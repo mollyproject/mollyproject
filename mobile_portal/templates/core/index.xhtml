@@ -1,0 +1,84 @@
+{% extends "core/base.xhtml" %}
+
+{% block stylesheets %}
+{{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/core/index.css"/>
+{% endblock %}
+
+{% block content %}
+    {% if user.is_authenticated %}
+    <p><a href="/webauth/logout/">Log out of WebAuth</a></p>
+    {% else %}
+    <p><a href="/webauth/login/">Log in using WebAuth for more features</a></p>
+    {% endif %}
+
+    <h1 class="nodisplay">Home</h1>
+
+    <div class="section">
+        <h2 class="nodisplay">Menu</h2>
+    
+
+    <ul class="icon-menu">
+      <li id="menu-contact">
+          <a href="{% url contact_index %}">Contact search</a>
+      </li>
+      <li id="menu-olis">
+          <a href="/olis/">OLIS search</a>
+      </li>
+      <li id="menu-maps">
+          <a href="/maps/">Maps</a>
+      </li>
+      <li id="menu-emergency">
+          <a href="/crisis/">Crisis contacts</a>
+      </li>
+      <li id="menu-emergency">
+          <a href="/podcasts/">Podcasts</a>
+      </li>
+      <li id="menu-emergency">
+          <a href="/results/">Exam results</a>
+      </li>
+    </ul>
+    
+    <div class="clearhidden"> </div>
+
+    </div>
+    <hr/>
+    <div class="section">
+        <h2>Location</h2>
+{% if placemark %}
+        <p id="location_status">We think you are somewhere near <strong class="nobr">{{ placemark.address }}</strong> ({{ location.0 }} {{ location.1 }}).</p>
+        <p id="location_update"><a href="/core/update_location/">This is not correct</a></p>
+{% else %}
+{% if location %}
+        <p id="location_status">We think you are somewhere near <strong class="nobr">{{ location.0 }} {{ location.1 }}</strong>.</p>
+        <p id="location_update"><a href="/core/update_location/">This is not correct</a></p>
+{% else %}
+        <p id="location_status">Sorry, but we are unable to determine your location automatically.</p>
+        <script type="text/javascript">
+            if (require_location && navigator.geolocation.getCurrentPosition)
+                $('#location_status').html('We do not yet have a location for you; please wait while we attempt to determine one.');
+            else if (navigator.geolocation.getCurrentPosition)
+                $('#location_status').css('display', 'none');
+        </script>
+        <p id="location_update"><a href="/core/update_location/">Update your location manually</a></p>
+{% endif %}
+{% endif %}
+        <script type="text/javascript">
+            if (navigator.geolocation.getCurrentPosition)
+                $('#location_update').append(' <a href="#" onclick="javascript:requestPosition();">Determine automatically</a>');
+        </script>
+    </div>
+    <hr/>
+    <div class="section">
+        <h2>Using this site</h2>
+        <p>
+            <a href="/help/">Help</a>
+        </p>
+    </div>
+    
+    <hr/>
+    <div class="section">
+        <h2>Session</h2>
+        <p>{{ session }}</p>
+    </div>
+{% endblock %}

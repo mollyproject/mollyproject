@@ -1,0 +1,16 @@
+li#menu-contact {
+    background-image:url('../../png/contact.png');
+}
+
+li#menu-olis {
+    background-image:url('../../png/olis.png');
+}
+
+li#menu-maps {
+    background-image:url('../../png/maps.png');
+}
+
+li#menu-emergency {
+    background-image:url('../../png/emergency.png');
+}
+

@@ -1,0 +1,117 @@
+body, table {
+    margin: 0;
+    font-family: "Liberation Sans", sans;
+    font-size:9pt;
+    
+}
+
+h1, h2 {
+    font-weight:bold;
+    margin-top:0px;
+    margin-bottom:2px;
+    text-align:center;
+}
+
+h1 {
+    font-size:12pt;
+}
+
+h2 {
+    font-size:11pt;
+    text-decoration:underline;
+}
+
+div.strapline {
+    background-color:#fff;
+}
+
+div.strapline img {
+    border:0;
+}
+
+div.container {
+    width:320px;
+    padding:0px;
+#    border-right:1px solid green;
+}
+
+div.content {
+    margin-top:5px;
+#    background-color: #002147;
+#    color:#ffffff;
+    padding:5px;
+}
+
+a {
+    color:#002147;
+    text-decoration:underline;
+}
+
+p {
+    margin:0;
+}
+
+.nodisplay {
+    display:none;
+}
+
+ul.icon-menu {
+    list-style:none;
+    margin-top:0;
+    padding:0;
+    padding-bottom:6px;
+}
+
+ul.icon-menu li {
+    margin-left:0px;
+    margin-top:6px;
+    background-repeat:no-repeat;
+    overflow:hide;
+    margin-top:5px;
+    float:left;
+}
+
+ul.icon-menu li a {
+    width:65px;
+    height:2em;
+    padding:5px;
+    padding-top:75px;
+    text-align:center;
+    display:block;
+    text-decoration:none;
+}
+
+div.section {
+#    background-image:url('../png/top.png');
+#    background-repeat:no-repeat;
+    clear:both;
+    padding:0 5px;
+#    padding-top:20px;
+}
+
+hr {
+	clear:both;
+	margin-bottom:2px;
+	height:1px;
+	color:#002147;
+	background-color:#002147;
+	border:0;
+	
+}
+
+div.clearhidden {
+    clear:both;
+    visibility:hidden;
+}
+
+.nobr {white-space: nowrap}
+
+button.as_link {
+    border:none;
+    text-decoration:underline;
+    color:#00f;
+    cursor:pointer;
+    background-color:inherit;
+    text-align:center;
+    white-space:nowrap;
+}

@@ -1,0 +1,14 @@
+{% extends "podcasts/base.xhtml" %}
+
+{% block content %}
+<h1>Podcasts</h1>
+
+<ul>
+{% for item in items %}
+    <li>
+        <a href="{{ item.url }}">{{ item.title }}</a>
+    </li>
+{% endfor %}
+</ul>
+
+{% endblock %}

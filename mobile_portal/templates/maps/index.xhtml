@@ -1,0 +1,13 @@
+{% extends "maps/base.xhtml" %}
+
+{% block content %}
+
+<p>Nearest...</p>
+<ul>
+    <li><a href="{% url maps_nearest "Museum" %}">Museum</a></li>
+    <li><a href="{% url maps_nearest "College" %}">College</a></li>
+    <li><a href="{% url maps_nearest "Building" %}">Building</a></li>
+    <li><a href="{% url maps_nearest "Carpark" %}">Car park</a></li>
+</ul>
+
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "core/base.xhtml" %}
+
+{% block content %}
+
+<h1>Update location manually</h1>
+
+{% if error %}
+
+<p><em>{{ error }}</em></p>
+
+{% endif %}
+
+{% if options %}
+
+<p>Did you mean:</p>
+
+<form method="post" action=".">
+<input type="hidden" name="location" value="{{ location }}"/>
+<ul>
+{% for option in options %}
+    <li><button class="as_link" type="submit" name="index" value="{{ forloop.counter0 }}">{{ option.address }}</button></li>
+{% endfor %}
+</ul>
+</form>
+
+<p>Alternatively, please try another search:</p>
+
+{% else %}
+
+<p>Please enter an address or postcode (e.g. 'Keble College', 'Parks Road', 'OX1 3PG')</p>
+
+{% endif %}
+
+<form method="post" action=".">
+    <p>
+        <input name="location" value="{{ location }}"/>
+        <input type="submit" value="Update"/>
+    </p>
+</form>
+
+{% endblock %}

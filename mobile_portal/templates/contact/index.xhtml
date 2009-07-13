@@ -1,0 +1,50 @@
+{% extends "core/base.xhtml" %}
+
+{% block stylesheets %}
+{{ block.super }}
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/contact.css"/>
+{% endblock %}
+
+{% block content %}
+
+<h1>Contact search</h1>
+
+{% if people %}
+
+<ul class="people">
+{% for person in people %}
+    <li class="li-{% cycle odd,even %}">
+        <span class="name">{{ person.name }}</span> <span class="nodisplay">&mdash;</span>
+        <span class="unit">{{ person.unit }}</span><br/>
+{% ifequal method "email" %}
+        <span class="email"><a href="mailto:{{ person.email }}">{{ person.email }}</a></span>
+{% else %}
+        <span class="phone">Int: {{ person.phone.0 }} &mdash; Ext: {{ person.phone.1 }}</span>
+{% endifequal %}
+    </li>
+{% endfor %}
+</ul>
+
+<p>Pages: {% for page in pages %}
+    <a href="?page={{ page }}&amp;method={{ method }}&amp;q={{ query|urlencode }}">{{ page }}</a>
+{% endfor %}</p>
+
+{% endif %}
+
+<form method="get" action=".">
+
+<p>
+  <label for="query">Search:</label>
+  <input id="query" name="q" value="{{ query }}"/>
+  <input type="submit" value="Go"/>
+</p>
+<p>
+    <input type="radio" name="method" value="email" id="method-email"{% ifequal method "email" %} checked="checked"{% endifequal %}/>
+    <label for="method-email">E-mail</label>
+    <input type="radio" name="method" value="phone" id="method-phone"{% ifequal method "phone" %} checked="checked"{% endifequal %}/>
+    <label for="method-phone">Phone</label>
+</p>
+
+</form>
+
+{% endblock %}

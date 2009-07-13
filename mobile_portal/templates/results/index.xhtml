@@ -1,0 +1,18 @@
+{% extends "base.xhtml" %}
+
+{% block content %}
+
+<h1>Results releases</h1>
+
+<dl>
+{% regroup items by pubDate as is %}
+
+{% for g in is %}
+<dt>{{ g.grouper }}</dt>
+{% for item in g.list %}
+<dd>{{ item.code }}: {{ item.title }}</dd>
+{% endfor %}
+{% endfor %}
+</dl>
+
+{% endblock %}

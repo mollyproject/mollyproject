@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="75"
+   height="75"
+   id="svg1145"
+   sodipodi:version="0.32"
+   inkscape:version="0.46+devel"
+   version="1.0"
+   sodipodi:docname="contact.svg"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape">
+  <defs
+     id="defs1147">
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       id="perspective1153" />
+    <filter
+       id="filter1815"
+       inkscape:label="Bloom"
+       inkscape:menu="Bevels"
+       inkscape:menu-tooltip="Soft, cushion-like bevel with matte highlights"
+       color-interpolation-filters="sRGB">
+      <feGaussianBlur
+         id="feGaussianBlur1817"
+         result="result1"
+         in="SourceAlpha"
+         stdDeviation="2.1526428571428569" />
+      <feSpecularLighting
+         id="feSpecularLighting1819"
+         result="result0"
+         specularExponent="18.063876651982376"
+         specularConstant="2"
+         surfaceScale="5">
+        <feDistantLight
+           id="feDistantLight1821"
+           azimuth="225"
+           elevation="24" />
+      </feSpecularLighting>
+      <feComposite
+         id="feComposite1823"
+         result="result6"
+         operator="in"
+         in2="SourceAlpha" />
+      <feMorphology
+         id="feMorphology1825"
+         radius="5.7142857142857144"
+         operator="dilate" />
+      <feGaussianBlur
+         id="feGaussianBlur1827"
+         result="result11"
+         stdDeviation="5.7237142857142853" />
+      <feDiffuseLighting
+         id="feDiffuseLighting1829"
+         surfaceScale="5"
+         result="result3"
+         diffuseConstant="2.0099999999999998"
+         in="result1">
+        <feDistantLight
+           id="feDistantLight1831"
+           elevation="25"
+           azimuth="225" />
+      </feDiffuseLighting>
+      <feBlend
+         id="feBlend1833"
+         result="result7"
+         mode="multiply"
+         in="result3"
+         in2="SourceGraphic"
+         blend="normal" />
+      <feComposite
+         id="feComposite1835"
+         in="result7"
+         operator="in"
+         in2="SourceAlpha" />
+      <feBlend
+         id="feBlend1837"
+         result="result9"
+         mode="lighten"
+         in="result6"
+         blend="normal" />
+      <feComposite
+         id="feComposite1839"
+         in="result11" />
+    </filter>
+    <filter
+       id="filter5757"
+       inkscape:label="Specular light"
+       inkscape:menu="ABCs"
+       inkscape:menu-tooltip="Basic specular bevel to use for building textures">
+      <feGaussianBlur
+         id="feGaussianBlur5759"
+         result="result0"
+         in="SourceAlpha"
+         stdDeviation="2.5" />
+      <feSpecularLighting
+         id="feSpecularLighting5761"
+         specularExponent="35"
+         specularConstant="1"
+         surfaceScale="2"
+         lighting-color="rgb(255,255,255)"
+         result="result1"
+         in="result0">
+        <feDistantLight
+           id="feDistantLight5763"
+           azimuth="235"
+           elevation="55" />
+      </feSpecularLighting>
+      <feComposite
+         id="feComposite5765"
+         operator="in"
+         result="result2"
+         in="result1"
+         in2="SourceAlpha" />
+      <feComposite
+         id="feComposite5767"
+         k3="0.99999999999999989"
+         k2="0.99999999999999989"
+         operator="arithmetic"
+         result="result4"
+         in="SourceGraphic" />
+    </filter>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.979899"
+     inkscape:cx="-37.037563"
+     inkscape:cy="70.433287"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1280"
+     inkscape:window-height="953"
+     inkscape:window-x="0"
+     inkscape:window-y="25" />
+  <metadata
+     id="metadata1150">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <g
+       id="g1808"
+       transform="matrix(0.98571429,0,0,0.98571429,3,3)"
+       style="filter:url(#filter5757)">
+      <rect
+         ry="10"
+         y="0"
+         x="0"
+         height="70"
+         width="70"
+         id="rect1159"
+         style="fill:#002147;fill-opacity:1" />
+      <text
+         sodipodi:linespacing="125%"
+         id="text1155"
+         y="32.32233"
+         x="3.5355341"
+         style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+         xml:space="preserve"><tspan
+           style="font-size:36px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;font-family:Liberation Sans;-inkscape-font-specification:Liberation Sans"
+           y="32.32233"
+           x="3.5355341"
+           id="tspan1157"
+           sodipodi:role="line">@</tspan></text>
+      <text
+         id="text1804"
+         y="61.413704"
+         x="31.819805"
+         style="font-size:40px;font-style:normal;font-weight:normal;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+         xml:space="preserve"><tspan
+           style="font-weight:bold"
+           y="61.413704"
+           x="31.819805"
+           id="tspan1806"
+           sodipodi:role="line">✆</tspan></text>
+    </g>
+  </g>
+</svg>
