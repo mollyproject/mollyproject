@@ -26,16 +26,16 @@
           <a href="/olis/">OLIS search</a>
       </li>
       <li id="menu-maps">
-          <a href="/maps/">Maps</a>
+          <a href="{% url maps_index %}">Maps</a>
       </li>
       <li id="menu-emergency">
-          <a href="/crisis/">Crisis contacts</a>
+          <a href="{% url core_crisis %}">Crisis contacts</a>
       </li>
       <li id="menu-emergency">
-          <a href="/podcasts/">Podcasts</a>
+          <a href="{% url podcasts_index %}">Podcasts</a>
       </li>
       <li id="menu-emergency">
-          <a href="/results/">Exam results</a>
+          <a href="{% url results_index %}">Exam results</a>
       </li>
     </ul>
     
@@ -47,11 +47,11 @@
         <h2>Location</h2>
 {% if placemark %}
         <p id="location_status">We think you are somewhere near <strong class="nobr">{{ placemark.address }}</strong> ({{ location.0 }} {{ location.1 }}).</p>
-        <p id="location_update"><a href="/core/update_location/">This is not correct</a></p>
+        <p id="location_update"><a href="{% url core_update_location %}">This is not correct</a></p>
 {% else %}
 {% if location %}
         <p id="location_status">We think you are somewhere near <strong class="nobr">{{ location.0 }} {{ location.1 }}</strong>.</p>
-        <p id="location_update"><a href="/core/update_location/">This is not correct</a></p>
+        <p id="location_update"><a href="{% url core_update_location %}">This is not correct</a></p>
 {% else %}
         <p id="location_status">Sorry, but we are unable to determine your location automatically.</p>
         <script type="text/javascript">
@@ -60,7 +60,7 @@
             else if (navigator.geolocation.getCurrentPosition)
                 $('#location_status').css('display', 'none');
         </script>
-        <p id="location_update"><a href="/core/update_location/">Update your location manually</a></p>
+        <p id="location_update"><a href="{% url core_update_location %}">Update your location manually</a></p>
 {% endif %}
 {% endif %}
         <script type="text/javascript">
