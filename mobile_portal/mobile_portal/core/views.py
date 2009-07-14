@@ -60,7 +60,7 @@ def ajax_update_location(request):
         except IndexError:
             placemark = None
         
-        geolocation.set_location(request, placemark, *location, method='geoapi')
+        geolocation.set_location(request, placemark, location[0], location[1], method='geoapi')
 
         request.session['location'] = location
         request.session['location_updated'] = datetime.now()
