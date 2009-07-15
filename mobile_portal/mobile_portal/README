@@ -1,0 +1,59 @@
+Installation
+============
+
+Depenencies
+-----------
+
+Install the following packages:
+ * postgres
+ * python-psycopg
+ * python-beautifulsoup
+ * python-simplejson
+ * python-django
+
+Database
+--------
+
+As a superuser, create the mobile_portal database and user:
+
+ $ createdb mobile_portal
+
+ $ createuser mobile_portal -P
+ Enter password for new role: 
+ Enter it again: 
+ Shall the new role be a superuser? (y/n) n
+ Shall the new role be allowed to create databases? (y/n) n
+ Shall the new role be allowed to create more new roles? (y/n) n
+
+Make sure the password is the one given in settings.py
+
+Now edit pg_hba.conf to allow passworded logins from the new user by adding the
+following line somewhere near the top. Order is important, so it needs to go
+above any more general access directives.
+
+ local mobile_portal mobile_portal md5
+
+Log in to the server and allow the user access to the database:
+
+ $ psql mobile_portal
+ Welcome to psql 8.3.7, the PostgreSQL interactive terminal.
+
+ Type:  \copyright for distribution terms
+        \h for help with SQL commands
+        \? for help with psql commands
+        \g or terminate with semicolon to execute query
+        \q to quit
+
+ mobile_portal=# grant all on database mobile_portal to mobile_portal;
+ GRANT
+ mobile_portal=# ^D
+
+Either send SIGHUP or restart the server to reload pg_hba.conf
+
+Change directory to mobile_portal/mobile_portal and use manage.py to initialise the database:
+
+ $ cd /Erewhon/mobile_portal/mobile_portal
+ $ python manage.py syncdb
+
+It should ask you to create a new superuser. Say yes and set one up.
+
