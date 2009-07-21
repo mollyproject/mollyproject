@@ -39,7 +39,7 @@ def update_location(request):
             
             return HttpResponseRedirect(reverse('core_index'))
         
-        elif len(position) > 1:
+        elif len(placemarks) > 1:
             options = placemarks
         else:
             error='We could not determine where that place is. Please try again.'
