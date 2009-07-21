@@ -5,7 +5,7 @@ from django.conf import settings
 # from django.contrib import admin
 # admin.autodiscover()
 
-urlpatterns = patterns('mobile_portal.podcasts.views',
+urlpatterns = patterns('mobile_portal.webcams.views',
     # Example:
     # (r'^mobile_portal/', include('mobile_portal.foo.urls')),
 
@@ -15,7 +15,9 @@ urlpatterns = patterns('mobile_portal.podcasts.views',
 
     # Uncomment the next line to enable the admin:
     # (r'^admin/(.*)', admin.site.root),
-    (r'^$', 'index', {}, 'podcasts_index'),
-    (r'^(?P<id>\d+)/$', 'podcast_detail', {}, 'podcasts_podcast'),
+    (r'^$', 'index', {}, 'webcams_index'),
+    (r'^(?P<slug>[a-zA-Z0-9\-]+)/$', 'webcam_detail', {}, 'webcams_webcam'),
+    (r'^(?P<slug>[a-zA-Z0-9\-]+)/image/$', 'webcam_image', {}, 'webcams_image'),
+    (r'^(?P<slug>[a-zA-Z0-9\-]+)/image/(?P<width>\d{3})/$', 'webcam_image', {}, 'webcams_image_width'),
 )
 
