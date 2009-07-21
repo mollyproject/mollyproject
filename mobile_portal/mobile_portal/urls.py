@@ -1,9 +1,8 @@
 from django.conf.urls.defaults import *
 from django.conf import settings
 
-# Uncomment the next two lines to enable the admin:
-# from django.contrib import admin
-# admin.autodiscover()
+from django.contrib import admin
+admin.autodiscover()
 
 urlpatterns = patterns('',
     # Example:
@@ -14,7 +13,7 @@ urlpatterns = patterns('',
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
     # Uncomment the next line to enable the admin:
-    # (r'^admin/(.*)', admin.site.root),
+    (r'^admin/(.*)', admin.site.root),
     (r'^$', 'mobile_portal.core.views.index', {}, 'core_index'),
     (r'^core/ajax/update_location/$', 'mobile_portal.core.views.ajax_update_location', {}, 'core_ajax_update_location'),
     (r'^core/update_location/$', 'mobile_portal.core.views.update_location', {}, 'core_update_location'),
@@ -25,10 +24,12 @@ urlpatterns = patterns('',
     (r'^maps/', include('mobile_portal.maps.urls')),
     (r'^podcasts/', include('mobile_portal.podcasts.urls')),
     (r'^results/', include('mobile_portal.results.urls')),
+    (r'^webcams/', include('mobile_portal.webcams.urls')),
+    (r'^auth/', include('mobile_portal.webauth.urls')),
 )
 
-if settings.DEBUG:
+if False and settings.DEBUG:
     urlpatterns += patterns('',
-        (r'^site-media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
+        (r'^ste-media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
     )
 
