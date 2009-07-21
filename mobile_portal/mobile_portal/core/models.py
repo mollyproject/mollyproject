@@ -97,3 +97,18 @@ class Profile(models.Model):
     
     fireeagle_access_token = models.TextField()
     fireeagle_access_secret = models.TextField()
+    
+    front_page_links = models.ManyToManyField('FrontPageLink', through='ProfileFrontPageLink')
+
+class FrontPageLink(models.Model):
+    slug = models.SlugField()
+    title = models.TextField()
+    order = models.PositiveIntegerField()
+    displayed = models.BooleanField()
+    urlconf_name = models.TextField()
+
+class ProfileFrontPageLink(models.Model):
+    profile = models.ForeignKey(Profile)
+    front_page_link = models.ForeignKey(FrontPageLink)
+    order = models.PositiveIntegerField()
+    displayed = models.BooleanField()

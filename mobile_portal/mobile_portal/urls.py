@@ -14,9 +14,6 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     (r'^admin/(.*)', admin.site.root),
-    (r'^$', 'mobile_portal.core.views.index', {}, 'core_index'),
-    (r'^core/ajax/update_location/$', 'mobile_portal.core.views.ajax_update_location', {}, 'core_ajax_update_location'),
-    (r'^core/update_location/$', 'mobile_portal.core.views.update_location', {}, 'core_update_location'),
 
 
     (r'^crisis/$', 'mobile_portal.core.views.crisis', {}, 'core_crisis'),
@@ -26,6 +23,8 @@ urlpatterns = patterns('',
     (r'^results/', include('mobile_portal.results.urls')),
     (r'^webcams/', include('mobile_portal.webcams.urls')),
     (r'^auth/', include('mobile_portal.webauth.urls')),
+
+    (r'', include('mobile_portal.core.urls')),
 )
 
 if False and settings.DEBUG:

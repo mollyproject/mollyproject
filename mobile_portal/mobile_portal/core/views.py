@@ -76,3 +76,5 @@ def ajax_update_location(request):
     
     return HttpResponse(address)
         
+def customise(request):
+    pass
