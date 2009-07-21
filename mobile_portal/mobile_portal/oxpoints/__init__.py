@@ -10,3 +10,5 @@ for entity in entities:
     by_type[entity['type']].append(entity)
 
     by_uri[entity['uri']] = entity
+
+import entity
