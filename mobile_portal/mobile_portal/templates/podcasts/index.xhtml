@@ -3,12 +3,11 @@
 {% block content %}
 <h1>Podcasts</h1>
 
-<ul>
-{% for item in items %}
-    <li>
-        <a href="{{ item.url }}">{{ item.title }}</a>
-    </li>
+<dl class="podcast_list">
+{% for podcast in podcasts %}
+    <dt><a href="{% url podcasts_podcast podcast.id %}">{{ podcast.title }}</a></dt>
+    <dd>{{ podcast.description }}</dd>
 {% endfor %}
-</ul>
+</dl>
 
 {% endblock %}

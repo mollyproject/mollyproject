@@ -1,4 +1,4 @@
-{% extends "core/base.xhtml" %}
+{% extends "contact/base.xhtml" %}
 
 {% block stylesheets %}
 {{ block.super }}
@@ -19,7 +19,7 @@
 {% ifequal method "email" %}
         <span class="email"><a href="mailto:{{ person.email }}">{{ person.email }}</a></span>
 {% else %}
-        <span class="phone">Int: {{ person.phone.0 }} &mdash; Ext: {{ person.phone.1 }}</span>
+        <span class="phone">Int: {{ person.phone.0 }} &mdash; Ext: <a href="tel:{{ person.phone.1 }}">{{ person.phone.1 }}</a></span>
 {% endifequal %}
     </li>
 {% endfor %}

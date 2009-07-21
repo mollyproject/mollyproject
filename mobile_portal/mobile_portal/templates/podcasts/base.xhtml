@@ -1,1 +1,12 @@
 {% extends "base.xhtml" %}
+
+{% block breadcrumbs %}
+{{ block.super }}
+    <li><a href="{% url podcasts_index %}">Podcasts</a></li>
+{% endblock %}
+
+
+{% block stylesheets %}
+{{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/podcasts.css"/>
+{% endblock %}

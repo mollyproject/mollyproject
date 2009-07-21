@@ -1,5 +1,5 @@
 function sendPosition(position) {
-    jQuery.post('/core/ajax/update_location/', {
+    jQuery.post('/beta/core/ajax/update_location/', {
         longitude: position.coords.longitude,
         latitude: position.coords.latitude,
     }, function(data) {

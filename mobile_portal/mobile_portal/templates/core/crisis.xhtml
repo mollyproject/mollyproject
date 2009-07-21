@@ -1,5 +1,11 @@
 {% extends "base.xhtml" %}
 
+{% block breadcrumbs %}
+{{ block.super }}
+    <li><a href="{% url core_crisis %}">Crisis contacts</a></li>
+{% endblock %}
+
+
 {% block content %}
 
 <h1>Crisis contacts</h1>

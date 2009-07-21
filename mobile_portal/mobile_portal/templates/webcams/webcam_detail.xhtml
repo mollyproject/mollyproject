@@ -1,0 +1,22 @@
+{% extends "webcams/base.xhtml" %}
+
+{% block breadcrumbs %}
+{{ block.super }}
+    <li><a href="{% url webcams_webcam webcam.slug %}">{{ webcam.title }}</a></li>
+{% endblock %}
+
+{% block content %}
+
+<h1>{{ webcam.title }}</h1>
+
+<img class="webcam_image" src="{% url webcams_image_width webcam.slug width|stringformat:"3d" %}" width="{{ width }}" alt=""/>
+
+<p>{{ webcam.description }}</p>
+
+{% if webcam.credit %}
+
+<p>Credit: {{ webcam.credit|safe }}</p>
+
+{% endif %}
+
+{% endblock %}

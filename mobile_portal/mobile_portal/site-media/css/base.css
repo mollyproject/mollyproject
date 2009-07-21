@@ -115,3 +115,22 @@ button.as_link {
     text-align:center;
     white-space:nowrap;
 }
+
+ol.breadcrumbs {
+    list-style:none;
+    padding-left:0;
+    margin:5px 5px;
+}
+
+ol.breadcrumbs li {
+    display:inline;
+}
+
+ol.breadcrumbs li:before {
+    content: "» ";
+    content: "> ";
+}
+
+ol.breadcrumbs li:first-child:before {
+    content: "";
+}

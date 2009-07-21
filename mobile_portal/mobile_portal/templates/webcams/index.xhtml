@@ -1,0 +1,15 @@
+{% extends "webcams/base.xhtml" %}
+
+{% block content %}
+
+<h1>Webcams</h1>
+
+<ul>
+{% for webcam in webcams %}
+    <li>
+        <a href="{% url webcams_webcam webcam.slug %}">{{ webcam.title }}</a>
+    </li>
+{% endfor %}
+</ul>
+
+{% endblock %}

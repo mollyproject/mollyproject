@@ -1,0 +1,32 @@
+{% extends "maps/base.xhtml" %}
+
+{% block title %}OMP | {{ resource.title }}{% endblock %}
+
+{% block content %}
+
+<h1>{{ resource.title }}</h1>
+
+{% if resource.in_images %}
+<img src="{{ resource.in_images.0.url }}" alt="" style="float:right"/>
+{% endif %}
+
+<p>
+    <a href="{{ resource.homepage.url }}">Web</a>
+    <a href="http://maps.google.co.uk/?q={{ resource.primary_place.google_qs_part }}&amp;z=16">Map</a>
+</p>
+
+<p>Directions:
+{% if location %}
+    <a href="http://maps.google.co.uk/?saddr=Here@{{ location|join:"," }}&amp;daddr={{ resource.primary_place.google_qs_part }}&amp;dirflg=w">from here</a> |
+{% endif %}
+    <a href="http://maps.google.co.uk/?saddr=Station@51.753468,-1.269795&amp;daddr={{ resource.primary_place.google_qs_part }}&amp;dirflg=w">from the station</a>
+</p>
+
+<h3>Occupies</h3>
+
+<ul>
+{% for place in resource.occupies %}
+    <li><a href="{% url maps_oxpoints place.id %}">{{ place.title }}</a></li>
+{% endfor %}
+</ul>
+{% endblock %}

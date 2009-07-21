@@ -1,1 +1,7 @@
 {% extends "base.xhtml" %}
+
+{% block breadcrumbs %}
+{{ block.super }}
+    <li><a href="{% url contact_index %}">Contact search</a></li>
+{% endblock %}
+
