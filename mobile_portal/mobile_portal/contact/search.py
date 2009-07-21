@@ -5,6 +5,11 @@ import urllib, urllib2
 CONTACT_SEARCH_URL = 'http://www.ox.ac.uk/applications/contact_search/index.rm?%s'
 
 def contact_search(surname, initial, exact, medium, page=1):
+    """
+    Screenscrapes contact details from the main University contact search page and returns
+    a list of dictionaries containing contact information.
+    """
+    
     query_string = urllib.urlencode({
         'lastname':surname,
         'initial':initial or '',

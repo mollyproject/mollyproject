@@ -10,11 +10,17 @@ def index(request):
         except:
             page = 1
 
+        # Examples of initial / surname splitting
+        # William Bloggs is W, Bloggs
+        # Bloggs         is  , Bloggs
+        # W Bloggs       is W, Bloggs
+        # Bloggs W       is W, Bloggs
+        # Bloggs William is B, William
         parts = request.GET.get('q', '').split(' ')[:2]
         if len(parts) == 1:
             surname, initial = parts[0], None
-        elif len(parts[0]) > len(parts[1]):
-            surname, initial = parts[0], parts[1][:1]
+        elif len(parts[1]) == 1:
+            surname, initial = parts[0], parts[1]
         else:
             surname, initial = parts[1], parts[0][:1]
 
