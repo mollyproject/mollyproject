@@ -3,13 +3,36 @@ from datetime import datetime
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from mobile_portal.core.renderers import mobile_render
+from mobile_portal.webauth.utils import require_auth
 import geolocation
 
 import sys, traceback
 
+from models import FrontPageLink
+from utils import latest_weather, outlook_to_icon
+from forms import FrontPageLinkForm
+
 def index(request):
     print "\n".join("%20s : %s" % s for s in request.META.items() if s[0].startswith('HTTP_'))
+    
+    front_page_links = FrontPageLink.objects.order_by('order')    
+    if request.user.is_authenticated():
+        user_front_page_links = request.user.get_profile().front_page_links.order_by('order')
+        if front_page_links.count != user_front_page_links.count:
+            for link in front_page_links:
+                if not link in [l.front_page_link for l in user_front_page_links]:
+                    request.user.get_profile().front_page_links.create(
+                        front_page_link = link,
+                        order = link.order,
+                        displayed = link.displayed
+                    )
+            front_page_links = request.user.get_profile().front_page_links.filter(displayed=True).order_by('order')
+        else:
+            front_page_links = user_front_page_links
+    front_page_links = [l for l in front_page_links if l.displayed]
+
     context = {
+        'front_page_links': front_page_links,
     }
     return mobile_render(request, context, 'core/index')
 
@@ -75,6 +98,22 @@ def ajax_update_location(request):
         address = "%s %s" % request.session['location']
     
     return HttpResponse(address)
-        
+
+@require_auth
 def customise(request):
-    pass
+    post = request.POST or None
+    links = request.user.get_profile().front_page_links.order_by('order')
+
+    forms = [FrontPageLinkForm(post, instance=l, prefix="%d"%i) for i,l in enumerate(links)]
+    
+    if all(f.is_valid() for f in forms):
+        forms.sort(key=lambda x:x.cleaned_data['order']) 
+        for i, f in enumerate(forms):
+            f.cleaned_data['order'] = i+1
+            f.save()
+        return HttpResponseRedirect('.') 
+
+    context = {
+        'forms': forms,
+    }
+    return mobile_render(request, context, 'core/customise')

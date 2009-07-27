@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 import django.dispatch
 
 class RecentManager(models.Manager):
@@ -95,20 +96,28 @@ class Profile(models.Model):
     user = models.ForeignKey(User, unique=True)
     webauth_username = models.TextField(null=True, blank=True)
     
-    fireeagle_access_token = models.TextField()
-    fireeagle_access_secret = models.TextField()
+    fireeagle_access_token = models.TextField(blank=True)
+    fireeagle_access_secret = models.TextField(blank=True)
     
-    front_page_links = models.ManyToManyField('FrontPageLink', through='ProfileFrontPageLink')
+    front_page_links = models.ManyToManyField('ProfileFrontPageLink', blank=True)
 
 class FrontPageLink(models.Model):
     slug = models.SlugField()
     title = models.TextField()
     order = models.PositiveIntegerField()
+
     displayed = models.BooleanField()
     urlconf_name = models.TextField()
+    
+    @property
+    def url(self):
+        return reverse(self.urlconf_name)
 
 class ProfileFrontPageLink(models.Model):
-    profile = models.ForeignKey(Profile)
     front_page_link = models.ForeignKey(FrontPageLink)
     order = models.PositiveIntegerField()
     displayed = models.BooleanField()
+    
+    slug = property(lambda self: self.front_page_link.slug)
+    title = property(lambda self: self.front_page_link.title)
+    url = property(lambda self: self.front_page_link.url)
