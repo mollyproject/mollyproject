@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
 from mobile_portal.wurfl import device_parents
 
+from utils import latest_weather, outlook_to_icon
+
 DEVICE_SPECIFIC_MEDIA = {
     'apple_iphone_ver1': {
         'js': frozenset(['js/devices/apple_iphone.js']),
@@ -52,3 +54,13 @@ def geolocation(request):
         'device': request.device,
         'meta': dict((a,b) for (a,b) in request.META.items() if a.startswith('HTTP_')),
     }
+
+def weather(request):
+    weather = latest_weather()
+    weather_icon = outlook_to_icon(weather['outlook'])
+    return {
+        'weather': weather,
+        'weather_icon': weather_icon,
+        'common_name': request.session.get('common_name')
+    }
+    

@@ -2,6 +2,7 @@ body, table {
     margin: 0;
     font-family: "Liberation Sans", sans;
     font-size:9pt;
+    background-color:#fff;
     
 }
 
@@ -23,23 +24,33 @@ h2 {
 
 div.strapline {
     background-color:#fff;
+    height:46px;
 }
 
 div.strapline img {
     border:0;
 }
 
+div.weather {
+    float:right;
+}
+
+div.weather img {
+    height: 46px;
+}
+
 div.container {
-    width:320px;
+    width:305px;
     padding:0px;
 #    border-right:1px solid green;
+    overflow:hidden;
 }
 
 div.content {
-    margin-top:5px;
-#    background-color: #002147;
-#    color:#ffffff;
-    padding:5px;
+/*    background-color: #002147;
+    color:#ffffff;*/
+    padding:2px;
+    padding-top:0px;
 }
 
 a {
@@ -64,10 +75,9 @@ ul.icon-menu {
 
 ul.icon-menu li {
     margin-left:0px;
-    margin-top:6px;
+    margin-top:0px;
     background-repeat:no-repeat;
     overflow:hide;
-    margin-top:5px;
     float:left;
 }
 
@@ -85,7 +95,7 @@ div.section {
 #    background-image:url('../png/top.png');
 #    background-repeat:no-repeat;
     clear:both;
-    padding:0 5px;
+    padding:0 0px;
 #    padding-top:20px;
 }
 
@@ -133,4 +143,39 @@ ol.breadcrumbs li:before {
 
 ol.breadcrumbs li:first-child:before {
     content: "";
+}
+
+div.weather {
+    float:right;
+    width:100px;
+    text-align:right;
+    overflow:hidden;
+}
+
+div.weather span {
+    padding-top:0px;
+    line-height:15px;
+    font-size:15px;
+    display:block;
+}
+
+div.weather .temperature {
+    margin-top:6px;
+    margin-bottom:3px;
+}
+div.weather .wind_speed {
+    margin-top:3px;
+    margin-bottom:6px;
+}
+    
+div.weather img {
+    float:right;
+}
+
+div.login {
+    float:right;
+    width:46px;
+    height:46px;
+    overflow:hidden;
+    margin-left:5px;
 }
