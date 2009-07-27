@@ -5,12 +5,14 @@ from django.contrib.auth import login as dologin, logout as dologout
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
+from django.core.mail import mail_admins
 from django.forms.util import ErrorList
 
 from mobile_portal.core.models import Profile
 from mobile_portal.core.renderers import mobile_render
+from mobile_portal.core import ldap_queries
 
-from utils import allow_unauth, require_unauth
+from utils import require_auth, require_unauth
 
 @require_unauth
 def login(request):
@@ -62,13 +64,17 @@ def webauth_login(request):
         try:
             profile = Profile.objects.get(webauth_username = webauth_username)
         except Profile.DoesNotExist:
-            user = User.objects.create_user('sso/%s' % webauth_username, '')
+            user = User.objects.create_user('sso_%s' % webauth_username, '')
             profile = Profile.objects.create(user = user, webauth_username=webauth_username)
         r = authenticate(webauth_user=profile)
         dologin(request, profile.user)
+        
+        request.session['common_name'] = ldap_queries.get_common_name(webauth_username)
+
     next_url = request.GET.get('redirect_url', reverse("core_index"))
     return HttpResponseRedirect(next_url)
 
+@require_auth
 def logout(request):
     context = {
         'used_webauth':request.session.get('_auth_user_backend') == 'mobile_portal.webauth.backends.WebauthBackend',
@@ -76,7 +82,6 @@ def logout(request):
     dologout(request)
     return mobile_render(request, context, "auth/logged_out")
 
-@allow_unauth
 def webauth_logout(request):
     """
     Redirects to the SSO logout page in a more elegant fashion than linking
@@ -89,7 +94,8 @@ def webauth_logout(request):
 def webauth_failure(request):
     """
     Displays a message to say something went wrong with Webauth and sends
-    a notification to the IT Officer to let him/her know.
+    a notification to the admins to let him/her know.
     """
+    mail_admins('Webauth failure for mobile_portal', unicode(request)) 
     
     return mobile_render(request, context, "auth/webauth_failure")

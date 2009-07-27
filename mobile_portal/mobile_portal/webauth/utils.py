@@ -1,7 +1,3 @@
-def allow_unauth(view, redirect=None):
-    view.allow_unauth = redirect
-    return view
-
 def require_auth(view, redirect=None):
     view.require_auth = redirect
     return view

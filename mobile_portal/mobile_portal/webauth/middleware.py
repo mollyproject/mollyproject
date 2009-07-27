@@ -1,5 +1,4 @@
 
-from models import WebauthUser
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 
@@ -7,7 +6,7 @@ from django.core.urlresolvers import reverse
 This is our authentication middleware.
 """
 
-class BinAuthMiddleware(object):
+class WebAuthMiddleware(object):
     def process_request(self, request):
         request.is_authenticated = request.user.is_authenticated()
         
@@ -19,13 +18,12 @@ class BinAuthMiddleware(object):
         and require_unauth decorators on view methods.
         """
         
-        if not hasattr(view_func, 'allow_unauth') and not request.user.is_authenticated() \
-           and not (hasattr(view_func, 'require_unauth') or hasattr(view_func, 'allow_unauth')):
-            try:
+        if hasattr(view_func, 'require_auth') and not request.user.is_authenticated():
+            if view_func.require_auth:
                 return HttpResponseRedirect(view_func.require_auth)
-            except AttributeError:
+            else:
                 return HttpResponseRedirect(reverse('auth_login') + "?redirect_url=" + request.path)
         elif hasattr(view_func, 'require_unauth') and request.user.is_authenticated():
-            return HttpResponseRedirect(view_func.require_unauth or reverse("home"))
+            return HttpResponseRedirect(view_func.require_unauth or reverse("core_index"))
         return None
 
