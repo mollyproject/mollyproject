@@ -34,7 +34,7 @@ def nearest(request, ptype):
     return mobile_render(request, context, 'maps/place_list')
 
 OXPOINTS_URL = 'http://m.ox.ac.uk/oxpoints/id/%s'    
-def oxpoints(request, id):
+def oxpoints_entity(request, id):
     resource = get_resource_by_url(OXPOINTS_URL % id)
     if isinstance(resource, MissingResource):
         raise Http404
