@@ -1,7 +1,8 @@
 from xml.etree import ElementTree as ET
-import urllib
+import urllib, random
 from django.conf import settings
 from django import template
+from mobile_portal.wurfl import device_parents
 
 register = template.Library()
 
@@ -19,6 +20,12 @@ def do_render_map(parser, token):
         raise template.TemplateSyntaxError, "%r takes one or two arguments" % token.contents.split()[0]
     return MapNode(args)
 
+GOOGLE_MAPS_BROWSERS = frozenset([
+    'stupid_novarra_proxy_sub73',
+    'apple_iphone_ver1',
+])
+GOOGLE_MAPS_INCLUDE = '<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>\n'
+
 class MapNode(template.Node):
     def __init__(self, args):
 	self.args = args
@@ -29,6 +36,43 @@ class MapNode(template.Node):
             lat, lng = [float(f) for f in args[0].resolve(context)]
         else:
             lat, lng = [float(a.resolve(context)) for a in args]
+
+        width, height = 300, 200
+        
+        if device_parents[context['device'].devid] | GOOGLE_MAPS_BROWSERS:
+            return self.google_map(context, lat, lng, width, height)
+        else:
+            return self.yahoo_map(context, lat, lng, width, height)
+
+    def google_map(self, context, lat, lng, width, height):
+        params = {
+            'width': width, 'height': height,
+            'lat': lat, 'lng': lng,
+            'id': 'map-%08x' % random.randint(0, 16**8-1),
+            'maps_include': context.get('maps_included') and '' or GOOGLE_MAPS_INCLUDE,
+        }
+        context['maps_included'] = True
+
+        return """\
+<div id="%(id)s" style="width:%(width)dpx; height:%(height)dpx;"/>
+%(maps_include)s<script type="text/javascript">
+$(document).ready(function() {
+    var point = new google.maps.LatLng(%(lat)f, %(lng)f);
+    var options = {
+        zoom: 14,
+        center: point,
+        mapTypeId: google.maps.MapTypeId.ROADMAP
+    };
+    var map = new google.maps.Map(document.getElementById("%(id)s"), options);
+    var marker = new google.maps.Marker({
+        position: point,
+        map: map,
+    });
+});
+</script>
+""" % params
+
+    def yahoo_map(self, context, lat, lng, width, height):
         params = {
             'appid': settings.YAHOO_API_KEY,
             'latitude': lat,
