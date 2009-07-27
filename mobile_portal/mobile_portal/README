@@ -13,6 +13,7 @@ Install the following packages:
  * python-ldap
  * apache-module-webauth (see http://webauth.stanford.edu/)
  * python-oauth
+ * python-levenshtein
 
 Database
 --------

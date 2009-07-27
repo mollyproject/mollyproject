@@ -55,6 +55,7 @@ class Feed(models.Model):
         b = self.last_fetched
         if not self.last_fetched or self.last_fetched + timedelta(0, self.fetch_period) < datetime.now():
             require_save = True
+            a = self.get_path()
             f = open(self.get_path(), 'w')
             response = urllib.urlopen(self.url)
             data = response.read()

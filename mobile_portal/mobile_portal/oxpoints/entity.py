@@ -72,6 +72,9 @@ class Place(Entity):
         return "%s@%f,%f" % (urllib.quote(self.title), self.location[0], self.location[1])
     google_qs_part.safe = True 
 
+    def get_location(self):
+        return location
+
 class College(Unit): pass
 class Department(Unit): pass
 class Library(Unit): pass
@@ -119,7 +122,10 @@ def get_bag(node):
     return node.findall('%s%s/%s%s' % (RDF_NS, 'Bag', RDF_NS, 'li'))
 
 def get_resource(node):
-    return LazyResource(get_resource_url(node))
+    if node is None:
+        return None
+    else:
+        return LazyResource(get_resource_url(node))
 
 def get_resource_url(node):
     return node.attrib[RDF_NS+'resource']

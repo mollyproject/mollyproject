@@ -1,4 +1,5 @@
 {% extends "maps/base.xhtml" %}
+{% load maps %}
 
 {% block title %}OMP | {{ resource.title }}{% endblock %}
 
@@ -23,5 +24,7 @@
 {% endif %}
     <a href="http://maps.google.co.uk/?saddr=Station@51.753468,-1.269795&amp;daddr={{ resource.google_qs_part }}&amp;dirflg=w">from the station</a>
 </p>
+
+{% map resource.location %}
 
 {% endblock %}

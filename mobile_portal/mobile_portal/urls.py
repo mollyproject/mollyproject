@@ -28,8 +28,8 @@ urlpatterns = patterns('',
     (r'', include('mobile_portal.core.urls')),
 )
 
-if False and settings.DEBUG:
+if settings.DEBUG:
     urlpatterns += patterns('',
-        (r'^ste-media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
+        (r'^beta/site-media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
     )
 
