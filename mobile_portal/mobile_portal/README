@@ -10,6 +10,9 @@ Install the following packages:
  * python-beautifulsoup
  * python-simplejson
  * python-django
+ * python-ldap
+ * apache-module-webauth (see http://webauth.stanford.edu/)
+ * python-oauth
 
 Database
 --------
@@ -57,3 +60,15 @@ Change directory to mobile_portal/mobile_portal and use manage.py to initialise 
 
 It should ask you to create a new superuser. Say yes and set one up.
 
+The information for a user is kept in two models, auth.User and core.Profile,
+with a foreign key link from the latter to the former. These are stored in the
+database as tables auth_user and core_profile. Django does not create an entry
+in the core_profile table for your superuser, which will make the site fall
+over when it can't be found. Use psql to insert a row into core_profile for the
+user.
+
+WebAuth
+-------
+
+Kerberos and LDAP
+-----------------

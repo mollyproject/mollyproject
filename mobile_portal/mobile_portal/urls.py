@@ -23,6 +23,7 @@ urlpatterns = patterns('',
     (r'^results/', include('mobile_portal.results.urls')),
     (r'^webcams/', include('mobile_portal.webcams.urls')),
     (r'^auth/', include('mobile_portal.webauth.urls')),
+    (r'^sakai/', include('mobile_portal.sakai.urls')),
 
     (r'', include('mobile_portal.core.urls')),
 )

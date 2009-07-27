@@ -6,11 +6,6 @@
 {% endblock %}
 
 {% block content %}
-    {% if user.is_authenticated %}
-    <p>Logged in as <strong>{{ user.get_profile.webauth_username }}</strong> | <a href="{% url auth_logout %}">Log out of WebAuth</a></p>
-    {% else %}
-    <p><a href="{% url webauth_login %}">Log in using WebAuth for more features</a></p>
-    {% endif %}
 
     <h1 class="nodisplay">Home</h1>
 
@@ -19,32 +14,18 @@
     
 
     <ul class="icon-menu">
-      <li id="menu-contact">
-          <a href="{% url contact_index %}">Contact search</a>
+{% for link in front_page_links %}
+      <li id="menu-{{ link.slug }}">
+          <a href="{{ link.url }}">{{ link.title }}</a>
       </li>
-      <li id="menu-olis">
-          <a href="/olis/">OLIS search</a>
-      </li>
-      <li id="menu-maps">
-          <a href="{% url maps_index %}">Maps</a>
-      </li>
-      <li id="menu-emergency">
-          <a href="{% url core_crisis %}">Crisis contacts</a>
-      </li>
-      <li id="menu-podcasts">
-          <a href="{% url podcasts_index %}">Podcasts</a>
-      </li>
-      <li id="menu-emergency">
-          <a href="{% url results_index %}">Exam results</a>
-      </li>
-
-      <li id="menu-webcams">
-          <a href="{% url webcams_index %}">Webcams</a>
-      </li>
+{% endfor %}
     </ul>
-    
     <div class="clearhidden"> </div>
-
+    
+{% if user.is_authenticated %}
+    <p><a href="{% url core_customise %}">Customise</a></p>
+{% endif %}
+    
     </div>
     <hr/>
     <div class="section">
@@ -79,7 +60,7 @@
             <a href="/help/">Help</a>
         </p>
     </div>
-    
+{% if user.is_superuser %}
     <hr/>
     <div class="section">
         <h2>Session</h2>
@@ -102,4 +83,5 @@
 {% endfor %}
         </dl>
     </div>
+{% endif %}
 {% endblock %}

@@ -10,7 +10,7 @@
 
 <ol>
 {% for object in nearby %}
-    <li>{{ object.1.dc_title }} {{ object.0|floatformat:"2" }}km</li>
+    <li><a href="{{ object.1 }}">{{ object.1.dc_title }}</a> {{ object.0|floatformat:"2" }}km</li>
 {% endfor %}
 </ol>
 

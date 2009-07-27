@@ -14,7 +14,7 @@
 {% if resource.homepage %}
     <a href="{{ resource.homepage.url }}">Web</a>
 {% endif %}
-    <a href="http://maps.google.co.uk/?q={{ resource.google_qs_part }}&amp;z=16">Map</a>
+    <a href="http://maps.google.co.uk/?q={{ resource.google_qs_part|safe }}&amp;z=16">Map</a>
 </p>
 
 <p>Directions:

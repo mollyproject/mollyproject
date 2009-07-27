@@ -69,7 +69,8 @@ class Place(Entity):
             self.location = None 
 
     def google_qs_part(self):
-        return "%s@%f,%f" % (urllib.quote(self.title), self.location[0], self.location[1]) 
+        return "%s@%f,%f" % (urllib.quote(self.title), self.location[0], self.location[1])
+    google_qs_part.safe = True 
 
 class College(Unit): pass
 class Department(Unit): pass
