@@ -16,6 +16,7 @@ urlpatterns = patterns('mobile_portal.podcasts.views',
     # Uncomment the next line to enable the admin:
     # (r'^admin/(.*)', admin.site.root),
     (r'^$', 'index', {}, 'podcasts_index'),
-    (r'^(?P<id>\d+)/$', 'podcast_detail', {}, 'podcasts_podcast'),
+    (r'^(?P<code>[a-z]+)/$', 'category_detail', {}, 'podcasts_category'),
+    (r'^(?P<code>[a-z]+)/(?P<id>\d+)/$', 'podcast_detail', {}, 'podcasts_podcast'),
 )
 

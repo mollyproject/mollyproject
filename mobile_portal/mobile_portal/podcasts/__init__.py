@@ -1,9 +1,18 @@
 from xml.etree import ElementTree as ET
 from datetime import datetime
-import email
+import email, re, urllib
 
 from mobile_portal.core.models import feed_fetched
-from models import Podcast, PodcastItem, PodcastEnclosure
+from models import Podcast, PodcastCategory, PodcastItem, PodcastEnclosure
+
+CATEGORY_RE = re.compile('/division_code/([^,]+),/division_name/(.+)')
+def decode_category(category):
+    match = CATEGORY_RE.match(category)
+    code, name = match.groups()
+    name = urllib.unquote(name.replace('+', ' '))
+    
+    podcast_category, created = PodcastCategory.objects.get_or_create(code=code,name=name)
+    return podcast_category
 
 def process_opml(sender, **kwargs):
     if kwargs.get('category') != 'podcast_opml':
@@ -19,12 +28,14 @@ def process_opml(sender, **kwargs):
             podcast = Podcast.objects.get(rss_url=attrib['xmlUrl'])
             if podcast.title != attrib['title'] or podcast.description != attrib['description']:
                 podcast.title = attrib['title']
+                podcast.category = decode_category(attrib['category'])
                 podcast.description = attrib['description']
                 podcast.save()
         except Podcast.DoesNotExist:
             podcast = Podcast(
                 rss_url = attrib['xmlUrl'],
                 title = attrib['title'],
+                category = decode_category(attrib['category']),
                 description = attrib['description'],
             )
             podcast.save()

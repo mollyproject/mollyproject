@@ -2,7 +2,8 @@
 
 {% block breadcrumbs %}
 {{ block.super }}
-    <li><a href="{% url podcasts_podcast podcast.id %}">{{ podcast.title }}</a></li>
+    <li><a href="{{ podcast.category.get_absolute_url }}">{{ podcast.category.name }}</a></li>
+    <li><a href="{{ podcast.get_absolute_url }}">{{ podcast.title }}</a></li>
 {% endblock %}
 
 
