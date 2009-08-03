@@ -5,16 +5,16 @@ Depenencies
 -----------
 
 Install the following packages:
- * postgres
- * python-psycopg
+ * postgresql
+ * python-psycopg2
  * python-beautifulsoup
  * python-simplejson
  * python-django
  * python-ldap
  * python-rdflib
  * libsasl2-modules-ldap
- * apache2-module-webauth (see http://webauth.stanford.edu/)
- * python-oauth
+ * libapache2-webauth
+ * python-oauth (?)
  * python-levenshtein
  * postgis
  * python-gdal
