@@ -1,4 +1,4 @@
-import wurfl
+import wurfl_data
 
 device_parents = {}
 
@@ -8,10 +8,10 @@ def get_parents(device):
     try:
         return device_parents[device]
     except KeyError:
-        device_parents[device] = [device] + get_parents(wurfl.devices.select_id(device).fall_back)
+        device_parents[device] = [device] + get_parents(wurfl_data.devices.select_id(device).fall_back)
         return device_parents[device]
 
-for device in wurfl.devices:
+for device in wurfl_data.devices:
     if not device in device_parents:
         device_parents[device] = get_parents(device)
         
