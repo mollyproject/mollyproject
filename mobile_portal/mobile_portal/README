@@ -11,16 +11,25 @@ Install the following packages:
  * python-simplejson
  * python-django
  * python-ldap
- * apache-module-webauth (see http://webauth.stanford.edu/)
+ * python-rdflib
+ * libsasl2-modules-ldap
+ * apache2-module-webauth (see http://webauth.stanford.edu/)
  * python-oauth
  * python-levenshtein
+ * postgis
+ * python-gdal
+ * proj
+ * libgeos-3.0.0
+ 
 
 Database
 --------
 
-As a superuser, create the mobile_portal database and user:
+Follow the instructions at
+http://geodjango.org/docs/install.html#creating-a-spatial-database-template-for-postgis
+to create a spatially enabled database named mobile_portal.
 
- $ createdb mobile_portal
+As a superuser, create the mobile_portal user:
 
  $ createuser mobile_portal -P
  Enter password for new role: 
