@@ -1,7 +1,7 @@
 from django.conf import settings
 import geolocation
 
-from mobile_portal.wurfl.wurfl import devices
+from mobile_portal.wurfl.wurfl_data import devices
 from mobile_portal.wurfl import device_parents
 from pywurfl.algorithms import JaroWinkler
 
@@ -32,3 +32,5 @@ class LocationMiddleware(object):
             opera_devid = OPERA_DEVICES.get(opera_device)
             if opera_devid:
                 request.device = devices.select_id(opera_devid)
+        if any((x in request.META['HTTP_USER_AGENT']) for x in ['Firefox', 'IE', 'Iceweasel', 'Safari', 'Opera', 'Chrome']):
+            request.device.max_image_width=800 
