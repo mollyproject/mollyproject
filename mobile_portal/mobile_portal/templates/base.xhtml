@@ -52,7 +52,7 @@
         </div>
 
         <div class="weather">
-            <img src="{{ MEDIA_URL }}png/weather/{{ weather_icon }}.png" alt="{{ weather.outlook|capfirst }}" title="{{ weather.outlook|capfirst }}"/>
+            <img src="{{ MEDIA_URL }}png/weather/{{ weather.icon }}.png" alt="{{ weather.get_outlook_display|capfirst }}" title="{{ weather.outlook|capfirst }}"/>
             <span class="temperature">{{ weather.temperature }}&#xB0;C</span>
             <span class="wind_speed">{{ weather.wind_speed }}mph</span>
         </div>

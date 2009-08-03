@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from mobile_portal.wurfl import device_parents
 
-from utils import latest_weather, outlook_to_icon
+from mobile_portal.weather.models import Weather
 
 DEVICE_SPECIFIC_MEDIA = {
     'apple_iphone_ver1': {
@@ -76,12 +76,10 @@ def weather(request):
     Adds weather information to the context in keys 'weather' and 'weather_icon'.
     """
     
-    weather = latest_weather()
-    weather_icon = outlook_to_icon(weather['outlook'])
+    weather = Weather.objects.get(bbc_id=25)
     
     return {
         'weather': weather,
-        'weather_icon': weather_icon,
         
         # This comes from LDAP and should be moved to its own context processor.
         'common_name': request.session.get('common_name')
