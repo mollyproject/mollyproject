@@ -21,6 +21,11 @@ DEVICE_SPECIFIC_MEDIA = {
 DEVICE_SPECIFIC_MEDIA_SET = frozenset(DEVICE_SPECIFIC_MEDIA)
 
 def device_specific_media(request):
+    """
+    Uses DEVICE_SPECIFIC_MEDIA as a basis to pass extra context when the
+    wurfl-detected device is a child of a given device id.
+    """
+    
     media = {'js':set(), 'css':set()}
     
     for devid in DEVICE_SPECIFIC_MEDIA_SET & device_parents[request.device.devid]:
@@ -32,9 +37,20 @@ def device_specific_media(request):
     }    
 
 def geolocation(request):
+    """
+    Provides location-based information to the template (i.e. lat/long, google
+    placemark data, and whether we would like to request the device's location
+    information.
+    """
+    
+    # Use the epoch in the place of -inf; a time it has been a while since.
     epoch = datetime(1970,1,1, 0, 0, 0)
     s = request.session
-    if max(s.get('location_requested', epoch), s.get('location_updated', epoch)) + timedelta(0, 300) < datetime.now() and s.get('location_method') in ('geoapi', None):
+    # Only request a location if our current location is older than one minute
+    # and the user isn't updating their location manually.
+    # The one minute timeout applies to the more recent of a request and an
+    # update.
+    if max(s.get('location_requested', epoch), s.get('location_updated', epoch)) + timedelta(0, 60) < datetime.now() and s.get('location_method') in ('geoapi', None):
         require_location = True
         request.session['location_requested'] = datetime.now()
     else:
@@ -42,25 +58,32 @@ def geolocation(request):
     
     location = request.session.get('location')
     placemark = request.session.get('placemark')
-    #raise Exception(location)
-    
     
     return {
-        'session': request.session.items(),
         'location': location,
         'location_updated': request.session.get('location_updated'),
         'placemark': placemark,
         'require_location': require_location,
+
+        # Debug information follows.        
+        'session': request.session.items(),
         'device': request.device,
         'meta': dict((a,b) for (a,b) in request.META.items() if a.startswith('HTTP_')),
     }
 
 def weather(request):
+    """
+    Adds weather information to the context in keys 'weather' and 'weather_icon'.
+    """
+    
     weather = latest_weather()
     weather_icon = outlook_to_icon(weather['outlook'])
+    
     return {
         'weather': weather,
         'weather_icon': weather_icon,
+        
+        # This comes from LDAP and should be moved to its own context processor.
         'common_name': request.session.get('common_name')
     }
     

@@ -13,6 +13,8 @@ class RecentManager(models.Manager):
         return super(RecentManager, self).get_query_set().filter(last_updated__gt = datetime.now() - timedelta(14))
 
 class Placemarks(models.Model):
+    "Cache for Google geocoding requests."
+     
     _data = models.TextField(default='null')
     latitude = models.FloatField(null=True)
     longitude = models.FloatField(null=True)
@@ -38,6 +40,12 @@ class Placemarks(models.Model):
 feed_fetched = django.dispatch.Signal(providing_args=['category', 'url'])
 
 class Feed(models.Model):
+    """
+    General cache for files retrieved from external sources.
+    Use Feed.fetch(url, category, fetch_period, return_data) as opposed to
+    creating Feed objects directly.
+    """
+    
     url = models.URLField()
     category = models.SlugField()
     fetch_period = models.PositiveIntegerField()
