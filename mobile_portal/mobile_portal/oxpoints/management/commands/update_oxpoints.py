@@ -54,7 +54,7 @@ class Command(NoArgsCommand):
         oxpoints_id = int(uri.split('/')[-1])
         entity, created = Entity.objects.get_or_create(oxpoints_id = oxpoints_id)
         # Parse the location. SRID 4326 is WGS84
-        entity.location = Point(*map(float, location.split(' ')), srid=4326)
+        entity.location = Point(*map(float, location.split(' ')), **{'srid':4326})
         entity.title = unicode(title)
         entity.entity_type = entity_types[unicode(ptype)[len(OXPOINTS_NS):]]
         entity.save()
