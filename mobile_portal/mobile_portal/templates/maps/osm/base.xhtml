@@ -1,0 +1,35 @@
+{% extends "maps/base.xhtml" %}
+{% load maps %}{% load osm_tags %}
+
+{% block breadcrumbs %}
+{{ block.super }}
+    <li><a href="{% url maps_nearest entity.entity_type.slug %}">{{ entity.entity_type.verbose_name_plural|capfirst }}</a></li>
+    <li><a href="{{ entity.get_absolute_url }}">{{ entity.title }}</a></li>
+{% endblock %}
+
+{% block content %}
+
+<h1>{{ entity.title }}</h1>
+
+<p>{{ entity.metadata }}</p>
+
+{% block metadata %}
+<table>
+    <tbody>
+{% for k,v in entity|osm_tags %}
+        <tr>
+            <th>{{ k|capfirst }}:</th>
+            <td>{{ v }}</td>
+        </tr>
+{% endfor %}
+    </tbody>
+</table>
+{% endblock %}
+
+{% map entity.location %}
+
+<h2>Disclaimer</h2>
+
+<p>Oxford University provide this information without warranty. For further details, see our <a href="">legal information</a>.</p>
+
+{% endblock %}

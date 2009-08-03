@@ -1,0 +1,38 @@
+{% extends "maps/base.xhtml" %}
+{% load maps %}
+
+{% block breadcrumbs %}
+{{ block.super }}
+    <li><a href="{% url maps_nearest "busstop" %}">Nearest bus stops</a></li>
+{% endblock %}
+
+{% block content %}
+
+<h1>{{ entity.title }}</h1>
+
+{% if times %}
+<table>
+    <thead>
+        <tr>
+            <th>Service</th>
+            <th>Destination</th>
+            <th>Expected</th>
+        </tr>
+    </thead>
+    <tbody>
+{% for time in times %}
+        <tr>
+            <td>{{ time.service }}</td>
+            <td>{{ time.destination }}</td>
+            <td>{{ time.proximity }}</td>
+        </tr>
+{% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>There is no bus time information for this stop.</p>
+{% endif %}
+
+{% map entity.location %}
+
+{% endblock %} 

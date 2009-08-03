@@ -2,6 +2,7 @@ from xml.etree import ElementTree as ET
 import urllib, random
 from django.conf import settings
 from django import template
+from django.contrib.gis.geos import Point
 from mobile_portal.wurfl import device_parents
 
 register = template.Library()
@@ -32,14 +33,20 @@ class MapNode(template.Node):
 
     def render(self, context):
         args = self.args
+        print self.args
         if args[1] is None:
-            lat, lng = [float(f) for f in args[0].resolve(context)]
+            arg = args[0].resolve(context)
+            if isinstance(arg, Point):
+                p = arg.transform(4326, clone=True)
+                lat, lng = p.y, p.x
+            else:
+                lat, lng = map(float, arg)
         else:
             lat, lng = [float(a.resolve(context)) for a in args]
 
-        width, height = 300, 200
+        width, height = min(600, context['device'].max_image_width), 200
         
-        if device_parents[context['device'].devid] | GOOGLE_MAPS_BROWSERS:
+        if True or device_parents[context['device'].devid] | GOOGLE_MAPS_BROWSERS:
             return self.google_map(context, lat, lng, width, height)
         else:
             return self.yahoo_map(context, lat, lng, width, height)
@@ -54,7 +61,7 @@ class MapNode(template.Node):
         context['maps_included'] = True
 
         return """\
-<div id="%(id)s" style="width:%(width)dpx; height:%(height)dpx;"/>
+<div id="%(id)s" style="width:100%%; height:%(height)dpx;"> </div>        
 %(maps_include)s<script type="text/javascript">
 $(document).ready(function() {
     var point = new google.maps.LatLng(%(lat)f, %(lng)f);

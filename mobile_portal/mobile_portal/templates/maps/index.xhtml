@@ -4,10 +4,9 @@
 
 <p>Nearest...</p>
 <ul>
-    <li><a href="{% url maps_nearest "Museum" %}">Museum</a></li>
-    <li><a href="{% url maps_nearest "College" %}">College</a></li>
-    <li><a href="{% url maps_nearest "Building" %}">Building</a></li>
-    <li><a href="{% url maps_nearest "Carpark" %}">Car park</a></li>
+{% for entity_type in entity_types %}
+    <li><a href="{% url maps_nearest entity_type.slug %}">{{ entity_type.verbose_name|capfirst }}</a></li>
+{% endfor %}
 </ul>
 
 {% endblock %}
