@@ -31,6 +31,7 @@ def nearest(request, ptype, distance=100):
     
     point = Point(request.location[1], request.location[0], srid=4326)
     
+    distance=int(distance)
     entities = Entity.objects.filter(entity_type=entity_type, location__distance_lt = (point, D(m=distance)))
     
     for entity in entities:
