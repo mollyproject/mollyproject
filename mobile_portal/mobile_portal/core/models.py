@@ -46,6 +46,9 @@ class Feed(models.Model):
     auto_fetch = models.BooleanField()
     status = models.IntegerField()
     
+    def __unicode__(self):
+        return self.url
+    
     def _fetch(self, fetch_period=None, return_data=False, raise_if_error=False):
         if not fetch_period is None:
             self.fetch_period = fetch_period
