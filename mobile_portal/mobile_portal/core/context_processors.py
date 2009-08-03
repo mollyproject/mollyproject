@@ -76,7 +76,10 @@ def weather(request):
     Adds weather information to the context in keys 'weather' and 'weather_icon'.
     """
     
-    weather = Weather.objects.get(bbc_id=25)
+    try:
+        weather = Weather.objects.get(bbc_id=25)
+    except Weather.DoesNotExist:
+        weather = None
     
     return {
         'weather': weather,
