@@ -7,9 +7,8 @@ from mobile_portal.core.models import Feed
 from mobile_portal.podcasts.models import Podcast, PodcastCategory
 
 OPML_FEED = 'http://rss.oucs.ox.ac.uk/oxitems/podcastingnewsfeeds.opml'
-RSS_FEED = 'http://rss.oucs.ox.ac.uk/mpls/oxsci-audio/rss20.xml?destination=poau'
+
 def index(request):
-    Feed.fetch(OPML_FEED, category='podcast_opml', fetch_period=3600*24)
 
     context = {
         'categories': PodcastCategory.objects.all()
@@ -28,8 +27,6 @@ def category_detail(request, code):
 
 def podcast_detail(request, code, id):
     podcast = get_object_or_404(Podcast, category__code=code, id=id)
-    
-    Feed.fetch(podcast.rss_url, category='podcast_rss', fetch_period=3600*24)
     
     items = podcast.podcastitem_set.order_by('-published_date')
     

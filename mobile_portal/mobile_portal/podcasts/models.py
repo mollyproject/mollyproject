@@ -9,24 +9,25 @@ class PodcastCategory(models.Model):
         return reverse('podcasts_category', args=[self.code])
         
     def __unicode__(self):
-        return self.name
+        return self.name or ''
     class Meta:
         verbose_name = 'Podcast category'
         verbose_name_plural = 'Podcast categories'
         ordering = ('name',)
 
 class Podcast(models.Model):
-    title = models.TextField()
-    description = models.TextField()
+    title = models.TextField(null=True)
+    description = models.TextField(null=True)
     rss_url = models.URLField()
     last_updated = models.DateTimeField(auto_now=True)
-    category = models.ForeignKey(PodcastCategory)
+    category = models.ForeignKey(PodcastCategory, null=True)
+    most_recent_item_date = models.DateTimeField(null=True)
     
     def get_absolute_url(self):
         return reverse('podcasts_podcast', args=[self.category.code, self.id])
         
     def __unicode__(self):
-        return self.title
+        return self.title or ''
 
     class Meta:
         verbose_name = 'Podcast feed'
@@ -36,15 +37,15 @@ class Podcast(models.Model):
 
 class PodcastItem(models.Model):
     podcast = models.ForeignKey(Podcast)
-    title = models.TextField()
-    description = models.TextField()
-    published_date = models.DateTimeField()
+    title = models.TextField(null=True)
+    description = models.TextField(null=True)
+    published_date = models.DateTimeField(null=True)
     author = models.TextField(null=True, blank=True)
     duration = models.PositiveIntegerField(null=True)
     guid = models.TextField()
 
     def __unicode__(self):
-        return self.title
+        return self.title or ''
 
     class Meta:
         verbose_name = 'Podcast item'
@@ -54,8 +55,8 @@ class PodcastItem(models.Model):
 class PodcastEnclosure(models.Model):
     podcast_item = models.ForeignKey(PodcastItem)
     url = models.URLField()
-    length = models.IntegerField()
-    mimetype = models.TextField()
+    length = models.IntegerField(null=True)
+    mimetype = models.TextField(null=True)
     
     class Meta:
         verbose_name = 'Podcast enclosed data'
