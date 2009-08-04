@@ -8,6 +8,8 @@ from mobile_portal.podcasts.models import Podcast, PodcastItem, PodcastCategory,
 class Command(NoArgsCommand):
     option_list = NoArgsCommand.option_list
     help = "Loads podcast data"
+
+    requires_model_validation = True
     
     OPML_FEED = 'http://rss.oucs.ox.ac.uk/oxitems/podcastingnewsfeeds.opml'
     

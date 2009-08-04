@@ -9,6 +9,8 @@ class Command(NoArgsCommand):
     option_list = NoArgsCommand.option_list
     help = "Loads NaPTAN bus stop data."
     
+    requires_model_validation = True
+
     ENGLAND_OSM_BZ2_URL = 'http://download.geofabrik.de/osm/europe/great_britain/england.osm.bz2'
 
     def add_busstop_entity_type(self):
