@@ -133,3 +133,7 @@ class ProfileFrontPageLink(models.Model):
     slug = property(lambda self: self.front_page_link.slug)
     title = property(lambda self: self.front_page_link.title)
     url = property(lambda self: self.front_page_link.url)
+
+class Config(models.Model):
+    key = models.SlugField()
+    value = models.TextField()

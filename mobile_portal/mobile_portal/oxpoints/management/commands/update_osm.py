@@ -4,7 +4,7 @@ from django.contrib.gis.geos import Point
 from django.conf import settings
 from mobile_portal.oxpoints.models import Entity, EntityType
 from mobile_portal.core.geolocation import reverse_geocode
-
+from mobile_portal.core.models import Config
 from xml.sax import saxutils, handler, make_parser
 import urllib2, bz2, subprocess, popen2
 from os import path
@@ -118,16 +118,13 @@ class OxfordHandler(handler.ContentHandler):
 
 def get_osm_etag():
     try:
-        f = open(OSM_ETAG_FILENAME, 'r')
-        etag = f.read()
-        f.close()
-        return etag
-    except IOError:
+        return Config.objects.get(key='osm_extract_etag').value
+    except Config.DoesNotExist:
         return None
 def set_osm_etag(etag):
-    f = open(OSM_ETAG_FILENAME, 'w')
-    f.write(etag)
-    f.close()
+    config, created = Config.objects.get_or_create(key='osm_extract_etag')
+    config.value = etag
+    config.save()
 
 class AnyMethodRequest(urllib2.Request):
     def __init__(self, url, data=None, headers={}, origin_req_host=None, unverifiable=None, method=None):
@@ -152,9 +149,8 @@ class Command(NoArgsCommand):
     ENGLAND_OSM_BZ2_URL = 'http://download.geofabrik.de/osm/europe/great_britain/england.osm.bz2'
     #ENGLAND_OSM_BZ2_URL = 'http://download.geofabrik.de/osm/europe/great_britain/england/shropshire.osm.bz2'
 
-    SHELL_CMD_1 = "wget -O- %s --quiet | bunzip2" % ENGLAND_OSM_BZ2_URL
-    SHELL_CMD_2 = ["bunzip"]
-
+    SHELL_CMD = "wget -O- %s --quiet | bunzip2" % ENGLAND_OSM_BZ2_URL
+    
     def handle_noargs(self, **options):
         old_etag = get_osm_etag()
         
@@ -166,7 +162,7 @@ class Command(NoArgsCommand):
             print 'OSM data not updated. Not updating.'
             return
             
-        p = popen2.popen2(Command.SHELL_CMD_1)
+        p = popen2.popen2(Command.SHELL_CMD)
         
         parser = make_parser()
         parser.setContentHandler(OxfordHandler())
