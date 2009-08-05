@@ -59,7 +59,10 @@ def update_location(request):
 
             geolocation.set_location(request, placemark, method='manual')
             
-            return HttpResponseRedirect(reverse('core_index'))
+            try:
+                return HttpResponseRedirect(request.POST['return_url'])
+            except KeyError:
+                return HttpResponseRedirect(reverse('core_index'))
         
         elif len(placemarks) > 1:
             options = placemarks
@@ -70,7 +73,8 @@ def update_location(request):
     context = {
         'error': error,
         'options': options,
-        'location': request.POST.get('location', '')
+        'location': request.POST.get('location', ''),
+        'return_url': request.GET.get('return_url') or request.POST.get('return_url')
     }
     return mobile_render(request, context, 'core/update_location')
 

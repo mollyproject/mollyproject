@@ -4,6 +4,6 @@
 
 <h1>Location required</h1>
 
-<p>To be able to use this feature you need to <a href="{% url core_update_location %}">choose a location</a>.</p>
+<p>To be able to use this feature you need to <a href="{% url core_update_location %}?return_url={{ return_url|urlencode }}">choose a location</a>.</p>
 
 {% endblock %}

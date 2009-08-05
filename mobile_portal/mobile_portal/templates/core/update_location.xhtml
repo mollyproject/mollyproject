@@ -34,6 +34,9 @@
 <form method="post" action=".">
     <p>
         <input name="location" value="{{ location }}"/>
+{% if return_url %}
+        <input name="return_url" type="hidden" value="{{ return_url }}"/>
+{% endif %}
         <input type="submit" value="Update"/>
     </p>
 </form>
