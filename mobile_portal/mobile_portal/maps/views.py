@@ -13,9 +13,11 @@ from django.shortcuts import get_object_or_404
 from mobile_portal.core.renderers import mobile_render
 #from mobile_portal import oxpoints
 from mobile_portal.core.models import Feed
+from mobile_portal.core.decorators import require_location
 
 from mobile_portal.oxpoints.models import Entity, EntityType
 from mobile_portal.oxpoints.entity import get_resource_by_url, MissingResource, Unit, Place
+
 
 def index(request):
     context = {
@@ -23,10 +25,9 @@ def index(request):
     }
     return mobile_render(request, context, 'maps/index')
 
-    
+@require_location    
 def nearest(request, ptype, distance=100):
-    if not hasattr(request, 'location') or not request.location:
-        return mobile_render(request, {}, 'core/require_location')
+        
     entity_type = get_object_or_404(EntityType, slug=ptype)
     
     point = Point(request.location[1], request.location[0], srid=4326)

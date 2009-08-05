@@ -46,7 +46,7 @@ class MapNode(template.Node):
 
         width, height = min(600, context['device'].max_image_width), 200
         
-        if True or device_parents[context['device'].devid] | GOOGLE_MAPS_BROWSERS:
+        if device_parents[context['device'].devid] & GOOGLE_MAPS_BROWSERS:
             return self.google_map(context, lat, lng, width, height)
         else:
             return self.yahoo_map(context, lat, lng, width, height)
