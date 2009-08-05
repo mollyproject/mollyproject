@@ -22,12 +22,14 @@ h2 {
     text-decoration:underline;
 }
 
-div.strapline {
+div.header {
     background-color:#fff;
     height:46px;
+    background-image:url('../png/header_bg.png');
+    overflow:hidden;
 }
 
-div.strapline img {
+div.header img {
     border:0;
 }
 

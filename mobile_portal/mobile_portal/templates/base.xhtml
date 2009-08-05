@@ -1,3 +1,4 @@
+{% load portal_misc %}
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE HTML>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-GB" lang="en-GB">
@@ -28,14 +29,10 @@
   </head>
 
   <body>
-    <div class="container">
-
-    <div class="strapline">
+    <div class="header" style="background-image:url('{{ MEDIA_URL }}png/header_bg.png');">
         <a href="{% url core_index %}">
-            <img src="{{ MEDIA_URL }}png/header.png" alt="Oxford Mobile Portal"/>
+            <img src="{{ MEDIA_URL }}png/home.png" alt="Home"/>
         </a>
-       
-        <div class="login">
 {% if user.is_authenticated %}
             <a href="{% url auth_logout %}">
                 <img src="{{ MEDIA_URL }}png/logout.png"
@@ -44,21 +41,17 @@
             </a>
 {% else %}
             <a href="{% url webauth_login %}">
-                <img src="{{ MEDIA_URL }}png/logout.png"
+                <img src="{{ MEDIA_URL }}png/login.png"
                      alt="Log in using WebAuth"
                      title="Log in using WebAuth for more features" />
             </a>
 {% endif %}
-        </div>
-
-        <div class="weather">
-            <img src="{{ MEDIA_URL }}png/weather/{{ weather.icon }}.png" alt="{{ weather.get_outlook_display|capfirst }}" title="{{ weather.outlook|capfirst }}"/>
-            <span class="temperature">{{ weather.temperature }}&#xB0;C</span>
-            <span class="wind_speed">{{ weather.wind_speed }}mph</span>
-        </div>
-     </div>
-    
-    
+        <img src="{{ MEDIA_URL }}png/logo.png" alt="Mobile Portal"/>
+{% if device.max_image_width|gte:"247" %}
+        <img src="{{ MEDIA_URL }}png/crest.png" style="float:right;" alt=""/>
+{% endif %}
+    </div>
+    <div class="container">   
     
     <ol class="breadcrumbs">
 {% block breadcrumbs %}
