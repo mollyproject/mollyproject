@@ -9,7 +9,6 @@ import geolocation
 import sys, traceback
 
 from models import FrontPageLink
-from utils import latest_weather, outlook_to_icon
 from forms import FrontPageLinkForm
 
 def index(request):
