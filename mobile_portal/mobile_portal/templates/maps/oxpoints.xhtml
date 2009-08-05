@@ -1,0 +1,89 @@
+{% extends "maps/base.xhtml" %}
+{% load maps %}{% load portal_misc %}
+
+{% block title %}OMP | {{ data.dc_title }}{% endblock %}
+
+{% block content %}
+
+<h1>{{ data.dc_title }}</h1>
+
+{% if data.oxp_hasHomepage or data.oxp_hasITHomepage or data.oxp_hasWeblearn %}
+<h2>Websites</h2>
+<ul>
+{% if data.oxp_hasHomepage %}
+    <li><a href="{{ data.oxp_hasHomepage.uri }}">Homepage</a></li>
+{% endif %}
+{% if data.oxp_hasITHomepage %}
+    <li><a href="{{ data.oxp_hasITHomepage.uri }}">IT Homepage</a></li>
+{% endif %}
+{% if data.oxp_hasWeblearn %}
+    <li><a href="{{ data.oxp_hasWeblearn.uri }}">Weblearn</a></li>
+{% endif %}
+{% if data.oxp_hasLibraryHomepage %}
+    <li><a href="{{ data.oxp_hasLibraryHomepage.uri }}">Library</a></li>
+{% endif %}
+</ul>
+{% endif %}
+
+{% if data.oxp_occupies %}
+<h2>Occupies</h2>
+<ul>
+{% for place in data.oxp_occupies %}
+{% with place|load_oxp_json as place_json %}
+    <li><a href="{% url maps_oxpoints place_json|oxp_id %}">{{ place_json.dc_title }}</a></li>
+{% endwith %}
+{% endfor %}
+</ul>
+{% endif %}
+
+{% if data.passiveProperties.oxp_occupies %}
+<h2>Occupied by</h2>
+<ul>
+{% for place in data.passiveProperties.oxp_occupies %}
+{% with place|load_oxp_json as place_json %}
+    <li><a href="{% url maps_oxpoints place_json|oxp_id %}">{{ place_json.dc_title }}</a></li>
+{% endwith %}
+{% endfor %}
+</ul>
+{% endif %}
+
+{% if data.oxp_subsetOf %}
+<h2>Parent unit</h2>
+{% with data.oxp_subsetOf|load_oxp_json as place_json %}
+<p><a href="{% url maps_oxpoints place_json|oxp_id %}">{{ place_json.dc_title }}</a></p>
+{% endwith %}
+{% endif %}
+
+{% if data.passiveProperties.oxp_subsetOf %}
+<h2>Sub-units</h2>
+<ul>
+{% for place in data.passiveProperties.oxp_subsetOf %}
+{% with place|load_oxp_json as place_json %}
+    <li><a href="{% url maps_oxpoints place_json|oxp_id %}">{{ place_json.dc_title }}</a></li>
+{% endwith %}
+{% endfor %}
+</ul>
+{% endif %}
+
+{% if data.oxp_inImage %}
+<h2>Images</h2>
+{% for image in data.oxp_inImage %}
+<p><img src="{% external_image image.uri %}" alt=""/></p>
+{% endfor %}
+{% endif %}
+
+{% if data.oxp_hasLocation %}
+    <h2>Map</h2>
+    {% map data.oxp_hasLocation.geo_pos %}
+{% else %}
+    {% if data.oxp_primaryPlace %}
+        {% with data.oxp_primaryPlace|load_oxp_json as place_json %}
+            {% if place_json.oxp_hasLocation %}
+                <h2>Map</h2>
+                {% map place_json.oxp_hasLocation.geo_pos %}
+            {% endif %}
+        {% endwith %}
+    {% endif %}
+{% endif %}
+
+{% endblock %}

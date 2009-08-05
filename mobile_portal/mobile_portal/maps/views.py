@@ -1,7 +1,7 @@
 # Create your views here.
 
 from xml.etree import ElementTree as ET
-import urllib
+import urllib, rdflib, urllib2, simplejson
 import ElementSoup as ES
 
 from django.contrib.gis.geos import Point
@@ -45,22 +45,23 @@ def nearest(request, ptype, distance=100):
     }
     return mobile_render(request, context, 'maps/place_list')
 
-OXPOINTS_URL = 'http://m.ox.ac.uk/oxpoints/id/%s'    
+
+
+OXPOINTS_URL = 'http://m.ox.ac.uk/oxpoints/id/%s.json'    
 def oxpoints_entity(request, id):
-    resource = get_resource_by_url(OXPOINTS_URL % id)
-    if isinstance(resource, MissingResource):
-        raise Http404
-    
+    try:
+        data = simplejson.load(urllib.urlopen(OXPOINTS_URL % id))[0]
+    except urllib2.HTTPError, e:
+        if e.code == 404:
+            raise Http404
+        else:
+            raise
+
     context = {
-        'resource': resource,
+        'data': data,
     }
 
-    if isinstance(resource, Unit):
-        template_name = 'maps/oxpoints/unit'
-    elif isinstance(resource, Place):
-        template_name = 'maps/oxpoints/place'
-    
-    return mobile_render(request, context, template_name)
+    return mobile_render(request, context, 'maps/oxpoints')
 
 OXONTIME_URL = 'http://www.oxontime.com/pip/stop.asp?naptan=%s&textonly=1'
 def busstop(request, atco_code):

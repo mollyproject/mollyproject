@@ -25,6 +25,7 @@ h2 {
 div.header {
     background-color:#fff;
     height:46px;
+    margin-top:0;
     background-image:url('../png/header_bg.png');
     overflow:hidden;
 }

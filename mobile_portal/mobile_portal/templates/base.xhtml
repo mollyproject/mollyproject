@@ -28,7 +28,7 @@
   </head>
 
   <body>
-    <div class="header" style="background-image:url('{{ MEDIA_URL }}png/header_bg.png');">
+    <div class="header">
         <a href="{% url core_index %}">
             <img src="{{ MEDIA_URL }}png/home.png" alt="Home"/>
         </a>
@@ -50,6 +50,7 @@
         <img src="{{ MEDIA_URL }}png/crest.png" style="float:right;" alt=""/>
 {% endif %}
     </div>
+    
     <div class="container">   
     
     <ol class="breadcrumbs">

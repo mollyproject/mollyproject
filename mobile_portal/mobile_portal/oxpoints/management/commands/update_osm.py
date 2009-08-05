@@ -5,6 +5,7 @@ from django.conf import settings
 from mobile_portal.oxpoints.models import Entity, EntityType
 from mobile_portal.core.geolocation import reverse_geocode
 from mobile_portal.core.models import Config
+from mobile_portal.core.utils import AnyMethodRequest
 from xml.sax import saxutils, handler, make_parser
 import urllib2, bz2, subprocess, popen2
 from os import path
@@ -125,20 +126,6 @@ def set_osm_etag(etag):
     config, created = Config.objects.get_or_create(key='osm_extract_etag')
     config.value = etag
     config.save()
-
-class AnyMethodRequest(urllib2.Request):
-    def __init__(self, url, data=None, headers={}, origin_req_host=None, unverifiable=None, method=None):
-        self.method = method and method.upper() or None
-        urllib2.Request.__init__(self, url, data, headers, origin_req_host, unverifiable)
-
-    def get_method(self):
-        if not self.method is None:
-            return self.method
-        elif self.has_data():
-            return "POST"
-        else:
-            return "GET"
-
 
 class Command(NoArgsCommand):
     option_list = NoArgsCommand.option_list

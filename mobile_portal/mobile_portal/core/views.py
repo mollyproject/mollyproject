@@ -2,13 +2,14 @@
 from datetime import datetime
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.shortcuts import get_object_or_404
 from mobile_portal.core.renderers import mobile_render
 from mobile_portal.webauth.utils import require_auth
 import geolocation
 
 import sys, traceback
 
-from models import FrontPageLink
+from models import FrontPageLink, ExternalImageSized
 from forms import FrontPageLinkForm
 
 def index(request):
@@ -120,3 +121,7 @@ def customise(request):
         'forms': forms,
     }
     return mobile_render(request, context, 'core/customise')
+
+def external_image(request, slug):
+    eis = get_object_or_404(ExternalImageSized, slug=slug)
+    return HttpResponse(open(eis.get_filename(), 'r'), mimetype='image/jpeg')

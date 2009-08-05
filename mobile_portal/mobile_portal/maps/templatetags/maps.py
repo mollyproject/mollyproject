@@ -39,6 +39,8 @@ class MapNode(template.Node):
             if isinstance(arg, Point):
                 p = arg.transform(4326, clone=True)
                 lat, lng = p.y, p.x
+            elif isinstance(arg, basestring):
+                lng, lat = map(float, arg.split(' '))
             else:
                 lat, lng = map(float, arg)
         else:

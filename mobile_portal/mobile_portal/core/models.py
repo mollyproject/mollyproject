@@ -1,4 +1,5 @@
-import random, urllib
+from __future__ import division
+import random, urllib, os, StringIO, PIL
 from os.path import exists, join
 import simplejson
 from datetime import datetime, timedelta
@@ -137,3 +138,39 @@ class ProfileFrontPageLink(models.Model):
 class Config(models.Model):
     key = models.SlugField()
     value = models.TextField()
+    
+class ExternalImage(models.Model):
+    url = models.URLField()
+    etag = models.TextField(null=True)
+    last_updated = models.DateTimeField(auto_now=True)
+    
+class ExternalImageSized(models.Model):
+    external_image = models.ForeignKey(ExternalImage)
+    width = models.PositiveIntegerField()
+    slug = models.SlugField()
+
+    def get_filename(self):
+        if not self.slug:
+            while not self.slug or ExternalImageSized.objects.filter(slug=self.slug).count():
+                self.slug = "%08x" % random.randint(0, 16**8-1)
+                print "Idea", self.slug
+        return os.path.join(settings.EXTERNAL_IMAGE_DIR, self.slug)
+
+    def get_absolute_url(self):
+        return reverse('external_image', args=[self.slug])    
+
+    def save(self, force_insert=False, force_update=False):
+        if not self.id:
+            im = PIL.Image.open(StringIO.StringIO(urllib.urlopen(self.external_image.url).read()))
+            
+            size = im.size
+            ratio = size[1] / size[0]
+            
+            resized = im.resize((self.width, self.width*ratio), PIL.Image.ANTIALIAS)
+            resized.save(self.get_filename(), format='jpeg')
+            
+        super(ExternalImageSized, self).save(force_insert=False, force_update=False)
+  
+    def delete(self):
+        os.unlink(self.get_filename())
+        super(ExternalImageSized, self).delete()
