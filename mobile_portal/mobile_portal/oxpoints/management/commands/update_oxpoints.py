@@ -1,7 +1,8 @@
-import rdflib
+import rdflib, Queue
 from django.core.management.base import NoArgsCommand
 from django.contrib.gis.geos import Point
 from mobile_portal.oxpoints.models import Entity, EntityType
+
 
 OXPOINTS_NS = 'http://ns.ox.ac.uk/namespace/oxpoints/2009/02/owl#'
 
@@ -11,8 +12,7 @@ class Command(NoArgsCommand):
     
     requires_model_validation = True
 
-    @staticmethod
-    def load_entity_types():
+    def load_entity_types(self):
         """
         Load the entity types into the database, returning a dictionary from
         rdf types (less the namespace) to EntityType objects.
@@ -27,6 +27,7 @@ class Command(NoArgsCommand):
             'Library':    ('library', 'library', 'libraries'),
             'Carpark':    ('carpark', 'University car park', 'University car parks'),
             'Unit':       ('unit', 'unit', 'units'),
+            'Room':       ('room', 'room', 'rooms'),
         }
     
         entity_types = {}
@@ -38,34 +39,73 @@ class Command(NoArgsCommand):
             entity_type.id_field = 'oxpoints_id'
             entity_type.save()
             entity_types[ptype] = entity_type
-        return entity_types
+        self.entity_types = entity_types
     
-    @staticmethod
-    def get_oxpoints_graph():
+    def load_oxpoints_graph(self):
         """
         Load the OxPoints data into an RDF graph.
         """
         ALL_OXPOINTS = 'http://m.ox.ac.uk/oxpoints/all.xml'
         g = rdflib.ConjunctiveGraph()
         g.parse(ALL_OXPOINTS)
-        return g
+        self.graph = g
     
-    @staticmethod
-    def update_oxpoints_entity(entity_types, uri, location, title, ptype):
+    def update_oxpoints_entity(self, uri, location, title, ptype, depth=0):
         oxpoints_id = int(uri.split('/')[-1])
+
+        if oxpoints_id in self.seen:
+            return
+        else:
+            self.seen.add(oxpoints_id)
+
+        if depth > 0:
+            if location:
+                self.counts['with_location_inferred'] += 1
+            else:
+                self.counts['without_location_inferred'] += 1
+            
         entity, created = Entity.objects.get_or_create(oxpoints_id = oxpoints_id)
         # Parse the location. SRID 4326 is WGS84
-        entity.location = Point(*map(float, location.split(' ')), **{'srid':4326})
+        if location:
+            entity.location = Point(*map(float, location.split(' ')), **{'srid':4326})
         entity.title = unicode(title)
-        entity.entity_type = entity_types[unicode(ptype)[len(OXPOINTS_NS):]]
+        entity.entity_type = self.entity_types[unicode(ptype)[len(OXPOINTS_NS):]]
         entity.save()
+
+        other_places =  self.graph.query("""
+            SELECT ?p ?n ?t ?r WHERE {
+                ?p ?r ?q
+              . ?p <http://purl.org/dc/elements/1.1/title> ?n
+              . ?p <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?t  }""",
+            initBindings = {'?q': uri})
+        other_places = (p[:3] for p in other_places if p[3] in [
+            rdflib.URIRef('http://ns.ox.ac.uk/namespace/oxpoints/2009/02/owl#primaryPlace'),
+            rdflib.URIRef('http://ns.ox.ac.uk/namespace/oxpoints/2009/02/owl#physicallyContainedWithin'),
+            rdflib.URIRef('http://ns.ox.ac.uk/namespace/oxpoints/2009/02/owl#subsetOf'),
+        ])
+        
+        #print "%s%s%-60s%s %-20s" % (("  " if location else "? "), "  "*depth, title, "  "*(6-depth), ptype[len(OXPOINTS_NS):])
+        
+        for uri, title, ptype in other_places:
+            self.queue.put((uri, location, title, ptype, depth+1))
     
     def handle_noargs(self, **options):
-        entity_types = Command.load_entity_types()
-        graph = Command.get_oxpoints_graph()
+        self.load_entity_types()
+        self.load_oxpoints_graph()
+        
+        self.seen = set()
+        self.queue = Queue.Queue()
+
+        self.counts = {
+            'with_location': 0,
+            'with_location_inferred': 0,
+            'without_location': 0,
+            'without_location_inferred': 0,
+            'removed': 0,
+        }            
     
         # Retrieve those objects from OxPoints that have a location, name and type
-        places_with_locations = graph.query("""
+        places_with_locations = self.graph.query("""
             SELECT ?p ?l ?n ?t WHERE {
                 ?p <http://ns.ox.ac.uk/namespace/oxpoints/2009/02/owl#hasLocation> ?a
               . ?a <http://www.opengis.net/gml/pos> ?l
@@ -73,17 +113,37 @@ class Command(NoArgsCommand):
               . ?p <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?t  }""")
         
         for place in places_with_locations:
-            uri, location = place[:2] 
-            Command.update_oxpoints_entity(entity_types, *place)
+            self.queue.put(place)
+            self.counts['with_location'] += 1
+
+        while not self.queue.empty():
+            self.update_oxpoints_entity(*self.queue.get())
+            
+        places_without_locations = self.graph.query("""
+            SELECT ?p ?n ?t WHERE {
+                ?p <http://purl.org/dc/elements/1.1/title> ?n
+              . ?p <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?t  }""")
+        places_without_locations = (p for p in places_without_locations if (
+            p[2].startswith(OXPOINTS_NS) and not int(p[0].split('/')[-1]) in self.seen
+        ))
         
-            occupiers = list(graph.query("""
-                SELECT ?p ?n ?t WHERE {
-                    ?p <http://ns.ox.ac.uk/namespace/oxpoints/2009/02/owl#primaryPlace> ?l
-                  . ?p <http://purl.org/dc/elements/1.1/title> ?n
-                  . ?p <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?t
-                }""",
-                initBindings = {'?l': uri}))
+        for place in places_without_locations:
+            uri, title, ptype = place
+            self.queue.put((uri, None, title, ptype))
+            self.counts['without_location'] += 1
+
+        while not self.queue.empty():
+            self.update_oxpoints_entity(*self.queue.get())
+
+                    
         
-            for occupier in occupiers:
-                uri, title, ptype = occupier
-                Command.update_oxpoints_entity(entity_types, uri, location, title, ptype)
+        for entity in Entity.objects.filter(entity_type__source='oxpoints'):
+            if not entity.oxpoints_id in self.seen:
+                entity.delete()
+                counts['removed'] += 1
+        
+        print self.counts
+        print len(self.seen)
+        print sum(self.counts.values())
+        print sum(self.counts.values()) - self.counts['removed']
+        
