@@ -10,6 +10,10 @@
 
 <h1>{{ entity.title }}</h1>
 
+<p>
+    <a href="{% url maps_entity_nearby_list entity.entity_type.slug,entity.display_id %}">Find things near here</a>
+</p>
+
 {% if times %}
 <table>
     <thead>
