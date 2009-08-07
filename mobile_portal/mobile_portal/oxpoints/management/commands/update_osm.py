@@ -40,6 +40,7 @@ class OxfordHandler(handler.ContentHandler):
             entity_type.verbose_name = verbose_name
             entity_type.verbose_name_plural = verbose_name_plural
             entity_type.source = 'osm'
+            entity_type.id_field = 'osm_node_id'
             entity_type.save()
             self.entity_types[slug] = entity_type
         

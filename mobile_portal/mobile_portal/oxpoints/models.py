@@ -7,6 +7,7 @@ class EntityType(models.Model):
     verbose_name = models.TextField()
     verbose_name_plural = models.TextField()
     source = models.TextField()
+    id_field = models.TextField()
     
     def __unicode__(self):
         return self.verbose_name
@@ -46,9 +47,4 @@ class Entity(models.Model):
         ordering = ('title',)
 
     def get_absolute_url(self):
-        if self.oxpoints_id:
-            return reverse('maps_oxpoints', args=[self.oxpoints_id])
-        elif self.atco_code:
-            return reverse('maps_busstop', args=[self.atco_code.strip()])
-        else:
-            return reverse('maps_osm', args=[self.osm_node_id])
+        return reverse('maps_entity', args=[self.entity_type.slug, getattr(self, self.entity_type.id_field)])

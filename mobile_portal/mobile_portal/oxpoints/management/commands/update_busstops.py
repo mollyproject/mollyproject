@@ -18,6 +18,7 @@ class Command(NoArgsCommand):
         self.entity_type.verbose_name = 'bus stop'
         self.entity_type.verbose_name_plural = 'bus stops'
         self.entity_type.source = 'naptan'
+        self.entity_type.id_field = 'atco_code'
         self.entity_type.save()
 
     def parse_busstops(self, filename):

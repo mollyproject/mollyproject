@@ -48,7 +48,7 @@ def nearest(request, ptype, distance=100):
 
 
 OXPOINTS_URL = 'http://m.ox.ac.uk/oxpoints/id/%s.json'    
-def oxpoints_entity(request, id):
+def entity_detail_oxpoints(request, id):
     try:
         data = simplejson.load(urllib.urlopen(OXPOINTS_URL % id))[0]
     except urllib2.HTTPError, e:
@@ -64,7 +64,7 @@ def oxpoints_entity(request, id):
     return mobile_render(request, context, 'maps/oxpoints')
 
 OXONTIME_URL = 'http://www.oxontime.com/pip/stop.asp?naptan=%s&textonly=1'
-def busstop(request, atco_code):
+def entity_detail_busstop(request, atco_code):
     entity = get_object_or_404(Entity, atco_code=atco_code)
     xml = ES.parse(urllib.urlopen(OXONTIME_URL % atco_code))
     
@@ -91,7 +91,7 @@ def busstop(request, atco_code):
         
     return mobile_render(request, context, 'maps/busstop')
     
-def osm(request, osm_node_id):
+def entity_detail_osm(request, osm_node_id):
     entity = get_object_or_404(Entity, osm_node_id=osm_node_id)
     
     context = {
@@ -102,3 +102,17 @@ def osm(request, osm_node_id):
         return mobile_render(request, context, 'maps/osm/%s' % entity.entity_type.slug)
     except:
         return mobile_render(request, context, 'maps/osm/base')
+
+
+ENTITY_HANDLERS = {
+    'osm': entity_detail_osm,
+    'busstop': entity_detail_busstop,
+    'oxpoints': entity_detail_oxpoints,
+}
+
+def entity_detail(request, type_slug, id):
+    entity_type = get_object_or_404(EntityType, slug=type_slug)
+    entity_handler = ENTITY_HANDLERS[entity_type.source]
+    id_field = str(entity_type.id_field)
+    entity = get_object_or_404(Entity, **{id_field: id, 'entity_type': entity_type})
+    return entity_handler(request, id)
