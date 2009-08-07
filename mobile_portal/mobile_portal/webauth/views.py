@@ -69,7 +69,10 @@ def webauth_login(request):
         r = authenticate(webauth_user=profile)
         dologin(request, profile.user)
         
-        request.session['common_name'] = ldap_queries.get_common_name(webauth_username)
+        try:
+            request.session['common_name'] = ldap_queries.get_common_name(webauth_username)
+        except:
+            request.session['common_name'] = None
 
     next_url = request.GET.get('redirect_url', reverse("core_index"))
     return HttpResponseRedirect(next_url)
