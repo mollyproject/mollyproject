@@ -34,6 +34,11 @@ def external_image(parser, token):
         return ExternalImageNode(template.Variable(args[1]))
 
 class ExternalImageNode(template.Node):
+    """
+    Takes the form {% external_image url %} and renders as a URL pointing at
+    the given image resized to match the device's max_image_width.
+    """
+    
     def __init__(self, url):
         self.url = url
         
@@ -44,19 +49,18 @@ class ExternalImageNode(template.Node):
         
         request = AnyMethodRequest(url, method='HEAD')
         response = urllib2.urlopen(request)
-        
-        print "Woo!"
-        print dir(response)
+
+        # Check whether the image has changed since last we looked at it        
         if response.headers['ETag'] != ei.etag:
-            print "Boo"
-            ExternalImageSized.objects.filter(external_image=ei).delete()
+
+            # Can't use the shorter EIS.objects.filter(...).delete() as that
+            # doesn't call the delete() method on individual objects, resulting
+            # in the old images not being deleted.
+            for eis in ExternalImageSized.objects.filter(external_image=ei):
+                eis.delete()
             ei.etag = response.headers['Etag']
             ei.save()
         
-        print "Whee"
-        
         eis, created = ExternalImageSized.objects.get_or_create(external_image=ei, width=width)
-                
-        print "Here"
-        print eis.get_absolute_url()
+
         return eis.get_absolute_url()
