@@ -18,32 +18,50 @@ from mobile_portal.core.decorators import require_location
 from mobile_portal.oxpoints.models import Entity, EntityType
 from mobile_portal.oxpoints.entity import get_resource_by_url, MissingResource, Unit, Place
 
-
 def index(request):
     context = {
-        'entity_types': EntityType.objects.all(),
     }
     return mobile_render(request, context, 'maps/index')
 
+def nearby_list(request, entity=None):
+    context = {
+        'entity_types': EntityType.objects.all(),
+        'entity': entity,
+    }
+    return mobile_render(request, context, 'maps/nearby_list')
+
 @require_location    
-def nearest(request, ptype, distance=100):
+def nearby_detail(request, ptype, distance=100, entity=None):
         
     entity_type = get_object_or_404(EntityType, slug=ptype)
     
-    point = Point(request.location[1], request.location[0], srid=4326)
+    if entity:
+        point = entity.location
+    else:
+        point = Point(request.location[1], request.location[0], srid=4326)
     
     distance=int(distance)
     entities = Entity.objects.filter(entity_type=entity_type, location__distance_lt = (point, D(m=distance)))
     
-    for entity in entities:
-        entity.distance = D(m=entity.location.transform(27700, clone=True).distance(point.transform(27700, clone=True)))
+    for e in entities:
+        e.distance = D(m=e.location.transform(27700, clone=True).distance(point.transform(27700, clone=True)))
     entities = sorted(entities, key=lambda e:e.distance)
     
     context = {
         'entity_type': entity_type,
-        'entities': entities
+        'entities': entities,
+        'entity': entity,
+        'distances': [
+            (100, '100m'),
+            (200, '200m'),
+            (500, '500m'),
+            (1000, '1km'),
+            (2000, '2km'),
+            (5000, '5km'),
+            (10000, '10km'),
+        ],
     }
-    return mobile_render(request, context, 'maps/place_list')
+    return mobile_render(request, context, 'maps/nearby_detail')
 
 
 
@@ -106,13 +124,24 @@ def entity_detail_osm(request, osm_node_id):
 
 ENTITY_HANDLERS = {
     'osm': entity_detail_osm,
-    'busstop': entity_detail_busstop,
+    'naptan': entity_detail_busstop,
     'oxpoints': entity_detail_oxpoints,
 }
 
-def entity_detail(request, type_slug, id):
+def get_entity(type_slug, id):
     entity_type = get_object_or_404(EntityType, slug=type_slug)
-    entity_handler = ENTITY_HANDLERS[entity_type.source]
     id_field = str(entity_type.id_field)
-    entity = get_object_or_404(Entity, **{id_field: id, 'entity_type': entity_type})
+    return get_object_or_404(Entity, **{id_field: id, 'entity_type': entity_type})
+
+def entity_detail(request, type_slug, id):
+    entity = get_entity(type_slug, id)
+    entity_handler = ENTITY_HANDLERS[entity.entity_type.source]
     return entity_handler(request, id)
+    
+def entity_nearby_list(request, type_slug, id):
+    entity = get_entity(type_slug, id)
+    return nearby_list(request, entity)
+    
+def entity_nearby_detail(request, type_slug, id, ptype, distance=100):
+    entity = get_entity(type_slug, id)
+    return nearby_detail(request, ptype, distance, entity)

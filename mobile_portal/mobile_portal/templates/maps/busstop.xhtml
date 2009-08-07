@@ -3,7 +3,7 @@
 
 {% block breadcrumbs %}
 {{ block.super }}
-    <li><a href="{% url maps_nearest "busstop" %}">Nearest bus stops</a></li>
+    <li><a href="{% url maps_nearby_detail "busstop" %}">Nearest bus stops</a></li>
 {% endblock %}
 
 {% block content %}

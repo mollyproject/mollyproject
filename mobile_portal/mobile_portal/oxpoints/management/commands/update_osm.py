@@ -20,7 +20,7 @@ AMENITIES = {
     'hospital': ('hospital', 'hospitals'), 
     'doctors': ("doctor's surgery", "doctors' surgeries"), 
     'atm': ('ATM', 'ATMs'),
-    'parking': ('public car park', 'public car parks'),
+    'parking': ('car park', 'car parks'),
     'pub': ('pub', 'pubs'),
     'cafe': ('café', 'cafés'),
     'restaurant': ('restaurant', 'restaurants'),

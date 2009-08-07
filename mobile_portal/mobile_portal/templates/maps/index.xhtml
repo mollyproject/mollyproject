@@ -1,12 +1,10 @@
 {% extends "maps/base.xhtml" %}
 
 {% block content %}
+<h1>Maps</h1>
 
-<p>Nearest...</p>
-<ul>
-{% for entity_type in entity_types %}
-    <li><a href="{% url maps_nearest entity_type.slug %}">{{ entity_type.verbose_name|capfirst }}</a></li>
-{% endfor %}
-</ul>
+<p>
+    <a href="{% url maps_nearby_list %}">Things near me</a>
+</p>
 
 {% endblock %}

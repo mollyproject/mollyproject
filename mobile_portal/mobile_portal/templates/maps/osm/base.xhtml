@@ -3,13 +3,17 @@
 
 {% block breadcrumbs %}
 {{ block.super }}
-    <li><a href="{% url maps_nearest entity.entity_type.slug %}">{{ entity.entity_type.verbose_name_plural|capfirst }}</a></li>
+    <li><a href="{% url maps_nearby_detail entity.entity_type.slug %}">{{ entity.entity_type.verbose_name_plural|capfirst }}</a></li>
     <li><a href="{{ entity.get_absolute_url }}">{{ entity.title }}</a></li>
 {% endblock %}
 
 {% block content %}
 
 <h1>{{ entity.title }}</h1>
+
+<p>
+    <a href="{% url maps_entity_nearby_list entity.entity_type.slug,entity.display_id %}">Find things near here</a>
+</p>
 
 <p>{{ entity.metadata }}</p>
 

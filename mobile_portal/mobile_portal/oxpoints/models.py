@@ -47,4 +47,8 @@ class Entity(models.Model):
         ordering = ('title',)
 
     def get_absolute_url(self):
-        return reverse('maps_entity', args=[self.entity_type.slug, getattr(self, self.entity_type.id_field)])
+        return reverse('maps_entity', args=[self.entity_type.slug, self.display_id])
+
+    @property
+    def display_id(self):
+        return getattr(self, self.entity_type.id_field)

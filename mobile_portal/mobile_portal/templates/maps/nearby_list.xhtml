@@ -1,0 +1,26 @@
+{% extends "maps/base.xhtml" %}
+
+{% block breadcrumbs %}
+{{ block.super }}
+    <li><a href="{% url maps_nearby_list %}">Find things nearby</a></li>
+{% endblock %}
+
+{% block content %}
+
+{% if entity %}
+<h1>Find things near {{ entity.title }}</h1>
+{% else %}
+<h1>Find things nearby</h1>
+
+<p>Please note that we think you are near <strong>{{ placemark.address }}</strong>. If this is not correct, please update your location.</p>
+{% endif %}
+
+<ul>
+{% for entity_type in entity_types %}{% if entity %}
+    <li><a href="{% url maps_entity_nearby_detail entity.entity_type.slug,entity.display_id,entity_type.slug %}">{{ entity_type.verbose_name|capfirst }}</a></li>
+{% else %}
+    <li><a href="{% url maps_nearby_detail entity_type.slug %}">{{ entity_type.verbose_name|capfirst }}</a></li>
+{% endif %}{% endfor %}
+</ul>
+
+{% endblock %}

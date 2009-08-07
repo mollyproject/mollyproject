@@ -30,7 +30,7 @@
 <ul>
 {% for place in data.oxp_occupies %}
 {% with place|load_oxp_json as place_json %}
-    <li><a href="{% url maps_oxpoints place_json|oxp_id %}">{{ place_json.dc_title }}</a></li>
+    <li><a href="{{ place_json|oxp_portal_url }}">{{ place_json.dc_title }}</a></li>
 {% endwith %}
 {% endfor %}
 </ul>
@@ -41,7 +41,7 @@
 <ul>
 {% for place in data.passiveProperties.oxp_occupies %}
 {% with place|load_oxp_json as place_json %}
-    <li><a href="{% url maps_oxpoints place_json|oxp_id %}">{{ place_json.dc_title }}</a></li>
+    <li><a href="{{ place_json|oxp_portal_url }}">{{ place_json.dc_title }}</a></li>
 {% endwith %}
 {% endfor %}
 </ul>
@@ -50,7 +50,7 @@
 {% if data.oxp_subsetOf %}
 <h2>Parent unit</h2>
 {% with data.oxp_subsetOf|load_oxp_json as place_json %}
-<p><a href="{% url maps_oxpoints place_json|oxp_id %}">{{ place_json.dc_title }}</a></p>
+<p><a href="{{ place_json|oxp_portal_url }}">{{ place_json.dc_title }}</a></p>
 {% endwith %}
 {% endif %}
 
@@ -59,7 +59,7 @@
 <ul>
 {% for place in data.passiveProperties.oxp_subsetOf %}
 {% with place|load_oxp_json as place_json %}
-    <li><a href="{% url maps_oxpoints place_json|oxp_id %}">{{ place_json.dc_title }}</a></li>
+    <li><a href="{{ place_json|oxp_portal_url }}">{{ place_json.dc_title }}</a></li>
 {% endwith %}
 {% endfor %}
 </ul>

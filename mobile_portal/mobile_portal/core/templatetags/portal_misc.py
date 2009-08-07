@@ -3,6 +3,7 @@ from django import template
 
 from mobile_portal.core.utils import AnyMethodRequest
 from mobile_portal.core.models import ExternalImage, ExternalImageSized
+from mobile_portal.oxpoints.models import Entity
 
 register = template.Library()
 
@@ -24,6 +25,13 @@ def oxp_id(value):
 @register.filter(name="load_oxp_json")
 def load_oxp_json(value):
     return simplejson.load(urllib.urlopen(value['uri']+'.json'))[0]
+    
+@register.filter(name="oxp_portal_url")
+def oxp_portal_url(value):
+    try:
+        return Entity.objects.get(oxpoints_id=int(oxp_id(value))).get_absolute_url()
+    except Entity.DoesNotExist:
+        return ""
     
 @register.tag(name='external_image')
 def external_image(parser, token):

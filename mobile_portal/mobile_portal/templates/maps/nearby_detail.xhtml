@@ -1,0 +1,35 @@
+{% extends "maps/base.xhtml" %}
+
+{% block breadcrumbs %}
+{{ block.super }}
+{% if entity %}
+    <li><a href="{{ entity_type.get_absolute_url }}">{{ entity_type.verbose_name_plural|capfirst }}</a></li>
+    <li><a href="{{ entity.get_absolute_url }}">{{ entity.title }}</a></li>
+    <li><a href="{% url maps_entity_nearby_detail entity.entity_type.slug,entity.display_id,entity_type.slug %}">Nearest {{ entity_type.verbose_name }}</a></li>
+{% else %}    
+    <li><a href="{% url maps_nearby_detail entity_type.slug %}">Nearest {{ entity_type.verbose_name }}</a></li>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+
+<p>
+    Within:
+{% for distance in distances %}{% if entity %}
+    <a href="{% url maps_entity_nearby_detail_distance entity.entity_type.slug,entity.display_id,entity_type.slug distance.0 %}">{{ distance.1 }}</a>
+{% else %}
+    <a href="{% url maps_nearby_detail_distance entity_type.slug distance.0 %}">{{ distance.1 }}</a>
+{% endif %}{% endfor %}
+</p>
+
+{% if entities %}
+<ol>
+{% for entity in entities %}
+    <li><a href="{{ entity.get_absolute_url }}">{{ entity.title }}</a> {{ entity.distance.km|floatformat:3 }} km</li>
+{% endfor %}
+</ol>
+{% else %}
+<p>There isn't anything that close to you. Try updating your location or widening your search.</p>
+{% endif %}
+
+{% endblock %}
