@@ -28,6 +28,8 @@ def nearby_list(request, entity=None):
         'entity_types': EntityType.objects.all(),
         'entity': entity,
     }
+    if entity and not entity.location:
+        return mobile_render(request, context, 'maps/entity_without_location')
     return mobile_render(request, context, 'maps/nearby_list')
 
 @require_location    
@@ -37,8 +39,12 @@ def nearby_detail(request, ptype, distance=100, entity=None):
     
     if entity:
         point = entity.location
+        if not point:
+            context = {'entity': entity}
+            return mobile_render(request, context, 'maps/entity_without_location')
     else:
         point = Point(request.location[1], request.location[0], srid=4326)
+    
     
     distance=int(distance)
     entities = Entity.objects.filter(entity_type=entity_type, location__distance_lt = (point, D(m=distance)))
@@ -77,6 +83,7 @@ def entity_detail_oxpoints(request, id):
 
     context = {
         'data': data,
+        'entity': get_object_or_404(Entity, oxpoints_id=int(id)),
     }
 
     return mobile_render(request, context, 'maps/oxpoints')

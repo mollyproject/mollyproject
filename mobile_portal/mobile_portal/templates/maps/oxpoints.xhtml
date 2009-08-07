@@ -76,18 +76,13 @@
 {% endfor %}
 {% endif %}
 
-{% if data.oxp_hasLocation %}
+{% if entity.location %}
     <h2>Map</h2>
-    {% map data.oxp_hasLocation.geo_pos %}
+    {% map entity.location %}
 {% else %}
-    {% if data.oxp_primaryPlace %}
-        {% with data.oxp_primaryPlace|load_oxp_json as place_json %}
-            {% if place_json.oxp_hasLocation %}
-                <h2>Map</h2>
-                {% map place_json.oxp_hasLocation.geo_pos %}
-            {% endif %}
-        {% endwith %}
-    {% endif %}
+    <p>We do not yet have a location for this {{ entity.entity_type.verbose_name }}.</p>
 {% endif %}
+
+{{ data }}
 
 {% endblock %}
