@@ -125,3 +125,9 @@ def customise(request):
 def external_image(request, slug):
     eis = get_object_or_404(ExternalImageSized, slug=slug)
     return HttpResponse(open(eis.get_filename(), 'r'), mimetype='image/jpeg')
+    
+@require_auth
+def location_sharing(request):
+    profile = request.user.get_profile()
+    
+    

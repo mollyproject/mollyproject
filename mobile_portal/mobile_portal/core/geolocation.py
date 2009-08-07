@@ -7,6 +7,7 @@ from datetime import datetime
 import urllib, urllib2, simplejson, math
 from django.conf import settings
 from django.http import HttpRequest
+from django.contrib.gis.geos import Point
 from models import Placemarks
 
 GOOGLE_MAPS_GEO_URL = 'http://maps.google.com/maps/geo?%s'
@@ -71,3 +72,9 @@ def set_location(request, placemark, latitude=None, longitude=None, method='unkn
     request.session['location_updated'] = datetime.now()
     request.session['placemark'] = placemark
     request.session['location_method'] = method
+
+    if request.user and request.user.is_authenticated():
+        profile = request.user.get_profile()
+        profile.location = Point(latitude, longitude, srid=4326)
+        profile.location_updated = datetime.now()
+        profile.save()

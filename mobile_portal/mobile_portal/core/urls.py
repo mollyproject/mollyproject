@@ -9,4 +9,5 @@ urlpatterns = patterns('mobile_portal.core.views',
     (r'^core/external_images/(?P<slug>[0-9a-f]{8})/$', 'external_image', {}, 'external_image'),
 
     (r'^customise/$', 'customise', {}, 'core_customise'),
+    (r'^customise/location_sharing/$', 'location_sharing', {}, 'core_location_sharing'),
 )

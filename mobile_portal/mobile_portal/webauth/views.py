@@ -63,6 +63,7 @@ def webauth_login(request):
         webauth_username = request.META['REMOTE_USER']
         try:
             profile = Profile.objects.get(webauth_username = webauth_username)
+            user = profile.user
         except Profile.DoesNotExist:
             user = User.objects.create_user('sso_%s' % webauth_username, '')
             profile = Profile.objects.create(user = user, webauth_username=webauth_username)
@@ -70,9 +71,15 @@ def webauth_login(request):
         dologin(request, profile.user)
         
         try:
-            request.session['common_name'] = ldap_queries.get_common_name(webauth_username)
+            person_data = ldap_queries.get_person_data(webauth_username)
+            profile.display_name = person_data['displayName'][0]
+            profile.save()
+            user.first_name = person_data['givenName'][0]
+            user.last_name = person_data['sn'][0]
+            user.email = person_data['mail'][0]
+            user.save()
         except:
-            request.session['common_name'] = None
+            raise
 
     next_url = request.GET.get('redirect_url', reverse("core_index"))
     return HttpResponseRedirect(next_url)

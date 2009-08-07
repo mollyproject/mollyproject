@@ -3,7 +3,7 @@ import random, urllib, os, StringIO, PIL
 from os.path import exists, join
 import simplejson
 from datetime import datetime, timedelta
-from django.db import models
+from django.contrib.gis.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
@@ -108,9 +108,15 @@ class Feed(models.Model):
 class Profile(models.Model):
     user = models.ForeignKey(User, unique=True)
     webauth_username = models.TextField(null=True, blank=True)
+    display_name = models.TextField(null=True, blank=True)
+    
     
     fireeagle_access_token = models.TextField(blank=True)
     fireeagle_access_secret = models.TextField(blank=True)
+    
+    location = models.PointField(null=True, srid=4326, blank=True)
+    location_updated = models.DateTimeField(null=True, blank=True)
+    share_location_with = models.ManyToManyField('self', blank=True, symmetrical=False)
     
     front_page_links = models.ManyToManyField('ProfileFrontPageLink', blank=True)
 
