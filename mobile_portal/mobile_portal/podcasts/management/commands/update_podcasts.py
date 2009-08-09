@@ -21,6 +21,8 @@ class Command(NoArgsCommand):
         ('published_date', 'pubDate'),
         ('description', 'description'),
     )
+
+    CATEGORY_ORDERS = {}
     
     CATEGORY_RE = re.compile('/division_code/([^,]+),/division_name/(.+)')
     @staticmethod
@@ -30,6 +32,14 @@ class Command(NoArgsCommand):
         name = urllib.unquote(name.replace('+', ' '))
         
         podcast_category, created = PodcastCategory.objects.get_or_create(code=code,name=name)
+
+        try:
+            podcast_category.order = Command.CATEGORY_ORDERS[code]
+        except KeyError:
+            Command.CATEGORY_ORDERS[code] = len(Command.CATEGORY_ORDERS)
+            podcast_category.order = Command.CATEGORY_ORDERS[code]
+
+        podcast_category.save()
         return podcast_category
 
 

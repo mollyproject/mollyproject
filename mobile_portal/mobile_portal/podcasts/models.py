@@ -4,6 +4,7 @@ from django.core.urlresolvers import reverse
 class PodcastCategory(models.Model):
     code = models.TextField()
     name = models.TextField()
+    order = models.IntegerField(null=True)
     
     def get_absolute_url(self):
         return reverse('podcasts_category', args=[self.code])
