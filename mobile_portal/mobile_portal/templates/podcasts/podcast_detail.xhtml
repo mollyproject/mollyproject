@@ -8,14 +8,14 @@
 
 
 {% block extrahead %}
-<link href="{{ podcast.rss_url }}" type="application/rss+xml" rel="alternate" title="Podcast RSS feed" />
+<link href="{{ podcast.rss_url }}?destination=moxacuk" type="application/rss+xml" rel="alternate" title="Podcast RSS feed" />
 {% endblock %}
 
 {% block content %}
 
 <h1>{{ podcast.title }}</h1>
 
-<a href="{{ podcast.rss_url }}" type="application/rss+xml">subscribe</a>
+<a href="{{ podcast.rss_url }}?destination=moxacuk" type="application/rss+xml">subscribe</a>
 <p class="podcast_description">{{ podcast.description }}</p>
 
 {% for item in items %}
@@ -60,7 +60,7 @@
         <tr>
             <td>{{ enc.mimetype }}</td>
             <td>{{ enc.length|filesizeformat }}</td>
-            <td><a href="{{ enc.url }}">Download</a></td>
+            <td><a href="{{ enc.url }}?CAMEFROM=moxacuk">Download</a></td>
         </tr>
 {% endfor %}
     </tbody>
