@@ -11,62 +11,83 @@
     <a href="{% url maps_entity_nearby_list entity.entity_type.slug,entity.display_id %}">Find things near here</a>
 </p>
 
-{% if data.oxp_hasHomepage or data.oxp_hasITHomepage or data.oxp_hasWeblearn %}
-<h2>Websites</h2>
-<ul>
+<dl>
+
+{% if data.oxp_hasHomepage or data.oxp_hasITHomepage or data.oxp_hasWeblearn or data.oxp_hasLibraryHomepage %}
+<dt>Websites</dt>
+
 {% if data.oxp_hasHomepage %}
-    <li><a href="{{ data.oxp_hasHomepage.uri }}">Homepage</a></li>
+    <dd><a href="{{ data.oxp_hasHomepage.uri }}">Homepage</a></dd>
 {% endif %}
 {% if data.oxp_hasITHomepage %}
-    <li><a href="{{ data.oxp_hasITHomepage.uri }}">IT Homepage</a></li>
+    <dd><a href="{{ data.oxp_hasITHomepage.uri }}">IT Homepage</a></dd>
 {% endif %}
 {% if data.oxp_hasWeblearn %}
-    <li><a href="{{ data.oxp_hasWeblearn.uri }}">Weblearn</a></li>
+    <dd><a href="{{ data.oxp_hasWeblearn.uri }}">Weblearn</a></dd>
 {% endif %}
 {% if data.oxp_hasLibraryHomepage %}
-    <li><a href="{{ data.oxp_hasLibraryHomepage.uri }}">Library</a></li>
+    <dd><a href="{{ data.oxp_hasLibraryHomepage.uri }}">Library</a></dd>
 {% endif %}
-</ul>
 {% endif %}
 
 {% if data.oxp_occupies %}
-<h2>Occupies</h2>
-<ul>
+<dl>Occupies</dl>
+
 {% for place in data.oxp_occupies %}
 {% with place|load_oxp_json as place_json %}
-    <li><a href="{{ place_json|oxp_portal_url }}">{{ place_json.dc_title }}</a></li>
+    <dd><a href="{{ place_json|oxp_portal_url }}">{{ place_json.dc_title }}</a></dd>
 {% endwith %}
 {% endfor %}
-</ul>
+
 {% endif %}
 
 {% if data.passiveProperties.oxp_occupies %}
-<h2>Occupied by</h2>
-<ul>
+<dt>Occupied by</dt>
+
 {% for place in data.passiveProperties.oxp_occupies %}
 {% with place|load_oxp_json as place_json %}
-    <li><a href="{{ place_json|oxp_portal_url }}">{{ place_json.dc_title }}</a></li>
+    <dd><a href="{{ place_json|oxp_portal_url }}">{{ place_json.dc_title }}</a></dd>
 {% endwith %}
 {% endfor %}
-</ul>
+
 {% endif %}
 
 {% if data.oxp_subsetOf %}
-<h2>Parent unit</h2>
+<dt>Parent unit</dt>
 {% with data.oxp_subsetOf|load_oxp_json as place_json %}
-<p><a href="{{ place_json|oxp_portal_url }}">{{ place_json.dc_title }}</a></p>
+<dd><a href="{{ place_json|oxp_portal_url }}">{{ place_json.dc_title }}</a></dd>
 {% endwith %}
 {% endif %}
 
 {% if data.passiveProperties.oxp_subsetOf %}
-<h2>Sub-units</h2>
-<ul>
+<dt>Sub-units</dt>
+
 {% for place in data.passiveProperties.oxp_subsetOf %}
 {% with place|load_oxp_json as place_json %}
-    <li><a href="{{ place_json|oxp_portal_url }}">{{ place_json.dc_title }}</a></li>
+    <dd><a href="{{ place_json|oxp_portal_url }}">{{ place_json.dc_title }}</a></dd>
 {% endwith %}
 {% endfor %}
-</ul>
+
+{% endif %}
+
+{% if data.oxp_physicallyContainedWithin %}
+<dt>Contained within</dt>
+
+{% with data.oxp_physicallyContainedWithin|load_oxp_json as place_json %}
+    <dd><a href="{{ place_json|oxp_portal_url }}">{{ place_json.dc_title }}</a></dd>
+{% endwith %}
+
+{% endif %}
+
+{% if data.passiveProperties.oxp_physicallyContainedWithin %}
+<dt>Contains</dt>
+
+{% for place in data.passiveProperties.oxp_physicallyContainedWithin %}
+{% with place|load_oxp_json as place_json %}
+    <dd><a href="{{ place_json|oxp_portal_url }}">{{ place_json.dc_title }}</a></dd>
+{% endwith %}
+{% endfor %}
+
 {% endif %}
 
 {% if data.oxp_inImage %}
