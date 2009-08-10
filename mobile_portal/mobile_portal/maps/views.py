@@ -13,7 +13,7 @@ from django.shortcuts import get_object_or_404
 from mobile_portal.core.renderers import mobile_render
 #from mobile_portal import oxpoints
 from mobile_portal.core.models import Feed
-from mobile_portal.core.decorators import require_location
+from mobile_portal.core.decorators import require_location, location_required
 
 from mobile_portal.oxpoints.models import Entity, EntityType
 from mobile_portal.oxpoints.entity import get_resource_by_url, MissingResource, Unit, Place
@@ -32,7 +32,6 @@ def nearby_list(request, entity=None):
         return mobile_render(request, context, 'maps/entity_without_location')
     return mobile_render(request, context, 'maps/nearby_list')
 
-@require_location    
 def nearby_detail(request, ptype, distance=100, entity=None):
         
     entity_type = get_object_or_404(EntityType, slug=ptype)
@@ -43,7 +42,10 @@ def nearby_detail(request, ptype, distance=100, entity=None):
             context = {'entity': entity}
             return mobile_render(request, context, 'maps/entity_without_location')
     else:
+        if not (hasattr(request, 'location') and request.location):
+            return location_required(request, *args, **kwargs)
         point = Point(request.location[1], request.location[0], srid=4326)
+        
     
     
     distance=int(distance)
@@ -98,8 +100,6 @@ def entity_detail_busstop(request, atco_code):
         rows = [cells[i:i+4] for i in range(0, len(cells), 4)]
     except AttributeError:
         rows = []
-        
-    print rows
         
     times = []
     for row in rows:

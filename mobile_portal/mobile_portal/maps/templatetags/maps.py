@@ -33,7 +33,6 @@ class MapNode(template.Node):
 
     def render(self, context):
         args = self.args
-        print self.args
         if args[1] is None:
             arg = args[0].resolve(context)
             if isinstance(arg, Point):

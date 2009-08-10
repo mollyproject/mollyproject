@@ -151,5 +151,5 @@ class Command(NoArgsCommand):
         podcast.save()
     
     def handle_noargs(self, **options):
-        #Command.update_from_opml(Command.OPML_FEED)
+        Command.update_from_opml(Command.OPML_FEED)
         Command.update_topdownloads()

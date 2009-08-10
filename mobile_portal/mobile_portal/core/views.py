@@ -13,7 +13,7 @@ from models import FrontPageLink, ExternalImageSized
 from forms import FrontPageLinkForm
 
 def index(request):
-    print "\n".join("%20s : %s" % s for s in request.META.items() if s[0].startswith('HTTP_'))
+    #print "\n".join("%20s : %s" % s for s in request.META.items() if s[0].startswith('HTTP_'))
     
     front_page_links = FrontPageLink.objects.order_by('order')    
     if request.user.is_authenticated():
@@ -61,16 +61,17 @@ def update_location(request):
             geolocation.set_location(request, placemark, method='manual')
             
             try:
-                return HttpResponseRedirect(request.POST['return_url'])
+                response = HttpResponseRedirect(request.POST['return_url'])
             except KeyError:
-                return HttpResponseRedirect(reverse('core_index'))
+                response = HttpResponseRedirect(reverse('core_index'))
+            response.status_code = 303
+            return response
         
         elif len(placemarks) > 1:
             options = placemarks
         else:
             error='We could not determine where that place is. Please try again.'
             
-    print options
     context = {
         'error': error,
         'options': options,
@@ -82,6 +83,11 @@ def update_location(request):
 def ajax_update_location(request):
     try:
         location = (float(request.POST['latitude']), float(request.POST['longitude']))
+        
+        lat, lon = location
+        if not (-90 <= lat and lat < 90 and -180 <= lon and lon < 180):
+            raise ValueError
+
         try:
             placemark = geolocation.reverse_geocode(*location)[0]
         except IndexError:
@@ -93,15 +99,16 @@ def ajax_update_location(request):
         request.session['location_updated'] = datetime.now()
         request.session['placemark'] = placemark
 
+            
     except (ValueError, KeyError), e:
-        pass
+        return HttpResponse('Please provide latitude and longitude arguments in a POST as decimal degrees.', status=400, mimetype='text/plain')
         
     if request.session.get('placemark'):
         address = request.session['placemark']['address']
     else:
         address = "%s %s" % request.session['location']
     
-    return HttpResponse(address)
+    return HttpResponse(address, mimetype='text/plain')
 
 @require_auth
 def customise(request):

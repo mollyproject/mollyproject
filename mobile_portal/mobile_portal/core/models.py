@@ -34,7 +34,6 @@ class Placemarks(models.Model):
     data = property(get_data, set_data)
     
     def save(self, force_insert=False, force_update=False):
-        print self.data
         self._data = simplejson.dumps(self.data)
         super(Placemarks, self).save()
 
@@ -159,7 +158,6 @@ class ExternalImageSized(models.Model):
         if not self.slug:
             while not self.slug or ExternalImageSized.objects.filter(slug=self.slug).count():
                 self.slug = "%08x" % random.randint(0, 16**8-1)
-                print "Idea", self.slug
         if not os.path.exists(settings.EXTERNAL_IMAGE_DIR):
             os.mkdir(settings.EXTERNAL_IMAGE_DIR)
         return os.path.join(settings.EXTERNAL_IMAGE_DIR, self.slug)
