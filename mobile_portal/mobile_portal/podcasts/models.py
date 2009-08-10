@@ -1,6 +1,11 @@
 from django.db import models
 from django.core.urlresolvers import reverse
 
+MEDIUM_CHOICES = (
+    ('audio', 'audio'),
+    ('video', 'video'),
+)
+
 class PodcastCategory(models.Model):
     code = models.TextField()
     name = models.TextField()
@@ -14,7 +19,7 @@ class PodcastCategory(models.Model):
     class Meta:
         verbose_name = 'Podcast category'
         verbose_name_plural = 'Podcast categories'
-        ordering = ('name',)
+        ordering = ('order','name',)
 
 class Podcast(models.Model):
     title = models.TextField(null=True)
@@ -23,6 +28,7 @@ class Podcast(models.Model):
     last_updated = models.DateTimeField(auto_now=True)
     category = models.ForeignKey(PodcastCategory, null=True)
     most_recent_item_date = models.DateTimeField(null=True)
+    medium = models.CharField(max_length=5, choices=MEDIUM_CHOICES, null=True)
     
     def get_absolute_url(self):
         return reverse('podcasts_podcast', args=[self.category.code, self.id])

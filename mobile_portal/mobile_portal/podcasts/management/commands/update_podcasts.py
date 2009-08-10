@@ -42,7 +42,7 @@ class Command(NoArgsCommand):
         podcast_category.save()
         return podcast_category
 
-
+    RSS_RE = re.compile('http://rss.oucs.ox.ac.uk/(.+-(.+?))/rss20.xml')
 
     @staticmethod
     def update_from_opml(opml_url):
@@ -57,6 +57,18 @@ class Command(NoArgsCommand):
             podcast.title = attrib['title']
             podcast.category = Command.decode_category(attrib['category'])
             podcast.description = attrib['description']
+            
+            # There are four podcast feed relics that existed before the
+            # -audio / -video convention was enforced. These need to be
+            # hard-coded as being audio feeds.
+            match_groups = Command.RSS_RE.match(attrib['xmlUrl']).groups()
+            podcast.medium = {
+                'engfac/podcasts-medieval': 'audio',
+                'oucs/ww1-podcasts': 'audio',
+                'philfac/uehiro-podcasts': 'audio',
+                'offices/undergrad-podcasts': 'audio',
+            }.get(match_groups[0], match_groups[1])
+            print podcast.medium
             
             Command.update_podcast(podcast)
             podcast.save()
@@ -100,7 +112,6 @@ class Command(NoArgsCommand):
             enc_urls = []            
             for enc in item.findall('enclosure'):
                 attrib = enc.attrib
-                print item, attrib['url']
                 podcast_enc, updated = PodcastEnclosure.objects.get_or_create(podcast_item=podcast_item, url=attrib['url'])
                 try:
                     podcast_enc.length = int(attrib['length'])

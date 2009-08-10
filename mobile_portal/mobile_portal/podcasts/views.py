@@ -16,11 +16,16 @@ def index(request):
     
     return mobile_render(request, context, 'podcasts/index')
 
-def category_detail(request, code):
+def category_detail(request, code, medium=None):
     category = get_object_or_404(PodcastCategory, code=code)
+    podcasts = Podcast.objects.filter(category=category)
+    if medium:
+        podcasts = podcasts.filter(medium=medium)
 
     context = {
         'category': category,
+        'podcasts': podcasts,
+        'medium': medium,
     }
     return mobile_render(request, context, 'podcasts/category_detail')
     
