@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.urlresolvers import reverse
+from mobile_portal.podcasts import TOP_DOWNLOADS_RSS_URL
 
 MEDIUM_CHOICES = (
     ('audio', 'audio'),
@@ -31,7 +32,10 @@ class Podcast(models.Model):
     medium = models.CharField(max_length=5, choices=MEDIUM_CHOICES, null=True)
     
     def get_absolute_url(self):
-        return reverse('podcasts_podcast', args=[self.category.code, self.id])
+        if self.rss_url == TOP_DOWNLOADS_RSS_URL:
+            return reverse('podcasts_top_downloads')
+        else:
+            return reverse('podcasts_podcast', args=[self.category.code, self.id])
         
     def __unicode__(self):
         return self.title or ''
@@ -50,6 +54,7 @@ class PodcastItem(models.Model):
     author = models.TextField(null=True, blank=True)
     duration = models.PositiveIntegerField(null=True)
     guid = models.TextField()
+    order = models.IntegerField(null=True)
 
     def __unicode__(self):
         return self.title or ''

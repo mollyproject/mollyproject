@@ -4,6 +4,7 @@ from xml.etree import ElementTree as ET
 from datetime import datetime
 import urllib, re, email
 from mobile_portal.podcasts.models import Podcast, PodcastItem, PodcastCategory, PodcastEnclosure
+from mobile_portal.podcasts import TOP_DOWNLOADS_RSS_URL
 
 class Command(NoArgsCommand):
     option_list = NoArgsCommand.option_list
@@ -49,14 +50,12 @@ class Command(NoArgsCommand):
         
         xml = ET.parse(urllib.urlopen(opml_url))
         
-        rss_urls = []
+        rss_urls = [Command.TOP_DOWNLOADS_RSS_URL]
         for outline in xml.findall('.//body/outline'):
             attrib = outline.attrib
             podcast, created = Podcast.objects.get_or_create(rss_url=attrib['xmlUrl'])
 
-            podcast.title = attrib['title']
             podcast.category = Command.decode_category(attrib['category'])
-            podcast.description = attrib['description']
             
             # There are four podcast feed relics that existed before the
             # -audio / -video convention was enforced. These need to be
@@ -95,13 +94,22 @@ class Command(NoArgsCommand):
                 return None
             
         xml = ET.parse(urllib.urlopen(podcast.rss_url))
+        
+        podcast.title = xml.find('.//channel/title').text
+        podcast.description = xml.find('.//channel/description').text
     
         guids = []
         for item in xml.findall('.//channel/item'):
     
             podcast_item, created = PodcastItem.objects.get_or_create(podcast=podcast, guid=gct(item, 'guid'))
+            
+            old_order = podcast_item.order
+            try:
+                podcast_item.order = int(item.find('{http://ns.ox.ac.uk/namespaces/oxitems/TopDownloads}position').text)
+            except (AttributeError, TypeError):
+                pass
 
-            require_save = False
+            require_save = old_order != podcast_item.order
             for attr, x_attr in Command.PODCAST_ATTRS:
                 if getattr(podcast_item, attr) != gct(item, x_attr):
                     setattr(podcast_item, attr, gct(item, x_attr))
@@ -134,6 +142,14 @@ class Command(NoArgsCommand):
                 podcast_item.delete()
                 
         podcast.most_recent_item_date = max(i.published_date for i in PodcastItem.objects.filter(podcast=podcast))
+
+    @staticmethod        
+    def update_topdownloads():
+        podcast, created = Podcast.objects.get_or_create(rss_url=TOP_DOWNLOADS_RSS_URL)
+        podcast.medium = 'audio'
+        Command.update_podcast(podcast)
+        podcast.save()
     
     def handle_noargs(self, **options):
-        Command.update_from_opml(Command.OPML_FEED)
+        #Command.update_from_opml(Command.OPML_FEED)
+        Command.update_topdownloads()
