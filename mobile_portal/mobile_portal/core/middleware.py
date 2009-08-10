@@ -3,7 +3,7 @@ import geolocation
 
 from mobile_portal.wurfl.wurfl_data import devices
 from mobile_portal.wurfl import device_parents
-from pywurfl.algorithms import JaroWinkler
+from pywurfl.algorithms import JaroWinkler, DeviceNotFound
 
 OPERA_DEVICES = {
     'Nokia # E71': 'nokia_e71_ver1'
@@ -19,10 +19,13 @@ class LocationMiddleware(object):
             request.location = None
             request.placemark = None
             
-        request.device = devices.select_ua(
-            request.META['HTTP_USER_AGENT'],
-            search=JaroWinkler(accuracy=0.85)
-        )
+        try:
+            request.device = devices.select_ua(
+                request.META['HTTP_USER_AGENT'],
+                search=JaroWinkler(accuracy=0.85)
+            )
+        except (KeyError, DeviceNotFound):
+            request.device = devices.select_id('generic_xhtml')
 
         # Opera Mini sends a header with better device information
         
