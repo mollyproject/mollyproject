@@ -16,6 +16,7 @@
 </p>
 
 {% block metadata %}
+{% if entity|osm_tags %}
 <table>
     <tbody>
 {% for k,v in entity|osm_tags %}
@@ -26,12 +27,13 @@
 {% endfor %}
     </tbody>
 </table>
+{% endif %}
 {% endblock %}
 
 {% map entity.location %}
 
 <h2>Disclaimer</h2>
 
-<p>Oxford University provide this information without warranty. For further details, see our <a href="">legal information</a>.</p>
+<p>Oxford University provide this information without warranty. For further details, see our <a href="/legal/">legal information</a>.</p>
 
 {% endblock %}

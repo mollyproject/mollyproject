@@ -50,7 +50,7 @@ class Command(NoArgsCommand):
         
         xml = ET.parse(urllib.urlopen(opml_url))
         
-        rss_urls = [Command.TOP_DOWNLOADS_RSS_URL]
+        rss_urls = [TOP_DOWNLOADS_RSS_URL]
         for outline in xml.findall('.//body/outline'):
             attrib = outline.attrib
             podcast, created = Podcast.objects.get_or_create(rss_url=attrib['xmlUrl'])

@@ -172,7 +172,7 @@ class ExternalImageSized(models.Model):
             size = im.size
             ratio = size[1] / size[0]
             
-            resized = im.resize((self.width, self.width*ratio), PIL.Image.ANTIALIAS)
+            resized = im.resize((self.width, int(round(self.width*ratio))), PIL.Image.ANTIALIAS)
             resized.save(self.get_filename(), format='jpeg')
             
         super(ExternalImageSized, self).save(force_insert=False, force_update=False)

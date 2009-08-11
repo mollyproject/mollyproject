@@ -15,6 +15,10 @@ from forms import FrontPageLinkForm
 def index(request):
     #print "\n".join("%20s : %s" % s for s in request.META.items() if s[0].startswith('HTTP_'))
     
+    # Take the default front age links from the database. If the user is logged
+    # in we'll use the ones attached to their profile. If we've added new links
+    # since last they visited, or if this is their first visit, we copy the
+    # create references attached to their profile, which they can then edit.
     front_page_links = FrontPageLink.objects.order_by('order')    
     if request.user.is_authenticated():
         user_front_page_links = request.user.get_profile().front_page_links.order_by('order')

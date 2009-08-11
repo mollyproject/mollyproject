@@ -8,7 +8,8 @@ from mobile_portal.podcasts.models import Podcast, PodcastCategory
 
 class PodcastsTestCase(unittest.TestCase):
     def setUp(self):
-        call_command('update_podcasts')
+        if not Podcast.objects.count():
+            call_command('update_podcasts')
         
     def testTopDownloads(self):
         c = Client()
