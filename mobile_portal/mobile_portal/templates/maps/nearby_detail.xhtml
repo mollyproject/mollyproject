@@ -13,6 +13,8 @@
 
 {% block content %}
 
+<h1>{{ entity_type.verbose_name_plural|capfirst }} within {{ distance }}{% if entity %}{{ entity.title }}{% endif %}</h1>
+
 <p>
     Within:
 {% for distance in distances %}{% if entity %}

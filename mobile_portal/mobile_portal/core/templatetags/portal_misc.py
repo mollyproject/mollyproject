@@ -1,5 +1,6 @@
 import simplejson, urllib, urllib2
 from django import template
+from django.utils.safestring import mark_safe
 
 from mobile_portal.core.utils import AnyMethodRequest
 from mobile_portal.core.models import ExternalImage, ExternalImageSized
@@ -59,16 +60,46 @@ class ExternalImageNode(template.Node):
         response = urllib2.urlopen(request)
 
         # Check whether the image has changed since last we looked at it        
-        if response.headers['ETag'] != ei.etag:
+        if response.headers.get('ETag', ei.etag) != ei.etag or response.headers.get('Last-Modified') != ei.last_modified:
 
             # Can't use the shorter EIS.objects.filter(...).delete() as that
             # doesn't call the delete() method on individual objects, resulting
             # in the old images not being deleted.
             for eis in ExternalImageSized.objects.filter(external_image=ei):
                 eis.delete()
-            ei.etag = response.headers['Etag']
+            ei.etag = response.headers.get('Etag')
+            ei.last_modified = response.headers.get('Last-Modified')
             ei.save()
         
         eis, created = ExternalImageSized.objects.get_or_create(external_image=ei, width=width)
 
         return eis.get_absolute_url()
+        
+UNUSUAL_NUMBERS = {
+    '+448454647': '0845 46 47',
+    '+448457909090': '08457 90 90 90'
+}
+
+@register.filter(name="telephone")
+def telephone(value):
+    value = value.replace(" ", "")
+    if value.startswith("0"):
+        value = "+44" + value[1:]
+    
+    normalised = value
+
+    if normalised in UNUSUAL_NUMBERS:
+        value = UNUSUAL_NUMBERS[normalised]
+    else:
+        if value.startswith("+44"):
+            value = "0" + value[3:]
+    
+        for dialing_code in ['01865', '0845']:    
+            if value.startswith(dialing_code):
+                value = dialing_code + " " + value[len(dialing_code):]
+                
+        if value.startswith('01865 2'):
+            value = "01865 (2)" + value[7:]
+            
+    return mark_safe('<a href="tel:%s">%s</a>' % (normalised, value))
+    

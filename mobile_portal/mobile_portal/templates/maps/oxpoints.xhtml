@@ -31,7 +31,7 @@
 {% endif %}
 
 {% if data.oxp_occupies %}
-<dl>Occupies</dl>
+<dt>Occupies</dt>
 
 {% for place in data.oxp_occupies %}
 {% with place|load_oxp_json as place_json %}
@@ -89,6 +89,8 @@
 {% endfor %}
 
 {% endif %}
+
+</dl>
 
 {% if data.oxp_inImage %}
 <h2>Images</h2>

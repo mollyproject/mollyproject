@@ -17,6 +17,22 @@ def get_person_data(username):
                          "oakPrincipal=krbPrincipalName=%s@OX.AC.UK,cn=OX.AC.UK,cn=KerberosRealms,dc=oak,dc=ox,dc=ac,dc=uk" % username)
     return results[0][1]
     
+def get_person_units(username):
+    oakldap = get_oakldap()
+    results = oakldap.search_s(
+        "ou=people,dc=oak,dc=ox,dc=ac,dc=uk",
+        ldap.SCOPE_SUBTREE,
+        "oakPrincipal=krbPrincipalName=%s@OX.AC.UK,cn=OX.AC.UK,cn=KerberosRealms,dc=oak,dc=ox,dc=ac,dc=uk" % username,
+        ["oakPrimaryPersonId"]
+    )
+    primary_person_id = results[0][1]['oakPrimaryPersonID'][0]
+    results = oakldap.search_s(
+        "ou=units,dc=oak,dc=ox,dc=ac,dc=uk",
+        ldap.SCOPE_SUBTREE,
+        "member=oakPrimaryPersonId=%s,ou=people,dc=oak,dc=ox,dc=ac,dc=uk" % primary_person_id
+    )
+    return results
+    
 OAK_PRINCIPAL_RE = re.compile('krbPrincipalName=([a-z0-9]+)@OX.AC.UK,cn=OX.AC.UK,cn=KerberosRealms,dc=oak,dc=ox,dc=ac,dc=uk')
 def get_username_by_email(email):
     oakldap = get_oakldap()

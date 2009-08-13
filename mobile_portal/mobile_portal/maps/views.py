@@ -1,4 +1,4 @@
-# Create your views here.
+from __future__ import division
 
 from xml.etree import ElementTree as ET
 import urllib, rdflib, urllib2, simplejson
@@ -32,7 +32,17 @@ def nearby_list(request, entity=None):
         return mobile_render(request, context, 'maps/entity_without_location')
     return mobile_render(request, context, 'maps/nearby_list')
 
-def nearby_detail(request, ptype, distance=100, entity=None):
+DISTANCES = {
+    100: '100m',
+    200: '200m',
+    500: '500m',
+    1000: '1km',
+    2000: '2km',
+    5000: '5km',
+    10000: '10km',
+}
+
+def nearby_detail(request, ptype, distance=None, entity=None):
         
     entity_type = get_object_or_404(EntityType, slug=ptype)
     
@@ -46,10 +56,16 @@ def nearby_detail(request, ptype, distance=100, entity=None):
             return location_required(request, *args, **kwargs)
         point = Point(request.location[1], request.location[0], srid=4326)
         
-    
-    
-    distance=int(distance)
-    entities = Entity.objects.filter(entity_type=entity_type, location__distance_lt = (point, D(m=distance)))
+    if distance:
+        distance = int(distance)
+        entities = Entity.objects.filter(entity_type=entity_type, location__distance_lt = (point, D(m=distance)))
+    else:
+        entities, i = [], 0
+        distances = sorted(DISTANCES.keys())
+        while i < len(distances) and len(entities) < 5:
+            entities = Entity.objects.filter(entity_type=entity_type, location__distance_lt = (point, D(m=distances[i])))
+            i += 1
+        distance = distances[i - 1]            
     
     for e in entities:
         e.distance = D(m=e.location.transform(27700, clone=True).distance(point.transform(27700, clone=True)))
@@ -59,15 +75,8 @@ def nearby_detail(request, ptype, distance=100, entity=None):
         'entity_type': entity_type,
         'entities': entities,
         'entity': entity,
-        'distances': [
-            (100, '100m'),
-            (200, '200m'),
-            (500, '500m'),
-            (1000, '1km'),
-            (2000, '2km'),
-            (5000, '5km'),
-            (10000, '10km'),
-        ],
+        'distances': sorted(DISTANCES.items()),
+        'distance': DISTANCES.get(distance, (distance < 1000) and ("%dm" % distance) or ("%dkm" % (distance/1000)))
     }
     return mobile_render(request, context, 'maps/nearby_detail')
 

@@ -1,16 +1,19 @@
 # Create your views here.
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
+from django.conf import settings
 from mobile_portal.core.renderers import mobile_render
 from mobile_portal.webauth.utils import require_auth
 import geolocation
 
-import sys, traceback
+import sys, traceback, pytz
 
-from models import FrontPageLink, ExternalImageSized
-from forms import FrontPageLinkForm
+from models import FrontPageLink, ExternalImageSized, LocationShare
+from forms import FrontPageLinkForm, LocationShareForm, LocationShareAddForm
+from utils import find_or_create_user_by_email
+from ldap_queries import get_person_units
 
 def index(request):
     #print "\n".join("%20s : %s" % s for s in request.META.items() if s[0].startswith('HTTP_'))
@@ -41,7 +44,12 @@ def index(request):
     return mobile_render(request, context, 'core/index')
 
 def crisis(request):
+    if request.user.is_authenticated():
+        units = get_person_units(request.user.get_profile().webauth_username)
+    else:
+        units = [] 
     context = {
+        'units': units,
     }
     return mobile_render(request, context, 'core/crisis')
 
@@ -135,10 +143,53 @@ def customise(request):
 
 def external_image(request, slug):
     eis = get_object_or_404(ExternalImageSized, slug=slug)
-    return HttpResponse(open(eis.get_filename(), 'r'), mimetype='image/jpeg')
+    response = HttpResponse(open(eis.get_filename(), 'r').read(), mimetype='image/jpeg')
+    last_updated = pytz.utc.localize(eis.external_image.last_updated)
+    
+    response['ETag'] = slug
+    return response
     
 @require_auth
 def location_sharing(request):
-    profile = request.user.get_profile()
+    post = request.POST or None
     
+    location_shares = LocationShare.objects.filter(from_user=request.user).order_by('from_user')
+    location_share_forms = []
+    for i, location_share in enumerate(location_shares):
+        lsf = LocationShareForm(post, instance=location_share, prefix="%d" % i)
+        location_share_forms.append( lsf )
+    
+    location_share_add_form = LocationShareAddForm(post)    
+
+    if post and 'location_share_add' in post:
+        if location_share_add_form.is_valid():
+            try:
+                user = find_or_create_user_by_email(location_share_add_form.cleaned_data['email'], create_external_user=False)
+            except ValueError:
+                request.user.message_set.create(message="No user with that e-mail address exists.")
+            else:
+                if user in [ls.to_user for ls in location_shares]:
+                    request.user.message_set.create(message="You are already sharing your location with that person.")
+                else:
+                    location_share = LocationShare(
+                        from_user = request.user,
+                        to_user = user,
+                        accuracy = location_share_add_form.cleaned_data['accuracy'],
+                    )
+                    if location_share_add_form.cleaned_data['limit']:
+                        location_share.until = datetime.now() + timedelta(hours=location_share_add_form.cleaned_data['limit'])
+                    location_share.save()
+                    response = HttpResponseRedirect('.')
+                    response.status_code = 303
+                    return response
+        else:
+            request.user.message_set.create(message="Please enter a valid e-mail address.")
+                
+    
+    context = {
+        'location_share_forms': location_share_forms,
+        'location_share_add_form': location_share_add_form,
+    }    
+    
+    return mobile_render(request, context, 'core/location_sharing')
     

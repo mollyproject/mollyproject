@@ -11,6 +11,7 @@ from django.forms.util import ErrorList
 from mobile_portal.core.models import Profile
 from mobile_portal.core.renderers import mobile_render
 from mobile_portal.core import ldap_queries
+from mobile_portal.core.utils import create_user_from_username, update_user_from_ldap
 
 from utils import require_auth, require_unauth
 
@@ -64,22 +65,13 @@ def webauth_login(request):
         try:
             profile = Profile.objects.get(webauth_username = webauth_username)
             user = profile.user
+            update_user_from_ldap(user)
         except Profile.DoesNotExist:
-            user = User.objects.create_user('sso_%s' % webauth_username, '')
-            profile = Profile.objects.create(user = user, webauth_username=webauth_username)
+            user = create_user_from_username(webauth_user)
+            profile = user.get_profile()
         r = authenticate(webauth_user=profile)
         dologin(request, profile.user)
         
-        try:
-            person_data = ldap_queries.get_person_data(webauth_username)
-            profile.display_name = person_data['displayName'][0]
-            profile.save()
-            user.first_name = person_data['givenName'][0]
-            user.last_name = person_data['sn'][0]
-            user.email = person_data['mail'][0]
-            user.save()
-        except:
-            raise
 
     next_url = request.GET.get('redirect_url', reverse("core_index"))
     return HttpResponseRedirect(next_url)

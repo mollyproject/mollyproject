@@ -7,6 +7,7 @@ from django.contrib.gis.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
+from mobile_portal.oxpoints.models import Entity
 import django.dispatch
 
 class RecentManager(models.Manager):
@@ -115,9 +116,36 @@ class Profile(models.Model):
     
     location = models.PointField(null=True, srid=4326, blank=True)
     location_updated = models.DateTimeField(null=True, blank=True)
-    share_location_with = models.ManyToManyField('self', blank=True, symmetrical=False)
     
     front_page_links = models.ManyToManyField('ProfileFrontPageLink', blank=True)
+    
+    def __unicode__(self):
+        return self.user.username
+
+LOCATION_ACCURACY_CHOICES = (
+    (1, "Don't share my location"), 
+    (2, 'Whether I am in Oxford'),
+    (3, 'Locality within Oxford'),
+    (4, 'Nearest college or department'),
+    (5, 'Exact location'),
+)
+
+class LocationShareTimes(models.Model):
+    user = models.ForeignKey(User)
+    share_times = models.TextField()
+
+class LocationShare(models.Model):
+    from_user = models.ForeignKey(User, related_name='location_share_from')
+    to_user = models.ForeignKey(User, related_name='location_share_to')
+    
+    accuracy = models.PositiveIntegerField(choices=LOCATION_ACCURACY_CHOICES, default=1)
+    share_times = models.ForeignKey(LocationShareTimes, null=True, blank=True)
+    until = models.DateTimeField(null=True, blank=True)
+    
+    location = models.PointField(srid=4326, null=True, blank=True)
+    location_title = models.TextField(blank=True)
+    location_entity = models.ForeignKey(Entity, null=True, blank=True)
+    location_updated = models.DateTimeField(null=True)
 
 class FrontPageLink(models.Model):
     slug = models.SlugField()
@@ -147,7 +175,12 @@ class Config(models.Model):
 class ExternalImage(models.Model):
     url = models.URLField()
     etag = models.TextField(null=True)
-    last_updated = models.DateTimeField(auto_now=True)
+    last_modified = models.TextField(null=True)
+    last_updated = models.DateTimeField() # This one is in UTC
+    
+    def save(self, force_insert=False, force_update=False):
+        self.last_updated = datetime.utcnow()
+        super(ExternalImage, self).save(force_insert=False, force_update=False)
     
 class ExternalImageSized(models.Model):
     external_image = models.ForeignKey(ExternalImage)

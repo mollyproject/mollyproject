@@ -1,4 +1,5 @@
 {% extends "base.xhtml" %}
+{% load portal_misc %}
 
 {% block breadcrumbs %}
 {{ block.super }}
@@ -14,14 +15,14 @@
 
 <dl>
     <dt>Emergency services</dt>
-    <dd><a href="tel:112">112</a></dd>
+    <dd>{{ "112"|telephone }}</dd>
     
     <dt>University Security Services</dt>
-    <dd>Emergency: <a href="tel:+441865289999">01865 (2)89999</a></dd>
-    <dd>Enquiries: <a href="tel:+441865272944">01865 (2)72944</a></dd>
+    <dd>Emergency: {{ "01865 (2)89999"|telephone }}</dd>
+    <dd>Enquiries: {{ "01865 (2)72944"|telephone }}</dd>
 
     <dt>Thames Valley Police</dt>
-    <dd><a href="tel:+448458505505">0845 8505505</a> (non-emergency)</dd>
+    <dd>{{ "0845 8505505"|telephone }} (non-emergency)</dd>
 </dl>
 
 <h2>Health and welfare</h2>
@@ -29,19 +30,30 @@
 <dl>
     
     <dt>NHS Direct</dt>
-    <dd><a href="tel:+448454647">0845 46 47</a></dd>
+    <dd>{{ "0845 46 47"|telephone }}</dd>
 
     <dt>Counselling Service</dt>
-    <dd><a href="tel:+441865270300">01865 (2)70300</a></dd>
+    <dd>{{ "01865 270300"|telephone }}</dd>
     
     <dt>Oxford Nightline</dt>
-    <dd><a href="tel:+441865270270">01865 (2)70270</a></dd>
+    <dd>{{ "01865 270270"|telephone }}</dd>
 
     <dt>Rape Crisis</dt>
-    <dd><a href="tel:+441865726295">01865 726295</a></dd>
+    <dd>{{ "01865 726295"|telephone }}</dd>
     
     <dt>Samaritans</dt>
-    <dd><a href="tel:+448457909090">018457 90 90 90</a></dd>
+    <dd>{{ "08457 90 90 90"|telephone }}</dd>
 </dl>
-    
+
+<h2>Administrative contacts</h2>
+
+<dl>
+    <dt>University switchboard</dt>
+    <dd><a href="tel:+441865280000">01865 (2)80000</a></dd>
+{% for unit in units %}{% ifequal unit.1.objectClass.0 "oakOrganizationalUnit" %}
+    <dt>{{ unit.1.displayName.0 }}</dt>
+    <dd>{{ unit.1.telephoneNumber.0|telephone }}</dd>
+{% endifequal %}{% endfor %}
+</dl>
+
 {% endblock %}

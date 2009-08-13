@@ -53,10 +53,11 @@ class MapNode(template.Node):
             return self.yahoo_map(context, lat, lng, width, height)
 
     def google_map(self, context, lat, lng, width, height):
+        context['google_maps_count'] = context.get('google_maps_count', 0) + 1
         params = {
             'width': width, 'height': height,
             'lat': lat, 'lng': lng,
-            'id': 'map-%08x' % random.randint(0, 16**8-1),
+            'id': 'map-%08x' % context['google_maps_count'],
             'maps_include': context.get('maps_included') and '' or GOOGLE_MAPS_INCLUDE,
         }
         context['maps_included'] = True

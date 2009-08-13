@@ -1,4 +1,5 @@
 {% extends "webcams/base.xhtml" %}
+{% load portal_misc %}
 
 {% block breadcrumbs %}
 {{ block.super }}
@@ -9,7 +10,7 @@
 
 <h1>{{ webcam.title }}</h1>
 
-<img class="webcam_image" src="{% url webcams_image_width webcam.slug width|stringformat:"3d" %}" width="{{ width }}" alt=""/>
+<img class="webcam_image" src="{% external_image webcam.url %}" width="{{ width }}" alt=""/>
 
 <p>{{ webcam.description }}</p>
 
