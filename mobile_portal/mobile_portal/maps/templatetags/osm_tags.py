@@ -1,32 +1,34 @@
+from xml.sax.saxutils import escape as xml_escape
 from django import template
+from django.utils.safestring import mark_safe
 
 register = template.Library()
 
 def yesno(s):
     return {'yes':'Yes','no':'No'}.get(s.lower())
 def verbatim(name):
-    return lambda t,s: (name, s)
+    return lambda t,s,tags: (name, s)
 
-def tag_wifi(t, s):
+def tag_wifi(t, s, tags):
     return 'wi-fi access', yesno(s)
     
-def tag_opening_hours(t, s):
+def tag_opening_hours(t, s, tags):
     return 'opening hours', s
 #    try:
 #        r = [d.split(' ') for d in s.split('; ')]
 #        
 #    return 
 
-def tag_collection_times(t, s):
+def tag_collection_times(t, s, tags):
     return 'collection times', s
 
-def tag_capacity(t, s):
+def tag_capacity(t, s, tags):
     try:
         return 'capacity', int(s)
     except:
         return None
 
-def tag_cuisine(t, s):
+def tag_cuisine(t, s, tags):
     try:
         cuisines = [w.capitalize() for w in s.split(';')]
         if len(cuisines) == 1:
@@ -35,6 +37,17 @@ def tag_cuisine(t, s):
             return 'cuisines', ', '.join(cuisines)
     except:
         return None
+
+def tag_url(t, s, tags):
+    title = tags.get('url:title', s)
+    return "URL", mark_safe('<a href="%s">%s</a>' % (xml_escape(s), xml_escape(title)))
+def tag_website(t, s, tags):
+    title = tags.get('website:title', s)
+    return "Website", mark_safe('<a href="%s">%s</a>' % (xml_escape(s), xml_escape(title)))
+def tag_wikipedia(t, s, tags):
+    if s.startswith("http://en.wikipedia.org/wiki/"):
+        s = s[29:]
+    return "Wikipedia article", mark_safe('<a href="http://en.m.wikipedia.org/wiki/%s">%s</a>' % (xml_escape(s), xml_escape(tags.get('wikipedia:title', s.replace("_", " ")))))
 
 tag_operator = verbatim('operator')
 tag_note = verbatim('note')
@@ -56,7 +69,7 @@ def osm_tags(entity):
     return_tags = []
     for tag in tags:
         if tag in TAGS:
-            return_tag = TAGS[tag](entity_type, tags[tag])
+            return_tag = TAGS[tag](entity_type, tags[tag], tags)
             if not return_tag is None:
                 return_tags.append(return_tag)
     

@@ -10,7 +10,7 @@
 
 <h1>{{ webcam.title }}</h1>
 
-<img class="webcam_image" src="{% external_image webcam.url %}" width="{{ width }}" alt=""/>
+<img class="webcam_image" src="{% external_image webcam.url %}" width="{{ device.max_image_width }}px" alt=""/>
 
 <p>{{ webcam.description }}</p>
 

@@ -17,7 +17,5 @@ urlpatterns = patterns('mobile_portal.webcams.views',
     # (r'^admin/(.*)', admin.site.root),
     (r'^$', 'index', {}, 'webcams_index'),
     (r'^(?P<slug>[a-zA-Z0-9\-]+)/$', 'webcam_detail', {}, 'webcams_webcam'),
-    (r'^(?P<slug>[a-zA-Z0-9\-]+)/image/$', 'webcam_image', {}, 'webcams_image'),
-    (r'^(?P<slug>[a-zA-Z0-9\-]+)/image/(?P<width>\d{3})/$', 'webcam_image', {}, 'webcams_image_width'),
 )
 

@@ -64,7 +64,7 @@ def update_location(request):
         except (TypeError, ValueError):
             index = None
         
-        if len(placemarks) == 1 or not index is None:
+        if placemarks and len(placemarks) == 1 or not index is None:
             try:
                 placemark = placemarks[index]
             except:
@@ -79,7 +79,7 @@ def update_location(request):
             response.status_code = 303
             return response
         
-        elif len(placemarks) > 1:
+        elif placemarks and len(placemarks) > 1:
             options = placemarks
         else:
             error='We could not determine where that place is. Please try again.'
@@ -95,6 +95,7 @@ def update_location(request):
 def ajax_update_location(request):
     try:
         location = (float(request.POST['latitude']), float(request.POST['longitude']))
+        method = request.POST.get('method')
         
         lat, lon = location
         if not (-90 <= lat and lat < 90 and -180 <= lon and lon < 180):
@@ -105,7 +106,10 @@ def ajax_update_location(request):
         except IndexError:
             placemark = None
         
-        geolocation.set_location(request, placemark, location[0], location[1], method='geoapi')
+        if not method in frozenset(['html5', 'gears', 'manual']):
+            method = 'unknown'
+        
+        geolocation.set_location(request, placemark, location[0], location[1], method=method)
 
         request.session['location'] = location
         request.session['location_updated'] = datetime.now()

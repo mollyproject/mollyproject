@@ -41,9 +41,9 @@
 {% else %}
         <p id="location_status">Sorry, but we are unable to determine your location automatically.</p>
         <script type="text/javascript">
-            if (require_location && navigator.geolocation.getCurrentPosition)
+            if (require_location && positionMethodAvailiable())
                 $('#location_status').html('We do not yet have a location for you; please wait while we attempt to determine one.');
-            else if (navigator.geolocation.getCurrentPosition)
+            else if (positionMethodAvailiable())
                 $('#location_status').css('display', 'none');
         </script>
         <p id="location_update"><a href="{% url core_update_location %}">Update your location manually</a></p>
