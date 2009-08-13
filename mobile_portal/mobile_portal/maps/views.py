@@ -1,5 +1,7 @@
 from __future__ import division
 
+from math import atan2, degrees
+
 from xml.etree import ElementTree as ET
 import urllib, rdflib, urllib2, simplejson
 import ElementSoup as ES
@@ -42,6 +44,8 @@ DISTANCES = {
     10000: '10km',
 }
 
+COMPASS_POINTS = ('N','NE','E','SE','S','SW','W','NW')
+
 def nearby_detail(request, ptype, distance=None, entity=None):
         
     entity_type = get_object_or_404(EntityType, slug=ptype)
@@ -69,6 +73,9 @@ def nearby_detail(request, ptype, distance=None, entity=None):
     
     for e in entities:
         e.distance = D(m=e.location.transform(27700, clone=True).distance(point.transform(27700, clone=True)))
+        lat_diff, lon_diff = e.location[0] - point[0], e.location[1] - point[1]
+        e.bearing = COMPASS_POINTS[int(((90 - degrees(atan2(lon_diff, lat_diff))+22.5) % 360) // 45)]
+        
     entities = sorted(entities, key=lambda e:e.distance)
     
     context = {

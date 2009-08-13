@@ -8,7 +8,7 @@ from mobile_portal.core.renderers import mobile_render
 from mobile_portal.webauth.utils import require_auth
 import geolocation
 
-import sys, traceback, pytz
+import sys, traceback, pytz, simplejson, urllib, re
 
 from models import FrontPageLink, ExternalImageSized, LocationShare
 from forms import FrontPageLinkForm, LocationShareForm, LocationShareAddForm
@@ -53,12 +53,24 @@ def crisis(request):
     }
     return mobile_render(request, context, 'core/crisis')
 
+FOUR_LETTER_CODE_RE = re.compile('[a-zA-Z]{4}')
 def update_location(request):
     error = ''
     options = []
 
     if request.method == 'POST':
-        placemarks = geolocation.geocode(request.POST.get('location'))
+        location = request.POST.get('location', '')
+        print location, FOUR_LETTER_CODE_RE.match(location)
+        if FOUR_LETTER_CODE_RE.match(location):
+            code = location.lower()
+            try:
+                data = simplejson.load(urllib.urlopen('http://m.ox.ac.uk/oxpoints/oucs:%s.json' % code))
+                location = data[0]['oxp_hasLocation']['geo_pos'].split(' ')
+                location = " ".join([location[1], location[0]])
+            except ValueError:
+                pass
+                
+        placemarks = geolocation.geocode(location)
         try:
             index = int(request.POST.get('index'))
         except (TypeError, ValueError):
