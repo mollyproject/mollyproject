@@ -1,6 +1,10 @@
 {% extends "maps/base.xhtml" %}
 {% load maps %}
 
+{% block extrahead %]
+    <meta http-equiv="refresh" content="45" />
+{% endblock %}
+
 {% block breadcrumbs %}
 {{ block.super }}
     <li><a href="{% url maps_nearby_detail "busstop" %}">Nearest bus stops</a></li>

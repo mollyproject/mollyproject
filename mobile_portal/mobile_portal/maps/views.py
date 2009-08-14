@@ -3,7 +3,7 @@ from __future__ import division
 from math import atan2, degrees
 
 from xml.etree import ElementTree as ET
-import urllib, rdflib, urllib2, simplejson
+import urllib, rdflib, urllib2, simplejson, StringIO
 import ElementSoup as ES
 
 from django.contrib.gis.geos import Point

@@ -1,4 +1,5 @@
 
+import os.path
 from django.core.management.base import NoArgsCommand
 
 from xml.etree import ElementTree as ET
@@ -52,4 +53,7 @@ class Command(NoArgsCommand):
     def handle_noargs(self, **options):
 
         self.add_busstop_entity_type()
-        self.parse_busstops('/Erewhon/mobile_portal/mobile_portal/oxpoints/data/NaPTAN340.xml')
+        self.parse_busstops(os.path.join(
+            os.path.dirname(__file__), 
+            '../../data/NaPTAN340.xml',
+        ))
