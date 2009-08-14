@@ -1,19 +1,22 @@
 # Create your views here.
 import urllib
 from xml.etree import ElementTree as ET
+from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from mobile_portal.core.renderers import mobile_render
 from mobile_portal.core.models import Feed
 from mobile_portal.podcasts.models import Podcast, PodcastCategory
 from mobile_portal.podcasts import TOP_DOWNLOADS_RSS_URL
+from mobile_portal.wurfl import device_parents
 
 OPML_FEED = 'http://rss.oucs.ox.ac.uk/oxitems/podcastingnewsfeeds.opml'
 
 def index(request):
 
-    context = {
-        'categories': PodcastCategory.objects.all(),
-    }    
+
+    if "apple_iphone_ver1" in device_parents[request.device.devid] :
+            return HttpResponseRedirect ("http://deimos.apple.com/WebObjects/Core.woa/Browse/ox-ac-uk-public")
+    context = {'categories': PodcastCategory.objects.all(),}    
     
     return mobile_render(request, context, 'podcasts/index')
 
