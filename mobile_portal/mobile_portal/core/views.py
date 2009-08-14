@@ -150,7 +150,7 @@ def customise(request):
         for i, f in enumerate(forms):
             f.cleaned_data['order'] = i+1
             f.save()
-        return HttpResponseRedirect('.') 
+        return HttpResponseRedirect(reverse("core_index")) 
 
     context = {
         'forms': forms,
@@ -159,7 +159,7 @@ def customise(request):
 
 def external_image(request, slug):
     eis = get_object_or_404(ExternalImageSized, slug=slug)
-    response = HttpResponse(open(eis.get_filename(), 'r').read(), mimetype='image/jpeg')
+    response = HttpResponse(open(eis.get_filename(), 'r').read(), mimetype='image/jpeg') 
     last_updated = pytz.utc.localize(eis.external_image.last_updated)
     
     response['ETag'] = slug
