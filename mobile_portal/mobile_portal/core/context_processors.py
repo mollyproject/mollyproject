@@ -12,10 +12,10 @@ DEVICE_SPECIFIC_MEDIA = {
         'js': frozenset(),
         'css': frozenset(['css/devices/rim_blackberry.css']),
     },
-#    'stupid_novarra_proxy_sub73': { # Firefox, actually
-#        'js': frozenset(['js/devices/apple_iphone.js']),
-#        'css': frozenset(['css/devices/apple_iphone.css']),
-#    }
+    'stupid_novarra_proxy_sub73': { # Firefox, actually
+        'js': frozenset(['js/devices/apple_iphone.js']),
+        'css': frozenset(['css/devices/apple_iphone.css']),
+    }
 }
 
 DEVICE_SPECIFIC_MEDIA_SET = frozenset(DEVICE_SPECIFIC_MEDIA)

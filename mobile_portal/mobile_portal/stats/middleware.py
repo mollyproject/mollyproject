@@ -16,12 +16,14 @@ class StatisticsMiddleware(object):
         request.view_name = ".".join((view_func.__module__, view_func.__name__))
 
     def process_response(self, request, response):
-        print [k for k in request.META]
-
         remote_ip = request.META['REMOTE_ADDR']
-        rdns = socket.gethostbyaddr(remote_ip)[0].split('.')
-        rdns.reverse()
-        rdns = ".".join(rdns)
+        
+        try:
+            rdns = socket.gethostbyaddr(remote_ip)[0].split('.')
+            rdns.reverse()
+            rdns = ".".join(rdns)
+        except:
+            rdns = None
 
         response_time = datetime.utcnow() - request.requested
         response_time = response_time.seconds + response_time.microseconds/1e6
@@ -43,7 +45,7 @@ class StatisticsMiddleware(object):
             requested = request.requested,
             response_time = response_time,
             location_method = request.session.get('location_method'),
-            location_set = request.session.get('location_set', False),
+            location_set = getattr(request, 'location_set', False),
             view_name = view_name,
             status_code = str(response.status_code),
             redirect_to = response.get('Location', None),

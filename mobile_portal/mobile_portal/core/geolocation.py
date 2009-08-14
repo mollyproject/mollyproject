@@ -38,11 +38,12 @@ def reverse_geocode(lat, lon):
         return json['Placemark']
         
 def geocode(query):
-    try:
-        placemarks = Placemarks.recent.get(query=query)
-        return placemarks.data
-    except Placemarks.DoesNotExist:
-        pass 
+    if query:
+        try:
+            placemarks = Placemarks.recent.get(query=query)
+            return placemarks.data
+        except Placemarks.DoesNotExist:
+            pass 
     query_string = urllib.urlencode({
         'q': query,
         'key': settings.GOOGLE_API_KEY,
@@ -63,18 +64,20 @@ def geocode(query):
         placemarks.save()
         return json['Placemark']
 
-def set_location(request, placemark, latitude=None, longitude=None, method='unknown'):
-    if latitude is None:
-        coordinates = placemark['Point']['coordinates']
-        # Placemarks have these things the wrong way round 
-        latitude, longitude = coordinates[1], coordinates[0]
-    request.session['location'] = latitude, longitude
+def set_location(request, location, accuracy, method, placemark=None):
+
+    request.session['location'] = location
     request.session['location_updated'] = datetime.now()
     request.session['placemark'] = placemark
     request.session['location_method'] = method
+    request.location_set = True
+    request.session['location_accuracy'] = accuracy
 
     if request.user and request.user.is_authenticated():
         profile = request.user.get_profile()
-        profile.location = Point(latitude, longitude, srid=4326)
+        profile.location = Point(location, srid=4326)
         profile.location_updated = datetime.now()
+        profile.location_method = method
+        profile.location_accuracy = accuracy
         profile.save()
+        

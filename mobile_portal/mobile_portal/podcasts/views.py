@@ -1,7 +1,8 @@
 # Create your views here.
 import urllib
 from xml.etree import ElementTree as ET
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
+from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 from mobile_portal.core.renderers import mobile_render
 from mobile_portal.core.models import Feed
@@ -14,9 +15,12 @@ OPML_FEED = 'http://rss.oucs.ox.ac.uk/oxitems/podcastingnewsfeeds.opml'
 def index(request):
 
 
-    if "apple_iphone_ver1" in device_parents[request.device.devid] :
-            return HttpResponseRedirect ("http://deimos.apple.com/WebObjects/Core.woa/Browse/ox-ac-uk-public")
-    context = {'categories': PodcastCategory.objects.all(),}    
+    #if "apple_iphone_ver1" in device_parents[request.device.devid] :
+    #        return HttpResponseRedirect ("http://deimos.apple.com/WebObjects/Core.woa/Browse/ox-ac-uk-public")
+    context = {
+        'categories': PodcastCategory.objects.all(),
+        'show_itunesu_link': request.GET.get('show_itunesu_link') != 'false'
+    }    
     
     return mobile_render(request, context, 'podcasts/index')
 
@@ -52,3 +56,11 @@ def top_downloads(request):
         podcast=Podcast.objects.get(rss_url=TOP_DOWNLOADS_RSS_URL)
     )
 
+def itunesu_redirect(request):
+    if request.method == 'POST' and 'no_redirect' in request.POST:
+        return HttpResponse('', mimetype="text/plain")
+    elif request.method == 'POST' and 'cancel' in request.POST:
+        return HttpResponseRedirect(reverse('podcasts_index') + '?show_itunesu_link=false')
+    else:
+        return HttpResponseRedirect("http://deimos.apple.com/WebObjects/Core.woa/Browse/ox-ac-uk-public")
+        

@@ -53,6 +53,20 @@ def crisis(request):
     }
     return mobile_render(request, context, 'core/crisis')
 
+# These are rough guesses
+GOOGLE_ADDRESS_ACCURACIES = {
+    0: float('inf'),
+    1: 500000,
+    2: 100000,
+    3:  40000,
+    4:   8000,
+    5:    300,
+    6:    300,
+    7:    100,
+    8:     50,
+    9:      0,
+}
+
 FOUR_LETTER_CODE_RE = re.compile('[a-zA-Z]{4}')
 def update_location(request):
     error = ''
@@ -82,7 +96,12 @@ def update_location(request):
             except:
                 placemark = placemarks[0]
 
-            geolocation.set_location(request, placemark, method='manual')
+            print placemark
+
+            location = placemark['Point']['coordinates'][:2]
+            location.reverse()
+            accuracy = GOOGLE_ADDRESS_ACCURACIES[placemark['AddressDetails']['Accuracy']]
+            geolocation.set_location(request, location, accuracy, 'geocoded', placemark)
             
             try:
                 response = HttpResponseRedirect(request.POST['return_url'])
@@ -105,38 +124,152 @@ def update_location(request):
     return mobile_render(request, context, 'core/update_location')
 
 def ajax_update_location(request):
-    try:
-        location = (float(request.POST['latitude']), float(request.POST['longitude']))
-        method = request.POST.get('method')
-        
-        lat, lon = location
-        if not (-90 <= lat and lat < 90 and -180 <= lon and lon < 180):
-            raise ValueError
+    """
+    This resource will only accept POST requests with the following arguments:
 
-        try:
-            placemark = geolocation.reverse_geocode(*location)[0]
-        except IndexError:
-            placemark = None
-        
-        if not method in frozenset(['html5', 'gears', 'manual']):
-            method = 'unknown'
-        
-        geolocation.set_location(request, placemark, location[0], location[1], method=method)
-
-        request.session['location'] = location
-        request.session['location_updated'] = datetime.now()
-        request.session['placemark'] = placemark
-
-            
-    except (ValueError, KeyError), e:
-        return HttpResponse('Please provide latitude and longitude arguments in a POST as decimal degrees.', status=400, mimetype='text/plain')
-        
-    if request.session.get('placemark'):
-        address = request.session['placemark']['address']
-    else:
-        address = "%s %s" % request.session['location']
+    'latitude' and 'longitude' [optional]
+        Expressed in decimal degrees using the WGS84 projection.
+    'accuracy' [optional]
+        Expressed as a float in metres.
+    'method' [required]
+        One of 'html5', 'gears', 'manual', 'geocoded', 'other', 'denied', 'error'.
     
-    return HttpResponse(address, mimetype='text/plain')
+    If method is one of 'html5', 'gears', 'manual', 'other' then a position
+    must be provided. If method is one of 'denied', 'error' then neither
+    position nor accuracy may be provided.
+    
+    The methods have the following semantics:
+    
+    'html5'
+        The position was determined using the HTML5 geolocation API, to be
+        found in draft form at http://dev.w3.org/geo/api/spec-source.html.
+    'gears'
+        The position was determined using the Google Gears geolocation API,
+        found at http://code.google.com/apis/gears/api_geolocation.html.
+    'manual'
+        The user provided the location directly.
+    'geocoded'
+        The user provided a string that was then geocoded to acquire a location.
+    'other'
+        Some other location method was used.
+    'denied'
+        A request was made to the user to be provided with the user's location
+        but it was denied.
+    'error'
+        An unspecified error occured, as provided for in the HTML5 spec.
+        
+    If a location was provided, a successful request will return a reverse
+    geocoded address if one is available, otherwise a space-delimited
+    latitude-longitude pair. Without a location the empty string will be
+    returned. In either case there will be an HTTP status code of 200.
+    
+    A request that does not meet this specification will result in an HTTP
+    status code of 400, accompanied by a plain text body detailing the errors.
+    """
+    
+    if request.method != 'POST':
+        return HttpResponse(
+            ajax_update_location.__doc__.replace('\n    ', '\n')[1:],
+            status = 405,
+            mimetype = 'text/plain',
+        )
+
+    errors = []
+
+    # Decipher the location if given. Will through 400s in the following scenarios:
+    #  * One or other of latitude and longitude isn't provided.
+    #  * One or other of latitude and longitude isn't in the allowed range
+    #  * One or other of latitude and longitude cannot be interpretted as a float.
+    # If neither is provided then 
+    location = request.POST.get('latitude'), request.POST.get('longitude')
+    if any(location):
+        try:
+            location = map(float, location)
+            lat, lon = location
+            if not (-90 <= lat and lat <= 90 and -180 <= lon and lon < 180):
+                raise ValueError
+        except ValueError:
+            errors.append(
+                'Please provide latitude and longitude arguments as decimal degrees.',
+            )
+    else:
+        location = None
+        
+    accuracy = request.POST.get('accuracy')
+    if accuracy:
+        try:
+            accuracy = float(accuracy)
+            if accuracy < 0:
+                raise ValueError
+            if not location:
+                raise AssertionError
+        except ValueError:
+            errors.append(
+                'If you provide accuracy, it must be a positive float expressed in metres.'
+            )
+        except AssertionError:
+            errors.append(
+                'You cannot specify accuracy without also providing a location.'
+            )
+          
+    try:  
+        method = request.POST['method']
+    except KeyError:
+        errors.append(
+            'You must provide a method.'
+        )
+    else:
+        if method in ('html5', 'gears', 'manual', 'geocoded', 'other'):
+            if not location:
+                errors.append(
+                    'A position is required for the method you provided.'
+                )
+        elif method in ('denied', 'error'):
+            if location:
+                errors.append(
+                    'You must not provide a position for the method you provided.'
+                )
+        else:
+            errors.append(
+                'The method you provided was not in the permitted set.'
+            )
+            
+    if errors:
+        return HttpResponse(
+            """\
+There were errors in the data you POST:
+
+ * %s
+ 
+For more information on acceptable requests perform a GET on this resource.
+""" % "\n * ".join(errors),
+            status=400,
+            mimetype='text/plain'
+        )
+    
+    
+    try:
+        placemark = geolocation.reverse_geocode(*location)[0]
+    except IndexError:
+        placemark = None
+        
+    geolocation.set_location(
+        request,
+        location,
+        accuracy,
+        method,
+        placemark,
+    )
+    
+    if location:    
+        if placemark:
+            response_data = placemark['address']
+        else:
+            response_data = "%s %s" % location
+    else:
+        response_data = ''
+    
+    return HttpResponse(response_data, mimetype='text/plain')
 
 @require_auth
 def customise(request):

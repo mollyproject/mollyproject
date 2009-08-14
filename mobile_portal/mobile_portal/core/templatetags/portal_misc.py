@@ -5,6 +5,7 @@ from django.utils.safestring import mark_safe
 from mobile_portal.core.utils import AnyMethodRequest
 from mobile_portal.core.models import ExternalImage, ExternalImageSized
 from mobile_portal.oxpoints.models import Entity
+from mobile_portal.wurfl import device_parents
 
 register = template.Library()
 
@@ -103,3 +104,6 @@ def telephone(value):
             
     return mark_safe('<a href="tel:%s">%s</a>' % (normalised, value))
     
+@register.filter(name="device_has_parent")
+def device_has_parent(value, arg):
+    return arg in device_parents[value.devid]

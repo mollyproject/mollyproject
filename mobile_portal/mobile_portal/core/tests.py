@@ -6,34 +6,69 @@ from django.core.urlresolvers import reverse
 
 from mobile_portal.core.utils import OXFORD_EMAIL_RE
 
+class AjaxSetLocationTestCase(unittest.TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.test_url = reverse('core_ajax_update_location')
+        
+    def testGET(self):
+        "GET should return a 405 Method Not Acceptable"
+        response = self.client.get(self.test_url)
+        self.assertEqual(response.status_code, 405)
+        
+    def testEmptyPOST(self):
+        "An empty POST should return a 400 Bad Request"
+        response = self.client.post(self.test_url)
+        self.assertEqual(response.status_code, 400)
+        
+    def testLocationRequirements(self):
+        "Depending on method, a location should either be required or forbidden."
+        
+        grouped_methods = {
+            True: ('html5', 'gears', 'manual', 'geocoded', 'other'),
+            False: ('error', 'denied'),
+        }
+        
+        for require_location, methods in grouped_methods.items():
+            for method in methods:
+                response = self.client.post(self.test_url, {
+                    'method': method,
+                    'latitude': 0,
+                    'longitude': 0,
+                })
+                expected_code = require_location and 200 or 400
+                self.assertEqual(response.status_code, expected_code)
+                
+                response = self.client.post(self.test_url, {
+                    'method': method,
+                })
+                expected_code = require_location and 400 or 200
+                self.assertEqual(response.status_code, expected_code)
+    
+    def testAccuracy(self):
+        "accuracy implies location"
+        
+        response = self.client.post(self.test_url, {
+            'method': 'other',
+            'latitude': 0,
+            'longitude': 0,
+            'accuracy': 10,
+        })
+        self.assertEqual(response.status_code, 200)
+        
+        response = self.client.post(self.test_url, {
+            'method': 'other',
+            'accuracy': 10,
+        })
+        self.assertEqual(response.status_code, 400)
+        
+        
+
 class CoreTestCase(unittest.TestCase):
     def setUp(self):
         self.client = Client()
         
-    def testSetLocationUsingAjax(self):
-        for i in range(10):
-            self.client = Client()
-            
-            latitude, longitude = random.randrange(-120, 120), random.randrange(-210,210)
-            valid_input = -90 <= latitude and latitude < 90 and -180 <= longitude and longitude < 180
-            
-            response = self.client.post('/core/ajax/update_location/', {
-                'longitude': longitude,
-                'latitude': latitude,
-            })
-            
-            if valid_input:
-                self.assertEqual(response.status_code, 200) # OK
-            else:
-                self.assertEqual(response.status_code, 400) # Bad Request
-                
-            response = self.client.get('/')
-            if valid_input:
-                self.assertEqual(response.context['location'], (latitude, longitude))
-            else:
-                self.assertEqual(response.context['location'], None)
-                
-    def testSetLocationManually(self):
+    def testSetLocationManually(self):        
         test_locations = (
             'Keble College', 'OX26NN', 'Germany', 'Antartica', '51 4',
             '12 Banbury Road, Oxford', 'Paris', 'W1A 1AA', 'dago;gns'
