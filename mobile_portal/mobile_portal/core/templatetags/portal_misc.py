@@ -13,6 +13,10 @@ register = template.Library()
 def gte(value, arg):
     return value >= float(arg)
     
+@register.filter(name="lte")
+def lte(value, arg):
+    return value <= arg
+    
 @register.filter(name="oxp_id")
 def oxp_id(value):
     prefix = 'http://m.ox.ac.uk/oxpoints/id/'
