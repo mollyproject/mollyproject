@@ -2,7 +2,7 @@ from django.core.management.base import NoArgsCommand
 
 from xml.etree import ElementTree as ET
 from datetime import datetime, timedelta
-import urllib, re, email
+import urllib, re, email, feedparser
 from mobile_portal.rss.models import RSSItem, RSSFeed
 
 
@@ -14,30 +14,31 @@ class Command(NoArgsCommand):
     
     def handle_noargs(self, **options):
         for feed in RSSFeed.objects.all():
-            xml = ET.parse(urllib.urlopen(feed.rss_url))
-            
+        
+            feed_data = feedparser.parse(feed.rss_url)
+            items = list(feed.rssitem_set.all())
             guids = set()
-            items = dict((f.guid, f) for f in feed.rssitem_set.all())
             
-            for x_item in xml.getroot().findall('channel/item'):
-                guid, pub_date = x_item.find('guid').text, x_item.find('pubDate').text
-                last_modified = datetime.strptime(pub_date[:25], "%a, %d %b %Y %H:%M:%S")
-                last_modified = last_modified - timedelta(hours=int(pub_date[26:29]), minutes=int(pub_date[29:31]))
-
-                if guid in items:
-                    item = items[guid]
+            for x_item in feed_data.entries:
+                guid, last_modified = x_item.id, datetime(*x_item.date_parsed[:7])
+                
+                for i in items:
+                    if i.guid == guid:
+                        item = i
+                        break
                 else:
                     item = RSSItem(guid=guid, last_modified=datetime(1900,1,1), feed=feed)
                     
                 if item.last_modified < last_modified:
-                    item.title = x_item.find('title').text
-                    item.description = x_item.find('description').text
-                    item.link = x_item.find('link').text
+                    item.title = x_item.title
+                    item.description = x_item.description
+                    item.link = x_item.link
                     item.last_modified = last_modified
                     item.save()
                 
                 guids.add(guid)
             
-            for item in items.values():
+            for item in items:
+            
                 if not item.guid in guids:
                     item.delete()

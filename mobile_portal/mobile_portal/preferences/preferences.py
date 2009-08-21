@@ -45,12 +45,14 @@ class PreferenceSet(object):
             return self._data[key][1]
         else:
             if isinstance(self._defaults[key], PreferenceSet):
-                return PreferenceSet({}, self._defaults[key], self)
+                self._data[key] = (default_modified, PreferenceSet({}, self._defaults[key], self))
+                return self._data[key][1]
             else:
                 try:
                     self._data[key] = (default_modified, self._defaults[key].copy())
                     return self._data[key][1]
-                except:
+                except Exception, e:
+                    print key, e
                     return self._defaults[key]
         
     def __setitem__(self, key, value):

@@ -9,6 +9,7 @@ class RSSFeed(models.Model):
     title = models.TextField()
     unit = models.CharField(max_length=10,null=True,blank=True)
     rss_url = models.URLField()
+    slug = models.SlugField()
     last_modified = models.DateTimeField() # this one is in UTC
     
     show_predicate = models.ForeignKey(ShowPredicate, null=True, blank=True)

@@ -4,8 +4,13 @@
 
 <h1>News feeds</h1>
 
+<p>
+    <a href="{% url rss_manage %}">Manage your news feeds</a>
+</p>
 
 <h2>Feeds</h2>
+
+{% if page.object_list %}
 
 <div class="page_navigation">
     {% if page.has_previous %}<a href="?page={{ page.previous_page_number }}">&lt;</a>{% else %}&lt;{% endif %}
@@ -15,17 +20,22 @@
 
 {% for item in page.object_list %}
 
-<div class="rss_item rss_item-{% cycle odd,even %} rss_feed_{{ item.feed.id }}" id="rss_item_{{ item.id }}">
+<div class="rss_item rss_item-{% cycle odd,even %} rss_feed_{{ item.feed.slug }}" id="rss_item_{{ item.id }}">
 
 {% comment %} <div class="rss_item_controls">
     <a href="#">Hide</a>
 </div> {% endcomment %}
 
 <h3>{{ item.title }}</h3>
-<p class="feed_name">
-    {{ item.feed.title }}
-    {#<a href="">Hide feed</a>#}
-</p>
+<form method="post" action="{% url rss_feed_display %}">
+    <p class="feed_name">
+        {{ item.feed.title }}
+        <input type="hidden" name="feed" value="{{ item.feed.slug }}"/>
+        <input type="hidden" name="displayed" value="false"/>
+        <input type="hidden" name="location" value="{% url rss_index %}?page={{ item.page_without_feed }}"/>
+        <input type="submit" class="hide_feed" value="Hide feed"/>
+    </p>
+</form>
 
 <p>{{ item.description }}</p>
 
@@ -38,5 +48,12 @@
     Displaying items <strong>{{ page.start_index }}</strong> to <strong>{{ page.end_index }}</strong> of <strong>{{ page.paginator.count }}</strong>.
     {% if page.has_next %}<a href="?page={{ page.next_page_number }}">&gt;</a>{% else %}&gt;{% endif %}
 </div>
+
+{% else %}
+
+<p>There are no items to display. You may want to <a href="{% url rss_manage %}">add some feeds</a>.</p>
+
+{% endif %}
+
 
 {% endblock %}

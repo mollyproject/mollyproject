@@ -25,5 +25,10 @@ defaults = {
             'results': (EPOCH, (5, True)),
             'podcasts': (EPOCH, (6, True)),
         })),
+        'rss': (EPOCH, PreferenceSet({
+            'hidden_items': (EPOCH, set()),
+            'hidden_feeds': (EPOCH, set()),
+            'extra_feeds': (EPOCH, set()),
+        })),
     }),
 }
