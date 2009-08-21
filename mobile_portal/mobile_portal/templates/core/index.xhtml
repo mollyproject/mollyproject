@@ -31,12 +31,12 @@
     <hr/>
     <div class="section">
         <h2>Location</h2>
-{% if placemark %}
-        <p id="location_status">We think you are somewhere near <strong class="nobr">{{ placemark.address }}</strong> ({{ location.0 }} {{ location.1 }}).</p>
+{% if preferences.location.placemark %}
+        <p id="location_status">We think you are somewhere near <strong class="nobr">{{ preferences.location.placemark.address }}</strong> ({{ preferences.location.location.0 }} {{ preferences.location.location.1 }}).</p>
         <p id="location_update"><a href="{% url core_update_location %}">This is not correct</a></p>
 {% else %}
-{% if location %}
-        <p id="location_status">We think you are somewhere near <strong class="nobr">{{ location.0 }} {{ location.1 }}</strong>.</p>
+{% if preferences.location.location %}
+        <p id="location_status">We think you are somewhere near <strong class="nobr">{{ preferences.location.location.0 }} {{ preferences.location.location.1 }}</strong>.</p>
         <p id="location_update"><a href="{% url core_update_location %}">This is not correct</a></p>
 {% else %}
         <p id="location_status">Sorry, but we are unable to determine your location automatically.</p>
@@ -54,7 +54,7 @@
                 $('#location_update').append(' <a href="#" onclick="javascript:requestPosition();">Determine automatically<\/a>');
         </script>
         
-{% if location %}{% map location %}{% endif %}
+{% if preferences.location.location %}{% map preferences.location.location %}{% endif %}
     
     </div>
     <hr/>
@@ -87,5 +87,10 @@
 {% endfor %}
         </dl>
     </div>
+    <hr/>
+    <div class="section">
+        <h2>Preferences</h2>
+        <p>{{ preferences }}</p>
+            
 {% endif %}
 {% endblock %}

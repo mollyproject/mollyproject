@@ -11,7 +11,7 @@ import geolocation
 import sys, traceback, pytz, simplejson, urllib, re
 
 from models import FrontPageLink, ExternalImageSized, LocationShare
-from forms import FrontPageLinkForm, LocationShareForm, LocationShareAddForm
+from forms import LocationShareForm, LocationShareAddForm
 from utils import find_or_create_user_by_email
 from ldap_queries import get_person_units
 
@@ -22,22 +22,16 @@ def index(request):
     # in we'll use the ones attached to their profile. If we've added new links
     # since last they visited, or if this is their first visit, we copy the
     # create references attached to their profile, which they can then edit.
-    front_page_links = FrontPageLink.objects.order_by('order')    
-    if request.user.is_authenticated():
-        user_front_page_links = request.user.get_profile().front_page_links.order_by('order')
-        if front_page_links.count != user_front_page_links.count:
-            for link in front_page_links:
-                if not link in [l.front_page_link for l in user_front_page_links]:
-                    request.user.get_profile().front_page_links.create(
-                        front_page_link = link,
-                        order = link.order,
-                        displayed = link.displayed
-                    )
-            front_page_links = request.user.get_profile().front_page_links.filter(displayed=True).order_by('order')
-        else:
-            front_page_links = user_front_page_links
-    front_page_links = [l for l in front_page_links if l.displayed]
+    
+    fpls = dict((fpl.slug, fpl) for fpl in FrontPageLink.objects.all())
+    print "Initial FPLs", fpls
+    
+    fpls_prefs = sorted(request.preferences['front_page_links'].items(), key=lambda (slug,(order, display)): order)
+    print request.preferences['front_page_links']
+    print "FPLs", fpls_prefs
 
+    front_page_links = [fpls[slug] for (slug,(order, display)) in fpls_prefs if display]
+    
     context = {
         'front_page_links': front_page_links,
     }
@@ -173,7 +167,7 @@ def ajax_update_location(request):
             status = 405,
             mimetype = 'text/plain',
         )
-
+        
     errors = []
 
     # Decipher the location if given. Will through 400s in the following scenarios:
@@ -247,10 +241,12 @@ For more information on acceptable requests perform a GET on this resource.
             mimetype='text/plain'
         )
     
-    
-    try:
-        placemark = geolocation.reverse_geocode(*location)[0]
-    except IndexError:
+    if location:
+        try:
+            placemark = geolocation.reverse_geocode(*location)[0]
+        except IndexError:
+            placemark = None
+    else:
         placemark = None
         
     geolocation.set_location(

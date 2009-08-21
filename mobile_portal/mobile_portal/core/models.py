@@ -117,8 +117,6 @@ class Profile(models.Model):
     location = models.PointField(null=True, srid=4326, blank=True)
     location_updated = models.DateTimeField(null=True, blank=True)
     
-    front_page_links = models.ManyToManyField('ProfileFrontPageLink', blank=True)
-    
     def __unicode__(self):
         return self.user.username
 
@@ -150,23 +148,11 @@ class LocationShare(models.Model):
 class FrontPageLink(models.Model):
     slug = models.SlugField()
     title = models.TextField()
-    order = models.PositiveIntegerField()
-
-    displayed = models.BooleanField()
     urlconf_name = models.TextField()
     
     @property
     def url(self):
         return reverse(self.urlconf_name)
-
-class ProfileFrontPageLink(models.Model):
-    front_page_link = models.ForeignKey(FrontPageLink)
-    order = models.PositiveIntegerField()
-    displayed = models.BooleanField()
-    
-    slug = property(lambda self: self.front_page_link.slug)
-    title = property(lambda self: self.front_page_link.title)
-    url = property(lambda self: self.front_page_link.url)
 
 class Config(models.Model):
     key = models.SlugField()

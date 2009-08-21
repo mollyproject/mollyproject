@@ -1,13 +1,7 @@
 from django import forms
 from django.forms.models import modelformset_factory
 
-from models import ProfileFrontPageLink, LocationShare, LOCATION_ACCURACY_CHOICES
-
-class FrontPageLinkForm(forms.ModelForm):
-    order = forms.FloatField()
-    class Meta:
-        model = ProfileFrontPageLink
-        fields = ('order', 'displayed')
+from models import LocationShare, LOCATION_ACCURACY_CHOICES
 
 class LocationShareForm(forms.ModelForm):
     class Meta:

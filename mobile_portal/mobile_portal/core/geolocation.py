@@ -65,19 +65,13 @@ def geocode(query):
         return json['Placemark']
 
 def set_location(request, location, accuracy, method, placemark=None):
+    if isinstance(location, list):
+        location = tuple(location)
 
-    request.session['location'] = location
-    request.session['location_updated'] = datetime.now()
-    request.session['placemark'] = placemark
-    request.session['location_method'] = method
-    request.location_set = True
-    request.session['location_accuracy'] = accuracy
+    request.preferences['location']['location'] = location
+    request.preferences['location']['updated'] = datetime.now()
+    request.preferences['location']['placemark'] = placemark
+    request.preferences['location']['method'] = method
+    request.preferences['location']['accuracy'] = accuracy
 
-    if request.user and request.user.is_authenticated():
-        profile = request.user.get_profile()
-        profile.location = Point(location, srid=4326)
-        profile.location_updated = datetime.now()
-        profile.location_method = method
-        profile.location_accuracy = accuracy
-        profile.save()
         

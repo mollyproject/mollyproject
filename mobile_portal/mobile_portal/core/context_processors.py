@@ -45,14 +45,20 @@ def geolocation(request):
     
     # Use the epoch in the place of -inf; a time it has been a while since.
     epoch = datetime(1970,1,1, 0, 0, 0)
-    s = request.session
+    
     # Only request a location if our current location is older than one minute
     # and the user isn't updating their location manually.
     # The one minute timeout applies to the more recent of a request and an
     # update.
-    if max(s.get('location_requested', epoch), s.get('location_updated', epoch)) + timedelta(0, 60) < datetime.now() and s.get('location_method') in ('geoapi', None):
+    
+    location = request.preferences['location']
+    requested = location['requested'] or epoch
+    updated = location['updated'] or epoch
+    method = location['method'] or epoch
+    
+    if max(requested, updated) + timedelta(0, 60) < datetime.now() and method in ('html5', 'gears', None):
         require_location = True
-        request.session['location_requested'] = datetime.now()
+        location['requested'] = datetime.now()
     else:
         require_location = False
     
@@ -60,9 +66,6 @@ def geolocation(request):
     placemark = request.session.get('placemark')
     
     return {
-        'location': location,
-        'location_updated': request.session.get('location_updated'),
-        'placemark': placemark,
         'require_location': require_location,
 
         # Debug information follows.        
@@ -85,6 +88,7 @@ def weather(request):
         'weather': weather,
         
         # This comes from LDAP and should be moved to its own context processor.
-        'common_name': request.session.get('common_name')
+        'common_name': request.session.get('common_name'),
+        'preferences': request.preferences
     }
     

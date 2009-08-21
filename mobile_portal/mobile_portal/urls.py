@@ -25,6 +25,7 @@ urlpatterns = patterns('',
     (r'^auth/', include('mobile_portal.webauth.urls')),
     (r'^sakai/', include('mobile_portal.sakai.urls')),
     (r'^news/', include('mobile_portal.rss.urls')),
+    (r'^weblearn/', include('mobile_portal.sakai.urls')),
 
     (r'', include('mobile_portal.core.urls')),
 )

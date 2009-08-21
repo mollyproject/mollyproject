@@ -1,0 +1,11 @@
+[
+    {
+        "pk": "2",
+        "model": "core.FrontPageLink",
+        "fields": {
+            "slug": "emergency",
+            "title": "Important contacts",
+            "urlconf_name": "core_crisis"
+        }
+    }
+]

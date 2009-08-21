@@ -30,8 +30,15 @@ class StatisticsMiddleware(object):
 
         view_name = hasattr(request, 'view_name') and request.view_name or None
 
-        user = isinstance(request.user, User) and request.user or None
-
+        try:
+            user = isinstance(request.user, User) and request.user or None
+        except:
+            # This will occur when the common middleware has appended a slash
+            # or otherwise redirected the request before the auth middleware
+            # has added a User object to the request.
+            # We're not really interested in these types of request.
+            return response
+            
 
         hit = Hit.objects.create(
             user = user,

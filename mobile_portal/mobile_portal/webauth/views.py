@@ -100,4 +100,4 @@ def webauth_failure(request):
     """
     mail_admins('Webauth failure for mobile_portal', unicode(request)) 
     
-    return mobile_render(request, context, "auth/webauth_failure")
+    return mobile_render(request, {}, "auth/webauth_failure")
