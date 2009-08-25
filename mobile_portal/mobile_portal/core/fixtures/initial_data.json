@@ -1,5 +1,13 @@
 [
     {
+        "pk": 1,
+        "model": "sites.site",
+        "fields": {
+            "domain": "m.ox.ac.uk",
+            "name": "Mobile portal"
+        }
+    },
+    {
         "pk": "2",
         "model": "core.FrontPageLink",
         "fields": {
