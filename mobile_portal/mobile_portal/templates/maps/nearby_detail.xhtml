@@ -7,7 +7,8 @@
     <li><a href="{{ entity.get_absolute_url }}">{{ entity.title }}</a></li>
     <li><a href="{% url maps_entity_nearby_detail entity.entity_type.slug,entity.display_id,entity_type.slug %}">Nearest {{ entity_type.verbose_name }}</a></li>
 {% else %}    
-    <li><a href="{% url maps_nearby_detail entity_type.slug %}">Nearest {{ entity_type.verbose_name }}</a></li>
+    <li><a href="{% url maps_nearby_list %}">Find things nearby</a></li>
+    <li><a href="{% url maps_nearby_detail entity_type.slug %}">{{ entity_type.verbose_name_plural|capfirst }}</a></li>
 {% endif %}
 {% endblock %}
 

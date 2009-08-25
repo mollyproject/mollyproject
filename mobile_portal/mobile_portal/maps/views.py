@@ -56,9 +56,10 @@ def nearby_detail(request, ptype, distance=None, entity=None):
             context = {'entity': entity}
             return mobile_render(request, context, 'maps/entity_without_location')
     else:
-        if not (hasattr(request, 'location') and request.location):
+        location = request.preferences['location']['location']
+        if not location:
             return location_required(request)
-        point = Point(request.location[1], request.location[0], srid=4326)
+        point = Point(location[1], location[0], srid=4326)
         
     if distance:
         distance = int(distance)

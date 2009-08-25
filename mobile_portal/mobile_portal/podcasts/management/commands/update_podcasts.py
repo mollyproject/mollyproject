@@ -1,13 +1,16 @@
-from django.core.management.base import NoArgsCommand
-
+from django.core.management.base import BaseCommand
+from optparse import make_option
 from xml.etree import ElementTree as ET
 from datetime import datetime
-import urllib, re, email
+import urllib, re, email, random
 from mobile_portal.podcasts.models import Podcast, PodcastItem, PodcastCategory, PodcastEnclosure
 from mobile_portal.podcasts import TOP_DOWNLOADS_RSS_URL
 
-class Command(NoArgsCommand):
-    option_list = NoArgsCommand.option_list
+class Command(BaseCommand):
+    option_list = BaseCommand.option_list + (
+        make_option('--maxitems', dest='maxitems', default=None,
+            help='Only load the specified number of items, chosen at random.'),
+    )
     help = "Loads podcast data"
 
     requires_model_validation = True
@@ -25,11 +28,11 @@ class Command(NoArgsCommand):
 
     CATEGORY_ORDERS = {}
     
-    CATEGORY_RE = re.compile('/division_code/([^,]+),/division_name/(.+)')
+    CATEGORY_RE = re.compile('/([^\/]+)/([^,]+)')
     @staticmethod
     def decode_category(category):
-        match = Command.CATEGORY_RE.match(category)
-        code, name = match.groups()
+        category = dict(Command.CATEGORY_RE.match(s).groups() for s in category.split(','))
+        code, name = category['division_code'], category['division_name']
         name = urllib.unquote(name.replace('+', ' '))
         
         podcast_category, created = PodcastCategory.objects.get_or_create(code=code,name=name)
@@ -46,12 +49,17 @@ class Command(NoArgsCommand):
     RSS_RE = re.compile('http://rss.oucs.ox.ac.uk/(.+-(.+?))/rss20.xml')
 
     @staticmethod
-    def update_from_opml(opml_url):
+    def update_from_opml(opml_url, maxitems):
         
         xml = ET.parse(urllib.urlopen(opml_url))
-        
+
         rss_urls = [TOP_DOWNLOADS_RSS_URL]
-        for outline in xml.findall('.//body/outline'):
+
+        podcast_elems = xml.findall('.//body/outline')        
+        if maxitems:
+            podcast_elems = random.sample(podcast_elems, maxitems)
+        
+        for outline in podcast_elems:
             attrib = outline.attrib
             podcast, created = Podcast.objects.get_or_create(rss_url=attrib['xmlUrl'])
 
@@ -67,13 +75,12 @@ class Command(NoArgsCommand):
                 'philfac/uehiro-podcasts': 'audio',
                 'offices/undergrad-podcasts': 'audio',
             }.get(match_groups[0], match_groups[1])
-            print podcast.medium
-            
+
+            rss_urls.append(attrib['xmlUrl'])
+
             Command.update_podcast(podcast)
             podcast.save()
             
-            rss_urls.append(attrib['xmlUrl'])
-        
         for podcast in Podcast.objects.all():
             if not podcast.rss_url in rss_urls:
                 podcast.delete()
@@ -150,6 +157,7 @@ class Command(NoArgsCommand):
         Command.update_podcast(podcast)
         podcast.save()
     
-    def handle_noargs(self, **options):
-        Command.update_from_opml(Command.OPML_FEED)
+    def handle(self, *args, **options):
+        maxitems = options['maxitems'] and int(options['maxitems']) or None
+        Command.update_from_opml(Command.OPML_FEED, maxitems)
         Command.update_topdownloads()

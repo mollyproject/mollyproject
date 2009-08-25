@@ -2,7 +2,7 @@ from renderers import mobile_render
 
 def require_location(f):
     def g(request, *args, **kwargs):
-        if not (hasattr(request, 'location') and request.location):
+        if not request.preferences['location']['location']:
             return location_required(request, *args, **kwargs)
         return f(request, *args, **kwargs)
     return g

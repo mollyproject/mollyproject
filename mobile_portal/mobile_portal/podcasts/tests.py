@@ -9,7 +9,7 @@ from mobile_portal.podcasts.models import Podcast, PodcastCategory
 class PodcastsTestCase(unittest.TestCase):
     def setUp(self):
         if not Podcast.objects.count():
-            call_command('update_podcasts')
+            call_command('update_podcasts', maxitems=10)
         
     def testTopDownloads(self):
         c = Client()
@@ -24,6 +24,8 @@ class PodcastsTestCase(unittest.TestCase):
             # Ignore the top downloads podcast
             if podcast.rss_url == TOP_DOWNLOADS_RSS_URL:
                 continue
+            
+            r = c.get('/podcasts/%s/' % podcast.category.code)
             r = c.get('/podcasts/%s/%d/' % (podcast.category.code, podcast.id))
             self.assertTrue(r.context['podcast'].podcastitem_set.count() > 0)
             

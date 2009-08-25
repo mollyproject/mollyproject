@@ -47,10 +47,30 @@ class MapNode(template.Node):
 
         width, height = min(600, context['device'].max_image_width), 200
         
+        return self.openlayers_map(context, lat, lng, width, height)
+        
         if device_parents[context['device'].devid] & GOOGLE_MAPS_BROWSERS:
             return self.google_map(context, lat, lng, width, height)
         else:
             return self.yahoo_map(context, lat, lng, width, height)
+
+    def openlayers_map(self, context, lat, lng, width, height):
+        context['openlayers_maps_count'] = context.get('openlayers_maps_count', 0) + 1
+        params = {
+            'width': width, 'height': height,
+            'lat': lat, 'lng': lng,
+            'id': 'openlayers-%08x' % context['openlayers_maps_count'],
+            'openlayers_include': '', #context.get('openlayers_included') and '' or OPENLAYERS_INCLUDE,
+        }
+        context['openlayers_included'] = True
+        return """\
+<div id="%(id)s" style="width:100%%; height:%(height)dpx;"> </div>        
+<script type="text/javascript">
+$(document).ready(function() {
+    create_map("%(id)s", %(lat)f, %(lng)f, [{lat:51.76, lon:-1.260}]);
+});
+</script>
+""" % params
 
     def google_map(self, context, lat, lng, width, height):
         context['google_maps_count'] = context.get('google_maps_count', 0) + 1

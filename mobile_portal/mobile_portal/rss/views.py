@@ -37,7 +37,7 @@ def index(request):
     feed_count = {}
     for i, item in enumerate(items):
         feed_count[item.feed.slug] = feed_count.get(item.feed.slug, 0) + 1
-        item.page_without_feed = (2 + i - feed_count[item.feed.slug]) // 10
+        item.page_without_feed = (1 + i - feed_count[item.feed.slug]) // 10 + 1
     
     paginator = Paginator(items, 10)
     try:
