@@ -39,7 +39,6 @@ class StatisticsMiddleware(object):
             # We're not really interested in these types of request.
             return response
             
-
         hit = Hit.objects.create(
             user = user,
             session_key = request.session.session_key,

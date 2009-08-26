@@ -29,7 +29,6 @@ def reverse_geocode(lat, lon):
     data = urllib2.urlopen(GOOGLE_MAPS_GEO_URL % query_string)
     json = simplejson.load(data, 'utf8')
     if json['Status']['code'] != 200:
-        print json
         return []
     else:
         placemarks, created = Placemarks.objects.get_or_create(latitude=lat, longitude=lon)
@@ -56,7 +55,6 @@ def geocode(query):
     data = urllib2.urlopen(GOOGLE_MAPS_GEO_URL % query_string)
     json = simplejson.load(data, 'utf8')
     if json['Status']['code'] != 200:
-        print json
         return None
     else:
         placemarks, created = Placemarks.objects.get_or_create(query=query)
@@ -74,4 +72,3 @@ def set_location(request, location, accuracy, method, placemark=None):
     request.preferences['location']['method'] = method
     request.preferences['location']['accuracy'] = accuracy
 
-        

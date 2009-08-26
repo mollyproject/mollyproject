@@ -1,9 +1,11 @@
 from xml.etree import ElementTree as ET
-import urllib, random
+import urllib, random, xml.sax.saxutils
 from django.conf import settings
 from django import template
 from django.contrib.gis.geos import Point
+from django.core.urlresolvers import reverse
 from mobile_portal.wurfl import device_parents
+from mobile_portal.osm.utils import get_generated_map
 
 register = template.Library()
 
@@ -22,7 +24,7 @@ def do_render_map(parser, token):
     return MapNode(args)
 
 GOOGLE_MAPS_BROWSERS = frozenset([
-    'stupid_novarra_proxy_sub73',
+#    'stupid_novarra_proxy_sub73',
     'apple_iphone_ver1',
 ])
 GOOGLE_MAPS_INCLUDE = '<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>\n'
@@ -46,7 +48,9 @@ class MapNode(template.Node):
             lat, lng = [float(a.resolve(context)) for a in args]
 
         width, height = min(600, context['device'].max_image_width), 200
+        width,height=300, 200
         
+        return self.generated_map(context, lat, lng, width, height)
         return self.openlayers_map(context, lat, lng, width, height)
         
         if device_parents[context['device'].devid] & GOOGLE_MAPS_BROWSERS:
@@ -71,6 +75,15 @@ $(document).ready(function() {
 });
 </script>
 """ % params
+
+    def generated_map(self, context, lat, lng, width, height):
+        hash = get_generated_map(
+            [(lat, lng, 'blue', None)],
+            width,
+            height,
+        )
+        url = reverse('osm_generated_map', args=[hash])
+        return '<img src="%s" alt="Map"/>' % xml.sax.saxutils.escape(url)
 
     def google_map(self, context, lat, lng, width, height):
         context['google_maps_count'] = context.get('google_maps_count', 0) + 1

@@ -16,6 +16,7 @@ from mobile_portal.core.renderers import mobile_render
 #from mobile_portal import oxpoints
 from mobile_portal.core.models import Feed
 from mobile_portal.core.decorators import require_location, location_required
+from mobile_portal.osm.utils import get_generated_map
 
 from mobile_portal.oxpoints.models import Entity, EntityType
 from mobile_portal.oxpoints.entity import get_resource_by_url, MissingResource, Unit, Place
@@ -73,18 +74,36 @@ def nearby_detail(request, ptype, distance=None, entity=None):
         distance = distances[i - 1]            
     
     for e in entities:
+        print e.location
         e.distance = D(m=e.location.transform(27700, clone=True).distance(point.transform(27700, clone=True)))
         lat_diff, lon_diff = e.location[0] - point[0], e.location[1] - point[1]
         e.bearing = COMPASS_POINTS[int(((90 - degrees(atan2(lon_diff, lat_diff))+22.5) % 360) // 45)]
         
     entities = sorted(entities, key=lambda e:e.distance)
     
+    entities = entities[:99]
+
+    points = []
+    if entity:
+        points.append( (entity.location[1], entity.location[0], 'green', None) )
+    else:
+        location = request.preferences['location']['location']
+        points.append( (location[0], location[1], 'blue', None) )
+    for i, e in enumerate(entities):
+        points.insert( 1, (e.location[1], e.location[0], 'red', i+1) )
+    print points
+    map_hash = get_generated_map(points, request.device.max_image_width, request.device.max_image_width)
+        
+    
+    print "[%s]" % ", ".join( "(%f, %f, %r)" % (e.location[0], e.location[1], e.title) for e in entities )
+    
     context = {
         'entity_type': entity_type,
         'entities': entities,
         'entity': entity,
         'distances': sorted(DISTANCES.items()),
-        'distance': DISTANCES.get(distance, (distance < 1000) and ("%dm" % distance) or ("%dkm" % (distance/1000)))
+        'distance': DISTANCES.get(distance, (distance < 1000) and ("%dm" % distance) or ("%dkm" % (distance/1000))),
+        'map_hash': map_hash,
     }
     return mobile_render(request, context, 'maps/nearby_detail')
 

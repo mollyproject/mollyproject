@@ -1,9 +1,10 @@
 # Create your views here.
 from datetime import datetime, timedelta
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 from django.conf import settings
+from django.core.management import call_command
 from mobile_portal.core.renderers import mobile_render
 from mobile_portal.webauth.utils import require_auth
 import geolocation
@@ -337,4 +338,34 @@ def location_sharing(request):
     }    
     
     return mobile_render(request, context, 'core/location_sharing')
+
+def run_command(request):
+    if not request.user.is_superuser:
+        raise Http404
+    commands = {
+        'update_podcasts': ('Update podcasts', []),
+        'update_osm': ('Update OpenStreetMap data', []),
+        'update_oxpoints': ('Update OxPoints data', []),
+        'update_busstops': ('Update bus stop data', []),
+        'update_rss': ('Update RSS feeds', []),
+        'update_weather': ('Update weather feed', []),
+        'generate_markers': ('Generate map markers', []),
+        'pull_markers': ('Pull markers from external location', ['location']),
+    }
     
+    if request.method == 'POST':
+        command = request.POST['command']
+        
+        if command in commands:
+            arg_names = commands[request.POST['command']][1]
+            args = {}
+            for arg in arg_names:
+                args[arg] = request.POST[arg]
+            
+            call_command(command, **args)
+    
+    context = {
+        'commands': commands
+    }
+    
+    return mobile_render(request, context, 'core/run_command')

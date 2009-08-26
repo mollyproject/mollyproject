@@ -25,6 +25,8 @@
 {% endif %}{% endfor %}
 </p>
 
+<img src="{% url osm_generated_map map_hash %}" alt=""/>
+
 {% if entities %}
 <ol>
 {% for entity in entities %}
