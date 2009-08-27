@@ -11,6 +11,7 @@ Install the following packages:
  * python-ldap
  * python-rdflib
  * python-imaging
+ * python-cairo
  * python-textile
  * python-tz
  * libsasl2-modules-ldap
@@ -45,7 +46,11 @@ Database
 
 Follow the instructions at
 http://geodjango.org/docs/install.html#creating-a-spatial-database-template-for-postgis
-to create a spatially enabled database named mobile_portal.
+to create a spatially enabled database named mobile_portal. The easy way on
+Debian/Ubuntu is to run the create_template_postgis.sh script in this
+directory as a DB superuser (e.g. as postgres) and then use:
+
+ $ createdb -T template_postgis mobile_portal
 
 As a superuser, create the mobile_portal user:
 
@@ -94,6 +99,11 @@ database as tables auth_user and core_profile. Django does not create an entry
 in the core_profile table for your superuser, which will make the site fall
 over when it can't be found. Use psql to insert a row into core_profile for the
 user.
+
+The site also requires a cache directory, currently /var/cache/mobile_portal .
+Create this directory and give user www-data all permissions to do things to
+it.
+
 
 WebAuth
 -------
