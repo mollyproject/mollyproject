@@ -91,9 +91,9 @@ class OxfordHandler(handler.ContentHandler):
                 except:
                     try:
                         name = ', '.join(reverse_geocode(*self.node_location)[0]['address'].split(', ')[:1])
-                        name = "%s near %s" % (entity_type.verbose_name, name)
+                        name = "Near %s" % (name)
                     except:
-                        name = "%s near %f,%f" % (entity_type.verbose_name, self.node_location[0], self.node_location[1])
+                        name = "Near %f,%f" % (self.node_location[0], self.node_location[1])
                 entity.title = name
                 entity.metadata = {
                     'attrs': dict(self.attrs),
