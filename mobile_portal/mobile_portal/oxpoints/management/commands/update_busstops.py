@@ -13,6 +13,7 @@ class Command(NoArgsCommand):
     requires_model_validation = True
 
     ENGLAND_OSM_BZ2_URL = 'http://download.geofabrik.de/osm/europe/great_britain/england.osm.bz2'
+	NS = '{http://www.naptan.org.uk/}'
 
     def add_busstop_entity_type(self):
         self.entity_type, created = EntityType.objects.get_or_create(slug='busstop')
@@ -25,7 +26,7 @@ class Command(NoArgsCommand):
     def parse_busstops(self, filename):
 
         def NS(elements):
-            return "/".join(('{http://www.naptan.org.uk/}' + e) for e in elements.split('/'))
+            return "/".join((Command.NS + e) for e in elements.split('/'))
 
         xml = ET.parse(filename)
         
@@ -38,9 +39,11 @@ class Command(NoArgsCommand):
             translation = stop.find(NS('Place/Location/Translation'))
             location = float(translation.find(NS('Latitude')).text), float(translation.find(NS('Longitude')).text)
             
+			#Description of stops
             descriptor = stop.find(NS('Descriptor'))
-            title = ", ".join("%s: %s" % (e.tag[27:], e.text) for e in descriptor)
+            title = "\n ".join("%s: %s" % (e.tag[len(Command.NS):], e.text) for e in descriptor)
             
+
             entity, created = Entity.objects.get_or_create(atco_code = atco_code, entity_type=self.entity_type)
             entity.location = Point(location[1], location[0], srid=4326)
             entity.title = title

@@ -30,7 +30,7 @@
 {% if entities %}
 <ol>
 {% for entity in entities %}
-    <li><a href="{{ entity.get_absolute_url }}">{{ entity.title }}</a> {{ entity.distance.km|floatformat:3 }} km {{ entity.bearing }}</li>
+    <li><a href="{{ entity.get_absolute_url }}">{{ entity.title|linebreaksbr }}</a> {{ entity.distance.km|floatformat:3 }} km {{ entity.bearing }}</li>
 {% endfor %}
 </ol>
 {% else %}
