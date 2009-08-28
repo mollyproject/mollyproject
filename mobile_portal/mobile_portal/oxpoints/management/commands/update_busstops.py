@@ -13,7 +13,7 @@ class Command(NoArgsCommand):
     requires_model_validation = True
 
     ENGLAND_OSM_BZ2_URL = 'http://download.geofabrik.de/osm/europe/great_britain/england.osm.bz2'
-	NS = '{http://www.naptan.org.uk/}'
+    NS = '{http://www.naptan.org.uk/}'
 
     def add_busstop_entity_type(self):
         self.entity_type, created = EntityType.objects.get_or_create(slug='busstop')
