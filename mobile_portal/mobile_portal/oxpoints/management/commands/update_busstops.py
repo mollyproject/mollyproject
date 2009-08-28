@@ -33,6 +33,10 @@ class Command(NoArgsCommand):
         stops, atco_codes = xml.findall('.//'+NS('StopPoint')), set()
         
         for stop in stops:
+	
+            if stop.attrib['Status'] == 'inactive':
+                continue
+
             atco_code = stop.find(NS('AtcoCode')).text.strip()
             atco_codes.add (atco_code)
 
