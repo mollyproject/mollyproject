@@ -138,7 +138,6 @@ class OxfordHandler(handler.ContentHandler):
                     name = self.tags['name']
                 except:
                     try:
-                        raise Exception
                         name = ', '.join(reverse_geocode(*self.node_location)[0]['address'].split(', ')[:1])
                         name = "Near %s" % (name)
                     except:
