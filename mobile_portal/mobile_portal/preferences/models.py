@@ -47,7 +47,6 @@ class Preferences(models.Model):
     preference_set = property(_get_preference_set, _set_preference_set)
     
     def save(self, *args, **kwargs):
-        #print "INIT ARGS", repr(self.preference_set.__getinitargs__())
         self._preference_set_pickled = base64.b64encode(pickle.dumps(self.preference_set))
         super(Preferences, self).save(*args, **kwargs)
 
