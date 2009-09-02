@@ -17,4 +17,4 @@ MAILTO=alexander.dutton@oucs.ox.ac.uk
 */30 * * * *      cd /Erewhon/mobile_portal/mobile_portal ; python manage.py update_weather
 
 # Keep k5start running to make sure our kerberos ticket is up to date for LDAP
-*/10 * * * *      /sbin/start-stop-daemon --start --pidfile /var/cache/mobile_portal/k5start.pid --exec /usr/local/bin/k5start -- -b -p /var/cache/mobile_portal/k5start.pid -f /Erewhon/apache/webauth/m.ox.ac.uk.keytab webauth/m.ox.ac.uk -k /tmp/krb5cc_mp
+*/10 * * * *      /sbin/start-stop-daemon --start --pidfile /var/cache/mobile_portal/k5start.pid --exec /usr/bin/k5start -- -b -p /var/cache/mobile_portal/k5start.pid -f /Erewhon/apache/webauth/m.ox.ac.uk.keytab webauth/m.ox.ac.uk -k /tmp/krb5cc_mp -K 10 -l 10h
