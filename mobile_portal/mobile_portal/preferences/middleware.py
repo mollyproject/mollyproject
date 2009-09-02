@@ -9,9 +9,15 @@ class PreferencesMiddleware(object):
         else:
             session_key = request.session.session_key
             request.preferences_object, created = Preferences.objects.get_or_create(session_key=session_key)
+            print "Created", created
         request.preferences = request.preferences_object.preference_set
+        print "Loading", request.preferences._data, id(request.preferences)
         
     def process_response(self, request, response):
-        request.preferences_object.save()
+        try:
+            print "Saving", request.preferences._data, id(request.preferences)
+            request.preferences_object.save()
+        except AttributeError:
+            pass
 
         return response

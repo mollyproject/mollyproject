@@ -32,8 +32,26 @@ def device_specific_media(request):
         for key in media:
             media[key] |= DEVICE_SPECIFIC_MEDIA[devid][key]
 
+    dumb, smart, touch, multitouch, desktop = False, False, False, False, False
+    if "apple_iphone_ver1" in device_parents[request.device.devid]:
+        multitouch = True
+    if request.device.pointing_method == 'touchscreen':
+        touch = True
+    if request.device.ajax_support_javascript:
+        smart = True
+    if "generic_web_browser" in device_parents[request.device.devid]:
+        desktop = True
+    dumb = not (smart or touch or multitouch or desktop)
+
+    dumb, smart, touch, multitouch, desktop = True, False, False, False, False
+    
     return {
         'device_specific_media':media,
+        'dumb': dumb,
+        'smart': smart,
+        'touch': touch,
+        'multitouch': multitouch,
+        'desktop': desktop,
     }    
 
 def geolocation(request):

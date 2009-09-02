@@ -18,10 +18,11 @@ class EntityType(models.Model):
 class Entity(models.Model):
     oxpoints_id = models.PositiveIntegerField(null=True, blank=True)
     atco_code = models.CharField(max_length=12, null=True, blank=True)
-    osm_node_id = models.PositiveIntegerField(null=True, blank=True)
+    osm_id = models.CharField(max_length=16, null=True, blank=True)
     title = models.TextField(blank=True)
     entity_type = models.ForeignKey(EntityType, null=True)
     location = models.PointField(srid=4326, null=True)
+    geometry = models.GeometryField(srid=4326, null=True)
     _metadata = models.TextField(default='null')
     
     def get_metadata(self):

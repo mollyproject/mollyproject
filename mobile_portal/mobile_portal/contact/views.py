@@ -1,9 +1,11 @@
 from mobile_portal.core.renderers import mobile_render
+from mobile_portal.core.ldap_queries import get_person_units
 from search import contact_search
+
 
 def index(request):
     if request.GET:
-        method = request.GET.get('method', '')
+        method = request.GET.get('method')
         method = 'phone' if method == 'phone' else 'email'
         try:
             page = int(request.GET.get('page'))
@@ -40,3 +42,13 @@ def index(request):
         }
         
     return mobile_render(request, context, 'contact/index')
+
+def quick_contacts(request):
+    if request.user.is_authenticated():
+        units = get_person_units(request.user.get_profile().webauth_username)
+    else:
+        units = [] 
+    context = {
+        'units': units,
+    }
+    return mobile_render(request, context, 'contact/quick')

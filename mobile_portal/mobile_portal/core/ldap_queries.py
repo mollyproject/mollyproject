@@ -1,7 +1,7 @@
 import ldap, ldap.sasl
 import os, re
 
-os.environ['KRB5CCNAME'] = '/tmp/krb5cc_mp2'
+os.environ['KRB5CCNAME'] = '/tmp/krb5cc_mp'
 
 def get_oakldap():
     auth = ldap.sasl.gssapi("")

@@ -12,23 +12,25 @@ class UndefinedPreference(object): pass
 class UndefinedPreferenceException(KeyError): pass
 
 class PreferenceSet(object):
-    def __init__(self, pickled_data=None, default_preference_set=None, parent_details=None):
-        self._defaults = default_preference_set or EmptyPreferenceSet()
+    def __init__(self, data=None, default_preferences=None, parent_details=None, get_defaults=None):
+        self._default_preferences = default_preferences
+        self.get_defaults = get_defaults
+        if default_preferences:
+            self._defaults = get_defaults(default_preferences)
+        else:
+            self._defaults = EmptyPreferenceSet()
+ 
         def f(k, v):
             if isinstance(v, PreferenceSet):
-                try:
-                    return PreferenceSet(v._data, self._defaults[k], self)
-                except UndefinedPreferenceException:
-                    return PreferenceSet(v._data, None, self)
+                dp = self._default_preferences+'/'+k if self._default_preferences else None
+                return PreferenceSet(v._data, dp, (self, k), get_defaults=get_defaults)
             else:
                 return v
                 
-        if isinstance(pickled_data, dict):
+        if isinstance(data, dict):
             self._data = dict(
-                (k, (d, f(k, v))) for (k,(d,v)) in pickled_data.items()
+                (k, (d, f(k, v))) for (k,(d,v)) in data.items()
             )
-        elif pickled_data:
-            self._data = pickle.loads(pickled_data.encode('utf8'))
         else:
             self._data = {}
         self._modified = False
@@ -45,14 +47,14 @@ class PreferenceSet(object):
             return self._data[key][1]
         else:
             if isinstance(self._defaults[key], PreferenceSet):
-                self._data[key] = (default_modified, PreferenceSet({}, self._defaults[key], self))
+                dp = self._default_preferences+'/'+key if self._default_preferences else None
+                self._data[key] = (default_modified, PreferenceSet({}, dp, (self, key), get_defaults=self.get_defaults))
                 return self._data[key][1]
             else:
                 try:
                     self._data[key] = (default_modified, self._defaults[key].copy())
                     return self._data[key][1]
                 except Exception, e:
-                    print key, e
                     return self._defaults[key]
         
     def __setitem__(self, key, value):
@@ -60,7 +62,7 @@ class PreferenceSet(object):
             datetime.utcnow(),
             value,
         )
-        self._modified = True
+        self.set_key_modified(key)
 
     def items(self):
         return [(key, self[key]) for key in self]    
@@ -80,10 +82,11 @@ class PreferenceSet(object):
         return self._modified
     def set_key_modified(self, key=None):
         self._modified = True
+        self._data[key] = datetime.utcnow(), self._data[key][1]
         if self._parent_details:
+            pd = self._parent_details
             parent_preferences, key = self._parent_details
-            parent_preferences.modified = True
-            parent_preferences
+            parent_preferences.set_key_modified(key)
     modified = property(_get_modified)
     
     def __iter__(self):
@@ -98,16 +101,24 @@ class PreferenceSet(object):
                     self[key] += other[key]
                 else:
                     self[key] = other[key]
+
+    def __getinitargs__(self):
+        return self._data, self._default_preferences, self._parent_details, self.get_defaults 
+        
+    def __getstate__(self):
+        return self.__getinitargs__()
+    def __setstate__(self, dict):
+        self.__init__(*dict)
+       
     
     def get_pickled(self):
-        return pickle.dumps(self._data)
+        return pickle.dumps(self)
         
     def __repr__(self):
-        print self._data, self._defaults._data
         return u"PreferenceSet({%s})" % ", ".join("%s: %s" % (repr(k), repr(self[k])) for k in self)
     __unicode__ = __repr__
         
-class EmptyPreferenceSet(PreferenceSet):
+class _EmptyPreferenceSet(PreferenceSet):
     def __init__(self):
         self._data = {}
     def __getitem__(self, key):
@@ -120,6 +131,12 @@ class EmptyPreferenceSet(PreferenceSet):
         raise NotImplementedError
     def __iter__(self):
         return iter([])
+    def __getinitargs__(self):
+        return ()
     @property
     def modified(self):
         return False
+        
+eps = _EmptyPreferenceSet()
+def EmptyPreferenceSet():
+    return eps

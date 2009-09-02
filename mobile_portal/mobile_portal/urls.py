@@ -16,7 +16,6 @@ urlpatterns = patterns('',
     (r'^admin/(.*)', admin.site.root),
 
 
-    (r'^crisis/$', 'mobile_portal.core.views.crisis', {}, 'core_crisis'),
     (r'^contact/', include('mobile_portal.contact.urls')),
     (r'^maps/', include('mobile_portal.maps.urls')),
     (r'^podcasts/', include('mobile_portal.podcasts.urls')),

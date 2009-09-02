@@ -36,15 +36,15 @@
 <p>
   <label for="query">Search:</label>
   <input id="query" name="q" value="{{ query }}"/>
-  <input type="submit" value="Go"/>
-</p>
-<p>
-    <input type="radio" name="method" value="email" id="method-email"{% ifequal method "email" %} checked="checked"{% endifequal %}/>
-    <label for="method-email">E-mail</label>
-    <input type="radio" name="method" value="phone" id="method-phone"{% ifequal method "phone" %} checked="checked"{% endifequal %}/>
-    <label for="method-phone">Phone</label>
+  <button type="submit" name="method" value="email">E-mail</button>
+  <button type="submit" name="method" value="phone">Phone</button>
 </p>
 
+
 </form>
+
+<p>
+    Need an important number? Try our <a href="{% url contact_quick %}">quick contacts</a>.
+</p>
 
 {% endblock %}

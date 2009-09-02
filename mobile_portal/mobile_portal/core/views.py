@@ -31,7 +31,7 @@ def index(request):
     print request.preferences['front_page_links']
     print "FPLs", fpls_prefs
 
-    front_page_links = [fpls[slug] for (slug,(order, display)) in fpls_prefs if display]
+    front_page_links = [fpls[slug] for (slug,(order, display)) in fpls_prefs if display and slug in fpls]
     
     context = {
         'front_page_links': front_page_links,

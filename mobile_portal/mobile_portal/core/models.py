@@ -150,6 +150,9 @@ class FrontPageLink(models.Model):
     title = models.TextField()
     urlconf_name = models.TextField()
     
+    def __unicode__(self):
+        return self.title
+    
     @property
     def url(self):
         return reverse(self.urlconf_name)

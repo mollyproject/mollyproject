@@ -4,8 +4,7 @@
 {% block content %}
 <h1>Podcasts</h1>
 
-{% if device|device_has_parent:"apple_iphone_ver1" and show_itunesu_link %}
-{% else %}
+{% if show_itunesu_link %} {# device|device_has_parent:"apple_iphone_ver1" and #}
 <div style="background-color:#002341; margin:1em; padding:0.5em; color:#ffffff; font-size:120%" id="itunesu_link_div">
 
 <p>It looks like you're using an {% if device|device_has_parent:"apple_ipod_touch_ver1" %}iPod Touch{% else %}iPhone{% endif %}!</p>
@@ -17,15 +16,15 @@
 <form method="post" action="{% url podcasts_itunesu_redirect %}">
 
 <p>
-    <input type="checkbox" name="remember" id="remember">
+    <input type="checkbox" name="remember" id="remember"/>
     <label for="remember">
         Remember this preference in future.
     </label>
 </p>
 
 <p style="text-align:center">
-    <input type="submit" name="redirect" value="Go to iTunesU" />
-    <input type="submit" name="cancel" value="Stay on m.ox" id="hide_itunesu_link" />
+    <button type="submit" name="use_itunesu" value="yes">Go to iTunesU</button>
+    <button type="submit" name="cancel" id="hide_itunesu_link" value="no">Stay on m.ox</button>
 </p>
 
 </form>

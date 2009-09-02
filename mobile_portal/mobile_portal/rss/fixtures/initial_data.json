@@ -1,0 +1,11 @@
+[
+    {
+        "pk": "7",
+        "model": "core.FrontPageLink",
+        "fields": {
+            "slug": "rss",
+            "title": "News",
+            "urlconf_name": "rss_index"
+        }
+    }
+]

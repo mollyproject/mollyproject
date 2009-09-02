@@ -13,13 +13,15 @@ from mobile_portal.wurfl import device_parents
 OPML_FEED = 'http://rss.oucs.ox.ac.uk/oxitems/podcastingnewsfeeds.opml'
 
 def index(request):
-
+    show_itunesu_link = not request.device.devid in request.preferences['podcasts']['use_itunesu']
+    if 'show_itunesu_link' in request.GET:
+        show_itunesu_link = request.GET['show_itunesu_link'] != 'false'
 
     #if "apple_iphone_ver1" in device_parents[request.device.devid] :
     #        return HttpResponseRedirect ("http://deimos.apple.com/WebObjects/Core.woa/Browse/ox-ac-uk-public")
     context = {
         'categories': PodcastCategory.objects.all(),
-        'show_itunesu_link': request.GET.get('show_itunesu_link') != 'false'
+        'show_itunesu_link': show_itunesu_link
     }    
     
     return mobile_render(request, context, 'podcasts/index')
@@ -57,10 +59,19 @@ def top_downloads(request):
     )
 
 def itunesu_redirect(request):
+    use_itunesu = request.POST.get('use_itunesu') == 'yes'
+    remember = 'remember' in request.POST
+    
+    if remember:
+        request.preferences['podcasts']['use_itunesu'][request.device.devid] = use_itunesu
+    
     if request.method == 'POST' and 'no_redirect' in request.POST:
         return HttpResponse('', mimetype="text/plain")
-    elif request.method == 'POST' and 'cancel' in request.POST:
-        return HttpResponseRedirect(reverse('podcasts_index') + '?show_itunesu_link=false')
+    elif request.method == 'POST' and not use_itunesu:
+        if remember:
+            return HttpResponseRedirect(reverse('podcasts_index'))
+        else:
+            return HttpResponseRedirect(reverse('podcasts_index') + '?show_itunesu_link=false')
     else:
         return HttpResponseRedirect("http://deimos.apple.com/WebObjects/Core.woa/Browse/ox-ac-uk-public")
         

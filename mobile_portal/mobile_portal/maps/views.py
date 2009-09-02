@@ -152,8 +152,8 @@ def entity_detail_busstop(request, atco_code):
         
     return mobile_render(request, context, 'maps/busstop')
     
-def entity_detail_osm(request, osm_node_id):
-    entity = get_object_or_404(Entity, osm_node_id=osm_node_id)
+def entity_detail_osm(request, osm_id):
+    entity = get_object_or_404(Entity, osm_id=osm_id)
     
     context = {
         'entity': entity,

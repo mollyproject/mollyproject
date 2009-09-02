@@ -19,6 +19,9 @@ class LocationMiddleware(object):
             )
         except (KeyError, DeviceNotFound):
             request.device = devices.select_id('generic_xhtml')
+            
+        if "generic_web_browser" in device_parents[request.device.devid]:
+            request.device.max_image_width = 320
 
         # Opera Mini sends a header with better device information
         

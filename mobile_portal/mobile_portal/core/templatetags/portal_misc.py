@@ -65,7 +65,7 @@ class ExternalImageNode(template.Node):
         response = urllib2.urlopen(request)
 
         # Check whether the image has changed since last we looked at it        
-        if response.headers.get('ETag', ei.etag) != ei.etag or response.headers.get('Last-Modified') != ei.last_modified:
+        if response.headers.get('ETag', ei.etag) != ei.etag or response.headers.get('Last-Modified', True) != ei.last_modified:
 
             # Can't use the shorter EIS.objects.filter(...).delete() as that
             # doesn't call the delete() method on individual objects, resulting

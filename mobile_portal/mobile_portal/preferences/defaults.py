@@ -1,5 +1,5 @@
 from datetime import datetime
-from preferences import PreferenceSet
+from preferences import PreferenceSet, EmptyPreferenceSet
 
 EPOCH = datetime(1970,1,2)
 
@@ -19,16 +19,29 @@ defaults = {
         }),
         'front_page_links': (EPOCH, PreferenceSet({
             'contact': (EPOCH, (1, True)),
-            'emergency': (EPOCH, (2, True)),
-            'maps': (EPOCH, (3, True)),
-            'webcams': (EPOCH, (4, True)),
-            'results': (EPOCH, (5, True)),
-            'podcasts': (EPOCH, (6, True)),
+            'maps': (EPOCH, (2, True)),
+            'webcams': (EPOCH, (3, True)),
+            'results': (EPOCH, (4, True)),
+            'podcasts': (EPOCH, (5, True)),
+            'rss': (EPOCH, (6, True)),
         })),
         'rss': (EPOCH, PreferenceSet({
             'hidden_items': (EPOCH, set()),
             'hidden_feeds': (EPOCH, set()),
             'extra_feeds': (EPOCH, set()),
         })),
+        'podcasts': (EPOCH, PreferenceSet({
+            'use_itunesu': (EPOCH, PreferenceSet({
+            })),
+        })),
     }),
 }
+
+def get_defaults(k):
+    if not k:
+        return EmptyPreferenceSet()
+    ks = k.split('/')
+    ps = defaults[ks[0]]
+    for k in ks[1:]:
+        ps = ps[k]
+    return ps

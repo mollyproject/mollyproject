@@ -3,67 +3,37 @@
 
 {% block stylesheets %}
 {{ block.super }}
+{% if multitouch or desktop %}
     <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/core/index.css"/>
+{% endif %}
 {% endblock %}
 
 {% block content %}
 
-    <h1 class="nodisplay">Home</h1>
-
     <div class="section">
-        <h2 class="nodisplay">Menu</h2>
-    
-
-    <ul class="icon-menu">
+    <ol class="icon-menu">
 {% for link in front_page_links %}
       <li id="menu-{{ link.slug }}">
-          <a href="{{ link.url }}">{{ link.title }}</a>
+          <a accesskey="{{ forloop.counter }}" href="{{ link.url }}">{{ link.title }}</a>
       </li>
 {% endfor %}
-    </ul>
+    </ol>
     <div class="clearhidden"> </div>
     
-{% if user.is_authenticated %}
-    <p><a href="{% url core_customise %}">Customise</a></p>
-{% endif %}
-    
     </div>
     <hr/>
+
     <div class="section">
-        <h2>Location</h2>
-{% if preferences.location.placemark %}
-        <p id="location_status">We think you are somewhere near <strong class="nobr">{{ preferences.location.placemark.address }}</strong> ({{ preferences.location.location.0 }} {{ preferences.location.location.1 }}).</p>
-        <p id="location_update"><a href="{% url core_update_location %}">This is not correct</a></p>
-{% else %}
-{% if preferences.location.location %}
-        <p id="location_status">We think you are somewhere near <strong class="nobr">{{ preferences.location.location.0 }} {{ preferences.location.location.1 }}</strong>.</p>
-        <p id="location_update"><a href="{% url core_update_location %}">This is not correct</a></p>
-{% else %}
-        <p id="location_status">Sorry, but we are unable to determine your location automatically.</p>
-        <script type="text/javascript">
-            if (require_location && positionMethodAvailiable())
-                $('#location_status').html('We do not yet have a location for you; please wait while we attempt to determine one.');
-            else if (positionMethodAvailiable())
-                $('#location_status').css('display', 'none');
-        </script>
-        <p id="location_update"><a href="{% url core_update_location %}">Update your location manually</a></p>
-{% endif %}
-{% endif %}
-        <script type="text/javascript">
-            if (navigator.geolocation.getCurrentPosition)
-                $('#location_update').append(' <a href="#" onclick="javascript:requestPosition();">Determine automatically<\/a>');
-        </script>
-        
-{% if preferences.location.location %}{% map preferences.location.location %}{% endif %}
+        <ul>
+            <li><a href="/help/">Using this site</a></li>
+            <li><a href="/help/">Customise this page</a></li>
+            <li><a href="/help/">Location-finding preferences</a></li>
+            <li><a href="/help/">Legal</a></li>
+
+        </ul>
+    </div>
     
-    </div>
-    <hr/>
-    <div class="section">
-        <h2>Using this site</h2>
-        <p>
-            <a href="/help/">Help</a>
-        </p>
-    </div>
+    
 {% if user.is_superuser %}
     <hr/>
     <div class="section">
