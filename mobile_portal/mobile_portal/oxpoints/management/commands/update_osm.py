@@ -188,7 +188,7 @@ class Command(NoArgsCommand):
     #ENGLAND_OSM_BZ2_URL = 'http://download.geofabrik.de/osm/europe/great_britain/england/shropshire.osm.bz2'
 
     SHELL_CMD = "wget -O- %s --quiet | bunzip2" % ENGLAND_OSM_BZ2_URL
-    #SHELL_CMD = "cat /home/alex/england.osm.bz2 | bunzip2"
+    #    SHELL_CMD = "cat /home/alex/england.osm.bz2 | bunzip2"
     
     def handle_noargs(self, **options):
         old_etag = get_osm_etag()
