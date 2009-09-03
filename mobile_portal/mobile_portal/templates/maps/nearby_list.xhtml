@@ -12,7 +12,7 @@
 {% else %}
 <h1>Find things nearby</h1>
 
-<p>Please note that we think you are near <strong>{{ preferences.location.placemark.address }}</strong>. If this is not correct, please update your location.</p>
+<p>Please note that we think you are near <strong>{{ preferences.location.placemark.address }}</strong>. If this is not correct, please <a href="{% url core_update_location %}?return_url={% url maps_nearby_list %}">eupdate your location</a>.</p>
 {% endif %}
 
 <ul>
