@@ -34,7 +34,7 @@
 {% endfor %}
 </ol>
 {% else %}
-<p>There isn't anything that close to you. Try updating your location or widening your search.</p>
+<p>There isn't anything that close to you. Try <a href="{% url core_update_location %}?return_url={% url maps_nearby_detail entity_type.slug %}">updating your location</a> or widening your search.</p>
 {% endif %}
 
 {% endblock %}
