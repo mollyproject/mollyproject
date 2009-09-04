@@ -43,7 +43,7 @@ def device_specific_media(request):
         desktop = True
     dumb = not (smart or touch or multitouch or desktop)
 
-    dumb, smart, touch, multitouch, desktop = True, False, False, False, False
+    #dumb, smart, touch, multitouch, desktop = True, False, False, False, False
     
     return {
         'device_specific_media':media,

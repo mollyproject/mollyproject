@@ -1,5 +1,6 @@
 from django.core.paginator import Paginator, EmptyPage, InvalidPage
 from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import get_object_or_404
 
 from mobile_portal.core.ldap_queries import get_person_units
 from mobile_portal.core.renderers import mobile_render
@@ -26,11 +27,7 @@ def get_feed_displayed(request, feed, user_data):
     if not feed.show_predicate or eval(feed.show_predicate.predicate, user_data):
         return True
 
-def index(request):
-    user_data = get_user_data(request)
-    
-    feeds = (feed for feed in RSSFeed.objects.all() if get_feed_displayed(request, feed, user_data))
-    
+def show_feeds(request, feeds, extra_context):
     items = RSSItem.objects.filter(feed__in = feeds).order_by('-last_modified')
     items = [item for item in items if not (item.feed.slug, item.guid) in request.preferences['rss']['hidden_items']]
     
@@ -51,9 +48,32 @@ def index(request):
 
     context = {
         'page': page,
-    }    
+    }
+    context.update(extra_context)
     
     return mobile_render(request, context, 'rss/index')
+
+def index(request):
+    user_data = get_user_data(request)
+    return show_feeds(
+        request,
+        (feed for feed in RSSFeed.objects.all() if get_feed_displayed(request, feed, user_data)),
+        {
+            'title': 'News feeds',
+            'single': False,
+        }
+    )
+    
+def feed_detail(request, slug):
+    feed = get_object_or_404(RSSFeed, slug=slug)
+    return show_feeds(
+        request,
+        (feed,),
+        {
+            'title': feed.title,
+            'single': True
+        }
+    )
 
 def set_feed_displayed(request, feed, displayed):
     extra_feeds = request.preferences['rss']['extra_feeds']

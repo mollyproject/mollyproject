@@ -7,5 +7,16 @@
             "title": "News",
             "urlconf_name": "rss_index"
         }
+    },
+    {
+        "pk": "1",
+        "model": "rss.RSSFeed",
+        "fields": {
+            "title": "Computing Services News",
+            "unit": "oucs",
+            "rss_url": "http://www.oucs.ox.ac.uk/rss/news.rss",
+            "slug": "oucs-news",
+            "last_modified": "2009-01-01 00:00:00"
+        }
     }
 ]

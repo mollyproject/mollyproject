@@ -1,11 +1,11 @@
-ul.icon-menu {
+ol.icon-menu {
     list-style:none;
     margin-top:0;
     padding:0;
     padding-bottom:6px;
 }
 
-ul.icon-menu li {
+ol.icon-menu li {
     margin-left:0px;
     margin-top:0px;
     background-repeat:no-repeat;
@@ -13,7 +13,7 @@ ul.icon-menu li {
     float:left;
 }
 
-ul.icon-menu li a {
+ol.icon-menu li a {
     width:65px;
     height:2em;
     padding:5px;

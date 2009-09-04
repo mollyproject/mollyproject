@@ -2,13 +2,11 @@
 
 {% block content %}
 
-<h1>News feeds</h1>
+<h1>{{ title }}</h1>
 
-<p>
+{% if not single %}<p>
     <a href="{% url rss_manage %}">Manage your news feeds</a>
-</p>
-
-<h2>Feeds</h2>
+</p>{% endif %}
 
 {% if page.object_list %}
 
@@ -27,15 +25,15 @@
 </div> {% endcomment %}
 
 <h3>{{ item.title }}</h3>
-<form method="post" action="{% url rss_feed_display %}">
+{% if not single %}<form method="post" action="{% url rss_feed_display %}">
     <p class="feed_name">
-        {{ item.feed.title }}
+        <a href="{% url rss_feed_detail item.feed.slug %}">{{ item.feed.title }}</a>
         <input type="hidden" name="feed" value="{{ item.feed.slug }}"/>
         <input type="hidden" name="displayed" value="false"/>
         <input type="hidden" name="location" value="{% url rss_index %}?page={{ item.page_without_feed }}"/>
         <input type="submit" class="hide_feed" value="Hide feed"/>
     </p>
-</form>
+</form>{% endif %}
 
 <p>{{ item.description }}</p>
 
