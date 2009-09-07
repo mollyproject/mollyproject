@@ -1,4 +1,5 @@
 {% extends "core/base.xhtml" %}
+{% load maps %}
 
 {% block content %}
 
@@ -40,5 +41,32 @@
         <input type="submit" value="Update"/>
     </p>
 </form>
+
+<hr/>
+
+
+
+{% if preferences.location.placemark %}
+        <p id="location_status">We think you are somewhere near <strong class="nobr">{{ preferences.location.placemark.address }}</strong> ({{ preferences.location.location.0 }} {{ preferences.location.location.1 }}).</p>
+{% else %}
+{% if preferences.location.location %}
+        <p id="location_status">We think you are somewhere near <strong class="nobr">{{ preferences.location.location.0 }} {{ preferences.location.location.1 }}</strong>.</p>
+{% else %}
+        <p id="location_status">Sorry, but we are unable to determine your location automatically.</p>
+        <script type="text/javascript">
+            if (require_location && positionMethodAvailiable())
+                $('#location_status').html('We do not yet have a location for you; please wait while we attempt to determine one.');
+            else if (positionMethodAvailiable())
+                $('#location_status').css('display', 'none');
+        </script>
+{% endif %}
+{% endif %}
+        <script type="text/javascript">
+            if (navigator.geolocation.getCurrentPosition)
+                $('#location_update').append(' <a href="#" onclick="javascript:requestPosition();">Determine automatically<\/a>');
+        </script>
+        
+{% if preferences.location.location %}{% map preferences.location.location %}{% endif %}
+
 
 {% endblock %}
