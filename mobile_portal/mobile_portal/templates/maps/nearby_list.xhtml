@@ -15,7 +15,7 @@
 <p>Please note that we think you are near <strong>{{ preferences.location.placemark.address }}</strong>. If this is not correct, please <a href="{% url core_update_location %}?return_url={{ return_url|urlencode }}">update your location</a>.</p>
 {% endif %}
 
-<ul>
+<ul class="ml">
 {% for entity_type in entity_types %}{% if entity %}
     <li><a href="{% url maps_entity_nearby_detail entity.entity_type.slug,entity.display_id,entity_type.slug %}">{{ entity_type.verbose_name|capfirst }}</a></li>
 {% else %}

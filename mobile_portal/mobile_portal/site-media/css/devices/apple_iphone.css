@@ -1,0 +1,25 @@
+
+ul.ml {
+    list-style:none;
+    padding:0.2em;
+}
+
+ul.ml li {
+    font-size:12pt;
+    padding:10px;
+    border-top:1px solid #ffffff;
+    color:#ffffff;
+    background-color:#002147;
+    background-image:url('../../png/right-arrow.png');
+    background-position:right center;
+    background-repeat:no-repeat;
+}
+
+ul.ml li a {
+    color:#ffffff;
+}
+
+ul.ml li:first-child {
+    border-top:0px;
+}
+
