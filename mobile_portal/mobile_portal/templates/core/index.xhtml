@@ -29,13 +29,15 @@
     
     </div>
 
+    <div class="list-section">
         <ul class="ml">
 {#            <li><a href="/help/">Using this site</a></li>#}
 {#            <li><a href="/customise/">Customise this page</a></li>#}
-            <li><a href="{% url core_update_location %}">Location-finding preferences</a></li>
+            <li class="top"><a href="{% url core_update_location %}">Location-finding preferences</a></li>
 {#            <li><a href="/legal/">Legal</a></li>#}
 
         </ul>
+    </div>
     
     
 {% if user.is_superuser %}
@@ -61,10 +63,11 @@
 {% endfor %}
         </dl>
     </div>
-    <hr/>
-    <div class="section">
+    
+    <div class="list-section">
         <h2>Preferences</h2>
         <p>{{ preferences }}</p>
+    </div>
             
 {% endif %}
 {% endblock %}

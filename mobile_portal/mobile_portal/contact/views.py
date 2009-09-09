@@ -1,3 +1,5 @@
+import simplejson, hashlib
+from django.http import HttpResponse
 from mobile_portal.core.renderers import mobile_render
 from mobile_portal.core.ldap_queries import get_person_units
 from search import contact_search
@@ -30,7 +32,9 @@ def index(request):
 
         context = {
             'people': people,
+            'page': page,
             'page_count': page_count,
+            'more_pages': page != page_count,
             'pages': range(1, page_count+1),
             'query': request.GET.get('q', ''),
             'method': method,
@@ -41,7 +45,17 @@ def index(request):
             'method': 'email'
         }
         
-    return mobile_render(request, context, 'contact/index')
+    if 'format' in request.GET and request.GET['format'] == 'json':
+        json = simplejson.dumps(context)
+        response = HttpResponse(
+            json,
+            mimetype='application/json'
+        )
+        response['X-JSON'] = json
+        response['ETag'] = hashlib.sha224(json).hexdigest()
+        return response
+    else:
+        return mobile_render(request, context, 'contact/index')
 
 def quick_contacts(request):
     if request.user.is_authenticated():

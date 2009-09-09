@@ -2,7 +2,9 @@
 ul.ml {
     list-style:none;
     padding:0.2em;
-    padding:10px
+    padding:0px;
+    margin-top: 0;
+    margin-bottom:0;
 }
 
 ul.ml li {
@@ -38,10 +40,11 @@ ul.ml li a {
     color:#ffffff;
     text-decoration: none;
     display:block;
-    padding-right:15px;
+    padding-right:21px;
+    text-align:left;
 }
 
-ul.ml li:first-child {
+ul.ml li.top, h2.section-header {
     border-top:0px;
     border-radius-topleft:8px;
     -moz-border-radius-topleft:8px;
@@ -51,7 +54,7 @@ ul.ml li:first-child {
     -webkit-border-top-right-radius:8px;
 }
 
-ul.ml li:last-child {
+ul.ml li:last-child, div.list-footer {
     border-radius-bottomleft:8px;
     -moz-border-radius-bottomleft:8px;
     -webkit-border-bottom-left-radius:8px;
@@ -60,7 +63,13 @@ ul.ml li:last-child {
     -webkit-border-bottom-right-radius:8px;
 }
 
-div.front-section, div.section {
+ul.ml li.notbottom {
+    border-radius:0px;
+    -moz-border-radius:0px;
+    -webkit-border-radius:0px;
+}
+
+div.front-section, div.section, div.section-nopad {
     margin:10px;
     padding:8px;
     border-radius:8px;
@@ -69,5 +78,54 @@ div.front-section, div.section {
     background-color:#ffffff;
     color:#000000;
 }
-    
 
+div.section, div.section-nopad {
+    background-color:#002147;
+    color:#ffffff;
+}
+
+div.list-section, div.section-nopad {
+    margin:10px;
+    padding:0;
+}
+
+div.section-content {
+    margin:8px;
+}
+
+h2.section-header, div.list-footer {
+    background-color:#48505a;
+    background-image:none;
+    font-weight:bold;
+    text-align:center;
+    color:white;
+    padding:2px;
+    font-size:14pt;
+    margin-bottom:0;
+    text-decoration:none;
+}
+
+div.list-footer {
+    border-top:1px solid #98a1ac;
+}
+
+div.list-footer a {
+    color:#ffffff;
+    text-decoration:none;
+}
+
+div.list-note {
+    background-color:#48505a;
+    padding:10px;
+}
+
+div.list-note div {
+    text-align:center;
+    color:#002147;
+    font-size:12pt;
+    background-color:#ffffff;
+    padding:10px;
+    border-radius:8px;
+    -moz-border-radius:8px;
+    -webkit-border-radius:8px;
+}

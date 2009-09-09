@@ -1,7 +1,7 @@
 function sendPosition(position, method) {
     $('#location_status').html('Location found; please wait while we put a name to it.');
         
-    jQuery.post('/beta/core/ajax/update_location/', {
+    jQuery.post(base+'core/ajax/update_location/', {
         longitude: position.coords.longitude,
         latitude: position.coords.latitude,
         accuracy: position.coords.accuracy,

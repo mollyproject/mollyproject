@@ -4,7 +4,7 @@
         "model": "core.FrontPageLink",
         "fields": {
             "slug": "contact",
-            "title": "Contact search",
+            "title": "Contacts",
             "urlconf_name": "contact_index"
         }
     }

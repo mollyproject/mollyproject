@@ -107,7 +107,15 @@ def telephone(value):
             value = "01865 (2)" + value[7:]
             
     return mark_safe('<a href="tel:%s">%s</a>' % (normalised, value))
+
+@register.filter
+def telephone_uri(value):
+    value = value.replace(" ", "")
+    if value.startswith("0"):
+        value = "tel:+44" + value[1:]
     
+    return value
+
 @register.filter(name="device_has_parent")
 def device_has_parent(value, arg):
     return arg in device_parents[value.devid]

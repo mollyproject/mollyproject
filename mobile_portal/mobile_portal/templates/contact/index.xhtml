@@ -9,63 +9,109 @@
 
 {% block content %}
 
-{% if people %}
-
-<ul class="people">
-{% for person in people %}
-    <li class="li-{% cycle odd,even %}">
-        <span class="name">{{ person.name }}</span> <span class="nodisplay">&mdash;</span>
-        <span class="unit">{{ person.unit }}</span><br/>
-{% ifequal method "email" %}
-        <span class="email"><a href="mailto:{{ person.email }}">{{ person.email }}</a></span>
-{% else %}
-        <span class="phone">Int: {{ person.phone.0 }} &mdash; Ext: {{ person.phone.1|telephone }}</span>
-{% endifequal %}
-    </li>
-{% endfor %}
-</ul>
-
-<p>Pages: {% for page in pages %}
-    <a href="?page={{ page }}&amp;method={{ method }}&amp;q={{ query|urlencode }}">{{ page }}</a>
-{% endfor %}</p>
-
-{% endif %}
-
-<div class="section">
+<div class="section-nopad">
 <form method="get" action=".">
 
-  <h2><label for="query">Search</label></h2>
+  <h2 class="section-header"><label for="query">Search</label></h2>
 
+    <div class="section-content">
 <p style="text-align:center">
   <input id="query" name="q" value="{{ query }}" style="width:90%; height:20px; font-size:16pt"/>
 </p><p style="text-align:center">
   <button type="submit" name="method" value="email">E-mail</button>
   <button type="submit" name="method" value="phone">Phone</button>
 </p>
+    </div>
 </div>
+
+{% if people %}
+
+<div class="list-section">
+<h2 class="section-header">Results</h2>
+{% if page_count|gte:4 %}
+<div class="list-note"><div>Your search returned more than 30 items. Try adding an initial to get more specific results.</div></div>
+{% endif %}
+
+<ul class="ml" id="people">
+{% for person in people %}
+    <li class="{{ method }}{% if forloop.last and more_pages %} notbottom{% endif %}">
+{% ifequal method "email" %}
+        <a href="mailto:{{ person.email }}">
+{% else %}
+        <a href="{{ person.phone.1|telephone_uri }}">
+{% endifequal %}
+        <span class="name">{{ person.name }}</span><br/>
+        <small><span class="unit">{{ person.unit }}</span></small>
+        </a>
+    </li>
+{% endfor %}
+</ul>
+
+{% ifnotequal page page_count %}
+
+<div class="list-footer">
+{% if 1 or touch or desktop %}
+
+<input type="hidden" id="h_current_page" value="{{ page }}"/>
+<input type="hidden" id="h_query" value="{{ query }}"/>
+<input type="hidden" id="h_method" value="{{ method }}"/>
+<a id="contacts_more" href="?page={{ page|add:"1" }}&amp;method={{ method }}&amp;q={{ query|urlencode }}">More&hellip;</a>
+<img src="{{ MEDIA_URL }}gif/wait24trans.gif" width="24px" height="24px" style="display:none" id="wait_spinner"/>
+{% else %}
+{% comment %}<p>Pages: {% for page in pages %}
+    <a href="?page={{ page }}&amp;method={{ method }}&amp;q={{ query|urlencode }}">{{ page }}</a>
+{% endfor %}</p>{% endcomment %}
+
+
+{% endif %}
+</div>
+{% endifnotequal %}
+
+</div>
+{% endif %}
 
 
 </form>
 
+{% if not people %}
+
+<div class="list-section">
+<h2 class="section-header">University contacts</h2>
 <ul class="ml">
-    <li class="header">University contacts</li>
     <li class="phone"><a href="tel:+441865270000">General enquiries</a></li>
     <li class="phone"><a href="tel:+441865280000">Switchboard</a></li>
     <li class="phone"><a href="tel:+441865273200">Computing Services help desk</a></li>
 </ul>
+</div>
 
+<div class="list-section">
+<h2 class="section-header">Emergency contacts</h2>
 <ul class="ml">
-    <li class="header">Emergency contacts</li>
     <li class="phone"><a href="tel:112">Emergency services</a></li>
     <li class="phone"><a href="tel:+441865289999">University security <small>(emergency)</small></a></li>
     <li class="phone"><a href="tel:+441865272944">University security <small>(enquiries)</small></a></li>
     <li class="phone"><a href="tel:+448458505505">Thames Valley Police <small>(non-emergency)</small></a></li>
 </ul>
+</div>
 
+<div class="list-section">
+<h2 class="section-header">Health and welfare</h2>
 <ul class="ml">
-    <li class="phone"><a href="{% url contact_quick %}">Quick contacts</a></li>
+    <li class="phone"><a href="tel:+448454647">NHS Direct</a></li>
+    <li class="phone"><a href="tel:+441865270300">Counselling Service</a></li>
+    <li class="phone"><a href="tel:+441865270270">Oxford Nightline</a></li>
+    <li class="phone"><a href="tel:+441865726295">Rape Crisis</a></li>
+    <li class="phone"><a href="tel:+448457909090">Samaritans</a></li>
+</div>
+    
+<div class="list-section">
+<h2 class="section-header">Other contacts</h2>
+<ul class="ml">
     <li class="email"><a href="{% url contact_quick %}">College contacts</a></li>
     <li><a href="{% url contact_quick %}">Department contacts</a></li>
 </ul>
+</div>
+
+{% endif %}
 
 {% endblock %}

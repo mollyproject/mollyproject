@@ -4,15 +4,15 @@ from mobile_portal.wurfl import device_parents
 from mobile_portal.weather.models import Weather
 
 DEVICE_SPECIFIC_MEDIA = {
-    'apple_iphone_ver1': {
-        'js': frozenset(['js/devices/apple_iphone.js']),
-        'css': frozenset(['css/devices/apple_iphone.css']),
-    },
+#    'apple_iphone_ver1': {
+#        'js': frozenset(['js/devices/apple_iphone.js']),
+#        'css': frozenset(['css/devices/apple_iphone.css']),
+#    },
     'blackberry_generic_ver4_sub10': {
         'js': frozenset(),
         'css': frozenset(['css/devices/rim_blackberry.css']),
     },
-    'stupid_novarra_proxy_sub73': { # Firefox, actually
+    'generic': { # Firefox, actually
         'js': frozenset(['js/devices/apple_iphone.js']),
         'css': frozenset(['css/devices/apple_iphone.css']),
     }
