@@ -33,7 +33,10 @@ $(document).ready(function () {
             for (i in data['people']) {
                 person = data['people'][i];
                 
-                uri = 'f';
+                if (method == 'email')
+                    uri = 'mailto:'+person['email'];
+                else
+                    uri = 'tel:+44' + person['phone'][1].replace(' ', '').slice(1);
                 name = person['name'];
                 unit = person['unit'];
                 
