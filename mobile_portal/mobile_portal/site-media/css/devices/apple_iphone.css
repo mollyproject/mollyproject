@@ -112,6 +112,7 @@ div.list-footer {
 div.list-footer a {
     color:#ffffff;
     text-decoration:none;
+    display:block;
 }
 
 div.list-note {
