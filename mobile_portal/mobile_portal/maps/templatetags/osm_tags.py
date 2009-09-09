@@ -52,7 +52,7 @@ def tag_wikipedia(t, s, tags):
 tag_operator = verbatim('operator')
 tag_note = verbatim('note')
     
-def tag_dispensing(t, s):
+def tag_dispensing(t, s, tags):
     if t == 'pharmacy':
         return 'dispensing', yesno(s)
 

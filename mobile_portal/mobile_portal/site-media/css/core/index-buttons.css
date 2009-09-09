@@ -1,0 +1,58 @@
+ol.icon-menu {
+    list-style:none;
+    margin-top:0;
+    padding:0;
+    padding-bottom:6px;
+}
+
+ol.icon-menu li {
+    margin-left:0px;
+    margin-top:0px;
+    background-repeat:no-repeat;
+    background-position:center 10px;
+    overflow:hide;
+    float:left;
+}
+
+ol.icon-menu li a {
+    width:60px;
+    height:2em;
+    padding:5px;
+    padding-top:75px;
+    text-align:center;
+    display:block;
+    text-decoration:none;
+}
+
+li#menu-contact {
+    background-image:url('../../png/podcasts.png');
+}
+
+li#menu-olis {
+    background-image:url('../../png/podcasts.png');
+}
+
+li#menu-maps {
+    background-image:url('../../png/podcasts.png');
+}
+
+li#menu-emergency {
+    background-image:url('../../png/podcasts.png');
+}
+
+li#menu-podcasts {
+    background-image:url('../../png/podcasts.png');
+}
+
+li#menu-webcams {
+    background-image:url('../../png/webcams.png');
+}
+
+li#menu-rss {
+    background-image:url('../../png/rss.png');
+}
+
+li#menu-results {
+    background-image:url('../../png/rss.png');
+}
+

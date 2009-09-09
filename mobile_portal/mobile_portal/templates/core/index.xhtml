@@ -1,16 +1,23 @@
 {% extends "core/base.xhtml" %}
-{% load maps %}
+{% load portal_misc %}{% load maps %}
 
 {% block stylesheets %}
 {{ block.super }}
-{% if multitouch or desktop %}
     <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/core/index.css"/>
+{% if touch or desktop %}
+    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/core/index-buttons.css"/>
 {% endif %}
+{% endblock %}
+
+{% block header %}
+    <div id="title">
+        <img src="{{ MEDIA_URL }}png/headers/{{ device.resolution_width|header_width }}.png" alt="Mobile Oxford"/>
+    </div>
 {% endblock %}
 
 {% block content %}
 
-    <div class="section">
+    <div class="front-section">
     <ol class="icon-menu">
 {% for link in front_page_links %}
       <li id="menu-{{ link.slug }}">
@@ -21,9 +28,7 @@
     <div class="clearhidden"> </div>
     
     </div>
-    <hr/>
 
-    <div class="section">
         <ul class="ml">
 {#            <li><a href="/help/">Using this site</a></li>#}
 {#            <li><a href="/customise/">Customise this page</a></li>#}
@@ -31,7 +36,6 @@
 {#            <li><a href="/legal/">Legal</a></li>#}
 
         </ul>
-    </div>
     
     
 {% if user.is_superuser %}

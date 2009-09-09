@@ -111,3 +111,13 @@ def telephone(value):
 @register.filter(name="device_has_parent")
 def device_has_parent(value, arg):
     return arg in device_parents[value.devid]
+    
+@register.filter
+def header_width(value):
+    value = int(value)
+    if value < 160:
+        return 128
+    elif value < 240:
+        return 160
+    else:
+        return 240

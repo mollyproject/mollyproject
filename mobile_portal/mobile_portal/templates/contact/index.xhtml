@@ -5,9 +5,9 @@
 <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/contact.css"/>
 {% endblock %}
 
-{% block content %}
+{% block pagetitle %}Contact search{% endblock %}
 
-<h1>Contact search</h1>
+{% block content %}
 
 {% if people %}
 
@@ -31,20 +31,41 @@
 
 {% endif %}
 
+<div class="section">
 <form method="get" action=".">
 
-<p>
-  <label for="query">Search:</label>
-  <input id="query" name="q" value="{{ query }}"/>
+  <h2><label for="query">Search</label></h2>
+
+<p style="text-align:center">
+  <input id="query" name="q" value="{{ query }}" style="width:90%; height:20px; font-size:16pt"/>
+</p><p style="text-align:center">
   <button type="submit" name="method" value="email">E-mail</button>
   <button type="submit" name="method" value="phone">Phone</button>
 </p>
+</div>
 
 
 </form>
 
-<p>
-    Need an important number? Try our <a href="{% url contact_quick %}">quick contacts</a>.
-</p>
+<ul class="ml">
+    <li class="header">University contacts</li>
+    <li class="phone"><a href="tel:+441865270000">General enquiries</a></li>
+    <li class="phone"><a href="tel:+441865280000">Switchboard</a></li>
+    <li class="phone"><a href="tel:+441865273200">Computing Services help desk</a></li>
+</ul>
+
+<ul class="ml">
+    <li class="header">Emergency contacts</li>
+    <li class="phone"><a href="tel:112">Emergency services</a></li>
+    <li class="phone"><a href="tel:+441865289999">University security <small>(emergency)</small></a></li>
+    <li class="phone"><a href="tel:+441865272944">University security <small>(enquiries)</small></a></li>
+    <li class="phone"><a href="tel:+448458505505">Thames Valley Police <small>(non-emergency)</small></a></li>
+</ul>
+
+<ul class="ml">
+    <li class="phone"><a href="{% url contact_quick %}">Quick contacts</a></li>
+    <li class="email"><a href="{% url contact_quick %}">College contacts</a></li>
+    <li><a href="{% url contact_quick %}">Department contacts</a></li>
+</ul>
 
 {% endblock %}

@@ -2,24 +2,72 @@
 ul.ml {
     list-style:none;
     padding:0.2em;
+    padding:10px
 }
 
 ul.ml li {
     font-size:12pt;
     padding:10px;
-    border-top:1px solid #ffffff;
-    color:#ffffff;
+    border-top:1px solid #98a1ac;
+    color:#000000;
     background-color:#002147;
-    background-image:url('../../png/right-arrow.png');
+    background-image:url('../../png/icons/list-arrow.png');
     background-position:right center;
     background-repeat:no-repeat;
 }
 
+ul.ml li.header {
+    background-color:#48505a;
+    background-image:none;
+    font-weight:bold;
+    text-align:center;
+    color:white;
+    padding:2px;
+    font-size:14pt;
+}
+
+ul.ml li.phone {
+    background-image:url('../../png/icons/list-phone.png');
+}
+
+ul.ml li.email {
+    background-image:url('../../png/icons/list-email.png');
+}
+
 ul.ml li a {
     color:#ffffff;
+    text-decoration: none;
+    display:block;
+    padding-right:15px;
 }
 
 ul.ml li:first-child {
     border-top:0px;
+    border-radius-topleft:8px;
+    -moz-border-radius-topleft:8px;
+    -webkit-border-top-left-radius:8px;
+    border-radius-topright:8px;
+    -moz-border-radius-topright:8px;
+    -webkit-border-top-right-radius:8px;
 }
+
+ul.ml li:last-child {
+    border-radius-bottomleft:8px;
+    -moz-border-radius-bottomleft:8px;
+    -webkit-border-bottom-left-radius:8px;
+    border-radius-bottomright:8px;
+    -moz-border-radius-bottomright:8px;
+    -webkit-border-bottom-right-radius:8px;
+}
+
+div.front-section, div.section {
+    margin:10px;
+    padding:8px;
+    border-radius:8px;
+    -moz-border-radius:8px;
+    -webkit-border-radius:8px;
+    background-color:#ffffff;
+    color:#000000;
+}
+    
 

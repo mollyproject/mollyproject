@@ -1,12 +1,15 @@
-body, table {
+body {
     margin: 0;
-    font-family: "Liberation Sans", sans;
+    font-family: "Liberation Sans", sans-serif;
     font-size:9pt;
-    background-color:#fff;
+    background-color:#98a1ac;
+    /*overflow:hidden;*/
+    -webkit-text-size-adjust: none;
+
     
 }
 
-h1, h2 {
+h2 {
     font-weight:bold;
     margin-top:0px;
     margin-bottom:2px;
@@ -15,6 +18,10 @@ h1, h2 {
 
 h1 {
     font-size:12pt;
+    text-align:left;
+    color:#ffffff;
+    margin-top:0;
+    padding-top:4px;
 }
 
 h2 {
@@ -22,28 +29,8 @@ h2 {
     text-decoration:underline;
 }
 
-div.header {
-    background-color:#fff;
-    height:46px;
-    margin-top:0;
-    background-image:url('../png/header_bg.png');
-    overflow:hidden;
-}
-
-div.header img {
-    border:0;
-}
-
-div.weather {
-    float:right;
-}
-
-div.weather img {
-    height: 46px;
-}
-
 div.container {
-    width:305px;
+    /*width:305px;*/
     padding:0px;
 #    border-right:1px solid green;
     overflow:hidden;
@@ -52,8 +39,9 @@ div.container {
 div.content {
 /*    background-color: #002147;
     color:#ffffff;*/
-    padding:2px;
-    padding-top:0px;
+    padding:0px;
+    vertical-align:top;
+    text-align:justify;
 }
 
 a {
@@ -67,16 +55,6 @@ p {
 
 .nodisplay {
     display:none;
-}
-
-
-
-div.section {
-#    background-image:url('../png/top.png');
-#    background-repeat:no-repeat;
-    clear:both;
-    padding:0 0px;
-#    padding-top:20px;
 }
 
 hr {
@@ -106,23 +84,44 @@ button.as_link {
     white-space:nowrap;
 }
 
+div.header {
+    height:34px;
+    width:100%;
+    background-image:url('../png/header_bg.png');
+}
+
 ol.breadcrumbs {
     list-style:none;
     padding-left:0;
-    margin:5px 5px;
+    margin:0px;
+    display:block;
 }
 
 ol.breadcrumbs li {
-    display:inline;
+    display:block;
+    float:left;
+    background-image:url('../png/sep.png');
+    background-position:right;
+    height:30px;
+    padding:2px;
+    padding-right:16px;
+    
 }
 
-ol.breadcrumbs li:before {
-    content: "» ";
-    content: "> ";
+ol.breadcrumbs li:last-child {
+    background-image:none;
 }
 
-ol.breadcrumbs li:first-child:before {
-    content: "";
+ol.breadcrumbs li a {
+    font-size:12pt;
+    
+    vertical-align:top;
+    color:#000000;
+    text-decoration:none;
+}
+
+ol.breadcrumbs img {
+    border:0;
 }
 
 div.weather {
@@ -158,4 +157,29 @@ div.login {
     height:46px;
     overflow:hidden;
     margin-left:5px;
+}
+
+div.openlayers_map {
+    width:100%;
+    height:200px;
+}
+
+body.landscape div.openlayers_map {
+    width:100%;
+    height:100%;
+}
+
+div.map_pane, div.details_pane {
+    width:100%;
+}
+
+body.landscape div.map_pane, body.landscape div.details_pane {
+    width:50%;
+    display:inline-block;
+    height:100%;
+    vertical-align:top;
+}
+
+body.landscape div.details_pane {
+    overflow:auto;
 }

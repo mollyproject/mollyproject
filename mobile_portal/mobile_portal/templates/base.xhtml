@@ -3,7 +3,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-GB" lang="en-GB">
   <head>
     <title>{% block title %}Oxford Mobile Portal{% endblock %}</title>
-    <meta name="viewport" content="width=320" />
+    <meta name="viewport" content="width=device-width; user-scalable=no; maximum-scale=1; minimum-scale=1" />
+
     {% block stylesheets %}
     <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/base.css"/>
     {% endblock %}
@@ -31,36 +32,23 @@
     
   </head>
 
-  <body>
+  <body class="{% if touch %} touch{% endif %}{% if multitouch %} multitouch{% endif %}{% if desktop %} desktop{% endif %}{% if smart %} smart{% endif %}">
+
+{% if 1 %}
+{% block header %}
     <div class="header">
-        <a href="{% url core_index %}">
-            <img src="{{ MEDIA_URL }}png/home.png" alt="Home"/>
-        </a>
-{% if user.is_authenticated %}
-            <a href="{% url auth_logout %}">
-                <img src="{{ MEDIA_URL }}png/logout.png"
-                     alt="Log out of WebAuth"
-                     title="Currently logged in as {{ common_name }}" />
-            </a>
-{% else %}
-            <a href="{% url webauth_login %}">
-                <img src="{{ MEDIA_URL }}png/login.png"
-                     alt="Log in using WebAuth"
-                     title="Log in using WebAuth for more features" />
-            </a>
-{% endif %}
-        <img src="{{ MEDIA_URL }}png/logo.png" alt="Mobile Portal"/>
-{% if device.max_image_width|gte:"247" %}
-        <img src="{{ MEDIA_URL }}png/crest.png" style="float:right;" alt=""/>
+{% if 1 or touch or desktop   %}
+        <ol class="breadcrumbs">
+{% block breadcrumbs %}
+            <li><a href="{% url core_index %}">
+                <img src="{{ MEDIA_URL }}png/logo.png" alt="Home"/>
+            </a></li>
+{% endblock %}
+        </ol>
+        <h1 id="page_title">{% block pagetitle %}{% endblock %}</h1>
 {% endif %}
     </div>
-
-{% if not touch %}    
-    <ol class="breadcrumbs">
-{% block breadcrumbs %}
-        <li><a href="{% url core_index %}">Home</a></li>
 {% endblock %}
-    </ol>
 {% endif %}
 
     <div class="content">

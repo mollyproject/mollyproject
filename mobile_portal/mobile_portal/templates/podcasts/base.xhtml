@@ -2,7 +2,9 @@
 
 {% block breadcrumbs %}
 {{ block.super }}
-    <li><a href="{% url podcasts_index %}">Podcasts</a></li>
+            <li><a href="{% url podcasts_index %}">
+                <img src="{{ MEDIA_URL }}png/podcasts-bc.png" alt="Podcasts"/>
+            </a></li>
 {% endblock %}
 
 

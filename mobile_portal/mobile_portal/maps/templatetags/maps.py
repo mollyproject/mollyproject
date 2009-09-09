@@ -29,6 +29,17 @@ GOOGLE_MAPS_BROWSERS = frozenset([
 ])
 GOOGLE_MAPS_INCLUDE = '<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>\n'
 
+OPENLAYERS_BROWSERS = frozenset([
+    'apple_iphone_ver1',
+    'generic_web_browser',
+    'generic',
+])
+OPENLAYERS_INCLUDE = """\
+    <script type="text/javascript" src="%(mu)sjs/prototype.js"></script>
+    <script type="text/javascript" src="%(mu)sjs/openlayers.js"></script>
+    <script type="text/javascript" src="%(mu)sjs/openlayers-osm.js"></script>
+""" % {'mu': settings.MEDIA_URL}
+
 class MapNode(template.Node):
     def __init__(self, args):
 	self.args = args
@@ -50,8 +61,10 @@ class MapNode(template.Node):
         width, height = min(600, context['device'].max_image_width), 200
         width,height=300, 200
         
-        return self.generated_map(context, lat, lng, width, height)
-        return self.openlayers_map(context, lat, lng, width, height)
+        if True or device_parents[context['device'].devid] & OPENLAYERS_BROWSERS:
+            return self.openlayers_map(context, lat, lng, width, height)
+        else:
+            return self.generated_map(context, lat, lng, width, height)
         
         if device_parents[context['device'].devid] & GOOGLE_MAPS_BROWSERS:
             return self.google_map(context, lat, lng, width, height)
@@ -64,11 +77,12 @@ class MapNode(template.Node):
             'width': width, 'height': height,
             'lat': lat, 'lng': lng,
             'id': 'openlayers-%08x' % context['openlayers_maps_count'],
-            'openlayers_include': '', #context.get('openlayers_included') and '' or OPENLAYERS_INCLUDE,
+            'openlayers_include': '' if context.get('openlayers_included') else OPENLAYERS_INCLUDE
         }
         context['openlayers_included'] = True
         return """\
-<div id="%(id)s" style="width:100%%; height:%(height)dpx;"> </div>        
+%(openlayers_include)s
+<div id="%(id)s" class="openlayers_map"> </div>        
 <script type="text/javascript">
 $(document).ready(function() {
     create_map("%(id)s", %(lat)f, %(lng)f, [{lat:51.76, lon:-1.260}]);

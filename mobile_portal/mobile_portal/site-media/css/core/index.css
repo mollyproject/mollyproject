@@ -1,49 +1,6 @@
-ol.icon-menu {
-    list-style:none;
-    margin-top:0;
-    padding:0;
-    padding-bottom:6px;
+div#title {
+    width: 100%;
+    background-color: #002147;
+    text-align: center;
+    font-size:14pt;
 }
-
-ol.icon-menu li {
-    margin-left:0px;
-    margin-top:0px;
-    background-repeat:no-repeat;
-    overflow:hide;
-    float:left;
-}
-
-ol.icon-menu li a {
-    width:65px;
-    height:2em;
-    padding:5px;
-    padding-top:75px;
-    text-align:center;
-    display:block;
-    text-decoration:none;
-}
-
-li#menu-contact {
-    background-image:url('../../png/contact.png');
-}
-
-li#menu-olis {
-    background-image:url('../../png/olis.png');
-}
-
-li#menu-maps {
-    background-image:url('../../png/maps.png');
-}
-
-li#menu-emergency {
-    background-image:url('../../png/emergency.png');
-}
-
-li#menu-podcasts {
-    background-image:url('../../png/podcasts.png');
-}
-
-li#menu-webcams {
-    background-image:url('../../png/webcams.png');
-}
-

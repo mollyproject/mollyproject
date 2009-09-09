@@ -7,15 +7,14 @@
     <li><a href="{{ entity.get_absolute_url }}">{{ entity.title }}</a></li>
 {% endblock %}
 
+{% block pagetitle %}{{ entity.title }}{% endblock %}
+
+
 {% block content %}
 
-<h1>{{ entity.title }}</h1>
-
-<p>
-    <a href="{% url maps_entity_nearby_list entity.entity_type.slug,entity.display_id %}">Find things near here</a>
-</p>
-
-{% block metadata %}
+<div class="map_pane">
+{% map entity.location %}
+</div><div class="details_pane">
 {% if entity|osm_tags %}
 <table>
     <tbody>
@@ -28,12 +27,16 @@
     </tbody>
 </table>
 {% endif %}
-{% endblock %}
-
-{% map entity.location %}
 
 <h2>Disclaimer</h2>
 
 <p>Oxford University provide this information without warranty. For further details, see our <a href="/legal/">legal information</a>.</p>
+
+<p>
+    <a href="{% url maps_entity_nearby_list entity.entity_type.slug,entity.display_id %}">Find things near here</a>
+</p>
+
+</div>
+
 
 {% endblock %}
