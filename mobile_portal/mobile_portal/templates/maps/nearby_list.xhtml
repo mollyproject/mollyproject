@@ -7,11 +7,13 @@
 
 {% block content %}
 
+<div class="list-section">
 {% if entity %}
-<h1>Find things near {{ entity.title }}</h1>
+<h2 class="section-header">Find things near {{ entity.title }}</h2>
 {% else %}
-<h1>Find things nearby</h1>
-
+<h2 class="section-header">Find things nearby</h2>
+</div
+>
 <p>Please note that we think you are near <strong>{{ preferences.location.placemark.address }}</strong>. If this is not correct, please <a href="{% url core_update_location %}?return_url={{ return_url|urlencode }}">update your location</a>.</p>
 {% endif %}
 
