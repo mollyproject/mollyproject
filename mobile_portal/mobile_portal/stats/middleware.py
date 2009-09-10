@@ -29,6 +29,11 @@ class StatisticsMiddleware(object):
         response_time = response_time.seconds + response_time.microseconds/1e6
 
         view_name = hasattr(request, 'view_name') and request.view_name or None
+        
+        if hasattr(request, 'device'):
+            devid = request.device.devid
+        else:
+            devid = '-'
 
         try:
             user = isinstance(request.user, User) and request.user or None
@@ -43,7 +48,7 @@ class StatisticsMiddleware(object):
             user = user,
             session_key = request.session.session_key,
             user_agent = request.META.get('HTTP_USER_AGENT'),
-            device_id = request.device.devid,
+            device_id = devid,
             ip_address = remote_ip,
             rdns = rdns,
             referer = request.META.get('HTTP_REFERER'),
