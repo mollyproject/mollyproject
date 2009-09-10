@@ -7,7 +7,8 @@
 
 {% block content %}
 
-<h1>{{ category.name }}</h1>
+<div class="list-section">
+	<h2 class="section-header">{{ category.name }}</h2>
 
 <p>Show
     <a href="{% url podcasts_category_medium category.code,"audio" %}">audio</a>
@@ -21,5 +22,7 @@ podcasts.</p>
     <dd>{{ podcast.description }}</dd>
 {% endfor %}
 </dl>
+
+</div>
 
 {% endblock %}
