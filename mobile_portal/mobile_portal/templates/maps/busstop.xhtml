@@ -18,6 +18,8 @@
     <a href="{% url maps_entity_nearby_list entity.entity_type.slug,entity.display_id %}">Find things near here</a>
 </p>
 
+<div class="list-section">
+	<h2 class="section-header">Real Time Bus Times</h2>
 {% if times %}
 <table>
     <thead>
@@ -37,6 +39,8 @@
 {% endfor %}
     </tbody>
 </table>
+
+</div>
 {% else %}
 <p>Sorry, there is currently no bus time information for this stop.</p>
 {% endif %}
