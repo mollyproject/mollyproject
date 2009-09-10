@@ -25,7 +25,7 @@ def contact_search(surname, initial, exact, medium, page=1):
         x_people = filter(lambda x:(x.attrib.get('class')=='people'), xml.findall('.//ul'))[0]
     except IndexError:
         # No people found
-        return [], 0
+        return [], 0, 0
 
     people = []
     for x_person in x_people.getchildren():
