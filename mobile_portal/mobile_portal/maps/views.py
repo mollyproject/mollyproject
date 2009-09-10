@@ -8,7 +8,7 @@ import ElementSoup as ES
 
 from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import D
-from django.http import Http404
+from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.core.urlresolvers import reverse
 
@@ -21,6 +21,8 @@ from mobile_portal.osm.utils import get_generated_map
 
 from mobile_portal.oxpoints.models import Entity, EntityType
 from mobile_portal.oxpoints.entity import get_resource_by_url, MissingResource, Unit, Place
+
+from mobile_portal.maps.utils import get_entity, is_favourite, make_favourite
 
 def index(request):
     context = {
@@ -117,9 +119,9 @@ def nearby_detail(request, ptype, distance=None, entity=None):
 
 
 OXPOINTS_URL = 'http://m.ox.ac.uk/oxpoints/id/%s.json'    
-def entity_detail_oxpoints(request, id):
+def entity_detail_oxpoints(request, entity):
     try:
-        data = simplejson.load(urllib.urlopen(OXPOINTS_URL % id))[0]
+        data = simplejson.load(urllib.urlopen(OXPOINTS_URL % entity.oxpoints_id))[0]
     except urllib2.HTTPError, e:
         if e.code == 404:
             raise Http404
@@ -128,15 +130,15 @@ def entity_detail_oxpoints(request, id):
 
     context = {
         'data': data,
-        'entity': get_object_or_404(Entity, oxpoints_id=int(id)),
+        'entity': entity,
     }
 
     return mobile_render(request, context, 'maps/oxpoints')
 
 OXONTIME_URL = 'http://www.oxontime.com/pip/stop.asp?naptan=%s&textonly=1'
-def entity_detail_busstop(request, atco_code):
-    entity = get_object_or_404(Entity, atco_code=atco_code)
-    xml = ES.parse(urllib.urlopen(OXONTIME_URL % atco_code))
+def entity_detail_busstop(request, entity):
+    #raise Exception(OXONTIME_URL % entity.atco_code)
+    xml = ES.parse(urllib.urlopen(OXONTIME_URL % entity.atco_code))
     
     try:
         cells = xml.find('.//table').findall('td')[4:]
@@ -159,9 +161,8 @@ def entity_detail_busstop(request, atco_code):
         
     return mobile_render(request, context, 'maps/busstop')
     
-def entity_detail_osm(request, osm_id):
-    entity = get_object_or_404(Entity, osm_id=osm_id)
-    
+def entity_detail_osm(request, entity):
+
     context = {
         'entity': entity,
     }
@@ -178,15 +179,11 @@ ENTITY_HANDLERS = {
     'oxpoints': entity_detail_oxpoints,
 }
 
-def get_entity(type_slug, id):
-    entity_type = get_object_or_404(EntityType, slug=type_slug)
-    id_field = str(entity_type.id_field)
-    return get_object_or_404(Entity, **{id_field: id, 'entity_type': entity_type})
-
 def entity_detail(request, type_slug, id):
     entity = get_entity(type_slug, id)
+    entity.is_favourite = is_favourite(request, entity)
     entity_handler = ENTITY_HANDLERS[entity.entity_type.source]
-    return entity_handler(request, id)
+    return entity_handler(request, entity)
     
 def entity_nearby_list(request, type_slug, id):
     entity = get_entity(type_slug, id)
@@ -195,3 +192,24 @@ def entity_nearby_list(request, type_slug, id):
 def entity_nearby_detail(request, type_slug, id, ptype, distance=100):
     entity = get_entity(type_slug, id)
     return nearby_detail(request, ptype, distance, entity)
+
+def entity_favourite(request, type_slug, id):
+    entity = get_entity(type_slug, id)
+    
+    if request.method != 'POST':
+        return HttpResponse('', mimetype='text/plain', status=405)
+        
+    try:
+        value = request.POST['is_favourite'] == 'true'
+    except KeyError:
+        return HttpResponse('', mimetype='text/plain', status=400)
+        
+    make_favourite(request, entity, value)
+    
+    if 'no_redirect' in request.POST:
+        return HttpResponse('', mimetype='text/plain', status=400)
+        
+    if 'return_url' in request.POST:
+        return HttpResponseRedirect(request.POST['return_url'])
+    else:
+        return HttpResponseRedirect(entity.get_absolute_url())

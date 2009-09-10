@@ -1,18 +1,23 @@
-{% extends "maps/base.xhtml" %}
+{% extends "maps/base.xhtml" %}{% load portal_misc %}
 
 {% block pagetitle %}Maps{% endblock %}
 
 {% block content %}
 
-
+{% if preferences.maps.favourites %}
 <div class="list-section">
 	<h2 class="section-header">Favourites</h2>
 <ul class="ml">
-	<li>Home bus stop </li>
-	<li>Work bus stop </li>
-	<li>Merton College</li>
+{% for entity_ref in preferences.maps.favourites %}
+{% with entity_ref|get_entity as entity %}
+	<li>
+	    <a href="{{ entity.get_absolute_url }}">{{ entity.title }}</a>
+	</li>
+{% endwith %}
+{% endfor %}
 </ul>
 </div>
+{% endif %}
 
 
 <div class="list-section">

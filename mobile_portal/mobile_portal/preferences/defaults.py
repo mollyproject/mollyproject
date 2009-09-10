@@ -34,6 +34,9 @@ defaults = {
             'use_itunesu': (EPOCH, PreferenceSet({
             })),
         })),
+        'maps': (EPOCH, PreferenceSet({
+            'favourites': (EPOCH, []),
+        })),
     }),
 }
 

@@ -6,6 +6,7 @@ from mobile_portal.core.utils import AnyMethodRequest
 from mobile_portal.core.models import ExternalImage, ExternalImageSized
 from mobile_portal.oxpoints.models import Entity
 from mobile_portal.wurfl import device_parents
+from mobile_portal.maps.utils import get_entity
 
 register = template.Library()
 
@@ -129,3 +130,7 @@ def header_width(value):
         return 160
     else:
         return 240
+        
+@register.filter('get_entity')
+def get_entity_filter(value):
+    return get_entity(*value)
