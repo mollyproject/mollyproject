@@ -2,6 +2,9 @@
 
 {% block breadcrumbs %}
 {{ block.super }}
-    <li><a href="{% url maps_index %}">Maps</a></li>
+
+	<li><a href="{% url contact_index %}">
+        <img src="{{ MEDIA_URL }}png/contact-bc.png" alt="Maps"/>
+    </a></li>
 {% endblock %}
 
