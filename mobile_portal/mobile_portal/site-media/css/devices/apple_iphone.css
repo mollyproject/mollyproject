@@ -13,8 +13,6 @@ ul.ml li {
     padding:10px;
     border-top:1px solid #98a1ac;
     background-color:#002147;
-    background-position:right center;
-    background-repeat:no-repeat;
 }
 
 ul.ml li.header {
@@ -27,24 +25,27 @@ ul.ml li.header {
     font-size:14pt;
 }
 
-ul.ml li.phone {
-    background-image:url('../../png/icons/list-phone.png');
-}
-
-ul.ml li.email {
-    background-image:url('../../png/icons/list-email.png');
-}
-
-ul.ml li.arrow {
+ul.ml a {
     background-image:url('../../png/icons/list-arrow.png');
 }
 
-ul.ml li a {
+ul.ml a.phone {
+    background-image:url('../../png/icons/list-phone.png');
+}
+
+ul.ml a.email {
+    background-image:url('../../png/icons/list-email.png');
+}
+
+
+ul.ml li a{
 	color:#ffffff;
     text-decoration: none;
     display:block;
     padding-right:21px;
     text-align:left;
+	background-position:right center;
+    background-repeat:no-repeat;
 }
 
 ul.ml li.top, h2.section-header {
