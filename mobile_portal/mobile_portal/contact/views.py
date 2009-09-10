@@ -23,6 +23,8 @@ def index(request):
         parts = request.GET.get('q', '').split(' ')[:2]
         if len(parts) == 1:
             surname, initial = parts[0], None
+        elif parts[0].endswith(','):
+            surname, initial = parts[0][:-1], parts[1][:1]
         elif len(parts[1]) == 1:
             surname, initial = parts[0], parts[1]
         else:
