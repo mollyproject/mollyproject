@@ -33,11 +33,13 @@
 {% endif %}
 
 <div class="list-section" >
+	<h2 class="section-header">Podcast Sources</h2>
 <ul class="category_list ml">
-{% for category in categories %}
-	{#CHANGE PLZ!#}
+	
+	{#CHANGE Following line to have a "TOP" ICON PLZ!#}
 	<li><a href="{% url podcasts_top_downloads %}">Top downloads from iTunesU</a></li>
-
+	
+{% for category in categories %}
     <li><a href="{{ category.get_absolute_url }}">{{ category.name }}</a></li>
 {% endfor %}
 </ul>
