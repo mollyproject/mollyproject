@@ -16,12 +16,12 @@
     <a href="{% url podcasts_category category.code %}">all</a>
 podcasts.</p>
 
-<dl class="podcast_list">
+
 {% for podcast in podcasts %}
-    <dt><a href="{{ podcast.get_absolute_url }}">{{ podcast.title }}</a> ({{ podcast.medium }})</dt>
-    <dd>{{ podcast.description }}</dd>
+    <li><a href="{{ podcast.get_absolute_url }}">{{ podcast.title }}</a> ({{ podcast.medium }}
+    <br />{{ podcast.description }}</li>
 {% endfor %}
-</dl>
+
 
 </div>
 
