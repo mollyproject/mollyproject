@@ -107,6 +107,7 @@ h2.section-header, div.list-footer {
 
 div.list-footer {
     border-top:1px solid #98a1ac;
+    padding:10px;
 }
 
 div.list-footer a {
@@ -120,7 +121,7 @@ div.list-note {
     padding:10px;
 }
 
-div.list-note div {
+div.bubble {
     text-align:center;
     color:#002147;
     font-size:12pt;

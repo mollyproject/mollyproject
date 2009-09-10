@@ -10,70 +10,82 @@
 {% block content %}
 
 <div class="section-nopad">
-<form method="get" action=".">
-
-  <h2 class="section-header"><label for="query">Search</label></h2>
+  <form method="get" action=".">
+    <h2 class="section-header">
+      <label for="query">Search</label>
+    </h2>
 
     <div class="section-content">
-<p style="text-align:center">
-  <input id="query" name="q" value="{{ query }}" style="width:90%; height:20px; font-size:16pt"/>
-</p><p style="text-align:center">
-  <button type="submit" name="method" value="email">E-mail</button>
-  <button type="submit" name="method" value="phone">Phone</button>
-</p>
+      <p style="text-align:center">
+        <input id="query" name="q" value="{{ query }}" style="width:90%; height:20px; font-size:16pt"/>
+      </p><p style="text-align:center">
+        <button type="submit" name="method" value="email">E-mail</button>
+        <button type="submit" name="method" value="phone">Phone</button>
+      </p>
     </div>
+  </form>
 </div>
 
-{% if people %}
+{% if query %}
 
 <div class="list-section">
-<h2 class="section-header">Results</h2>
-{% if page_count|gte:4 %}
-<div class="list-note"><div>Your search returned more than 30 items. Try adding an initial to get more specific results.</div></div>
-{% endif %}
+  <h2 class="section-header">Results</h2>
 
-<ul class="ml" id="people">
-{% for person in people %}
+  {% if people %}
+
+    {% if page_count|gte:4 %}
+  <div class="list-note"><div class="bubble">
+    Your search returned more than 30 items. Try adding an initial to get more specific results.
+  </div></div>
+    {% endif %}
+
+  <ul class="ml" id="people">
+    {% for person in people %}
     <li class="{{ method }}{% if forloop.last and more_pages %} notbottom{% endif %}">
-{% ifequal method "email" %}
-        <a href="mailto:{{ person.email }}">
-{% else %}
-        <a href="{{ person.phone.1|telephone_uri }}">
-{% endifequal %}
-        <span class="name">{{ person.name }}</span><br/>
+      {% ifequal method "email" %}
+      <a href="mailto:{{ person.email }}">
+      {% else %}
+      <a href="{{ person.phone.1|telephone_uri }}">
+      {% endifequal %}
+        <span class="name">{{ person.name }}</span>
+        <br/>
         <small><span class="unit">{{ person.unit }}</span></small>
-        </a>
+      </a>
     </li>
-{% endfor %}
-</ul>
+    {% endfor %}
+  </ul>
 
-{% ifnotequal page page_count %}
+    {% ifnotequal page page_count %}
+  <div class="list-footer">
+      {% if 1 or touch or desktop %}
 
-<div class="list-footer">
-{% if 1 or touch or desktop %}
-
-<input type="hidden" id="h_current_page" value="{{ page }}"/>
-<input type="hidden" id="h_query" value="{{ query }}"/>
-<input type="hidden" id="h_method" value="{{ method }}"/>
-<a id="contacts_more" href="?page={{ page|add:"1" }}&amp;method={{ method }}&amp;q={{ query|urlencode }}">More&hellip;</a>
-<img src="{{ MEDIA_URL }}gif/wait24trans.gif" width="24px" height="24px" style="display:none" id="wait_spinner"/>
-{% else %}
-{% comment %}<p>Pages: {% for page in pages %}
-    <a href="?page={{ page }}&amp;method={{ method }}&amp;q={{ query|urlencode }}">{{ page }}</a>
-{% endfor %}</p>{% endcomment %}
-
-
-{% endif %}
+    <input type="hidden" id="h_current_page" value="{{ page }}"/>
+    <input type="hidden" id="h_query" value="{{ query }}"/>
+    <input type="hidden" id="h_method" value="{{ method }}"/>
+    <a id="contacts_more" href="?page={{ page|add:"1" }}&amp;method={{ method }}&amp;q={{ query|urlencode }}">More&hellip;</a>
+    <img src="{{ MEDIA_URL }}gif/wait24trans.gif" width="24px" height="24px" style="display:none" id="wait_spinner"/>
+      {% else %}
+        {% comment %}
+    <p>Pages:
+          {% for page in pages %}
+      <a href="?page={{ page }}&amp;method={{ method }}&amp;q={{ query|urlencode }}">{{ page }}</a>
+          {% endfor %}
+    </p>
+        {% endcomment %}
+      {% endif %}
+  </div>
+    {% endifnotequal %}
+  </div>
+  {% else %}
+  <div class="list-footer"><div class="bubble">
+    Your search didn't return any results.
+  </div></div>
+  
+  {% endif %}
 </div>
-{% endifnotequal %}
-
-</div>
 {% endif %}
 
-
-</form>
-
-{% if not people %}
+{% if not query %}
 
 <div class="list-section">
 <h2 class="section-header">University contacts</h2>
