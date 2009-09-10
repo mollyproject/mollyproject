@@ -13,6 +13,7 @@ ul.ml li {
     padding:10px;
     border-top:1px solid #98a1ac;
     background-color:#002147;
+	padding-right: 0;
 }
 
 ul.ml li.header {
