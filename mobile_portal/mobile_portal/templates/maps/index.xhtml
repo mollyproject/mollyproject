@@ -2,13 +2,24 @@
 
 {% block content %}
 
+
 <div class="list-section">
-<h2 class="section-header">Maps</h2>
+	<h2 class="section-header">Favourites</h2>
+<ul class="ml">
+	<li>Home bus stop </li>
+	<li>Work bus stop </li>
+	<li>Merton College</li>
+</ul>
+</div>
+
+
+<div class="list-section">
+<h2 class="section-header">Browse</h2>
 
 <ul class="ml">
-    <li>
-        <a href="{% url maps_nearby_list %}">Things near me</a>
-    </li>
+    <li><a href="{% url maps_nearby_list %}">Near me</a></li>
+	<li>Near Somewhere</li>
+	<li>By Category</li>
 </ul>
 </div>
 
