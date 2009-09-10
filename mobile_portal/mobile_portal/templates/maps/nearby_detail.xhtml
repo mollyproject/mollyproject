@@ -16,7 +16,7 @@
 
 <div class="list-section">
 <h2 class="section header">{{ entity_type.verbose_name_plural|capfirst }} within {{ distance }}{% if entity %} of {{ entity.title }}{% endif %}</h2>
-
+</div>
 <p>
     Within:
 {% for distance in distances %}{% if entity %}
@@ -29,7 +29,7 @@
 <img src="{% url osm_generated_map map_hash %}" alt=""/>
 
 {% if entities %}
-<ol>
+<ol class="ml">
 {% for entity in entities %}
     <li><a href="{{ entity.get_absolute_url }}">{{ entity.title|linebreaksbr }}</a> {{ entity.distance.km|floatformat:3 }} km {{ entity.bearing }}</li>
 {% endfor %}
