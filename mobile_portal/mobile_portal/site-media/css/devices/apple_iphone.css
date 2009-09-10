@@ -119,6 +119,9 @@ div.list-footer a {
 div.list-note {
     background-color:#48505a;
     padding:10px;
+    color:#ffffff;
+    font-size:12pt;
+    
 }
 
 div.bubble {

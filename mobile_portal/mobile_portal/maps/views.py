@@ -10,6 +10,7 @@ from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import D
 from django.http import Http404
 from django.shortcuts import get_object_or_404
+from django.core.urlresolvers import reverse
 
 #from mobile_portal.core.geolocation import distance
 from mobile_portal.core.renderers import mobile_render
@@ -27,9 +28,15 @@ def index(request):
     return mobile_render(request, context, 'maps/index')
 
 def nearby_list(request, entity=None):
+    if entity:
+        return_url = reverse('maps_entity_nearby_list', args=[entity.entity_type.slug, entity.display_id])
+    else:
+        return_url = reverse('maps_nearby_list')
+        
     context = {
         'entity_types': EntityType.objects.all(),
         'entity': entity,
+        'return_url': return_url,
     }
     if entity and not entity.location:
         return mobile_render(request, context, 'maps/entity_without_location')
