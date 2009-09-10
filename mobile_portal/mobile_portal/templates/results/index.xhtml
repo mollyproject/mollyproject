@@ -11,19 +11,18 @@
 {% block content %}
 
 
-<div class="list-section">
-<h2 class="section-header">Results releases</h2>
 
-<ul class="ml">
 {% regroup items by pubDate as is %}
 {% for g in is %}
-	{{ g.grouper }}
-	<li>
+	<div class="list-section">
+	<h2 class="section-header">{{ g.grouper }}</h2>
+	<ul class="ml">
 {% for item in g.list %}
+<li>
 {{ item.code }}: {{ item.title }}
+</li>
 {% endfor %}
-	</li>
+	</ul></div>
 {% endfor %}
-</ul>
-</div>
+
 {% endblock %}
