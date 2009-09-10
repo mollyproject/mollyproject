@@ -2,7 +2,6 @@
 {% load portal_misc %}
 
 {% block content %}
-<h1>Podcasts</h1>
 
 {% if device|device_has_parent:"apple_iphone_ver1" and show_itunesu_link %} {#  #}
 <div style="background-color:#002341; margin:1em; padding:0.5em; color:#ffffff; font-size:120%" id="itunesu_link_div">
@@ -33,15 +32,14 @@
 
 {% endif %}
 
-
-<p>
-    <a href="{% url podcasts_top_downloads %}">Top downloads from iTunesU</a>
-</p>
-
+<div class="list-section" >
 <ul class="category_list ml">
 {% for category in categories %}
+	{#CHANGE PLZ!#}
+	<li><a href="{% url podcasts_top_downloads %}">Top downloads from iTunesU</a></li>
+
     <li><a href="{{ category.get_absolute_url }}">{{ category.name }}</a></li>
 {% endfor %}
 </ul>
-
+</div>
 {% endblock %}
