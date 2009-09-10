@@ -14,7 +14,8 @@
 
 {% block content %}
 
-<h1>{{ entity_type.verbose_name_plural|capfirst }} within {{ distance }}{% if entity %} of {{ entity.title }}{% endif %}</h1>
+<div class="list-section">
+<h2 class="section header">{{ entity_type.verbose_name_plural|capfirst }} within {{ distance }}{% if entity %} of {{ entity.title }}{% endif %}</h2>
 
 <p>
     Within:
