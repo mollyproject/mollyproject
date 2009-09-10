@@ -30,11 +30,11 @@
 
 {% if entities %}
 <div class="list-section">
-<ul class="ml">
+<ol class="ml">
 {% for entity in entities %}
     <li><a href="{{ entity.get_absolute_url }}">{{ entity.title|linebreaksbr }}</a> {{ entity.distance.km|floatformat:3 }} km {{ entity.bearing }}</li>
 {% endfor %}
-</ul>
+</ol>
 </div>
 {% else %}
 <p>There isn't anything that close to you. Try <a href="{% url core_update_location %}?return_url={% url maps_nearby_detail entity_type.slug %}">updating your location</a> or widening your search.</p>
