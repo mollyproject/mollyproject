@@ -34,6 +34,7 @@ ul.ml li.email {
 }
 
 ul.ml li a {
+	color:#ffffff;
     background-image:url('../../png/icons/list-arrow.png');
     background-position:right center;
     background-repeat:no-repeat;
