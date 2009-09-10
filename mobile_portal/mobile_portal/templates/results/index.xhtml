@@ -15,7 +15,7 @@
 {% regroup items by pubDate as is %}
 {% for g in is %}
 	<div class="list-section">
-	<h2 class="section-header">{{ g.grouper }}</h2>
+	<h2 class="section-header">{{ g.grouper|date:"d M Y" }}</h2>
 	<ul class="ml">
 {% for item in g.list %}
 <li>
