@@ -38,6 +38,7 @@ def contact_search(surname, initial, exact, medium, page=1):
         people.append( details )
 
     page_count = int(filter(lambda x:(x.attrib.get('class')=='found'), xml.findall('.//div'))[0][1][4].text)
+    results_count = int(filter(lambda x:(x.attrib.get('class')=='found'), xml.findall('.//div'))[0][1][0].text)
 
-    return people, page_count
+    return people, page_count, results_count
 
