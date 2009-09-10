@@ -1,5 +1,7 @@
 {% extends "maps/base.xhtml" %}
 
+{% block pagetitle %}Maps{% endblock %}
+
 {% block content %}
 
 
@@ -17,7 +19,7 @@
 <h2 class="section-header">Browse</h2>
 
 <ul class="ml">
-    <li><a href="{% url maps_nearby_list %}">Near me</a></li>
+    <li><a href="{% url maps_nearby_list %}">Near Me</a></li>
 	<li>Near Somewhere</li>
 	<li>By Category</li>
 </ul>
