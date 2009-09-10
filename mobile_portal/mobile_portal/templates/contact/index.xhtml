@@ -115,7 +115,10 @@
     <li class="phone"><a href="tel:+441865726295">Rape Crisis</a></li>
     <li class="phone"><a href="tel:+448457909090">Samaritans</a></li>
 </div>
-    
+  
+{% comment %}  
+
+{# Update to retrieve College/Department contacts #}
 <div class="list-section">
 <h2 class="section-header">Other contacts</h2>
 <ul class="ml">
@@ -123,6 +126,8 @@
     <li><a href="{% url contact_quick %}">Department contacts</a></li>
 </ul>
 </div>
+{% endcomment %}
+
 
 {% endif %}
 
