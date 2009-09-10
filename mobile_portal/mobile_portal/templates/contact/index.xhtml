@@ -32,12 +32,13 @@
   <h2 class="section-header">Results</h2>
 
   {% if people %}
-
-    {% if page_count|gte:4 %}
   <div class="list-note"><div class="bubble">
-    Your search returned more than 30 items. Try adding an initial to get more specific results.
-  </div></div>
+    {% if page_count|gte:4 %}
+    Your search returned {{results_count}} items. Try adding an initial to get more specific results.
+	{% else %}
+    Your search returned {{results_count}}
     {% endif %}
+  </div></div>
 
   <ul class="ml" id="people">
     {% for person in people %}
