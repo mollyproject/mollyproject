@@ -36,7 +36,7 @@ def index(request):
             'people': people,
             'page': page,
             'page_count': page_count,
-            'results_count': 200, #results_count,
+            'results_count': results_count,
             'more_pages': page != page_count,
             'pages': range(1, page_count+1),
             'query': request.GET.get('q', ''),
