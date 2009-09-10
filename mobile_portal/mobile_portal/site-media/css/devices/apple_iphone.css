@@ -8,12 +8,12 @@ ul.ml {
 }
 
 ul.ml li {
+    color:#ffffff;
     font-size:12pt;
     padding:10px;
     border-top:1px solid #98a1ac;
     color:#000000;
     background-color:#002147;
-    background-image:url('../../png/icons/list-arrow.png');
     background-position:right center;
     background-repeat:no-repeat;
 }
@@ -37,7 +37,7 @@ ul.ml li.email {
 }
 
 ul.ml li a {
-    color:#ffffff;
+    background-image:url('../../png/icons/list-arrow.png');
     text-decoration: none;
     display:block;
     padding-right:21px;
