@@ -2,7 +2,9 @@
 
 {% block breadcrumbs %}
 {{ block.super }}
-    <li><a href="{% url results_index %}">Exam results</a></li>
+	<li><a href="{% url contact_index %}">
+        <img src="{{ MEDIA_URL }}png/results-bc.png" alt="Results releases"/>
+    </a></li>
 {% endblock %}
 
 
