@@ -14,8 +14,6 @@ ul.ml li {
     border-top:1px solid #98a1ac;
     color:#000000;
     background-color:#002147;
-    background-position:right center;
-    background-repeat:no-repeat;
 }
 
 ul.ml li.header {
@@ -38,6 +36,8 @@ ul.ml li.email {
 
 ul.ml li a {
     background-image:url('../../png/icons/list-arrow.png');
+    background-position:right center;
+    background-repeat:no-repeat;
     text-decoration: none;
     display:block;
     padding-right:21px;
