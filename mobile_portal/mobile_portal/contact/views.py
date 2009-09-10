@@ -28,12 +28,13 @@ def index(request):
         else:
             surname, initial = parts[1], parts[0][:1]
 
-        people, page_count = contact_search(surname, initial, True, method, page)
+        people, page_count, results_count = contact_search(surname, initial, True, method, page)
 
         context = {
             'people': people,
             'page': page,
             'page_count': page_count,
+            'results_count': results_count,
             'more_pages': page != page_count,
             'pages': range(1, page_count+1),
             'query': request.GET.get('q', ''),
