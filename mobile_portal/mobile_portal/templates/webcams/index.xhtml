@@ -2,8 +2,12 @@
 
 {% block content %}
 
-<h1>Webcams</h1>
 
+
+
+<div class="list-section">
+<h2 class="section-header">Webcams</h2>
+<div class="section-content">
 <ul class="ml">
 {% for webcam in webcams %}
     <li>
@@ -11,5 +15,7 @@
     </li>
 {% endfor %}
 </ul>
+
+</div></div>
 
 {% endblock %}
