@@ -21,7 +21,7 @@ podcasts.</p>
 
 {% for podcast in podcasts %}
     <li><a href="{{ podcast.get_absolute_url }}">{{ podcast.title }}</a> ({{ podcast.medium }}
-    <br />{{ podcast.description }}</li>
+    <br /><small>{{ podcast.description }}</small></li>
 {% endfor %}
 		</ul>
 </div>
