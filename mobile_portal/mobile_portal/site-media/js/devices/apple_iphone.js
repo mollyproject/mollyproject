@@ -40,8 +40,8 @@ $(document).ready(function () {
                 name = person['name'];
                 unit = person['unit'];
                 
-                html  = '<li class="'+method+'">';
-                html += '  <a href="'+uri+'">';
+                html  = '<li>';
+                html += '  <a class="'+method+'" href="'+uri+'">';
                 html += '    <span class="name">'+name+'</span><br/>';
                 html += '    <small><span class="unit">'+unit+'</span></small>';
                 html += '  </a>';

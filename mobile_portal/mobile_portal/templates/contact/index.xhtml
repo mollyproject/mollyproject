@@ -42,11 +42,11 @@
 
   <ul class="ml" id="people">
     {% for person in people %}
-    <li class="{{ method }}{% if forloop.last and more_pages %} notbottom{% endif %}">
+    <li class="{% if forloop.last and more_pages %} notbottom{% endif %}">
       {% ifequal method "email" %}
-      <a href="mailto:{{ person.email }}">
+      <a class="{{ method }}" href="mailto:{{ person.email }}">
       {% else %}
-      <a href="{{ person.phone.1|telephone_uri }}">
+      <a class="{{ method }}" href="{{ person.phone.1|telephone_uri }}">
       {% endifequal %}
         <span class="name">{{ person.name }}</span>
         <br/>
@@ -91,30 +91,30 @@
 <div class="list-section">
 <h2 class="section-header">University contacts</h2>
 <ul class="ml">
-    <li class="phone"><a href="tel:+441865270000">General enquiries</a></li>
-    <li class="phone"><a href="tel:+441865280000">Switchboard</a></li>
-    <li class="phone"><a href="tel:+441865273200">Computing Services help desk</a></li>
+    <li><a class="phone" href="tel:+441865270000">General enquiries</a></li>
+    <li><a class="phone" href="tel:+441865280000">Switchboard</a></li>
+    <li><a class="phone" href="tel:+441865273200">Computing Services help desk</a></li>
 </ul>
 </div>
 
 <div class="list-section">
 <h2 class="section-header">Emergency contacts</h2>
 <ul class="ml">
-    <li class="phone"><a href="tel:112">Emergency services</a></li>
-    <li class="phone"><a href="tel:+441865289999">University security <small>(emergency)</small></a></li>
-    <li class="phone"><a href="tel:+441865272944">University security <small>(enquiries)</small></a></li>
-    <li class="phone"><a href="tel:+448458505505">Thames Valley Police <small>(non-emergency)</small></a></li>
+    <li><a class="phone" href="tel:112">Emergency services</a></li>
+    <li><a class="phone" href="tel:+441865289999">University security <small>(emergency)</small></a></li>
+    <li><a class="phone" href="tel:+441865272944">University security <small>(enquiries)</small></a></li>
+    <li><a class="phone" href="tel:+448458505505">Thames Valley Police <small>(non-emergency)</small></a></li>
 </ul>
 </div>
 
 <div class="list-section">
 <h2 class="section-header">Health and welfare</h2>
 <ul class="ml">
-    <li class="phone"><a href="tel:+448454647">NHS Direct</a></li>
-    <li class="phone"><a href="tel:+441865270300">Counselling Service</a></li>
-    <li class="phone"><a href="tel:+441865270270">Oxford Nightline</a></li>
-    <li class="phone"><a href="tel:+441865726295">Rape Crisis</a></li>
-    <li class="phone"><a href="tel:+448457909090">Samaritans</a></li>
+    <li><a class="phone" href="tel:+448454647">NHS Direct</a></li>
+    <li><a class="phone" href="tel:+441865270300">Counselling Service</a></li>
+    <li><a class="phone" href="tel:+441865270270">Oxford Nightline</a></li>
+    <li><a class="phone" href="tel:+441865726295">Rape Crisis</a></li>
+    <li><a class="phone" href="tel:+448457909090">Samaritans</a></li>
 </div>
   
 {% comment %}  
