@@ -10,7 +10,7 @@
 <div class="section-content">
 <ul class="ml">
 {% for webcam in webcams %}
-    <li>
+	<li class="{% if forloop.last and more_pages %} notbottom{% endif %}">
         <a href="{% url webcams_webcam webcam.slug %}">{{ webcam.title }}</a>
     </li>
 {% endfor %}
