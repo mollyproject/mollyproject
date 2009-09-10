@@ -5,11 +5,9 @@
 
 {% block content %}
 
-<h1>{{ data.dc_title }}</h1>
+<div class="list-section">
+<h2 class="section-header">{{ data.dc_title }}</h2>
 
-<p>
-    <a href="{% url maps_entity_nearby_list entity.entity_type.slug,entity.display_id %}">Find things near here</a>
-</p>
 
 <dl>
 
@@ -99,13 +97,20 @@
 {% endfor %}
 {% endif %}
 
+</div>
+
+<div class="list-section">
+    <h2 class="section-header">Map</h2>
+
 {% if entity.location %}
-    <h2>Map</h2>
     {% map entity.location %}
+<div class="list-footer">
+    <a href="{% url maps_entity_nearby_list entity.entity_type.slug,entity.display_id %}">Find things near here</a>
+</div>
 {% else %}
     <p>We do not yet have a location for this {{ entity.entity_type.verbose_name }}.</p>
 {% endif %}
+</div>
 
-{{ data }}
 
 {% endblock %}

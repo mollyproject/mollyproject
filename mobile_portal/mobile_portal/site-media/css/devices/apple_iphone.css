@@ -35,9 +35,12 @@ ul.ml li.email {
     background-image:url('../../png/icons/list-email.png');
 }
 
+ul.ml li.arrow {
+    background-image:url('../../png/icons/list-arrow.png');
+}
+
 ul.ml li a {
 	color:#ffffff;
-    background-image:url('../../png/icons/list-arrow.png');
     text-decoration: none;
     display:block;
     padding-right:21px;
