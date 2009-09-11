@@ -60,6 +60,7 @@ def run_tests(test_labels, verbosity=1, interactive=True, extra_tests=[], suite=
     old_name = settings.DATABASE_NAME
 
     settings.CACHE_DIR = os.path.join(os.path.dirname(__file__), 'cache')
+    os.mkdir(settings.CACHE_DIR)
 
     settings.FEED_PATH = os.path.join(settings.CACHE_DIR, 'feeds')
     settings.EXTERNAL_IMAGE_DIR = os.path.join(settings.CACHE_DIR, 'external_images')
