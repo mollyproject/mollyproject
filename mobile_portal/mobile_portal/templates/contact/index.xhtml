@@ -34,9 +34,9 @@
   {% if people %}
   <div class="list-note"><div class="bubble">
     {% if page_count|gte:4 %}
-    Your search returned {{results_count}} items. Try adding an initial to get more specific results.
+    Your search returned {{results_count}} item{{ results_count|pluralize }}. Try adding an initial to get more specific results.
 	{% else %}
-    Your search returned {{results_count}} items.
+    Your search returned {{results_count}} item{{ results_count|pluralize }}.
     {% endif %}
   </div></div>
 
