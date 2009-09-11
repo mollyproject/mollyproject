@@ -181,7 +181,7 @@ class ExternalImageSized(models.Model):
             while not self.slug or ExternalImageSized.objects.filter(slug=self.slug).count():
                 self.slug = "%08x" % random.randint(0, 16**8-1)
         if not os.path.exists(settings.EXTERNAL_IMAGE_DIR):
-            os.mkdir(settings.EXTERNAL_IMAGE_DIR)
+            os.makedirs(settings.EXTERNAL_IMAGE_DIR)
         return os.path.join(settings.EXTERNAL_IMAGE_DIR, self.slug)
 
     def get_absolute_url(self):
