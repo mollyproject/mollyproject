@@ -1,4 +1,4 @@
-import unittest, tidy
+import unittest
 
 from django.core.management import call_command
 from django.test.client import Client
