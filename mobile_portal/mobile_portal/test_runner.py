@@ -42,6 +42,7 @@ def run_tests(test_labels, verbosity=1, interactive=True, extra_tests=[], suite=
     For more documentation, please consult the following URL:
       http://geodjango.org/docs/testing.html.
     """
+    import os.path
     from django.conf import settings
     from django.db import connection
     from django.db.models import get_app, get_apps
@@ -55,7 +56,15 @@ def run_tests(test_labels, verbosity=1, interactive=True, extra_tests=[], suite=
     # Setting up for testing.
     setup_test_environment()
     settings.DEBUG = False
+    settings.TESTING = True
     old_name = settings.DATABASE_NAME
+
+    settings.CACHE_DIR = os.path.join(os.path.dirname(__file__), 'cache')
+
+    settings.FEED_PATH = os.path.join(settings.CACHE_DIR, 'feeds')
+    settings.EXTERNAL_IMAGE_DIR = os.path.join(settings.CACHE_DIR, 'external_images')
+    settings.GENERATED_MAP_DIR = os.path.join(settings.CACHE_DIR, 'generated_maps')
+    settings.OSM_TILE_DIR = os.path.join(settings.CACHE_DIR, 'osm_tiles')
 
     output = getattr(settings, 'TEST_OUTPUT_FILE', 'test_results.xml')
     output = open(output, 'w')
@@ -96,58 +105,3 @@ def run_tests(test_labels, verbosity=1, interactive=True, extra_tests=[], suite=
     # Returning the total failures and errors
     return len(result.failures) + len(result.errors)
 
-
-def a_run_tests(test_labels, verbosity=1, interactive=True, extra_tests=[]):
-    """
-    Run the unit tests for all the test labels in the provided list.
-    Labels must be of the form:
-     - app.TestClass.test_method
-        Run a single specific test method
-     - app.TestClass
-        Run all the test methods in a given class
-     - app
-        Search for doctests and unittests in the named application.
-
-    When looking for tests, the test runner will look in the models and
-    tests modules for the application.
-    
-    A list of 'extra' tests may also be provided; these tests
-    will be added to the test suite.
-    
-    Returns the number of tests that failed.
-    """
-    setup_test_environment()
-    
-    settings.DEBUG = False
-    
-    verbose = getattr(settings, 'TEST_OUTPUT_VERBOSE', False)
-    descriptions = getattr(settings, 'TEST_OUTPUT_DESCRIPTIONS', False)
-    output = getattr(settings, 'TEST_OUTPUT_FILE', 'test_results.xml')
-    
-    suite = unittest.TestSuite()
-    
-    if test_labels:
-        for label in test_labels:
-            if '.' in label:
-                suite.addTest(build_test(label))
-            else:
-                app = get_app(label)
-                suite.addTest(build_suite(app))
-    else:
-        for app in get_apps():
-            suite.addTest(build_suite(app))
-    
-    for test in extra_tests:
-        suite.addTest(test)
-
-    old_name = settings.DATABASE_NAME
-    from django.db import connection
-    connection.creation.create_test_db(verbosity, autoclobber=not interactive)
-    
-    result = xmlrunner.XMLTestRunner(stream=output).run(suite)
-    
-    connection.creation.destroy_test_db(old_name, verbosity)
-    
-    teardown_test_environment()
-    
-    return len(result.failures) + len(result.errors)
