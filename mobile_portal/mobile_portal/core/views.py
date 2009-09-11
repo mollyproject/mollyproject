@@ -17,22 +17,16 @@ from utils import find_or_create_user_by_email
 from ldap_queries import get_person_units
 
 def index(request):
-    #print "\n".join("%20s : %s" % s for s in request.META.items() if s[0].startswith('HTTP_'))
-    
     # Take the default front age links from the database. If the user is logged
     # in we'll use the ones attached to their profile. If we've added new links
     # since last they visited, or if this is their first visit, we copy the
     # create references attached to their profile, which they can then edit.
-    
     fpls = dict((fpl.slug, fpl) for fpl in FrontPageLink.objects.all())
-    print "Initial FPLs", fpls
-    
+
     fpls_prefs = sorted(request.preferences['front_page_links'].items(), key=lambda (slug,(order, display)): order)
-    print request.preferences['front_page_links']
-    print "FPLs", fpls_prefs
 
     front_page_links = [fpls[slug] for (slug,(order, display)) in fpls_prefs if display and slug in fpls]
-    
+
     context = {
         'front_page_links': front_page_links,
     }
@@ -69,7 +63,6 @@ def update_location(request):
 
     if request.method == 'POST':
         location = request.POST.get('location', '')
-        print location, FOUR_LETTER_CODE_RE.match(location)
         if FOUR_LETTER_CODE_RE.match(location):
             code = location.lower()
             try:
@@ -78,38 +71,36 @@ def update_location(request):
                 location = " ".join([location[1], location[0]])
             except ValueError:
                 pass
-                
+
         placemarks = geolocation.geocode(location)
         try:
             index = int(request.POST.get('index'))
         except (TypeError, ValueError):
             index = None
-        
+
         if placemarks and len(placemarks) == 1 or not index is None:
             try:
                 placemark = placemarks[index]
             except:
                 placemark = placemarks[0]
 
-            print placemark
-
             location = placemark['Point']['coordinates'][:2]
             location.reverse()
             accuracy = GOOGLE_ADDRESS_ACCURACIES[placemark['AddressDetails']['Accuracy']]
             geolocation.set_location(request, location, accuracy, 'geocoded', placemark)
-            
+
             try:
                 response = HttpResponseRedirect(request.POST['return_url'])
             except KeyError:
                 response = HttpResponseRedirect(reverse('core_index'))
             response.status_code = 303
             return response
-        
+
         elif placemarks and len(placemarks) > 1:
             options = placemarks
         else:
             error='We could not determine where that place is. Please try again.'
-            
+
     context = {
         'error': error,
         'options': options,
@@ -128,13 +119,13 @@ def ajax_update_location(request):
         Expressed as a float in metres.
     'method' [required]
         One of 'html5', 'gears', 'manual', 'geocoded', 'other', 'denied', 'error'.
-    
+
     If method is one of 'html5', 'gears', 'manual', 'other' then a position
     must be provided. If method is one of 'denied', 'error' then neither
     position nor accuracy may be provided.
-    
+
     The methods have the following semantics:
-    
+
     'html5'
         The position was determined using the HTML5 geolocation API, to be
         found in draft form at http://dev.w3.org/geo/api/spec-source.html.
@@ -152,23 +143,23 @@ def ajax_update_location(request):
         but it was denied.
     'error'
         An unspecified error occured, as provided for in the HTML5 spec.
-        
+
     If a location was provided, a successful request will return a reverse
     geocoded address if one is available, otherwise a space-delimited
     latitude-longitude pair. Without a location the empty string will be
     returned. In either case there will be an HTTP status code of 200.
-    
+
     A request that does not meet this specification will result in an HTTP
     status code of 400, accompanied by a plain text body detailing the errors.
     """
-    
+
     if request.method != 'POST':
         return HttpResponse(
             ajax_update_location.__doc__.replace('\n    ', '\n')[1:],
             status = 405,
             mimetype = 'text/plain',
         )
-        
+
     errors = []
 
     # Decipher the location if given. Will through 400s in the following scenarios:
@@ -189,7 +180,7 @@ def ajax_update_location(request):
             )
     else:
         location = None
-        
+
     accuracy = request.POST.get('accuracy')
     if accuracy:
         try:
@@ -206,8 +197,8 @@ def ajax_update_location(request):
             errors.append(
                 'You cannot specify accuracy without also providing a location.'
             )
-          
-    try:  
+
+    try:
         method = request.POST['method']
     except KeyError:
         errors.append(
@@ -228,20 +219,20 @@ def ajax_update_location(request):
             errors.append(
                 'The method you provided was not in the permitted set.'
             )
-            
+
     if errors:
         return HttpResponse(
             """\
 There were errors in the data you POST:
 
  * %s
- 
+
 For more information on acceptable requests perform a GET on this resource.
 """ % "\n * ".join(errors),
             status=400,
             mimetype='text/plain'
         )
-    
+
     if location:
         try:
             placemark = geolocation.reverse_geocode(*location)[0]
@@ -249,7 +240,7 @@ For more information on acceptable requests perform a GET on this resource.
             placemark = None
     else:
         placemark = None
-        
+
     geolocation.set_location(
         request,
         location,
@@ -257,15 +248,15 @@ For more information on acceptable requests perform a GET on this resource.
         method,
         placemark,
     )
-    
-    if location:    
+
+    if location:
         if placemark:
             response_data = placemark['address']
         else:
             response_data = "%s %s" % location
     else:
         response_data = ''
-    
+
     return HttpResponse(response_data, mimetype='text/plain')
 
 @require_auth
@@ -274,13 +265,13 @@ def customise(request):
     links = request.user.get_profile().front_page_links.order_by('order')
 
     forms = [FrontPageLinkForm(post, instance=l, prefix="%d"%i) for i,l in enumerate(links)]
-    
+
     if all(f.is_valid() for f in forms):
-        forms.sort(key=lambda x:x.cleaned_data['order']) 
+        forms.sort(key=lambda x:x.cleaned_data['order'])
         for i, f in enumerate(forms):
             f.cleaned_data['order'] = i+1
             f.save()
-        return HttpResponseRedirect(reverse("core_index")) 
+        return HttpResponseRedirect(reverse("core_index"))
 
     context = {
         'forms': forms,
@@ -289,23 +280,23 @@ def customise(request):
 
 def external_image(request, slug):
     eis = get_object_or_404(ExternalImageSized, slug=slug)
-    response = HttpResponse(open(eis.get_filename(), 'r').read(), mimetype='image/jpeg') 
+    response = HttpResponse(open(eis.get_filename(), 'r').read(), mimetype='image/jpeg')
     last_updated = pytz.utc.localize(eis.external_image.last_updated)
-    
+
     response['ETag'] = slug
     return response
-    
+
 @require_auth
 def location_sharing(request):
     post = request.POST or None
-    
+
     location_shares = LocationShare.objects.filter(from_user=request.user).order_by('from_user')
     location_share_forms = []
     for i, location_share in enumerate(location_shares):
         lsf = LocationShareForm(post, instance=location_share, prefix="%d" % i)
         location_share_forms.append( lsf )
-    
-    location_share_add_form = LocationShareAddForm(post)    
+    location_share_add_form = LocationShareAddForm(post)
+
 
     if post and 'location_share_add' in post:
         if location_share_add_form.is_valid():
@@ -330,13 +321,13 @@ def location_sharing(request):
                     return response
         else:
             request.user.message_set.create(message="Please enter a valid e-mail address.")
-                
-    
+
+
     context = {
         'location_share_forms': location_share_forms,
         'location_share_add_form': location_share_add_form,
-    }    
-    
+    }
+
     return mobile_render(request, context, 'core/location_sharing')
 
 def run_command(request):
@@ -352,20 +343,20 @@ def run_command(request):
         'generate_markers': ('Generate map markers', []),
         'pull_markers': ('Pull markers from external location', ['location']),
     }
-    
+
     if request.method == 'POST':
         command = request.POST['command']
-        
+
         if command in commands:
             arg_names = commands[request.POST['command']][1]
             args = {}
             for arg in arg_names:
                 args[arg] = request.POST[arg]
-            
+
             call_command(command, **args)
-    
+
     context = {
         'commands': commands
     }
-    
+
     return mobile_render(request, context, 'core/run_command')
