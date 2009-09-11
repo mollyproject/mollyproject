@@ -42,7 +42,7 @@ def run_tests(test_labels, verbosity=1, interactive=True, extra_tests=[], suite=
     For more documentation, please consult the following URL:
       http://geodjango.org/docs/testing.html.
     """
-    import os.path, shutil
+    import os, os.path, shutil
     from django.conf import settings
     from django.db import connection
     from django.db.models import get_app, get_apps
@@ -60,7 +60,8 @@ def run_tests(test_labels, verbosity=1, interactive=True, extra_tests=[], suite=
     old_name = settings.DATABASE_NAME
 
     settings.CACHE_DIR = os.path.join(os.path.dirname(__file__), 'cache')
-    os.makedirs(settings.CACHE_DIR)
+    if not os.path.exists(settings.CACHE_DIR):
+        os.makedirs(settings.CACHE_DIR)
 
     settings.FEED_PATH = os.path.join(settings.CACHE_DIR, 'feeds')
     settings.EXTERNAL_IMAGE_DIR = os.path.join(settings.CACHE_DIR, 'external_images')
