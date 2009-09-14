@@ -2,7 +2,8 @@ body {
     margin: 0;
     font-family: "Liberation Sans", sans-serif;
     font-size:9pt;
-    background-color:#98a1ac;
+    /*background-color:#98a1ac;*/
+	background-color:#cfd9e5;
     /*overflow:hidden;*/
     -webkit-text-size-adjust: none;
 
