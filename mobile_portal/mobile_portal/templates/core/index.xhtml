@@ -10,7 +10,7 @@
 {% endblock %}
 
 {% block header %}
-    <div id="title">
+    <div id="title-{{device.resolution_width|header_width}}">
         <img src="{{ MEDIA_URL }}png/headers/{{ device.resolution_width|header_width }}.png" alt="Mobile Oxford"/>
     </div>
 {% endblock %}
