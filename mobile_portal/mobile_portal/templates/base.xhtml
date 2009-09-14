@@ -3,10 +3,15 @@
   <head>
 	
 	{# iPhone specific title to fit on home screen - code should perhaps be moved elsewhere? #}
-	{% if device|device_has_parent:"apple_iphone_ver1" %}
-		<title>{% block title %}MobileOxford{% endblock %}</title>
-    {% else %}<title>{% block title %}Mobile Oxford{% endblock %}</title>
-	{% endif %}
+		<title>{% block title %}
+			{% if device|device_has_parent:"apple_iphone_ver1" %}
+				MobileOxford
+			{% else %}
+				Mobile Oxford
+			{% endif %}
+			{% endblock %}
+		</title>
+	
     <meta name="viewport" content="width=device-width; user-scalable=no; maximum-scale=1; minimum-scale=1" />
 
     {% block stylesheets %}
