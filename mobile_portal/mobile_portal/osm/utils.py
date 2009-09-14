@@ -3,7 +3,7 @@ try:
 except ImportError:
     import pickle
     
-import hashlib, os.path
+import hashlib, os, os.path
 from datetime import datetime
 from django.conf import settings
 from models import GeneratedMap
@@ -27,6 +27,8 @@ def get_generated_map(points, width, height):
         gm.last_accessed = datetime.now()
         gm.save()
     except GeneratedMap.DoesNotExist:
+        if not os.path.exists(settings.GENERATED_MAP_DIR):
+            os.makedirs(settings.GENERATED_MAP_DIR)
         get_map(points, width, height, os.path.join(settings.GENERATED_MAP_DIR, hash))
         gm = GeneratedMap.objects.create(
             hash = hash,

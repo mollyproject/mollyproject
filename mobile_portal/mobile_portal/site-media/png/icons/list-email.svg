@@ -9,7 +9,7 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="27"
+   width="20"
    height="20"
    id="svg943"
    sodipodi:version="0.32"
@@ -17,7 +17,7 @@
    version="1.0"
    sodipodi:docname="list-email.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
-   inkscape:export-filename="/home/alex/mp2/mobile_portal/site-media/png/icons/list-arrow.png"
+   inkscape:export-filename="/Erewhon/mobile_portal/mobile_portal/site-media/png/icons/list-email.png"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90">
   <defs
@@ -38,13 +38,13 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="8"
-     inkscape:cx="15.523768"
-     inkscape:cy="9.1062408"
+     inkscape:cx="-0.351232"
+     inkscape:cy="6.3876486"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1920"
-     inkscape:window-height="1059"
+     inkscape:window-width="1274"
+     inkscape:window-height="950"
      inkscape:window-x="1280"
      inkscape:window-y="13" />
   <metadata
@@ -62,17 +62,18 @@
   <g
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
-     id="layer1">
+     id="layer1"
+     transform="translate(0,-2.8186507)">
     <rect
-       style="fill:none;stroke:#1f1f1f;stroke-width:2;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       style="fill:none;stroke:#ffffff;stroke-width:2;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        id="rect1539"
        width="17.766058"
        height="12.462757"
-       x="1.0441942"
-       y="3.8186507" />
+       x="1.1390681"
+       y="6.5872722" />
     <path
-       style="fill:none;stroke:#1f1f1f;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       d="m 1,3.862845 8.905126,7.833631 8.905126,-7.833631"
+       style="fill:none;stroke:#ffffff;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="M 1.0948739,6.6314664 9.9999999,14.465097 18.905126,6.6314664"
        id="path1541"
        sodipodi:nodetypes="ccc" />
   </g>

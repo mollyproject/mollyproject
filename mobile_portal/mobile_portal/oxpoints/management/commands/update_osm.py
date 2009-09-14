@@ -11,19 +11,18 @@ import urllib2, bz2, subprocess, popen2
 from os import path
 
 AMENITIES = {
-    'bicycle_parking': ('bicycle rack', 'bicycle racks'),
-    'post_box': ('post box', 'post boxes'),
-    'toilets': ('public toilet', 'public toilets'),
-    'recycling': ('recycling facility', 'recycling facilities'),
-    'post_office': ('post office', 'post offices'),
-    'pharmacy': ('pharmacy', 'pharmacies'), 
-    'hospital': ('hospital', 'hospitals'), 
-    'doctors': ("doctor's surgery", "doctors' surgeries"), 
-    'atm': ('ATM', 'ATMs'),
-    'parking': ('car park', 'car parks'),
-    'pub': ('pub', 'pubs'),
-    'cafe': ('café', 'cafés'),
-    'restaurant': ('restaurant', 'restaurants'),
+    'bicycle_parking': ('bicycle rack', 'bicycle racks', False),
+    'post_box': ('post box', 'post boxes', False),
+    'recycling': ('recycling facility', 'recycling facilities', False),
+    'post_office': ('post office', 'post offices', False),
+    'pharmacy': ('pharmacy', 'pharmacies', True), 
+    'hospital': ('hospital', 'hospitals', True), 
+    'doctors': ("doctor's surgery", "doctors' surgeries", True), 
+    'atm': ('ATM', 'ATMs', False),
+    'parking': ('car park', 'car parks', False),
+    'pub': ('pub', 'pubs', True),
+    'cafe': ('café', 'cafés', True),
+    'restaurant': ('restaurant', 'restaurants', True),
 }
 
 ENGLAND_OSM_BZ2_XML = 'http://download.geofabrik.de/osm/europe/great_britain/england.osm.bz2'
@@ -41,12 +40,13 @@ class OxfordHandler(handler.ContentHandler):
         self.valid_node = True
         
         self.entity_types = {}
-        for slug, (verbose_name, verbose_name_plural) in AMENITIES.items():
+        for slug, (verbose_name, verbose_name_plural, show_in_category_list) in AMENITIES.items():
             entity_type, created = EntityType.objects.get_or_create(slug=slug)
             entity_type.verbose_name = verbose_name
             entity_type.verbose_name_plural = verbose_name_plural
             entity_type.source = 'osm'
             entity_type.id_field = 'osm_id'
+            entity_type.show_in_category_list = show_in_category_list
             entity_type.save()
             self.entity_types[slug] = entity_type
         

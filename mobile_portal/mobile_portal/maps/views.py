@@ -213,3 +213,24 @@ def entity_favourite(request, type_slug, id):
         return HttpResponseRedirect(request.POST['return_url'])
     else:
         return HttpResponseRedirect(entity.get_absolute_url())
+
+def category_list(request):
+    entity_types = EntityType.objects.filter(show_in_category_list=True).order_by('verbose_name_plural')
+    
+    context = {
+        'entity_types': entity_types,
+    }
+    
+    return mobile_render(request, context, 'maps/category_list')
+        
+def category_detail(request, ptype):
+    entity_type = get_object_or_404(EntityType, slug=ptype)
+    
+    entities = entity_type.entity_set.order_by('title')
+
+    context = {
+        'entity_type': entity_type,
+        'entities': entities,
+    }
+    
+    return mobile_render(request, context, 'maps/category_detail')

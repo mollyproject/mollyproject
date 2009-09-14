@@ -36,17 +36,17 @@
     {% if page_count|gte:4 %}
     Your search returned {{results_count}} item{{ results_count|pluralize }}. Try adding an initial to get more specific results.
 	{% else %}
-    Your search returned {{results_count}} item{{ results_count|pluralize }}.
+    Your search returned {{results_count}} item{{ results_count|pluralize }}..
     {% endif %}
   </div></div>
 
   <ul class="ml" id="people">
     {% for person in people %}
-    <li class="{% if forloop.last and more_pages %} notbottom{% endif %}">
+    <li{% if forloop.last and more_pages %} class="notbottom"{% endif %}>
       {% ifequal method "email" %}
-      <a class="{{ method }}" href="mailto:{{ person.email }}">
+      <a class="email" href="mailto:{{ person.email }}">
       {% else %}
-      <a class="{{ method }}" href="{{ person.phone.1|telephone_uri }}">
+      <a class="phone" href="{{ person.phone.1|telephone_uri }}">
       {% endifequal %}
         <span class="name">{{ person.name }}</span>
         <br/>
@@ -76,7 +76,7 @@
       {% endif %}
   </div>
     {% endifnotequal %}
-  </div>
+
   {% else %}
   <div class="list-footer"><div class="bubble">
     Your search didn't return any results.
@@ -115,6 +115,7 @@
     <li><a class="phone" href="tel:+441865270270">Oxford Nightline</a></li>
     <li><a class="phone" href="tel:+441865726295">Rape Crisis</a></li>
     <li><a class="phone" href="tel:+448457909090">Samaritans</a></li>
+</ul>
 </div>
   
 {% comment %}  

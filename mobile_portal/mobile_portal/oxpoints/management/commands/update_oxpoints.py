@@ -37,6 +37,7 @@ class Command(NoArgsCommand):
             entity_type.verbose_name_plural = verbose_name_plural
             entity_type.source = 'oxpoints'
             entity_type.id_field = 'oxpoints_id'
+            entity_type.show_in_category_list = True
             entity_type.save()
             entity_types[ptype] = entity_type
         self.entity_types = entity_types

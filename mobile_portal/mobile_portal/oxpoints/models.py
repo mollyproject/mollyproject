@@ -8,6 +8,7 @@ class EntityType(models.Model):
     verbose_name_plural = models.TextField()
     source = models.TextField()
     id_field = models.TextField()
+    show_in_category_list = models.BooleanField()
     
     def __unicode__(self):
         return self.verbose_name
