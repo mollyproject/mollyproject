@@ -4,7 +4,7 @@
 {% block content %}
 
 {% if device|device_has_parent:"apple_iphone_ver1" and show_itunesu_link %} {#  #}
-<div style="background-color:#002341; margin:1em; padding:0.5em; color:#ffffff; font-size:120%" id="itunesu_link_div">
+<div style="background-color:#002341; margin:1em; padding:0.5em; color:#ffffff; font-size:120%"; -webkit-box-shadow:0.2em 0.2em 0.5em #000000; id="itunesu_link_div">
 
 <p>It looks like you're using an {% if device|device_has_parent:"apple_ipod_touch_ver1" %}iPod Touch{% else %}iPhone{% endif %}!</p>
 
