@@ -12,8 +12,8 @@ ul.ml li {
     font-size:12pt;
     padding:10px;
     border-top:1px solid #98a1ac;
-    background-color:#002147;
-	padding-right: 10px;
+    background-color:#002147; opacity: 0.5;
+	padding-right: 0;
 }
 
 ul.ml li.header {
@@ -28,7 +28,6 @@ ul.ml li.header {
 
 ul.ml a {
     background-image:url('../../png/icons/list-arrow.png');
-    padding-right: 11px;
 }
 
 ul.ml a.phone {
