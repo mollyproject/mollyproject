@@ -1,11 +1,21 @@
-function sendPosition(position, method) {
+/************************************
+ * (C) University of Oxford 2009    *
+ * E-mail: erewhon AT oucs.ox.ac.uk *
+ ************************************/
+
+var positionRequestCount = 0;
+var positionWatchId = null;
+var positionInterface = null;
+var positionMethod = null;
+
+function sendPosition(position) {
     $('#location_status').html('Location found; please wait while we put a name to it.');
         
     jQuery.post(base+'core/ajax/update_location/', {
         longitude: position.coords.longitude,
         latitude: position.coords.latitude,
         accuracy: position.coords.accuracy,
-        method: method,
+        method: positionMethod,
     }, function(data) {
         $('#location_status').html('We think you are somewhere near <strong class="nobr">'+data+'</strong>.');
     });
@@ -35,25 +45,52 @@ function sendPositionError(error) {
     }
 }
 
+function getGearsPositionInterface(name) {
+    var geo = google.gears.factory.create('beta.geolocation');
+    
+    function wrapWithPermission(f) {
+        return function(successCallback, errorCallback, options) {
+            if (geo.getPermission(name))
+                    return f(successCallback, errorCallback, options);
+                else
+                    errorCallback({
+                        PERMISSION_DENIED: geo.PositionEror.PERMISSION_DENIED,
+                        code: geo.PositionError.PERMISSION_DENIED,
+                    });
+        };
+    }
+    
+    return {
+        getCurrentPosition: wrapWithPermission(geo.getCurrentPosition),
+        watchPosition: wrapWithPermission(geo.watchPosition),
+        clearWatch: geo.clearWatch,
+    }
+}
+
+function positionWatcher(position) {
+    if (positionRequestCount > 10 || position.coords.accuracy <= 150 || position.coords.accuracy == 18000)
+        positionInterface.clearWatch(positionWatchId);
+    positionRequestCount += 1;
+    
+    sendPosition(position);
+}
+
 function requestPosition() {
     location_options = {
             enableHighAccuracy: true,
             maximumAge: 30000,
     }
     if (navigator.geolocation) {
-        $('#location_status').html('Please wait while we attempt to determine your location...');
-        navigator.geolocation.getCurrentPosition(function(position) {sendPosition(position, 'html5');}, sendPositionError, location_options);
+        positionInterface = navigator.geolocation;
+        positionMethod = 'html5';
     } else if (google.gears) {
+        positionInterface = getGearsPositionInterface('Oxford Mobile Portal');
+        positionMethod = 'gears';
+    }
+    
+    if (positionInterface) {
         $('#location_status').html('Please wait while we attempt to determine your location...');
-        var geo = google.gears.factory.create('beta.geolocation');
-        if (geo.getPermission('Oxford Mobile Portal'))
-            geo.getCurrentPosition(function(position) {sendPosition(position, 'gears');}, sendPositionError, location_options);
-        else {
-            sendPositionError({
-                PERMISSION_DENIED: geo.PositionError.PERMISSION_DENIED,
-                code: geo.PositionError.PERMISSION_DENIED,
-            });
-        }
+        positionWatchId = positionInterface.watchPosition(positionWatcher, sendPositionError, location_options);
     } else
         $('#location_status').html('We have no means of determining your location automatically.');
 }
