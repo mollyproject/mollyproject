@@ -141,7 +141,7 @@ def entity_detail_busstop(request, entity):
     xml = ES.parse(urllib.urlopen(OXONTIME_URL % entity.atco_code))
     
     try:
-        cells = xml.find('.//table').findall('td')[4:]
+        cells = xml.find('.//table').findall('td')
         rows = [cells[i:i+4] for i in range(0, len(cells), 4)]
     except AttributeError:
         rows = []
