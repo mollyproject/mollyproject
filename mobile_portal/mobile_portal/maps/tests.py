@@ -20,13 +20,19 @@ class MapsTestCase(unittest.TestCase):
         entities = random.sample(list(Entity.objects.filter(entity_type__source='naptan')), 20)
         client = Client()
         for entity in entities:
-            r = client.get(entity.get_absolute_url())    
+            try:
+                r = client.get(entity.get_absolute_url())
+            except urllib2.HTTPError, e:
+                self.fail('Could not fetch %s: %s' % (entity.get_absolute_url(), unicode(e))
 
     def testOxpoints(self):
         entities = random.sample(list(Entity.objects.filter(entity_type__source='oxpoints')), 200)
         client = Client()
         for entity in entities:
-            r = client.get(entity.get_absolute_url())
+            try:
+                r = client.get(entity.get_absolute_url())
+            except urllib2.HTTPError, e:
+                self.fail('Could not fetch %s: %s' % (entity.get_absolute_url(), unicode(e))
     
     def testNearbyEntityWithoutLocation(self):
         entities = list(Entity.objects.filter(location__isnull=True))
