@@ -61,7 +61,7 @@ class MapNode(template.Node):
         width, height = min(600, context['device'].max_image_width), 200
         width,height=300, 200
         
-        if True or device_parents[context['device'].devid] & OPENLAYERS_BROWSERS:
+        if False and device_parents[context['device'].devid] & OPENLAYERS_BROWSERS:
             return self.openlayers_map(context, lat, lng, width, height)
         else:
             return self.generated_map(context, lat, lng, width, height)

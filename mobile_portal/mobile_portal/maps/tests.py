@@ -1,4 +1,4 @@
-import unittest, random
+import unittest, random, urllib2
 
 from django.core.management import call_command
 from django.test.client import Client
@@ -27,12 +27,16 @@ class MapsTestCase(unittest.TestCase):
 
     def testOxpoints(self):
         entities = random.sample(list(Entity.objects.filter(entity_type__source='oxpoints')), 200)
+        entities = Entity.objects.filter(entity_type__source='oxpoints')
         client = Client()
         for entity in entities:
             try:
                 r = client.get(entity.get_absolute_url())
             except urllib2.HTTPError, e:
+                raise BaseException(entity.get_absolute_url())
                 self.fail('Could not fetch %s: %s' % (entity.get_absolute_url(), unicode(e)))
+            except Exception, e:
+                raise BaseException(entity.get_absolute_url())
     
     def testNearbyEntityWithoutLocation(self):
         entities = list(Entity.objects.filter(location__isnull=True))

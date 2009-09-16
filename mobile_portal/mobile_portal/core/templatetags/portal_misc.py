@@ -63,7 +63,11 @@ class ExternalImageNode(template.Node):
         ei, created = ExternalImage.objects.get_or_create(url=url)
         
         request = AnyMethodRequest(url, method='HEAD')
-        response = urllib2.urlopen(request)
+
+        try:
+            response = urllib2.urlopen(request)
+        except urllib2.HTTPError:
+            return ""
 
         # Check whether the image has changed since last we looked at it        
         if response.headers.get('ETag', ei.etag) != ei.etag or response.headers.get('Last-Modified', True) != ei.last_modified:

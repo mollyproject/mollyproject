@@ -3,7 +3,7 @@ try:
 except:
     import pickle
 import hashlib, os, urllib
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.db import models
 from django.conf import settings
 
@@ -34,9 +34,9 @@ class OSMTile(models.Model):
     @staticmethod
     def get_data(xtile, ytile, zoom):
         try:
-            osm_tile = OSMTile.objects.get(xtile=xtile, ytile=ytile, zoom=zoom)
+            osm_tile = OSMTile.objects.get(xtile=xtile, ytile=ytile, zoom=zoom, last_fetched__lt = datetime.now() - timedelta(1))
         except OSMTile.DoesNotExist:
-            osm_tile = OSMTile.objects.create(xtile=xtile, ytile=ytile, zoom=zoom)
+            osm_tile, created = OSMTile.objects.get_or_create(xtile=xtile, ytile=ytile, zoom=zoom)
             
             response = urllib.urlopen(get_tile_url(xtile, ytile, zoom))
             f = open(osm_tile.get_filename(), 'w')

@@ -48,7 +48,23 @@ class Command(NoArgsCommand):
             descriptor = stop.find(NS('Descriptor'))
             title = "\n ".join("%s: %s" % (e.tag[len(Command.NS):], e.text) for e in descriptor)
             
-
+            cnm, lmk, ind, str = [(descriptor.find(NS(s)).text if descriptor.find(NS(s)) != None else None) for s in ['CommonName', 'Landmark','Indicator','Street']]
+            
+            if lmk and ind and ind.endswith(lmk) and len(ind) > len(lmk):
+                ind = ind[:-len(lmk)]
+                
+                
+            if ind == 'Corner':
+                title = "Corner of %s and %s" % (str, lmk)
+            elif cnm == str:
+                title = "%s, %s" % (ind, cnm)
+            elif lmk == str and ind == lmk:
+                title = "%s, %s" % (lmk, str)
+            elif lmk != str:
+                title = "%s %s, on %s" % (ind, lmk, str)
+            else:
+                title = "%s %s, %s" % (ind, lmk, cnm)
+            
             entity, created = Entity.objects.get_or_create(atco_code = atco_code, entity_type=self.entity_type)
             entity.location = Point(location[1], location[0], srid=4326)
             entity.title = title

@@ -10,7 +10,7 @@ ol.icon-menu li {
     margin-top:0px;
     background-repeat:no-repeat;
     background-position:center 10px;
-    overflow:hide;
+    overflow:hidden;
     float:left;
 }
 

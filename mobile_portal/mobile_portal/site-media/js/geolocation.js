@@ -8,8 +8,9 @@ var positionWatchId = null;
 var positionInterface = null;
 var positionMethod = null;
 
-function sendPosition(position) {
-    $('#location_status').html('Location found; please wait while we put a name to it.');
+function sendPosition(position, final) {
+    if (positionRequestCount == 1)
+        $('#location_status').html('Location found; please wait while we put a name to it.');
         
     jQuery.post(base+'core/ajax/update_location/', {
         longitude: position.coords.longitude,
@@ -17,7 +18,8 @@ function sendPosition(position) {
         accuracy: position.coords.accuracy,
         method: positionMethod,
     }, function(data) {
-        $('#location_status').html('We think you are somewhere near <strong class="nobr">'+data+'</strong>.');
+        accuracy = Math.round(position.coords.accuracy);
+        $('#location_status').html('We think you are somewhere near <strong class="nobr">'+data+'</strong> (to approximately <strong>'+accuracy+'</strong> metres).');
     });
 }
 
@@ -68,14 +70,19 @@ function getGearsPositionInterface(name) {
 }
 
 function positionWatcher(position) {
-    if (positionRequestCount > 10 || position.coords.accuracy <= 150 || position.coords.accuracy == 18000)
-        positionInterface.clearWatch(positionWatchId);
     positionRequestCount += 1;
+    if (positionRequestCount > 10 || position.coords.accuracy <= 150 || position.coords.accuracy == 18000) {
+        positionInterface.clearWatch(positionWatchId);
+        positionWatchId = null;
+    }
     
-    sendPosition(position);
+    sendPosition(position, positionWatchId != null);
 }
 
 function requestPosition() {
+    if (positionWatchId == null)
+        return; 
+        
     location_options = {
             enableHighAccuracy: true,
             maximumAge: 30000,

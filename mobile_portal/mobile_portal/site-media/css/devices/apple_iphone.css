@@ -13,7 +13,7 @@ ul.ml li {
     padding:10px;
     border-top:1px solid #98a1ac;
     background-color:#002147; opacity: 0.9;
-	padding-right: 0;
+	padding-right: 10px;
 }
 
 ul.ml li.header {
@@ -26,21 +26,22 @@ ul.ml li.header {
     font-size:14pt;
 }
 
-ul.ml a {
+ul.ml a, button.as_link  {
     background-image:url('../../png/icons/list-arrow.png');
 }
 
-ul.ml a.phone {
+ul.ml .phone {
     background-image:url('../../png/icons/list-phone.png');
 }
 
-ul.ml a.email {
+ul.ml .email {
     background-image:url('../../png/icons/list-email.png');
 }
 
 
-ul.ml li a{
-	color:#ffffff;
+ul.ml li a, button.as_link {
+	font-size:12pt;
+    color:#ffffff;
     text-decoration: none;
     display:block;
     padding-right:21px;
@@ -49,7 +50,7 @@ ul.ml li a{
     background-repeat:no-repeat;
 }
 
-ul.ml li.top, h2.section-header {
+div.list-section .top, h2.section-header {
     border-top:0px;
     border-radius-topleft:8px;
     -moz-border-radius-topleft:8px;
@@ -127,6 +128,14 @@ div.list-note {
     color:#ffffff;
     font-size:12pt;
     
+}
+
+div.hide-overflow {
+    text-align:center;
+}
+
+div.hide-overflow img {
+    overflow:hidden;
 }
 
 div.bubble {

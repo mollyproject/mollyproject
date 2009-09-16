@@ -1,0 +1,22 @@
+{% extends "maps/base.xhtml" %}
+
+{% block breadcrumbs %}
+{{ block.super }}
+    <li><a href="{% url maps_category_list %}">&hellip;</a></li>
+{% endblock %}
+
+{% block pagetitle %}{{ entity_type.verbose_name_plural }}{% endblock %}
+
+{% block content %}
+
+<div class="list-section">
+
+<ul class="ml">
+{% for entity in entities %}
+    <li{% if forloop.first %} class="top"{% endif %}><a href="{% url maps_entity entity_type.slug,entity.display_id %}">{{ entity.title|capfirst }}</a></li>
+{% endfor %}
+</ul>
+
+</div>
+
+{% endblock %}

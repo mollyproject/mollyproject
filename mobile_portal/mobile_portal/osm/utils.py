@@ -22,6 +22,9 @@ MARKER_RANGE = xrange(1, 100)
 def get_generated_map(points, width, height):
     hash = hashlib.sha224(pickle.dumps(repr((points, width, height)))).hexdigest()[:16]
     
+    #for gm in GeneratedMap.objects.filter(hash=hash):
+    #    gm.delete()
+        
     try:
         gm = GeneratedMap.objects.get(hash=hash)
         gm.last_accessed = datetime.now()

@@ -37,7 +37,7 @@ def get_map(points, width, height, filename):
     lat_min, lat_max = minmax(p[0] for p in points)
     lon_min, lon_max = minmax(p[1] for p in points)
     
-    size = min(width, height)-50
+    size = min(width, height)
     if lat_min != lat_max:
         zoom = int(log2(360/abs(lat_min - lat_max)) + log2(size/256))
     else:

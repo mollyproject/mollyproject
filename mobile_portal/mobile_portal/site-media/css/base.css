@@ -31,15 +31,11 @@ h2 {
 }
 
 div.container {
-    /*width:305px;*/
     padding:0px;
-#    border-right:1px solid green;
     overflow:hidden;
 }
 
 div.content {
-/*    background-color: #002147;
-    color:#ffffff;*/
     padding:0px;
     vertical-align:top;
     text-align:justify;
@@ -80,9 +76,10 @@ button.as_link {
     text-decoration:underline;
     color:#00f;
     cursor:pointer;
-    background-color:inherit;
+    background-color:transparent;
     text-align:center;
     white-space:nowrap;
+    padding-left:0;
 }
 
 div.header {
@@ -107,10 +104,6 @@ ol.breadcrumbs li {
     padding:2px;
     padding-right:16px;
     
-}
-
-ol.breadcrumbs li:last-child {
-    background-image:none;
 }
 
 ol.breadcrumbs li a {
@@ -183,4 +176,23 @@ body.landscape div.map_pane, body.landscape div.details_pane {
 
 body.landscape div.details_pane {
     overflow:auto;
+}
+
+div.submit-line {
+    width:100%;
+}
+
+div.submit-line input {
+    margin:0;
+    padding:2px;
+    border:0;
+    height:30px;
+    line-height:26px;
+    font-size:26px;
+}
+
+div.submit-line input[type="image"] {
+    border:0;
+    padding:0;
+    
 }

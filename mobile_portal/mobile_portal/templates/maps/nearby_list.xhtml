@@ -2,8 +2,12 @@
 
 {% block breadcrumbs %}
 {{ block.super }}
-    <li><a href="{% url maps_nearby_list %}">Find things nearby</a></li>
+	<li><a href="{% url maps_index %}">
+        <img src="{{ MEDIA_URL }}png/maps-bc.png" alt="Maps"/>
+    </a></li>
 {% endblock %}
+
+{% block pagetitle %}Things nearby{% endblock %}
 
 {% block content %}
 

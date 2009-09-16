@@ -1,9 +1,9 @@
 {% extends "core/base.xhtml" %}
 {% load maps %}
 
-{% block content %}
+{% block pagetitle %}Update location{% endblock %}
 
-<h1>Update location manually</h1>
+{% block content %}
 
 {% if error %}
 
@@ -13,37 +13,44 @@
 
 {% if options %}
 
-<p>Did you mean:</p>
+<div class="list-section">
+
+<h2 class="section-header">Did you mean:</h2>
 
 <form method="post" action=".">
 <input type="hidden" name="location" value="{{ location }}"/>
-<ul>
+<ul class="ml">
 {% for option in options %}
-    <li><button class="as_link" type="submit" name="index" value="{{ forloop.counter0 }}">{{ option.address }}</button></li>
+    <li><button class="as_link" type="submit" name="index" value="{{ forloop.counter0 }}" style="width:100%">{{ option.address }}</button></li>
 {% endfor %}
 </ul>
 </form>
 
-<p>Alternatively, please try another search:</p>
-
-{% else %}
-
-<p>Please enter an address or postcode (e.g. 'Keble College', 'Parks Road', 'OX1 3PG')</p>
+</div>
 
 {% endif %}
 
+<div class="section-nopad">
+
+<h2 class="section-header">{% if options %}Alternatively, please try another search:{% else %}Please enter an address or postcode:{% endif %}</h2>
+
+<div class="section-content"><div class="bubble">Examples: 'oucs' (a unit code), 'Trinity College' (a college or department), 'Parks Road' (an address), 'OX1 3PG' (a postcode).</div></div>
+
+
 <form method="post" action=".">
-    <p>
-        <input name="location" value="{{ location }}"/>
+    <div class="section-content">
+      <div class="submit-line">
 {% if return_url %}
         <input name="return_url" type="hidden" value="{{ return_url }}"/>
 {% endif %}
-        <input type="submit" value="Update"/>
-    </p>
+        <input id="location" name="location" value="{{ location }}"/><input type="image" src="{{ MEDIA_URL }}png/icons/submit-arrow.png" alt="Submit"/>
+        
+      </div>
+    </div>
+
 </form>
 
-<hr/>
-
+</div>
 
 
 {% if preferences.location.placemark %}

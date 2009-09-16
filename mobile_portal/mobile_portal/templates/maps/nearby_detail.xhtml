@@ -7,26 +7,30 @@
     <li><a href="{{ entity.get_absolute_url }}">{{ entity.title }}</a></li>
     <li><a href="{% url maps_entity_nearby_detail entity.entity_type.slug,entity.display_id,entity_type.slug %}">Nearest {{ entity_type.verbose_name }}</a></li>
 {% else %}    
-    <li><a href="{% url maps_nearby_list %}">Find things nearby</a></li>
-    <li><a href="{% url maps_nearby_detail entity_type.slug %}">{{ entity_type.verbose_name_plural|capfirst }}</a></li>
+	<li><a href="{% url maps_index %}">
+        <img src="{{ MEDIA_URL }}png/maps-bc.png" alt="Maps"/>
+    </a></li>
+    <li><a href="{% url maps_nearby_list %}">&hellip;</a></li>
 {% endif %}
 {% endblock %}
+
+{% block pagetitle %}{{ entity_type.verbose_name_plural|capfirst }}{% if entity %} near {{ entity.title }}{% endif %}{% endblock %}
 
 {% block content %}
 
 <div class="list-section">
-<h2 class="section header">{{ entity_type.verbose_name_plural|capfirst }} within {{ distance }}{% if entity %} of {{ entity.title }}{% endif %}</h2>
-</div>
-<p>
+<div class="list-note top">
     Within:
 {% for distance in distances %}{% if entity %}
     <a href="{% url maps_entity_nearby_detail_distance entity.entity_type.slug,entity.display_id,entity_type.slug distance.0 %}">{{ distance.1 }}</a>
 {% else %}
     <a href="{% url maps_nearby_detail_distance entity_type.slug distance.0 %}">{{ distance.1 }}</a>
 {% endif %}{% endfor %}
-</p>
+</div>
 
-<img src="{% url osm_generated_map map_hash %}" alt=""/>
+<div class="list-note">
+    <div style="background-image:url('{% url osm_generated_map map_hash %}'); background-repeat:no-repeat; background-position: center center; height:240px"> </div>
+</div>
 
 {% if entities %}
 <div class="list-section">
@@ -39,5 +43,6 @@
 {% else %}
 <p>There isn't anything that close to you. Try <a href="{% url core_update_location %}?return_url={% url maps_nearby_detail entity_type.slug %}">updating your location</a> or widening your search.</p>
 {% endif %}
+</div>
 
 {% endblock %}
