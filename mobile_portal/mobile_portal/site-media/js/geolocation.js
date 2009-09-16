@@ -110,6 +110,7 @@ if (require_location)
     jQuery(document).ready(requestPosition);
 
 function resetDimensions() {
+    return;
     
     h = window.innerHeight - $('.content').offset().top;
     //$('#page_title').html(window.innerWidth + ' ' + ($('body').hasClass('landscape') ? 'land' : 'port') + ' ' + $('.map_pane').width() + ' ' + $('.content').height());

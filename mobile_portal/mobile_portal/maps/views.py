@@ -101,7 +101,7 @@ def nearby_detail(request, ptype, distance=None, entity=None):
     for i, e in enumerate(entities):
         points.insert( 1, (e.location[1], e.location[0], 'red', i+1) )
     print points
-    map_hash = get_generated_map(points, request.device.max_image_width-40, 240)
+    map_hash = get_generated_map(points, request.device.max_image_width-8, max(request.device.max_image_height, 320))
         
     
     print "[%s]" % ", ".join( "(%f, %f, %r)" % (e.location[0], e.location[1], e.title) for e in entities )

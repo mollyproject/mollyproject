@@ -3,8 +3,10 @@
 
 {% block breadcrumbs %}
 {{ block.super }}
-    <li><a href="{% url maps_nearby_detail entity.entity_type.slug %}">{{ entity.entity_type.verbose_name_plural|capfirst }}</a></li>
-    <li><a href="{{ entity.get_absolute_url }}">{{ entity.title }}</a></li>
+	<li><a href="{% url maps_index %}">
+        <img src="{{ MEDIA_URL }}png/maps-bc.png" alt="Maps"/>
+    </a></li>
+    <li><a href="{% url maps_nearby_detail entity.entity_type.slug %}">&hellip;</a></li>
 {% endblock %}
 
 {% block pagetitle %}{{ entity.title }}{% endblock %}

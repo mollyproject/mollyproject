@@ -2,10 +2,13 @@
 
 {% block breadcrumbs %}
 {{ block.super }}
+	<li><a href="{% url maps_index %}">
+        <img src="{{ MEDIA_URL }}png/maps-bc.png" alt="Maps"/>
+    </a></li>
     <li><a href="{% url maps_category_list %}">&hellip;</a></li>
 {% endblock %}
 
-{% block pagetitle %}{{ entity_type.verbose_name_plural }}{% endblock %}
+{% block pagetitle %}{{ entity_type.verbose_name_plural|capfirst }}{% endblock %}
 
 {% block content %}
 

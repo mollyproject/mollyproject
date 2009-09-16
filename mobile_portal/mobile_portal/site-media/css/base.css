@@ -23,6 +23,8 @@ h1 {
     color:#ffffff;
     margin-top:0;
     padding-top:4px;
+    whitespace:no-wrap;
+    
 }
 
 h2 {
@@ -86,6 +88,7 @@ div.header {
     height:34px;
     width:100%;
     background-image:url('../png/header_bg.png');
+    overflow:hidden;
 }
 
 ol.breadcrumbs {
@@ -103,6 +106,7 @@ ol.breadcrumbs li {
     height:30px;
     padding:2px;
     padding-right:16px;
+    overflow:hidden;
     
 }
 
