@@ -7,14 +7,24 @@ ul.ml {
     margin-bottom:0;
 }
 
-ul.ml li {
+ul.ml li, table.section-table tr {
     color:#ffffff;
     font-size:12pt;
     padding:10px;
     border-top:1px solid #98a1ac;
-    background-color:#002147; opacity: 0.9;
+    background-color:#002147; opacity: 1;
 	padding-right: 10px;
 }
+
+table.section-table {
+    border-collapse:collapse;
+    width:100%;
+}
+
+table.section-table tr.notopborder {
+    border-top:0;
+}
+
 
 ul.ml li.header {
     background-color:#48505a;

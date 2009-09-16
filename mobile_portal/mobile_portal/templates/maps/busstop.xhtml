@@ -7,12 +7,16 @@
 
 {% block breadcrumbs %}
 {{ block.super }}
-    <li><a href="{% url maps_nearby_detail "busstop" %}">Nearest bus stops</a></li>
+	<li><a href="{% url maps_index %}">
+        <img src="{{ MEDIA_URL }}png/maps-bc.png" alt="Maps"/>
+    </a></li>
+    <li><a href="{% url maps_nearby_detail entity.entity_type.slug %}">&hellip;</a></li>
 {% endblock %}
+
+{% block pagetitle %}{{ entity.title }}{% endblock %}
 
 {% block content %}
 
-<h1>{{ entity.title }}</h1>
 
 <p>
     <a href="{% url maps_entity_nearby_list entity.entity_type.slug,entity.display_id %}">Find things near here</a>
@@ -20,9 +24,9 @@
 
 <div class="list-section">
 	<h2 class="section-header">Real Time Bus Times</h2>
-{% if times %}
-<table>
-    <thead>
+{% if services %}
+<table class="section-table">
+    <thead style="display:none;">
         <tr>
             <th>Service</th>
             <th>Destination</th>
@@ -30,11 +34,14 @@
         </tr>
     </thead>
     <tbody>
-{% for time in times %}
+{% for service in services %}
         <tr>
-            <td>{{ time.service }}</td>
-            <td>{{ time.destination }}</td>
-            <td>{{ time.proximity }}</td>
+            <td rowspan="2" style="font-size:200%; text-align:center;">{{ service.0 }}</td>
+            <td>{{ service.1 }}</td>
+            <td>{{ service.2 }}</td>
+        </tr>
+        <tr class="notopborder">
+            <td colspan="2">{% if service.3 %}Next: {{ service.3|join:", " }}{% else %}No more proximate busses{% endif %}</td>
         </tr>
 {% endfor %}
     </tbody>

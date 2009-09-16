@@ -146,16 +146,20 @@ def entity_detail_busstop(request, entity):
     except AttributeError:
         rows = []
         
-    times = []
+    services = {}
     for row in rows:
-        times.append({
-            'service': row[0].text.encode('utf8').replace('\xc2\xa0', ''),
-            'destination': row[1].text.encode('utf8').replace('\xc2\xa0', ''),
-            'proximity': row[2].text.encode('utf8').replace('\xc2\xa0', ''),
-        })
+        service, destination, proximity = [row[i].text.encode('utf8').replace('\xc2\xa0', '') for i in range(3)]
+        
+        if not service in services:
+            services[service] = (destination, proximity, [])
+        else:
+            services[service][2].append(proximity)
+
+    services = [(s[0], s[1][0], s[1][1], s[1][2]) for s in services.items()]
+    services.sort(key= lambda x: ( ' '*(5-len(x[0]) + (1 if x[0][-1].isalpha() else 0)) + x[0] ))
         
     context = {
-        'times': times,
+        'services': services,
         'entity': entity,
     }        
         
