@@ -13,7 +13,7 @@
     <li><a href="{% url maps_nearby_detail entity.entity_type.slug %}">&hellip;</a></li>
 {% endblock %}
 
-{% block pagetitle %}{{ entity.title }}{% endblock %}
+{% block pagetitle %}Bus stop{% endblock %}
 
 {% block content %}
 
@@ -23,7 +23,7 @@
 </p>
 
 <div class="list-section">
-	<h2 class="section-header">Real Time Bus Times</h2>
+	<h2 class="section-header">{{ entity.title }}</h2>
 {% if services %}
 <table class="section-table">
     <thead style="display:none;">
@@ -49,11 +49,17 @@
 
 
 {% else %}
-<p>Sorry, there is currently no bus time information for this stop.</p>
-{% endif %}
+<div class="list-note">
+    <div class="bubble">
+        Sorry, there is currently no bus time information for this stop.
+    </div>
 </div>
+{% endif %}
 
-{% map entity.location %}
+<div style="background-image:url('{% map_url entity.location %}'); background-repeat:no-repeat; background-position: center center; height:{{ device.max_image_height }}px"> </div>
+
+
+</div>
 
 
 <p>Is favourite: {{ entity.is_favourite }}</p>

@@ -23,6 +23,18 @@ def do_render_map(parser, token):
         raise template.TemplateSyntaxError, "%r takes one or two arguments" % token.contents.split()[0]
     return MapNode(args)
 
+@register.tag(name='map_url')
+def do_render_map(parser, token):
+    try:
+        args = token.split_contents()
+        if len(args) == 2:
+           args = template.Variable(args[1]), None
+        else:
+           args = map(template.Variable, args[1:])
+    except:
+        raise template.TemplateSyntaxError, "%r takes one or two arguments" % token.contents.split()[0]
+    return MapNode(args, True)
+
 GOOGLE_MAPS_BROWSERS = frozenset([
 #    'stupid_novarra_proxy_sub73',
     'apple_iphone_ver1',
@@ -41,8 +53,9 @@ OPENLAYERS_INCLUDE = """\
 """ % {'mu': settings.MEDIA_URL}
 
 class MapNode(template.Node):
-    def __init__(self, args):
+    def __init__(self, args, just_url=False):
 	self.args = args
+	self.just_url = just_url
 
     def render(self, context):
         args = self.args
@@ -58,8 +71,7 @@ class MapNode(template.Node):
         else:
             lat, lng = [float(a.resolve(context)) for a in args]
 
-        width, height = min(600, context['device'].max_image_width), 200
-        width,height=300, 200
+        width, height = context['device'].max_image_width-16, context['device'].max_image_height
         
         if False and device_parents[context['device'].devid] & OPENLAYERS_BROWSERS:
             return self.openlayers_map(context, lat, lng, width, height)
@@ -97,7 +109,11 @@ $(document).ready(function() {
             height,
         )
         url = reverse('osm_generated_map', args=[hash])
-        return '<img src="%s" alt="Map"/>' % xml.sax.saxutils.escape(url)
+        
+        if self.just_url:
+            return url
+        else:
+            return '<img src="%s" alt="Map"/>' % xml.sax.saxutils.escape(url)
 
     def google_map(self, context, lat, lng, width, height):
         context['google_maps_count'] = context.get('google_maps_count', 0) + 1

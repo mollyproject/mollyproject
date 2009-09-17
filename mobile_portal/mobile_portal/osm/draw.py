@@ -191,7 +191,7 @@ def get_fitted_map(centre_point, points, min_points, zoom, width, height, filena
         print zoom
     
     while point_set.contained_within(box, zoom):
-        new_point, points = points[1], points[1:]
+        new_point, points = points[0], points[1:]
         point_set.add(new_point)
         if not points:
             break

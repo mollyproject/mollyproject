@@ -101,6 +101,7 @@ def nearby_detail(request, ptype, zoom=None, entity=None):
         'entity': entity,
         'zoom': zoom,
         'map_hash': map_hash,
+        'count': sum(map(len, entities)),
     }
     return mobile_render(request, context, 'maps/nearby_detail')
 
