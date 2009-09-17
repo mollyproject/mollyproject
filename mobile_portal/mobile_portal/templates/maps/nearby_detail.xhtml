@@ -23,7 +23,7 @@
     Found {{ count }} {% ifequal count 1 %}{{ entity_type.verbose_name }}{% else %}{{ entity_type.verbose_name_plural }}{% endifequal %} 
 </div>
 
-    <div style="background-image:url('{% url osm_generated_map map_hash %}'); background-repeat:no-repeat; background-position: center center; height:320px"> </div>
+    <div style="background-image:url('{% url osm_generated_map map_hash %}'); background-repeat:no-repeat; background-position: center center; height:{{ device.max_image_height }}px"> </div>
 
 {% if entities %}
 <ul class="ml">
