@@ -36,7 +36,7 @@
             <td>{{ service.2 }}</td>
         </tr>
         <tr class="notopborder">
-            <td colspan="2"><small>{% if service.3 %}Next: {{ service.3|join:", " }}{% else %}No more info available{% endif %}</small></td>
+            <td colspan="2"><small>Next: {% if service.3 %}{{ service.3|join:", " }}{% else %}<em>No further info</em>{% endif %}</small></td>
         </tr>
 {% endfor %}
     </tbody>
