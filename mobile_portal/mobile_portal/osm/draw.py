@@ -202,9 +202,9 @@ def get_fitted_map(centre_point, points, min_points, zoom, width, height, filena
     
     points = [(centre_point[0], centre_point[1], 'green', None)]
     
-    for i, point in enumerate(used_points, 1):
+    for i, point in enumerate(used_points):
         points.append(
-            (point[0], point[1], 'red', i)
+            (point[0], point[1], 'red', i+1)
         )
         
     print "Points", len(points), points
