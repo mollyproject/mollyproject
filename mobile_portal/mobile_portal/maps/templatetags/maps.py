@@ -91,8 +91,8 @@ $(document).ready(function() {
 """ % params
 
     def generated_map(self, context, lat, lng, width, height):
-        hash = get_generated_map(
-            [(lat, lng, 'blue', None)],
+        hash, metadata = get_generated_map(
+            [(lat, lng, 'green', None)],
             width,
             height,
         )

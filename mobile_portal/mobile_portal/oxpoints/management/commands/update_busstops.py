@@ -58,7 +58,7 @@ class Command(NoArgsCommand):
                 title = "Corner of %s and %s" % (str, lmk)
             elif cnm == str:
                 title = "%s, %s" % (ind, cnm)
-            elif lmk == str and ind == lmk:
+            elif ind == lmk:
                 title = "%s, %s" % (lmk, str)
             elif lmk != str:
                 title = "%s %s, on %s" % (ind, lmk, str)

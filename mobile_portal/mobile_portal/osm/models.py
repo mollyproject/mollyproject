@@ -2,7 +2,7 @@ try:
     import cPickle as pickle
 except:
     import pickle
-import hashlib, os, urllib
+import hashlib, os, urllib, simplejson
 from datetime import datetime, timedelta
 from django.db import models
 from django.conf import settings
@@ -11,6 +11,13 @@ class GeneratedMap(models.Model):
     hash = models.CharField(max_length=16)
     generated = models.DateTimeField()
     last_accessed = models.DateTimeField()
+    _metadata = models.TextField(blank=True)
+    
+    def _get_metadata(self):
+        return simplejson.loads(self._metadata)
+    def _set_metadata(self, value):
+        self._metadata = simplejson.dumps(value)
+    metadata = property(_get_metadata, _set_metadata)
     
     def get_filename(self):
         if not os.path.exists(settings.GENERATED_MAP_DIR):

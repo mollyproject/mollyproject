@@ -22,6 +22,7 @@ class LocationMiddleware(object):
             
         if "generic_web_browser" in device_parents[request.device.devid]:
             request.device.max_image_width = 320
+            request.device.max_image_height = 320
 
         # Opera Mini sends a header with better device information
         

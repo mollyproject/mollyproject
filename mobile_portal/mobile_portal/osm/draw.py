@@ -13,7 +13,7 @@ def get_tile_ref(lat_deg, lon_deg, zoom):
     n = 2.0 ** zoom
     xtile = (lon_deg + 180.0) / 360.0 * n
     ytile = (1.0 - math.log(math.tan(lat_rad) + (1 / math.cos(lat_rad))) / math.pi) / 2.0 * n
-    return(xtile, ytile)
+    return (xtile, ytile)
 
 def get_tile_geo(xtile, ytile, zoom):
   n = 2.0 ** zoom
@@ -33,15 +33,16 @@ def minmax(i):
         max_ = max(max_, e)
     return min_, max_
 
-def get_map(points, width, height, filename):
+def get_map(points, width, height, filename, zoom=None):
     lat_min, lat_max = minmax(p[0] for p in points)
     lon_min, lon_max = minmax(p[1] for p in points)
     
-    size = min(width, height)
-    if lat_min != lat_max:
-        zoom = int(log2(360/abs(lat_min - lat_max)) + log2(size/256)-1.0)
-    else:
-        zoom = 16
+    if not zoom:
+        size = min(width, height)
+        if lat_min != lat_max:
+            zoom = int(log2(360/abs(lat_min - lat_max)) + log2(size/256)-1.0)
+        else:
+            zoom = 16
     
     points = [(get_tile_ref(p[0], p[1], zoom), p[2], p[3]) for p in points]
     print zoom, points    
@@ -57,7 +58,7 @@ def get_map(points, width, height, filename):
     cx, cy = get_tile_ref(lat_center, lon_center, zoom)
     oxc = int((cx - tx_min) * 256 - width/2)
     oyc = int((cy - ty_min) * 256 - height/2)
-    ox, oy = oxc, oyc
+    ox, oy = oxc, oyc-10
     
     tx_min_ = int(tx_min + ox/256)
     tx_max_ = int(tx_max + (width+ox)/256)
@@ -123,6 +124,98 @@ def get_map(points, width, height, filename):
     
     surface.write_to_png(filename)
 
+class PointSet(set):
+    def __init__(self, initial=None):
+        super(PointSet, self).__init__(initial)
+        self._min = (float('inf'), float('inf'))
+        self._max = (float('-inf'), float('-inf'))
+        self.ordered = []
+        for p in initial:
+            self.update(p)
+        
+    def add(self, p):
+        super(PointSet, self).add(p)
+        self.update(p)
+    
+    def remove(self, p):
+        self.ordered.remove(p)
+        super(PointSet, self).remove(p)
+        if any((p[i] in (self._min[i], self._max[i])) for i in range(2)):
+            self._min = (float('inf'), float('inf'))
+            self._max = (float('-inf'), float('-inf'))
+            for p in self:
+                self._min = min(self._min[0], p[0]), min(self._min[1], p[1])
+                self._max = max(self._max[0], p[0]), max(self._max[1], p[1])
+    
+    def update(self, p):
+        self.ordered.append(p)
+        self._min = min(self._min[0], p[0]), min(self._min[1], p[1])
+        self._max = max(self._max[0], p[0]), max(self._max[1], p[1])
+        
+    def extent(self, zoom):
+        tl = get_tile_ref(self._min[0], self._min[1], zoom)
+        br = get_tile_ref(self._max[0], self._max[1], zoom)
+        
+        a = (br[0]-tl[0])*256, (tl[1]-br[1])*256
+        print "Fooo" , a
+        return a
+        
+    def contained_within(self, box, zoom):
+        extent = self.extent(zoom)
+        return extent[0] <= box[1] and extent[1] <= box[0]
+        
+
+def get_fitted_map(centre_point, points, min_points, zoom, width, height, filename):
+    print "Here"
+
+    # If we haven't been given a zoom, start as close as we can
+    if not zoom:
+        zoom = 18
+
+    box = width - 20, height-35
+    
+    new_points = []
+    for i, point in enumerate(points):
+        if i>1 and point == new_points[-1][0]:
+            new_points[-1][1].append(i)
+        else:
+            new_points.append( (point, [i]) )
+    
+    points = [p[0] for p in new_points]
+    
+    points = [centre_point] + list(points)
+    point_set, points = PointSet(points[:min_points+1]), points[min_points+1:]
+    
+    while not point_set.contained_within(box, zoom):
+        zoom -= 1
+        print zoom
+    
+    while point_set.contained_within(box, zoom):
+        new_point, points = points[1], points[1:]
+        point_set.add(new_point)
+        if not points:
+            break
+    else:
+        point_set.remove(new_point)
+    
+    used_points = point_set.ordered[1:]
+    
+    points = [(centre_point[0], centre_point[1], 'green', None)]
+    
+    for i, point in enumerate(used_points, 1):
+        points.append(
+            (point[0], point[1], 'red', i)
+        )
+        
+    print "Points", len(points), points
+    
+    print "Extent", point_set.extent(zoom)
+    get_map(points, width, height, filename, zoom)
+    
+    new_points = new_points[:len(point_set)-1]
+    return new_points, zoom
+    
+    
 if __name__ == '__main__':
     RED, GREEN, BLUE = (1, 0, 0), (0, 0.5, 0), (0.25, 0.25, 1)
     get_map(

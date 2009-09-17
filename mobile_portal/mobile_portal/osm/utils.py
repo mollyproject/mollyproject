@@ -7,7 +7,7 @@ import hashlib, os, os.path
 from datetime import datetime
 from django.conf import settings
 from models import GeneratedMap
-from draw import get_map
+from draw import get_map, get_fitted_map
 
 MARKER_COLORS = (
     ('blue', '#0000ff', '#000050'),
@@ -18,24 +18,31 @@ MARKER_COLORS = (
 
 MARKER_RANGE = xrange(1, 100)
 
-
-def get_generated_map(points, width, height):
-    hash = hashlib.sha224(pickle.dumps(repr((points, width, height)))).hexdigest()[:16]
+def get_or_create_map(f, args):
+    hash = hashlib.sha224(pickle.dumps(repr(args))).hexdigest()[:16]
     
-    #for gm in GeneratedMap.objects.filter(hash=hash):
-    #    gm.delete()
-        
     try:
         gm = GeneratedMap.objects.get(hash=hash)
-        gm.last_accessed = datetime.now()
+        gm.last_accessed = datetime.utcnow()
         gm.save()
+        metadata = gm.metadata
     except GeneratedMap.DoesNotExist:
         if not os.path.exists(settings.GENERATED_MAP_DIR):
             os.makedirs(settings.GENERATED_MAP_DIR)
-        get_map(points, width, height, os.path.join(settings.GENERATED_MAP_DIR, hash))
-        gm = GeneratedMap.objects.create(
+        metadata = f(filename=os.path.join(settings.GENERATED_MAP_DIR, hash), *args)
+        gm = GeneratedMap(
             hash = hash,
             generated = datetime.utcnow(),
             last_accessed = datetime.utcnow(),
         )
-    return hash
+        gm.metadata = metadata
+        gm.save()
+    return hash, metadata
+
+
+def get_generated_map(points, width, height):
+    return get_or_create_map(get_map, (points, width, height))
+    
+def fit_to_map(centre_point, points, min_points, zoom, width, height):
+    points = list(points)
+    return get_or_create_map(get_fitted_map, (centre_point, points, min_points, zoom, width, height))

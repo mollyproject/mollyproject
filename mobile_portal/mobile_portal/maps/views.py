@@ -17,7 +17,7 @@ from mobile_portal.core.renderers import mobile_render
 #from mobile_portal import oxpoints
 from mobile_portal.core.models import Feed
 from mobile_portal.core.decorators import require_location, location_required
-from mobile_portal.osm.utils import get_generated_map
+from mobile_portal.osm.utils import get_generated_map, fit_to_map
 
 from mobile_portal.oxpoints.models import Entity, EntityType
 from mobile_portal.oxpoints.entity import get_resource_by_url, MissingResource, Unit, Place
@@ -56,7 +56,7 @@ DISTANCES = {
 
 COMPASS_POINTS = ('N','NE','E','SE','S','SW','W','NW')
 
-def nearby_detail(request, ptype, distance=None, entity=None):
+def nearby_detail(request, ptype, zoom=None, entity=None):
         
     entity_type = get_object_or_404(EntityType, slug=ptype)
     
@@ -70,48 +70,36 @@ def nearby_detail(request, ptype, distance=None, entity=None):
         if not location:
             return location_required(request)
         point = Point(location[1], location[0], srid=4326)
-        
-    if distance:
-        distance = int(distance)
-        entities = Entity.objects.filter(entity_type=entity_type, location__distance_lt = (point, D(m=distance)))
-    else:
-        entities, i = [], 0
-        distances = sorted(DISTANCES.keys())
-        while i < len(distances) and len(entities) < 5:
-            entities = Entity.objects.filter(entity_type=entity_type, location__distance_lt = (point, D(m=distances[i])))
-            i += 1
-        distance = distances[i - 1]            
     
+    if zoom:
+        zoom = int(zoom)
+        min_points = 0
+    else:
+        min_points = 5
+        
+    entities = Entity.objects.filter(entity_type=entity_type, location__isnull = False)
+    entities = entities.distance(point).order_by('distance')[:99]
+
     for e in entities:
-        print e.location
-        e.distance = D(m=e.location.transform(27700, clone=True).distance(point.transform(27700, clone=True)))
         lat_diff, lon_diff = e.location[0] - point[0], e.location[1] - point[1]
         e.bearing = COMPASS_POINTS[int(((90 - degrees(atan2(lon_diff, lat_diff))+22.5) % 360) // 45)]
         
-    entities = sorted(entities, key=lambda e:e.distance)
+    map_hash, (new_points, zoom) = fit_to_map(
+        centre_point = location,
+        points = ((entity.location[1], entity.location[0]) for entity in entities),
+        min_points = min_points,
+        zoom = zoom,
+        width = request.device.max_image_width-16,
+        height = request.device.max_image_height,
+    )
     
-    entities = entities[:99]
-
-    points = []
-    if entity:
-        points.append( (entity.location[1], entity.location[0], 'green', None) )
-    else:
-        location = request.preferences['location']['location']
-        points.append( (location[0], location[1], 'blue', None) )
-    for i, e in enumerate(entities):
-        points.insert( 1, (e.location[1], e.location[0], 'red', i+1) )
-    print points
-    map_hash = get_generated_map(points, request.device.max_image_width-8, max(request.device.max_image_height, 320))
-        
-    
-    print "[%s]" % ", ".join( "(%f, %f, %r)" % (e.location[0], e.location[1], e.title) for e in entities )
+    entities = [[entities[i] for i in b] for a,b in new_points]
     
     context = {
         'entity_type': entity_type,
         'entities': entities,
         'entity': entity,
-        'distances': sorted(DISTANCES.items()),
-        'distance': DISTANCES.get(distance, (distance < 1000) and ("%dm" % distance) or ("%dkm" % (distance/1000))),
+        'zoom': zoom,
         'map_hash': map_hash,
     }
     return mobile_render(request, context, 'maps/nearby_detail')
