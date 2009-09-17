@@ -65,6 +65,7 @@ def nearby_detail(request, ptype, zoom=None, entity=None):
         if not point:
             context = {'entity': entity}
             return mobile_render(request, context, 'maps/entity_without_location')
+        location = point[0], point[1]
     else:
         location = request.preferences['location']['location']
         if not location:
@@ -185,9 +186,9 @@ def entity_nearby_list(request, type_slug, id):
     entity = get_entity(type_slug, id)
     return nearby_list(request, entity)
     
-def entity_nearby_detail(request, type_slug, id, ptype, distance=100):
+def entity_nearby_detail(request, type_slug, id, ptype, zoom=None):
     entity = get_entity(type_slug, id)
-    return nearby_detail(request, ptype, distance, entity)
+    return nearby_detail(request, ptype, zoom, entity)
 
 def entity_favourite(request, type_slug, id):
     entity = get_entity(type_slug, id)
