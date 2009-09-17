@@ -17,11 +17,6 @@
 
 {% block content %}
 
-
-<p>
-    <a href="{% url maps_entity_nearby_list entity.entity_type.slug,entity.display_id %}">Find things near here</a>
-</p>
-
 <div class="list-section">
 	<h2 class="section-header">{{ entity.title }}</h2>
 {% if services %}
@@ -41,7 +36,7 @@
             <td>{{ service.2 }}</td>
         </tr>
         <tr class="notopborder">
-            <td colspan="2">{% if service.3 %}Next: {{ service.3|join:", " }}{% else %}No more proximate busses{% endif %}</td>
+            <td colspan="2"><small>{% if service.3 %}Next: {{ service.3|join:", " }}{% else %}No more info available{% endif %}</small></td>
         </tr>
 {% endfor %}
     </tbody>
@@ -58,6 +53,11 @@
 
 <div style="background-image:url('{% map_url entity.location %}'); background-repeat:no-repeat; background-position: center center; height:{{ device.max_image_height }}px"> </div>
 
+<ul class="ml">
+    <li>
+    <a href="{% url maps_entity_nearby_list entity.entity_type.slug,entity.display_id %}">Find things near here</a>
+    </li>
+</ul>
 
 </div>
 

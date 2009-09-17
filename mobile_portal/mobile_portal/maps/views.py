@@ -89,7 +89,7 @@ def nearby_detail(request, ptype, zoom=None, entity=None):
         points = ((entity.location[1], entity.location[0]) for entity in entities),
         min_points = min_points,
         zoom = zoom,
-        width = request.device.max_image_width-10,
+        width = request.device.max_image_width-8,
         height = request.device.max_image_height,
     )
     
@@ -127,13 +127,16 @@ def entity_detail_oxpoints(request, entity):
 OXONTIME_URL = 'http://www.oxontime.com/pip/stop.asp?naptan=%s&textonly=1'
 def entity_detail_busstop(request, entity):
     #raise Exception(OXONTIME_URL % entity.atco_code)
-    xml = ES.parse(urllib.urlopen(OXONTIME_URL % entity.atco_code))
-    
     try:
-        cells = xml.find('.//table').findall('td')
-        rows = [cells[i:i+4] for i in range(0, len(cells), 4)]
-    except AttributeError:
+        xml = ES.parse(urllib.urlopen(OXONTIME_URL % entity.atco_code))
+    except TypeError:
         rows = []
+    else:
+        try:
+            cells = xml.find('.//table').findall('td')
+            rows = [cells[i:i+4] for i in range(0, len(cells), 4)]
+        except AttributeError:
+            rows = []
         
     services = {}
     for row in rows:
