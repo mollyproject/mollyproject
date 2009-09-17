@@ -89,8 +89,8 @@ def nearby_detail(request, ptype, zoom=None, entity=None):
         points = ((entity.location[1], entity.location[0]) for entity in entities),
         min_points = min_points,
         zoom = zoom,
-        width = 320, #request.device.max_image_width-10,
-        height = 240, #request.device.max_image_height,
+        width = request.device.max_image_width-10,
+        height = request.device.max_image_height,
     )
     
     entities = [[entities[i] for i in b] for a,b in new_points]
