@@ -162,7 +162,7 @@ class PointSet(set):
         
     def contained_within(self, box, zoom):
         extent = self.extent(zoom)
-        return extent[0] <= box[1] and extent[1] <= box[0]
+        return extent[0] <= box[0] and extent[1] <= box[1]
         
 
 def get_fitted_map(centre_point, points, min_points, zoom, width, height, filename):
