@@ -1,3 +1,5 @@
+@import "breadcrumbs.css";
+
 body {
     margin: 0;
     font-family: "Liberation Sans", sans-serif;
@@ -8,28 +10,6 @@ body {
     -webkit-text-size-adjust: none;
 
     
-}
-
-h2 {
-    font-weight:bold;
-    margin-top:0px;
-    margin-bottom:2px;
-    text-align:center;
-}
-
-h1 {
-    font-size:12pt;
-    text-align:left;
-    color:#ffffff;
-    margin-top:0;
-    padding-top:4px;
-    whitespace:no-wrap;
-    
-}
-
-h2 {
-    font-size:11pt;
-    text-decoration:underline;
 }
 
 div.container {
@@ -82,44 +62,6 @@ button.as_link {
     text-align:center;
     white-space:nowrap;
     padding-left:0;
-}
-
-div.header {
-    height:34px;
-    width:100%;
-    background-image:url('../png/header_bg.png');
-    overflow:hidden;
-}
-
-ol.breadcrumbs {
-    list-style:none;
-    padding-left:0;
-    margin:0px;
-    display:block;
-}
-
-ol.breadcrumbs li {
-    display:block;
-    float:left;
-    background-image:url('../png/sep.png');
-    background-position:right;
-    height:30px;
-    padding:2px;
-    padding-right:16px;
-    overflow:hidden;
-    
-}
-
-ol.breadcrumbs li a {
-    font-size:12pt;
-    
-    vertical-align:top;
-    color:#000000;
-    text-decoration:none;
-}
-
-ol.breadcrumbs img {
-    border:0;
 }
 
 div.weather {
@@ -184,7 +126,10 @@ body.landscape div.details_pane {
 
 div.submit-line {
     width:100%;
+    padding-bottom:8px;
 }
+
+/*
 
 div.submit-line input {
     margin:0;
@@ -199,4 +144,4 @@ div.submit-line input[type="image"] {
     border:0;
     padding:0;
     
-}
+}*/

@@ -199,7 +199,7 @@ class XMLTestRunner(object):
         else:
             stream = self._stream
 
-        text_stream = unittest._WritelnDecorator(StringIO())
+        text_stream = unittest._WritelnDecorator(sys.stdout)
 
         xml_result = _XMLTestResult(classname)
         text_result = unittest._TextTestResult(text_stream, True, 1)
@@ -234,8 +234,6 @@ class XMLTestRunner(object):
             stream.close()
         
         text_result.printErrors()
-        print text_stream.getvalue(),
-        
         
         return xml_result
 

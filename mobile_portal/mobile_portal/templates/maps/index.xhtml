@@ -1,6 +1,7 @@
 {% extends "maps/base.xhtml" %}{% load portal_misc %}
 
-{% block pagetitle %}<img src="{{ MEDIA_URL }}png/maps-bc.png" alt=""/> Maps{% endblock %}
+{% block pagetitle %}Maps{% endblock %}
+{% block pagetitleclass %}maps-header{% endblock %}
 
 {% block content %}
 
@@ -25,7 +26,6 @@
 
 <ul class="ml">
     <li><a href="{% url maps_nearby_list %}">Near Me</a></li>
-	<li>Near Somewhere</li>
 	<li>
 	    <a href="{% url maps_category_list %}">By Category</a>
 	</li>

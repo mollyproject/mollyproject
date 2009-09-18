@@ -13,7 +13,7 @@ urlpatterns = patterns('',
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
     # Uncomment the next line to enable the admin:
-    (r'^admin/(.*)', admin.site.root),
+    (r'^adm/(.*)', admin.site.root),
 
 
     (r'^contact/', include('mobile_portal.contact.urls')),
@@ -21,7 +21,7 @@ urlpatterns = patterns('',
     (r'^podcasts/', include('mobile_portal.podcasts.urls')),
     (r'^results/', include('mobile_portal.results.urls')),
     (r'^webcams/', include('mobile_portal.webcams.urls')),
-    (r'^auth/', include('mobile_portal.webauth.urls')),
+    #(r'^auth/', include('mobile_portal.webauth.urls')),
     (r'^news/', include('mobile_portal.rss.urls')),
     (r'^osm/', include('mobile_portal.osm.urls')),
 #    (r'^weblearn/', include('mobile_portal.sakai.urls')),
