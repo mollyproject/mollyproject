@@ -5,6 +5,7 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 from django.conf import settings
 from django.core.management import call_command
+from django.template import loader, Context
 from mobile_portal.core.renderers import mobile_render
 from mobile_portal.webauth.utils import require_auth
 import geolocation
@@ -360,3 +361,13 @@ def run_command(request):
     }
 
     return mobile_render(request, context, 'core/run_command')
+
+def static_detail(request, title, template):
+    t = loader.get_template('static/%s.xhtml' % template)
+    
+    context = {
+        'title': title,
+        'content': t.render(Context()),
+    }
+    return mobile_render(request, context, 'core/static_detail')
+    
