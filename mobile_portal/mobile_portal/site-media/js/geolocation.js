@@ -7,6 +7,7 @@ var positionRequestCount = 0;
 var positionWatchId = null;
 var positionInterface = null;
 var positionMethod = null;
+var positionGeo = null;
 
 function sendPosition(position, final) {
     if (positionRequestCount == 1)
@@ -48,24 +49,31 @@ function sendPositionError(error) {
 }
 
 function getGearsPositionInterface(name) {
-    var geo = google.gears.factory.create('beta.geolocation');
+    if (positionGeo == null)
+        positionGeo = google.gears.factory.create('beta.geolocation');
+    geo = positionGeo;
     
-    function wrapWithPermission(f) {
+    function wrapWithPermission(fname) {
         return function(successCallback, errorCallback, options) {
-            if (geo.getPermission(name))
-                    return f(successCallback, errorCallback, options);
+            if (geo.getPermission(name)) {
+                if (fname == 'gcp')
+                    return geo.getCurrentPosition(successCallback, errorCallback, options);
                 else
-                    errorCallback({
-                        PERMISSION_DENIED: geo.PositionEror.PERMISSION_DENIED,
-                        code: geo.PositionError.PERMISSION_DENIED,
-                    });
+                    return geo.watchPosition(successCallback, errorCallback, options);
+            } else
+                errorCallback({
+                    PERMISSION_DENIED: geo.PositionEror.PERMISSION_DENIED,
+                    code: geo.PositionError.PERMISSION_DENIED,
+                });
         };
     }
     
     return {
-        getCurrentPosition: wrapWithPermission(geo.getCurrentPosition),
-        watchPosition: wrapWithPermission(geo.watchPosition),
-        clearWatch: geo.clearWatch,
+        getCurrentPosition: wrapWithPermission('getCurrentPosition'),
+        watchPosition: wrapWithPermission('watchPosition'),
+        clearWatch: function(id) {
+            geo.clearWatch(id);
+        },
     }
 }
 
@@ -80,19 +88,19 @@ function positionWatcher(position) {
 }
 
 function requestPosition() {
-    if (positionWatchId == null)
+    if (positionWatchId != null)
         return; 
         
     location_options = {
             enableHighAccuracy: true,
             maximumAge: 30000,
     }
-    if (navigator.geolocation) {
-        positionInterface = navigator.geolocation;
-        positionMethod = 'html5';
-    } else if (google.gears) {
+    if (google.gears) {
         positionInterface = getGearsPositionInterface('Oxford Mobile Portal');
         positionMethod = 'gears';
+    } else if (navigator.geolocation) {
+        positionInterface = navigator.geolocation;
+        positionMethod = 'html5';
     }
     
     if (positionInterface) {
