@@ -40,10 +40,9 @@ class MapsTestCase(unittest.TestCase):
             try:
                 r = client.get(entity.get_absolute_url())
             except urllib2.HTTPError, e:
-                raise BaseException(entity.get_absolute_url())
                 self.fail('Could not fetch %s: %s' % (entity.get_absolute_url(), unicode(e)))
             except Exception, e:
-                raise BaseException(entity.get_absolute_url())
+                raise
     
     def testNearbyEntityWithoutLocation(self):
         self.ensureOxPoints()
