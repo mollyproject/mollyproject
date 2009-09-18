@@ -95,7 +95,7 @@ function requestPosition() {
             enableHighAccuracy: true,
             maximumAge: 30000,
     }
-    if (google.gears) {
+    if (window.google && window.google.gears) {
         positionInterface = getGearsPositionInterface('Oxford Mobile Portal');
         positionMethod = 'gears';
     } else if (navigator.geolocation) {
@@ -111,7 +111,7 @@ function requestPosition() {
 }
 
 function positionMethodAvailable() {
-    return (navigator.geolocation || google.gears)
+    return (navigator.geolocation || (window.google && window.google.gears))
 }
 
 if (require_location)
