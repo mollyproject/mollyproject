@@ -50,6 +50,9 @@ class Entity(models.Model):
 
     def get_absolute_url(self):
         return reverse('maps_entity', args=[self.entity_type.slug, self.display_id])
+        
+    def __unicode__(self):
+        return self.title
 
     @property
     def display_id(self):

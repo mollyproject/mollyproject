@@ -87,7 +87,7 @@ def nearby_detail(request, ptype, zoom=None, entity=None):
         
     map_hash, (new_points, zoom) = fit_to_map(
         centre_point = location,
-        points = ((entity.location[1], entity.location[0]) for entity in entities),
+        points = ((e.location[1], e.location[0]) for e in entities),
         min_points = min_points,
         zoom = zoom,
         width = request.device.max_image_width-8,
@@ -150,6 +150,7 @@ def entity_detail_busstop(request, entity):
 
     services = [(s[0], s[1][0], s[1][1], s[1][2]) for s in services.items()]
     services.sort(key= lambda x: ( ' '*(5-len(x[0]) + (1 if x[0][-1].isalpha() else 0)) + x[0] ))
+    services.sort(key= lambda x: 0 if x[2]=='DUE' else int(x[2].split(' ')[0]))
         
     context = {
         'services': services,

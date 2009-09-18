@@ -1,4 +1,4 @@
-import unittest, random, urllib2
+import unittest, random, urllib2, itertools
 
 from django.core.management import call_command
 from django.test.client import Client
@@ -75,22 +75,21 @@ class MapsTestCase(unittest.TestCase):
                 return Entity.objects.filter(title=p, entity_type__source='oxpoints')[0]
                 
         NEARBY_ENTITIES = (
-            ('Keble College Lodge', 'University Museum of Natural History', 200),
+            ('Keble College Lodge', 'University Museum of Natural History'),
         )
         
-        for p1, p2, d in NEARBY_ENTITIES:
+        for p1, p2 in NEARBY_ENTITIES:
             p1, p2 = resolve_entity(p1), resolve_entity(p2)
             
             response = self.client.get(reverse(
-                'maps_entity_nearby_detail_distance', args=[
+                'maps_entity_nearby_detail', args=[
                     p1.entity_type.slug,
                     p1.display_id,
                     p2.entity_type.slug,
-                    d,
                 ]))
             
             self.assertEqual(response.template[0].name, 'maps/nearby_detail.xhtml')
-            self.assertTrue(p2 in response.context['entities'],
-                "%s should be within %dm of %s." % (p1, d, p2)
+            self.assertTrue(p2 in itertools.chain(*response.context['entities']),
+                "%s should be near %s." % (p1, p2)
             )
             self.assertTrue(response.context['entity'] == p1)

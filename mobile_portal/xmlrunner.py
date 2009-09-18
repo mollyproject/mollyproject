@@ -93,32 +93,26 @@ class TestResultMultiplexer(unittest.TestResult):
                 getattr(tr, name)(*args, **kwargs)
 
     def startTest(self, *args, **kwargs):
-        print "Start"
         for tr in self.__trs:
             tr.startTest(*args, **kwargs)
     def stopTest(self, *args, **kwargs):
-        print "Stop"
         for tr in self.__trs:
             tr.stopTest(*args, **kwargs)
     def addSuccess(self, *args, **kwargs):
-        print "Success"
         for tr in self.__trs:
             tr.addSuccess(*args, **kwargs)
     def addFailure(self, *args, **kwargs):
-        print "Failure"
         for tr in self.__trs:
             tr.addFailure(*args, **kwargs)
     def addError(self, *args, **kwargs):
-        print "Error"
         for tr in self.__trs:
             tr.addError(*args, **kwargs)
 
 
 
 class _XMLTestResult(unittest.TestResult):
-
-    """A test result class that stores result as XML.
-
+    """
+    A test result class that stores result as XML.
     Used by XMLTestRunner.
 
     """
@@ -196,7 +190,6 @@ class XMLTestRunner(object):
 
     def run(self, test):
         """Run the given test case or test suite."""
-        print type(test), type(type(test))
         class_ = test.__class__
         classname = class_.__module__ + "." + class_.__name__
         if self._stream == None:
@@ -209,7 +202,7 @@ class XMLTestRunner(object):
         text_stream = unittest._WritelnDecorator(StringIO())
 
         xml_result = _XMLTestResult(classname)
-        text_result = unittest._TextTestResult(text_stream, False, 0)
+        text_result = unittest._TextTestResult(text_stream, True, 1)
         result = TestResultMultiplexer([xml_result, text_result])
         #result = text_result
         #result = xml_result
