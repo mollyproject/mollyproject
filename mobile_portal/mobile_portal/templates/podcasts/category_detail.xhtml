@@ -2,8 +2,12 @@
 
 {% block breadcrumbs %}
 {{ block.super }}
-    <li><a href="{{ category.get_absolute_url }}">{{ category.name }}</a></li>
+            <li><a href="{% url podcasts_index %}">
+                <img src="{{ MEDIA_URL }}png/podcasts-bc.png" alt="Podcasts"/>
+            </a></li>
 {% endblock %}
+
+{% block pagetitle %}{{ category.name }}{% endblock %}
 
 {% block content %}
 

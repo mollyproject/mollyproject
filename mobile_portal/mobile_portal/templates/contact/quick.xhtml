@@ -3,8 +3,13 @@
 
 {% block breadcrumbs %}
 {{ block.super }}
-    <li><a href="{% url contact_quick %}">Quick contacts</a></li>
+            <li><a href="{% url contact_index %}">
+                <img src="{{ MEDIA_URL }}png/contact-bc.png" alt="Contact"/>
+            </a></li>
 {% endblock %}
+
+
+{% block pagetitle %}Quick contacts{% endblock %}
 
 
 {% block content %}

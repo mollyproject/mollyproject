@@ -1,8 +1,9 @@
 {% extends "rss/base.xhtml" %}
 
-{% block content %}
+{% block pagetitleclass %}rss-header with-icon{% endblock %}
+{% block pagetitle %}News{% endblock %}
 
-<h1>{{ title }}</h1>
+{% block content %}
 
 {% if not single %}<p>
     <a href="{% url rss_manage %}">Manage your news feeds</a>

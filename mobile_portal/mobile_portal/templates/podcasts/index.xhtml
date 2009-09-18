@@ -1,6 +1,9 @@
 {% extends "podcasts/base.xhtml" %}
 {% load portal_misc %}
 
+{% block pagetitleclass %}podcasts-header with-icon{% endblock %}
+{% block pagetitle %}Podcasts{% endblock %}
+
 {% block content %}
 
 {% if device|device_has_parent:"apple_iphone_ver1" and show_itunesu_link %} {#  #}

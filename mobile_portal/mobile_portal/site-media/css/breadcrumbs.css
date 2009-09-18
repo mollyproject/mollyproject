@@ -53,9 +53,32 @@ h1 {
     float:left;
 }
 
-h1.maps-header {
-    background-image:url('../png/maps-bc.png');
+h1.with-icon {
     background-repeat:no-repeat;
     background-position:left middle;
     padding-left:34px;
+}
+
+h1.maps-header {
+    background-image:url('../png/maps-bc.png');
+}
+
+h1.contact-header {
+    background-image:url('../png/contact-bc.png');
+}
+
+h1.webcams-header {
+    background-image:url('../png/webcams-bc.png');
+}
+
+h1.podcasts-header {
+    background-image:url('../png/podcasts-bc.png');
+}
+
+h1.results-header {
+    background-image:url('../png/results-bc.png');
+}
+
+h1.rss-header {
+    background-image:url('../png/rss-bc.png');
 }

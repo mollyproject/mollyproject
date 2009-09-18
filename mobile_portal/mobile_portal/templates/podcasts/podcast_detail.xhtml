@@ -2,11 +2,15 @@
 
 {% block breadcrumbs %}
 {{ block.super }}
+            <li><a href="{% url podcasts_index %}">
+                <img src="{{ MEDIA_URL }}png/podcasts-bc.png" alt="Podcasts"/>
+            </a></li>
 {% if podcast.category %}
-    <li><a href="{{ podcast.category.get_absolute_url }}">{{ podcast.category.name }}</a></li>
+    <li><a href="{{ podcast.category.get_absolute_url }}">...</a></li>
 {% endif %}
-    <li><a href="{{ podcast.get_absolute_url }}">{{ podcast.title }}</a></li>
 {% endblock %}
+
+{% block pagetitle %}{{ podcast.title }}{% endblock %}
 
 
 {% block extrahead %}
@@ -14,8 +18,6 @@
 {% endblock %}
 
 {% block content %}
-
-<h1>{{ podcast.title }}</h1>
 
 <a href="{{ podcast.rss_url }}?destination=moxacuk" type="application/rss+xml">subscribe</a>
 <p class="podcast_description">{{ podcast.description }}</p>

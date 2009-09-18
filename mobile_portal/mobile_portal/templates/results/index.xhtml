@@ -1,11 +1,7 @@
 {% extends "base.xhtml" %}
 
-{% block breadcrumbs %}
-{{ block.super }}
-	<li><a href="{% url contact_index %}">
-        <img src="{{ MEDIA_URL }}png/results-bc.png" alt="Results releases"/>
-    </a></li>
-{% endblock %}
+{% block pagetitleclass %}results-header with-icon{% endblock %}
+{% block pagetitle %}Results releases{% endblock %}
 
 
 {% block content %}
