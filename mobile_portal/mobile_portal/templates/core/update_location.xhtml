@@ -70,7 +70,7 @@
 {% endif %}
 <p id="location_update"> </p>
         <script type="text/javascript">
-            if (navigator.geolocation.getCurrentPosition || google.gears)
+            if (positionMethodAvailable())
                 $('#location_update').append(' <a href="#" onclick="javascript:requestPosition();">Determine automatically<\/a>');
         </script>
         
