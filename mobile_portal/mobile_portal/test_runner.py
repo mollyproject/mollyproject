@@ -72,7 +72,7 @@ def run_tests(test_labels, verbosity=1, interactive=True, extra_tests=[], suite=
     output = open(output, 'w')
 
     # Creating the test spatial database.
-    create_test_spatial_db(verbosity=verbosity, autoclobber=not interactive)
+    create_test_spatial_db(verbosity=0, autoclobber=not interactive)
 
     # The suite may be passed in manually, e.g., when we run the GeoDjango test,
     # we want to build it and pass it in due to some customizations.  Otherwise,
@@ -101,7 +101,7 @@ def run_tests(test_labels, verbosity=1, interactive=True, extra_tests=[], suite=
 
     result = xmlrunner.XMLTestRunner(stream=output).run(suite)
 
-    connection.creation.destroy_test_db(old_name, verbosity)
+    connection.creation.destroy_test_db(old_name, verbosity=0)
     teardown_test_environment()
 
     # Remove the cache directories

@@ -74,12 +74,45 @@ class _TestInfo(object):
         text = escape(str(error[1]))
         stream.write('\n')
         stream.write('    <%s type="%s">%s\n' \
-            % (tagname, escape(str(error[0])), text))
+            % (tagname, escape(repr(error[0])), text))
         tb_stream = StringIO()
         traceback.print_tb(error[2], None, tb_stream)
         stream.write(escape(tb_stream.getvalue()))
         stream.write('    </%s>\n' % tagname)
         stream.write('  ')
+
+class TestResultMultiplexer(unittest.TestResult):
+    def __init__(self, test_results):
+        self.__trs = test_results
+        super(TestResultMultiplexer, self).__init__()
+        
+    def __getattr__(self, name):
+        def f(*args, **kwargs):
+            getattr(super(TestResultMultiplexer, self), name)(*args, **kwargs)
+            for tr in self.__trs:
+                getattr(tr, name)(*args, **kwargs)
+
+    def startTest(self, *args, **kwargs):
+        print "Start"
+        for tr in self.__trs:
+            tr.startTest(*args, **kwargs)
+    def stopTest(self, *args, **kwargs):
+        print "Stop"
+        for tr in self.__trs:
+            tr.stopTest(*args, **kwargs)
+    def addSuccess(self, *args, **kwargs):
+        print "Success"
+        for tr in self.__trs:
+            tr.addSuccess(*args, **kwargs)
+    def addFailure(self, *args, **kwargs):
+        print "Failure"
+        for tr in self.__trs:
+            tr.addFailure(*args, **kwargs)
+    def addError(self, *args, **kwargs):
+        print "Error"
+        for tr in self.__trs:
+            tr.addError(*args, **kwargs)
+
 
 
 class _XMLTestResult(unittest.TestResult):
@@ -144,7 +177,6 @@ class _XMLTestResult(unittest.TestResult):
         stream.write('  <system-err><![CDATA[%s]]></system-err>\n' % err)
         stream.write('</testsuite>\n')
 
-
 class XMLTestRunner(object):
 
     """A test runner that stores results in XML format compatible with JUnit.
@@ -164,6 +196,7 @@ class XMLTestRunner(object):
 
     def run(self, test):
         """Run the given test case or test suite."""
+        print type(test), type(type(test))
         class_ = test.__class__
         classname = class_.__module__ + "." + class_.__name__
         if self._stream == None:
@@ -173,7 +206,13 @@ class XMLTestRunner(object):
         else:
             stream = self._stream
 
-        result = _XMLTestResult(classname)
+        text_stream = unittest._WritelnDecorator(StringIO())
+
+        xml_result = _XMLTestResult(classname)
+        text_result = unittest._TextTestResult(text_stream, False, 0)
+        result = TestResultMultiplexer([xml_result, text_result])
+        #result = text_result
+        #result = xml_result
         start_time = time.time()
 
         # TODO: Python 2.5: Use the with statement
@@ -197,11 +236,15 @@ class XMLTestRunner(object):
             sys.stderr = old_stderr
 
         time_taken = time.time() - start_time
-        result.print_report(stream, time_taken, out_s, err_s)
+        xml_result.print_report(stream, time_taken, out_s, err_s)
         if self._stream == None:
             stream.close()
-
-        return result
+        
+        text_result.printErrors()
+        print text_stream.getvalue(),
+        
+        
+        return xml_result
 
     def _set_path(self, path):
         self._path = path

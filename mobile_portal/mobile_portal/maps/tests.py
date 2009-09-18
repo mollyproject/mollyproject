@@ -10,13 +10,18 @@ class MapsTestCase(unittest.TestCase):
     def setUp(self):
         self.client = Client()
         
-        if Entity.objects.count():
+    def ensureBusstops(self):
+        if Entity.objects.filter(entity_type__slug='busstop').count():
             return
-            
         call_command('update_busstops')
+    def ensureOxPoints(self):
+        if Entity.objects.filter(entity_type__slug='college').count():
+            return
         call_command('update_oxpoints')
 
     def testBusstops(self):
+        self.ensureBusstops()
+        
         entities = random.sample(list(Entity.objects.filter(entity_type__source='naptan')), 20)
         client = Client()
         for entity in entities:
@@ -26,6 +31,8 @@ class MapsTestCase(unittest.TestCase):
                 self.fail('Could not fetch %s: %s' % (entity.get_absolute_url(), unicode(e)))
 
     def testOxpoints(self):
+        self.ensureOxPoints()
+
         entities = random.sample(list(Entity.objects.filter(entity_type__source='oxpoints')), 200)
         entities = Entity.objects.filter(entity_type__source='oxpoints')
         client = Client()
@@ -39,6 +46,8 @@ class MapsTestCase(unittest.TestCase):
                 raise BaseException(entity.get_absolute_url())
     
     def testNearbyEntityWithoutLocation(self):
+        self.ensureOxPoints()
+
         entities = list(Entity.objects.filter(location__isnull=True))
         entities = random.sample(entities, 5)
         
@@ -57,6 +66,8 @@ class MapsTestCase(unittest.TestCase):
             self.assertEqual(response.template[0].name, 'maps/entity_without_location.xhtml')
                 
     def testNearbyOxpoints(self):
+        self.ensureOxPoints()
+
         def resolve_entity(p):
             if isinstance(p, int):
                 return Entity.objects.get(oxpoints_id=p)
