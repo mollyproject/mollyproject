@@ -9,7 +9,7 @@ ul.ml {
 ul.ml li, table.section-table tr {
     color:#ffffff;
     font-size:12pt;
-    padding:10px;
+
     border-top:1px solid #98a1ac;
     background-color:#002147; opacity: 1;
 	padding-right: 10px;
@@ -58,6 +58,7 @@ ul.ml li a, button.as_link {
     color:#ffffff;
     text-decoration: none;
     display:block;
+	padding:10px;
     padding-right:21px;
     text-align:left;
 	background-position:right center;
