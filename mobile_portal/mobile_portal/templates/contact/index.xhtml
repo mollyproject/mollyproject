@@ -5,6 +5,19 @@
 <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/contact.css"/>
 {% endblock %}
 
+{% block extrahead %}{{ block.super }}
+{% if query %}
+<script type="text/javascript">
+    var query = "{{ query }}";
+    var query_enc = "{{ query|urlencode }}";
+    var page = {{ page }};
+    var page_count = {{ page_count }};
+    var method = "{{ method }}";
+</script>
+{% endif %}
+<script type="text/javascript" src="{{ MEDIA_URL }}js/contact.js"> </script>
+{% endblock %}
+
 {% block pagetitleclass %}contact-header with-icon{% endblock %}
 {% block pagetitle %}Contact search{% endblock %}
 
@@ -37,13 +50,22 @@
     {% if page_count|gte:4 %}
     Your search returned {{results_count}} item{{ results_count|pluralize }}. Try adding an initial to get more specific results.
 	{% else %}
-    Your search returned {{results_count}} item{{ results_count|pluralize }}..
+    Your search returned {{results_count}} item{{ results_count|pluralize }}.
     {% endif %}
   </div></div>
 
+    {% ifnotequal 1 page_count %}
+  <div class="list-note">
+      Pages:
+          {% for page in pages %}
+      <a href="?page={{ page }}&amp;method={{ method }}&amp;q={{ query|urlencode }}" style="display:inline;">{{ page }}</a>
+          {% endfor %}
+  </div>
+    {% endifnotequal %}
+
   <ul class="ml" id="people">
     {% for person in people %}
-    <li{% if forloop.last and more_pages %} class="notbottom"{% endif %}>
+    <li{% if forloop.last %} class="notbottom"{% endif %}>
       {% ifequal method "email" %}
       <a class="email" href="mailto:{{ person.email }}">
       {% else %}
@@ -57,24 +79,12 @@
     {% endfor %}
   </ul>
 
-    {% ifnotequal page page_count %}
-  <div class="list-footer">
-      {% if 1 or touch or desktop %}
-
-    <input type="hidden" id="h_current_page" value="{{ page }}"/>
-    <input type="hidden" id="h_query" value="{{ query }}"/>
-    <input type="hidden" id="h_method" value="{{ method }}"/>
-    <a id="contacts_more" href="?page={{ page|add:"1" }}&amp;method={{ method }}&amp;q={{ query|urlencode }}">More&hellip;</a>
-    <img src="{{ MEDIA_URL }}gif/wait24trans.gif" width="24px" height="24px" style="display:none" id="wait_spinner"/>
-      {% else %}
-        {% comment %}
-    <p>Pages:
+    {% ifnotequal 1 page_count %}
+  <div class="list-footer" id="more_contact_results">
+      Pages:
           {% for page in pages %}
-      <a href="?page={{ page }}&amp;method={{ method }}&amp;q={{ query|urlencode }}">{{ page }}</a>
+      <a href="?page={{ page }}&amp;method={{ method }}&amp;q={{ query|urlencode }}" style="display:inline;">{{ page }}</a>
           {% endfor %}
-    </p>
-        {% endcomment %}
-      {% endif %}
   </div>
     {% endifnotequal %}
 
