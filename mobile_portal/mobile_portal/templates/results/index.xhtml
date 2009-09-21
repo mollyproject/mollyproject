@@ -14,7 +14,7 @@
 	<h2 class="section-header">{{ g.grouper|date:"d M Y" }}</h2>
 	<ul class="ml">
 {% for item in g.list %}
-<li>
+<li class="non-link-item">
 {{ item.code }}: {{ item.title }}
 </li>
 {% endfor %}
