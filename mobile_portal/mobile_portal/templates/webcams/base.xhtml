@@ -1,9 +1,2 @@
 {% extends "base.xhtml" %}
 
-{% block breadcrumbs %}
-{{ block.super }}
-            <li><a href="{% url webcams_index %}">
-                <img src="{{ MEDIA_URL }}png/webcams-bc.png" alt="Webcams"/>
-            </a></li>
-{% endblock %}
-

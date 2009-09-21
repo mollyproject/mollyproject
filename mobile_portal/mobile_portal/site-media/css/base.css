@@ -129,6 +129,11 @@ div.submit-line {
     padding-bottom:8px;
 }
 
+div.backgrounded-image {
+    background-repeat:no-repeat;
+    background-position: center center;
+}
+
 /*
 
 div.submit-line input {

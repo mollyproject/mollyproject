@@ -166,6 +166,8 @@ class ExternalImage(models.Model):
     etag = models.TextField(null=True)
     last_modified = models.TextField(null=True)
     last_updated = models.DateTimeField() # This one is in UTC
+    width = models.PositiveIntegerField(null=True)
+    height = models.PositiveIntegerField(null=True)
     
     def save(self, force_insert=False, force_update=False):
         self.last_updated = datetime.utcnow()
@@ -174,6 +176,7 @@ class ExternalImage(models.Model):
 class ExternalImageSized(models.Model):
     external_image = models.ForeignKey(ExternalImage)
     width = models.PositiveIntegerField()
+    height = models.PositiveIntegerField()
     slug = models.SlugField()
 
     def get_filename(self):
@@ -195,7 +198,11 @@ class ExternalImageSized(models.Model):
             ratio = size[1] / size[0]
             
             resized = im.resize((self.width, int(round(self.width*ratio))), PIL.Image.ANTIALIAS)
+            self.height = resized.size[1]
             resized.save(self.get_filename(), format='jpeg')
+
+            self.external_image.width = size[0]
+            self.external_image.height = size[1]
             
         super(ExternalImageSized, self).save(force_insert=False, force_update=False)
   
