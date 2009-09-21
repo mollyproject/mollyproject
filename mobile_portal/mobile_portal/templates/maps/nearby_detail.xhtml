@@ -30,7 +30,7 @@
 {% for entity_group in entities %}
 {% ifequal entity_group|length 1 %}
 {% with entity_group.0 as entity %}
-    <li><a href="{{ entity.get_absolute_url }}">{{ forloop.counter }}. {{ entity.title|linebreaksbr }}</a> {{ entity.distance.km|floatformat:3 }} km {{ entity.bearing }}</li>
+    <li><a title="{{ entity.title }}" href="{{ entity.get_absolute_url }}">{{ forloop.counter }}. {{ entity.title }}<br /> {{ entity.distance.km|floatformat:3 }} km {{ entity.bearing }}</a></li>
 {% endwith %}
 {% else %}
 {% with entity_group.0 as entity %}
