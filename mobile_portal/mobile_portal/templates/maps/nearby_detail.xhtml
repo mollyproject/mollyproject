@@ -20,13 +20,15 @@
 
 <div class="list-section">
 <div class="list-note top">
-    Found {{ count }} {% ifequal count 1 %}{{ entity_type.verbose_name }}{% else %}{{ entity_type.verbose_name_plural }}{% endifequal %} 
+    Found {{ count }} {% ifequal count 1 %}{{ entity_type.verbose_name }}{% else %}{{ entity_type.verbose_name_plural }}{% endifequal %}
+    <a class="no-icon" href="{% if entity %}{% url maps_entity_nearby_detail_distance entity.entity_type.slug,entity.display_id,entity_type.slug,zoom|add:"-1" %}{% else %}{% url maps_nearby_detail_distance entity_type.slug,zoom|add:"1" %}{% endif %}">Zoom in</a>
+    <a class="no-icon" href="{% if entity %}{% url maps_entity_nearby_detail_distance entity.entity_type.slug,entity.display_id,entity_type.slug,zoom|add:"1" %}{% else %}{% url maps_nearby_detail_distance entity_type.slug,zoom|add:"-1" %}{% endif %}">Zoom out</a>
 </div>
 
     <div style="background-image:url('{% url osm_generated_map map_hash %}'); background-repeat:no-repeat; background-position: center center; height:{{ device.max_image_height }}px"> </div>
 
-{% if entities %}
 <ul class="ml">
+{% if entities %}
 {% for entity_group in entities %}
 {% ifequal entity_group|length 1 %}
 {% with entity_group.0 as entity %}
@@ -41,10 +43,14 @@
 {% endfor %}
 {% endifequal %}
 {% endfor %}
-</ul>
+
 {% else %}
-<p>There isn't anything that close to you. Try <a href="{% url core_update_location %}?return_url={% url maps_nearby_detail entity_type.slug %}">updating your location</a> or widening your search.</p>
+<div class="list-note">
+    There isn't anything that close to you.
+    Try <a class="no-icon" href="{% url core_update_location %}?return_url={% url maps_nearby_detail entity_type.slug %}">updating
+    your location</a> or <a class="no-icon" href="{% if entity %}{% url maps_entity_nearby_detail_distance entity.entity_type.slug,entity.display_id,entity_type.slug,zoom|add:"-1" %}{% else %}{% url maps_nearby_detail_distance entity_type.slug,zoom|add:"-1" %}{% endif %}">widening your search</a>.</div>
 {% endif %}
+</ul>
 </div>
 
 {% endblock %}

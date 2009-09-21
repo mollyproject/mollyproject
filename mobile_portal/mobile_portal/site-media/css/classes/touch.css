@@ -56,6 +56,13 @@ ul.ml .email {
     background-image:url('../../png/icons/list-email.png');
 }
 
+ul.ml .audio {
+    background-image:url('../../png/icons/list-audio.png');
+}
+
+ul.ml .video {
+    background-image:url('../../png/icons/list-video.png');
+}
 
 ul.ml li a, button.as_link {
 	font-size:12pt;
@@ -67,6 +74,10 @@ ul.ml li a, button.as_link {
     text-align:left;
 	background-position:right center;
     background-repeat:no-repeat;
+}
+
+ul.ml a.no-icon {
+    background-image:none;
 }
 
 div.list-section .top, h2.section-header {
