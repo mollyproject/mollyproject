@@ -15,6 +15,10 @@ ul.ml li, table.section-table tr {
 	padding-right: 10px;
 }
 
+ul.ml li.non-link-item {
+	padding:10px;
+}
+
 ul.ml li.subitem {
     background-color:#103157;
     margin: auto auto auto 16px;
