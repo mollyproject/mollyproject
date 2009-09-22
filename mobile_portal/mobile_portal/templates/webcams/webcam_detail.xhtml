@@ -14,16 +14,16 @@
 {% block content %}
 
 <div class="section-nopad">
-<h2 class="section-header">{{ webcam.title }}<br /><small>{% now "G:i "%}</small></h1>
+<h2 class="section-header">{{ webcam.title }}<br /><small>{% now "G:i "%}</small></h2>
 
 {% external_image webcam.url "div" %}
 
+<div class="list-footer">
 <p>{{ webcam.description }}</p>
 
 {% if webcam.credit %}
-
 <p>Credit: {{ webcam.credit|safe }}</p>
-
 {% endif %}
 
+</div></div>
 {% endblock %}
