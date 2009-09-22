@@ -1,6 +1,10 @@
 {% extends "webcams/base.xhtml" %}
 {% load portal_misc %}
 
+{% block extrahead %}
+    <meta http-equiv="refresh" content="60" />
+{% endblock %}
+
 {% block breadcrumbs %}
 {{ block.super }}
             <li><a href="{% url webcams_index %}">
