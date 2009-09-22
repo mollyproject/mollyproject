@@ -1,7 +1,7 @@
 {% load portal_misc %}<!DOCTYPE HTML>
 
 {# iPhone specific title to fit on home screen - code should perhaps be moved elsewhere? #}
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-GB" lang="en-GB" {% if device|device_has_parent:"apple_iphone_ver1" %}manifest="{{ MEDIA_URL }}/cache/devices/iphone.manifest"{% endif %} >
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-GB" lang="en-GB" {% if device|device_has_parent:"apple_iphone_ver1" %}manifest="{{ MEDIA_URL }}cache/devices/iphone.manifest"{% endif %} >
   <head>
 	
 {# iPhone specific title to fit on home screen - code should perhaps be moved elsewhere? #}
@@ -25,8 +25,8 @@
 {% endif %}
 
 {% if device|device_has_parent:"apple_iphone_ver1" %}
-    <link rel="apple-touch-icon" href="{{ MEDIA_URL}}/png/apple-touch-icon.png"/>
-    <link rel="apple-touch-startup-image" href="{{ MEDIA_URL}}/png/apple-touch-startup-image.jpg">
+    <link rel="apple-touch-icon" href="{{ MEDIA_URL}}png/apple-touch-icon.png"/>
+    <link rel="apple-touch-startup-image" href="{{ MEDIA_URL}}png/apple-touch-startup-image.jpg">
 
 	<meta name="apple-mobile-web-app-capable" />
 	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
