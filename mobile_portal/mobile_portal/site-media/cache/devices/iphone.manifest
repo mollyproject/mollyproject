@@ -1,4 +1,22 @@
 CACHE MANIFEST
 
+../../css/base.css
+../../css/index.css
+../../css/index-buttons.css
+../../css/touch.css
+../../css/breadcrumbs.css
+
+../../png/headers/240.png
+../../png/headers/home_header_bg_240.png
+../../png/contacts.png
+../../png/maps.png
+../../png/webcams.png
+../../png/results.png
+../../png/podcasts.png
+../../png/rss.png
+../../png/list-arrow.png
+
+../../js/geolocation.js
 ../../js/jquery-1.3.2.js
 
+../../js/gears_init.js
