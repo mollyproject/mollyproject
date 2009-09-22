@@ -18,7 +18,9 @@
 {% block content %}
 
 <div class="list-section">
-	<h2 class="section-header">{{ entity.title }}</h2>
+	<h2 class="section-header"><small>{{ entity.title }}<br />{{ now }}</small></h2>
+
+	
 {% if services %}
 <table class="section-table">
     <thead style="display:none;">
