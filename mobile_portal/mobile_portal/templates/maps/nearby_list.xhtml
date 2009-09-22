@@ -20,7 +20,7 @@
 <div class="list-note">
 {% if preferences.location.location %}
 <div class="bubble">
-We think you are near <strong>{{ preferences.location.placemark.address }}</strong>. If this is not correct, please <a href="{% url core_update_location %}?return_url={{ return_url|urlencode }}">update your location</a>. {{ preferences.location.coords.accuracy }}</div>
+We think you are near <strong>{{ preferences.location.placemark.address }}</strong>. If this is not correct, please <a href="{% url core_update_location %}?return_url={{ return_url|urlencode }}">update your location</a>. </div>
 {% else %}
 <div class="bubble">We do not yet have a location for you. Please <a href="{% url core_update_location %}?return_url={{ return_url|urlencode }}">update your location</a>.</div>
 {% endif %}
