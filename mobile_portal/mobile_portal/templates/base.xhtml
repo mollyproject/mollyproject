@@ -1,5 +1,7 @@
 {% load portal_misc %}<!DOCTYPE HTML>
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-GB" lang="en-GB">
+
+{# iPhone specific title to fit on home screen - code should perhaps be moved elsewhere? #}
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-GB" lang="en-GB" {% if device|device_has_parent:"apple_iphone_ver1" %}manifest="{{ MEDIA_URL }}/cache/devices/iphone.manifest"{% endif %} >
   <head>
 	
 {# iPhone specific title to fit on home screen - code should perhaps be moved elsewhere? #}
