@@ -18,7 +18,7 @@
 {% block content %}
 
 <div class="list-section">
-	<h2 class="section-header"><small>{{ entity.title }}<br />{{ now }}</small></h2>
+	<h2 class="section-header"><small>{{ entity.title }}<br />{% now "G:i "%}</small></h2>
 
 	
 {% if services %}
