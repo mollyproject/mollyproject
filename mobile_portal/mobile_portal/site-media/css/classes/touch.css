@@ -56,12 +56,19 @@ ul.ml .email {
     background-image:url('../../png/icons/list-email.png');
 }
 
-ul.ml .audio {
+ul.ml span.audio {
     background-image:url('../../png/icons/list-audio.png');
 }
 
-ul.ml .video {
+ul.ml span.video {
     background-image:url('../../png/icons/list-video.png');
+}
+
+ul.ml span.audio, ul.ml span.video {
+    display:block;
+    background-repeat:no-repeat;
+    padding-left:25px;
+    background-position:left 2px;
 }
 
 ul.ml li a, button.as_link {
