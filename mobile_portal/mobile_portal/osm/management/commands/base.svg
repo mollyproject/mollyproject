@@ -68,7 +68,7 @@
        sodipodi:nodetypes="cscccsc" />
     <text
        xml:space="preserve"
-       style="font-size:10.22735882px;font-style:normal;font-weight:bold;text-align:center;text-anchor:middle;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+       style="font-size:10.22735882px;font-style:normal;font-weight:bold;text-align:center;text-anchor:middle;fill:%(text_color)s       ;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
        x="394.11011"
        y="440.13892"
        id="text17"><tspan

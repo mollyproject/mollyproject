@@ -15,7 +15,12 @@ class Command(NoArgsCommand):
         
 
         for color, index in itertools.product(MARKER_COLORS, MARKER_RANGE):
-            out = template % {'label': str(index), 'fill': color[1], 'stroke': color[2]}
+            out = template % {
+                'label': str(index),
+                'fill': color[1],
+                'stroke': color[2],
+                'text_color': color[3],
+            }
             
             f = open('out.svg', 'w')
             f.write(out)
