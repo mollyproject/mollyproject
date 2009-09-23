@@ -9,16 +9,18 @@
     <li><a href="{% url maps_nearby_detail entity.entity_type.slug %}">&hellip;</a></li>
 {% endblock %}
 
-{% block pagetitle %}{{ entity.title }}{% endblock %}
+{% block pagetitle %}{{ entity.entity_type.verbose_name }}{% endblock %}
 
 
 {% block content %}
 
-<div class="map_pane">
-{% map entity.location %}
-</div><div class="details_pane">
+<div class="section-nopad">
+<h2 class="section-header">{{ entity.title }}</h2>
+
+<div style="background-image:url('{% map_url entity.location %}'); background-repeat:no-repeat; background-position: center center; height:{{ device.max_image_height }}px"> </div>
+
 {% if entity|osm_tags %}
-<table>
+<table class="section-table">
     <tbody>
 {% for k,v in entity|osm_tags %}
         <tr>
@@ -30,13 +32,24 @@
 </table>
 {% endif %}
 
-<h2>Disclaimer</h2>
+<ul class="ml">
+    <li>
+        <a href="{% url maps_entity_nearby_list entity.entity_type.slug,entity.display_id %}">Find things near here</a>
+    </li>
+</ul>
 
-<p>Oxford University provide this information without warranty. For further details, see our <a href="/legal/">legal information</a>.</p>
+</div>
 
-<p>
-    <a href="{% url maps_entity_nearby_list entity.entity_type.slug,entity.display_id %}">Find things near here</a>
-</p>
+<div class="section-nopad">
+<h2 class="section-header">Note</h2>
+
+<div class="list-note bottom">
+    This information is provided courtesy of
+    <a href="http://www.openstreetmap.org/">OpenStreetMap</a> under a
+    <a href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Attribution-ShareAlike 2.0</a> license.<br/>
+    Oxford University provides this information without warranty. For further
+    details, see our <a href="/legal/">legal information</a>.
+</div>
 
 </div>
 
