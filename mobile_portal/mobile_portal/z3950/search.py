@@ -91,6 +91,7 @@ class OLISResult(object):
             if data[2] != '$':
                 continue
 
+
             subfields = data[3:].split(' $')
             subfields = [(s[0], s[1:]) for s in subfields]
 
@@ -101,14 +102,16 @@ class OLISResult(object):
             for subfield_id, content in subfields:
                 if not subfield_id in m:
                     m[subfield_id] = []
-                m[subfield_id].append(content)
+                m[subfield_id].append(content.decode('iso-8859-1'))
             self.metadata[heading].append(m)
 
         self.libraries = {}
 
         for datum in self.metadata[OLISResult.USM_LOCATION]:
             library = Library(datum['b'])
-            if datum['y'][0].startswith('DUE BACK: '):
+            if not 'y' in datum:
+                due_date, availability = None, AVAIL_UNKNOWN
+            elif datum['y'][0].startswith('DUE BACK: '):
                 due_date = datetime.strptime(datum['y'][0][10:], '%d/%m/%y')
                 availability = AVAIL_UNAVAILABLE
             else:
@@ -129,7 +132,7 @@ class OLISResult(object):
             self.libraries[library].append( {
                 'due': due_date,
                 'availability': availability,
-                'availability_display': datum['y'][0],
+                'availability_display': datum['y'][0] if 'y' in datum else None,
                 'shelfmark': shelfmark,
             } )
             

@@ -1,0 +1,30 @@
+<div class="section-nopad">
+    <h2 class="section-header">Search</h2>
+    <div class="list-note"><div class="bubble">
+        Search by providing one or more of the following. You can use a '*' in place of an 'X' in an ISBN.
+    </div></div>
+    <form method="get" action="{% url z3950_search %}">
+    <table class="section-table">
+        <tbody>
+            <tr>
+                <th>{{ search_form.title.label }}:</th>
+                <td>{{ search_form.title }}</td>
+            </tr><tr>
+                <th>{{ search_form.author.label }}:</th>
+                <td>{{ search_form.author }}</td>
+            </tr><tr>
+                <th>{{ search_form.isbn.label }}:</th>
+                <td>{{ search_form.isbn }}</td>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="2">
+                    <input type="submit" value="Search"/>
+                    <input type="reset" value="Reset"/>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+    </form>
+</div>

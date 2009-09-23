@@ -5,17 +5,21 @@
 
 {% block content %}
 
-<div class="list-section">
-    <ul class="ml">
-        <li><a href="">Search by ISBN</a></li>
-    </ul>
-</div>
+{% include "z3950/search_form.xhtml" %}
         
 <div class="list-section">
     <h2 class="section-header">Maps</h2>
     <ul class="ml">
         <li><a href="{% url maps_category_detail "library" %}">List of libraries</a></li>
         <li><a href="{% url maps_nearby_detail "library" %}">Libraries near me</a></li>
+    </ul>
+</div>
+
+<div class="list-section">
+    <h2 class="section-header">Contact Library Services</h2>
+    <ul class="ml">
+        <li><a class="email" href="+mailto:reader.services@ouls.ox.ac.uk">E-mail<br/><small>reader.services@ouls.ox.ac.uk</small></a></li>
+        <li><a class="phone" href="+tel:+441865277162">Telephone<br/><small>01865 (2)77162</small></a></li>
     </ul>
 </div>
 

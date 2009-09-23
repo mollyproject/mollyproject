@@ -7,17 +7,33 @@
             </a></li>
 {% endblock %}
 
-{% block pagetitle %}Results{% endblock %}
+{% block pagetitle %}Search{% endblock %}
 
 {% block content %}
 
+{% if search_form %}{% include "z3950/search_form.xhtml" %}{% endif %}
+
+{% if results %}
 <div class="list-section">
+<h2 class="section-header">Results</h2>
+{% if removed %}
+<div class="list-note"><div class="bubble">
+    The following common word{{ removed|length|pluralize:" was,s were" }} not included in your query:
+    {% for w in removed %}{% if forloop.last %}{% if not forloop.first %}and {% endif %}<em>{{ w }}</em>{% else %}<em>{{ w }}</em>, {% endif %}{% endfor %}
+</div></div>
+{% endif %}
 <ul class="ml">
 {% for item in results %}
-<li{% if forloop.first %} class="top"{% endif %}>
-    <a href="{% url z3950_item_detail item.control_number %}">{{ item }}</a></li>
+<li>
+    <a href="{% url z3950_item_detail item.control_number %}">
+        {{ item }}
+        <br/><small><strong>Author:</strong> {{ item.author }}</small>
+        <br/><small><strong>Publisher:</strong> {{ item.publisher }}</small>
+    </a>
+</li>
 {% endfor %}
 </ul>
 </div>
+{% endif %}
 
 {% endblock %}

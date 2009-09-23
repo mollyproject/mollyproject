@@ -79,6 +79,10 @@ h1.results-header {
     background-image:url('../png/results-bc.png');
 }
 
+h1.z3950-header {
+    background-image:url('../png/z3950-bc.png');
+}
+
 h1.rss-header {
     background-image:url('../png/rss-bc.png');
 }
