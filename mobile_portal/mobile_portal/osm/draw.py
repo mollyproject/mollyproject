@@ -123,6 +123,8 @@ def get_map(points, width, height, filename, zoom=None):
            
     
     surface.write_to_png(filename)
+    
+    
 
 class PointSet(set):
     def __init__(self, initial=None):
@@ -166,7 +168,6 @@ class PointSet(set):
         
 
 def get_fitted_map(centre_point, points, min_points, zoom, width, height, filename):
-    print "Here"
 
     # If we haven't been given a zoom, start as close as we can
     if not zoom:
@@ -183,7 +184,8 @@ def get_fitted_map(centre_point, points, min_points, zoom, width, height, filena
     
     points = [p[0] for p in new_points]
     
-    points = [centre_point] + list(points)
+    if centre_point:
+        points = [centre_point] + list(points)
     point_set, points = PointSet(points[:min_points+1]), points[min_points+1:]
     
     while not point_set.contained_within(box, zoom):
@@ -191,20 +193,23 @@ def get_fitted_map(centre_point, points, min_points, zoom, width, height, filena
         print zoom
     
     while point_set.contained_within(box, zoom):
-        new_point, points = points[0], points[1:]
-        point_set.add(new_point)
         if not points:
             break
+        new_point, points = points[0], points[1:]
+        point_set.add(new_point)
     else:
         point_set.remove(new_point)
     
     used_points = point_set.ordered[1:]
     
-    points = [(centre_point[0], centre_point[1], 'green', None)]
+    if centre_point:
+        points = [(centre_point[0], centre_point[1], centre_point[2], None)]
+    else:
+        points = []
     
     for i, point in enumerate(used_points):
         points.append(
-            (point[0], point[1], 'red', i+1)
+            (point[0], point[1], point[2], i+1)
         )
         
     print "Points", len(points), points
@@ -212,7 +217,10 @@ def get_fitted_map(centre_point, points, min_points, zoom, width, height, filena
     print "Extent", point_set.extent(zoom)
     get_map(points, width, height, filename, zoom)
     
-    new_points = new_points[:len(point_set)-1]
+    if centre_point:
+        new_points = new_points[:len(point_set)-1]
+    else:
+        new_points = new_points[:len(point_set)]
     return new_points, zoom
     
     

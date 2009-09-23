@@ -21,8 +21,12 @@
 <div class="list-section">
 <div class="list-note top">
     Found {{ count }} {% ifequal count 1 %}{{ entity_type.verbose_name }}{% else %}{{ entity_type.verbose_name_plural }}{% endifequal %}
+    {% ifnotequal zoom 18 %}
     <a class="no-icon" href="{% if entity %}{% url maps_entity_nearby_detail_distance entity.entity_type.slug,entity.display_id,entity_type.slug,zoom|add:"-1" %}{% else %}{% url maps_nearby_detail_distance entity_type.slug,zoom|add:"1" %}{% endif %}">Zoom in</a>
+    {% endifnotequal %}
+    {% ifnotequal zoom 10 %}
     <a class="no-icon" href="{% if entity %}{% url maps_entity_nearby_detail_distance entity.entity_type.slug,entity.display_id,entity_type.slug,zoom|add:"1" %}{% else %}{% url maps_nearby_detail_distance entity_type.slug,zoom|add:"-1" %}{% endif %}">Zoom out</a>
+    {% endifnotequal %}
 </div>
 
     <div style="background-image:url('{% url osm_generated_map map_hash %}'); background-repeat:no-repeat; background-position: center center; height:{{ device.max_image_height }}px"> </div>
@@ -48,7 +52,7 @@
 <div class="list-note">
     There isn't anything that close to you.
     Try <a class="no-icon" href="{% url core_update_location %}?return_url={% url maps_nearby_detail entity_type.slug %}">updating
-    your location</a> or <a class="no-icon" href="{% if entity %}{% url maps_entity_nearby_detail_distance entity.entity_type.slug,entity.display_id,entity_type.slug,zoom|add:"-1" %}{% else %}{% url maps_nearby_detail_distance entity_type.slug,zoom|add:"-1" %}{% endif %}">widening your search</a>.</div>
+    your location</a>{% ifnotequal zoom 10 %} or <a class="no-icon" href="{% if entity %}{% url maps_entity_nearby_detail_distance entity.entity_type.slug,entity.display_id,entity_type.slug,zoom|add:"-1" %}{% else %}{% url maps_nearby_detail_distance entity_type.slug,zoom|add:"-1" %}{% endif %}">widening your search</a>{% endifnotequal %}.</div>
 {% endif %}
 </ul>
 </div>

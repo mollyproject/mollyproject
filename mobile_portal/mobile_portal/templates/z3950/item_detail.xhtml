@@ -1,0 +1,48 @@
+{% extends "z3950/base.xhtml" %}
+
+{% block breadcrumbs %}
+{{ block.super }}
+            <li><a href="{% url z3950_index %}">
+                <img src="{{ MEDIA_URL }}png/z3950-bc.png" alt="Library"/>
+            </a></li>
+{% endblock %}
+
+{% block pagetitle %}View{% endblock %}
+{% block title %}m.ox | {{ item.title }}{% endblock %}
+
+{% block content %}
+
+<div class="section-nopad">
+    <h2 class="section-header">{{ item.title }}</h2>
+    <ul class="ml">
+       <li class="non-link-item">Publisher: {{ item.publisher }}</li>
+{% if item.edition %}
+       <li class="non-link-item">Edition: {{ item.edition }}</li>
+{% endif %}
+       <li class="non-link-item">Description: {{ item.description }}</li>
+    </ul>
+</div>
+
+<div class="list-section">
+    <h2 class="section-header">Library holdings</h2>
+    
+    <div style="background-image:url('{% url osm_generated_map map_hash %}'); background-repeat:no-repeat; background-position: center center; height:{{ device.max_image_height }}px"> </div>
+
+    <ul class="ml">
+{% for library, books in libraries %}
+{% if library.oxpoints_id %}
+        <li><a href="{{ library.oxpoints_entity.get_absolute_url }}">{{ library.marker_number|default:"Not on map" }}. {{ library.location|join:" - " }}</a></li>
+{% else %}
+        <li class="non-link-item">{{ library.marker_number|default:"Not on map" }}. {{ library.location|join:" - " }}</li>
+{% endif %}
+        {% for book in books %}
+        <li class="subitem non-link-item">
+        Shelfmark: <em>{{ book.shelfmark }}</em>, availability: <em>{{ book.availability_display }}</em>
+        </li>
+        {% endfor %}
+{% endfor %}
+    </ul>
+</div>
+
+
+{% endblock %}

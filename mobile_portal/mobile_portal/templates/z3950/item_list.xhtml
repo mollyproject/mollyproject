@@ -1,0 +1,23 @@
+{% extends "z3950/base.xhtml" %}
+
+{% block breadcrumbs %}
+{{ block.super }}
+            <li><a href="{% url z3950_index %}">
+                <img src="{{ MEDIA_URL }}png/z3950-bc.png" alt="Library"/>
+            </a></li>
+{% endblock %}
+
+{% block pagetitle %}Results{% endblock %}
+
+{% block content %}
+
+<div class="list-section">
+<ul class="ml">
+{% for item in results %}
+<li{% if forloop.first %} class="top"{% endif %}>
+    <a href="{% url z3950_item_detail item.control_number %}">{{ item }}</a></li>
+{% endfor %}
+</ul>
+</div>
+
+{% endblock %}

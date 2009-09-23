@@ -86,8 +86,8 @@ def nearby_detail(request, ptype, zoom=None, entity=None):
         e.bearing = COMPASS_POINTS[int(((90 - degrees(atan2(lon_diff, lat_diff))+22.5) % 360) // 45)]
         
     map_hash, (new_points, zoom) = fit_to_map(
-        centre_point = location,
-        points = ((e.location[1], e.location[0]) for e in entities),
+        centre_point = (location[0], location[1], 'green'),
+        points = ((e.location[1], e.location[0], 'red') for e in entities),
         min_points = min_points,
         zoom = zoom,
         width = request.device.max_image_width-8,
