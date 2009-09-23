@@ -77,6 +77,30 @@ function getGearsPositionInterface(name) {
     }
 }
 
+function getBlackberryPositionInterface() {
+    function getCurrentPosition (successCallback, errorCallback, options) {
+        successCallback({
+            coords: {
+                latitude: blackberry.location.latitude,
+                longitude: blackberry.location.longitude,
+                accuracy: 200,
+            }
+        });
+    }
+    
+    return {
+        getCurrentPosition: getCurrentPosition,
+        watchPosition: function (successCallback, errorCallback, options) {
+            getCurrentPosition(successCallback, errorCallback, options);
+            blackberry.location.onLocationUpdate(successCallback);
+            return successCallback;
+        },
+        clearWatch: function(id) {
+            blackberry.location.removeLocationUpdate(id);
+        },
+    }
+}    
+
 function positionWatcher(position) {
     positionRequestCount += 1;
     if (positionRequestCount > 10 || position.coords.accuracy <= 150 || position.coords.accuracy == 18000) {
@@ -98,6 +122,9 @@ function requestPosition() {
     if (window.google && google.gears) {
         positionInterface = getGearsPositionInterface('Oxford Mobile Portal');
         positionMethod = 'gears';
+    } else if (window.blackberry && blackberry.location) {
+        positionInterface = getBlackberryPositionInterface();
+        positionMethod = 'blackberry';
     } else if (window.navigator && navigator.geolocation) {
         positionInterface = navigator.geolocation;
         positionMethod = 'html5';
@@ -111,7 +138,9 @@ function requestPosition() {
 }
 
 function positionMethodAvailable() {
-    return ((window.navigator && navigator.geolocation) || (window.google && google.gears))
+    return ((window.navigator && navigator.geolocation)
+         || (window.blackberry && blackberry.location)
+         || (window.google && google.gears))
 }
 
 if (require_location)

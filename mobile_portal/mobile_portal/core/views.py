@@ -133,6 +133,9 @@ def ajax_update_location(request):
     'gears'
         The position was determined using the Google Gears geolocation API,
         found at http://code.google.com/apis/gears/api_geolocation.html.
+    'blackberry'
+        The position was determined using the BlackBerry geolocation API,
+        http://docs.blackberry.com/en/developers/deliverables/8861/blackberry_location_568404_11.jsp.
     'manual'
         The user provided the location directly.
     'geocoded'
@@ -206,7 +209,7 @@ def ajax_update_location(request):
             'You must provide a method.'
         )
     else:
-        if method in ('html5', 'gears', 'manual', 'geocoded', 'other'):
+        if method in ('html5', 'gears', 'manual', 'geocoded', 'blackberry', 'other'):
             if not location:
                 errors.append(
                     'A position is required for the method you provided.'
