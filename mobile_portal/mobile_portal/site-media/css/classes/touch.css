@@ -133,7 +133,7 @@ div.list-section, div.section-nopad {
 }
 
 div.section-content {
-    margin:8px;
+    padding:8px;
 }
 
 h2.section-header, div.list-footer {
