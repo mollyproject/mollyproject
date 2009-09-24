@@ -86,6 +86,14 @@ def search_isbn(request, isbn=None):
     
 AVAIL_COLORS = ['red', 'amber', 'purple', 'blue', 'green']
 def item_detail(request, control_number):
+
+    try:
+        zoom = int(request.GET['zoom'])
+    except (ValueError, KeyError):
+        zoom = None
+    else:
+        zoom = min(max(10, zoom), 18)
+
     items = search.ControlNumberSearch(control_number)
     if len(items) == 0:
             raise Http404
@@ -126,8 +134,8 @@ def item_detail(request, control_number):
     map_hash, (new_points, zoom) = fit_to_map(
         centre_point = (location[0], location[1], 'green') if location else None,
         points = points,
-        min_points = len(points),
-        zoom = None,
+        min_points = 0 if zoom else len(points),
+        zoom = zoom,
         width = request.device.max_image_width-8,
         height = request.device.max_image_height,
     )
@@ -149,5 +157,6 @@ def item_detail(request, control_number):
         'item': item,
         'libraries': libraries,
         'map_hash': map_hash,
+        'zoom': zoom,
     }
     return mobile_render(request, context, 'z3950/item_detail')

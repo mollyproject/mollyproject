@@ -1,4 +1,4 @@
-ul.ml {
+ul.ml, dl.ml {
     list-style:none;
     padding:0.2em;
     padding:0px;
@@ -6,7 +6,7 @@ ul.ml {
     margin-bottom:0;
 }
 
-ul.ml li, table.section-table tr {
+ul.ml li, table.section-table tr, dl.ml dt, dl.ml dd {
     color:#ffffff;
     font-size:12pt;
 
@@ -15,11 +15,11 @@ ul.ml li, table.section-table tr {
 	padding-right: 10px;
 }
 
-ul.ml li.non-link-item {
+ul.ml li.non-link-item, dl.ml dt {
 	padding:10px;
 }
 
-ul.ml li.subitem {
+ul.ml li.subitem, dl.ml dd {
     background-color:#103157;
     margin: auto auto auto 16px;
 }
@@ -44,7 +44,7 @@ ul.ml li.header {
     font-size:14pt;
 }
 
-ul.ml a, button.as_link  {
+ul.ml a, dl.ml a, button.as_link  {
     background-image:url('../../png/icons/list-arrow.png');
 }
 
@@ -71,7 +71,7 @@ ul.ml span.audio, ul.ml span.video {
     background-position:left 2px;
 }
 
-ul.ml li a, button.as_link {
+ul.ml li a, dl.ml dd a, button.as_link {
 	font-size:12pt;
     color:#ffffff;
     text-decoration: none;
@@ -185,3 +185,4 @@ div.bubble {
     -moz-border-radius:8px;
     -webkit-border-radius:8px;
 }
+

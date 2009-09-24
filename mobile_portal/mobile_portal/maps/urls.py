@@ -16,10 +16,7 @@ urlpatterns = patterns('mobile_portal.maps.views',
     (r'^nearby/(?P<ptype>[^/]+)/$',
         'nearby_detail', {},
         'maps_nearby_detail'),
-    (r'^nearby/(?P<ptype>.+)/(?P<zoom>1[0-8])/$',
-        'nearby_detail', {},
-        'maps_nearby_detail_distance'),
-
+    
     (r'^category/$',
         'category_list', {},
         'maps_category_list'),
@@ -37,10 +34,7 @@ urlpatterns = patterns('mobile_portal.maps.views',
     (r'^(?P<type_slug>[a-z_]+):(?P<id>[\dA-Z]+)/nearby/(?P<ptype>[^/]+)/$',
         'entity_nearby_detail', {},
         'maps_entity_nearby_detail'),
-    (r'^(?P<type_slug>[a-z_]+):(?P<id>[\dA-Z]+)/nearby/(?P<ptype>[^/]+)/(?P<zoom>1[0-8])/$',
-        'entity_nearby_detail', {},
-        'maps_entity_nearby_detail_distance'),
-        
+    
     (r'^(?P<type_slug>[a-z_]+):(?P<id>[\dA-Z]+)/favourite/$',
         'entity_favourite', {},
         'maps_entity_favourite'),

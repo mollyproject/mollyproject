@@ -17,7 +17,9 @@
 <div class="section-nopad">
 <h2 class="section-header">{{ entity.title }}</h2>
 
-<div style="background-image:url('{% map_url entity.location %}'); background-repeat:no-repeat; background-position: center center; height:{{ device.max_image_height }}px"> </div>
+<div class="backgrounded-image" style="background-image:url('{% map_url entity.location %}'); height:{{ device.max_image_height }}px">
+{% include "maps/map_elements.xhtml" %}
+</div>
 
 {% if entity|osm_tags %}
 <table class="section-table">

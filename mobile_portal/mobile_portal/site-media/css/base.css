@@ -129,9 +129,41 @@ div.submit-line {
     padding-bottom:8px;
 }
 
+
+/* Style for map elements */
+
 div.backgrounded-image {
     background-repeat:no-repeat;
     background-position: center center;
+    position:relative;
+}
+
+a.zoom-out, a.zoom-in {
+    padding:5px;
+    display:block;
+}
+
+a.zoom-out img, a.zoom-in img{
+    border:0;
+}
+
+a.zoom-out {
+    float:left;
+}
+
+a.zoom-in {
+    float:right;
+}
+
+div.osm-license {
+    position:absolute;
+    top:auto;
+    right:0;
+    bottom:0;
+    font-size:8pt;
+    text-align:right;
+    background-color: rgba(255, 255, 255, 0.5);
+    padding:2px;
 }
 
 /*

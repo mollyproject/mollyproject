@@ -5,7 +5,7 @@ from django import template
 from django.contrib.gis.geos import Point
 from django.core.urlresolvers import reverse
 from mobile_portal.wurfl import device_parents
-from mobile_portal.osm.utils import get_generated_map
+from mobile_portal.osm.utils import fit_to_map
 
 register = template.Library()
 
@@ -103,8 +103,11 @@ $(document).ready(function() {
 """ % params
 
     def generated_map(self, context, lat, lng, width, height):
-        hash, metadata = get_generated_map(
-            [(lat, lng, 'green', None)],
+        hash, metadata = fit_to_map(
+            (lat, lng, 'green'),
+            [],
+            0,
+            context['zoom'],
             width,
             height,
         )

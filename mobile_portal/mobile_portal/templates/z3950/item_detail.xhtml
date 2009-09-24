@@ -26,7 +26,9 @@
 <div class="list-section">
     <h2 class="section-header">Library holdings</h2>
     
-    <div style="background-image:url('{% url osm_generated_map map_hash %}'); background-repeat:no-repeat; background-position: center center; height:{{ device.max_image_height }}px"> </div>
+    <div class="backgrounded-image" style="background-image:url('{% url osm_generated_map map_hash %}'); height:{{ device.max_image_height }}px">
+    {% include "maps/map_elements.xhtml" %}
+    </div>
 
     <ul class="ml">
 {% for library, books in libraries %}

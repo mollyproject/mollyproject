@@ -3,9 +3,10 @@
 {% block breadcrumbs %}
 {{ block.super }}
 {% if entity %}
-    <li><a href="{{ entity_type.get_absolute_url }}">{{ entity_type.verbose_name_plural|capfirst }}</a></li>
-    <li><a href="{{ entity.get_absolute_url }}">{{ entity.title }}</a></li>
-    <li><a href="{% url maps_entity_nearby_detail entity.entity_type.slug,entity.display_id,entity_type.slug %}">Nearest {{ entity_type.verbose_name }}</a></li>
+	<li><a href="{% url maps_index %}">
+        <img src="{{ MEDIA_URL }}png/maps-bc.png" alt="Maps"/>
+    </a></li>
+    <li><a href="{% url maps_entity_nearby_list entity.entity_type.slug,entity.display_id %}">&hellip;</a></li>
 {% else %}    
 	<li><a href="{% url maps_index %}">
         <img src="{{ MEDIA_URL }}png/maps-bc.png" alt="Maps"/>
@@ -14,22 +15,18 @@
 {% endif %}
 {% endblock %}
 
-{% block pagetitle %}{{ entity_type.verbose_name_plural|capfirst }}{% if entity %} near {{ entity.title }}{% endif %}{% endblock %}
+{% block pagetitle %}{{ entity_type.verbose_name_plural|capfirst }}{% endblock %}
 
 {% block content %}
 
 <div class="list-section">
 <div class="list-note top">
-    Found {{ count }} {% ifequal count 1 %}{{ entity_type.verbose_name }}{% else %}{{ entity_type.verbose_name_plural }}{% endifequal %}
-    {% ifnotequal zoom 18 %}
-    <a class="no-icon" href="{% if entity %}{% url maps_entity_nearby_detail_distance entity.entity_type.slug,entity.display_id,entity_type.slug,zoom|add:"-1" %}{% else %}{% url maps_nearby_detail_distance entity_type.slug,zoom|add:"1" %}{% endif %}">Zoom in</a>
-    {% endifnotequal %}
-    {% ifnotequal zoom 10 %}
-    <a class="no-icon" href="{% if entity %}{% url maps_entity_nearby_detail_distance entity.entity_type.slug,entity.display_id,entity_type.slug,zoom|add:"1" %}{% else %}{% url maps_nearby_detail_distance entity_type.slug,zoom|add:"-1" %}{% endif %}">Zoom out</a>
-    {% endifnotequal %}
+    Found {{ count }} {% ifequal count 1 %}{{ entity_type.verbose_name }}{% else %}{{ entity_type.verbose_name_plural }}{% if entity %} near {{ entity.title }}{% endif %}{% endifequal %}
 </div>
 
-    <div style="background-image:url('{% url osm_generated_map map_hash %}'); background-repeat:no-repeat; background-position: center center; height:{{ device.max_image_height }}px"> </div>
+<div class="backgrounded-image" style="background-image:url('{% url osm_generated_map map_hash %}'); height:{{ device.max_image_height }}px">
+{% include "maps/map_elements.xhtml" %}
+</div>
 
 <ul class="ml">
 {% if entities %}
@@ -52,11 +49,12 @@
 <div class="list-note">
     There isn't anything that close to you.
     Try <a class="no-icon" href="{% url core_update_location %}?return_url={% url maps_nearby_detail entity_type.slug %}">updating
-    your location</a>{% ifnotequal zoom 10 %} or <a class="no-icon" href="{% if entity %}{% url maps_entity_nearby_detail_distance entity.entity_type.slug,entity.display_id,entity_type.slug,zoom|add:"-1" %}{% else %}{% url maps_nearby_detail_distance entity_type.slug,zoom|add:"-1" %}{% endif %}">widening your search</a>{% endifnotequal %}.</div>
+    your location</a>{% ifnotequal zoom 10 %} or <a class="no-icon" href="?zoom={{ zoom|add:"-1" }}">widening your search</a>{% endifnotequal %}.</div>
 {% endif %}
 </ul>
 </div>
 
+<!--
 {% ifequal entity_type.source "osm" %}
 <div class="section-nopad">
 <h2 class="section-header">Note</h2>
@@ -69,5 +67,6 @@
     details, see our <a href="/legal/">legal information</a>.
 </div>
 {% endifequal %}
+-->
 
 {% endblock %}

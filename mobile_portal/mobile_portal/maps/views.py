@@ -56,7 +56,17 @@ DISTANCES = {
 
 COMPASS_POINTS = ('N','NE','E','SE','S','SW','W','NW')
 
-def nearby_detail(request, ptype, zoom=None, entity=None):
+def get_zoom(GET):
+    try:
+        zoom = int(GET['zoom'])
+    except (KeyError, ValueError):
+        zoom = None
+    else:
+        zoom = min(max(10, zoom), 18)
+    return zoom
+
+def nearby_detail(request, ptype, entity=None):
+    zoom = get_zoom(request.GET)
         
     entity_type = get_object_or_404(EntityType, slug=ptype)
     
@@ -65,7 +75,7 @@ def nearby_detail(request, ptype, zoom=None, entity=None):
         if not point:
             context = {'entity': entity}
             return mobile_render(request, context, 'maps/entity_without_location')
-        location = point[0], point[1]
+        location = point[1], point[0]
     else:
         location = request.preferences['location']['location']
         if not location:
@@ -110,6 +120,7 @@ def nearby_detail(request, ptype, zoom=None, entity=None):
 
 OXPOINTS_URL = 'http://m.ox.ac.uk/oxpoints/id/%s.json'    
 def entity_detail_oxpoints(request, entity):
+    zoom = get_zoom(request.GET) or 16
     try:
         data = simplejson.load(urllib.urlopen(OXPOINTS_URL % entity.oxpoints_id))[0]
     except urllib2.HTTPError, e:
@@ -121,13 +132,15 @@ def entity_detail_oxpoints(request, entity):
     context = {
         'data': data,
         'entity': entity,
+        'zoom': zoom,
     }
 
     return mobile_render(request, context, 'maps/oxpoints')
 
 OXONTIME_URL = 'http://www.oxontime.com/pip/stop.asp?naptan=%s&textonly=1'
 def entity_detail_busstop(request, entity):
-    #raise Exception(OXONTIME_URL % entity.atco_code)
+    zoom = get_zoom(request.GET) or 16
+    
     try:
         xml = ES.parse(urllib.urlopen(OXONTIME_URL % entity.atco_code))
     except TypeError:
@@ -155,14 +168,17 @@ def entity_detail_busstop(request, entity):
     context = {
         'services': services,
         'entity': entity,
+        'zoom': zoom,
     }        
         
     return mobile_render(request, context, 'maps/busstop')
     
 def entity_detail_osm(request, entity):
-
+    zoom = get_zoom(request.GET) or 16
+    
     context = {
         'entity': entity,
+        'zoom': zoom,
     }
     
     try:
@@ -187,9 +203,9 @@ def entity_nearby_list(request, type_slug, id):
     entity = get_entity(type_slug, id)
     return nearby_list(request, entity)
     
-def entity_nearby_detail(request, type_slug, id, ptype, zoom=None):
+def entity_nearby_detail(request, type_slug, id, ptype):
     entity = get_entity(type_slug, id)
-    return nearby_detail(request, ptype, zoom, entity)
+    return nearby_detail(request, ptype, entity)
 
 def entity_favourite(request, type_slug, id):
     entity = get_entity(type_slug, id)

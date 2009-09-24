@@ -1,6 +1,16 @@
 {% extends "maps/base.xhtml" %}
 {% load maps %}{% load portal_misc %}
 
+{% block breadcrumbs %}
+{{ block.super }}
+	<li><a href="{% url maps_index %}">
+        <img src="{{ MEDIA_URL }}png/maps-bc.png" alt="Maps"/>
+    </a></li>
+    <li><a href="{% url maps_nearby_detail entity.entity_type.slug %}">&hellip;</a></li>
+{% endblock %}
+
+{% block pagetitle %}{{ data.dc_title }}{% endblock %}
+
 {% block title %}OMP | {{ data.dc_title }}{% endblock %}
 
 {% block content %}
@@ -10,7 +20,7 @@
 <h2 class="section-header">{{ data.dc_title }}</h2>
 
 
-<dl>
+<dl class="ml">
 
 {% if data.oxp_hasHomepage or data.oxp_hasITHomepage or data.oxp_hasWeblearn or data.oxp_hasLibraryHomepage %}
 <dt>Websites</dt>
@@ -90,22 +100,26 @@
 {% endif %}
 
 </dl>
+</div>
 
 {% if data.oxp_inImage %}
-<h2>Images</h2>
+<div class="section-nopad">
+<h2 class="section-header">Images</h2>
 {% for image in data.oxp_inImage %}
-<p><img src="{% external_image image.uri %}" alt=""/></p>
+{% external_image image.uri asdiv %}
 {% endfor %}
+</div>
 {% endif %}
 
-</div>
 
 <div class="list-section">
     <h2 class="section-header">Map</h2>
 
 {% if entity.location %}
-    {% map entity.location %}
-<div class="list-footer">
+    
+<div class="backgrounded-image" style="background-image:url('{% map_url entity.location %}'); height:{{ device.max_image_height }}px">
+{% include "maps/map_elements.xhtml" %}
+</div><div class="list-footer">
     <a href="{% url maps_entity_nearby_list entity.entity_type.slug,entity.display_id %}">Find things near here</a>
 </div>
 {% else %}

@@ -113,13 +113,14 @@ def get_map(points, width, height, filename, zoom=None):
         context.fill()
         
     
-    context.set_source_rgb(0,0,0)
-    credit = "OpenStreetMap"
-    xbearing, ybearing, cwidth, cheight, xadvance, yadvance = (
-        context.text_extents(credit))
-    context.select_font_face('sanf-serif', cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
-    context.move_to(width-cwidth-5, height-5)
-    context.show_text(credit)
+    # The following is now rendered in HTML
+    #context.set_source_rgb(0,0,0)
+    #credit = "OpenStreetMap"
+    #xbearing, ybearing, cwidth, cheight, xadvance, yadvance = (
+    #    context.text_extents(credit))
+    #context.select_font_face('sanf-serif', cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+    #context.move_to(width-cwidth-5, height-5)
+    #context.show_text(credit)
            
     
     surface.write_to_png(filename)
