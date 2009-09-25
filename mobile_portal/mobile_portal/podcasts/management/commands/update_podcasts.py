@@ -24,6 +24,7 @@ class Command(BaseCommand):
         ('duration', '{itunes:}duration'),
         ('published_date', 'pubDate'),
         ('description', 'description'),
+		('itunesu_code'), '{itunesu:}code'),
     )
 
     CATEGORY_ORDERS = {}
