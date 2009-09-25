@@ -70,6 +70,7 @@ class Library(object):
 
 class OLISResult(object):
     USM_CONTROL_NUMBER = 1
+    USM_AUTHOR = 100
     USM_TITLE_STATEMENT = 245
     USM_EDITION = 250
     USM_PUBLICATION = 260
@@ -79,7 +80,7 @@ class OLISResult(object):
     def __init__(self, result):
         self.result = result
         self.str = str(result)
-        self.metadata = {}
+        self.metadata = {OLISResult.USM_LOCATION: []}
 
         items = self.str.split('\n')[1:]
         for item in items:
@@ -88,10 +89,12 @@ class OLISResult(object):
             if heading == OLISResult.USM_CONTROL_NUMBER:
                 # We strip the 'UkOxUb' from the front.
                 self.control_number = data[6:]
-            if data[2] != '$':
+            
+            # We'll use a slice as data may not contain that many characters.
+            # LCN 12110145 is an example where this would otherwise fail.    
+            if data[2:3] != '$':
                 continue
-
-
+            
             subfields = data[3:].split(' $')
             subfields = [(s[0], s[1:]) for s in subfields]
 
@@ -137,18 +140,20 @@ class OLISResult(object):
             } )
             
 
-    def _metadata_property(heading):
+    def _metadata_property(heading, sep=' '):
         def f(self):
             if not heading in self.metadata:
                     return None
             field = self.metadata[heading][0]
-            return ' '.join(' '.join(field[k]) for k in sorted(field))
+            return sep.join(' '.join(field[k]) for k in sorted(field))
         return property(f)
     
     title = _metadata_property(USM_TITLE_STATEMENT)
     publisher = _metadata_property(USM_PUBLICATION)
+    author = _metadata_property(USM_AUTHOR, ', ')
     description = _metadata_property(USM_PHYSICAL_DESCRIPTION)
     edition = _metadata_property(USM_EDITION)
+    copies = property(lambda self: len(self.metadata[OLISResult.USM_LOCATION]))
     
     def __unicode__(self):
         return self.title

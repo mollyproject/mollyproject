@@ -129,6 +129,8 @@ def telephone_uri(value):
 
 @register.filter(name="device_has_parent")
 def device_has_parent(value, arg):
+    if not value:
+        return False
     return arg in device_parents[value.devid]
     
 @register.filter

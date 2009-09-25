@@ -1,4 +1,4 @@
-import unittest
+import unittest, urllib
 from django.test import TestCase
 from django.conf import settings
 from django.core.management import call_command
@@ -33,6 +33,11 @@ TEST_LIBRARY_IDS = [
     set([23233283, 23233440, 23232931, 23233138]),
 ]
 
+def ensureOxPoints():
+    if Entity.objects.filter(entity_type__slug='college').count():
+        return
+    call_command('update_oxpoints')
+
 class FakeOLISResult(search.OLISResult):
     def __init__(self, data):
         db_name = getattr(settings, 'Z3950_DATABASE')
@@ -41,11 +46,7 @@ class FakeOLISResult(search.OLISResult):
                 z3950_.Z3950_RECSYN_USMARC_ov, data, db_name
         ))
 
-class USMARCTestCase(unittest.TestCase):
-    def ensureOxPoints(self):
-        if Entity.objects.filter(entity_type__slug='college').count():
-            return
-        call_command('update_oxpoints')
+class USMARCTestCase(TestCase):
 
     def testGetDetails(self):
         for data, metadata in zip(TEST_DATA, TEST_METADATA):
@@ -62,7 +63,7 @@ class USMARCTestCase(unittest.TestCase):
 
     @perTestDatum
     def testLocationOxPoints(self, result, i):
-        self.ensureOxPoints()
+        ensureOxPoints()
         
         for library in result.libraries:
             self.assert_(
@@ -72,9 +73,33 @@ class USMARCTestCase(unittest.TestCase):
 
 ISBNS = ['1903402557', '0134841891']
         
-class ISBNSearchTestCase(unittest.TestCase):
+class ISBNSearchTestCase(TestCase):
     def testSearch(self):
         for isbn in ISBNS:
             s = search.ISBNSearch(isbn)
             for r in s:
                 print unicode(r)
+                
+TEST_AUTHORS = [
+    'Adolf Hitler', 'Peter F Hamilton', 'Rushdie', 'Jeremy Clarkson', 'Gandhi',
+    'Jeremy Black', 'Stewart III',
+]
+
+class SearchTestCase(TestCase):
+    
+    def testAuthorSearch(self):
+        ensureOxPoints()
+        
+        for author in TEST_AUTHORS:
+            response = self.client.get('/library/search/?%s' % urllib.urlencode({
+                'author': author,
+                'title': '',
+                'isbn': '',
+            }))
+            self.assertEqual(response.status_code, 200)
+            
+    def testOLISSearch(self):
+        for author in TEST_AUTHORS:
+            results = search.OLISSearch('au="%s"' % author)
+            self.assert_(len(results) > 0)
+    
