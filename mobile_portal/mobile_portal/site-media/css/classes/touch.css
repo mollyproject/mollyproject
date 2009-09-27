@@ -1,3 +1,10 @@
+
+
+body {
+	background-image:url('../../png/stripes.png');
+}
+
+
 ul.ml, dl.ml {
     list-style:none;
     padding:0.2em;
