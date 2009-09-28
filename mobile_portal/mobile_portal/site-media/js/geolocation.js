@@ -13,7 +13,7 @@ function sendPosition(position, final) {
     if (positionRequestCount == 1)
         $('#location_status').html('Location found; please wait while we put a name to it.');
         
-    jQuery.post(base+'core/ajax/update_location/', {
+    jQuery.post(base+'ajax/update_location/', {
         longitude: position.coords.longitude,
         latitude: position.coords.latitude,
         accuracy: position.coords.accuracy,
@@ -30,7 +30,7 @@ function sendPositionError(error) {
             'You did not give permission for the site to know your location. '
           + 'You won\'t be asked again unless you initiate an automatic '
           + 'update using the link below.');
-        jQuery.post('/core/ajax/update_location/', {
+        jQuery.post(base+'ajax/update_location/', {
             method: 'denied',
         });
     } else if (error.code == error.POSITION_UNAVAILABLE) {
@@ -42,7 +42,7 @@ function sendPositionError(error) {
         $('#location_status').html(
             'An error occured while determining your location.'
         );
-        jQuery.post('/core/ajax/update_location/', {
+        jQuery.post(base+'ajax/update_location/', {
             method: 'error',
         });
     }
