@@ -266,7 +266,6 @@ For more information on acceptable requests perform a GET on this resource.
     if location:
         if placemark:
             response_data = placemark[0]
-            print "RD", response_data
         else:
             response_data = "%s %s" % location
     else:
