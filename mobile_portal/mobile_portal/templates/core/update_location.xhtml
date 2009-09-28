@@ -66,10 +66,12 @@
 {% else %}
         <p id="location_status">Sorry, but we are unable to determine your location automatically.</p>
         <script type="text/javascript">
-            if (require_location && positionMethodAvailiable())
-                $('#location_status').html('We do not yet have a location for you; please wait while we attempt to determine one.');
-            else if (positionMethodAvailiable())
-                $('#location_status').css('display', 'none');
+            $(document).ready(function() {
+                if (require_location && positionMethodAvailable())
+                    $('#location_status').html('We do not yet have a location for you; please wait while we attempt to determine one.');
+                else if (positionMethodAvailable())
+                    $('#location_status').css('display', 'none');
+            });
         </script>
 {% endif %}
 {% endif %}

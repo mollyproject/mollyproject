@@ -103,6 +103,7 @@ function requestPosition() {
         positionMethod = 'html5';
     }
     
+    $('#location_status').css('display', 'block');
     if (positionInterface) {
         $('#location_status').html('Please wait while we attempt to determine your location...');
         positionWatchId = positionInterface.watchPosition(positionWatcher, sendPositionError, location_options);
