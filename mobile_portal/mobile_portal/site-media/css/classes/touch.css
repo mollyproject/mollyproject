@@ -141,6 +141,12 @@ div.list-section, div.section-nopad {
 
 div.section-content {
     padding:8px;
+    /*background-color:#ffffff;
+    color:#000000;*/
+}
+
+div.section-content a {
+    color: #ffffff;
 }
 
 h2.section-header, div.list-footer {

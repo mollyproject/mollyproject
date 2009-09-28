@@ -13,7 +13,7 @@
 
 {% if search_form %}{% include "z3950/search_form.xhtml" %}{% endif %}
 
-{% if results %}
+{% if page %}
 <div class="list-section">
 <h2 class="section-header">Results</h2>
 {% if removed %}
@@ -22,14 +22,24 @@
     {% for w in removed %}{% if forloop.last %}{% if not forloop.first %}and {% endif %}<em>{{ w }}</em>{% else %}<em>{{ w }}</em>, {% endif %}{% endfor %}
 </div></div>
 {% endif %}
+<div class="list-note">
+{% if page.has_previous %}
+    <a href="?title={{ title|urlencode }}&author={{ author|urlencode }}&isbn={{ isbn|urlencode }}&page={{ page.previous_page_number }}">&lt;</a>
+{% endif %}
+    Showing results {{ page.start_index }} to {{ page.end_index }} of {{ paginator.object_list|length }}. Page {{ page.number }} of {{ paginator.num_pages }}.
+{% if page.has_next %}
+    <a href="?title={{ title|urlencode }}&author={{ author|urlencode }}&isbn={{ isbn|urlencode }}&page={{ page.next_page_number }}">&gt;</a>
+{% endif %}
+</div>
 <ul class="ml">
-{% for item in results %}
+{% for item in page.object_list %}
 <li>
     <a href="{% url z3950_item_detail item.control_number %}">
-        {{ item }}
-        <br/><small><strong>Author:</strong> {{ item.author }}</small>
-        <br/><small><strong>Publisher:</strong> {{ item.publisher }}</small>
-        <br/><small><strong>Copies:</strong> {{ item.copies }}</small>
+        {{ item }}{% if item.author %}
+        <br/><small><strong>Author:</strong> {{ item.author }}</small>{% endif %}
+        <br/><small><strong>Publisher:</strong> {{ item.publisher }}</small>{% if item.edition %}
+        <br/><small><strong>Edition:</strong> {{ item.edition }}</small>{% endif %}
+        <br/><small><strong>Libraries:</strong> {{ item.holding_libraries }}</small>
     </a>
 </li>
 {% endfor %}

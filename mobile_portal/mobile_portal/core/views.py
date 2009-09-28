@@ -8,6 +8,7 @@ from django.core.management import call_command
 from django.template import loader, Context
 from mobile_portal.core.renderers import mobile_render
 from mobile_portal.webauth.utils import require_auth
+from mobile_portal.osm.utils import fit_to_map
 import geolocation
 
 import sys, traceback, pytz, simplejson, urllib, re
@@ -59,36 +60,35 @@ GOOGLE_ADDRESS_ACCURACIES = {
 
 FOUR_LETTER_CODE_RE = re.compile('[a-zA-Z]{4}')
 def update_location(request):
+    try:
+        zoom = int(request.GET['zoom'])
+    except (IndexError, KeyError):
+        zoom = 16
+    else:
+        zoom = min(max(10, zoom), 18)
+        
     error = ''
-    options = []
+    options, map_hash = [], None
 
     if request.method == 'POST':
         location = request.POST.get('location', '')
-        if FOUR_LETTER_CODE_RE.match(location):
-            code = location.lower()
-            try:
-                data = simplejson.load(urllib.urlopen('http://m.ox.ac.uk/oxpoints/oucs:%s.json' % code))
-                location = data[0]['oxp_hasLocation']['geo_pos'].split(' ')
-                location = " ".join([location[1], location[0]])
-            except ValueError:
-                pass
-
-        placemarks = geolocation.geocode(location)
+        
+        options = geolocation.geocode(location)
+        
         try:
             index = int(request.POST.get('index'))
         except (TypeError, ValueError):
             index = None
 
-        if placemarks and len(placemarks) == 1 or not index is None:
+        if options and len(options) == 1 or not index is None:
             try:
-                placemark = placemarks[index]
+                option = options[index]
             except:
-                placemark = placemarks[0]
+                option = options[0]
 
-            location = placemark['Point']['coordinates'][:2]
-            location.reverse()
-            accuracy = GOOGLE_ADDRESS_ACCURACIES[placemark['AddressDetails']['Accuracy']]
-            geolocation.set_location(request, location, accuracy, 'geocoded', placemark)
+            name, location, accuracy = option
+            
+            geolocation.set_location(request, location, accuracy, 'geocoded', option)
 
             try:
                 response = HttpResponseRedirect(request.POST['return_url'])
@@ -97,16 +97,26 @@ def update_location(request):
             response.status_code = 303
             return response
 
-        elif placemarks and len(placemarks) > 1:
-            options = placemarks
+        elif options and len(options) > 1:
+            points = [(o[1][0], o[1][1], 'red') for o in options]
+            map_hash, (new_points, zoom) = fit_to_map(
+                None,
+                points = points,
+                min_points = len(points),
+                zoom = None,
+                width = request.device.max_image_width,
+                height = request.device.max_image_height,
+            )
         else:
             error='We could not determine where that place is. Please try again.'
 
     context = {
+        'map_hash': map_hash,
         'error': error,
         'options': options,
         'location': request.POST.get('location', ''),
-        'return_url': request.GET.get('return_url') or request.POST.get('return_url')
+        'return_url': request.GET.get('return_url') or request.POST.get('return_url'),
+        'zoom': zoom
     }
     return mobile_render(request, context, 'core/update_location')
 
@@ -239,7 +249,7 @@ For more information on acceptable requests perform a GET on this resource.
 
     if location:
         try:
-            placemark = geolocation.reverse_geocode(*location)[0]
+            placemark = geolocation.reverse_geocode(*location)
         except IndexError:
             placemark = None
     else:
@@ -255,7 +265,7 @@ For more information on acceptable requests perform a GET on this resource.
 
     if location:
         if placemark:
-            response_data = placemark['address']
+            response_data = placemark[0]
         else:
             response_data = "%s %s" % location
     else:

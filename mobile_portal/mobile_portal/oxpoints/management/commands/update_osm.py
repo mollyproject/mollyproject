@@ -138,10 +138,10 @@ class OxfordHandler(handler.ContentHandler):
                     name = self.tags['name']
                 except:
                     try:
-                        name = ', '.join(reverse_geocode(*self.node_location)[0]['address'].split(', ')[:1])
+                        name = reverse_geocode(*self.node_location)[0][0]
                         name = "Near %s" % (name)
                     except:
-                        name = "Near %f,%f" % (self.node_location[0], self.node_location[1])
+                        name = "Near %f, %f" % (self.node_location[0], self.node_location[1])
                 entity.title = name
                 entity.metadata = {
                     'attrs': dict(self.attrs),

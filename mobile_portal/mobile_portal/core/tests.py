@@ -6,6 +6,8 @@ from django.core.urlresolvers import reverse
 
 from mobile_portal.core.utils import OXFORD_EMAIL_RE
 
+from mobile_portal.core import geolocation
+
 class AjaxSetLocationTestCase(unittest.TestCase):
     def setUp(self):
         self.client = Client()
@@ -25,7 +27,7 @@ class AjaxSetLocationTestCase(unittest.TestCase):
         "Depending on method, a location should either be required or forbidden."
         
         grouped_methods = {
-            True: ('html5', 'gears', 'manual', 'geocoded', 'other'),
+            True: ('html5', 'gears', 'blackberry', 'manual', 'geocoded', 'other'),
             False: ('error', 'denied'),
         }
         
@@ -75,11 +77,11 @@ class CoreTestCase(unittest.TestCase):
         )
         
         for location in test_locations:
-            response = self.client.post('/core/update_location/', {
+            response = self.client.post('/update_location/', {
                 'location': location
             })
             
-            self.assertTrue(response.status_code in (303, 200), # Found, OK
+            self.assertTrue(response.status_code in (303, 200),
                 "Unexpected status code: %d" % response.status_code)
    
     def testOxfordEmailRegex(self):
@@ -101,3 +103,9 @@ class CoreTestCase(unittest.TestCase):
         for address in non_oxford_addresses:
             self.assert_(not OXFORD_EMAIL_RE.match(address),
                 "%s matched as an Oxford e-mail address when it shouldn't." % address)
+                
+class GeocodingTestCase(unittest.TestCase):
+    def testReverseGeocode(self):
+        points = [(51.758504,-1.256055)]
+        for point in points:
+            geolocation.reverse_geocode(*point)

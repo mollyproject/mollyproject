@@ -67,6 +67,7 @@ class Command(NoArgsCommand):
             
             entity, created = Entity.objects.get_or_create(atco_code = atco_code, entity_type=self.entity_type)
             entity.location = Point(location[1], location[0], srid=4326)
+            entity.geometry = entity.location
             entity.title = title
             entity.save()
     

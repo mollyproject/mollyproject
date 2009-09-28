@@ -71,15 +71,10 @@ class USMARCTestCase(TestCase):
                 "%s (%d) is not in the list of expected libraries (%r)" % (unicode(library), library.oxpoints_entity.oxpoints_id, TEST_LIBRARY_IDS[i])
             )
 
-ISBNS = ['1903402557', '0134841891']
-        
-class ISBNSearchTestCase(TestCase):
-    def testSearch(self):
-        for isbn in ISBNS:
-            s = search.ISBNSearch(isbn)
-            for r in s:
-                print unicode(r)
-                
+TEST_ISBNS = [
+    '1903402557', '0134841891', '0262041677', '0340811293', '1565925858',
+]
+               
 TEST_AUTHORS = [
     'Adolf Hitler', 'Peter F Hamilton', 'Rushdie', 'Jeremy Clarkson', 'Gandhi',
     'Jeremy Black', 'Stewart III',
@@ -102,4 +97,9 @@ class SearchTestCase(TestCase):
         for author in TEST_AUTHORS:
             results = search.OLISSearch('au="%s"' % author)
             self.assert_(len(results) > 0)
+
+    def testISBNSearch(self):
+        for isbn in TEST_ISBNS:
+            results = search.OLISSearch('isbn="%s"' % isbn)
+            self.assert_(len(results) > 0, "No results for ISBN %s" % isbn)
     

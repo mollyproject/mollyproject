@@ -70,6 +70,8 @@ class Library(object):
 
 class OLISResult(object):
     USM_CONTROL_NUMBER = 1
+    USM_ISBN = 20
+    USM_ISSN = 22
     USM_AUTHOR = 100
     USM_TITLE_STATEMENT = 245
     USM_EDITION = 250
@@ -129,6 +131,8 @@ class OLISResult(object):
                 shelfmark = "Copy %s" % datum['t'][0]
             else:
                 shelfmark = None
+                
+            materials_specified = datum['3'][0] if '3' in datum else None
             
             if not library in self.libraries:
                 self.libraries[library] = []
@@ -137,6 +141,7 @@ class OLISResult(object):
                 'availability': availability,
                 'availability_display': datum['y'][0] if 'y' in datum else None,
                 'shelfmark': shelfmark,
+                'materials_specified': materials_specified,
             } )
             
 
@@ -154,6 +159,19 @@ class OLISResult(object):
     description = _metadata_property(USM_PHYSICAL_DESCRIPTION)
     edition = _metadata_property(USM_EDITION)
     copies = property(lambda self: len(self.metadata[OLISResult.USM_LOCATION]))
+    holding_libraries = property(lambda self: len(self.libraries))
+
+    def isbns(self):
+        if OLISResult.USM_ISBN in self.metadata:
+            return [a['a'][0] for a in self.metadata[OLISResult.USM_ISBN]]
+        else:
+            return []
+    
+    def issns(self):
+        if OLISResult.USM_ISSN in self.metadata:
+            return [a['a'][0] for a in self.metadata[OLISResult.USM_ISSN]]
+        else:
+            return []
     
     def __unicode__(self):
         return self.title
@@ -179,6 +197,10 @@ class OLISSearch(object):
         return len(self.results)        
 
     def __getitem__(self, key):
+        if isinstance(key, slice):
+            if key.step:
+                raise NotImplementedError("Stepping not supported")
+            return map(OLISResult, self.results.__getslice__(key.start, key.stop))
         return OLISResult(self.results[key])        
         
 class ISBNSearch(OLISSearch):

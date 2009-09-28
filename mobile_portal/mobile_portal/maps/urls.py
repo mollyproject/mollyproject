@@ -38,5 +38,9 @@ urlpatterns = patterns('mobile_portal.maps.views',
     (r'^(?P<type_slug>[a-z_]+):(?P<id>[\dA-Z]+)/favourite/$',
         'entity_favourite', {},
         'maps_entity_favourite'),
+
+    (r'^without_location/$', 
+        'without_location', {},
+        'maps_without_location'),
     
 )

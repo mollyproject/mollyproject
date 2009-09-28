@@ -14,13 +14,52 @@
 
 <div class="section-nopad">
     <h2 class="section-header">{{ item.title }}</h2>
-    <ul class="ml">
-       <li class="non-link-item">Publisher: {{ item.publisher }}</li>
-{% if item.edition %}
-       <li class="non-link-item">Edition: {{ item.edition }}</li>
+    <table class="section-table">
+{% if item.author %}
+        <tr>
+            <th>Author:</th>
+            <td>{{ item.author }}</td>
+        </tr>
 {% endif %}
-       <li class="non-link-item">Description: {{ item.description }}</li>
-    </ul>
+{% if item.publisher %}
+        <tr>
+            <th>Publisher:</th>
+            <td>{{ item.publisher }}</td>
+        </tr>
+{% endif %}
+{% if item.edition %}
+        <tr>
+            <th>Edition:</th>
+            <td>{{ item.edition }}</td>
+        </tr>
+{% endif %}
+{% if item.description %}
+        <tr>
+            <th>Description:</th>
+            <td>{{ item.description }}</td>
+        </tr>
+{% endif %}
+{% if item.isbns %}
+{% for isbn in item.isbns %}
+        <tr>
+{% if forloop.first %}
+            <th{% ifnotequal item.isbns|length 1 %} rowspan="{{ item.isbns|length }}"{% endifnotequal %}>ISBN{{ item.isbns|pluralize }}:</th>
+{% endif %}
+            <td>{{ isbn }}</td>
+        </tr>
+{% endfor %}
+{% endif %}
+{% if item.issns %}
+{% for issn in item.issns %}
+        <tr>
+{% if forloop.first %}
+            <th{% ifnotequal item.issns|length 1 %} rowspan="{{ item.issns|length }}"{% endifnotequal %}>ISSN{{ item.issns|pluralize }}:</th>
+{% endif %}
+            <td>{{ issn }}</td>
+        </tr>
+{% endfor %}
+{% endif %}
+    </table>
 </div>
 
 <div class="list-section">
@@ -39,7 +78,7 @@
 {% endif %}
         {% for book in books %}
         <li class="subitem non-link-item">
-        Shelfmark: <em>{{ book.shelfmark }}</em>, availability: <em>{{ book.availability_display }}</em>
+        Shelfmark: <em>{{ book.shelfmark }}</em>, availability: <em>{{ book.availability_display }}</em>{% if book.materials_specified %}, issue: <em>{{ book.materials_specified }}</em>{% endif %}
         </li>
         {% endfor %}
 {% endfor %}

@@ -57,3 +57,7 @@ class Entity(models.Model):
     @property
     def display_id(self):
         return getattr(self, self.entity_type.id_field)
+        
+class PostCode(models.Model):
+    post_code = models.CharField(max_length=8)
+    location = models.PointField(srid=4326, null=True)

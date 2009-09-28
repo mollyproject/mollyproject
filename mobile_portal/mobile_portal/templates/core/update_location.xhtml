@@ -17,11 +17,15 @@
 
 <h2 class="section-header">Did you mean:</h2>
 
+<div class="backgrounded-image" style="background-image:url('{% url osm_generated_map map_hash %}'); height:{{ device.max_image_height }}px">
+{% include "maps/map_elements.xhtml" %}
+</div>
+
 <form method="post" action=".">
 <input type="hidden" name="location" value="{{ location }}"/>
 <ul class="ml">
 {% for option in options %}
-    <li><button class="as_link" type="submit" name="index" value="{{ forloop.counter0 }}" style="width:100%">{{ option.address }}</button></li>
+    <li><button class="as_link" type="submit" name="index" value="{{ forloop.counter0 }}" style="width:100%">{{ option.0 }}</button></li>
 {% endfor %}
 </ul>
 </form>
@@ -55,7 +59,7 @@
 
 
 {% if preferences.location.placemark %}
-        <p id="location_status">We think you are somewhere near <strong class="nobr">{{ preferences.location.placemark.address }}</strong> ({{ preferences.location.location.0 }} {{ preferences.location.location.1 }}).</p>
+        <p id="location_status">We think you are somewhere near <strong class="nobr">{{ preferences.location.placemark.0 }}</strong> ({{ preferences.location.location.0 }} {{ preferences.location.location.1 }}).</p>
 {% else %}
 {% if preferences.location.location %}
         <p id="location_status">We think you are somewhere near <strong class="nobr">{{ preferences.location.location.0 }} {{ preferences.location.location.1 }}</strong>.</p>
@@ -75,7 +79,11 @@
                 $('#location_update').append(' <a href="#" onclick="javascript:requestPosition();">Determine automatically<\/a>');
         </script>
         
-{% if preferences.location.location %}{% map preferences.location.location %}{% endif %}
+{% if preferences.location.location %}
+<div class="backgrounded-image" style="background-image:url('{% map_url preferences.location.location %}'); height:{{ device.max_image_height }}px">
+{% include "maps/map_elements.xhtml" %}
+</div>
+{% endif %}
 
 
 {% endblock %}

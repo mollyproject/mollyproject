@@ -69,6 +69,7 @@ class Command(NoArgsCommand):
         # Parse the location. SRID 4326 is WGS84
         if location:
             entity.location = Point(*map(float, location.split(' ')), **{'srid':4326})
+            entity.geometry = entity.location
         entity.title = unicode(title)
         entity.entity_type = self.entity_types[unicode(ptype)[len(OXPOINTS_NS):]]
         entity.save()

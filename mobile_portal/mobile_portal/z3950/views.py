@@ -1,6 +1,7 @@
 
 from django.http import Http404, HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.core.paginator import Paginator
 from django.contrib.gis.geos import Point
 
 from mobile_portal.core.renderers import mobile_render
@@ -18,7 +19,7 @@ STOP_WORDS = frozenset( (
   + "my,neither,no,nor,not,of,off,often,on,only,or,other,our,own,rather,said,"
   + "say,says,she,should,since,so,some,than,that,the,their,them,then,there,"
   + "these,they,this,tis,to,too,twas,us,wants,was,we,were,what,when,where,"
-  + "which,while,who,whom,why,will,with,would,yet,you,your" ).split(','))
+  + "which,while,who,whom,why,will,with,would,yet,you,your" ).split(',') )
 
 def index(request):
     search_form = SearchForm()
@@ -43,6 +44,7 @@ def search_detail(request):
     
     if search_form.is_valid():
         query, removed = [], set()
+        title, author, isbn = '', '', ''
         if search_form.cleaned_data['author']:
             author, new_removed = clean_input(search_form.cleaned_data['author'])
             removed |= new_removed
@@ -58,32 +60,41 @@ def search_detail(request):
         if query:
             query = "and".join(query)
             results = search.OLISSearch(query)
-        else:
-            results = None
-    else:
-        results, removed = None, None
-    
-    print removed
-    context = {
-        'search_form': search_form,
-        'removed': removed,
-        'results': results,
-    }
-    return mobile_render(request, context, 'z3950/item_list')
-    
-def search_isbn(request, isbn=None):
-    if not isbn:
-        raise Http404
+
+            paginator = Paginator(results, 10)
         
-    results = search.ISBNSearch(isbn)
-    if len(results) == 1:
-        return HttpResponseRedirect(reverse('z3950_item_detail', args=[results[0].control_number]))
+            try:
+                page_index = int(request.GET['page'])
+            except (ValueError, KeyError):
+                page_index = 1
+            else:
+                page_index = min(max(1, page_index), paginator.num_pages)
+            
+            page = paginator.page(page_index)
     
-    context = {
-        'results': search.ISBNSearch(isbn)
-    }
+            context = {
+                'search_form': search_form,
+                'removed': removed,
+                'paginator': paginator,
+                'page': page,
+                'title': title,
+                'author': author,
+                'isbn': isbn,
+            }
+
+        else:
+            context = {
+                'search_form': search_form,
+            }
+
+    else:
+        context = {
+            'search_form': search_form,
+        }
+
     return mobile_render(request, context, 'z3950/item_list')
-    
+
+
 AVAIL_COLORS = ['red', 'amber', 'purple', 'blue', 'green']
 def item_detail(request, control_number):
 
@@ -117,7 +128,7 @@ def item_detail(request, control_number):
         libraries.sort(key=lambda l:(ordering[l[0].oxpoints_id] if l[0].oxpoints_id else float('inf')))
 
     else:
-        entitles.order_by('title')
+        entities.order_by('title')
 
     for library, books in libraries:
         if not (library.oxpoints_id and library.oxpoints_entity.location):
@@ -136,7 +147,7 @@ def item_detail(request, control_number):
         points = points,
         min_points = 0 if zoom else len(points),
         zoom = zoom,
-        width = request.device.max_image_width-8,
+        width = request.device.max_image_width,
         height = request.device.max_image_height,
     )
 

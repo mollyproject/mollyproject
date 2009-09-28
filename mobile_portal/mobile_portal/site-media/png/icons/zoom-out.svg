@@ -15,8 +15,11 @@
    sodipodi:version="0.32"
    inkscape:version="0.46+devel"
    version="1.0"
-   sodipodi:docname="New document 1"
-   inkscape:output_extension="org.inkscape.output.svg.inkscape">
+   sodipodi:docname="zoom-out.svg"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape"
+   inkscape:export-filename="/Erewhon/mobile_portal/mobile_portal/site-media/png/icons/zoom-out.png"
+   inkscape:export-xdpi="90"
+   inkscape:export-ydpi="90">
   <defs
      id="defs4">
     <inkscape:perspective
@@ -62,7 +65,7 @@
      id="layer1"
      transform="translate(-262.14285,-320.21933)">
     <rect
-       style="opacity:0.5;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:2.74585509;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       style="opacity:0.375;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:2.74585509000000005;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        id="rect12"
        width="27.254145"
        height="27.254145"
@@ -72,7 +75,7 @@
        ry="1.3627073" />
     <text
        xml:space="preserve"
-       style="font-size:70.77626801px;font-style:normal;font-weight:normal;opacity:0.5;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+       style="font-size:70.77626800999999546px;font-style:normal;font-weight:normal;opacity:0.375;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
        x="264.37341"
        y="354.60678"
        id="text786"><tspan

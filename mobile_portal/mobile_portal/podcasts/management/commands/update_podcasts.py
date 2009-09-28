@@ -108,6 +108,8 @@ class Command(BaseCommand):
     
         guids = []
         for item in xml.findall('.//channel/item'):
+            if not gct(item, 'guid'):
+                continue
     
             podcast_item, created = PodcastItem.objects.get_or_create(podcast=podcast, guid=gct(item, 'guid'))
             

@@ -1,5 +1,5 @@
 from __future__ import division
-import math, random, cairo, urllib, os.path
+import math, random, cairo, urllib, os.path, sys, time
 
 from django.conf import settings
 
@@ -45,7 +45,6 @@ def get_map(points, width, height, filename, zoom=None):
             zoom = 16
     
     points = [(get_tile_ref(p[0], p[1], zoom), p[2], p[3]) for p in points]
-    print zoom, points    
     
     lat_range, lon_range = lat_min - lat_max, lon_max - lon_min
     lat_center, lon_center = (lat_min + lat_max)/2, (lon_min + lon_max)/2
@@ -75,8 +74,13 @@ def get_map(points, width, height, filename, zoom=None):
     
     for tile in tiles:
         tile_data = OSMTile.get_data(tile['ref'][0], tile['ref'][1], zoom)
-        tile['surface'] = cairo.ImageSurface.create_from_png(tile_data)
-
+        
+        try:
+            tile['surface'] = cairo.ImageSurface.create_from_png(tile_data)
+        except Exception, e:
+            tile['surface'] = cairo.ImageSurface(cairo.FORMAT_ARGB32, 256, 256)
+            
+        
         context.set_source_surface(
             tile['surface'],
             (tile['ref'][0] - tx_min) * 256 - ox,
@@ -160,7 +164,6 @@ class PointSet(set):
         br = get_tile_ref(self._max[0], self._max[1], zoom)
         
         a = (br[0]-tl[0])*256, (tl[1]-br[1])*256
-        print "Fooo" , a
         return a
         
     def contained_within(self, box, zoom):
@@ -191,8 +194,7 @@ def get_fitted_map(centre_point, points, min_points, zoom, width, height, filena
     
     while not point_set.contained_within(box, zoom):
         zoom -= 1
-        print zoom
-    
+
     while point_set.contained_within(box, zoom):
         if not points:
             break
@@ -201,11 +203,11 @@ def get_fitted_map(centre_point, points, min_points, zoom, width, height, filena
     else:
         point_set.remove(new_point)
     
-    used_points = point_set.ordered[1:]
-    
     if centre_point:
+        used_points = point_set.ordered[1:]
         points = [(centre_point[0], centre_point[1], centre_point[2], None)]
     else:
+        used_points = point_set.ordered[:]
         points = []
     
     for i, point in enumerate(used_points):
@@ -213,9 +215,6 @@ def get_fitted_map(centre_point, points, min_points, zoom, width, height, filena
             (point[0], point[1], point[2], i+1)
         )
         
-    print "Points", len(points), points
-    
-    print "Extent", point_set.extent(zoom)
     get_map(points, width, height, filename, zoom)
     
     if centre_point:

@@ -2,8 +2,9 @@ try:
     import cPickle as pickle
 except:
     import pickle
-import hashlib, os, urllib, simplejson
+import hashlib, os, urllib, simplejson, sys
 from datetime import datetime, timedelta
+from StringIO import StringIO
 from django.db import models
 from django.conf import settings
 
@@ -46,8 +47,12 @@ class OSMTile(models.Model):
             osm_tile, created = OSMTile.objects.get_or_create(xtile=xtile, ytile=ytile, zoom=zoom)
             
             response = urllib.urlopen(get_tile_url(xtile, ytile, zoom))
+            s = StringIO()
+            s.write(response.read())
             f = open(osm_tile.get_filename(), 'w')
-            f.write(response.read())
+            f.write(s.getvalue())
             f.close()
-            
-        return open(osm_tile.get_filename())
+            s.seek(0)
+            return s
+        else:    
+            return open(osm_tile.get_filename())

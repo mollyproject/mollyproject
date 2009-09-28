@@ -100,7 +100,7 @@ def nearby_detail(request, ptype, entity=None):
         points = ((e.location[1], e.location[0], 'red') for e in entities),
         min_points = min_points,
         zoom = zoom,
-        width = request.device.max_image_width-8,
+        width = request.device.max_image_width,
         height = request.device.max_image_height,
     )
     
@@ -248,3 +248,12 @@ def category_detail(request, ptype):
     }
     
     return mobile_render(request, context, 'maps/category_detail')
+
+def without_location(request):
+    entities = Entity.objects.filter(entity_type__source='oxpoints', location__isnull=True)
+    
+    data = (
+        '%d,"%s","%s"\n' % (e.oxpoints_id, e.title.replace('"', r'\"'), e.entity_type.slug) for e in entities
+    )
+    
+    return HttpResponse(data, mimetype='text/csv')

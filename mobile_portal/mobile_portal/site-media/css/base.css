@@ -8,7 +8,7 @@ body {
 	background-color:#cfd9e5;
     /*overflow:hidden;*/
     -webkit-text-size-adjust: none;
-
+    text-align: left;
     
 }
 
@@ -20,7 +20,7 @@ div.container {
 div.content {
     padding:0px;
     vertical-align:top;
-    text-align:justify;
+    text-align:left;
 }
 
 a {
