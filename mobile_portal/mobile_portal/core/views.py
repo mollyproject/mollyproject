@@ -184,7 +184,7 @@ def ajax_update_location(request):
     location = request.POST.get('latitude'), request.POST.get('longitude')
     if any(location):
         try:
-            location = map(float, location)
+            location = tuple(map(float, location))
             lat, lon = location
             if not (-90 <= lat and lat <= 90 and -180 <= lon and lon < 180):
                 raise ValueError
@@ -267,7 +267,7 @@ For more information on acceptable requests perform a GET on this resource.
         if placemark:
             response_data = placemark[0]
         else:
-            response_data = "%s %s" % location
+            response_data = "%.4f %.4f" % location
     else:
         response_data = ''
 
@@ -377,10 +377,10 @@ def run_command(request):
 
 def static_detail(request, title, template):
     t = loader.get_template('static/%s.xhtml' % template)
-    
+
     context = {
         'title': title,
         'content': t.render(Context()),
     }
     return mobile_render(request, context, 'core/static_detail')
-    
+
