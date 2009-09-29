@@ -1,11 +1,11 @@
 [
     {
-        "pk": "3",
+        "pk": "8",
         "model": "core.FrontPageLink",
         "fields": {
-            "slug": "maps",
-            "title": "Maps",
-            "urlconf_name": "maps_index"
+            "slug": "library",
+            "title": "Library search",
+            "urlconf_name": "z3950_index"
         }
     }
 ]
