@@ -49,13 +49,11 @@ div.features, div.preview {
     max-width:665px;
     
     padding:10px;
+	text-decoration:none;
 }
 
 div.features h2, div.preview h2 {
     margin-top:0;
 }
 
-div.features li, div.preview li {
-	text-decoration:none;
-}
 }
