@@ -40,7 +40,7 @@ div.strapline {
 	color:#FFF;
 }
 
-div.features, div.preview {
+div.features, div.preview, div.access {
     background-color:#ffffff;
     border-radius:10px;
     -moz-border-radius:10px;
@@ -54,6 +54,7 @@ div.features, div.preview {
     padding:10px;
 }
 
-div.features h2, div.preview h2 {
+div.features h2, div.preview h2, div.access h2 {
     margin-top:0;
 }
+
