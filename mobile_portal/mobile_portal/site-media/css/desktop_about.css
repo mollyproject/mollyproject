@@ -52,6 +52,8 @@ div.features, div.preview, div.access {
     max-width:665px;
     
     padding:10px;
+	
+	/* Does this go here? */
 	list-style:none;
 }
 
@@ -68,5 +70,6 @@ div.access {
 
 div.access ul {
 	padding:0;
+	list-style:none;
 }
 
