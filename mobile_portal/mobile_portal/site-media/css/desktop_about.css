@@ -8,8 +8,9 @@ body {
 
 div.header {
     position:relative;
-    background-color:#c5d2e0;
+/*    background-color:#c5d2e0;*/
     height:145px;
+	background-image:url('../png/header-gradient.png');
 }
 
 div.header-strapline {
@@ -35,7 +36,8 @@ div.header img.brandmark {
 
 div.strapline {
     padding:5px 0px 0px 0px;
-    color:#002147;
+   /* color:#002147;*/
+	color:#FFF;
 }
 
 div.features, div.preview {
