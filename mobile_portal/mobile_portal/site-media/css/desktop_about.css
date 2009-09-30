@@ -54,3 +54,8 @@ div.features, div.preview {
 div.features h2, div.preview h2 {
     margin-top:0;
 }
+
+div.features h3, div.preview h3 {
+	text-decoration:none;
+}
+}
