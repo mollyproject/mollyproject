@@ -3,7 +3,7 @@ body {
     margin:0;
 /*    background-color:#4b92db;*/
 	background-image:url('../png/stripes.png');
-    min-width:715px;
+    min-width:615px;
 }
 
 div.header {
@@ -46,7 +46,7 @@ div.features, div.preview {
     -moz-border-radius:10px;
     -webkit-border-radius:10px;
     margin:15px auto;
-    max-width:565px;
+    max-width:665px;
     
     padding:10px;
 }
