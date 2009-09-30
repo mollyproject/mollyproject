@@ -45,6 +45,8 @@ div.features, div.preview {
     border-radius:10px;
     -moz-border-radius:10px;
     -webkit-border-radius:10px;
+	border-style:solid;
+	border-width:5px;
     margin:15px auto;
     max-width:665px;
     
@@ -53,9 +55,4 @@ div.features, div.preview {
 
 div.features h2, div.preview h2 {
     margin-top:0;
-}
-
-div.features ul, div.features li {
-	text-decoration:none;
-	
 }
