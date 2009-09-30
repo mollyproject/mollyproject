@@ -52,20 +52,21 @@ div.features, div.preview, div.access {
     max-width:665px;
     
     padding:10px;
+	list-style:none;
 }
 
 div.features h2, div.preview h2, div.access h2 {
     margin-top:0;
 }
 
-div.access, div.preview, div.access ul{
-	list-style:none;
-	
-}
 
 div.access {
 	float:left;
 	margin-right:20px;
 	width: 180px;
+}
+
+div.access ul {
+	padding:0;
 }
 
