@@ -9,6 +9,9 @@ DEFAULTS_CHOICES = (
 
 defaults = {
     'new': PreferenceSet({
+        'core': (EPOCH, {
+            'desktop_about_shown': False,
+        }),
         'location': (EPOCH, {
             'method': None,
             'location': None,

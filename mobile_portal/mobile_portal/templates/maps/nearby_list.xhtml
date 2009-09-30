@@ -3,7 +3,7 @@
 {% block breadcrumbs %}
 {{ block.super }}
 	<li><a href="{% url maps_index %}">
-        <img src="{{ MEDIA_URL }}png/maps-bc.png" alt="Maps"/>
+        {% if dumb %}Maps{% else %}<img src="{{ MEDIA_URL }}png/maps-bc.png" alt="Maps"/>{% endif %}
     </a></li>
 {% endblock %}
 
@@ -20,9 +20,9 @@
 <div class="list-note">
 {% if preferences.location.location %}
 <div class="bubble">
-We think you are near <strong>{{ preferences.location.placemark.0 }}</strong>. If this is not correct, please <a href="{% url core_update_location %}?return_url={{ return_url|urlencode }}">update your location</a>. </div>
+We think you are near <strong>{{ preferences.location.placemark.0 }}</strong>. If this is not correct, please <a class="location_update_link" href="{% url core_update_location %}?return_url={{ return_url|urlencode }}">update your location</a>. </div>
 {% else %}
-<div class="bubble">We do not yet have a location for you. Please <a href="{% url core_update_location %}?return_url={{ return_url|urlencode }}">update your location</a>.</div>
+<div class="bubble">We do not yet have a location for you. Please <a class="location_update_link" href="{% url core_update_location %}?return_url={{ return_url|urlencode }}">update your location</a>.</div>
 {% endif %}
 </div>
 {% endif %}

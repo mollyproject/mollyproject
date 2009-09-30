@@ -132,3 +132,59 @@ function resetDimensions() {
     //$('.details_pane').css('width', $('.map_pane').width()-4);
 }
 
+
+function do_location_update() {
+    $(document.body).append('<div id="location_update_background" style="position:absolute; left:0; top:0; width:100%; height:'+$(document).attr('height')+'px; background-color:#fff; opacity:0.75"> </div>');
+
+    width = Math.min(window.innerWidth - 15, 300);
+    height = Math.min(window.innerHeight, 300);
+    top = (window.innerHeight - height) / 2;
+    left = (window.innerWidth - width) / 2;
+
+    $(document.body).append(
+        '<div id="location_update_container" style="position:fixed; width:'+width+'px; left:'+left+'px; top:'+top+'px; border-radius:10px; -moz-border-radius:10px; -webkit-border-radius:10px; border:solid 0px #fff;">'
+      + '  <ul class="popup-tabs">'
+      + '    <li><a href="#" onclick="javascript:show_tab(\'auto\');">Auto</a></li>'
+      + '    <li><a href="#" onclick="javascript:show_tab(\'manual\');">Manual</a></li>'
+      + '    <li><a href="#" onclick="javascript:show_tab(\'map\');">Map</a></li>'
+      + '    <li class="not-tab"><a href="#" onclick="javascript:close_location_update();">Close</a></li>'
+      + '  </ul>'
+      + '  <div id="location_update_box"> </div>'
+      + '</div>');
+    
+    $.get(base+'update_location/', {
+        ajax: true,
+    }, function(data) {
+        $('#location_update_box').html(data);
+        $('#manual_location_form').bind('submit', manual_location_submit);
+        show_tab('auto');
+    });
+    
+    
+    return false;
+};
+
+function show_tab(name) {
+    $('.tab').hide();
+    $('#tab-'+name).show();
+}
+
+function manual_location_submit() {
+    $.get(base+'update_location/', {
+        ajax: true,
+        location: $('#location').val(),
+    }, function(data) {
+        $('#tab-manual').html(data);
+    });
+    return false;
+}
+
+function close_location_update() {
+    $('#location_update_container').remove();
+    $('#location_update_background').remove();
+}
+
+$(document).ready(function () {
+    $('a.location_update_link').bind('click', do_location_update);
+    $('#manual_location_form').bind('submit', manual_location_submit);
+});

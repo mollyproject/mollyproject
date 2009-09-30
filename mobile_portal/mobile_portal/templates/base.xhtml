@@ -1,6 +1,4 @@
 {% load portal_misc %}<!DOCTYPE HTML>
-
-
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-GB" lang="en-GB" manifest="{{ MEDIA_URL }}cache/devices/iphone.manifest" >
   <head>
 	
@@ -49,7 +47,7 @@
     <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}{{ path }}"/>    
 {% endfor %}
     
-	<link rel="icon" type="image/png" href="{{ MEDIA_URL }}/png/favicon.png"/>
+	<link rel="icon" type="image/vnd.microsoft.icon" href="{{ MEDIA_URL }}ico/favicon.ico"/>
 
     {% block extrahead %}{% endblock %}
     
@@ -64,7 +62,7 @@
         <ol class="breadcrumbs">
 {% block breadcrumbs %}
             <li><a href="{% url core_index %}">
-                <img src="{{ MEDIA_URL }}png/logo.png" alt="Home"/>
+                {% if dumb %}Home{% else %}<img src="{{ MEDIA_URL }}png/logo.png" alt="Home"/>{% endif %}
             </a></li>
 {% endblock %}
         </ol>

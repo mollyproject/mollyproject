@@ -19,6 +19,9 @@ class LocationMiddleware(object):
             )
         except (KeyError, DeviceNotFound):
             request.device = devices.select_id('generic_xhtml')
+
+        if 'HTC Hero' in request.META.get('HTTP_USER_AGENT', ''):
+            request.device = devices.select_id('tmobile_g1_ver1')
             
         if "generic_web_browser" in device_parents[request.device.devid]:
             request.device.max_image_width = 320

@@ -1,35 +1,9 @@
-{% extends "core/base.xhtml" %}
 {% load maps %}
 
-{% block pagetitle %}Update location{% endblock %}
+<div class="section-nopad tab" id="tab-auto">
 
-{% block content %}
-
-
-<div class="section-nopad">
-
-<h2 class="section-header">{% if options %}Alternatively, please try another search:{% else %}Please enter an address or postcode:{% endif %}</h2>
-
-<div class="section-content"><div class="bubble">Examples: 'oucs' (a unit code), 'Trinity College' (a college or department), 'Parks Road' (an address), 'OX1 3PG' (a postcode).</div></div>
-
-
-<form method="get" action=".">
-    <div class="section-content">
-      <div class="submit-line">
-{% if return_url %}
-        <input name="return_url" type="hidden" value="{{ return_url }}"/>
-{% endif %}
-        <input id="location" name="location" value="{{ location }}"/>
-        <input type="submit" value="Update"/>
-        
-      </div>
-    </div>
-
-</form>
-
-</div>
-
-
+<h2 class="section-header">Automatic geolocation</h2>
+<div class="section-content">
 {% if preferences.location.placemark %}
         <p id="location_status">We think you are somewhere near <strong class="nobr">{{ preferences.location.placemark.0 }}</strong> ({{ preferences.location.location.0 }} {{ preferences.location.location.1 }}).</p>
 {% else %}
@@ -52,12 +26,33 @@
             if (positionMethodAvailable())
                 $('#location_update').append(' <a href="#" onclick="javascript:requestPosition();">Determine automatically<\/a>');
         </script>
-        
-{% if preferences.location.location %}
-<div class="backgrounded-image" style="background-image:url('{% map_url preferences.location.location %}'); height:{{ device.max_image_height }}px">
-{% include "maps/map_elements.xhtml" %}
 </div>
+</div>
+
+<div class="section-nopad tab" id="tab-manual">
+
+<h2 class="section-header">Update location manually</h2>
+
+<div class="section-content"><div class="bubble">Examples: 'oucs' (a unit code), 'Trinity College' (a college or department), 'Parks Road' (an address), 'OX1 3PG' (a postcode).</div></div>
+
+
+<form method="get" action="." id="manual_location_form">
+    <div class="section-content">
+      <div class="submit-line">
+{% if return_url %}
+        <input name="return_url" type="hidden" value="{{ return_url }}"/>
 {% endif %}
+        <input id="location" name="location" value="{{ location }}"/>
+        <input type="submit" value="Update"/>
+        
+      </div>
+    </div>
 
+</form>
 
-{% endblock %}
+</div>
+
+<div class="section-nopad tab" id="tab-map">
+<h2 class="section-header">Map</h2>
+
+</div>

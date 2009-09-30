@@ -17,4 +17,6 @@ urlpatterns = patterns('mobile_portal.core.views',
     (r'^customise/location_sharing/$', 'location_sharing', {}, 'core_location_sharing'),
     
     (r'^about/$', 'static_detail', {'title':'About', 'template':'about'}, 'core_static_about'),
+    
+    (r'^desktop_about/$', 'desktop_about', {}, 'core_desktop_about'),
 )

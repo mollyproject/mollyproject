@@ -42,6 +42,9 @@ def device_specific_media(request):
     if "generic_web_browser" in device_parents[request.device.devid]:
         desktop = True
     dumb = not (smart or touch or multitouch or desktop)
+    
+    if "MSIE 4" in request.META.get('HTTP_USER_AGENT', ''):
+        dumb, smart, touch, multitouch, desktop = True, False, False, False, False
 
     #dumb, smart, touch, multitouch, desktop = True, False, False, False, False
     

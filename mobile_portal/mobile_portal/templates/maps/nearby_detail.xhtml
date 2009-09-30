@@ -4,14 +4,18 @@
 {{ block.super }}
 {% if entity %}
 	<li><a href="{% url maps_index %}">
-        <img src="{{ MEDIA_URL }}png/maps-bc.png" alt="Maps"/>
+        {% if dumb %}Maps{% else %}<img src="{{ MEDIA_URL }}png/maps-bc.png" alt="Maps"/>{% endif %}
     </a></li>
-    <li><a href="{% url maps_entity_nearby_list entity.entity_type.slug,entity.display_id %}">&hellip;</a></li>
+    <li><a href="{% url maps_entity_nearby_list entity.entity_type.slug,entity.display_id %}">
+        {% if dumb %}Categories{% else %}&hellip;{% endif %}
+    </a></li>
 {% else %}    
 	<li><a href="{% url maps_index %}">
-        <img src="{{ MEDIA_URL }}png/maps-bc.png" alt="Maps"/>
+        {% if dumb %}Maps{% else %}<img src="{{ MEDIA_URL }}png/maps-bc.png" alt="Maps"/>{% endif %}
     </a></li>
-    <li><a href="{% url maps_nearby_list %}">&hellip;</a></li>
+    <li><a href="{% url maps_nearby_list %}">
+        {% if dumb %}Categories{% else %}&hellip;{% endif %}
+    </a></li>
 {% endif %}
 {% endblock %}
 

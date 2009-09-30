@@ -44,7 +44,7 @@ def reverse_geocode(lat, lon):
     return [placemark]
 
 UNIT_CODE_RE = re.compile(r'^[a-z]{4}$')
-POST_CODE_RE = re.compile(r'^[A-Z]{1,2}[0-9R][0-9A-Z]? [0-9][ABD-HJLNP-UW-Z]{2}$')
+POST_CODE_RE = re.compile(r'^[A-Z]{1,2}[0-9R][0-9A-Z]? ?[0-9][ABD-HJLNP-UW-Z]{2}$')
 
 def geocode_unit_code(query):
     try:
@@ -61,6 +61,9 @@ def geocode_unit_code(query):
         ) ]
 
 def geocode_post_code(query):
+    if not ' ' in query:
+        query = '%s %s' % (query[:-3], query[-3:])
+         
     try:
         post_code = PostCode.objects.get(post_code=query)
     except PostCode.DoesNotExist:

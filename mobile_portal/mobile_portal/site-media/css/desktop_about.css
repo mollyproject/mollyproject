@@ -1,0 +1,53 @@
+body {
+    font-family: "Liberation Sans", Arial, sans-serif;
+    margin:0;
+    background-color:#4b92db;
+    min-width:615px;
+}
+
+div.header {
+    position:relative;
+    background-color:#c5d2e0;
+    height:145px;
+}
+
+div.header-strapline {
+    position:absolute;
+    color:#ffffff;
+    bottom:15px;
+    left:15px;
+    padding:0;
+    margin:0;
+    margin-right:145px;
+}
+
+div.header-strapline h1 {
+    margin:0;
+}
+
+div.header img.brandmark {
+    position:absolute;
+    top:15px;
+    right:15px;
+    margin-left:15px;
+}
+
+div.strapline {
+    padding:5px 0px 0px 0px;
+    color:#002147;
+}
+
+div.features, div.preview {
+    background-color:#ffffff;
+    border-radius:10px;
+    -moz-border-radius:10px;
+    -webkit-border-radius:10px;
+    margin:15px auto;
+    max-width:565px;
+    
+    padding:10px;
+}
+
+div.features h2, div.preview h2 {
+    margin-top:0;
+}

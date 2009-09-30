@@ -1,3 +1,4 @@
+@import "../breadcrumbs.css";
 
 
 body {
@@ -199,3 +200,58 @@ div.bubble {
     -webkit-border-radius:8px;
 }
 
+#location_update_container div.section-nopad, #location_update_container div.list-section {
+    margin:0;
+    #border:2px solid #ffffff;
+    
+}
+
+#location_update_container h2 {
+    margin:0;
+}
+
+ul.popup-tabs {
+    list-style: none;
+    margin:0;
+    padding:4px;
+    padding-bottom:0;
+    margin-bottom:4px;
+}
+
+ul.popup-tabs li {
+    display:inline;
+
+}
+
+ul.popup-tabs li a {
+    text-decoration:none;
+    margin:2px;
+    margin-bottom:0;
+    padding:8px 10px;
+    #border:2px solid #ffffff;
+    border-radius-topleft:4px;
+    -moz-border-radius-topleft:4px;
+    -webkit-border-top-left-radius:4px;
+    border-radius-topright:4px;
+    -moz-border-radius-topright:4px;
+    -webkit-border-top-right-radius:4px;
+    border-bottom:0;
+    background-color:#48505A;
+    color:#ffffff;
+    font-weight:bold;
+    font-size:11pt;
+}
+
+ul.popup-tabs li.not-tab a {
+    border:0;
+    padding:2px;
+    margin:4px;
+    margin-left:10px;
+    border-radius:0px;
+    -moz-border-radius:0px;
+    -webkit-border-radius:0px;
+    color:#002147;
+    background-color:transparent;
+
+    
+}

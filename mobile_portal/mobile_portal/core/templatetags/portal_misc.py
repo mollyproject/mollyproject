@@ -55,20 +55,20 @@ class ExternalImageNode(template.Node):
     Takes the form {% external_image url %} and renders as a URL pointing at
     the given image resized to match the device's max_image_width.
     """
-    
+
     def __init__(self, url, just_url=True):
         self.url, self.just_url = url, just_url
-        
+
     def render(self, context):
         url, width = self.url.resolve(context), context['device'].max_image_width
 
         ei, created = ExternalImage.objects.get_or_create(url=url)
-        
+
         request = AnyMethodRequest(url, method='HEAD')
 
         try:
             response = urllib2.urlopen(request)
-        except urllib2.HTTPError:
+        except (urllib2.HTTPError, urllib2.URLError):
             return ""
 
         # Check whether the image has changed since last we looked at it        
@@ -82,7 +82,7 @@ class ExternalImageNode(template.Node):
             ei.etag = response.headers.get('Etag')
             ei.last_modified = response.headers.get('Last-Modified')
             ei.save()
-        
+
         eis, created = ExternalImageSized.objects.get_or_create(external_image=ei, width=width)
 
         if self.just_url:
@@ -101,7 +101,7 @@ def telephone(value):
     value = value.replace(" ", "")
     if value.startswith("0"):
         value = "+44" + value[1:]
-    
+
     normalised = value
 
     if normalised in UNUSUAL_NUMBERS:
@@ -109,14 +109,14 @@ def telephone(value):
     else:
         if value.startswith("+44"):
             value = "0" + value[3:]
-    
+
         for dialing_code in ['01865', '0845']:    
             if value.startswith(dialing_code):
                 value = dialing_code + " " + value[len(dialing_code):]
-                
+
         if value.startswith('01865 2'):
             value = "01865 (2)" + value[7:]
-            
+
     return mark_safe('<a href="tel:%s">%s</a>' % (normalised, value))
 
 @register.filter
@@ -124,7 +124,7 @@ def telephone_uri(value):
     value = value.replace(" ", "")
     if value.startswith("0"):
         value = "tel:+44" + value[1:]
-    
+
     return value
 
 @register.filter(name="device_has_parent")
@@ -132,7 +132,7 @@ def device_has_parent(value, arg):
     if not value:
         return False
     return arg in device_parents[value.devid]
-    
+
 @register.filter
 def header_width(value):
     value = int(value)
@@ -142,7 +142,7 @@ def header_width(value):
         return 160
     else:
         return 240
-        
+
 @register.filter('get_entity')
 def get_entity_filter(value):
     return get_entity(*value)

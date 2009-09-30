@@ -2,13 +2,14 @@
 from datetime import datetime, timedelta
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.core.urlresolvers import reverse
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render_to_response
 from django.conf import settings
 from django.core.management import call_command
-from django.template import loader, Context
+from django.template import loader, Context, RequestContext
 from mobile_portal.core.renderers import mobile_render
 from mobile_portal.webauth.utils import require_auth
 from mobile_portal.osm.utils import fit_to_map
+from mobile_portal.wurfl import device_parents
 import geolocation
 
 import sys, traceback, pytz, simplejson, urllib, re
@@ -21,6 +22,14 @@ from ldap_queries import get_person_units
 from handlers import BaseView
 
 def index(request):
+    internal_referer = request.META.get('HTTP_REFERER') and request.META['HTTP_REFERER'].startswith('http://oucs-alexd:8000/')
+
+    if ("generic_web_browser" in device_parents[request.device.devid]
+        and not request.preferences['core']['desktop_about_shown']
+        and not request.GET.get('preview') == 'true'
+        and not internal_referer):
+        return HttpResponseRedirect(reverse('core_desktop_about'))
+
     # Take the default front age links from the database. If the user is logged
     # in we'll use the ones attached to their profile. If we've added new links
     # since last they visited, or if this is their first visit, we copy the
@@ -64,7 +73,7 @@ class UpdateLocationView(BaseView):
         if 'location' in request.GET:
             return self.confirm_stage(request, context)
         else:
-            return mobile_render(request, context, 'core/update_location')
+            return self.add_container_if_necessary(request, context, 'core/update_location')
             
     def handle_POST(self, request, context):
         try:
@@ -106,7 +115,7 @@ class UpdateLocationView(BaseView):
                 min_points = len(points),
                 zoom = None,
                 width = request.device.max_image_width,
-                height = request.device.max_image_height,
+                height = min(request.device.max_image_height, 200),
             )
         else:
             map_hash, zoom = None, None
@@ -123,7 +132,20 @@ class UpdateLocationView(BaseView):
                 mimetype='application/json',
             )
         else:
-            return mobile_render(request, context, 'core/update_location_confirm')
+            return self.add_container_if_necessary(request, context, 'core/update_location_confirm')
+            
+    def add_container_if_necessary(self, request, context, template_name):
+        if request.GET.get('ajax') != 'true':
+            template = loader.get_template(template_name+'.xhtml')
+            context = RequestContext(request, context)
+            
+            context = {
+                'content': template.render(context),
+            }
+            
+            template_name = 'core/update_location_container'
+        
+        return mobile_render(request, context, template_name)
                     
 
 def ajax_update_location(request):
@@ -389,4 +411,7 @@ def static_detail(request, title, template):
         'content': t.render(Context()),
     }
     return mobile_render(request, context, 'core/static_detail')
+
+def desktop_about(request):
+    return render_to_response('core/desktop_about.xhtml', {}, context_instance=RequestContext(request))    
 
