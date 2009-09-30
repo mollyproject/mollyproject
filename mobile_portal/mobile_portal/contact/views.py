@@ -54,7 +54,7 @@ def index(request):
             json,
             mimetype='application/json'
         )
-        response['X-JSON'] = json
+#        response['X-JSON'] = json
         response['ETag'] = hashlib.sha224(json).hexdigest()
         return response
     else:

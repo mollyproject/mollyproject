@@ -18,6 +18,8 @@ from forms import LocationShareForm, LocationShareAddForm
 from utils import find_or_create_user_by_email
 from ldap_queries import get_person_units
 
+from handlers import BaseView
+
 def index(request):
     # Take the default front age links from the database. If the user is logged
     # in we'll use the ones attached to their profile. If we've added new links
@@ -44,61 +46,60 @@ def crisis(request):
     }
     return mobile_render(request, context, 'core/crisis')
 
-# These are rough guesses
-GOOGLE_ADDRESS_ACCURACIES = {
-    0: float('inf'),
-    1: 500000,
-    2: 100000,
-    3:  40000,
-    4:   8000,
-    5:    300,
-    6:    300,
-    7:    100,
-    8:     50,
-    9:      0,
-}
+class UpdateLocationView(BaseView):
+    def initial_context(self, request):
+        try:
+            zoom = int(request.GET['zoom'])
+        except (IndexError, KeyError):
+            zoom = 16
+        else:
+            zoom = min(max(10, zoom), 18)
+        return_url = (request.POST if request.method == 'POST' else request.GET).get('return_url')
+        return {
+            'zoom': zoom,
+            'return_url': return_url,
+        }
 
-FOUR_LETTER_CODE_RE = re.compile('[a-zA-Z]{4}')
-def update_location(request):
-    try:
-        zoom = int(request.GET['zoom'])
-    except (IndexError, KeyError):
-        zoom = 16
-    else:
-        zoom = min(max(10, zoom), 18)
+    def handle_GET(self, request, context):
+        if 'location' in request.GET:
+            return self.confirm_stage(request, context)
+        else:
+            return mobile_render(request, context, 'core/update_location')
+            
+    def handle_POST(self, request, context):
+        try:
+            title, accuracy, latitude, longitude = (
+                request.POST['title'],
+                float(request.POST['accuracy']),
+                float(request.POST['latitude']),
+                float(request.POST['longitude']),
+            )
+        except (KeyError, ValueError):
+            return self.bad_request(request)
+                
+        location = latitude, longitude
+        placemark = (title, location, accuracy)
+        geolocation.set_location(request, location, accuracy, 'geocoded', placemark)
         
-    error = ''
-    options, map_hash = [], None
+        if 'no_redirect' in request.POST:
+            return HttpResponse('')
+            
+        if context['return_url']:
+            response = HttpResponseRedirect(context['return_url'])
+        else:
+            response = HttpResponseRedirect(reverse('core_index'))
+            
+        response.status_code = 303
+        return response
 
-    if request.method == 'POST':
-        location = request.POST.get('location', '')
+    def confirm_stage(self, request, context):
+        location = request.GET['location']
         
         options = geolocation.geocode(location)
+
+        points = [(o[1][0], o[1][1], 'red') for o in options]        
         
-        try:
-            index = int(request.POST.get('index'))
-        except (TypeError, ValueError):
-            index = None
-
-        if options and len(options) == 1 or not index is None:
-            try:
-                option = options[index]
-            except:
-                option = options[0]
-
-            name, location, accuracy = option
-            
-            geolocation.set_location(request, location, accuracy, 'geocoded', option)
-
-            try:
-                response = HttpResponseRedirect(request.POST['return_url'])
-            except KeyError:
-                response = HttpResponseRedirect(reverse('core_index'))
-            response.status_code = 303
-            return response
-
-        elif options and len(options) > 1:
-            points = [(o[1][0], o[1][1], 'red') for o in options]
+        if points:
             map_hash, (new_points, zoom) = fit_to_map(
                 None,
                 points = points,
@@ -108,17 +109,22 @@ def update_location(request):
                 height = request.device.max_image_height,
             )
         else:
-            error='We could not determine where that place is. Please try again.'
-
-    context = {
-        'map_hash': map_hash,
-        'error': error,
-        'options': options,
-        'location': request.POST.get('location', ''),
-        'return_url': request.GET.get('return_url') or request.POST.get('return_url'),
-        'zoom': zoom
-    }
-    return mobile_render(request, context, 'core/update_location')
+            map_hash, zoom = None, None
+        
+        context.update({
+            'zoom': zoom,
+            'map_hash': map_hash,
+            'options': options,
+        })
+        
+        if request.GET.get('format') == 'json':
+            return HttpResponse(
+                simplejson.dumps(context),
+                mimetype='application/json',
+            )
+        else:
+            return mobile_render(request, context, 'core/update_location_confirm')
+                    
 
 def ajax_update_location(request):
     """

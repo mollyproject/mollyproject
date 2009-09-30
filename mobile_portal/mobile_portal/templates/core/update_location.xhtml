@@ -5,34 +5,6 @@
 
 {% block content %}
 
-{% if error %}
-
-<p><em>{{ error }}</em></p>
-
-{% endif %}
-
-{% if options %}
-
-<div class="list-section">
-
-<h2 class="section-header">Did you mean:</h2>
-
-<div class="backgrounded-image" style="background-image:url('{% url osm_generated_map map_hash %}'); height:{{ device.max_image_height }}px">
-{% include "maps/map_elements.xhtml" %}
-</div>
-
-<form method="post" action=".">
-<input type="hidden" name="location" value="{{ location }}"/>
-<ul class="ml">
-{% for option in options %}
-    <li><button class="as_link" type="submit" name="index" value="{{ forloop.counter0 }}" style="width:100%">{{ option.0 }}</button></li>
-{% endfor %}
-</ul>
-</form>
-
-</div>
-
-{% endif %}
 
 <div class="section-nopad">
 
@@ -41,7 +13,7 @@
 <div class="section-content"><div class="bubble">Examples: 'oucs' (a unit code), 'Trinity College' (a college or department), 'Parks Road' (an address), 'OX1 3PG' (a postcode).</div></div>
 
 
-<form method="post" action=".">
+<form method="get" action=".">
     <div class="section-content">
       <div class="submit-line">
 {% if return_url %}

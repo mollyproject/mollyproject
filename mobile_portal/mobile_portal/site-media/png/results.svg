@@ -17,7 +17,10 @@
    inkscape:version="0.46+devel"
    version="1.0"
    sodipodi:docname="results.svg"
-   inkscape:output_extension="org.inkscape.output.svg.inkscape">
+   inkscape:output_extension="org.inkscape.output.svg.inkscape"
+   inkscape:export-filename="/Erewhon/mobile_portal/mobile_portal/site-media/png/results-bc.png"
+   inkscape:export-xdpi="45"
+   inkscape:export-ydpi="45">
   <defs
      id="defs2385">
     <linearGradient
@@ -76,7 +79,7 @@
     <linearGradient
        inkscape:collect="always"
        xlink:href="#linearGradient3049"
-       id="linearGradient3055"
+       id="linearGradient3645"
        x1="317.34201"
        y1="488.07648"
        x2="317.34201"
@@ -92,7 +95,7 @@
      inkscape:pageshadow="2"
      inkscape:zoom="5.6568542"
      inkscape:cx="-8.6879211"
-     inkscape:cy="25.608183"
+     inkscape:cy="25.431406"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -119,7 +122,7 @@
      transform="translate(-287.34202,-488.07647)">
     <path
        id="path2393"
-       style="font-size:medium;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;color:#000000;fill:url(#linearGradient3055);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2.24163794999999988;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
+       style="font-size:medium;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;color:#000000;fill:url(#linearGradient3645);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2.24163794999999988;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
        d="m 309.06962,493.22334 17.70967,2.67742 -0.93548,39.67742 -21.74193,-7.48387 4.96774,-34.87097 z m 9.74015,-5.14687 -1.29033,4.12903 3.74194,0.54839 -0.19355,-4.3871 -2.25806,-0.29032 z m 9.64515,34.70968 -0.19355,7.58064 1.74194,5.90323 2.2258,-0.64516 -3.77419,-12.83871 z m -23.19355,8.16129 -2.80645,8.83871 2.2258,0.67742 2.7742,-8.7742 -2.19355,-0.74193 z m 15.51613,5.35484 0.48387,11.77419 2.32258,-0.0967 -0.45161,-10.87097 -2.35484,-0.80645 z" />
   </g>
 </svg>
