@@ -63,3 +63,9 @@ div.access, div.preview, div.access ul{
 	
 }
 
+div.access {
+	float:left;
+	margin-right:20px;
+	width: 180px;
+}
+
