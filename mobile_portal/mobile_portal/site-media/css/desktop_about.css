@@ -1,7 +1,8 @@
 body {
     font-family: "Liberation Sans", Arial, sans-serif;
     margin:0;
-    background-color:#4b92db;
+/*    background-color:#4b92db;*/
+	background-image:url('../../png/stripes.png');
     min-width:615px;
 }
 
