@@ -1,0 +1,47 @@
+{% extends "weather/base.xhtml" %}
+
+{% block pagetitleclass %}weather-header with-icon{% endblock %}
+{% block pagetitle %}Weather{% endblock %}
+
+{% block content %}
+
+<div class="list-section">
+	<h2 class="section-header">Latest observations for Oxford</h2>
+	<div class="list-note"><div class="bubble">
+	    <img src="{{ MEDIA_URL }}png/weather/{{ weather.icon }}.png" alt="{{ weather.get_outlook_display|capfirst }}"/>
+	</div></div>
+	<table class="section-table">
+	    <tbody>
+	        <tr>
+	            <th>Temperature:</th>
+	            <td>{{ weather.temperature }}&deg;C</td>
+	        </tr>
+	        <tr>
+	            <th>Wind:</th>
+	            <td>{{ weather.wind_speed }} mph {{ weather.wind_direction }}</td>
+	        </tr>
+	        <tr>
+	            <th>Humidity:</th>
+	            <td>{{ weather.humidity }}%</td>
+	        </tr>
+	        <tr>
+	            <th>Pressure:</th>
+	            <td>{{ weather.pressure }} mbar {{ weather.get_pressure_state_display }}</td>
+	        </tr>
+	        <tr>
+	            <th>Visibility:</th>
+	            <td>{{ weather.get_visibility_display|capfirst }}</td>
+	        </tr>
+	    </tbody>
+    </table>
+	</div>
+{% endblock %}
+
+    temperature = models.IntegerField(null=True)
+    wind_direction = models.CharField(null=True, max_length=2)
+    wind_speed = models.IntegerField(null=True)
+    humidity = models.IntegerField(null=True)
+    pressure = models.PositiveIntegerField(null=True)
+    pressure_state = models.CharField(null=True, max_length=1, choices=PRESSURE_STATE_CHOICES)
+    visibility = models.CharField(null=True, max_length=2, choices=VISIBILITY_CHOICES)
+    

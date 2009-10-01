@@ -28,6 +28,7 @@ defaults = {
             'podcasts': (EPOCH, (5, True)),
             'rss': (EPOCH, (6, True)),
             'z3950': (EPOCH, (7, True)),
+            'weather': (EPOCH, (8, True)),
         })),
         'rss': (EPOCH, PreferenceSet({
             'hidden_items': (EPOCH, set()),
