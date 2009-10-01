@@ -5,54 +5,16 @@
 
 {% block content %}
 
-{% if not single %}<p>
-    <a href="{% url rss_manage %}">Manage your news feeds</a>
-</p>{% endif %}
-
-{% if page.object_list %}
-
-<div class="page_navigation">
-    {% if page.has_previous %}<a href="?page={{ page.previous_page_number }}">&lt;</a>{% else %}&lt;{% endif %}
-    Displaying items <strong>{{ page.start_index }}</strong> to <strong>{{ page.end_index }}</strong> of <strong>{{ page.paginator.count }}</strong>.
-    {% if page.has_next %}<a href="?page={{ page.next_page_number }}">&gt;</a>{% else %}&gt;{% endif %}
-</div>
-
-{% for item in page.object_list %}
-
-<div class="rss_item rss_item-{% cycle odd,even %} rss_feed_{{ item.feed.slug }}" id="rss_item_{{ item.id }}">
-
-{% comment %} <div class="rss_item_controls">
-    <a href="#">Hide</a>
-</div> {% endcomment %}
-
-<h3>{{ item.title }}</h3>
-{% if not single %}<form method="post" action="{% url rss_feed_display %}">
-    <p class="feed_name">
-        <a href="{% url rss_feed_detail item.feed.slug %}">{{ item.feed.title }}</a>
-        <input type="hidden" name="feed" value="{{ item.feed.slug }}"/>
-        <input type="hidden" name="displayed" value="false"/>
-        <input type="hidden" name="location" value="{% url rss_index %}?page={{ item.page_without_feed }}"/>
-        <input type="submit" class="hide_feed" value="Hide feed"/>
-    </p>
-</form>{% endif %}
-
-<p>{{ item.description }}</p>
-
-</div>
-
+<div class="list-section">
+    <h2 class="section-header">Feeds</h2>
+    <ul class="ml">
+{% for feed in feeds %}
+        <li>
+            <a href="{{ feed.get_absolute_url }}">{{ feed.title }}</a>
+        </li>
 {% endfor %}
-
-<div class="page_navigation">
-    {% if page.has_previous %}<a href="?page={{ page.previous_page_number }}">&lt;</a>{% else %}&lt;{% endif %}
-    Displaying items <strong>{{ page.start_index }}</strong> to <strong>{{ page.end_index }}</strong> of <strong>{{ page.paginator.count }}</strong>.
-    {% if page.has_next %}<a href="?page={{ page.next_page_number }}">&gt;</a>{% else %}&gt;{% endif %}
+    </ul>
 </div>
-
-{% else %}
-
-<p>There are no items to display. You may want to <a href="{% url rss_manage %}">add some feeds</a>.</p>
-
-{% endif %}
 
 
 {% endblock %}

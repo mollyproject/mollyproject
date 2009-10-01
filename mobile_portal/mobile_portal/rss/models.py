@@ -1,4 +1,6 @@
+from pytz import utc, timezone
 from django.db import models
+from django.core.urlresolvers import reverse
 
 class ShowPredicate(models.Model):
     name = models.TextField()
@@ -14,6 +16,15 @@ class RSSFeed(models.Model):
     
     show_predicate = models.ForeignKey(ShowPredicate, null=True, blank=True)
     
+    def __unicode__(self):
+        return self.title
+        
+    def get_absolute_url(self):
+        return reverse('rss_item_list', args=[self.slug])
+        
+    class Meta:
+        ordering = ('title',)
+    
 class RSSItem(models.Model):
     feed = models.ForeignKey(RSSFeed)
     title = models.TextField()
@@ -21,3 +32,15 @@ class RSSItem(models.Model):
     description = models.TextField()
     link = models.URLField()
     last_modified = models.DateTimeField() # this one is also in UTC
+    
+    @property
+    def last_modified_local(self):
+        try:
+            return utc.localize(self.last_modified).astimezone(timezone('Europe/London'))
+        except Exception, e:
+            return repr(e)
+    
+    def get_absolute_url(self):
+        return reverse('rss_item_detail', args=[self.feed.slug, self.id])
+    class Meta:
+        ordering = ('-last_modified',)

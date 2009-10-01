@@ -54,15 +54,26 @@ def show_feeds(request, feeds, extra_context):
     return mobile_render(request, context, 'rss/index')
 
 def index(request):
-    user_data = get_user_data(request)
-    return show_feeds(
-        request,
-        (feed for feed in RSSFeed.objects.all() if get_feed_displayed(request, feed, user_data)),
-        {
-            'title': 'News feeds',
-            'single': False,
-        }
-    )
+    feeds = RSSFeed.objects.all()
+    context = {
+        'feeds': feeds,
+    }
+    return mobile_render(request, context, 'rss/index')
+
+def item_list(request, slug):
+    feed = get_object_or_404(RSSFeed, slug=slug)
+    context = {
+        'feed': feed,
+    }
+    return mobile_render(request, context, 'rss/item_list')
+
+def item_detail(request, slug, id):
+    item = get_object_or_404(RSSItem, feed__slug=slug, id=id)
+    context = {
+        'item': item,
+    }
+    return mobile_render(request, context, 'rss/item_detail')
+    
     
 def feed_detail(request, slug):
     feed = get_object_or_404(RSSFeed, slug=slug)
