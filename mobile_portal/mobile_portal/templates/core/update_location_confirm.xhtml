@@ -13,7 +13,7 @@
 <ul class="ml">
 {% for option in options %}
     <li>
-        <form method="post" action=".">
+        <form method="post" action="." class="submit-location-form">
             <input type="hidden" name="title" value="{{ option.0 }}"/>
             <input type="hidden" name="latitude" value="{{ option.1.0 }}"/>
             <input type="hidden" name="longitude" value="{{ option.1.1 }}"/>

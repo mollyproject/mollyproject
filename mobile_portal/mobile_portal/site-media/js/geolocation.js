@@ -21,6 +21,8 @@ function sendPosition(position, final) {
     }, function(data) {
         accuracy = Math.round(position.coords.accuracy);
         $('#location_status').html('We think you are somewhere near <strong class="nobr">'+data+'</strong> (to approximately <strong>'+accuracy+'</strong> metres).');
+        
+        $('.location_name').html(data);
     });
 }
 
@@ -175,9 +177,27 @@ function manual_location_submit() {
         location: $('#location').val(),
     }, function(data) {
         $('#tab-manual').html(data);
+        $('.submit-location-form').bind('submit', manual_location_confirm);
     });
     return false;
 }
+
+function manual_location_confirm() {
+    form = $(this);
+    $.post(base+'update_location/', {
+        ajax: 'true',
+        title: form.find("[name='title']").val(),
+        latitude: form.find("[name='latitude']").val(),
+        longitude: form.find("[name='longitude']").val(),
+        accuracy: form.find("[name='accuracy']").val(),
+        no_redirect: 'true',
+    }, function(data) {
+        $('#tab-manual').html('<h2 class="section-header">Update manually</h2><div class="section-content">Your location has been updated successfully.</div></div>');
+        $('.location_name').html(form.find("[name='title']").val());
+    });
+    return false;
+}
+        
 
 function close_location_update() {
     $('#location_update_container').remove();
@@ -187,4 +207,5 @@ function close_location_update() {
 $(document).ready(function () {
     $('a.location_update_link').bind('click', do_location_update);
     $('#manual_location_form').bind('submit', manual_location_submit);
+    $('.submit-location-form').bind('submit', manual_location_confirm);
 });

@@ -110,6 +110,7 @@ def weather(request):
         
         # This comes from LDAP and should be moved to its own context processor.
         'common_name': request.session.get('common_name'),
-        'preferences': request.preferences
+        'preferences': request.preferences,
+        'session_key': request.session.session_key,
     }
     
