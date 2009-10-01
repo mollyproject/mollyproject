@@ -1,0 +1,29 @@
+{% extends "rss/base.xhtml" %}
+
+{% block breadcrumbs %}
+{{ block.super }}
+            <li><a href="{% url rss_index %}">
+                <img src="{{ MEDIA_URL }}png/rss-bc.png" alt="News"/>
+            </a></li>
+{% endblock %}
+
+{% block pagetitle %}News items{% endblock %}
+
+{% block content %}
+
+<div class="list-section">
+    <h2 class="section-header">{{ feed.title }}</h2>
+    
+    <ul class="ml">
+{% for item in feed.rssitem_set.all %}
+        <li>
+            <a href="{{ item.get_absolute_url }}">
+                {{ item.title }}<br/>
+                <small>{{ item.last_modified_local|date:"d M Y H:m:s" }}</small>
+            </a>
+        </li>
+{% endfor %}
+    </ul>
+</div>
+
+{% endblock %}
