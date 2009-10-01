@@ -77,12 +77,38 @@ class CoreTestCase(unittest.TestCase):
         )
         
         for location in test_locations:
-            response = self.client.post('/update_location/', {
+            response = self.client.get('/update_location/', {
                 'location': location
             })
             
-            self.assertTrue(response.status_code in (303, 200),
+            self.assertEqual(response.status_code, 200,
                 "Unexpected status code: %d" % response.status_code)
+                
+            self.assertTrue(len(response.context['options']) > 0,
+                "Update location should return at least one option for location '%s'." % location)
+            
+            option = response.context['options'][0]
+            
+            base_args = {
+                'title': option[0],
+                'latitude': option[1][0],
+                'longitude': option[1][1],
+                'accuracy': option[2],
+            }
+            
+            response = self.client.post('/update_location/', dict(base_args,
+                no_redirect='true',
+            ))
+            self.assertEqual(response.status_code, 200)
+            
+            response = self.client.post('/update_location/', base_args, follow=True)
+            self.assertEqual(response.redirect_chain, [(u'http://testserver/', 303)])
+            
+            response = self.client.post('/update_location/', dict(base_args,
+                return_url='http://foo.bar/',
+            ), follow=True)
+            self.assertEqual(response.redirect_chain, [(u'http://foo.bar/', 303)])
+            
    
     def testOxfordEmailRegex(self):
         oxford_addresses = (

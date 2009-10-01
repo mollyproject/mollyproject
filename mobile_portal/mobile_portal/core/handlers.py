@@ -6,12 +6,14 @@ class BaseView(object):
             'You may not perform a %s request against this resource.' % request.method,
             status=405,
         )
+        return response
         
     def bad_request(self, request):
         response = HttpResponse(
             'Your request was malformed.',
             status=400,
         )
+        return response
         
     def initial_context(self, request, *args, **kwargs):
         return {}

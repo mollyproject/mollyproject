@@ -5,7 +5,7 @@ Geospatial-related functions, including geocoding.
 from __future__ import division
 from operator import add
 from datetime import datetime
-import urllib, urllib2, simplejson, math, re
+import urllib, urllib2, simplejson, math, re, sys
 from django.conf import settings
 from django.http import HttpRequest
 from django.contrib.gis.geos import Point
@@ -92,20 +92,24 @@ def geocode(query):
     if not (', ' in query or ' near ' in query):
         query += ', Oxford'
         
+    query = query.strip()
+    if query.split(' ')[0][0].isdigit():
+        query = ' '.join(query.split(' ')[1:])
+    
     params = {
         'api_key': settings.CLOUDMADE_API_KEY,
         'query': urllib.quote_plus(query),
     }
-
+    
     try:
         data = urllib2.urlopen(CLOUDMADE_GEOCODE_URL % params)
         json = simplejson.load(data, 'utf8')
-    except:
+    except Exception,e:
         return []
     
     if not json:
         return []
-    
+
     restricted_results = []
     centre_of_oxford = Point(-1.2582, 51.7522, srid=4326).transform(27700, clone=True)
     for feature in json['features']:

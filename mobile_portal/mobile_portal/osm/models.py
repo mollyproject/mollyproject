@@ -9,7 +9,7 @@ from django.db import models
 from django.conf import settings
 
 class GeneratedMap(models.Model):
-    hash = models.CharField(max_length=16)
+    hash = models.CharField(max_length=16, unique=True, primary_key=True)
     generated = models.DateTimeField()
     last_accessed = models.DateTimeField()
     _metadata = models.TextField(blank=True)
