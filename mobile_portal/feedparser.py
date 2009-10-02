@@ -613,7 +613,7 @@ class _FeedParserMixin:
             try:
                 output = base64.decodestring(output)
             except binascii.Error:
-                pass4
+                pass
             except binascii.Incomplete:
                 pass
                 
