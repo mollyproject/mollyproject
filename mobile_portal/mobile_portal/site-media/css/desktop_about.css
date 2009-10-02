@@ -3,7 +3,14 @@ body {
     margin:0;
 /*    background-color:#4b92db;*/
 	background-image:url('../png/stripes.png');
-    min-width:615px;
+    min-width:730px;
+}
+
+div.container {
+    width:800px;
+    margin-left:auto;
+    margin-right:auto;
+    position:relative;
 }
 
 div.header {
@@ -40,32 +47,42 @@ div.strapline {
 	color:#FFF;
 }
 
-div.features, div.preview, div.access {
+div.features, div.preview, div.access, div.data-usage, div.about {
     background-color:#ffffff;
     border-radius:10px;
     -moz-border-radius:10px;
     -webkit-border-radius:10px;
-	border-style:solid;
-	border-width:5px;
-	border-color:#cfd9e5;
-    margin:15px auto;
-    max-width:665px;
-    
+
     padding:10px;
 	
 	/* Does this go here? */
 	list-style:none;
 }
 
-div.features h2, div.preview h2, div.access h2 {
+div.about {
+    margin: 15px;
+    margin-bottom:0;
+}
+
+div.features h2, div.preview h2, div.access h2, div.data-usage h2 {
     margin-top:0;
 }
 
+div.column-left {
+    float:left;
+    margin-left:15px;
+    margin-top:15px;
+}
 
-div.access {
-	float:left;
-	margin-right:20px;
-	width: 180px;
+div.column-middle {
+    padding-left:15px;
+    width:220px;
+    float: left;
+    margin-top:15px;
+}
+
+div.access, div.data-usage {
+    margin-top:15px;
 }
 
 div.access ul {
@@ -73,3 +90,73 @@ div.access ul {
 	list-style:none;
 }
 
+div.access li {
+    border-top:1px solid #000;
+    padding:5px 0;
+}
+
+div.access li:first-child {
+    border-top:0;
+}
+
+li#access-qrcode img {
+    margin-left:auto;
+    margin-right:auto;
+    display:block;
+}
+
+div.features {
+    width:515px;
+}
+
+div.features ul {
+    padding-left:0;
+    list-style:none;
+}
+
+div.features img.even {
+    float: left;
+    margin-right:10px;
+    margin-bottom:10px;
+}
+
+div.features img.odd {
+    float: right;
+    margin-right:10px;
+    margin-bottom:10px;
+}    
+
+
+div.features li {
+    display:block;
+    clear:both;
+}
+
+div.footer {
+    clear:both;
+    padding-top:30px;
+    padding-bottom:15px;
+    text-align:center;
+}
+
+div.footer img {
+    margin:0 20px;
+    border:0;
+}
+
+div.footer ul {
+    padding-left:0;
+}
+
+div.footer li {
+    display:inline;
+    margin:auto 0.4em;
+}
+
+div.footer li a {
+    white-space:nowrap;
+}
+
+div.logos {
+    margin-bottom:30px;
+}

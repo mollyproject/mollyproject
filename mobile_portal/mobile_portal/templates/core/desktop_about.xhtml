@@ -11,7 +11,7 @@
           var popup = window.open(
               '?preview=true',
               'popwin',
-              'left=20,top=20,innerwidth=260,innerheight=320,toolbar=0,menubar=0,location=0,status=1,resizable=1,scrollbars=yes'
+              'left=20,top=20,innerwidth=330,innerheight=480,toolbar=0,menubar=0,location=0,status=1,resizable=1,scrollbars=yes'
           );
           popup.window.location.href = "{% url core_index %}" + "?preview=true";
       }
@@ -27,43 +27,36 @@
   </head>
   
   <body onload="javascript:loaded();">
-  
     <div class="header">
+    <div class="container" style="height:145px;">
       <div class="header-strapline">
         <h1>
-          <img src="{{ MEDIA_URL }}png/desktop-logo.png" alt="Mobile Oxford" height="62" width="455"/>
+          <img src="{{ MEDIA_URL }}png/desktop-logo.png" alt="Mobile Oxford" height="62" width="445"/>
         </h1>
         <div class="strapline">
-          Get essential information from around the University of Oxford on the move.
+          In Oxford, at Oxford, from Oxford.
         </div>
       </div>
-      <img class="brandmark" src="{{ MEDIA_URL }}gif/brandmarks/2217_ox_brand1_pos.gif" alt="University of Oxford" height="115" width="115" />
+      <img class="brandmark" src="{{ MEDIA_URL }}gif/brandmarks/2231_ox_brand1_rev.gif" alt="University of Oxford" height="115" width="115" />
+    </div>
     </div>
     
-	<div class="access">
-	  <h2>How to access</h2>
-	  <p>How to access Mobile Oxford</p>
-		<ul>
-			<li>Open up your phone's web browser and head to: <a href="http://m.ox.ac.uk">m.ox.ac.uk</a></li>
-			<li id="access-datamatrix"><img src="{{ MEDIA_URL }}png/barcodes/datamatrix.png" alt="Data Matrix Barcode for m.ox.ac.uk" height="156" width="156" /></li>
-			<li id="access-qrcode"><img src="{{ MEDIA_URL }}png/barcodes/qrcode.png" alt="QR Barcode for m.ox.ac.uk" height="156" width="156"/></li>
-			<li>Tweet #mobileox</li>
-			<li>How to access WiFi on your phone - link to OUCS wifi config</li>
-			<li>Mobile Oxford blog</li>
-		</ul>
-	</div>
-	
-    <div class="preview">
-      <h2>Preview</h2>
+    <div class="container">
     
-      <a id="preview-link" href="{% url core_index %}?preview=true">Preview</a>
-    </div>
+    <div class="about">
+        <em>Mobile Oxford</em> is a new service for students and staff at the
+        University of Oxford. Incorporating information and access to services
+        from across the institution, <em>Mobile Oxford</em> is a central place
+        to act as your guide in both the city and the University.
+    </div>    
     
+    <div class="column-left">
     <div class="features">
     <h2>Features</h2>
     
     <ul>
       <li class="feature-contacts">
+        <img src="{{ MEDIA_URL }}png/demos/contacts.png" width="160" height="160" class="even" />
         <h3>Contact search</h3>
         <p>
           Search the University contact directory with one-click access to
@@ -72,6 +65,7 @@
       </li>
       
       <li class="feature-z3950">
+        <img src="{{ MEDIA_URL }}png/demos/z3950.png" width="160" height="160" class="odd" />
         <h3>Library search</h3>
         <p>
           Search for books and other items by author, title or
@@ -82,6 +76,7 @@
       </li>
 
       <li class="feature-maps">
+        <img src="{{ MEDIA_URL }}png/demos/maps.png" width="160" height="160" class="even" />
         <h3>Maps</h3>
         <p>
           Search for colleges, departments, restaurants, bus stops and much
@@ -92,6 +87,7 @@
       </li>
 
       <li class="feature-podcasts">
+        <img src="{{ MEDIA_URL }}png/demos/podcasts.png" width="160" height="160" class="odd" />
         <h3>Podcasts</h3>
         <p>
           Listen to any podcast published through the University's
@@ -100,13 +96,102 @@
       </li>
       
       <li class="feature-webcams">
+        <img src="{{ MEDIA_URL }}png/demos/webcams.png" width="160" height="160" class="even" />
         <h3>Webcams</h3>
         <p>
-          Foo
+          View webcams from across the city. Check the weather, the traffic, or simply wave at yourself.
         </p>
       </li>
+    
+      <li class="feature-news">
+        <img src="{{ MEDIA_URL }}png/demos/news.png" width="160" height="160" class="odd" />
+        <h3>News</h3>
+        <p>
+          Read news from across the University to find out about events and recent developments.
+        </p>
+      </li>
+    
+      <li class="feature-results">
+        <img src="{{ MEDIA_URL }}png/demos/results.png" width="160" height="160" class="even" />
+        <h3>Results releases</h3>
+        <p>
+          Check whether your examination school has had its results released so you know when to check the Student Self-Service System.
+        </p>
+      </li>
+    
+      <li class="feature-weather">
+        <img src="{{ MEDIA_URL }}png/demos/weather.png" width="160" height="160" class="odd" />
+        <h3>Weather</h3>
+        <p>
+          Check the latest weather reports from Oxford.
+        </p>
+      </li>
+    
     </ul>
+    <div style="clear:both;"> </div>
     </div>
+    </div>
+    <div class="column-middle">
+    <div class="preview">
+      <h2>Preview</h2>
+    
+      <p><a id="preview-link" href="{% url core_index %}?preview=true">Preview</a>
+         the site using the browser on your desktop or laptop.</p>
+    </div>
+    
+    <div class="access">
+      <h2>How to access</h2>
+      <ul>
+        <li>Open up your phone's web browser and head to: <a href="http://m.ox.ac.uk/">m.ox.ac.uk</a></li>
+        <li id="access-qrcode">
+            Point your phone's barcode scanner at:
+            <img src="{{ MEDIA_URL }}png/barcodes/qrcode.png" alt="QR Barcode for m.ox.ac.uk" height="189" width="189"/>
+        </li>
+        <li>
+          <a href="http://www.oucs.ox.ac.uk/network/wireless/">
+            Instructions for setting up wireless access from your wireless device
+          </a>
+        </li>
+      </ul>
+	</div>
+	
+	<div class="data-usage">
+	    <h2>Data usage</h2>
+	    <p>While this service is provided free of charge, your mobile operator
+	       may charge for the data you transfer. Please check that using this
+	       site does not incur any unexpected charges before accessing it.</p>
+	</div>
+	</div>
+    
+    
+    </div>
+
+    <div class="footer">
+      <div class="container">
+      <p>Developed by the OUCS Erewhon Project, through the JISC-funded Institutional Innovation programme.</p>
+      <div class="logos">
+      <a href="http://jisc.ac.uk/">
+        <img src="{{ MEDIA_URL }}png/jisc-logo.png" width="100" height="52" alt="JISC" style="position:relative; top:7px;" />
+      </a>
+      <a href="http://erewhon.oucs.ox.ac.uk/">
+        <img src="{{ MEDIA_URL }}png/erewhon-logo.png" width="128" height="68" alt="JISC" style="position:relative; top:0px;" />
+      </a>
+      <a href="http://www.oucs.ox.ac.uk/">
+        <img src="{{ MEDIA_URL }}png/oucs-logo.png" width="254" height="63" alt="OUCS" style="position:relative; top:9px;" />
+      </a>
+      </div>
+      <p>With thanks to the following for providing data:</p>
+      <ul>
+        <li><a href="http://backstage.bbc.co.uk/">BBC</a></li>
+        <li><a href="http://www.oxfordshire.gov.uk">Oxfordshire County Council</a></li>
+        <li><a href="http://wiki.openstreetmap.org/">OpenStreetMap</a></li>
+        <li><a href="http://www.ouls.ox.ac.uk/">Oxford University Library Services</a></li>
+        <li><a href="http://podcasts.ox.ac.uk/">University of Oxford Podcasts</a></li>
+        <li><a href="http://www.admin.ox.ac.uk/schools/">Examination Schools</a></li>
+        <li><a href="http://oii.ox.ac.uk/">Oxford Internet Institute</a></li>
+        <li><a href="http://www.earth.ox.ac.uk/">Earth Sciences Department</a></li>
+      </ul>
+    </div></div>
    
   </body>
 </html>
