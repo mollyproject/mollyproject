@@ -10,7 +10,8 @@
 {% endif %}
 {% endblock %}
 
-{% block pagetitle %}{{ podcast.title }}{% endblock %}
+{% block pagetitle %}Podcast{% endblock %}
+{% block title %}m.ox | {{ podcast.title }}{% endblock %}
 
 
 {% block extrahead %}
@@ -19,57 +20,52 @@
 
 {% block content %}
 
-<a href="{{ podcast.rss_url }}?destination=moxacuk" type="application/rss+xml">subscribe</a>
-<p class="podcast_description">{{ podcast.description }}</p>
+<div class="section-nopad">
+    <h2 class="section-header">{{ podcast.title }}</h2>
+    
+    <div class="section-content">{{ podcast.description|safe }}</div>
+</div>
 
 {% for item in items %}
 
-<div class="podcast_item podcast_item_{% cycle odd,even %}">
+<div class="section-nopad">
+    <h3 class="section-header">{{ item.title }}</h3>
+    
+    <table class="section-table">
+        <tbody>
+    {% if item.duration %}
+            <tr>
+                <th>Duration:</th>
+                <td>{{ item.duration }}</td>
+            </tr>
+    {% endif %}
+            <tr>
+                <th>Published:</th>
+                <td>{{ item.published_date|date:"D j M Y, g:i A" }}</td>
+            </tr>
+        </tbody>
+    </table>
 
-<h2 class="podcast_item_title">{{ item.title }}</h2>
+    <div class="section-content">{{ item.description|safe }}</div>
 
-<hr/>
-
-<table class="podcast_item_meta">
-    <tbody>
-{% if item.duration %}
-        <tr>
-            <th>Duration:</th>
-            <td>{{ item.duration }}</td>
-        </tr>
-{% endif %}
-        <tr>
-            <th>Published:</th>
-            <td>{{ item.published_date|date:"D j M Y, g:i A" }}</td>
-        </tr>
-    </tbody>
-</table>
-
-<p class="podcast_item_description">{{ item.description }}</p>
-
-<hr/>
-
-<h3 class="podcast_enclosures">Downloads</h3>
-
-<table class="podcast_enclosures">
-    <thead>
-        <tr>
-            <th>Format</th>
-            <th>Size</th>
-            <th>Download</th>
-        </tr>
-    </thead>
-    <tbody>
-{% for enc in item.podcastenclosure_set.all %}
-        <tr>
-            <td>{{ enc.mimetype }}</td>
-            <td>{{ enc.length|filesizeformat }}</td>
-            <td><a href="{{ enc.url }}?CAMEFROM=moxacuk">Download</a></td>
-        </tr>
-{% endfor %}
-    </tbody>
-</table>
-
+    <table class="section-table">
+        <thead>
+            <tr>
+                <th>Format</th>
+                <th>Size</th>
+                <th>Download</th>
+            </tr>
+        </thead>
+        <tbody>
+    {% for enc in item.podcastenclosure_set.all %}
+            <tr>
+                <td>{{ enc.get_mimetype_display|capfirst }}</td>
+                <td>{{ enc.length|filesizeformat }}</td>
+                <td><a href="{{ enc.url }}?CAMEFROM=moxacuk">Download</a></td>
+            </tr>
+    {% endfor %}
+        </tbody>
+    </table>
 </div>
 
 {% endfor %}

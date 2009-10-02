@@ -23,6 +23,7 @@ ul.ml li, table.section-table tr, dl.ml dt, dl.ml dd {
 	padding-right: 10px;
 }
 
+
 ul.ml li.non-link-item, dl.ml dt {
 	padding:10px;
 }
@@ -37,8 +38,16 @@ table.section-table {
     width:100%;
 }
 
+table.section-table th:first-child, table.section-table td:first-child {
+    padding-left:10px;
+}
+
 table.section-table tr.notopborder {
     border-top:0;
+}
+
+table.section-table:last-child {
+    margin-bottom:10px;
 }
 
 
@@ -79,7 +88,7 @@ ul.ml span.audio, ul.ml span.video {
     background-position:left 2px;
 }
 
-ul.ml li a, dl.ml dd a, button.as_link {
+ul.ml li a, dl.ml dd a, button.as_link, table.section-table a {
 	font-size:12pt;
     color:#ffffff;
     text-decoration: none;
@@ -89,13 +98,19 @@ ul.ml li a, dl.ml dd a, button.as_link {
     text-align:left;
 	background-position:right center;
     background-repeat:no-repeat;
+
+}
+
+table.section-table a {
+    padding:0;
+    text-decoration:underline;
 }
 
 ul.ml a.no-icon {
     background-image:none;
 }
 
-div.list-section .top, h2.section-header {
+div.list-section .top, h2.section-header, h3.section-header {
     border-top:0px;
     border-radius-topleft:8px;
     -moz-border-radius-topleft:8px;
@@ -150,7 +165,7 @@ div.section-content a {
     color: #ffffff;
 }
 
-h2.section-header, div.list-footer {
+h2.section-header, h3.section-header, div.list-footer {
     background-color:#48505a;
     background-image:none;
     font-weight:bold;
@@ -160,6 +175,10 @@ h2.section-header, div.list-footer {
     font-size:14pt;
     margin-bottom:0;
     text-decoration:none;
+}
+
+h3.section-header {
+    font-size:12pt;
 }
 
 div.list-footer {

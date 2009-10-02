@@ -63,12 +63,28 @@ class PodcastItem(models.Model):
         verbose_name = 'Podcast item'
         verbose_name_plural = 'Podcast items'
 
+MIMETYPES = {
+    'audio/x-mpeg': 'MP3 audio',
+    'video/mp4': 'MP4 video',
+    'MPEG4 Video': 'MP4 video',
+    'text/html': 'HTML document',
+    'audio/mpeg': 'MP3 audio',
+    'video/x-ms-wmv': 'WMV video',
+    'text/plain': 'plain text',
+    'application/pdf': 'PDF document',
+    'audio/x-m4b': 'MP4 audio',
+    'application/octet-stream': 'unknown',
+    'video/mpeg': 'MPEG video',
+}    
 
 class PodcastEnclosure(models.Model):
     podcast_item = models.ForeignKey(PodcastItem)
     url = models.URLField()
     length = models.IntegerField(null=True)
     mimetype = models.TextField(null=True)
+    
+    def get_mimetype_display(self):
+        return MIMETYPES.get(self.mimetype, 'unknown')
     
     class Meta:
         verbose_name = 'Podcast enclosed data'

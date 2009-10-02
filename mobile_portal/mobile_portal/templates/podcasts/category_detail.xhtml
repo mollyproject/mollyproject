@@ -11,15 +11,16 @@
 
 {% block content %}
 
-<p>Show
-    <a href="{% url podcasts_category_medium category.code,"audio" %}">audio</a>
-    <a href="{% url podcasts_category_medium category.code,"video" %}">video</a>
-    <a href="{% url podcasts_category category.code %}">all</a>
-podcasts.</p>
-
 
 <div class="list-section">
 	<h2 class="section-header">{{ category.name }}</h2>
+    <div class="list-note"><div class="bubble">
+    Show
+    <a href="{% url podcasts_category_medium category.code,"audio" %}">audio</a>
+    <a href="{% url podcasts_category_medium category.code,"video" %}">video</a>
+    <a href="{% url podcasts_category category.code %}">all</a>
+podcasts.
+    </div></div>
 		<ul class="ml">
 
 
