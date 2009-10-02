@@ -23,6 +23,7 @@ from handlers import BaseView
 
 def index(request):
     internal_referer = request.META.get('HTTP_REFERER') and request.META['HTTP_REFERER'].startswith('http://oucs-alexd:8000/')
+    internal_referer = request.META.get('HTTP_REFERER') and request.META['HTTP_REFERER'].startswith('http://m.ox.ac.uk/')
 
     if ("generic_web_browser" in device_parents[request.device.devid]
         and not request.preferences['core']['desktop_about_shown']

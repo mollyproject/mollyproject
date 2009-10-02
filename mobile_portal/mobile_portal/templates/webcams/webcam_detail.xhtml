@@ -23,10 +23,10 @@
 {% external_image webcam.url "div" %}
 
 <div class="list-footer">
-<p>{{ webcam.description }}</p>
+<p><small>{{ webcam.description }}</small></p>
 
 {% if webcam.credit %}
-<p>Credit: {{ webcam.credit|safe }}</p>
+<p><small>Credit: {{ webcam.credit|safe }}</small></p>
 {% endif %}
 
 </div></div>
