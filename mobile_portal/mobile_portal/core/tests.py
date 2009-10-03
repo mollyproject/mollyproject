@@ -73,7 +73,7 @@ class CoreTestCase(unittest.TestCase):
     def testSetLocationManually(self):        
         test_locations = (
             'Keble College', 'OX26NN', 'Germany', 'Antartica', '51 4',
-            '12 Banbury Road, Oxford', 'Paris', 'W1A 1AA', 'dago;gns'
+            '12 Banbury Road, Oxford', 'W1A 1AA', 'dago;gns'
         )
         
         for location in test_locations:
