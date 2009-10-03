@@ -11,6 +11,7 @@ OPERA_DEVICES = {
 
 class LocationMiddleware(object):
     def process_request(self, request):
+        ua = request.META.get('HTTP_USER_AGENT', '')
 
         try:
             request.device = devices.select_ua(
@@ -20,7 +21,11 @@ class LocationMiddleware(object):
         except (KeyError, DeviceNotFound):
             request.device = devices.select_id('generic_xhtml')
 
-        if 'HTC Hero' in request.META.get('HTTP_USER_AGENT', ''):
+        if 'T-Mobile G1 Build' in ua:
+            request.device = devices.select_id('tmobile_g1_ver1')
+        elif 'HTC Hero' in ua:
+            request.device = devices.select_id('tmobile_g1_ver1')
+        elif 'Android' in ua:
             request.device = devices.select_id('tmobile_g1_ver1')
             
         if "generic_web_browser" in device_parents[request.device.devid]:
