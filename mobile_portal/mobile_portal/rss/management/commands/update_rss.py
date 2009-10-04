@@ -4,7 +4,7 @@ from xml.etree import ElementTree as ET
 from datetime import datetime, timedelta
 import urllib, re, email, feedparser
 from mobile_portal.rss.models import RSSItem, RSSFeed
-
+from mobile_portal.rss.utils import sanitise_html
 
 class Command(NoArgsCommand):
     option_list = NoArgsCommand.option_list
@@ -29,9 +29,9 @@ class Command(NoArgsCommand):
                 else:
                     item = RSSItem(guid=guid, last_modified=datetime(1900,1,1), feed=feed)
                     
-                if item.last_modified < last_modified:
+                if True or item.last_modified < last_modified:
                     item.title = x_item.title
-                    item.description = x_item.description
+                    item.description = sanitise_html(x_item.description)
                     item.link = x_item.link
                     item.last_modified = last_modified
                     item.save()
