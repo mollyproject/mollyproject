@@ -174,7 +174,7 @@ function show_tab(name) {
 }
 
 function manual_location_submit() {
-    $('#location_update_box').html('<div class="wait-tab"> </div>')
+    $('#location_update_box').html('<div class="wait-tab"> </div>');
     $.get(base+'update_location/', {
         ajax: true,
         location: $('#location').val(),
@@ -186,7 +186,7 @@ function manual_location_submit() {
 }
 
 function manual_location_confirm() {
-    $('#location_update_box').html('<div class="wait-tab"> </div>')
+    $('#location_update_box').html('<div class="wait-tab"> </div>');
     form = $(this);
     $.post(base+'update_location/', {
         ajax: 'true',
