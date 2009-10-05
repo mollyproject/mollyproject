@@ -46,6 +46,10 @@ table.section-table tr.notopborder {
     border-top:0;
 }
 
+table.section-table tr {
+	padding: 5px 5px 5px 5px;
+}
+
 table.section-table:last-child {
     margin-bottom:10px;
 }
