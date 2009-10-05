@@ -148,10 +148,12 @@ function do_location_update() {
       + '  <ul class="popup-tabs">'
       + '    <li><a href="#" onclick="javascript:show_tab(\'auto\');">Auto</a></li>'
       + '    <li><a href="#" onclick="javascript:show_tab(\'manual\');">Manual</a></li>'
-      + '    <li><a href="#" onclick="javascript:show_tab(\'map\');">Map</a></li>'
+//      + '    <li><a href="#" onclick="javascript:show_tab(\'map\');">Map</a></li>'
       + '    <li class="not-tab"><a href="#" onclick="javascript:close_location_update();">Close</a></li>'
       + '  </ul>'
-      + '  <div id="location_update_box"> </div>'
+      + '  <div id="location_update_box">'
+      + '    <div class="wait-tab"> </div>' 
+      + '  </div>'
       + '</div>');
     
     $.get(base+'update_location/', {
@@ -172,6 +174,7 @@ function show_tab(name) {
 }
 
 function manual_location_submit() {
+    $('#location_update_box').html('<div class="wait-tab"> </div>')
     $.get(base+'update_location/', {
         ajax: true,
         location: $('#location').val(),
@@ -183,6 +186,7 @@ function manual_location_submit() {
 }
 
 function manual_location_confirm() {
+    $('#location_update_box').html('<div class="wait-tab"> </div>')
     form = $(this);
     $.post(base+'update_location/', {
         ajax: 'true',

@@ -247,6 +247,7 @@ ul.popup-tabs li a {
     margin:2px;
     margin-bottom:0;
     padding:8px 10px;
+    padding-bottom:4px;
     #border:2px solid #ffffff;
     border-radius-topleft:4px;
     -moz-border-radius-topleft:4px;
@@ -270,7 +271,18 @@ ul.popup-tabs li.not-tab a {
     -moz-border-radius:0px;
     -webkit-border-radius:0px;
     color:#002147;
-    background-color:transparent;
+    background-color:transparent;    
+}
 
+div.wait-tab {
+    background-image:url('../gif/wait24trans.gif');
+    background-position:center;
+    height:100px;
+    background-repeat:no-repeat;
+    background-color: #002147;
+    margin-top:0px;
     
+    border-radius:10px;
+    -moz-border-radius:10px;
+    -webkit-border-radius:10px;
 }
