@@ -74,7 +74,7 @@ def resize_external_image(url, width, timeout=None):
             response = urllib2.urlopen(request)
             socket.setdefaulttimeout(old_timeout)        
     except (urllib2.HTTPError, urllib2.URLError):
-        return ""
+        return None
 
     # Check whether the image has changed since last we looked at it        
     if response.headers.get('ETag', ei.etag) != ei.etag or response.headers.get('Last-Modified', True) != ei.last_modified:

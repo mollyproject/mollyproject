@@ -64,7 +64,9 @@ class ExternalImageNode(template.Node):
 
         eis = resize_external_image(url, width)
 
-        if self.just_url:
+        if not eis:
+            return ''
+        elif self.just_url:
             return eis.get_absolute_url()
         else:
             return """<div class="backgrounded-image" style="background-image:url('%s'); height:%dpx"> </div>""" % (eis.get_absolute_url(), eis.height)
