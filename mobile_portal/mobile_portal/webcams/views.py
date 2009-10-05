@@ -21,10 +21,8 @@ def webcam_detail(request, slug):
     
     try:
         eis = resize_external_image(webcam.url, request.device.max_image_width, timeout=5)
-    except (IOError, urllib2.URLError):
-        eis = None
     except:
-        raise
+        eis = None
     
     context = {
         'webcam': webcam,
