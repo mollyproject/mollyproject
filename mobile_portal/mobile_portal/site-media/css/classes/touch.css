@@ -43,7 +43,7 @@ table.section-table th:first-child, table.section-table td:first-child {
 }
 
 table.section-table tr {
-	padding:5px;
+	padding:10px;
 }
 
 table.section-table tr.notopborder {
