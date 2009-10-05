@@ -2,7 +2,7 @@ import simplejson, urllib, urllib2
 from django import template
 from django.utils.safestring import mark_safe
 
-from mobile_portal.core.utils import AnyMethodRequest
+from mobile_portal.core.utils import AnyMethodRequest, resize_external_image
 from mobile_portal.core.models import ExternalImage, ExternalImageSized
 from mobile_portal.oxpoints.models import Entity
 from mobile_portal.wurfl import device_parents
@@ -62,28 +62,7 @@ class ExternalImageNode(template.Node):
     def render(self, context):
         url, width = self.url.resolve(context), context['device'].max_image_width
 
-        ei, created = ExternalImage.objects.get_or_create(url=url)
-
-        request = AnyMethodRequest(url, method='HEAD')
-
-        try:
-            response = urllib2.urlopen(request)
-        except (urllib2.HTTPError, urllib2.URLError):
-            return ""
-
-        # Check whether the image has changed since last we looked at it        
-        if response.headers.get('ETag', ei.etag) != ei.etag or response.headers.get('Last-Modified', True) != ei.last_modified:
-
-            # Can't use the shorter EIS.objects.filter(...).delete() as that
-            # doesn't call the delete() method on individual objects, resulting
-            # in the old images not being deleted.
-            for eis in ExternalImageSized.objects.filter(external_image=ei):
-                eis.delete()
-            ei.etag = response.headers.get('Etag')
-            ei.last_modified = response.headers.get('Last-Modified')
-            ei.save()
-
-        eis, created = ExternalImageSized.objects.get_or_create(external_image=ei, width=width)
+        eis = resize_external_image(url, width)
 
         if self.just_url:
             return eis.get_absolute_url()

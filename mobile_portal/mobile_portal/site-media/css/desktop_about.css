@@ -53,7 +53,7 @@ div.features, div.preview, div.access, div.data-usage, div.about {
     -moz-border-radius:10px;
     -webkit-border-radius:10px;
 
-    padding:10px;
+    padding:15px;
 	
 	/* Does this go here? */
 	list-style:none;
@@ -106,7 +106,7 @@ li#access-qrcode img {
 }
 
 div.features {
-    width:515px;
+    width:505px;
 }
 
 div.features ul {

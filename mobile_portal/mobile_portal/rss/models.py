@@ -1,6 +1,8 @@
 from pytz import utc, timezone
 from django.db import models
 from django.core.urlresolvers import reverse
+from xml.etree import ElementTree as ET
+from mobile_portal.core.utils import resize_external_image
 
 class ShowPredicate(models.Model):
     name = models.TextField()
@@ -42,5 +44,20 @@ class RSSItem(models.Model):
     
     def get_absolute_url(self):
         return reverse('rss_item_detail', args=[self.feed.slug, self.id])
+        
+        
+    def get_description_display(self, device):
+        html = ET.fromstring('<html>%s</html>' % self.description)
+        print "Here"
+        for img in html.findall('.//img'):
+            print "Here"
+            eis = resize_external_image(img.attrib['src'], device.max_image_width-40)
+            img.attrib['src'] = eis.get_absolute_url()
+            img.attrib['width'] = '%d' % eis.width
+            img.attrib['height'] = '%d' % eis.height
+        return ET.tostring(html)[6:-7]
+            
+        
+    
     class Meta:
         ordering = ('-last_modified',)

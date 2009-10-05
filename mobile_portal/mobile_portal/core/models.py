@@ -197,9 +197,16 @@ class ExternalImageSized(models.Model):
             size = im.size
             ratio = size[1] / size[0]
             
-            resized = im.resize((self.width, int(round(self.width*ratio))), PIL.Image.ANTIALIAS)
-            self.height = resized.size[1]
-            resized.save(self.get_filename(), format='jpeg')
+            if self.width >= size[0]:
+                resized = im
+            else:
+                resized = im.resize((self.width, int(round(self.width*ratio))), PIL.Image.ANTIALIAS)
+            self.width, self.height = resized.size
+
+            try:            
+                resized.save(self.get_filename(), format='jpeg')
+            except IOError:
+                resized.convert('RGB').save(self.get_filename(), format='jpeg')
 
             self.external_image.width = size[0]
             self.external_image.height = size[1]

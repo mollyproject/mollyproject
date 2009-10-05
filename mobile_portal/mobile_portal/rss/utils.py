@@ -28,6 +28,7 @@ DROP_TAGS = set(['b', 'u', 'i', 'html'])
 
 VALID_ATTRIBS = set([
     'dir', 'class', 'href', 'id', 'lang', 'xml:lang', 'title', 'colspan', 'rowspan',
+    'src', 'width', 'height',
 ])
 
 VALID_URI_SCHEMES = set([
@@ -65,7 +66,6 @@ class HtmlSanitiser(object):
                 if not (html[i-1].text or len(html[i-1])):
                     html[i-1:i], i = [], i-1
                 html[i+1:i+1] = [Element('p')]
-                print node.tag, i, ET.tostring(html)
                 html[i+1].text, node.tail = node.tail, None
                 
                 i += 2 
@@ -73,7 +73,11 @@ class HtmlSanitiser(object):
                 html[i-1].append(node)
                 html[i:i+1] = []
                 
-    def sanitise_node(self, node):
+    def sanitise_node(self, node, parents=()):
+
+        print
+        print '  '*len(parents), [n.tag for n in parents], [n.tag for n in node]
+        
         node[0:0], i = [Element('start')], 1
         while i < len(node):
             n = node[i]
@@ -87,6 +91,8 @@ class HtmlSanitiser(object):
                 node[i:i+1] = []
             else:
                 i += 1
+
+        print '  '*len(parents), [n.tag for n in parents], [n.tag for n in node]
                 
         for attrib in set(node.attrib):
             if not attrib in VALID_ATTRIBS:
@@ -100,13 +106,17 @@ class HtmlSanitiser(object):
         if hasattr(self, method_name):
             getattr(self, method_name)(node)
 
+        print '  '*len(parents), [n.tag for n in parents], [n.tag for n in node]
+
         for n in node[1:]:
-            self.sanitise_node(n)
+            self.sanitise_node(n, parents=parents+(node,))
+
+        print '  '*len(parents), [n.tag for n in parents], [n.tag for n in node]
 
         i = 1
         while i < len(node):
             n = node[i]
-            if node.tag in REMOVE_IF_EMPTY and len(n) == 0 and n.text == None:
+            if n.tag in REMOVE_IF_EMPTY and len(n) == 0 and n.text == None:
                 node[i:i+1] = []
             else:
                 i += 1
@@ -116,6 +126,9 @@ class HtmlSanitiser(object):
         else:
             node.text = node[0].tail or None
         node[0:1] = []
+
+        print '  '*len(parents), [n.tag for n in parents], [n.tag for n in node]
+
 
     def attrib_colspan(self, node, value):
         try:
@@ -178,7 +191,22 @@ def sanitise_html(html):
     return ret
 
 if __name__ == '__main__':
-    hs = HtmlSanitiser("""<em>Squeak</em> Hello <strong>there</strong>,<br/>How are you?""")
+    hs = HtmlSanitiser("""<p>
+	<a href='http://posterous.com/getfile/files.posterous.com/mobileoxford/3cqiGpVUZVgb39r4e9PzHiDQxtU8R8mmJXMZLDKaXgFey6FCqUtpWqnMCskQ/photo.jpg'><img src="http://posterous.com/getfile/files.posterous.com/mobileoxford/WOz2sQoO7OUxhgF6NSvEx2oAYlCwE3gfJkOV7XNEtU2TiC7n1FR2NnnneFC4/photo.jpg.scaled.500.jpg" width="500" height="667"/></a>
+
+<p>Finding nearby bus stops</p><p><a href='http://posterous.com/getfile/files.posterous.com/mobileoxford/zlu0WkDyBbvjzJY72Ys4bewLbed3vYdodNlzuKvdl9xIHNhd9abBYzhLVFR8/photo_2.jpg'><img src="http://posterous.com/getfile/files.posterous.com/mobileoxford/drmmj0aw4GgkyP659RmE74y8zjMQdj49XF5exbQo5co9KT5Lih6ekwMIXcZq/photo_2.jpg.scaled.500.jpg" width="500" height="667"/></a>
+</p><p>Playing a podcast from the University's iTunes U.</p><p><a href='http://posterous.com/getfile/files.posterous.com/mobileoxford/ld0VnVkFSRHLkvnP7dqon0J09kEO02aAdFoXXbCuDAnzktL935d3m8X7wLsD/photo_3.jpg'><img src="http://posterous.com/getfile/files.posterous.com/mobileoxford/MVvJiCW22e8WG7HSGvzMy32dMl33Sg5jhjfdgDd19wZxPg4mZm8wkYaR1tPQ/photo_3.jpg.scaled.500.jpg" width="500" height="667"/></a>
+</p><p>Real time bus information</p><p><a href='http://posterous.com/getfile/files.posterous.com/mobileoxford/ogER473d8FHQwuscjNqWx5cQuxjFKS6nmPferVIllG3YAF9hznmqIHtcv9NU/photo_4.jpg'><img src="http://posterous.com/getfile/files.posterous.com/mobileoxford/9aQwlMccOp58sQTNhpTeyIfSj71nXhq2hZrtImJwpRdmtepSbCvHdJpsUpV5/photo_4.jpg.scaled.500.jpg" width="500" height="667"/></a>
+
+</p>
+	
+</p>
+
+<p><a href="http://mobileoxford.posterous.com/testing-services-on-a-sony-ericsson-w880i">Permalink</a> 
+
+	| <a href="http://mobileoxford.posterous.com/testing-services-on-a-sony-ericsson-w880i#comment">Leave a comment&nbsp;&nbsp;&raquo;</a>
+
+</p>""")
 
     print '='*80
     print hs.html

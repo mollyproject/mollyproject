@@ -20,7 +20,13 @@
 <div class="section-nopad">
 <h2 class="section-header">{{ webcam.title }}<br /><small>{% now "G:i "%}</small></h2>
 
-{% external_image webcam.url "div" %}
+{% if eis %}
+<div class="backgrounded-image" style="background-image:url('{{ eis.get_absolute_url }}'); height:{{ eis.height }}px;"> </div>
+{% else %}
+<div class="section-content">
+    Unfortunately, this webcam is currently unavailable. Please try again later.
+</div>
+{% endif %}
 
 <div class="list-footer">
 <p><small>{{ webcam.description }}</small></p>

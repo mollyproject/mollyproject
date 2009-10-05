@@ -71,6 +71,7 @@ def item_detail(request, slug, id):
     item = get_object_or_404(RSSItem, feed__slug=slug, id=id)
     context = {
         'item': item,
+        'description': item.get_description_display(request.device)
     }
     return mobile_render(request, context, 'rss/item_detail')
     
