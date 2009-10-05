@@ -275,7 +275,7 @@ ul.popup-tabs li.not-tab a {
 }
 
 div.wait-tab {
-    background-image:url('../gif/wait24trans.gif');
+    background-image:url('../../gif/wait24trans.gif');
     background-position:center;
     height:100px;
     background-repeat:no-repeat;

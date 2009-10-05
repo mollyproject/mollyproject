@@ -19,4 +19,7 @@ urlpatterns = patterns('mobile_portal.core.views',
     (r'^about/$', 'static_detail', {'title':'About', 'template':'about'}, 'core_static_about'),
     
     (r'^desktop_about/$', 'desktop_about', {}, 'core_desktop_about'),
+
+    (r'^robots.txt$', 'mobiile_portal.core.views.robots_txt', {}, 'core_robots_txt'),
+
 )

@@ -12,7 +12,7 @@ from mobile_portal.osm.utils import fit_to_map
 from mobile_portal.wurfl import device_parents
 import geolocation
 
-import sys, traceback, pytz, simplejson, urllib, re
+import pytz, simplejson, urllib
 
 from models import FrontPageLink, ExternalImageSized, LocationShare
 from forms import LocationShareForm, LocationShareAddForm
@@ -416,3 +416,9 @@ def static_detail(request, title, template):
 def desktop_about(request):
     return render_to_response('core/desktop_about.xhtml', {}, context_instance=RequestContext(request))    
 
+def robots_txt(request):
+    return HttpResponse("""
+User-agent: *
+Disallow: /update_location/
+Disallow: /ajax_update_location/
+""", mimetype="text/plain")
