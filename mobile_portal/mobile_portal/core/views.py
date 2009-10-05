@@ -417,7 +417,7 @@ def desktop_about(request):
     return render_to_response('core/desktop_about.xhtml', {}, context_instance=RequestContext(request))    
 
 def robots_txt(request):
-    return HttpResponse("""
+    return HttpResponse("""\
 User-agent: *
 Disallow: /update_location/
 Disallow: /ajax_update_location/
