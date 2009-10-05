@@ -128,7 +128,9 @@
 {% endif %}
 </div>
 
+{#
 <p>Is favourite: {{ entity.is_favourite }}</p>
+#}
 
 <form method="post" action="{% url maps_entity_favourite entity.entity_type.slug entity.display_id %}">
 <input type="hidden" name="is_favourite" value="{{ entity.is_favourite|yesno:"false,true" }}"/>
