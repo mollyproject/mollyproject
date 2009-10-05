@@ -65,7 +65,14 @@ def resize_external_image(url, width, timeout=None):
     request = AnyMethodRequest(url, method='HEAD')
 
     try:
-        response = urllib2.urlopen(request, timeout=timeout)
+        try:
+            response = urllib2.urlopen(request, timeout=timeout)
+        except TypeError:
+            import socket
+            old_timeout = socket.getdefaulttimeout()
+            socket.setdefaulttimeout(timeout)
+            response = urllib2.urlopen(request)
+            socket.setdefaulttimeout(old_timeout)        
     except (urllib2.HTTPError, urllib2.URLError):
         return ""
 
