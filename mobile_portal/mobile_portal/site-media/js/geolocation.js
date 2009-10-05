@@ -174,7 +174,6 @@ function show_tab(name) {
 }
 
 function manual_location_submit() {
-    $('#tab-manual').html('<div class="wait-tab"> </div>');
     $.get(base+'update_location/', {
         ajax: true,
         location: $('#location').val(),
@@ -182,11 +181,11 @@ function manual_location_submit() {
         $('#tab-manual').html(data);
         $('.submit-location-form').bind('submit', manual_location_confirm);
     });
+    $('#tab-manual').html('<div class="wait-tab"> </div>');
     return false;
 }
 
 function manual_location_confirm() {
-    $('#tab-manual').html('<div class="wait-tab"> </div>');
     form = $(this);
     $.post(base+'update_location/', {
         ajax: 'true',
@@ -199,6 +198,7 @@ function manual_location_confirm() {
         $('#tab-manual').html('<h2 class="section-header">Update manually</h2><div class="section-content">Your location has been updated successfully.</div></div>');
         $('.location_name').html(form.find("[name='title']").val());
     });
+    $('#tab-manual').html('<div class="wait-tab"> </div>');
     return false;
 }
         

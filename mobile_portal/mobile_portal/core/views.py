@@ -106,7 +106,6 @@ class UpdateLocationView(BaseView):
         location = request.GET['location']
         
         options = geolocation.geocode(location)
-
         points = [(o[1][0], o[1][1], 'red') for o in options]        
         
         if points:
@@ -114,7 +113,7 @@ class UpdateLocationView(BaseView):
                 None,
                 points = points,
                 min_points = len(points),
-                zoom = None,
+                zoom = None if len(points)>1 else 15,
                 width = request.device.max_image_width,
                 height = min(request.device.max_image_height, 200),
             )
