@@ -42,6 +42,10 @@ table.section-table th:first-child, table.section-table td:first-child {
     padding-left:10px;
 }
 
+table.section-table tr {
+	padding:5px;
+}
+
 table.section-table tr.notopborder {
     border-top:0;
 }
