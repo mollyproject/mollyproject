@@ -116,9 +116,12 @@ def geocode(query):
         bounds_a, bounds_b = [Point(p[1], p[0], srid=4326).transform(27700, clone=True) for p in feature['bounds']]
         centroid = tuple(feature['centroid']['coordinates'])
         accuracy = bounds_a.distance(bounds_b) / 1.414
-        results.append( (
-            feature['properties']['name'], centroid, accuracy
-        ) )
+        try:
+            results.append( (
+                feature['properties']['name'], centroid, accuracy
+            ) )
+        except KeyError:
+            results += reverse_geocode(*centroid)
         centroid = Point(centroid[1], centroid[0], srid=4326).transform(27700, clone=True)
         print centroid.distance(centre_of_oxford)
         if centroid.distance(centre_of_oxford) < 2500:

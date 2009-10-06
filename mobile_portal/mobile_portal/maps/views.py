@@ -143,7 +143,7 @@ def entity_detail_busstop(request, entity):
     
     try:
         xml = ES.parse(urllib.urlopen(OXONTIME_URL % entity.atco_code))
-    except TypeError:
+    except (TypeError, IOError):
         rows = []
     else:
         try:
