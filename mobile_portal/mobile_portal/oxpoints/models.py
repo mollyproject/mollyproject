@@ -26,6 +26,10 @@ class Entity(models.Model):
     geometry = models.GeometryField(srid=4326, null=True)
     _metadata = models.TextField(default='null')
     
+    parent = models.ForeignKey('self', null=True)
+    is_sublocation = models.BooleanField(default=False)
+    is_stack = models.BooleanField(default=False)
+    
     def get_metadata(self):
         try:
             return self.__metadata
