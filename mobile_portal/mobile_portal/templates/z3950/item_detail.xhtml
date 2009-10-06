@@ -62,6 +62,7 @@
     </table>
 </div>
 
+{% if libraries %}
 <div class="list-section">
     <h2 class="section-header">Library holdings</h2>
     
@@ -84,6 +85,26 @@
 {% endfor %}
     </ul>
 </div>
+{% endif %}
 
+{% if stacks %}
+<div class="list-section">
+    <h2 class="section-header">Holdings in stacks</h2>
+    <ul class="ml">
+{% for library, books in stacks %}
+{% if library.oxpoints_id %}
+        <li><a href="{{ library.oxpoints_entity.get_absolute_url }}">{{ forloop.counter }}. {{ library.location|join:" - " }}</a></li>
+{% else %}
+        <li class="non-link-item">{{ forloop.counter }}. {{ library.location|join:" - " }}</li>
+{% endif %}
+        {% for book in books %}
+        <li class="subitem non-link-item">
+        Shelfmark: <em>{{ book.shelfmark }}</em>, availability: <em>{{ book.availability_display }}</em>{% if book.materials_specified %}, issue: <em>{{ book.materials_specified }}</em>{% endif %}
+        </li>
+        {% endfor %}
+{% endfor %}
+    </ul>
+</div>
+{% endif %}
 
 {% endblock %}

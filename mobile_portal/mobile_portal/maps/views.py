@@ -88,7 +88,7 @@ def nearby_detail(request, ptype, entity=None):
     else:
         min_points = 5
         
-    entities = Entity.objects.filter(entity_type=entity_type, location__isnull = False)
+    entities = Entity.objects.filter(entity_type=entity_type, location__isnull = False, is_sublocation = False)
     entities = entities.distance(point).order_by('distance')[:99]
 
     for e in entities:
@@ -240,7 +240,7 @@ def category_list(request):
 def category_detail(request, ptype):
     entity_type = get_object_or_404(EntityType, slug=ptype)
     
-    entities = entity_type.entity_set.order_by('title')
+    entities = entity_type.entity_set.filter(is_sublocation=False).order_by('title')
 
     context = {
         'entity_type': entity_type,
