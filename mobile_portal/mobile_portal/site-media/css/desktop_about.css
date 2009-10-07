@@ -32,7 +32,7 @@ div.header {
     position:relative;
 /*    background-color:#c5d2e0;*/
     height:145px;
-	background-image:url('../png/header-gradient.png');
+/*	background-image:url('../png/header-gradient.png');*/
 }
 
 div.header-strapline {
