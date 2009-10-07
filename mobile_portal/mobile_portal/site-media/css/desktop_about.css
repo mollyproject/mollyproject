@@ -143,6 +143,9 @@ div.features img.odd {
     margin-bottom:10px;
 }    
 
+div.features li.feature-contacts {
+	list-style-image:;
+}
 
 div.features li {
     display:block;
@@ -177,3 +180,5 @@ div.footer li a {
 div.logos {
     margin-bottom:30px;
 }
+
+
