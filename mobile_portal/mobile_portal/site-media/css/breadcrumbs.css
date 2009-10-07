@@ -1,7 +1,7 @@
 div.header {
     height:34px;
     width:100%;
-    background-image:url('../png/index-icons/header_bg.png');
+    background-image:url('../png/header_bg.png');
     overflow:hidden;
 }
 
@@ -15,7 +15,7 @@ ol.breadcrumbs {
 ol.breadcrumbs li {
     display:block;
     float:left;
-    background-image:url('../png/index-icons/sep.png');
+    background-image:url('../png/sep.png');
     background-position:right;
     height:30px;
     padding:2px;
