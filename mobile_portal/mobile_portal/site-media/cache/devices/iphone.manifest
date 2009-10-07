@@ -7,16 +7,14 @@ http://m.ox.ac.uk/site-media/css/index-buttons.css
 http://m.ox.ac.uk/site-media/touch.css
 http://m.ox.ac.uk/site-media/breadcrumbs.css
 
-http://m.ox.ac.uk/site-media/png/headers/240.png
-http://m.ox.ac.uk/site-media/png/headers/home_header_bg_240.png
-http://m.ox.ac.uk/site-media/png/contacts.png
-http://m.ox.ac.uk/site-media/png/maps.png
-http://m.ox.ac.uk/site-media/png/webcams.png
-http://m.ox.ac.uk/site-media/png/results.png
-http://m.ox.ac.uk/site-media/png/podcasts.png
-http://m.ox.ac.uk/site-media/png/rss.png
-http://m.ox.ac.uk/site-media/png/list-arrow.png
-http://m.ox.ac.uk/site-media/png/webcams.png
+http://m.ox.ac.uk/site-media/png/index-icons/contacts.png
+http://m.ox.ac.uk/site-media/png/index-icons/maps.png
+http://m.ox.ac.uk/site-media/png/index-icons/webcams.png
+http://m.ox.ac.uk/site-media/png/index-icons/results.png
+http://m.ox.ac.uk/site-media/png/index-icons/podcasts.png
+http://m.ox.ac.uk/site-media/png/index-icons/news.png
+http://m.ox.ac.uk/site-media/png/index-icons/weather.png
+http://m.ox.ac.uk/site-media/png/index-icons/z3950.png
 
 http://m.ox.ac.uk/site-media/js/geolocation.js
 http://m.ox.ac.uk/site-media/js/jquery-1.3.2.js
