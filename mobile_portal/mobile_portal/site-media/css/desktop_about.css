@@ -15,6 +15,11 @@ body {
 a {
 	text-decoration: none;
 }
+
+h2 {
+	line-height:1;
+}
+
 div.container {
     width:800px;
     margin-left:auto;
