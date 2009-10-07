@@ -1,7 +1,7 @@
 div.header {
     height:34px;
     width:100%;
-    background-image:url('../png/header_bg.png');
+    background-image:url('../png/index-icons/header_bg.png');
     overflow:hidden;
 }
 
@@ -15,7 +15,7 @@ ol.breadcrumbs {
 ol.breadcrumbs li {
     display:block;
     float:left;
-    background-image:url('../png/sep.png');
+    background-image:url('../png/index-icons/sep.png');
     background-position:right;
     height:30px;
     padding:2px;
@@ -60,33 +60,33 @@ h1.with-icon {
 }
 
 h1.maps-header {
-    background-image:url('../png/maps-bc.png');
+    background-image:url('../png/index-icons/maps-bc.png');
 }
 
 h1.contact-header {
-    background-image:url('../png/contacts-bc.png');
+    background-image:url('../png/index-icons/contacts-bc.png');
 }
 
 h1.webcams-header {
-    background-image:url('../png/webcams-bc.png');
+    background-image:url('../png/index-icons/webcams-bc.png');
 }
 
 h1.podcasts-header {
-    background-image:url('../png/podcasts-bc.png');
+    background-image:url('../png/index-icons/podcasts-bc.png');
 }
 
 h1.results-header {
-    background-image:url('../png/results-bc.png');
+    background-image:url('../png/index-icons/results-bc.png');
 }
 
 h1.z3950-header {
-    background-image:url('../png/z3950-bc.png');
+    background-image:url('../png/index-icons/z3950-bc.png');
 }
 
 h1.rss-header {
-    background-image:url('../png/rss-bc.png');
+    background-image:url('../png/index-icons/rss-bc.png');
 }
 
 h1.weather-header {
-    background-image:url('../png/weather-bc.png');
+    background-image:url('../png/index-icons/weather-bc.png');
 }
