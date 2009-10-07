@@ -21,13 +21,22 @@ class LocationMiddleware(object):
         except (KeyError, DeviceNotFound):
             request.device = devices.select_id('generic_xhtml')
 
+        if 'MSIE' in ua and not 'IEMobile' in ua:
+            if 'MSIE 4.0' in ua:
+                request.device = devices.select_id('msie40_generic')
+            elif 'MSIE 5.0' in ua:
+                request.device = devices.select_id('msie50_generic')
+            elif 'MSIE 6.0' in ua:
+                request.device = devices.select_id('msie60_generic')
+            else:
+                request.device = devices.select_id('msie70_generic')
         if 'T-Mobile G1 Build' in ua:
             request.device = devices.select_id('tmobile_g1_ver1')
         elif 'HTC Hero' in ua:
             request.device = devices.select_id('tmobile_g1_ver1')
         elif 'Android' in ua:
             request.device = devices.select_id('tmobile_g1_ver1')
-            
+        
         if "generic_web_browser" in device_parents[request.device.devid]:
             request.device.max_image_width = 320
             request.device.max_image_height = 320
