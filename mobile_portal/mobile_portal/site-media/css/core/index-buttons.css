@@ -25,42 +25,42 @@ ol.icon-menu li a {
 }
 
 li#menu-contact {
-    background-image:url('../../png/contacts.png');
+    background-image:url('../../png/index-icons/contacts.png');
 }
 
 li#menu-olis {
-    background-image:url('../../png/podcasts.png');
+    background-image:url('../../png/index-icons/podcasts.png');
 }
 
 li#menu-maps {
-    background-image:url('../../png/maps.png');
+    background-image:url('../../png/index-icons/maps.png');
 }
 
 li#menu-emergency {
-    background-image:url('../../png/podcasts.png');
+    background-image:url('../../png/index-icons/podcasts.png');
 }
 
 li#menu-podcasts {
-    background-image:url('../../png/podcasts.png');
+    background-image:url('../../png/index-icons/podcasts.png');
 }
 
 li#menu-webcams {
-    background-image:url('../../png/webcams.png');
+    background-image:url('../../png/index-icons/webcams.png');
 }
 
 li#menu-rss {
-    background-image:url('../../png/rss.png');
+    background-image:url('../../png/index-icons/rss.png');
 }
 
 li#menu-results {
-    background-image:url('../../png/results.png');
+    background-image:url('../../png/index-icons/results.png');
 }
 
 li#menu-z3950 {
-    background-image:url('../../png/z3950.png');
+    background-image:url('../../png/index-icons/z3950.png');
 }
 
 li#menu-weather {
-    background-image:url('../../png/weather.png');
+    background-image:url('../../png/index-icons/weather.png');
 }
 
