@@ -65,23 +65,24 @@
 {% if libraries %}
 <div class="list-section">
     <h2 class="section-header">Library holdings</h2>
-    
-    <div class="backgrounded-image" style="background-image:url('{% url osm_generated_map map_hash %}'); height:{{ device.max_image_height }}px">
-    {% include "maps/map_elements.xhtml" %}
-    </div>
 
     <ul class="ml">
 {% for library, books in libraries %}
 {% if library.oxpoints_id %}
-        <li><a href="{{ library.oxpoints_entity.get_absolute_url }}">{{ library.marker_number|default:"Not on map" }}. {{ library.location|join:" - " }}</a></li>
+        <li><a href="{{ library.oxpoints_entity.get_absolute_url }}">{{ library.location|join:" - " }}</a></li>
 {% else %}
-        <li class="non-link-item">{{ library.marker_number|default:"Not on map" }}. {{ library.location|join:" - " }}</li>
+        <li class="non-link-item">{{ library.location|join:" - " }}</li>
 {% endif %}
-        {% for book in books %}
-        <li class="subitem non-link-item">
-        Shelfmark: <em>{{ book.shelfmark }}</em>, availability: <em>{{ book.availability_display }}</em>{% if book.materials_specified %}, issue: <em>{{ book.materials_specified }}</em>{% endif %}
-        </li>
-        {% endfor %}
+{% ifequal books|length 1 %}
+    <li class="subitem non-link-item">
+    Shelfmark: <em>{{ books.0.shelfmark }}</em>, availability: <em>{{ books.0.availability_display }}</em>{% if books.0.materials_specified %}, issue: <em>{{ books.0.materials_specified }}</em>{% endif %}
+    </li>
+{% else %}
+    <li class="subitem">
+      <a href="{% url z3950_item_holdings_detail control_number,library.location.1 %}">
+        {{ books|length }} items with availability at most <em>{{ library.availability_display }}</em>
+      </a>
+{% endifequal %}
 {% endfor %}
     </ul>
 </div>

@@ -50,4 +50,13 @@ class LocationMiddleware(object):
             if opera_devid:
                 request.device = devices.select_id(opera_devid)
 #        if any((x in request.META['HTTP_USER_AGENT']) for x in ['Firefox', 'IE', 'Iceweasel', 'Safari', 'Opera', 'Chrome']):
-#            request.device.max_image_width=800 
+#            request.device.max_image_width=800
+
+from django.db import connection
+
+class PrintQueriesMiddleware(object):
+    def process_response(self, request, response):
+        for query in connection.queries:
+            print '-'*80
+            print query['sql']
+        return response

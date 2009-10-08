@@ -26,6 +26,8 @@ class Entity(models.Model):
     geometry = models.GeometryField(srid=4326, null=True)
     _metadata = models.TextField(default='null')
     
+    absolute_url = models.TextField()
+    
     parent = models.ForeignKey('self', null=True)
     is_sublocation = models.BooleanField(default=False)
     is_stack = models.BooleanField(default=False)
@@ -40,20 +42,26 @@ class Entity(models.Model):
         self.__metadata = metadata
     metadata = property(get_metadata, set_metadata)
     
-    def save(self, force_insert=False, force_update=False):
+    def save(self, *args, **kwargs):
         try:
             self._metadata = simplejson.dumps(self.__metadata)
         except AttributeError:
             pass
-        super(Entity, self).save(force_insert, force_update)
+        if self.entity_type:
+            self.absolute_url = self._get_absolute_url()
+        return super(Entity, self).save(*args, **kwargs)
     
     objects = models.GeoManager()
     
     class Meta:
         ordering = ('title',)
 
-    def get_absolute_url(self):
+    def _get_absolute_url(self):
         return reverse('maps_entity', args=[self.entity_type.slug, self.display_id])
+    def get_absolute_url(self):
+        if not self.absolute_url:
+            self.save()
+        return self.absolute_url
         
     def __unicode__(self):
         return self.title

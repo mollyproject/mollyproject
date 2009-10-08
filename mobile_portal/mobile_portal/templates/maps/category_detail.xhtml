@@ -18,7 +18,7 @@
 
 <ul class="ml">
 {% for entity in entities %}
-    <li{% if forloop.first %} class="top"{% endif %}><a href="{% url maps_entity entity_type.slug,entity.display_id %}">{{ entity.title|capfirst }}</a></li>
+    <li{% if forloop.first %} class="top"{% endif %}><a href="{{ entity.get_absolute_url }}">{{ entity.title|capfirst }}</a></li>
 {% endfor %}
 </ul>
 

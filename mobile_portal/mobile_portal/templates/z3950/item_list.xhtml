@@ -7,15 +7,24 @@
             </a></li>
 {% endblock %}
 
-{% block pagetitle %}Search{% endblock %}
+{% block pagetitle %}Result list{% endblock %}
+{% block title %}m.ox | {% if page %}Result list{% else %}Search{% endif %}{% endblock %}
 
 {% block content %}
 
 {% if search_form %}{% include "z3950/search_form.xhtml" %}{% endif %}
 
+{% if error_message %}
+<div class="section">
+<div class="bubble">
+<p>There was an error with your search:</p>
+<p><strong>{{ error_message }}</strong></p>
+</div></div>
+{% endif %}
+
 {% if page %}
 <div class="list-section">
-<h2 class="section-header">Results</h2>
+<h2 class="section-header">Result list</h2>
 {% if removed %}
 <div class="list-note"><div class="bubble">
     The following common word{{ removed|length|pluralize:" was,s were" }} not included in your query:

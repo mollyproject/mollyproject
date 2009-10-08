@@ -95,22 +95,19 @@ def geolocation(request):
         'meta': dict((a,b) for (a,b) in request.META.items() if a.startswith('HTTP_')),
     }
 
+from django.db import connection
+
 def weather(request):
     """
     Adds weather information to the context in keys 'weather' and 'weather_icon'.
     """
-    
-    try:
-        weather = Weather.objects.get(bbc_id=25)
-    except Weather.DoesNotExist:
-        weather = None
-    
+
     return {
-        'weather': weather,
         
         # This comes from LDAP and should be moved to its own context processor.
         'common_name': request.session.get('common_name'),
         'preferences': request.preferences,
         'session_key': request.session.session_key,
+        'queries': connection.queries,
     }
     

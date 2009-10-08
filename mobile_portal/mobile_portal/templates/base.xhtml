@@ -30,6 +30,7 @@
 
 	<meta name="apple-mobile-web-app-capable" />
 	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+	<meta name="format-detection" content="telephone=no" />
 {% endif %}
 
 {% if touch or desktop %}
@@ -81,5 +82,14 @@
 {#<hr/><p>{{ dumb|yesno:"dumb," }} {{ smart|yesno:"smart," }} {{ touch|yesno:"touch," }} {{ desktop|yesno:"desktop," }}</p>#}
 
     </div>
+{% comment %}
+    <table>
+        <tbody>
+{% for query in queries %}
+            <tr><td>{{ query.sql }}</td><td>{{ query.time }}</td></tr>
+{% endfor %}
+        </tbody>
+    </table>
+{% endcomment %}
   </body>
 </html>

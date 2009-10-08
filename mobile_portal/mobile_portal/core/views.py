@@ -28,7 +28,8 @@ def index(request):
     if ("generic_web_browser" in device_parents[request.device.devid]
         and not request.preferences['core']['desktop_about_shown']
         and not request.GET.get('preview') == 'true'
-        and not internal_referer):
+        and not internal_referer
+        and not settings.DEBUG):
         return HttpResponseRedirect(reverse('core_desktop_about'))
 
     # Take the default front age links from the database. If the user is logged

@@ -27,10 +27,13 @@ AVAILABILITIES = {
 }
 def require_json(f):
     def g(self, *args, **kwargs):
-        if not hasattr(self, '_json'):
-            self._json = simplejson.load(urllib.urlopen(
-                Library.LIBRARY_URL % self.location[-1].replace(' ', '+')
-            ))[0]
+        try:
+            if not hasattr(self, '_json'):
+                self._json = simplejson.load(urllib.urlopen(
+                    Library.LIBRARY_URL % self.location[-1].replace(' ', '+')
+                ))[0]
+        except:
+            self._json = None
         return f(self, *args, **kwargs)
     return g
  
@@ -52,7 +55,16 @@ class Library(object):
     @property
     @require_json
     def oxpoints_entity(self):
-        return Entity.objects.get(oxpoints_id=self.oxpoints_id)
+        try:
+            return self._oxpoints_entity
+        except AttributeError:
+            self._oxpoints_entity = Entity.objects.get(oxpoints_id=self.oxpoints_id)
+            return self._oxpoints_entity
+            
+    @property
+    @require_json
+    def oxpoints_location(self):
+        return self.oxpoints_entity.location
     
     @require_json
     def __unicode__(self):
@@ -67,6 +79,11 @@ class Library(object):
         
     def __eq__(self, other):
         return self.location == other.location
+        
+    def availability_display(self):
+        return [
+            'unavailable', 'unknown', 'stack', 'reference', 'available'
+        ][self.availability]
 
 class OLISResult(object):
     USM_CONTROL_NUMBER = 1
@@ -114,7 +131,11 @@ class OLISResult(object):
 
         for datum in self.metadata[OLISResult.USM_LOCATION]:
             library = Library(datum['b'])
-            if not 'y' in datum:
+            if not 'p' in datum:
+                availability = AVAIL_UNKNOWN
+                datum['y'] = ['Check web OPAC']
+                due_date = None
+            elif not 'y' in datum:
                 due_date, availability = None, AVAIL_UNKNOWN
             elif datum['y'][0].startswith('DUE BACK: '):
                 due_date = datetime.strptime(datum['y'][0][10:], '%d/%m/%y')
@@ -144,6 +165,9 @@ class OLISResult(object):
                 'materials_specified': materials_specified,
             } )
             
+        for library in self.libraries:
+            library.availability = max(l['availability'] for l in self.libraries[library])
+            
 
     def _metadata_property(heading, sep=' '):
         def f(self):
@@ -155,7 +179,7 @@ class OLISResult(object):
     
     title = _metadata_property(USM_TITLE_STATEMENT)
     publisher = _metadata_property(USM_PUBLICATION)
-    author = _metadata_property(USM_AUTHOR, ', ')
+    author = _metadata_property(USM_AUTHOR)
     description = _metadata_property(USM_PHYSICAL_DESCRIPTION)
     edition = _metadata_property(USM_EDITION)
     copies = property(lambda self: len(self.metadata[OLISResult.USM_LOCATION]))

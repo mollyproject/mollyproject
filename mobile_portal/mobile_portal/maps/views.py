@@ -240,7 +240,7 @@ def category_list(request):
 def category_detail(request, ptype):
     entity_type = get_object_or_404(EntityType, slug=ptype)
     
-    entities = entity_type.entity_set.filter(is_sublocation=False).order_by('title')
+    entities = entity_type.entity_set.filter(is_sublocation=False).select_related('entitytype').order_by('title')
 
     context = {
         'entity_type': entity_type,
