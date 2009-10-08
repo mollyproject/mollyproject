@@ -29,6 +29,7 @@ class Command(NoArgsCommand):
             'Carpark':    ('carpark', 'University car park', 'University car parks'),
             'Unit':       ('unit', 'unit', 'units'),
             'Room':       ('room', 'room', 'rooms'),
+            'SubLibrary': ('sublibrary', 'sublocation', 'sublocations'),
         }
 
         entity_types = {}
@@ -163,7 +164,7 @@ class Command(NoArgsCommand):
         for entity in Entity.objects.filter(entity_type__source='oxpoints'):
             if not entity.oxpoints_id in self.seen:
                 entity.delete()
-                counts['removed'] += 1
+                self.counts['removed'] += 1
 
 
         self.link_subsets_of()
