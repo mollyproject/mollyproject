@@ -34,7 +34,7 @@ def contact_search(surname, initial, exact, medium, page=1):
             if x_detail.attrib['class'].split('_')[1] == 'phone':
                 details[u'phone'] = (x_detail[0][1].text, x_detail[0][3].text)
             else:
-                details[x_detail.attrib['class'].split('_')[1]] = x_detail.text.strip() or x_detail[0].text
+                details[x_detail.attrib['class'].split('_')[1]] = x_detail[0].text if len(x_detail) else (x_detail.text.strip() or None)
         people.append( details )
 
     page_count = int(filter(lambda x:(x.attrib.get('class')=='found'), xml.findall('.//div'))[0][1][4].text)
