@@ -129,7 +129,6 @@ def geocode(query):
         except KeyError:
             results += reverse_geocode(*centroid)
         centroid = Point(centroid[1], centroid[0], srid=4326).transform(27700, clone=True)
-        print centroid.distance(centre_of_oxford)
         if centroid.distance(centre_of_oxford) < 2500:
             restricted_results.append( results[-1] )
         

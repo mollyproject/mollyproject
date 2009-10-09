@@ -74,7 +74,7 @@ class MapsTestCase(unittest.TestCase):
                 return Entity.objects.filter(title=p, entity_type__source='oxpoints')[0]
                 
         NEARBY_ENTITIES = (
-            ('Keble College Lodge', 'University Museum of Natural History'),
+            ('Keble College', 'University Museum of Natural History'),
         )
         
         for p1, p2 in NEARBY_ENTITIES:
