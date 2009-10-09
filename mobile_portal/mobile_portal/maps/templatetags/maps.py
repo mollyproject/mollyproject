@@ -54,8 +54,8 @@ OPENLAYERS_INCLUDE = """\
 
 class MapNode(template.Node):
     def __init__(self, args, just_url=False):
-	self.args = args
-	self.just_url = just_url
+        self.args = args
+        self.just_url = just_url
 
     def render(self, context):
         args = self.args

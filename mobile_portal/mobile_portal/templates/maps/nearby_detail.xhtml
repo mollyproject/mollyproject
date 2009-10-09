@@ -1,5 +1,7 @@
 {% extends "maps/base.xhtml" %}
 
+{% block title %}m.ox | {{ entity_type.verbose_name_plural|capfirst }} near {% if entity %}{{ entity.type }}{% else %}me{% endif %}{% endblock %}
+
 {% block breadcrumbs %}
 {{ block.super }}
 {% if entity %}

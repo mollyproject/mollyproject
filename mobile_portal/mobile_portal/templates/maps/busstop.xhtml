@@ -1,6 +1,8 @@
 {% extends "maps/base.xhtml" %}
 {% load maps %}
 
+{% block title %}m.ox | Bus stop: {{ entity.title }}{% endblock %}
+
 {% block extrahead %}
     <meta http-equiv="refresh" content="45" />
 {% endblock %}
