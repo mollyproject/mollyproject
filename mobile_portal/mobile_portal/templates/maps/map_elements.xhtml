@@ -1,4 +1,4 @@
-{% if not zoom_controls|default:1 %}
+{% if zoom_controls|default_if_none:1 %}
     {% ifnotequal zoom 10 %}
         <a class="no-icon zoom-out" href="?zoom={{ zoom|add:"-1" }}">
             <img src="{{ MEDIA_URL }}png/icons/zoom-out.png" alt="Zoom out"/>
