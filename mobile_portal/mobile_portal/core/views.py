@@ -125,6 +125,8 @@ class UpdateLocationView(BaseView):
             'zoom': zoom,
             'map_hash': map_hash,
             'options': options,
+            'map_height': min(request.device.max_image_height, 200),
+            'zoom_controls': False,
         })
         
         if request.GET.get('format') == 'json':

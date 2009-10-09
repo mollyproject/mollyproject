@@ -9,6 +9,7 @@ import urllib, urllib2, simplejson, math, re, sys
 from django.conf import settings
 from django.http import HttpRequest
 from django.contrib.gis.geos import Point
+from django.contrib.gis.gdal import OGRException
 from models import Placemarks
 from mobile_portal.oxpoints.models import Entity, PostCode
 
@@ -113,7 +114,12 @@ def geocode(query):
     restricted_results = []
     centre_of_oxford = Point(-1.2582, 51.7522, srid=4326).transform(27700, clone=True)
     for feature in json['features']:
-        bounds_a, bounds_b = [Point(p[1], p[0], srid=4326).transform(27700, clone=True) for p in feature['bounds']]
+        try:
+            bounds_a, bounds_b = [Point(p[1], p[0], srid=4326).transform(27700, clone=True) for p in feature['bounds']]
+        except OGRException:
+            # The point wasn't transformable into BGS - it's probably outside the UK.
+            continue
+            
         centroid = tuple(feature['centroid']['coordinates'])
         accuracy = bounds_a.distance(bounds_b) / 1.414
         try:

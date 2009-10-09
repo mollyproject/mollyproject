@@ -140,8 +140,9 @@ function do_location_update() {
 
     width = Math.min(window.innerWidth - 15, 300);
     height = Math.min(window.innerHeight, 300);
-    top = (window.innerHeight - height) / 2;
+    top = Math.min((window.innerHeight - height) / 2, 50);
     left = (window.innerWidth - width) / 2;
+    
 
     $(document.body).append(
         '<div id="location_update_container" style="position:fixed; width:'+width+'px; left:'+left+'px; top:'+top+'px; border-radius:10px; -moz-border-radius:10px; -webkit-border-radius:10px; border:solid 0px #fff;">'
@@ -163,7 +164,6 @@ function do_location_update() {
         $('#manual_location_form').bind('submit', manual_location_submit);
         show_tab('auto');
     });
-    
     
     return false;
 };

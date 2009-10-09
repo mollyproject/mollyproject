@@ -4,7 +4,7 @@
 <h2 class="section-header">Did you mean:</h2>
 
 {% if map_hash %}
-<div class="backgrounded-image" style="background-image:url('{% url osm_generated_map map_hash %}'); height:{{ device.max_image_height }}px">
+<div class="backgrounded-image" style="background-image:url('{% url osm_generated_map map_hash %}'); height:{{ map_height|default:device.max_image_height }}px">
 {% include "maps/map_elements.xhtml" %}
 </div>
 {% endif %}
@@ -19,7 +19,7 @@
             <input type="hidden" name="longitude" value="{{ option.1.1 }}"/>
             <input type="hidden" name="accuracy" value="{{ option.2 }}"/>
             <input type="hidden" name="return_url" value="{{ return_url }}"/>
-            <button class="as_link" type="submit" name="index" style="width:100%">{{ option.0 }}</button>
+            <button class="as_link" type="submit" name="index" style="width:100%">{{ forloop.counter }}. {{ option.0 }}</button>
         </form>
     </li>
 {% endfor %}

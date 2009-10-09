@@ -14,8 +14,8 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     (r'^adm/(.*)', admin.site.root),
-
-
+    
+    
     (r'^contact/', include('mobile_portal.contact.urls')),
     (r'^maps/', include('mobile_portal.maps.urls')),
     (r'^podcasts/', include('mobile_portal.podcasts.urls')),
@@ -31,7 +31,7 @@ urlpatterns = patterns('',
     (r'', include('mobile_portal.core.urls')),
 )
 
-if settings.DEBUG:
+if True or settings.DEBUG:
     urlpatterns += patterns('',
         (r'^site-media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
     )

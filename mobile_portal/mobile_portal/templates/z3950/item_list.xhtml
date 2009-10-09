@@ -31,18 +31,24 @@
     {% for w in removed %}{% if forloop.last %}{% if not forloop.first %}and {% endif %}<em>{{ w }}</em>{% else %}<em>{{ w }}</em>, {% endif %}{% endfor %}
 </div></div>
 {% endif %}
-<div class="list-note">
+
+<div class="list-note pagination-nav">
 {% if page.has_previous %}
-    <a href="?title={{ title|urlencode }}&author={{ author|urlencode }}&isbn={{ isbn|urlencode }}&page={{ page.previous_page_number }}">&lt;</a>
+    <a href="?title={{ title|urlencode }}&author={{ author|urlencode }}&isbn={{ isbn|urlencode }}&page={{ page.previous_page_number }}" title="Previous page" class="prev">
+        <img src="{{ MEDIA_URL }}png/icons/list-arrow-left.png" alt="&#8592;"/>
+    </a>
 {% endif %}
     Showing results {{ page.start_index }} to {{ page.end_index }} of {{ paginator.object_list|length }}. Page {{ page.number }} of {{ paginator.num_pages }}.
 {% if page.has_next %}
-    <a href="?title={{ title|urlencode }}&author={{ author|urlencode }}&isbn={{ isbn|urlencode }}&page={{ page.next_page_number }}">&gt;</a>
+    <a href="?title={{ title|urlencode }}&author={{ author|urlencode }}&isbn={{ isbn|urlencode }}&page={{ page.next_page_number }}" title="Next page" class="next">
+        <img src="{{ MEDIA_URL }}png/icons/list-arrow.png" alt="&#8594;"/>
+    </a>
 {% endif %}
 </div>
+
 <ul class="ml">
 {% for item in page.object_list %}
-<li>
+<li{% if forloop.last %} class="notbottom"{% endif %}>
     <a href="{% url z3950_item_detail item.control_number %}">
         {{ item }}{% if item.author %}
         <br/><small><strong>Author:</strong> {{ item.author }}</small>{% endif %}
@@ -53,7 +59,23 @@
 </li>
 {% endfor %}
 </ul>
+
+<div class="list-footer pagination-nav">
+{% if page.has_previous %}
+    <a href="?title={{ title|urlencode }}&author={{ author|urlencode }}&isbn={{ isbn|urlencode }}&page={{ page.previous_page_number }}" title="Previous page" class="prev">
+        <img src="{{ MEDIA_URL }}png/icons/list-arrow-left.png" alt="&#8592;"/>
+    </a>
+{% endif %}
+    Showing results {{ page.start_index }} to {{ page.end_index }} of {{ paginator.object_list|length }}. Page {{ page.number }} of {{ paginator.num_pages }}.
+{% if page.has_next %}
+    <a href="?title={{ title|urlencode }}&author={{ author|urlencode }}&isbn={{ isbn|urlencode }}&page={{ page.next_page_number }}" title="Next page" class="next">
+        <img src="{{ MEDIA_URL }}png/icons/list-arrow.png" alt="&#8594;"/>
+    </a>
+{% endif %}
 </div>
+
+</div>
+
 {% endif %}
 
 {% endblock %}

@@ -66,7 +66,7 @@ def search_detail(request):
             error_message = None
 
         try:
-            if not error_message and query:
+            if not error_message and (title or author or isbn):
                 query = "and".join(query)
                 results = search.OLISSearch(query)
     

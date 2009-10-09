@@ -290,3 +290,21 @@ div.wait-tab {
     -moz-border-radius:10px;
     -webkit-border-radius:10px;
 }
+
+div.pagination-nav {
+    text-align:center;
+    font-weight:normal;
+    font-size:11pt;
+}
+
+div.pagination-nav a img {
+    border:0;
+}
+
+div.pagination-nav a.prev {
+    float:left;
+}
+
+div.pagination-nav a.next {
+    float:right;
+}
