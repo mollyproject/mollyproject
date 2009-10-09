@@ -24,6 +24,10 @@ class GeneratedMap(models.Model):
         if not os.path.exists(settings.GENERATED_MAP_DIR):
             os.mkdir(settings.GENERATED_MAP_DIR)
         return os.path.join(settings.GENERATED_MAP_DIR, self.hash)
+        
+    def delete(self, *args, **kwargs):
+        os.unlink(self.get_filename())
+        return super(GeneratedMap, self).delete(*args, **kwargs)
 
 def get_tile_url(xtile, ytile, zoom):
     return "http://tile.openstreetmap.org/%d/%d/%d.png" % (zoom, xtile, ytile)
