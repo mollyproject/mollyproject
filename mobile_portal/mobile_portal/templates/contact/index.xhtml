@@ -5,6 +5,8 @@
 <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/contact.css"/>
 {% endblock %}
 
+{% block title %}m.ox | Contact search: {{ query }}{% endblock %}
+
 {% block extrahead %}{{ block.super }}
 {% if query %}
 <script type="text/javascript">

@@ -4,6 +4,10 @@ from mobile_portal.core.renderers import mobile_render
 from mobile_portal.core.ldap_queries import get_person_units
 from search import contact_search
 
+# See http://en.wikipedia.org/wiki/Nobility_particle for more information.
+NOBILITY_PARTICLES = set([
+    'de', 'van der', 'te', 'von', 'van', 'du', 'di'
+])
 
 def index(request):
     if request.GET:
@@ -20,7 +24,13 @@ def index(request):
         # W Bloggs       is W, Bloggs
         # Bloggs W       is W, Bloggs
         # Bloggs William is B, William
-        parts = request.GET.get('q', '').split(' ')[:2]
+        parts = request.GET.get('q', '').split(' ')
+        i = 0
+        while i < len(parts)-1:
+            if parts[i].lower() in NOBILITY_PARTICLES:
+                parts[i:i+2] = [' '.join(parts[i:i+2])]
+            i += 1
+        parts = parts[:2]
         if len(parts) == 1:
             surname, initial = parts[0], None
         elif parts[0].endswith(','):
