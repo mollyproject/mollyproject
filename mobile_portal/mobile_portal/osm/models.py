@@ -26,7 +26,10 @@ class GeneratedMap(models.Model):
         return os.path.join(settings.GENERATED_MAP_DIR, self.hash)
         
     def delete(self, *args, **kwargs):
-        os.unlink(self.get_filename())
+        try:
+            os.unlink(self.get_filename())
+        except:
+            pass
         return super(GeneratedMap, self).delete(*args, **kwargs)
 
 def get_tile_url(xtile, ytile, zoom):
