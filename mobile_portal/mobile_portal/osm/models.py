@@ -5,7 +5,7 @@ except:
 import hashlib, os, urllib, simplejson, sys
 from datetime import datetime, timedelta
 from StringIO import StringIO
-from django.db import models
+from django.db import models, IntegrityError
 from django.conf import settings
 
 class GeneratedMap(models.Model):
@@ -41,6 +41,9 @@ class OSMTile(models.Model):
     zoom = models.IntegerField()
     last_fetched = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        unique_together = (('xtile', 'ytile', 'zoom'),)
+
     def get_filename(self):
         if not os.path.exists(settings.OSM_TILE_DIR):
             os.mkdir(settings.OSM_TILE_DIR)
@@ -52,7 +55,10 @@ class OSMTile(models.Model):
             osm_tile = OSMTile.objects.get(xtile=xtile, ytile=ytile, zoom=zoom, last_fetched__lt = datetime.now() - timedelta(1))
             return open(osm_tile.get_filename())
         except (OSMTile.DoesNotExist, IOError):
-            osm_tile, created = OSMTile.objects.get_or_create(xtile=xtile, ytile=ytile, zoom=zoom)
+            try:
+                osm_tile, created = OSMTile.objects.get_or_create(xtile=xtile, ytile=ytile, zoom=zoom)
+            except IntegrityError:
+                return OSMTile.get_data(xtile, ytile, zoom)
 
             response = urllib.urlopen(get_tile_url(xtile, ytile, zoom))
             s = StringIO()
@@ -62,3 +68,4 @@ class OSMTile(models.Model):
             f.close()
             s.seek(0)
             return s
+    
