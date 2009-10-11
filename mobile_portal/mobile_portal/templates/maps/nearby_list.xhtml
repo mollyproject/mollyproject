@@ -1,11 +1,11 @@
 {% extends "maps/base.xhtml" %}
 
-{% block title %}m.ox | Maps - nearby{% endblock %}
+{% block title %}m.ox | Maps - near{% if entity %} {{ entity.title }}{% else %}by{% endif %}{% endblock %}
 
 {% block breadcrumbs %}
 {{ block.super }}
 	<li><a href="{% url maps_index %}">
-        {% if dumb %}Maps{% else %}<img src="{{ MEDIA_URL }}png/maps-bc.png" alt="Maps"/>{% endif %}
+        {% if dumb %}Maps{% else %}<img src="{{ MEDIA_URL }}png/index-icons/maps-bc.png" alt="Maps"/>{% endif %}
     </a></li>
 {% endblock %}
 

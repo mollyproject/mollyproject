@@ -3,11 +3,12 @@
 {% block breadcrumbs %}
 {{ block.super }}
             <li><a href="{% url rss_index %}">
-                <img src="{{ MEDIA_URL }}png/rss-bc.png" alt="News"/>
+                <img src="{{ MEDIA_URL }}png/index-icons/rss-bc.png" alt="News"/>
             </a></li>
 {% endblock %}
 
-{% block pagetitle %}News items{% endblock %}
+{% block pagetitle %}News feed{% endblock %}
+{% block title %}m.ox | News feed: {{ feed.title }}{% endblock %}
 
 {% block content %}
 

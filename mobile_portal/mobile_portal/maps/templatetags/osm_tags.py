@@ -30,7 +30,7 @@ def tag_capacity(t, s, tags):
 
 def tag_cuisine(t, s, tags):
     try:
-        cuisines = [w.capitalize() for w in s.split(';')]
+        cuisines = [w.capitalize().replace('_', ' ') for w in s.split(';')]
         if len(cuisines) == 1:
             return 'cuisine', ', '.join(cuisines)
         else:

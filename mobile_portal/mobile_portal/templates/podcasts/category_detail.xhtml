@@ -3,11 +3,12 @@
 {% block breadcrumbs %}
 {{ block.super }}
             <li><a href="{% url podcasts_index %}">
-                <img src="{{ MEDIA_URL }}png/podcasts-bc.png" alt="Podcasts"/>
+                <img src="{{ MEDIA_URL }}png/index-icons/podcasts-bc.png" alt="Podcasts"/>
             </a></li>
 {% endblock %}
 
 {% block pagetitle %}{{ category.name }}{% endblock %}
+{% block title %}m.ox | Podcasts - {{ category.name }}{% endblock %}
 
 {% block content %}
 

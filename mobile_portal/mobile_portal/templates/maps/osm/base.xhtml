@@ -4,13 +4,13 @@
 {% block breadcrumbs %}
 {{ block.super }}
 	<li><a href="{% url maps_index %}">
-        <img src="{{ MEDIA_URL }}png/maps-bc.png" alt="Maps"/>
+        <img src="{{ MEDIA_URL }}png/index-icons/maps-bc.png" alt="Maps"/>
     </a></li>
     <li><a href="{% url maps_nearby_detail entity.entity_type.slug %}">&hellip;</a></li>
 {% endblock %}
 
-{% block pagetitle %}{{ entity.entity_type.verbose_name }}{% endblock %}
-
+{% block pagetitle %}{{ entity.entity_type.verbose_name|capfirst }}{% endblock %}
+{% block title %}m.ox | {{ entity.entity_type.verbose_name|capfirst }}: {{ entity.title }}{% endblock %}
 
 {% block content %}
 
