@@ -31,6 +31,8 @@ urlpatterns = patterns('',
     (r'', include('mobile_portal.core.urls')),
 )
 
+handler500 = 'mobile_portal.core.views.handler500'
+
 if True or settings.DEBUG:
     urlpatterns += patterns('',
         (r'^site-media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),

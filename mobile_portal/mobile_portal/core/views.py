@@ -18,6 +18,7 @@ from models import FrontPageLink, ExternalImageSized, LocationShare
 from forms import LocationShareForm, LocationShareAddForm
 from utils import find_or_create_user_by_email
 from ldap_queries import get_person_units
+from context_processors import device_specific_media
 
 from handlers import BaseView
 
@@ -418,9 +419,9 @@ def static_detail(request, title, template):
 def desktop_about(request):
     return render_to_response('core/desktop_about.xhtml', {}, context_instance=RequestContext(request))    
 
-def robots_txt(request):
-    return HttpResponse("""\
-User-agent: *
-Disallow: /update_location/
-Disallow: /ajax_update_location/
-""", mimetype="text/plain")
+def handler500(request):
+    context = {
+        'MEDIA_URL': settings.MEDIA_URL,
+    }
+    context.update(device_specific_media(request))
+    return render_to_response('500.html', context)
