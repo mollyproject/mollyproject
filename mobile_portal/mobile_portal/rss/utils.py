@@ -164,6 +164,8 @@ class HtmlSanitiser(object):
     def tag_a(self, node):
         if not 'href' in node.attrib:
             node.tag = 'span'
+        else:
+            node.attrib['rel'] = 'nofollow'
 
     def tag_br(self, node):
         for attrib in set(['dir', 'lang', 'xml:lang']):

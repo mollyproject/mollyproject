@@ -74,6 +74,13 @@ def geocode_post_code(query):
             
 
 def geocode(query):
+
+    try:
+        placemarks = Placemarks.recent.get(query=query)
+        return placemarks.data
+    except Placemarks.DoesNotExist:
+        pass
+
     results = []
     
     if UNIT_CODE_RE.match(query.lower()):
