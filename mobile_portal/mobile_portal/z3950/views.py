@@ -128,7 +128,9 @@ class ItemDetailView(BaseView):
 
         display_map = {
             'true':True, 'false':False
-        }.get(request.GET.get('with_map', None), False) and (not request.preferences['location']['location'] is None)
+        }.get(request.GET.get('with_map', None), None)
+        if display_map is None:
+            display_map = (not request.preferences['location']['location'] is None)
         
         return {
             'zoom': self.get_zoom(request, None),
