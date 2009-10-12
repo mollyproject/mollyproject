@@ -24,8 +24,6 @@ def item_detail(request, control_number):
             stacks.append( (library, items) )
         else:
             libraries.append( (library, items) )
-            
-    pprint.PrettyPrinter(indent=4).pprint(all_libraries)
 
     if libraries:
         entity_ids = set(l.oxpoints_id for l in item.libraries if l.oxpoints_id)

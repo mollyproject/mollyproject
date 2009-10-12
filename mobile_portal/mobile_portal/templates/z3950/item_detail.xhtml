@@ -65,6 +65,13 @@
 {% if libraries %}
 <div class="list-section">
     <h2 class="section-header">Library holdings</h2>
+    <div class="list-note"><div class="bubble">
+        Please note that all libraries have admission and borrowing policies; inclusion in this list does not imply access.{% if map_hash %} Closest results are not necessarily best.{% endif %}
+    </div></div> 
+
+{% if map_hash %}
+    <div class="backgrounded-image" style="background-image:url('{% url osm_generated_map map_hash %}'); height:{{ device.max_image_height }}px;"> </div>
+{% endif %}
 
     <ul class="ml">
 {% for library, books in libraries %}

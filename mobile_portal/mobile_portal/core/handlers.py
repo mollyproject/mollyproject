@@ -25,6 +25,15 @@ class BaseView(object):
             return getattr(self, method_name)(request, context, *args, **kwargs)
         else:
             return method_not_acceptable(request)
+            
+    def get_zoom(self, request, default=16):
+        try:
+            zoom = int(request.GET['zoom'])
+        except (ValueError, KeyError):
+            zoom = default
+        else:
+            zoom = min(max(10, zoom), 18)
+        return zoom        
 
     @property
     def __name__(self):

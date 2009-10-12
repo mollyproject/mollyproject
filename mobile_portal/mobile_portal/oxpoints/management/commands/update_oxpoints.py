@@ -84,7 +84,7 @@ class Command(NoArgsCommand):
             self.subsetsOf[entity] = parents[0][0][-8:]
             entity.is_sublocation = True
 
-        if entity.entity_type.slug == 'library':
+        if entity.entity_type.slug == 'sublibrary':
             entity.is_stack = any((x in entity.title.lower()) for x in ('stack', 'nuneham', 'offsite'))
 
         entity.save()
