@@ -13,7 +13,7 @@
     </a></li>
 {% else %}    
 	<li><a href="{% url maps_index %}">
-        {% if dumb %}Maps{% else %}<img src="{{ MEDIA_URL }}png/maps-bc.png" alt="Maps"/>{% endif %}
+        {% if dumb %}Maps{% else %}<img src="{{ MEDIA_URL }}png/index-icons/maps-bc.png" alt="Maps"/>{% endif %}
     </a></li>
     <li><a href="{% url maps_nearby_list %}">
         {% if dumb %}Categories{% else %}&hellip;{% endif %}
