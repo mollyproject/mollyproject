@@ -44,6 +44,10 @@ class StatisticsMiddleware(object):
             # We're not really interested in these types of request.
             return response
             
+        full_path = request.path
+        if request.META.get('QUERY_STRING'):
+            full_path += '?%s' % request.META['QUERY_STRING']            
+            
         hit = Hit.objects.create(
             user = user,
             session_key = request.session.session_key,
@@ -52,7 +56,7 @@ class StatisticsMiddleware(object):
             ip_address = remote_ip,
             rdns = rdns,
             referer = request.META.get('HTTP_REFERER'),
-            full_path = request.path,
+            full_path = full_path,
             requested = request.requested,
             response_time = response_time,
             location_method = request.session.get('location_method'),

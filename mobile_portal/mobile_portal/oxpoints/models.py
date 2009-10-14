@@ -9,7 +9,8 @@ class EntityType(models.Model):
     source = models.TextField()
     id_field = models.TextField()
     show_in_category_list = models.BooleanField()
-    
+    note = models.TextField(null=True)
+        
     def __unicode__(self):
         return self.verbose_name
         
@@ -25,7 +26,7 @@ class Entity(models.Model):
     location = models.PointField(srid=4326, null=True)
     geometry = models.GeometryField(srid=4326, null=True)
     _metadata = models.TextField(default='null')
-    
+
     absolute_url = models.TextField()
     
     parent = models.ForeignKey('self', null=True)

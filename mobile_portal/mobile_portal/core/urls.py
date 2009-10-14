@@ -20,4 +20,6 @@ urlpatterns = patterns('mobile_portal.core.views',
     
     (r'^desktop_about/$', 'desktop_about', {}, 'core_desktop_about'),
 
+    (r'^feedback/$', 'contact', {}, 'core_contact'),
+
 )

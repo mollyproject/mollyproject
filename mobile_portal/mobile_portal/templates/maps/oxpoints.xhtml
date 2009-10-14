@@ -12,7 +12,7 @@
 
 {% block pagetitle %}{{ data.dc_title }}{% endblock %}
 
-{% block title %}m.ox | {{ entity_type.verbose_name|capfirst }}: {{ data.dc_title }}{% endblock %}
+{% block title %}m.ox | {{ entity.entity_type.verbose_name|capfirst }}: {{ data.dc_title }}{% endblock %}
 
 {% block content %}
 

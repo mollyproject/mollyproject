@@ -1,7 +1,9 @@
 from django.conf.urls.defaults import *
 
-urlpatterns = patterns('mobile_portal.rss.views',
-   (r'^$', 'index', {}, 'rss_index'),
-   (r'^(?P<slug>[a-z\-]+)/$', 'item_list', {}, 'rss_item_list'),
-   (r'^(?P<slug>[a-z\-]+)/(?P<id>\d+)/$', 'item_detail', {}, 'rss_item_detail'),
+from views import IndexView, ItemListView, ItemDetailView
+
+urlpatterns = patterns('',
+   (r'^$', IndexView(), {}, 'rss_index'),
+   (r'^(?P<slug>[a-z\-]+)/$', ItemListView(), {}, 'rss_item_list'),
+   (r'^(?P<slug>[a-z\-]+)/(?P<id>\d+)/$', ItemDetailView(), {}, 'rss_item_detail'),
 )

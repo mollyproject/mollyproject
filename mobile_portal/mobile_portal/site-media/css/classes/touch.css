@@ -6,7 +6,7 @@ body {
 }
 
 
-ul.ml, dl.ml {
+ul.ml, dl.ml, ol.ml {
     list-style:none;
     padding:0.2em;
     padding:0px;
@@ -14,7 +14,7 @@ ul.ml, dl.ml {
     margin-bottom:0;
 }
 
-ul.ml li, table.section-table tr, dl.ml dt, dl.ml dd {
+ul.ml li, ol.ml li, table.section-table tr, dl.ml dt, dl.ml dd {
     color:#ffffff;
     font-size:12pt;
 
@@ -24,7 +24,7 @@ ul.ml li, table.section-table tr, dl.ml dt, dl.ml dd {
 }
 
 
-ul.ml li.non-link-item, dl.ml dt {
+ul.ml li.non-link-item, dl.ml dt, ol.ml li.non-link-item {
 	padding:10px;
 }
 
@@ -65,7 +65,7 @@ ul.ml li.header {
     font-size:14pt;
 }
 
-ul.ml a, dl.ml a, button.as_link  {
+ul.ml a, ol.ml a, dl.ml a, button.as_link  {
     background-image:url('../../png/icons/list-arrow.png');
 }
 
@@ -92,7 +92,7 @@ ul.ml span.audio, ul.ml span.video {
     background-position:left 2px;
 }
 
-ul.ml li a, dl.ml dd a, button.as_link, table.section-table a {
+ul.ml li a, ol.ml li a, dl.ml dd a, button.as_link, table.section-table a {
 	font-size:12pt;
     color:#ffffff;
     text-decoration: none;
@@ -124,7 +124,7 @@ div.list-section .top, h2.section-header, h3.section-header {
     -webkit-border-top-right-radius:8px;
 }
 
-ul.ml li:last-child, div.list-footer {
+ul.ml li:last-child, ol.ml li:last-child, div.list-footer {
     border-radius-bottomleft:8px;
     -moz-border-radius-bottomleft:8px;
     -webkit-border-bottom-left-radius:8px;

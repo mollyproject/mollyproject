@@ -22,6 +22,8 @@ AVAILABILITIES = {
     'Please check shelf': AVAIL_UNKNOWN,
     'In place': AVAIL_STACK,
     'Missing': AVAIL_UNAVAILABLE,
+    'Temporarily missing': AVAIL_UNAVAILABLE,
+    'Reported Missing': AVAIL_UNAVAILABLE,
     'Withdrawn': AVAIL_UNAVAILABLE,
     '': AVAIL_UNKNOWN,
 }

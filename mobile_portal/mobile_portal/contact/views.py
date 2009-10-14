@@ -25,6 +25,7 @@ def index(request):
         # Bloggs W       is W, Bloggs
         # Bloggs William is B, William
         parts = request.GET.get('q', '').split(' ')
+        parts = [p for p in parts if p]
         i = 0
         while i < len(parts)-1:
             if parts[i].lower() in NOBILITY_PARTICLES:

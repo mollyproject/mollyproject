@@ -14,8 +14,10 @@ import geolocation
 
 import pytz, simplejson, urllib
 
+from mobile_portal.googlesearch.forms import GoogleSearchForm
+
 from models import FrontPageLink, ExternalImageSized, LocationShare
-from forms import LocationShareForm, LocationShareAddForm
+from forms import LocationShareForm, LocationShareAddForm, ContactForm
 from utils import find_or_create_user_by_email
 from ldap_queries import get_person_units
 from context_processors import device_specific_media
@@ -45,6 +47,7 @@ def index(request):
 
     context = {
         'front_page_links': front_page_links,
+        'search_form': GoogleSearchForm(),
     }
     return mobile_render(request, context, 'core/index')
 
@@ -425,3 +428,27 @@ def handler500(request):
     }
     context.update(device_specific_media(request))
     return render_to_response('500.html', context)
+    
+def contact(request):
+    contact_form = ContactForm(request.POST or None)
+    
+    if contact_form.is_valid():
+        email = EmailMessage(
+            'm.ox | Comment',
+            contact_form.cleaned_data['body'],
+            None,
+            ('%s <%s>' % admin for admin in settings.ADMINS),
+            [],
+            None,
+            [],
+            {'Reply-To': contact_form.cleaned_data['email']},
+        )
+        email.send()
+       
+        return HttpResponseRedirect(reverse('core_contact'))
+       
+    context = {
+       'contact_form': contact_form,
+    }
+   
+    return mobile_render(request, context, 'core/contact')

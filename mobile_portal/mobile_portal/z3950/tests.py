@@ -30,7 +30,7 @@ TEST_METADATA = [
 
 TEST_LIBRARY_IDS = [
     set([32330371]),
-    set([32330371, 32330119, 32330381, 23233138]),
+    set([32330371, 32330119, 32330381, 32330525]),
 ]
 
 def ensureOxPoints():

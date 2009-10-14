@@ -30,6 +30,10 @@
     Found {{ count }} {% ifequal count 1 %}{{ entity_type.verbose_name }}{% else %}{{ entity_type.verbose_name_plural }}{% if entity %} near {{ entity.title }}{% endif %}{% endifequal %}
 </div>
 
+{% if entity_type.note %}
+<div class="list-note"><div class="bubble">{{ entity_type.note }}</div></div>
+{% endif %}
+
 <div class="backgrounded-image" style="background-image:url('{% url osm_generated_map map_hash %}'); height:{{ device.max_image_height }}px">
 {% include "maps/map_elements.xhtml" %}
 </div>

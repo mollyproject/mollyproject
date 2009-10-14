@@ -21,21 +21,22 @@ class Command(NoArgsCommand):
 
         # Define the types of OxPoints entities we'll be loading
         ENTITY_TYPES = {
-            'Building':   ('building', 'University building', 'University buildings'),
-            'College':    ('college', 'college or PPH', 'colleges and PPHs'),
-            'Department': ('department', 'University department', 'University departments'),
-            'Museum':     ('museum', 'museum', 'museums'),
-            'Library':    ('library', 'library', 'libraries'),
-            'Carpark':    ('carpark', 'University car park', 'University car parks'),
-            'Unit':       ('unit', 'unit', 'units'),
-            'Room':       ('room', 'room', 'rooms'),
-            'SubLibrary': ('sublibrary', 'sublocation', 'sublocations'),
+            'Building':   ('building', 'University building', 'University buildings', ''),
+            'College':    ('college', 'college or PPH', 'colleges and PPHs', ''),
+            'Department': ('department', 'University department', 'University departments', ''),
+            'Museum':     ('museum', 'museum', 'museums', ''),
+            'Library':    ('library', 'library', 'libraries', 'Please note that all libraries have admission and borrowing policies; inclusion in this list does not imply access.'),
+            'Carpark':    ('carpark', 'University car park', 'University car parks', ''),
+            'Unit':       ('unit', 'unit', 'units', ''),
+            'Room':       ('room', 'room', 'rooms', ''),
+            'SubLibrary': ('sublibrary', 'sublocation', 'sublocations', ''),
         }
 
         entity_types = {}
-        for ptype, (slug, verbose_name, verbose_name_plural) in ENTITY_TYPES.items():
+        for ptype, (slug, verbose_name, verbose_name_plural, note) in ENTITY_TYPES.items():
             entity_type, created = EntityType.objects.get_or_create(slug=slug)
             entity_type.verbose_name = verbose_name
+            entity_type.note = note
             entity_type.verbose_name_plural = verbose_name_plural
             entity_type.source = 'oxpoints'
             entity_type.id_field = 'oxpoints_id'
