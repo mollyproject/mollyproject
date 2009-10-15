@@ -13,7 +13,7 @@ from models import Webcam, WEBCAM_WIDTHS
 
 
 class IndexView(BaseView):
-    def get_metadata(self):
+    def get_metadata(self, request):
         return {
             'title': 'Webcams',
             'additional': 'View webcams from around the city and University',
@@ -27,7 +27,7 @@ class IndexView(BaseView):
         return mobile_render(request, context, 'webcams/index')
     
 class WebcamDetailView(BaseView):
-    def get_metadata(self, slug):
+    def get_metadata(self, request, slug):
         webcam = get_object_or_404(Webcam, slug=slug)
         return {
             'title': webcam.title,

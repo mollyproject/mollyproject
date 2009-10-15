@@ -21,6 +21,7 @@ class Command(NoArgsCommand):
         self.entity_type.verbose_name_plural = 'bus stops'
         self.entity_type.source = 'naptan'
         self.entity_type.id_field = 'atco_code'
+        self.entity_type.show_in_nearby_list = True
         self.entity_type.show_in_category_list = False
         self.entity_type.save()
 

@@ -33,7 +33,7 @@ def minmax(i):
         max_ = max(max_, e)
     return min_, max_
 
-def get_map(points, width, height, filename, zoom=None):
+def get_map(points, width, height, filename, zoom=None, lat_center=None, lon_center=None):
     lat_min, lat_max = minmax(p[0] for p in points)
     lon_min, lon_max = minmax(p[1] for p in points)
     
@@ -47,7 +47,8 @@ def get_map(points, width, height, filename, zoom=None):
     points = [(get_tile_ref(p[0], p[1], zoom), p[2], p[3]) for p in points]
     
     lat_range, lon_range = lat_min - lat_max, lon_max - lon_min
-    lat_center, lon_center = (lat_min + lat_max)/2, (lon_min + lon_max)/2
+    if not lat_center:
+        lat_center, lon_center = (lat_min + lat_max)/2, (lon_min + lon_max)/2
     
     tx_min, tx_max = map(int, minmax(p[0][0] for p in points))
     ty_min, ty_max = map(int, minmax(p[0][1] for p in points))
@@ -73,6 +74,12 @@ def get_map(points, width, height, filename, zoom=None):
     context = cairo.Context(surface)
     
     for tile in tiles:
+        offx = (tile['ref'][0] - tx_min) * 256 - ox
+        offy = (tile['ref'][1] - ty_min) * 256 - oy
+        
+        if not (-256 < offx and offx < width and -256 < offy and offy < height):
+            continue  
+        
         tile_data = OSMTile.get_data(tile['ref'][0], tile['ref'][1], zoom)
         
         try:
@@ -129,7 +136,10 @@ def get_map(points, width, height, filename, zoom=None):
     
     surface.write_to_png(filename)
     
-    
+    return
+    del surface
+    for tile in tiles:
+        del tile['surface']
 
 class PointSet(set):
     def __init__(self, initial=None):

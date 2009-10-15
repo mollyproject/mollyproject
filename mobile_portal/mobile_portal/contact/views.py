@@ -27,10 +27,13 @@ def index(request):
         parts = request.GET.get('q', '').split(' ')
         parts = [p for p in parts if p]
         i = 0
+
         while i < len(parts)-1:
             if parts[i].lower() in NOBILITY_PARTICLES:
                 parts[i:i+2] = [' '.join(parts[i:i+2])]
-            i += 1
+            else:
+                i += 1
+        print parts
         parts = parts[:2]
         if len(parts) == 1:
             surname, initial = parts[0], None

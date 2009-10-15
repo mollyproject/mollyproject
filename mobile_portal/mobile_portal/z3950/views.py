@@ -1,5 +1,3 @@
-import pprint
-
 from PyZ3950 import zoom
 
 from django.http import Http404, HttpResponseRedirect
@@ -36,7 +34,6 @@ def search_detail(request):
     def clean_input(s):
         s = s.replace('"', '').lower()
         removed = frozenset(w for w in s.split(' ') if (w in STOP_WORDS))
-        print "R", frozenset(w for w in s.split(' ') )
         s = ' '.join(w for w in s.split(' ') if (not w in STOP_WORDS))
         return s, removed
     def clean_isbn(s):
@@ -154,8 +151,6 @@ class ItemDetailView(BaseView):
             else:
                 libraries.append( (library, items) )
     
-        print libraries, stacks
-    
         if libraries:
             entity_ids = set(l.oxpoints_id for l in context['item'].libraries if l.oxpoints_id)
             entities = Entity.objects.filter(oxpoints_id__in = entity_ids)
@@ -245,7 +240,7 @@ def item_holdings_detail(request, control_number, sublocation):
         raise Http404
         
     books = item.libraries[library]
-    print library.oxpoints_entity.location
+    
     context = {
         'item': item,
         'library': library,

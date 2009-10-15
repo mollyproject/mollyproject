@@ -48,9 +48,7 @@ class RSSItem(models.Model):
         
     def get_description_display(self, device):
         html = ET.fromstring('<html>%s</html>' % self.description)
-        print "Here"
         for img in html.findall('.//img'):
-            print "Here"
             eis = resize_external_image(img.attrib['src'], device.max_image_width-40)
             img.attrib['src'] = eis.get_absolute_url()
             img.attrib['width'] = '%d' % eis.width

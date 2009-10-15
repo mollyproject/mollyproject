@@ -38,3 +38,17 @@ class BaseView(object):
     @property
     def __name__(self):
         return type(self).__name__
+        
+class ZoomableView(BaseView):
+    default_zoom = None
+    
+    def initial_context(self, request, *args, **kwargs):
+        try:
+            zoom = int(request.GET['zoom'])
+        except (KeyError, ValueError):
+            zoom = type(self).default_zoom
+        else:
+            zoom = min(max(10, zoom), 18)
+        return {
+            'zoom': zoom,
+        }

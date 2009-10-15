@@ -11,13 +11,16 @@ class GoogleSearchView(BaseView):
         }
         
     def handle_GET(self, request, context):
-        if 'query' in request.GET:
-            return self.handle_search(request, request.GET['query'], context)
+        if context['search_form'].is_valid():
+            return self.handle_search(request, context)
         
         return mobile_render(request, context, 'googlesearch/index')
         
-    def handle_search(self, request, query, context):
-        results = GoogleSearch('m.ox.ac.uk', None, query)
+    def handle_search(self, request, context):
+        application = context['search_form'].cleaned_data['application'] or None
+        query = context['search_form'].cleaned_data['query']
+        
+        results = GoogleSearch('m.ox.ac.uk', application, query, request)
         
         context.update({
             'results': list(results)[:20],

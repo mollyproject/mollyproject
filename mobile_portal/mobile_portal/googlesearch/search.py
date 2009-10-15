@@ -7,10 +7,11 @@ from xml.etree import ElementTree as ET
 GOOGLE_SEARCH_URL = 'http://googlesearch.oucs.ox.ac.uk/search?%s'
 
 class GoogleSearch(object):
-    def __init__(self, domain, application, query):
+    def __init__(self, domain, application, query, request=None):
         self.domain = domain
         self.application = application
         self.query = query
+        self.request = request
 
     def __iter__(self):
         if self.application:
@@ -48,16 +49,15 @@ class GoogleSearch(object):
                 'application': callback.__module__.split('.')[1],
             }
 
-            print repr(metadata['excerpt'])
-
             if metadata['application'] == 'core':
                 metadata['application'] = None
 
             if hasattr(callback, 'get_metadata'):
                 try:
-                    metadata.update(getattr(callback, 'get_metadata')(*callback_args, **callback_kwargs))
+                    metadata.update(getattr(callback, 'get_metadata')(self.request, *callback_args, **callback_kwargs))
                 except Http404:
                     continue
+                
             else:
                 title = r.find('T').text
                 if title.startswith('m.ox | '):

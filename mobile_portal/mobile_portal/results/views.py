@@ -8,7 +8,7 @@ class IndexView(BaseView):
     RSS_FEED = 'http://twitter.com/statuses/user_timeline/46711686.rss'
     RESULT_RE = re.compile(r"(?P<code>[A-Z]+) \((?P<title>.+)\)")
     
-    def get_metadata(self):
+    def get_metadata(self, request):
         return {
             'title': 'Results releases',
             'additional': 'View recently released Schools results'

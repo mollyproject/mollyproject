@@ -8,6 +8,7 @@ class EntityType(models.Model):
     verbose_name_plural = models.TextField()
     source = models.TextField()
     id_field = models.TextField()
+    show_in_nearby_list = models.BooleanField()
     show_in_category_list = models.BooleanField()
     note = models.TextField(null=True)
         
@@ -15,7 +16,7 @@ class EntityType(models.Model):
         return self.verbose_name
         
     class Meta:
-        ordering = ('source', 'verbose_name')
+        ordering = ('verbose_name',)
 
 class Entity(models.Model):
     oxpoints_id = models.PositiveIntegerField(null=True, blank=True)

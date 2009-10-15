@@ -46,6 +46,7 @@ class OxfordHandler(handler.ContentHandler):
             entity_type.verbose_name_plural = verbose_name_plural
             entity_type.source = 'osm'
             entity_type.id_field = 'osm_id'
+            entity_type.show_in_nearby_list = True
             entity_type.show_in_category_list = show_in_category_list
             entity_type.save()
             self.entity_types[slug] = entity_type

@@ -14,7 +14,7 @@ from mobile_portal.wurfl import device_parents
 OPML_FEED = 'http://rss.oucs.ox.ac.uk/oxitems/podcastingnewsfeeds.opml'
 
 class IndexView(BaseView):
-    def get_metadata(self):
+    def get_metadata(self, request):
         return {
             'title': 'Podcasts',
             'additional': 'Browse and listen to podcasts from around the University.'
@@ -35,7 +35,7 @@ class IndexView(BaseView):
         return mobile_render(request, context, 'podcasts/index')
 
 class CategoryDetailView(BaseView):
-    def get_metadata(self, code, medium=None):
+    def get_metadata(self, request, code, medium=None):
         category = get_object_or_404(PodcastCategory, code=code)
         return {
             'title': category.name,
@@ -56,7 +56,7 @@ class CategoryDetailView(BaseView):
         return mobile_render(request, context, 'podcasts/category_detail')
 
 class PodcastDetailView(BaseView):
-    def get_metadata(self, code=None, id=None, podcast=None):
+    def get_metadata(self, request, code=None, id=None, podcast=None):
         if not podcast:
             podcast = get_object_or_404(Podcast, category__code=code, id=id)
         
@@ -83,7 +83,7 @@ class PodcastDetailView(BaseView):
         return mobile_render(request, context, 'podcasts/podcast_detail')
 
 class TopDownloadsView(PodcastDetailView):
-    def get_metadata(self):
+    def get_metadata(self, request):
         podcast=Podcast.objects.get(rss_url=TOP_DOWNLOADS_RSS_URL)
         return {
             'title': podcast.title,
@@ -92,7 +92,7 @@ class TopDownloadsView(PodcastDetailView):
         
     def handle_GET(self, request, context):
         return super(TopDownloadsView, self).handle_GET(
-            request,
+            request, context,
             podcast=Podcast.objects.get(rss_url=TOP_DOWNLOADS_RSS_URL)
         )
 

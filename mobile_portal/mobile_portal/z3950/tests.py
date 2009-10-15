@@ -30,7 +30,7 @@ TEST_METADATA = [
 
 TEST_LIBRARY_IDS = [
     set([32330371]),
-    set([32330371, 32330119, 32330381, 32330525]),
+    set([32330119, 32330525, 32330326, 32330381]),
 ]
 
 def ensureOxPoints():
@@ -65,11 +65,11 @@ class USMARCTestCase(TestCase):
     def testLocationOxPoints(self, result, i):
         ensureOxPoints()
         
+        oxpoints_ids = set()
         for library in result.libraries:
-            self.assert_(
-                library.oxpoints_entity.oxpoints_id in TEST_LIBRARY_IDS[i],
-                "%s (%d) is not in the list of expected libraries (%r)" % (unicode(library), library.oxpoints_entity.oxpoints_id, TEST_LIBRARY_IDS[i])
-            )
+            oxpoints_ids.add(library.oxpoints_entity.oxpoints_id)
+            
+        self.assertEqual(oxpoints_ids, TEST_LIBRARY_IDS[i])
 
 TEST_ISBNS = [
     '1903402557', '0134841891', '0262041677', '0340811293', '1565925858',

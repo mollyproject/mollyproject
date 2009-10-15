@@ -10,7 +10,7 @@ from mobile_portal.core.handlers import BaseView
 from models import RSSFeed, RSSItem
 
 class IndexView(BaseView):
-    def get_metadata(self):
+    def get_metadata(self, request):
         return {
             'title': 'News',
             'additional': 'View news feeds and events from across the University.',
@@ -24,7 +24,7 @@ class IndexView(BaseView):
         return mobile_render(request, context, 'rss/index')
 
 class ItemListView(BaseView):
-    def get_metadata(self, slug):
+    def get_metadata(self, request, slug):
         feed = get_object_or_404(RSSFeed, slug=slug)
         
         return {
@@ -39,7 +39,7 @@ class ItemListView(BaseView):
         return mobile_render(request, context, 'rss/item_list')
 
 class ItemDetailView(BaseView):
-    def get_metadata(sef, slug, id):
+    def get_metadata(self, request, slug, id):
         item = get_object_or_404(RSSItem, feed__slug=slug, id=id)
         
         return {

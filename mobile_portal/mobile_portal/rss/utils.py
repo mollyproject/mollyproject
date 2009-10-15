@@ -75,9 +75,6 @@ class HtmlSanitiser(object):
                 
     def sanitise_node(self, node, parents=()):
 
-        print
-        print '  '*len(parents), [n.tag for n in parents], [n.tag for n in node]
-        
         node[0:0], i = [Element('start')], 1
         while i < len(node):
             n = node[i]
@@ -92,8 +89,6 @@ class HtmlSanitiser(object):
             else:
                 i += 1
 
-        print '  '*len(parents), [n.tag for n in parents], [n.tag for n in node]
-                
         for attrib in set(node.attrib):
             if not attrib in VALID_ATTRIBS:
                 del node.attrib[attrib]
@@ -106,12 +101,8 @@ class HtmlSanitiser(object):
         if hasattr(self, method_name):
             getattr(self, method_name)(node)
 
-        print '  '*len(parents), [n.tag for n in parents], [n.tag for n in node]
-
         for n in node[1:]:
             self.sanitise_node(n, parents=parents+(node,))
-
-        print '  '*len(parents), [n.tag for n in parents], [n.tag for n in node]
 
         i = 1
         while i < len(node):
@@ -126,9 +117,6 @@ class HtmlSanitiser(object):
         else:
             node.text = node[0].tail or None
         node[0:1] = []
-
-        print '  '*len(parents), [n.tag for n in parents], [n.tag for n in node]
-
 
     def attrib_colspan(self, node, value):
         try:
@@ -186,33 +174,5 @@ class HtmlSanitiser(object):
 def sanitise_html(html):
     hs = HtmlSanitiser(html, id_prefix='s', header_offset=0)
     ret = hs.get_sanitised()
-    print '='*80
-    print html.encode('utf8')
-    print '-'*80
-    print ret.encode('utf8')
     return ret
 
-if __name__ == '__main__':
-    hs = HtmlSanitiser("""<p>
-	<a href='http://posterous.com/getfile/files.posterous.com/mobileoxford/3cqiGpVUZVgb39r4e9PzHiDQxtU8R8mmJXMZLDKaXgFey6FCqUtpWqnMCskQ/photo.jpg'><img src="http://posterous.com/getfile/files.posterous.com/mobileoxford/WOz2sQoO7OUxhgF6NSvEx2oAYlCwE3gfJkOV7XNEtU2TiC7n1FR2NnnneFC4/photo.jpg.scaled.500.jpg" width="500" height="667"/></a>
-
-<p>Finding nearby bus stops</p><p><a href='http://posterous.com/getfile/files.posterous.com/mobileoxford/zlu0WkDyBbvjzJY72Ys4bewLbed3vYdodNlzuKvdl9xIHNhd9abBYzhLVFR8/photo_2.jpg'><img src="http://posterous.com/getfile/files.posterous.com/mobileoxford/drmmj0aw4GgkyP659RmE74y8zjMQdj49XF5exbQo5co9KT5Lih6ekwMIXcZq/photo_2.jpg.scaled.500.jpg" width="500" height="667"/></a>
-</p><p>Playing a podcast from the University's iTunes U.</p><p><a href='http://posterous.com/getfile/files.posterous.com/mobileoxford/ld0VnVkFSRHLkvnP7dqon0J09kEO02aAdFoXXbCuDAnzktL935d3m8X7wLsD/photo_3.jpg'><img src="http://posterous.com/getfile/files.posterous.com/mobileoxford/MVvJiCW22e8WG7HSGvzMy32dMl33Sg5jhjfdgDd19wZxPg4mZm8wkYaR1tPQ/photo_3.jpg.scaled.500.jpg" width="500" height="667"/></a>
-</p><p>Real time bus information</p><p><a href='http://posterous.com/getfile/files.posterous.com/mobileoxford/ogER473d8FHQwuscjNqWx5cQuxjFKS6nmPferVIllG3YAF9hznmqIHtcv9NU/photo_4.jpg'><img src="http://posterous.com/getfile/files.posterous.com/mobileoxford/9aQwlMccOp58sQTNhpTeyIfSj71nXhq2hZrtImJwpRdmtepSbCvHdJpsUpV5/photo_4.jpg.scaled.500.jpg" width="500" height="667"/></a>
-
-</p>
-	
-</p>
-
-<p><a href="http://mobileoxford.posterous.com/testing-services-on-a-sony-ericsson-w880i">Permalink</a> 
-
-	| <a href="http://mobileoxford.posterous.com/testing-services-on-a-sony-ericsson-w880i#comment">Leave a comment&nbsp;&nbsp;&raquo;</a>
-
-</p>""")
-
-    print '='*80
-    print hs.html
-    print '-'*80
-    print hs.get_sanitised()
-    print '='*80
-    
