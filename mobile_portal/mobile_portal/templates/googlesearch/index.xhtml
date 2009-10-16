@@ -47,7 +47,7 @@
 {% endif %}
 
 <div class="list-section">
-  <h2 class="section-header">Search elsewhere</h2>
+  <h2 class="section-header">Search elsewhere <small>for<em> {{ search_form.data.query }}</em></small></h2> 
   <ul class="ml">
     <li class="non-link-item">Contact search</li>
     <li class="subitem"><a href="{% url contact_index %}?q={{ search_form.data.query }}&amp;method=email">E-mail</a></li>
