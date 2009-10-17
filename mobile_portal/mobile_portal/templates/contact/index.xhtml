@@ -47,6 +47,13 @@
 <div class="list-section">
   <h2 class="section-header">Results</h2>
 
+
+  {% if message %}
+  <div class="list-note"><div class="bubble">
+    {{ message }}
+  </div></div>
+  {% endif %}
+
   {% if people %}
   <div class="list-note"><div class="bubble">
     {% if page_count|gte:4 %}
@@ -90,11 +97,11 @@
   </div>
     {% endifnotequal %}
 
-  {% else %}
+  {% else %}{% if not message %}
   <div class="list-footer"><div class="bubble">
     Your search didn't return any results.
   </div></div>
-  
+  {% endif %}
   {% endif %}
 </div>
 {% endif %}

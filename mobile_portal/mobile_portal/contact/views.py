@@ -1,4 +1,4 @@
-import simplejson, hashlib
+import simplejson, hashlib, urllib2
 from django.http import HttpResponse
 from mobile_portal.core.renderers import mobile_render
 from mobile_portal.core.ldap_queries import get_person_units
@@ -44,18 +44,25 @@ def index(request):
         else:
             surname, initial = parts[1], parts[0][:1]
 
-        people, page_count, results_count = contact_search(surname, initial, True, method, page)
-
-        context = {
-            'people': people,
-            'page': page,
-            'page_count': page_count,
-            'results_count': results_count,
-            'more_pages': page != page_count,
-            'pages': range(1, page_count+1),
-            'query': request.GET.get('q', ''),
-            'method': method,
-        }
+        try:
+            people, page_count, results_count = contact_search(surname, initial, True, method, page)
+        except urllib2.URLError:
+            context = {
+                'query': request.GET.get('q', ''),
+                'method': method,
+                'message': 'Sorry; there was a temporary issue retrieving results. Please try again shortly.',
+            }
+        else:
+            context = {
+                'people': people,
+                'page': page,
+                'page_count': page_count,
+                'results_count': results_count,
+                'more_pages': page != page_count,
+                'pages': range(1, page_count+1),
+                'query': request.GET.get('q', ''),
+                'method': method,
+            }
     else:
         context = {
             'people': None,
