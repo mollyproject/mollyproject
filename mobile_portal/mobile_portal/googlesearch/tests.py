@@ -4,6 +4,15 @@ from django.utils.importlib import import_module
 from mobile_portal.core.handlers import BaseView
 from search import GoogleSearch
 
+class Argspec(tuple):
+    args = property(lambda self: self[0])
+    varargs = property(lambda self: self[1])
+    keywords = property(lambda self: self[2])
+    defaults = property(lambda self: self[3])
+
+def getargspec(*args, **kwargs):
+    return Argspec(inspect.getargspec(*args, **kwargs))
+
 class GenericSearchTestCase(unittest.TestCase):
     def testViewSignatures(self):
         for app_name in settings.INSTALLED_APPS:
@@ -11,31 +20,31 @@ class GenericSearchTestCase(unittest.TestCase):
                 views = import_module(app_name+'.views')
             except ImportError:
                 continue
-    
+
             for view_name in dir(views):
-                
+
                 view = getattr(views, view_name)
-                
+
                 if not isinstance(view, type):
                     continue
-                    
+
                 if not BaseView in view.__mro__:
                     continue
 
                 metadata_sig = None
                 handler_sigs = []
                 initial_context_sig = None
-                                    
+
                 for func_name in dir(view):
                     func = getattr(view, func_name)
 
                     if func_name == 'get_metadata':
-                        metadata_sig = inspect.getargspec(func)
+                        metadata_sig = getargspec(func)
                     elif func_name == 'initial_context':
-                        initial_context_sig = inspect.getargspec(func)
+                        initial_context_sig = getargspec(func)
                     elif func_name.startswith('handle_') and func_name[7:].upper() == func_name[7:]:
-                        handler_sigs.append( (func_name, inspect.getargspec(func)) )
-                
+                        handler_sigs.append( (func_name, getargspec(func)) )
+
                 if not handler_sigs:
                     continue
 
@@ -69,7 +78,7 @@ class GenericSearchTestCase(unittest.TestCase):
                             app_name, view_name, handler_name, argspec.keywords
                         ),
                     )
-                
+
                 if not (initial_context_sig.varargs or initial_context_sig.keywords):
                     self.assertEqual(
                         initial_context_sig.args,
@@ -78,7 +87,7 @@ class GenericSearchTestCase(unittest.TestCase):
                             app_name, view_name,
                         )
                     )
-                
+
                 if metadata_sig:
                     self.assertEqual(
                         metadata_sig.args,
@@ -99,5 +108,5 @@ class GenericSearchTestCase(unittest.TestCase):
                             app_name, view_name, metadata_sig.keywords
                         ),
                     )
-                    
-                
+
+
