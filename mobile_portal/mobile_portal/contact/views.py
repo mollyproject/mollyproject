@@ -10,7 +10,7 @@ NOBILITY_PARTICLES = set([
 ])
 
 def index(request):
-    if request.GET:
+    if request.GET and request.GET.get('q'):
         method = request.GET.get('method')
         method = 'phone' if method == 'phone' else 'email'
         try:
