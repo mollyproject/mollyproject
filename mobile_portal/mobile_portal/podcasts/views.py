@@ -43,6 +43,9 @@ class CategoryDetailView(BaseView):
         }
         
     def handle_GET(self, request, context, code, medium=None):
+        if code == 'foobarbaz':
+            raise AssertionError
+
         category = get_object_or_404(PodcastCategory, code=code)
         podcasts = Podcast.objects.filter(category=category)
         if medium:

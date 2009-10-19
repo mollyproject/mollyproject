@@ -64,7 +64,7 @@ def get_or_create_map(f, args):
         except IntegrityError:
             pass
 
-        if GeneratedMap.objects.all().count() > 10000:
+        if GeneratedMap.objects.all().count() > 5000:
             for gm in GeneratedMap.objects.order_by('last_accessed')[:50]:
                 gm.delete()    
     
