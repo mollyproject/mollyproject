@@ -3,7 +3,7 @@ from django.http import HttpResponse
 class BaseView(object):
     def method_not_acceptable(self, request):
         response = HttpResponse(
-            'You may not perform a %s request against this resource.' % request.method,
+            'You may not perform a %s request against this resource.' % request.method.upper(),
             status=405,
         )
         return response
@@ -24,7 +24,7 @@ class BaseView(object):
             context = self.initial_context(request, *args, **kwargs)
             return getattr(self, method_name)(request, context, *args, **kwargs)
         else:
-            return method_not_acceptable(request)
+            return self.method_not_acceptable(request)
             
     def get_zoom(self, request, default=16):
         try:
