@@ -422,8 +422,14 @@ def static_detail(request, title, template):
     }
     return mobile_render(request, context, 'core/static_detail')
 
-def desktop_about(request):
-    return render_to_response('core/desktop_about.xhtml', {}, context_instance=RequestContext(request))    
+class DesktopAboutView(BaseView):
+    def get_metadata(self, request):
+        return {
+            'exclude_from_search': True
+        }
+        
+    def handle_GET(self, request, context):
+        return render_to_response('core/desktop_about.xhtml', {}, context_instance=RequestContext(request))    
 
 def handler500(request):
     context = {

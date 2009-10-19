@@ -57,6 +57,9 @@ class GoogleSearch(object):
                     metadata.update(getattr(callback, 'get_metadata')(self.request, *callback_args, **callback_kwargs))
                 except Http404:
                     continue
+                    
+                if metadata.get('exclude_from_search'):
+                    continue
                 
             else:
                 title = r.find('T').text

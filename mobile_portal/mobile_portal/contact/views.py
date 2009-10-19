@@ -10,7 +10,7 @@ NOBILITY_PARTICLES = set([
 ])
 
 def index(request):
-    if request.GET and request.GET.get('q'):
+    if request.GET and request.GET.get('q', '').strip():
         method = request.GET.get('method')
         method = 'phone' if method == 'phone' else 'email'
         try:
@@ -31,9 +31,11 @@ def index(request):
         while i < len(parts)-1:
             if parts[i].lower() in NOBILITY_PARTICLES:
                 parts[i:i+2] = [' '.join(parts[i:i+2])]
+            elif parts[i] == '':
+                parts[i:i+1] = []
             else:
                 i += 1
-        print parts
+        
         parts = parts[:2]
         if len(parts) == 1:
             surname, initial = parts[0], None

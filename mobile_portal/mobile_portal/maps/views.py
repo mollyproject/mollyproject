@@ -271,7 +271,9 @@ class BusstopSearchView(BaseView):
         }
         
     def handle_GET(self, request, context):
-        id = request.GET.get('id', '')
+        id = request.GET.get('id', '').strip()
+        if len(id) == 5:
+            id = '693' + id
         if len(id) == 2:
             entities = Entity.objects.filter(central_stop_id=id.upper())
         elif len(id) == 8:
