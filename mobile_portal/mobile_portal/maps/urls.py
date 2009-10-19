@@ -7,6 +7,8 @@ from views import (
     
     NearbyEntityListView, NearbyEntityDetailView,
     CategoryListView, CategoryDetailView,
+    
+    BusstopSearchView,
 )
 
 urlpatterns = patterns('mobile_portal.maps.views',
@@ -38,6 +40,11 @@ urlpatterns = patterns('mobile_portal.maps.views',
     (r'^(?P<type_slug>[a-z_]+):(?P<id>[\dA-Z]+)/nearby/(?P<ptype>[^/]+)/$',
         NearbyEntityDetailView(), {},
         'maps_entity_nearby_detail'),
+        
+    (r'^busstop_search/$',
+        BusstopSearchView(), {},
+        'maps_busstop_search'),
+        
     
     (r'^(?P<type_slug>[a-z_]+):(?P<id>[\dA-Z]+)/favourite/$',
         'entity_favourite', {},

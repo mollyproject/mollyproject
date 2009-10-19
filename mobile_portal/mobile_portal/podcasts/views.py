@@ -1,7 +1,7 @@
 # Create your views here.
 import urllib
 from xml.etree import ElementTree as ET
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 from mobile_portal.core.renderers import mobile_render
@@ -36,6 +36,9 @@ class IndexView(BaseView):
 
 class CategoryDetailView(BaseView):
     def get_metadata(self, request, code, medium=None):
+        if medium:
+            raise Http404
+            
         category = get_object_or_404(PodcastCategory, code=code)
         return {
             'title': category.name,

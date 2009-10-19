@@ -24,32 +24,35 @@ from context_processors import device_specific_media
 
 from handlers import BaseView
 
-def index(request):
-    internal_referer = request.META.get('HTTP_REFERER', '').startswith('http://oucs-alexd:8000/')
-    internal_referer = request.META.get('HTTP_REFERER', '').startswith('http://m.ox.ac.uk/')
-
-    if ("generic_web_browser" in device_parents[request.device.devid]
-        and not request.preferences['core']['desktop_about_shown']
-        and not request.GET.get('preview') == 'true'
-        and not internal_referer
-        and not settings.DEBUG):
-        return HttpResponseRedirect(reverse('core_desktop_about'))
-
-    # Take the default front age links from the database. If the user is logged
-    # in we'll use the ones attached to their profile. If we've added new links
-    # since last they visited, or if this is their first visit, we copy the
-    # create references attached to their profile, which they can then edit.
-    fpls = dict((fpl.slug, fpl) for fpl in FrontPageLink.objects.all())
-
-    fpls_prefs = sorted(request.preferences['front_page_links'].items(), key=lambda (slug,(order, display)): order)
-
-    front_page_links = [fpls[slug] for (slug,(order, display)) in fpls_prefs if display and slug in fpls]
-
-    context = {
-        'front_page_links': front_page_links,
-        'search_form': GoogleSearchForm(),
-    }
-    return mobile_render(request, context, 'core/index')
+class IndexView(BaseView):
+    def handle_GET(self, request, context):
+        internal_referer = request.META.get('HTTP_REFERER', '').startswith('http://oucs-alexd:8000/')
+        internal_referer = request.META.get('HTTP_REFERER', '').startswith('http://m.ox.ac.uk/')
+    
+        if ("generic_web_browser" in device_parents[request.device.devid]
+            and not request.preferences['core']['desktop_about_shown']
+            and not request.GET.get('preview') == 'true'
+            and not internal_referer
+            and not settings.DEBUG):
+            return HttpResponseRedirect(reverse('core_desktop_about'))
+    
+        fpls = dict((fpl.slug, fpl) for fpl in FrontPageLink.objects.all())
+        fpls_prefs = sorted(request.preferences['front_page_links'].items(), key=lambda (slug,(order, display)): order)
+        front_page_links = [fpls[slug] for (slug,(order, display)) in fpls_prefs if display and slug in fpls]
+    
+        context = {
+            'front_page_links': front_page_links,
+            'search_form': GoogleSearchForm(),
+        }
+        return mobile_render(request, context, 'core/index')
+        
+    def handle_POST(self, request, context):
+        print "Foo"
+        no_desktop_about = {'true':True, 'false':False}.get(request.POST.get('no_desktop_about'))
+        if not no_desktop_about is None:
+            request.preferences['core']['desktop_about_shown'] = no_desktop_about
+            
+        return HttpResponseRedirect(reverse('core_index'))
 
 def crisis(request):
     if request.user.is_authenticated():

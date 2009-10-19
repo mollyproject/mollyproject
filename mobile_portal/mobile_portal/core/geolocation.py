@@ -18,11 +18,10 @@ CLOUDMADE_GEOCODE_URL = 'http://geocoding.cloudmade.com/%(api_key)s/geocoding/fi
 
 def reverse_geocode(lat, lon):
 
-    try:
-        placemarks = Placemarks.recent.get(latitude=lat, longitude=lon)
+    placemarks, created = Placemarks.recent.get_or_create(latitude=lat, longitude=lon)
+    
+    if placemarks.data:
         return placemarks.data
-    except Placemarks.DoesNotExist:
-        pass
         
     params = {
         'api_key': settings.CLOUDMADE_API_KEY,
@@ -38,7 +37,6 @@ def reverse_geocode(lat, lon):
     else:
         placemark = json['features'][0]['properties']['name'], (lat, lon), 100
 
-    placemarks, created = Placemarks.objects.get_or_create(latitude=lat, longitude=lon)
     placemarks.data = [placemark]
     placemarks.save()
     
@@ -75,11 +73,10 @@ def geocode_post_code(query):
 
 def geocode(query):
 
-    try:
-        placemarks = Placemarks.recent.get(query=query)
+    placemarks, created = Placemarks.recent.get_or_create(query=query)
+    
+    if placemarks.data:
         return placemarks.data
-    except Placemarks.DoesNotExist:
-        pass
 
     results = []
     
@@ -141,7 +138,6 @@ def geocode(query):
         
     results = restricted_results or results
     
-    placemarks, created = Placemarks.objects.get_or_create(query=query)
     placemarks.data = results
     placemarks.save()
     

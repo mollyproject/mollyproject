@@ -1,5 +1,5 @@
 
-import os.path
+import os.path, re
 from django.core.management.base import NoArgsCommand
 
 from xml.etree import ElementTree as ET
@@ -14,6 +14,11 @@ class Command(NoArgsCommand):
 
     ENGLAND_OSM_BZ2_URL = 'http://download.geofabrik.de/osm/europe/great_britain/england.osm.bz2'
     NS = '{http://www.naptan.org.uk/}'
+    CENTRAL_STOP_RE = re.compile('Stop ([A-Z]\d)')
+    
+    @staticmethod
+    def atco(c):
+        return unicode(min(9, (ord(c)-91)//3))
 
     def add_busstop_entity_type(self):
         self.entity_type, created = EntityType.objects.get_or_create(slug='busstop')
@@ -40,6 +45,15 @@ class Command(NoArgsCommand):
                 continue
 
             atco_code = stop.find(NS('AtcoCode')).text.strip()
+            #print atco_code
+            if not stop.find(NS('NaptanCode')) is None:
+                naptan_code = stop.find(NS('NaptanCode')).text.strip()
+                naptan_code = ''.join(map(Command.atco, naptan_code))
+                if len(naptan_code) != 8:
+                    print "Funny naptan code: %s - %s" % (stop.find(NS('NaptanCode')).text, naptan_code)
+            else:
+                naptan_code = None
+                
             atco_codes.add (atco_code)
 
             translation = stop.find(NS('Place/Location/Translation'))
@@ -65,8 +79,15 @@ class Command(NoArgsCommand):
                 title = "%s %s, on %s" % (ind, lmk, str)
             else:
                 title = "%s %s, %s" % (ind, lmk, cnm)
-            
+
             entity, created = Entity.objects.get_or_create(atco_code = atco_code, entity_type=self.entity_type)
+
+            match = ind and Command.CENTRAL_STOP_RE.match(ind)
+            if match:
+                print "%10s %s" % (match.groups(0)[0], title)
+                entity.central_stop_id = match.groups(0)[0]
+            
+            entity.naptan_code = naptan_code
             entity.location = Point(location[1], location[0], srid=4326)
             entity.geometry = entity.location
             entity.title = title

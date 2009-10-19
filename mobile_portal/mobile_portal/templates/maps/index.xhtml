@@ -34,4 +34,20 @@
 </ul>
 </div>
 
+<div class="section-nopad">
+  <form method="get" action="{% url maps_busstop_search %}">
+    <h2 class="section-header">Bus stop search</h2>
+    <div class="list-note"><div class="bubble"><label for="busstop_id">
+        Enter an 8-digit oxontime code, or a central stop number (e.g. 'F3')
+    </label></div></div>
+    
+    <div class="section-content">
+      <p style="text-align:center">
+        <input name="id" id="busstop_id"/>
+        <input type="submit" value="Go!"/>
+      </p>
+    </div>
+  </form>
+</div>
+
 {% endblock %}

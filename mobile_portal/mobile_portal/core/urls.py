@@ -1,11 +1,11 @@
 from django.conf.urls.defaults import *
 from django.conf import settings
 
-from mobile_portal.core.views import UpdateLocationView
+from mobile_portal.core.views import IndexView, UpdateLocationView
 
 urlpatterns = patterns('mobile_portal.core.views',
 
-    (r'^$', 'index', {}, 'core_index'),
+    (r'^$', IndexView(), {}, 'core_index'),
     (r'^ajax/update_location/$', 'ajax_update_location', {}, 'core_ajax_update_location'),
 
     (r'^update_location/$', UpdateLocationView(), {}, 'core_update_location'),

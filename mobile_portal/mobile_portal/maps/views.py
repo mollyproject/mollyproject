@@ -23,6 +23,7 @@ from mobile_portal.oxpoints.models import Entity, EntityType
 from mobile_portal.oxpoints.entity import get_resource_by_url, MissingResource, Unit, Place
 
 from mobile_portal.maps.utils import get_entity, is_favourite, make_favourite, get_bearing
+from forms import BusstopSearchForm
 
 class IndexView(BaseView):
     def get_metadata(self, request):
@@ -241,27 +242,6 @@ class NearbyEntityDetailView(NearbyDetailView):
         entity = get_entity(type_slug, id)
         return super(NearbyEntityDetailView, self).handle_GET(request, context, ptype, entity)
 
-def entity_favourite(request, type_slug, id):
-    entity = get_entity(type_slug, id)
-    
-    if request.method != 'POST':
-        return HttpResponse('', mimetype='text/plain', status=405)
-        
-    try:
-        value = request.POST['is_favourite'] == 'true'
-    except KeyError:
-        return HttpResponse('', mimetype='text/plain', status=400)
-        
-    make_favourite(request, entity, value)
-    
-    if 'no_redirect' in request.POST:
-        return HttpResponse('', mimetype='text/plain', status=400)
-        
-    if 'return_url' in request.POST:
-        return HttpResponseRedirect(request.POST['return_url'])
-    else:
-        return HttpResponseRedirect(entity.get_absolute_url())
-
 class CategoryListView(BaseView):
     def initial_context(self, request):
         entity_types = EntityType.objects.filter(show_in_category_list=True).order_by('verbose_name_plural')
@@ -283,7 +263,52 @@ class CategoryDetailView(BaseView):
     
     def handle_GET(self, request, context, ptype):
         return mobile_render(request, context, 'maps/category_detail')
+
+class BusstopSearchView(BaseView):
+    def initial_context(self, request):
+        return {
+            'search_form': BusstopSearchForm(request.GET or None)
+        }
         
+    def handle_GET(self, request, context):
+        id = request.GET.get('id', '')
+        if len(id) == 2:
+            entities = Entity.objects.filter(central_stop_id=id.upper())
+        elif len(id) == 8:
+            entities = Entity.objects.filter(naptan_code=id)
+        else:
+            entities = []
+        
+        entities = list(entities)
+        if len(entities) == 1:
+            return HttpResponseRedirect(entities[0].get_absolute_url())
+        
+        context['entities'] = entities
+        
+        return mobile_render(request, context, 'maps/busstop_search')
+        
+def entity_favourite(request, type_slug, id):
+    entity = get_entity(type_slug, id)
+    
+    if request.method != 'POST':
+        return HttpResponse('', mimetype='text/plain', status=405)
+        
+    try:
+        value = request.POST['is_favourite'] == 'true'
+    except KeyError:
+        return HttpResponse('', mimetype='text/plain', status=400)
+        
+    make_favourite(request, entity, value)
+    
+    if 'no_redirect' in request.POST:
+        return HttpResponse('', mimetype='text/plain', status=400)
+        
+    if 'return_url' in request.POST:
+        return HttpResponseRedirect(request.POST['return_url'])
+    else:
+        return HttpResponseRedirect(entity.get_absolute_url())
+
+
 def without_location(request):
     entities = Entity.objects.filter(entity_type__source='oxpoints', location__isnull=True)
     

@@ -23,3 +23,6 @@ def cache_control(private=False, public=False, never_expires=None, expiry=None):
                 response['Cache-Control'] = "public"
             if never_expires:
                 response['Expiry'] = None
+        return g
+    return f
+    

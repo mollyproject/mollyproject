@@ -20,7 +20,9 @@ class EntityType(models.Model):
 
 class Entity(models.Model):
     oxpoints_id = models.PositiveIntegerField(null=True, blank=True)
+    naptan_code = models.CharField(max_length=8, null=True, blank=True)
     atco_code = models.CharField(max_length=12, null=True, blank=True)
+    central_stop_id = models.CharField(max_length=2, null=True, blank=True)
     osm_id = models.CharField(max_length=16, null=True, blank=True)
     title = models.TextField(blank=True)
     entity_type = models.ForeignKey(EntityType, null=True)
