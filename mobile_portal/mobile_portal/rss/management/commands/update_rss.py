@@ -1,6 +1,5 @@
 from django.core.management.base import NoArgsCommand
 
-from xml.etree import ElementTree as ET
 from datetime import datetime, timedelta
 import urllib, re, email, feedparser
 from mobile_portal.rss.models import RSSItem, RSSFeed
