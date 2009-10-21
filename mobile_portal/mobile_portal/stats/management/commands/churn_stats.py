@@ -16,18 +16,28 @@ class Command(NoArgsCommand):
             'crawl', 'spider', 'googlebot',
             'slurp', 'msnbot','zibber',
         ])
+
+        def filter_all(hit):
+            return True
+        def filter_noncrawler(hit):
+            return not any(c in (hit.user_agent or '').lower() for c in crawlers)
+        def filter_oxnetwork(hit):
+            return (hit.rdns or '').startswith('uk.ac.ox.')
         
         filters = {
-            'all': lambda h:True,
-            'noncrawler': lambda h: not any(c in h.user_agent.lower() for c in crawlers),
-            'ox_network': lambda h: (h.rdns or '').startswith('uk.ac.ox.'),
+            'all': filter_all,
+            'noncrawler': filter_noncrawler,
+            'oxnetwork': filter_oxnetwork,
         }
         
         counts = dict((filter, {}) for filter in filters)
         
         an_hour = timedelta(hours=1)
         
-        for hit in Hit.objects.all():
+        for hit in Hit.objects.filter(requested__gt = datetime.now()-timedelta(14)):
+            if hit.rdns == 'uk.ac.ox.oucs.slippery-rubber-feet':
+                continue
+
             requested = hit.requested.replace(minute=0, second=0, microsecond=0)
             
             for filter in filters:
@@ -69,8 +79,8 @@ class Command(NoArgsCommand):
             lg = graphication.linegraph.LineGraph(series_set, scale)
             
             output = graphication.FileOutput()
-            output.add_item(lg, x=0, y=0, width=1600, height=400)
-            output.write("png", "/home/alex/Desktop/%s.png" % filter)
+            output.add_item(lg, x=0, y=0, width=2000, height=400)
+            output.write("png", "/home/alex/graphs/%s.png" % filter)
             
             print count
             
