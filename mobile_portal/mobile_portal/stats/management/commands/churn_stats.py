@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from django.core.management.base import NoArgsCommand
 import graphication, graphication.linegraph, graphication.scales.date
 
+from mobile_portal.wurfl import device_parents
 from mobile_portal.stats.models import Hit
 
 class Command(NoArgsCommand):
@@ -23,21 +24,28 @@ class Command(NoArgsCommand):
             return not any(c in (hit.user_agent or '').lower() for c in crawlers)
         def filter_oxnetwork(hit):
             return (hit.rdns or '').startswith('uk.ac.ox.')
+        def filter_iphone(hit):
+	        return 'apple_iphone_ver1' in device_parents.get(hit.device_id, ())
         
         filters = {
             'all': filter_all,
             'noncrawler': filter_noncrawler,
             'oxnetwork': filter_oxnetwork,
+            'iphone': filter_iphone,
         }
         
         counts = dict((filter, {}) for filter in filters)
         
         an_hour = timedelta(hours=1)
         
+
+
         for hit in Hit.objects.filter(requested__gt = datetime.now()-timedelta(14)):
+            #exclude James!
             if hit.rdns == 'uk.ac.ox.oucs.slippery-rubber-feet':
                 continue
 
+            # Removes some granularity of hit entries (down to hour intervals)
             requested = hit.requested.replace(minute=0, second=0, microsecond=0)
             
             for filter in filters:
@@ -54,10 +62,11 @@ class Command(NoArgsCommand):
             count = counts[filter] = counts[filter].items()
             count.sort()
             
+            # Adds blank entries for times when there are no hits. 
             i = 1
         
             while i < len(count):
-                
+                # here be magic   
                 gap = (count[i][0] - count[i-1][0])
                 to_add = gap.days * 24 + gap.seconds // 3600 - 1
                 
@@ -80,7 +89,7 @@ class Command(NoArgsCommand):
             
             output = graphication.FileOutput()
             output.add_item(lg, x=0, y=0, width=2000, height=400)
-            output.write("png", "/home/alex/graphs/%s.png" % filter)
+            output.write("png", "/home/timf/graphs/%s.png" % filter)
             
             print count
             
