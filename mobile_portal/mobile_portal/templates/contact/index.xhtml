@@ -82,7 +82,13 @@
       {% endifequal %}
         <span class="name">{{ person.name }}</span>
         <br/>
-        <small><span class="unit">{% if person.unit %}{{ person.unit }}{% else %}<em>Unknown affiliation</em>{% endif %}</span></small>
+        <small><span class="unit">{% if person.unit %}{{ person.unit }}{% else %}<em>Unknown affiliation</em>{% endif %}</span><br />
+		{% ifequal method "email" %}
+		    {{ person.email }}
+        {% else %}
+		    {{ person.phone.1 }}
+		{% endifequal %}
+		</small>
       </a>
     </li>
     {% endfor %}
