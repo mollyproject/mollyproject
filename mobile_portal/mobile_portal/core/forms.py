@@ -14,6 +14,6 @@ class LocationShareAddForm(forms.Form):
     accuracy = forms.ChoiceField(choices=LOCATION_ACCURACY_CHOICES)
     
 class ContactForm(forms.Form):
-    email = forms.EmailField()
-    body = forms.CharField(widget=forms.Textarea())
+    email = forms.EmailField(label="Your e-mail address (optional)", required=False)
+    body = forms.CharField(widget=forms.Textarea(), label="Feedback")
     

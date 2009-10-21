@@ -166,7 +166,13 @@ div.osm-license {
     color: #000000;
 }
 
+dl.feedback dd, dl.feedback dl{
+    margin-left:0;
+}
 
+dl.feedback input, dl.feedback textarea {
+    width:99%;
+}
 
 /*
 

@@ -6,6 +6,7 @@ from django.shortcuts import get_object_or_404, render_to_response
 from django.conf import settings
 from django.core.management import call_command
 from django.template import loader, Context, RequestContext
+from django.core.mail import EmailMessage
 from mobile_portal.core.renderers import mobile_render
 from mobile_portal.webauth.utils import require_auth
 from mobile_portal.osm.utils import fit_to_map
@@ -442,9 +443,32 @@ def contact(request):
     contact_form = ContactForm(request.POST or None)
     
     if contact_form.is_valid():
+        params = {
+            'email': contact_form.cleaned_data['email'],
+            'devid': request.device.devid,
+            'ua': request.META['HTTP_USER_AGENT'],
+            'referer': request.POST.get('referer', ''),
+            'location': request.preferences['location']['location'],
+            'body': contact_form.cleaned_data['body'],
+        }
+        body = """\
+Meta
+====
+
+E-mail:     %(email)s
+Device:     %(devid)s
+User-agent: %(ua)s
+Referer:    %(referer)s
+Location:   %(location)s
+
+Message
+=======
+
+%(body)s
+""" % params
         email = EmailMessage(
             'm.ox | Comment',
-            contact_form.cleaned_data['body'],
+            body,
             None,
             ('%s <%s>' % admin for admin in settings.ADMINS),
             [],
@@ -453,11 +477,18 @@ def contact(request):
             {'Reply-To': contact_form.cleaned_data['email']},
         )
         email.send()
+        
+        qs = urllib.urlencode({
+            'sent':'true',
+            'referer': params['referer'],
+        })
        
-        return HttpResponseRedirect(reverse('core_contact'))
+        return HttpResponseRedirect(reverse('core_contact')+('?%s' % qs))
        
     context = {
        'contact_form': contact_form,
+       'sent': request.GET.get('sent') == 'true',
+       'referer': request.GET.get('referer', ''),
     }
    
     return mobile_render(request, context, 'core/contact')

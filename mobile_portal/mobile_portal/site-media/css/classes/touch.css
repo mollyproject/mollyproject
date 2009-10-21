@@ -140,8 +140,9 @@ ul.ml li.notbottom {
 }
 
 div.front-section, div.section, div.section-nopad {
+    text-align:center;
     margin:10px;
-    padding:8px;
+    padding:4px;
     border-radius:8px;
     -moz-border-radius:8px;
     -webkit-border-radius:8px;
