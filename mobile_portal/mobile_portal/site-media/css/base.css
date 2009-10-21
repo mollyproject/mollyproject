@@ -168,10 +168,14 @@ div.osm-license {
 
 dl.feedback dd, dl.feedback dl{
     margin-left:0;
+    padding:0 6px;
 }
 
 dl.feedback input, dl.feedback textarea {
-    width:99%;
+    width:100%;
+    border:1px solid #888;
+    padding:0;
+   
 }
 
 /*
