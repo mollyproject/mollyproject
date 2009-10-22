@@ -79,6 +79,12 @@
 {% block content %}
 {% endblock %}
 
+{% if not hide_feedback_link %}
+    <div class="front-section">
+        <a href="{% url core_contact %}?referer={{ path }}">Provide feedback for this page.</a>
+    </div>
+{% endif %}
+
 {#<hr/><p>{{ dumb|yesno:"dumb," }} {{ smart|yesno:"smart," }} {{ touch|yesno:"touch," }} {{ desktop|yesno:"desktop," }}</p>#}
 
     </div>

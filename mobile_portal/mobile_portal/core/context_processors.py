@@ -35,7 +35,7 @@ def device_specific_media(request):
     dumb, smart, touch, multitouch, desktop = False, False, False, False, False
     if "apple_iphone_ver1" in device_parents[request.device.devid]:
         multitouch = True
-    if request.device.pointing_method == 'touchscreen':
+    if True or request.device.pointing_method == 'touchscreen':
         touch = True
     if request.device.ajax_support_javascript:
         smart = True
@@ -109,5 +109,6 @@ def weather(request):
         'preferences': request.preferences,
         'session_key': request.session.session_key,
         'queries': connection.queries,
+        'path': request.path,
     }
     

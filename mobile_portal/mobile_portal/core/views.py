@@ -44,6 +44,7 @@ class IndexView(BaseView):
         context = {
             'front_page_links': front_page_links,
             'search_form': GoogleSearchForm(),
+            'hide_feedback_link': True,
         }
         return mobile_render(request, context, 'core/index')
         
