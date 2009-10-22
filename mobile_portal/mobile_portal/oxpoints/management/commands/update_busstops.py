@@ -1,18 +1,27 @@
 
-import os.path, re
+import os.path, re, ftplib
 from django.core.management.base import NoArgsCommand
 
 from xml.etree import ElementTree as ET
 from django.contrib.gis.geos import Point
 from mobile_portal.oxpoints.models import Entity, EntityType
-   
+
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from StringIO import StringIO
+
+try:
+    import credentials
+except ImportError:
+    raise ImportError("Please create a credentials.py in oxpoints/management/commands")
+
 class Command(NoArgsCommand):
     option_list = NoArgsCommand.option_list
     help = "Loads NaPTAN bus stop data."
     
     requires_model_validation = True
 
-    ENGLAND_OSM_BZ2_URL = 'http://download.geofabrik.de/osm/europe/great_britain/england.osm.bz2'
     NS = '{http://www.naptan.org.uk/}'
     CENTRAL_STOP_RE = re.compile('Stop ([A-Z]\d)')
     
@@ -30,12 +39,13 @@ class Command(NoArgsCommand):
         self.entity_type.show_in_category_list = False
         self.entity_type.save()
 
-    def parse_busstops(self, filename):
+    def parse_busstops(self):
 
         def NS(elements):
             return "/".join((Command.NS + e) for e in elements.split('/'))
 
-        xml = ET.parse(filename)
+        self.data.seek(0)
+        xml = ET.parse(self.data)
         
         stops, atco_codes = xml.findall('.//'+NS('StopPoint')), set()
         
@@ -96,11 +106,22 @@ class Command(NoArgsCommand):
         for entity in Entity.objects.filter(entity_type=self.entity_type):
             if not entity.atco_code in atco_codes:
                 entity.delete()
+
+    def chomp_data(self, block):
+        print "Block"
+        self.data.write(block)
                 
     def handle_noargs(self, **options):
 
         self.add_busstop_entity_type()
-        self.parse_busstops(os.path.join(
-            os.path.dirname(__file__), 
-            '../../data/NaPTAN340.xml',
-        ))
+        
+        ftp = ftplib.FTP('journeyweb.org.uk',
+            credentials.user,
+            credentials.password,
+        )
+        ftp.cwd('/V2/340/')
+        self.data = StringIO()
+        ftp.retrbinary('RETR NaPTAN340.xml', self.chomp_data)
+        ftp.quit()
+        
+        self.parse_busstops()
