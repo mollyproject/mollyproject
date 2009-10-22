@@ -55,12 +55,9 @@ class Command(NoArgsCommand):
                 continue
 
             atco_code = stop.find(NS('AtcoCode')).text.strip()
-            #print atco_code
             if not stop.find(NS('NaptanCode')) is None:
                 naptan_code = stop.find(NS('NaptanCode')).text.strip()
                 naptan_code = ''.join(map(Command.atco, naptan_code))
-                if len(naptan_code) != 8:
-                    print "Funny naptan code: %s - %s" % (stop.find(NS('NaptanCode')).text, naptan_code)
             else:
                 naptan_code = None
                 
@@ -94,7 +91,6 @@ class Command(NoArgsCommand):
 
             match = ind and Command.CENTRAL_STOP_RE.match(ind)
             if match:
-                print "%10s %s" % (match.groups(0)[0], title)
                 entity.central_stop_id = match.groups(0)[0]
             
             entity.naptan_code = naptan_code
@@ -108,7 +104,6 @@ class Command(NoArgsCommand):
                 entity.delete()
 
     def chomp_data(self, block):
-        print "Block"
         self.data.write(block)
                 
     def handle_noargs(self, **options):
