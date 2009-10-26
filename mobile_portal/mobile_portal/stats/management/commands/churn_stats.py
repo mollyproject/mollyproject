@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
 from django.core.management.base import NoArgsCommand
-import graphication, graphication.linegraph, graphication.scales.date graphication.fileoutput
+import graphication, graphication.linegraph, graphication.scales.date, graphication.fileoutput
 
 from mobile_portal.wurfl import device_parents
 from mobile_portal.stats.models import Hit
