@@ -89,7 +89,7 @@ class Command(NoArgsCommand):
             
             output = graphication.FileOutput()
             output.add_item(lg, x=0, y=0, width=2000, height=400)
-            output.write("png", "/home/timf/graphs/%s.png" % filter)
+            output.write("pdf", "/home/timf/graphs/%s.pdf" % filter)
             
             print count
             
