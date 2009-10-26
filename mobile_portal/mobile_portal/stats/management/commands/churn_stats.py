@@ -5,7 +5,7 @@ from django.core.management.base import NoArgsCommand
 #import graphication, graphication.linegraph, graphication.scales.date
 from graphication import *
 from graphication.linegraph import *
-from graphication.scaled import * 
+from graphication.scales import * 
 
 
 from mobile_portal.wurfl import device_parents
