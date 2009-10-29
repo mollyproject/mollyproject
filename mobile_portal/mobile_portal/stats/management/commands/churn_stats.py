@@ -94,5 +94,5 @@ class Command(NoArgsCommand):
             output.add_item(lg, x=0, y=0, width=2000, height=400)
             output.write("png", "/home/timf/graphs/%s.png" % filter)
             
-            print count
+            #print count
             
