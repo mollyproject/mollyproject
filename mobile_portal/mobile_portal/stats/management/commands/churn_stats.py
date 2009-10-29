@@ -26,15 +26,15 @@ class Command(NoArgsCommand):
             return (hit.rdns or '').startswith('uk.ac.ox.')
         def filter_iphone(hit):
 	        return 'apple_iphone_ver1' in device_parents.get(hit.device_id, ())
-        def filter_blackberry(hit):
-            return 'blackberry' in device_parents.get(hit.device_model_name, ())
+        def filter_opera_mini(hit):
+            return 'opera_mini_ver1' in device_parents.get(hit.device_id, ())
 
         filters = {
             'all': filter_all,
             'noncrawler': filter_noncrawler,
             'oxnetwork': filter_oxnetwork,
             'iphone': filter_iphone,
-			'blackberry': filter_blackberry,
+			'opera_mini': filter_opera_mini,
         }
         
         counts = dict((filter, {}) for filter in filters)
