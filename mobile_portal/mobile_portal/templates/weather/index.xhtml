@@ -4,9 +4,18 @@
 {% block pagetitle %}Weather{% endblock %}
 {% block title %}m.ox | Weather{% endblock %}
 
+{% block extrahead %}
+{{ block.super }}
+<style type="text/css">
+th {
+    padding:0.5em;
+}
+</style>
+{% endblock %}
+
 {% block content %}
 
-<div class="list-section">
+<div class="section-nopad">
 	<h2 class="section-header">Latest observations for Oxford</h2>
 	<div class="list-note"><div class="bubble">
 	    <img src="{{ MEDIA_URL }}png/weather/{{ weather.icon }}.png" alt="{{ weather.get_outlook_display|capfirst }}"/><br/>
@@ -36,7 +45,32 @@
 	        </tr>
 	    </tbody>
     </table>
-	</div>
+</div>
+	
+<div class="section-nopad">
+    <h2 class="section-header">Forecast</h2>
+
+    <table class="section-table">
+        <thead>
+            <tr>
+                <th>Day</th>
+                <th>Outlook</th>
+                <th>High</th>
+                <th>Low</th>
+            </tr>
+        </thead>
+        <tbody>
+{% for forecast in forecasts %}
+            <tr>
+                <td>{{ forecast.observed_date|date:"l" }}</td>
+                <td><img src="{{ MEDIA_URL }}png/weather/{{ forecast.icon }}.png" alt="{{ forecast.get_outlook_display|capfirst }}" style="height:2em; width:2em;"/></td>
+                <td>{{ forecast.max_temperature }}&deg;C</td>
+                <td>{{ forecast.min_temperature }}&deg;C</td>
+            </tr>
+{% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}
 
     temperature = models.IntegerField(null=True)

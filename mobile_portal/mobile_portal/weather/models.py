@@ -1,6 +1,11 @@
 from datetime import datetime, time
 from django.contrib.gis.db import models
 
+PTYPE_CHOICES = (
+    ('o', 'observation'),
+    ('f', 'forecast'),
+)
+
 PRESSURE_STATE_CHOICES = (
     ('+', 'rising'),
     ('-', 'falling'),
@@ -61,8 +66,16 @@ OUTLOOK_TO_ICON = {
     'hsn': 'snow5',
 }
 
+SCALE_CHOICES = (
+    ('l', 'low'),
+    ('m', 'medium'),
+    ('h', 'high'),
+)
+
 class Weather(models.Model):
     bbc_id = models.PositiveIntegerField()
+    ptype = models.CharField(max_length=1, choices=PTYPE_CHOICES)
+    
     name = models.TextField(null=True)
 
     outlook = models.CharField(null=True, max_length=3, choices=OUTLOOK_CHOICES)
@@ -72,7 +85,7 @@ class Weather(models.Model):
     modified_date = models.DateTimeField(auto_now=True)   
     
     temperature = models.IntegerField(null=True)
-    wind_direction = models.CharField(null=True, max_length=2)
+    wind_direction = models.CharField(null=True, max_length=3)
     wind_speed = models.IntegerField(null=True)
     humidity = models.IntegerField(null=True)
     pressure = models.PositiveIntegerField(null=True)
@@ -80,6 +93,15 @@ class Weather(models.Model):
     visibility = models.CharField(null=True, max_length=2, choices=VISIBILITY_CHOICES)
     
     location = models.PointField(srid=4326, null=True)
+
+    min_temperature = models.IntegerField(null=True)
+    max_temperature = models.IntegerField(null=True)
+    uv_risk = models.CharField(max_length=1, choices=SCALE_CHOICES, null=True)
+    pollution = models.CharField(max_length=1, choices=SCALE_CHOICES, null=True)
+    sunset = models.TimeField(null=True)
+    sunrise = models.TimeField(null=True)
+    
+        
     
     def icon(self):
         now = datetime.now().time()

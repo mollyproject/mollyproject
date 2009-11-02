@@ -2,9 +2,12 @@ from django.core.management.base import NoArgsCommand
 
 from xml.etree import ElementTree as ET
 from datetime import datetime, tzinfo, timedelta
-import urllib, re, email
+import urllib, re, email, sys
 from django.contrib.gis.geos import Point
-from mobile_portal.weather.models import Weather, OUTLOOK_CHOICES, VISIBILITY_CHOICES, PRESSURE_STATE_CHOICES
+from mobile_portal.weather.models import (
+    Weather, OUTLOOK_CHOICES, VISIBILITY_CHOICES, PRESSURE_STATE_CHOICES,
+    SCALE_CHOICES
+)
 
 def rfc_2822_datetime(value):
     time_tz = email.utils.parsedate_tz(value)
@@ -25,37 +28,52 @@ class Command(NoArgsCommand):
 
     requires_model_validation = True
 
-    WEATHER_URL = 'http://newsrss.bbc.co.uk/weather/forecast/%d/ObservationsRSS.xml'
-    WEATHER_RE = re.compile(
+    OBSERVATIONS_URL = 'http://newsrss.bbc.co.uk/weather/forecast/%d/ObservationsRSS.xml'
+    OBSERVATIONS_RE = re.compile(
         r'Temperature: (?P<temperature>-?\d+|N\/A).+Wind Direction: '
       + r'(?P<wind_direction>[NESW]{0,2}|N\/A), Wind Speed: (?P<wind_speed>\d+|N\/A).+Re'
       + r'lative Humidity: (?P<humidity>\d+|N\/A).+Pressure: (?P<pressure>\d+|N\/A).+'
       + r' (?P<pressure_state>rising|falling|steady|no change|N\/A), Visibility: (?P<visibility>[A-Za-z\/ ]+)')
     
-    WEATHER_TITLE_RE = re.compile(
+    OBSERVATIONS_TITLE_RE = re.compile(
         r'(?P<day>[A-Za-z]+) at (?P<time>\d\d:\d\d).+\n(?P<outlook>[A-Za-z\/ ]+)\.'
     )
     
-    WEATHER_CHANNEL_TITLE_RE = re.compile(
-        r'BBC - Weather Centre - Latest Observations for (?P<name>.+)'
+    FORECAST_URL = 'http://newsrss.bbc.co.uk/weather/forecast/%d/Next3DaysRSS.xml'
+    FORECAST_RE = FE = (
+        r'Max Temp: (?P<max_temperature>-?\d+|N\/A).+Min Temp: (?P<min_temperature>-?\d+|N\/A)'
+      + r'.+Wind Direction: (?P<wind_direction>[NESW]{0,3}|N\/A), Wind Speed: '
+      + r'(?P<wind_speed>\d+|N\/A).+Visibility: (?P<visibility>[A-Za-z\/ ]+), '
+      + r'Pressure: (?P<pressure>\d+|N\/A).+Humidity: (?P<humidity>\d+|N\/A).+'
+      + r'UV risk: (?P<uv_risk>[A-Za-z]+|N\/A), Pollution: (?P<pollution>[A-Za-z]+|N\/A), '
+      + r'Sunrise: (?P<sunrise>\d\d:\d\d)[A-Z]{3}, Sunset: (?P<sunset>\d\d:\d\d)[A-Z]{3}'
+    )
+    FORECAST_RE = re.compile(FE)
+    
+    FORECAST_TITLE_RE = re.compile(
+        r'(?P<day>[A-Za-z]+): (?P<outlook>[A-Za-z\/ ]+),'
+    )
+    
+    CHANNEL_TITLE_RE = re.compile(
+        r'BBC - Weather Centre - (Latest Observations|Forecast) for (?P<name>.+)'
     )
     
     OXFORD_BBC_ID = 25
     
     @staticmethod
-    def get_weather_data(bbc_id):
-        xml = ET.parse(urllib.urlopen(Command.WEATHER_URL % bbc_id))
+    def get_observations_data(bbc_id):
+        xml = ET.parse(urllib.urlopen(Command.OBSERVATIONS_URL % bbc_id))
         
         description = xml.find('.//item/description').text
         title = xml.find('.//item/title').text
         channel_title = xml.find('.//channel/title').text
     
         # Extract the data from the RSS item using regular expressions.
-        data = Command.WEATHER_TITLE_RE.match(title).groupdict()
-        data.update(Command.WEATHER_RE.match(description).groupdict())
+        data = Command.OBSERVATIONS_TITLE_RE.match(title).groupdict()
+        data.update(Command.OBSERVATIONS_RE.match(description).groupdict())
         
-        print channel_title, Command.WEATHER_TITLE_RE
-        data.update(Command.WEATHER_CHANNEL_TITLE_RE.match(channel_title).groupdict())
+        print channel_title, Command.OBSERVATIONS_TITLE_RE
+        data.update(Command.CHANNEL_TITLE_RE.match(channel_title).groupdict())
         
         # Normalise integer fields with None for unknown values
         for k in ['temperature','wind_speed','humidity','pressure']:
@@ -81,8 +99,8 @@ class Command(NoArgsCommand):
             observed_date -= timedelta(1)
         published_date = rfc_2822_datetime(published_date)
             
-        data['published'] = published_date
-        data['observed'] = observed_date
+        data['published_date'] = published_date
+        data['observed_date'] = observed_date
         
         data['location'] = (
             float(xml.find('.//{http://www.w3.org/2003/01/geo/wgs84_pos#}lat').text),
@@ -90,6 +108,45 @@ class Command(NoArgsCommand):
         )
     
         return data
+        
+    @staticmethod
+    def get_forecast_data(bbc_id):
+        xml = ET.parse(urllib.urlopen(Command.FORECAST_URL % bbc_id))
+        
+        channel_title = xml.find('.//channel/title').text
+        data = Command.CHANNEL_TITLE_RE.match(channel_title).groupdict()
+        data['forecasts'] = {}
+        data['modified_date'] = rfc_2822_datetime(xml.find('.//pubDate').text)
+        
+        for item in xml.findall('.//item'):
+            desc = Command.FORECAST_RE.match(item.find('description').text).groupdict()
+            title = Command.FORECAST_TITLE_RE.match(item.find('title').text).groupdict()
+            
+            published_date = item.find('pubDate').text
+            dt = rfc_2822_datetime(published_date)
+            while dt.strftime('%A') != title['day']:
+                dt += timedelta(1)
+                
+            forecast = data['forecasts'][dt.date()] = {}
+            forecast['observed_date'] = dt.date()
+            
+            forecast.update(desc)
+            forecast.update(title)
+            
+            forecast['sunset'] = rfc_2822_datetime(
+                published_date[:17] + forecast['sunset'] + ':00' + published_date[25:]
+            ).time()
+            forecast['sunrise'] = rfc_2822_datetime(
+                published_date[:17] + forecast['sunrise'] + ':00' + published_date[25:]
+            ).time()
+        
+            forecast['location'] = (
+                float(xml.find('.//{http://www.w3.org/2003/01/geo/wgs84_pos#}lat').text),
+                float(xml.find('.//{http://www.w3.org/2003/01/geo/wgs84_pos#}long').text),
+            )
+            
+        return data
+            
         
     @staticmethod
     def find_choice_match(choices, verbose):
@@ -101,26 +158,45 @@ class Command(NoArgsCommand):
             return None
             
     def handle_noargs(self, **options):
-        data = Command.get_weather_data(Command.OXFORD_BBC_ID)
+        observations = Command.get_observations_data(Command.OXFORD_BBC_ID)
+        forecasts = Command.get_forecast_data(Command.OXFORD_BBC_ID)
+        print forecasts
         
-        weather, created = Weather.objects.get_or_create(bbc_id = Command.OXFORD_BBC_ID)
+        weathers = [(
+            Weather.objects.get_or_create(bbc_id = Command.OXFORD_BBC_ID, ptype='o')[0], observations
+        )]
         
-        weather.temperature = data['temperature']
-        weather.wind_speed = data['wind_speed']
-        weather.humidity = data['humidity']
-        weather.pressure = data['pressure']
-        weather.wind_direction = data['wind_direction']
+        for k, v in forecasts['forecasts'].items():
+            weathers.append( (
+                Weather.objects.get_or_create(bbc_id = Command.OXFORD_BBC_ID, ptype='f', observed_date=k)[0],
+                v
+            ) )
+            
+        VERBATIM = (
+            'temperature', 'wind_speed', 'humidity', 'pressure',
+            'wind_direction', 'sunset', 'sunrise', 'observed_date',
+            'published_date', 'name', 'min_temperature', 'max_temperature',
+        )
+        LOOKUP = (
+            ('outlook', OUTLOOK_CHOICES),
+            ('visibility', VISIBILITY_CHOICES),
+            ('pressure_state', PRESSURE_STATE_CHOICES),
+            ('uv_risk', SCALE_CHOICES),
+            ('pollution', SCALE_CHOICES),
+        )
         
-        weather.outlook = Command.find_choice_match(OUTLOOK_CHOICES, data['outlook'])
-        weather.visibility = Command.find_choice_match(VISIBILITY_CHOICES, data['visibility'])
-        weather.pressure_state = Command.find_choice_match(PRESSURE_STATE_CHOICES, data['pressure_state'])
+        for weather, data in weathers:
+            print data
+            for k in VERBATIM:
+                if k in data:
+                    setattr(weather, k, data[k])
+            
+            for k, l in LOOKUP:
+                if k in data:
+                    setattr(weather, k, Command.find_choice_match(l, data[k]))
+                
+            weather.location = Point(data['location'], srid=4326)
         
-        weather.published_date = data['published']
-        weather.observed_date = data['observed']
         
-        weather.name = data['name']
-        weather.location = Point(data['location'], srid=4326)
+            weather.save()
         
-        print weather.pressure_state
-        print weather.get_pressure_state_display()
-        weather.save()
