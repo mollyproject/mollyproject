@@ -61,7 +61,7 @@
         "model": "rss.rssfeed",
         "fields": {
             "rss_url": "http://www.google.com/calendar/feeds/it-support%40sant.ox.ac.uk/public/basic?orderby=starttime&sortorder=ascending&futureevents=true&singleevents=true",
-            "title": "St. Anthony's College Events",
+            "title": "St. Antony's College Events",
             "show_predicate": null,
             "last_modified": "2009-10-01 15:03:24",
             "slug": "st-anthonys-events",

@@ -20,7 +20,7 @@
         <li>
             <a href="{{ item.get_absolute_url }}">
                 {{ item.title }}<br/>
-                <small>{{ item.last_modified_local|date:"d M Y H:m:s" }}</small>
+                <small>Item updated: <em>{{ item.last_modified_local|date:"D j M Y \a\t H:m" }}</em></small>
             </a>
         </li>
 {% endfor %}
