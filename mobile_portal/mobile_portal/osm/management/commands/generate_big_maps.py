@@ -83,10 +83,10 @@ class Command(NoArgsCommand):
             
         get_map(
             coloured_points,
-            2048*3,
-            int(2048*3/1.414),
+            16384*3,
+            int(16384*3/1.414),
             os.path.join(Command.TARGET_DIR, 'everything.png'),
-            16,
+            18,
             51.7522, -1.2582,
         )
         print 'Done BIG one'
