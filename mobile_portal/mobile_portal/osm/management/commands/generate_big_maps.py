@@ -10,12 +10,12 @@ class Command(NoArgsCommand):
         'department', 'college', 'library', 'unit', 'museum',
         'pub', 'busstop', 'bicycle_parking'
     )
-    ZOOM = 15
+    ZOOM = 16
     
-    QUALITY = 2048
+    QUALITY = 4096
     RESOLUTION = (QUALITY, int(QUALITY/1.2))
     
-    TARGET_DIR = '/home/alex/big_maps'
+    TARGET_DIR = '/home/timf/'
     
     HIERACHY = ('college', 'department', 'unit', 'museum', 'library', 'pub', 'busstop')
     COLOURS = {
