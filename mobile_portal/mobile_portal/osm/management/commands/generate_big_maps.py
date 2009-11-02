@@ -10,9 +10,9 @@ class Command(NoArgsCommand):
         'department', 'college', 'library', 'unit', 'museum',
         'pub', 'busstop', 'bicycle_parking'
     )
-    ZOOM = 16
+    ZOOM = 18
     
-    QUALITY = 4096
+    QUALITY = 16384
     RESOLUTION = (QUALITY, int(QUALITY/1.2))
     
     TARGET_DIR = '/home/timf/'
