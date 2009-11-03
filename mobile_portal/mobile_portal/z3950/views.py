@@ -1,3 +1,4 @@
+from itertools import chain
 from PyZ3950 import zoom
 
 from django.http import Http404, HttpResponseRedirect
@@ -156,7 +157,17 @@ class ItemDetailView(BaseView):
             entities = Entity.objects.filter(oxpoints_id__in = entity_ids)
             if location:
                 point = Point(location[1], location[0], srid=4326)
-                entities = entities.distance(point).order_by('distance')
+                
+                with_location = entities.filter(location__isnull=False)
+                without_location = entities.filter(location__isnull=True)
+                
+                if with_location.count() == 0:
+                    return self.handle_without_location(request, context)
+                
+                entities = chain(
+                    with_location.distance(point).order_by('distance'),
+                    without_location.order_by('title'),
+                )
         
                 ordering = dict((e.oxpoints_id, i) for i, e in enumerate(entities))
         

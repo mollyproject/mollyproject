@@ -76,9 +76,9 @@
     <ul class="ml">
 {% for library, books in libraries %}
 {% if library.oxpoints_id %}
-        <li><a href="{{ library.oxpoints_entity.get_absolute_url }}">{% if map_hash %}{{ library.marker_number }}. {% endif %}{{ library.location|join:" - " }}</a></li>
+        <li><a href="{{ library.oxpoints_entity.get_absolute_url }}">{% if map_hash %}{{ library.marker_number|default_if_none:"Not on map" }}. {% endif %}{{ library.location|join:" - " }}</a></li>
 {% else %}
-        <li class="non-link-item">{% if map_hash %}{{ library.marker_number }}. {% endif %}{{ library.location|join:" - " }}</li>
+        <li class="non-link-item">{% if map_hash %}{{ library.marker_number|default_if_none:"Not on map" }}. {% endif %}{{ library.location|join:" - " }}</li>
 {% endif %}
 {% ifequal books|length 1 %}
     <li class="subitem non-link-item">
