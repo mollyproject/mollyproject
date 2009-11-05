@@ -8,6 +8,8 @@ from StringIO import StringIO
 from django.db import models, IntegrityError
 from django.conf import settings
 
+from mobile_portal.oxpoints.models import Entity
+
 class GeneratedMap(models.Model):
     hash = models.CharField(max_length=16, unique=True, primary_key=True)
     generated = models.DateTimeField()
@@ -68,4 +70,20 @@ class OSMTile(models.Model):
             f.close()
             s.seek(0)
             return s
+    
+class OSMUpdate(models.Model):
+    contributor_name = models.TextField(blank=True)
+    contributor_email = models.TextField(blank=True)
+    contributor_attribute = models.BooleanField()
+
+    entity = models.ForeignKey(Entity)    
+    
+    submitted = models.DateTimeField(auto_now_add=True)
+    
+    old = models.TextField()
+    new = models.TextField()
+    
+    notes = models.TextField(blank=True)
+    
+    approved = models.BooleanField(default=False)
     

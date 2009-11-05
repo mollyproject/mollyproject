@@ -124,7 +124,9 @@
     <a href="{% url maps_entity_nearby_list entity.entity_type.slug,entity.display_id %}" rel="nofollow">Find things near here</a>
 </div>
 {% else %}
-    <p>We do not yet have a location for this {{ entity.entity_type.verbose_name }}.</p>
+    <div class="list-footer"><div class="bubble">
+        We do not yet have a location for this {{ entity.entity_type.verbose_name }}.
+    </div></div>
 {% endif %}
 </div>
 

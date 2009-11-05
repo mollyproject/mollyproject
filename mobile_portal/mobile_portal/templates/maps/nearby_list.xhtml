@@ -30,12 +30,29 @@ We think you are near <strong class="location_name">{{ preferences.location.plac
 {% endif %}
 </div>
 {% endif %}
+</div>
+
+<div class="list-section">
+  <h2 class="section-header">Public</h2>
 
 <ul class="ml">
-{% for entity_type in entity_types %}{% if entity %}
-    <li><a href="{% url maps_entity_nearby_detail entity.entity_type.slug,entity.display_id,entity_type.slug %}">{{ entity_type.verbose_name|capfirst }}</a></li>
+{% for entity_type in public %}{% if entity %}
+    <li><a href="{% url maps_entity_nearby_detail entity.entity_type.slug,entity.display_id,entity_type.slug %}">{{ entity_type.verbose_name_plural|capfirst }}</a></li>
 {% else %}
-    <li><a href="{% url maps_nearby_detail entity_type.slug %}">{{ entity_type.verbose_name|capfirst }}</a></li>
+    <li><a href="{% url maps_nearby_detail entity_type.slug %}">{{ entity_type.verbose_name_plural|capfirst }}</a></li>
+{% endif %}{% endfor %}
+</ul>
+
+</div>
+
+<div class="list-section">
+  <h2 class="section-header">University of Oxford</h2>
+
+<ul class="ml">
+{% for entity_type in university %}{% if entity %}
+    <li><a href="{% url maps_entity_nearby_detail entity.entity_type.slug,entity.display_id,entity_type.slug %}">{{ entity_type.verbose_name_plural|capfirst }}</a></li>
+{% else %}
+    <li><a href="{% url maps_nearby_detail entity_type.slug %}">{{ entity_type.verbose_name_plural|capfirst }}</a></li>
 {% endif %}{% endfor %}
 </ul>
 

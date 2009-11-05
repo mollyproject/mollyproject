@@ -4,6 +4,7 @@ from django.core.urlresolvers import reverse
 
 class EntityType(models.Model):
     slug = models.SlugField()
+    article = models.CharField(max_length=2)
     verbose_name = models.TextField()
     verbose_name_plural = models.TextField()
     source = models.TextField()
@@ -11,6 +12,8 @@ class EntityType(models.Model):
     show_in_nearby_list = models.BooleanField()
     show_in_category_list = models.BooleanField()
     note = models.TextField(null=True)
+    
+    sub_types = models.ManyToManyField('self', blank=True)
         
     def __unicode__(self):
         return self.verbose_name
@@ -26,6 +29,7 @@ class Entity(models.Model):
     osm_id = models.CharField(max_length=16, null=True, blank=True)
     title = models.TextField(blank=True)
     entity_type = models.ForeignKey(EntityType, null=True)
+    all_types = models.ManyToManyField(EntityType, blank=True, related_name='all_entities')
     location = models.PointField(srid=4326, null=True)
     geometry = models.GeometryField(srid=4326, null=True)
     _metadata = models.TextField(default='null')

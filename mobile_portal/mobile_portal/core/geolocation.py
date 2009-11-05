@@ -19,6 +19,7 @@ CLOUDMADE_GEOCODE_URL = 'http://geocoding.cloudmade.com/%(api_key)s/geocoding/fi
 def reverse_geocode(lat, lon):
 
     placemarks, created = Placemarks.recent.get_or_create(latitude=lat, longitude=lon)
+
     
     if placemarks.data:
         return placemarks.data
@@ -29,9 +30,9 @@ def reverse_geocode(lat, lon):
         'lon': lon,
     }
 
-    data = urllib2.urlopen(CLOUDMADE_REVERSE_GEOCODE_URL % params)
+    data = urllib2.urlopen(CLOUDMADE_REVERSE_GEOCODE_URL % params).read()
     
-    json = simplejson.load(data, 'utf8')
+    json = simplejson.loads(data.replace('&apos;', "'"), 'utf8')
     if not json:
         placemark = None
     else:
@@ -107,9 +108,10 @@ def geocode(query):
     }
     
     try:
-        data = urllib2.urlopen(CLOUDMADE_GEOCODE_URL % params)
-        json = simplejson.load(data, 'utf8')
+        data = urllib2.urlopen(CLOUDMADE_GEOCODE_URL % params).read()
+        json = simplejson.loads(data.replace('&apos;', "'"), 'utf8')
     except Exception,e:
+        raise
         return []
     
     if not json:

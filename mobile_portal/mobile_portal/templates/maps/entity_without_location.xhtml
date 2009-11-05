@@ -16,11 +16,11 @@
 
 {% block content %}
 
-<div class="list-section">
-    <h2 class="section-header">{{ entity_type.verbose_name_plural }} near {{ entity.title }}</h2>
-    <div class="section-content"><div class="bubble">
-        Unfortunately, we do not have a location for this object, and so cannot tell you what is near it.
-    </div>
+<div class="section-nopad">
+  <h2 class="section-header">{{ entity_type.verbose_name_plural }} near {{ entity.title }}</h2>
+  <div class="section-content"><div class="bubble">
+    Unfortunately, we do not have a location for this object, and so cannot tell you what is near it.
+  </div>
 </div>
 
 {% endblock %}

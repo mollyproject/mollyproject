@@ -1,7 +1,10 @@
 from django.conf.urls.defaults import *
 from django.conf import settings
 
-from mobile_portal.core.views import IndexView, UpdateLocationView, DesktopAboutView
+from mobile_portal.core.views import (
+    IndexView, UpdateLocationView, DesktopAboutView,
+    UserMessageView,
+)
 
 urlpatterns = patterns('mobile_portal.core.views',
 
@@ -38,4 +41,7 @@ urlpatterns = patterns('mobile_portal.core.views',
 
     (r'^feedback/$', 'contact', {}, 'core_contact'),
 
+    (r'^messages/$',
+        UserMessageView(), {},
+        'core_messages'),
 )

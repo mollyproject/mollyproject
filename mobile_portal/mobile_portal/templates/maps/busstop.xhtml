@@ -4,7 +4,16 @@
 {% block title %}m.ox | Bus stop: {{ entity.title }}{% endblock %}
 
 {% block extrahead %}
+{% if with_meta_refresh %}
     <meta http-equiv="refresh" content="45" />
+{% endif %}
+    <script type="text/javascript">
+        last = {{ services_json|safe }};
+    </script>
+{% if touch or desktop %}
+    {#<script type="text/javascript" src="{{ MEDIA_URL}}js/jquery-color-1.0.js"> </script>#}
+    <script type="text/javascript" src="{{ MEDIA_URL}}js/busstop.js"> </script>
+{% endif %}
 {% endblock %}
 
 {% block breadcrumbs %}
@@ -20,7 +29,7 @@
 {% block content %}
 
 <div class="list-section">
-	<h2 class="section-header"><small>{{ entity.title }}<br />{% now "G:i "%}</small></h2>
+	<h2 class="section-header"><small>{{ entity.title }}<br /><span id="time_now">{% now "G:i:s "%}</span></small></h2>
 
 	
 {% if services %}
@@ -32,7 +41,7 @@
             <th>Expected</th>
         </tr>
     </thead>
-    <tbody>
+    <tbody id="bus_times">
 {% for service in services %}
         <tr>
             <td rowspan="2" style="font-size:200%; text-align:center;">{{ service.0 }}</td>

@@ -49,6 +49,9 @@
 {#            <li><a href="{% url core_update_location %}">Location-finding preferences</a></li> #}
             <li class="top"><a href="{% url core_static_about %}">About this site</a></li>
             <li><a href="{% url core_contact %}?referer={% url core_index %}">Provide feedback</a></li>
+{% if has_user_messages %}
+            <li><a href="{% url core_messages %}">Read messages from the developers</a></li>
+{% endif %}            
 {#            <li><a href="/legal/">Legal</a></li>#}
 
         </ul>

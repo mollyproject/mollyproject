@@ -7,6 +7,7 @@ from django.conf import settings
 from django.core.management import call_command
 from django.template import loader, Context, RequestContext
 from django.core.mail import EmailMessage
+from django import forms
 from mobile_portal.core.renderers import mobile_render
 from mobile_portal.webauth.utils import require_auth
 from mobile_portal.osm.utils import fit_to_map
@@ -17,8 +18,8 @@ import pytz, simplejson, urllib
 
 from mobile_portal.googlesearch.forms import GoogleSearchForm
 
-from models import FrontPageLink, ExternalImageSized, LocationShare
-from forms import LocationShareForm, LocationShareAddForm, ContactForm
+from models import FrontPageLink, ExternalImageSized, LocationShare, UserMessage
+from forms import LocationShareForm, LocationShareAddForm, ContactForm, UserMessageFormSet
 from utils import find_or_create_user_by_email
 from ldap_queries import get_person_units
 from context_processors import device_specific_media
@@ -45,6 +46,8 @@ class IndexView(BaseView):
             'front_page_links': front_page_links,
             'search_form': GoogleSearchForm(),
             'hide_feedback_link': True,
+            'has_user_messages': UserMessage.objects.filter(session_key = request.session.session_key).count() > 0,
+
         }
         return mobile_render(request, context, 'core/index')
         
@@ -104,7 +107,7 @@ class UpdateLocationView(BaseView):
         if 'no_redirect' in request.POST:
             return HttpResponse('')
             
-        if context['return_url']:
+        if context.get('return_url'):
             response = HttpResponseRedirect(context['return_url'])
         else:
             response = HttpResponseRedirect(reverse('core_index'))
@@ -156,6 +159,8 @@ class UpdateLocationView(BaseView):
             }
             
             template_name = 'core/update_location_container'
+        else:
+            request.preferences['last_ajaxed'] = datetime.now()
         
         return mobile_render(request, context, template_name)
                     
@@ -206,6 +211,8 @@ def ajax_update_location(request):
     A request that does not meet this specification will result in an HTTP
     status code of 400, accompanied by a plain text body detailing the errors.
     """
+    
+    request.preferences['last_ajaxed'] = datetime.now()
 
     if request.method != 'POST':
         return HttpResponse(
@@ -451,16 +458,18 @@ def contact(request):
             'referer': request.POST.get('referer', ''),
             'location': request.preferences['location']['location'],
             'body': contact_form.cleaned_data['body'],
+            'session_key': request.session.session_key,
         }
         body = """\
 Meta
 ====
 
-E-mail:     %(email)s
-Device:     %(devid)s
-User-agent: %(ua)s
-Referer:    %(referer)s
-Location:   %(location)s
+E-mail:      %(email)s
+Device:      %(devid)s
+User-agent:  %(ua)s
+Referer:     %(referer)s
+Location:    %(location)s
+Session key: %(session_key)s
 
 Message
 =======
@@ -493,3 +502,34 @@ Message
     }
    
     return mobile_render(request, context, 'core/contact')
+    
+class UserMessageView(BaseView):
+    def initial_context(self, request):
+        try:
+            formset = UserMessageFormSet(
+                request.POST or None,
+                queryset=UserMessage.objects.filter(
+                    session_key=request.session.session_key
+                )
+            )
+        except forms.ValidationError:
+            formset = UserMessageFormSet(
+                None,
+                queryset=UserMessage.objects.filter(
+                    session_key=request.session.session_key
+                )
+            )            
+        return {
+            'formset': formset,
+        }
+
+    def handle_GET(self, request, context):
+        UserMessage.objects.filter(session_key=request.session.session_key).update(read=True)
+        return mobile_render(request, context, 'core/messages')
+        
+    def handle_POST(self, request, context):
+        if context['formset'].is_valid():
+            context['formset'].save()
+            
+        return HttpResponseRedirect(reverse('core_messages'))
+        

@@ -1,0 +1,213 @@
+{% extends "maps/base.xhtml" %}
+{% load maps %}{% load portal_misc %}
+
+{% block breadcrumbs %}
+{{ block.super }}
+	<li><a href="{% url maps_index %}">
+        {% if dumb %}Maps{% else %}<img src="{{ MEDIA_URL }}png/index-icons/maps-bc.png" alt="Maps"/>{% endif %}
+    </a></li>
+    <li><a href="{{ entity.get_absolute_url }}">
+        {% if dumb %}{{ entity.entity_type.verbose_name_plural|capfirst }}{% else %}&hellip;{% endif %}</a></li>
+{% endblock %}
+
+{% block pagetitle %}Update map{% endblock %}
+
+{% block title %}m.ox | Update {{ entity.title }}{% endblock %}
+
+{% block content %}
+
+<div class="section-nopad">
+  <h2 class="section-header">Important information</h2>
+  
+  <div class="section-content" style="text-align:left;">
+    <p>
+      Thank you for wanting to improve the data provided by Mobile Oxford.
+      However, before you submit any changes, you should be aware of the
+      following terms.
+    </p>
+    
+    <p style="margin-top:0.5em;">
+      Your contribution will be made to OpenStreetMap (OSM) under a Creative Commons
+      Attribution-Share Alike 2.0 license (CC-BY-SA), which gives anyone
+      permission to share or modify your changes so long as they attribute you
+      and any published changes are made available under the same or similar
+      license.
+    </p>
+    
+    <p style="margin-top:0.5em;">
+      Your changes will be checked by a member of the Mobile Oxford team
+      before being uploaded. Mobile Oxford may tidy or normalise the data you
+      provide before they are uploaded using the Mobile Oxford OSM account.
+    </p>
+    
+    <p style="margin-top:0.5em;">
+      If you would like to be named as the original author of the changes,
+      please provide your name and tick the attribution box. Your e-mail
+      address will never be submitted to OSM, but may be used by us to clarify
+      any changes you provide.
+    </p>
+    
+
+  </div>
+</div>
+
+<div class="section-nopad">
+  <h2 class="section-header">Map</h2>
+  <div class="list-note"><div class="bubble">
+    You are submitting an update to the {{ entity.entity_type.verbose_name }}
+    <em>&quot;{{ entity.title }}&quot;</em>.
+  </div></div>
+  
+<div class="backgrounded-image" style="background-image:url('{% map_url entity.location %}'); height:{{ device.max_image_height }}px">
+{% include "maps/map_elements.xhtml" %}
+</div>
+
+</div>
+
+<form method="post" action=".">
+
+<div class="front-section">
+
+    <p style="margin-top:0.5em;">
+      Not all fields will be relevant to the item you are updating, and all
+      fields are optional.
+    </p>
+      
+<table>
+  <tbody>
+    <tr>
+      <th colspan="2">
+        Provide your name and tick the box to be attributed for the change.
+      </th>
+    </tr>
+    <tr>
+      <td>{{ form.contributor_name.label }}</td>
+      <td>{{ form.contributor_name }}</td>
+    </tr>
+    <tr>
+      <td>{{ form.contributor_attribute.label }}</td>
+      <td>{{ form.contributor_attribute }}</td>
+    </tr>
+    
+    <tr>
+      <th colspan="2">
+        Your e-mail address is useful should we want to clarify any change you make.
+      </th>
+    </tr>
+    <tr>
+      <td>{{ form.contributor_email.label }}</td>
+      <td>{{ form.contributor_email }}</td>
+    </tr>
+    
+    <tr>
+      <th colspan="2">
+        The following are general properties for most types of item.
+      </th>
+    </tr>
+    <tr>
+      <td>{{ form.name.label }}</td>
+      <td>{{ form.name }}</td>
+    </tr>
+    <tr>
+      <td>{{ form.operator.label }}</td>
+      <td>{{ form.operator }}</td>
+    </tr>
+    <tr>
+      <td>{{ form.phone.label }}</td>
+      <td>{{ form.phone }}</td>
+    </tr>
+    <tr>
+      <td>{{ form.opening_hours.label }}</td>
+      <td>{{ form.opening_hours }}</td>
+    </tr>
+    <tr>
+      <td>{{ form.url.label }}</td>
+      <td>{{ form.url }}</td>
+    </tr>
+    <tr>
+      <td>{{ form.cuisine.label }}</td>
+      <td>{{ form.cuisine }}</td>
+    </tr>
+    
+    <tr>
+      <th colspan="2">
+        This next two about food apply mostly to pubs. For things that obviously serve food (e.g.
+        restaurants), feel free to leave this empty.
+      </th>
+    </tr>
+    <tr>
+      <td>{{ form.food.label }}</td>
+      <td>{{ form.food }}</td>
+    </tr>
+    <tr>
+      <td>{{ form.food__hours.label }}</td>
+      <td>{{ form.food__hours }}</td>
+    </tr>
+
+    <tr>
+      <th colspan="2">
+        If there is an ATM accessible at all hours here, please set this. This
+        may be left blank if you are editing an ATM.
+      </th>
+    </tr>
+    <tr>
+      <td>{{ form.atm.label }}</td>
+      <td>{{ form.atm }}</td>
+    </tr>
+
+    <tr>
+      <th colspan="2">
+        The following only apply to post boxes. The reference is normally
+        printed at the bottom of the details on the post box.
+      </th>
+    </tr>
+    <tr>
+      <td>{{ form.collection_times.label }}</td>
+      <td>{{ form.collection_times }}</td>
+    </tr>
+    <tr>
+      <td>{{ form.ref.label }}</td>
+      <td>{{ form.ref }}</td>
+    </tr>
+
+    <tr>
+      <th colspan="2">
+        For car parks and bicycle parking, please provide the number of spaces.
+      </th>
+    </tr>
+    <tr>
+      <td>{{ form.capacity.label }}</td>
+      <td>{{ form.capacity }}</td>
+    </tr>
+
+    <tr>
+      <th colspan="2">
+        If you have any other information you think should be included, please
+        tell us about it here.
+      </th>
+    </tr>
+    <tr>
+      <td colspan="2">{{ form.notes }}</td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      <th colspan="2">
+        If you are happy with your changes and agree to the terms above, you
+        may now click 'Submit'.
+      </th>
+    </tr>
+    <tr>
+      <th colspan="2">
+        <input type="submit" value="Submit"/>
+      </th>
+    </tr>
+  </tfoot>
+
+</table>
+
+</div>
+
+</form>
+
+{% endblock %}

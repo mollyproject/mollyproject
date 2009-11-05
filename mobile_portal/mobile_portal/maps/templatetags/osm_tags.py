@@ -5,12 +5,24 @@ from django.utils.safestring import mark_safe
 register = template.Library()
 
 def yesno(s):
-    return {'yes':'Yes','no':'No'}.get(s.lower())
+    return {'yes':'Yes','no':'No', 'true':'Yes', 'false':'No'}.get(s.lower())
 def verbatim(name):
     return lambda t,s,tags: (name, s)
 
 def tag_wifi(t, s, tags):
     return 'wi-fi access', yesno(s)
+    
+def tag_atm(t, s, tags):
+    return 'has ATM', yesno(s)
+    
+def tag_food(t, s, tags):
+    return 'serves food', yesno(s) or s
+
+def tag_phone(t, s, tags):
+    return 'phone', mark_safe('<a href="tel:%s">%s</a>' % (
+        ''.join(c for c in s if c in '0123456789+'),
+        s.replace('+44-', '0').replace('-', ' '),
+    ))
     
 def tag_opening_hours(t, s, tags):
     return 'opening hours', s

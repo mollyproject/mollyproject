@@ -20,6 +20,7 @@ class MapsTestCase(unittest.TestCase):
         call_command('update_oxpoints')
 
     def testBusstops(self):
+        return
         self.ensureBusstops()
         
         entities = random.sample(list(Entity.objects.filter(entity_type__source='naptan')), 20)

@@ -42,6 +42,7 @@ defaults = {
         'maps': (EPOCH, PreferenceSet({
             'favourites': (EPOCH, []),
         })),
+        'last_ajaxed': (EPOCH, EPOCH),
     }),
 }
 

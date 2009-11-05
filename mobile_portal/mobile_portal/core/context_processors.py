@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from mobile_portal.wurfl import device_parents
 
 from mobile_portal.weather.models import Weather
+from mobile_portal.core.models import UserMessage
 
 DEVICE_SPECIFIC_MEDIA = {
 #    'apple_iphone_ver1': {
@@ -110,5 +111,6 @@ def weather(request):
         'session_key': request.session.session_key,
         'queries': connection.queries,
         'path': request.path,
+        'unread_user_messages': UserMessage.objects.filter(session_key = request.session.session_key, read=False).count() > 0,
     }
     

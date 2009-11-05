@@ -23,19 +23,21 @@ class Command(NoArgsCommand):
         ENTITY_TYPES = {
             'Building':   ('building', 'University building', 'University buildings', True, True, ''),
             'College':    ('college', 'college or PPH', 'colleges and PPHs', True, True, ''),
-            'Department': ('department', 'University department', 'University departments', True, True, ''),
+            'Department': ('department', 'University department', 'University departments', False, False, ''),
             'Museum':     ('museum', 'museum', 'museums', True, True, ''),
-            'Library':    ('library', 'library', 'libraries', True, True, 'Please note that all libraries have admission and borrowing policies; inclusion in this list does not imply access.'),
+            'Library':    ('ulibrary', 'library', 'libraries', True, True, 'Please note that all libraries have admission and borrowing policies; inclusion in this list does not imply access.'),
             'Carpark':    ('carpark', 'University car park', 'University car parks', True, True, ''),
-            'Unit':       ('unit', 'unit', 'units', True, True, ''),
+            'Unit':       ('unit', 'unit', 'units', False, False, ''),
             'Room':       ('room', 'room', 'rooms', True, False, ''),
             'SubLibrary': ('sublibrary', 'library sublocation', 'library sublocations', False, False, ''),
+            'DepOrUnit':  ('unitdep', 'university department or unit', 'university departments and units', True, True, ''), 
         }
 
         entity_types = {}
         for ptype, (slug, verbose_name, verbose_name_plural, show_in_nearby_list, show_in_category_list, note) in ENTITY_TYPES.items():
             entity_type, created = EntityType.objects.get_or_create(slug=slug)
             entity_type.verbose_name = verbose_name
+            entity_type.article = 'a'
             entity_type.note = note
             entity_type.verbose_name_plural = verbose_name_plural
             entity_type.source = 'oxpoints'
@@ -44,6 +46,9 @@ class Command(NoArgsCommand):
             entity_type.show_in_category_list = show_in_category_list
             entity_type.save()
             entity_types[ptype] = entity_type
+            
+        entity_types['DepOrUnit'].sub_types.add(entity_types['Department'])
+        entity_types['DepOrUnit'].sub_types.add(entity_types['Unit'])
         self.entity_types = entity_types
 
     def load_oxpoints_graph(self):
@@ -76,6 +81,9 @@ class Command(NoArgsCommand):
             entity.geometry = entity.location
         entity.title = unicode(title)
         entity.entity_type = self.entity_types[unicode(ptype)[len(OXPOINTS_NS):]]
+        entity.all_types.add(entity.entity_type)
+        if entity.entity_type.slug in ('unit', 'department'):
+            entity.all_types.add(self.entity_types['DepOrUnit'])
 
         parents = list(self.graph.query("SELECT ?q WHERE { ?p ?r ?q }", initBindings = {
                     '?r': rdflib.URIRef('http://ns.ox.ac.uk/namespace/oxpoints/2009/02/owl#subsetOf'),

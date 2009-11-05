@@ -76,13 +76,22 @@
 {% endif %}
 
     <div class="content">
+
+{% if unread_user_messages %}    
+    <div class="front-section">
+      <a href="{% url core_messages %}" style="font-size:1.2em; padding:1em 0.2em; display:block;">
+        You have a message from the developers!
+      </a>
+    </div>
+{% endif %}
+
 {% block content %}
 {% endblock %}
 
 {% if not hide_feedback_link %}
     <div class="front-section">
         <a href="{% url core_contact %}?referer={{ path }}">Provide feedback for this page.</a><br />
-		<a href="http://chart.apis.google.com/chart?cht=qr&chs={{ device.max_image_width }}x{{ device.max_image_width }}&chl=http://m.ox.ac.uk{{ path }}">2D Barcode for this page</a>
+		<a href="http://chart.apis.google.com/chart?cht=qr&amp;chs={{ device.max_image_width }}x{{ device.max_image_width }}&amp;chl=http://m.ox.ac.uk{{ path }}">2D Barcode for this page</a>
     </div>
 {% endif %}
 

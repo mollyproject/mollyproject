@@ -31,6 +31,7 @@ class Command(NoArgsCommand):
 
     def add_busstop_entity_type(self):
         self.entity_type, created = EntityType.objects.get_or_create(slug='busstop')
+        self.entity_type.artcile = 'a'
         self.entity_type.verbose_name = 'bus stop'
         self.entity_type.verbose_name_plural = 'bus stops'
         self.entity_type.source = 'naptan'
@@ -88,6 +89,7 @@ class Command(NoArgsCommand):
                 title = "%s %s, %s" % (ind, lmk, cnm)
 
             entity, created = Entity.objects.get_or_create(atco_code = atco_code, entity_type=self.entity_type)
+            entity.all_types.add(entity.entity_type)
 
             match = ind and Command.CENTRAL_STOP_RE.match(ind)
             if match:

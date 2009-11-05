@@ -7,22 +7,115 @@ from mobile_portal.core.geolocation import reverse_geocode
 from mobile_portal.core.models import Config
 from mobile_portal.core.utils import AnyMethodRequest
 from xml.sax import saxutils, handler, make_parser
-import urllib2, bz2, subprocess, popen2
+import urllib2, bz2, subprocess, popen2, sys
 from os import path
 
 AMENITIES = {
-    'bicycle_parking': ('bicycle rack', 'bicycle racks', False),
-    'post_box': ('post box', 'post boxes', False),
-    'recycling': ('recycling facility', 'recycling facilities', False),
-    'post_office': ('post office', 'post offices', False),
-    'pharmacy': ('pharmacy', 'pharmacies', True), 
-    'hospital': ('hospital', 'hospitals', True), 
-    'doctors': ("doctor's surgery", "doctors' surgeries", True), 
-    'atm': ('ATM', 'ATMs', False),
-    'parking': ('car park', 'car parks', False),
-    'pub': ('pub', 'pubs', True),
-    'cafe': ('café', 'cafés', True),
-    'restaurant': ('restaurant', 'restaurants', True),
+    'bicycle_parking': (
+        'a', 'bicycle rack', 'bicycle racks',
+        True, False,
+        (),
+    ),
+    'bank': (
+        'a', 'bank', 'banks',
+        True, True,
+        (),
+    ),
+    'bar': (
+        'a', 'bar', 'bars',
+        True, True,
+        (),
+    ),
+    'cinema': (
+        'a', 'cinema', 'cinemas',
+        True, True,
+        (),
+    ),
+    'theatre': (
+        'a', 'theatre', 'theatres',
+        True, True,
+        (),
+    ),
+    'post_box': (
+        'a', 'post box', 'post boxes',
+        True, False,
+        (),
+    ),
+    'recycling': (
+        'a', 'recycling facility', 'recycling facilities',
+        True, False,
+        (),
+    ),
+    'post_office': (
+        'a', 'post office', 'post offices',
+        True, False,
+        (),
+    ),
+    'pharmacy': (
+        'a', 'pharmacy', 'pharmacies',
+        False, False,
+        ('medical',),
+    ),
+    'hospital': (
+        'a', 'hospital', 'hospitals',
+        False, False,
+        ('medical',),
+    ),
+    'doctors': (
+        'a', "doctor's surgery", "doctors' surgeries",
+        False, False,
+        ('medical',),
+    ), 
+    'atm': (
+        'an', 'ATM', 'ATMs',
+        True, False,
+        (),
+    ),
+    'parking': (
+        'a', 'car park', 'car parks',
+        True, False,
+        (),
+    ),
+    'pub': (
+        'a', 'pub', 'pubs',
+        True, True,
+        (),
+    ),
+    'ice_cream': (
+        'an', 'ice cream café', 'ice cream cafés',
+        False, False,
+        ('cafe','food',),
+    ),
+    'cafe': (
+        'a', 'café', 'cafés',
+        False, False,
+        ('food',),
+    ),
+    'restaurant': (
+        'a', 'restaurant', 'restaurants',
+        False, False,
+        ('food',),
+    ),
+    'medical': (
+        'a', 'place relating to health', 'places relating to health',
+        True, True,
+        (),
+    ),
+    'fast_food': (
+        'a', 'fast food outlet', 'fast food outlets',
+        False, False,
+        ('food',),
+    ),
+    'food': (
+        'a', 'place to eat', 'places to eat',
+        True, True,
+        (),
+    ),
+    'library': (
+        'a', 'public library', 'public libraries',
+        True, True,
+        (),
+    ),
 }
 
 ENGLAND_OSM_BZ2_XML = 'http://download.geofabrik.de/osm/europe/great_britain/england.osm.bz2'
@@ -40,24 +133,35 @@ class OxfordHandler(handler.ContentHandler):
         self.valid_node = True
         
         self.entity_types = {}
-        for slug, (verbose_name, verbose_name_plural, show_in_category_list) in AMENITIES.items():
+        for slug, (article, verbose_name, verbose_name_plural, show_in_nearby_list, show_in_category_list, other_types) in AMENITIES.items():
             entity_type, created = EntityType.objects.get_or_create(slug=slug)
             entity_type.verbose_name = verbose_name
             entity_type.verbose_name_plural = verbose_name_plural
+            entity_type.article = article
             entity_type.source = 'osm'
             entity_type.id_field = 'osm_id'
-            entity_type.show_in_nearby_list = True
+            entity_type.show_in_nearby_list = show_in_nearby_list
             entity_type.show_in_category_list = show_in_category_list
             entity_type.save()
             self.entity_types[slug] = entity_type
+            
+            entity_type.all_types = other_types + (slug,)
+            
+        for entity_type in self.entity_types.values():
+            for s in entity_type.all_types:
+                et = self.entity_types[s]
+                et.sub_types.add(entity_type)
+                
+            entity_type.all_types = tuple(self.entity_types[slug] for slug in entity_type.all_types)
+
+        for entity_type in self.entity_types.values():
+            entity_type.save()
         
         self.create_count, self.modify_count = 0,0
         self.delete_count, self.unchanged_count = 0,0
         self.ignore_count = 0
         
         self.node_locations = {}
-        
-
         
     def startElement(self, name, attrs):
         if name == 'node':
@@ -105,6 +209,10 @@ class OxfordHandler(handler.ContentHandler):
             # Ignore ways that lay partly outside our bounding box
             if name == 'way' and not all(id in self.node_locations for id in self.nodes):
                 return
+
+            # We already have these from OxPoints, so leave them alone.            
+            if self.tags.get('amenity') == 'library' and self.tags.get('operator') == 'University of Oxford':
+                return
                 
             entity, created = Entity.objects.get_or_create(osm_id=self.id)
             
@@ -136,19 +244,29 @@ class OxfordHandler(handler.ContentHandler):
 
                 entity_type = self.entity_types[self.tags['amenity']]
                 try:
-                    name = self.tags['name']
-                except:
+                    name = self.tags.get('name') or self.tags['operator']
+                except (KeyError, AssertionError):
                     try:
                         name = reverse_geocode(*self.node_location)[0][0]
                         name = "Near %s" % (name)
                     except:
                         name = "Near %f, %f" % (self.node_location[0], self.node_location[1])
+
                 entity.title = name
                 entity.metadata = {
                     'attrs': dict(self.attrs),
                     'tags': self.tags
                 }
                 entity.entity_type = entity_type
+                
+                for et in entity_type.all_types:
+                    entity.all_types.add(et)
+                
+                if self.tags.get('atm') == 'yes':
+                    entity.all_types.add(self.entity_types['atm'])
+                if self.tags.get('food') == 'yes':
+                    entity.all_types.add(self.entity_types['food'])
+                    
                 entity.save()
                 
             else:
@@ -159,6 +277,27 @@ class OxfordHandler(handler.ContentHandler):
             if not entity.osm_id in self.ids:
                 entity.delete()
                 self.delete_count += 1
+                
+        entities = Entity.objects.filter(osm_id__isnull=False)
+        inferred_names = {}
+        for entity in entities:
+            inferred_name = entity.metadata['tags'].get('name') or entity.metadata['tags'].get('operator')
+            if not inferred_name:
+                continue
+            if not inferred_name in inferred_names:
+                inferred_names[inferred_name] = set()
+            inferred_names[inferred_name].add(entity)
+            
+        for inferred_name, entities in inferred_names.items():
+            if len(entities) > 1:
+                for entity in entities:
+                    try:
+                        entity.title = "%s, %s" % (inferred_name, reverse_geocode(entity.location[1], entity.location[0])[0][0])
+                        entity.save()
+                    except:
+                        print "Couldn't geocode for %s" % inferred_name
+                        pass
+            
         print "Complete"
         print "  Created:   %6d" % self.create_count
         print "  Modified:  %6d" % self.modify_count
@@ -188,7 +327,7 @@ class Command(NoArgsCommand):
     #ENGLAND_OSM_BZ2_URL = 'http://download.geofabrik.de/osm/europe/great_britain/england/shropshire.osm.bz2'
 
     SHELL_CMD = "wget -O- %s --quiet | bunzip2" % ENGLAND_OSM_BZ2_URL
-    #    SHELL_CMD = "cat /home/alex/england.osm.bz2 | bunzip2"
+#    SHELL_CMD = "cat /home/alex/gpsmid/england.osm.bz2 | bunzip2"
     
     def handle_noargs(self, **options):
         old_etag = get_osm_etag()

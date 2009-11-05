@@ -17,6 +17,11 @@ def gte(value, arg):
 @register.filter(name="lte")
 def lte(value, arg):
     return value <= arg
+
+@register.filter(name="contains")
+def gte(value, arg):
+    return arg in value
+    
     
 @register.filter(name="oxp_id")
 def oxp_id(value):

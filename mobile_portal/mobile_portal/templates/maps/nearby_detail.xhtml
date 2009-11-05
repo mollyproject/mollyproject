@@ -1,6 +1,7 @@
 {% extends "maps/base.xhtml" %}
+{% load portal_misc %}
 
-{% block title %}m.ox | {{ entity_type.verbose_name_plural|capfirst }} near{% if entity %} {{ entity.title }}{% else %}by{% endif %}{% endblock %}
+{% block title %}m.ox | {{ entity_types.0.verbose_name_plural|capfirst }} near{% if entity %} {{ entity.title }}{% else %}by{% endif %}{% endblock %}
 
 {% block breadcrumbs %}
 {{ block.super }}
@@ -21,14 +22,41 @@
 {% endif %}
 {% endblock %}
 
-{% block pagetitle %}{{ entity_type.verbose_name_plural|capfirst }}{% endblock %}
+{% block pagetitle %}{{ entity_types.0.verbose_name_plural|capfirst }}{% endblock %}
 
 {% block content %}
 
 <div class="list-section">
-<div class="list-note top">
-    Found {{ count }} {% ifequal count 1 %}{{ entity_type.verbose_name }}{% else %}{{ entity_type.verbose_name_plural }}{% if entity %} near {{ entity.title }}{% endif %}{% endifequal %}
-</div>
+  <h2 class="section-header">
+    Found {{ count }}
+    {% ifequal count 1 %}
+      {{ entity_types.0.verbose_name }}
+      {% ifnotequal entity_types|length 1 %}
+        that is also {% for et in entity_types|slice:"1:" %}{% if not forloop.first %}, {% if forloop.last %}and {% endif %}{% endif %}{{ et.article }} {{ et.verbose_name }}{% endfor %}
+      {% endifnotequal %} 
+    {% else %}
+      {{ entity_types.0.verbose_name_plural }}
+      {% if entity %} near {{ entity.title }}{% endif %}
+      {% ifnotequal entity_types|length 1 %}
+        that are also {% for et in entity_types|slice:"1:" %}{% if not forloop.first %}, {% if forloop.last %}and {% endif %}{% endif %}{{ et.verbose_name_plural }}{% endfor %}
+      {% endifnotequal %} 
+    {% endifequal %}
+  </h2>
+
+{% if found_entity_types %}
+  <div class="list-note">
+    <div class="bubble">
+      Limit to:
+{% for et in found_entity_types %}
+{% if entity_types.0.sub_types.all|contains:et %}
+      <a href="{% url maps_nearby_detail et.slug %}">{{ et.verbose_name_plural }}</a>
+{% else %}
+      <a href="{% url maps_nearby_list %}{{ et.slug }}{% for oet in entity_types %};{{ oet.slug }}{% endfor %}/">{{ et.verbose_name_plural }}</a>
+{% endif %}{% if not forloop.last %} | {% endif %} 
+{% endfor %}
+    </div>
+  </div>
+{% endif %}
 
 {% if entity_type.note %}
 <div class="list-note"><div class="bubble">{{ entity_type.note }}</div></div>
@@ -43,14 +71,14 @@
 {% for entity_group in entities %}
 {% ifequal entity_group|length 1 %}
 {% with entity_group.0 as entity %}
-    <li><a title="{{ entity.title }}" href="{{ entity.get_absolute_url }}">{{ forloop.counter }}. {{ entity.title }}<br /> {{ entity.distance.km|floatformat:3 }} km {{ entity.bearing }}</a></li>
+    <li><a title="{{ entity.title }}" href="{{ entity.get_absolute_url }}">{{ forloop.counter }}. {{ entity.title }}<br /><small>{% if multiple_entity_types %}{{ entity.entity_type.verbose_name|capfirst }}, {% endif %}{{ entity.distance.km|floatformat:3 }} km {{ entity.bearing }}</small></a></li>
 {% endwith %}
 {% else %}
 {% with entity_group.0 as entity %}
-    <li class="non-link-item">{{ forloop.counter }}. <em>{{ entity_group|length }} {{ entity_type.verbose_name_plural }}</em> {{ entity.distance.km|floatformat:3 }} km {{ entity.bearing }}</li>
+    <li class="non-link-item">{{ forloop.counter }}. <em>{{ entity_group|length }} {{ entity_type.0.verbose_name_plural }}</em> {{ entity.distance.km|floatformat:3 }} km {{ entity.bearing }}</li>
 {% endwith %}
 {% for entity in entity_group %}
-    <li class="subitem{% if forloop.last %} last-subitem{% endif %}"><a href="{{ entity.get_absolute_url }}">{{ entity.title|linebreaksbr }}</a></li>
+    <li class="subitem{% if forloop.last %} last-subitem{% endif %}"><a href="{{ entity.get_absolute_url }}">{{ entity.title }}{% if multiple_entity_types %}, <small>{{ entity.entity_type.verbose_name }}</small>{% endif %}</a></li>
 {% endfor %}
 {% endifequal %}
 {% endfor %}
@@ -58,7 +86,7 @@
 {% else %}
 <div class="list-note">
     There isn't anything that close to you.
-    Try <a class="no-icon" href="{% url core_update_location %}?return_url={% url maps_nearby_detail entity_type.slug %}">updating
+    Try <a class="no-icon" href="{% url core_update_location %}?return_url={{ path }}">updating
     your location</a>{% ifnotequal zoom 10 %} or <a class="no-icon" href="?zoom={{ zoom|add:"-1" }}">widening your search</a>{% endifnotequal %}.</div>
 {% endif %}
 </ul>

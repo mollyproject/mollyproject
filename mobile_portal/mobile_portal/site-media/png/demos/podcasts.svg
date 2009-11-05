@@ -10,15 +10,15 @@
    xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="160"
-   height="160"
+   width="300"
+   height="300"
    id="svg2"
    sodipodi:version="0.32"
    inkscape:version="0.46+devel"
    version="1.0"
-   sodipodi:docname="maps.svg"
+   sodipodi:docname="podcasts.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
-   inkscape:export-filename="/Erewhon/mobile_portal/mobile_portal/site-media/png/demos/maps.png"
+   inkscape:export-filename="/home/alex/for_barry.png"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90">
   <defs
@@ -130,7 +130,8 @@
        y1="160.00104"
        x2="73.035713"
        y2="150"
-       gradientUnits="userSpaceOnUse" />
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="scale(1.875,1.875)" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -166,11 +167,11 @@
      inkscape:groupmode="layer"
      id="layer1">
     <image
-       y="0"
+       y="-0.4296875"
        x="0"
        id="image1438"
-       height="181.5625"
-       width="140"
+       height="340.42969"
+       width="262.5"
        xlink:href="file:///home/alex/Desktop/m.ox%20sss/photo%2010.jpg" />
     <image
        y="33.254463"
@@ -179,13 +180,14 @@
        height="155.625"
        width="120"
        xlink:href="file:///home/alex/Desktop/m.ox%20sss/photo%206.jpg"
-       style="filter:url(#filter1620)" />
+       style="filter:url(#filter1620)"
+       transform="matrix(1.875,0,0,1.875,0.44642852,0.67354984)" />
     <rect
        style="fill:url(#linearGradient1671);fill-opacity:1;stroke:none"
        id="rect1655"
-       width="160"
-       height="10"
+       width="300"
+       height="18.75"
        x="0"
-       y="150" />
+       y="281.25" />
   </g>
 </svg>

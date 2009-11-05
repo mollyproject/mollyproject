@@ -1,7 +1,9 @@
 from __future__ import division
 
 from xml.etree import ElementTree as ET
-import urllib, rdflib, urllib2, simplejson, StringIO
+from itertools import chain
+from datetime import datetime, timedelta
+import urllib, rdflib, urllib2, simplejson, StringIO, copy
 import ElementSoup as ES
 
 from django.contrib.gis.geos import Point
@@ -19,11 +21,12 @@ from mobile_portal.core.models import Feed
 from mobile_portal.core.decorators import require_location, location_required
 from mobile_portal.osm.utils import get_generated_map, fit_to_map
 
+from mobile_portal.osm.models import OSMUpdate
 from mobile_portal.oxpoints.models import Entity, EntityType
 from mobile_portal.oxpoints.entity import get_resource_by_url, MissingResource, Unit, Place
 
 from mobile_portal.maps.utils import get_entity, is_favourite, make_favourite, get_bearing
-from forms import BusstopSearchForm
+from forms import BusstopSearchForm, UpdateOSMForm
 
 class IndexView(BaseView):
     def get_metadata(self, request):
@@ -47,9 +50,15 @@ class NearbyListView(BaseView):
             return_url = reverse('maps_entity_nearby_list', args=[entity.entity_type.slug, entity.display_id])
         else:
             return_url = reverse('maps_nearby_list')
-            
+        
+        entity_types = EntityType.objects.filter(show_in_nearby_list=True)
+        university = [et for et in entity_types if et.source == 'oxpoints']
+        public = [et for et in entity_types if et.source != 'oxpoints']
+        
+        
         context = {
-            'entity_types': EntityType.objects.filter(show_in_nearby_list=True),
+            'university': university,
+            'public': public,
             'entity': entity,
             'return_url': return_url,
         }
@@ -58,8 +67,8 @@ class NearbyListView(BaseView):
         return mobile_render(request, context, 'maps/nearby_list')
 
 class NearbyDetailView(ZoomableView):
-    def initial_context(self, request, ptype, entity=None):
-        entity_type = get_object_or_404(EntityType, slug=ptype)
+    def initial_context(self, request, ptypes, entity=None):
+        entity_types = tuple(get_object_or_404(EntityType, slug=t) for t in ptypes.split(';'))
         
         point, location = None, None
         if entity:
@@ -72,14 +81,16 @@ class NearbyDetailView(ZoomableView):
                 point = Point(location[1], location[0], srid=4326)
 
         if point:
-            entities = Entity.objects.filter(entity_type=entity_type, location__isnull = False, is_sublocation = False)
+            entities = Entity.objects.filter(location__isnull = False, is_sublocation = False)
+            for et in entity_types:
+                entities = entities.filter(all_types=et)
             entities = entities.distance(point).order_by('distance')[:99]
         else:
             entities = []
         
-        context = super(NearbyDetailView, self).initial_context(request, ptype, entities)
+        context = super(NearbyDetailView, self).initial_context(request, ptypes, entities)
         context.update({
-            'entity_type': entity_type,
+            'entity_types': entity_types,
             'point': point,
             'location': location,
             'entities': entities,
@@ -87,8 +98,13 @@ class NearbyDetailView(ZoomableView):
         })
         return context
 
-    def get_metadata(self, request, ptype, entity=None):
-        context = self.initial_context(request, ptype, entity)
+    def get_metadata(self, request, ptypes, entity=None):
+        context = self.initial_context(request, ptypes, entity)
+        
+        if len(context['entity_types']) > 1:
+            return {
+                'exclude_from_search':True,
+            }
         
         return {
             'title': '%s near%s%s' % (
@@ -102,9 +118,9 @@ class NearbyDetailView(ZoomableView):
             ),
         }
         
-    def handle_GET(self, request, context, ptype, entity=None):
-        entity_type, entities, point, location = (
-            context['entity_type'], context['entities'],
+    def handle_GET(self, request, context, ptypes, entity=None):
+        entity_types, entities, point, location = (
+            context['entity_types'], context['entities'],
             context['point'], context['location'],
         )
 
@@ -118,10 +134,7 @@ class NearbyDetailView(ZoomableView):
             min_points = 5
         else:
             min_points = 0
-            
-        for e in entities:
-            e.bearing = get_bearing(point, e.location)
-            
+        
         map_hash, (new_points, zoom) = fit_to_map(
             centre_point = (location[0], location[1], 'green'),
             points = ((e.location[1], e.location[0], 'red') for e in entities),
@@ -133,11 +146,19 @@ class NearbyDetailView(ZoomableView):
         
         entities = [[entities[i] for i in b] for a,b in new_points]
         
+        found_entity_types = set()    
+        for e in chain(*entities):
+            e.bearing = get_bearing(point, e.location)
+            found_entity_types.add(e.entity_type)
+        found_entity_types -= set(entity_types)
+        
         context.update({
             'entities': entities,
             'zoom': zoom,
             'map_hash': map_hash,
             'count': sum(map(len, entities)),
+            'entity_types': entity_types,
+            'found_entity_types': found_entity_types,
         })
         return mobile_render(request, context, 'maps/nearby_detail')
 
@@ -210,13 +231,73 @@ class EntityDetailView(ZoomableView):
         services = [(s[0], s[1][0], s[1][1], s[1][2]) for s in services.items()]
         services.sort(key= lambda x: ( ' '*(5-len(x[0]) + (1 if x[0][-1].isalpha() else 0)) + x[0] ))
         services.sort(key= lambda x: 0 if x[2]=='DUE' else int(x[2].split(' ')[0]))
-            
+        
         context['services'] = services
-            
-        return mobile_render(request, context, 'maps/busstop')
+        context['with_meta_refresh'] = datetime.now() > request.preferences['last_ajaxed'] + timedelta(600)
+        
+        if request.GET.get('ajax') == 'true':
+            request.preferences['last_ajaxed'] = datetime.now()
+            context = {
+                'services': context['services'],
+                'time': datetime.now().strftime('%H:%M:%S'),
+            }
+            return HttpResponse(simplejson.dumps(context), mimetype='application/json')
+        else:
+            context['services_json'] = simplejson.dumps(services)
+            return mobile_render(request, context, 'maps/busstop')
     
     def display_osm(self, request, context, entity):
         return mobile_render(request, context, 'maps/osm/base')
+
+class EntityUpdateView(ZoomableView):
+    default_zoom = 16
+    
+    def handle_GET(self, request, context, type_slug, id):
+        entity = context['entity'] = get_entity(type_slug, id)
+        if entity.entity_type.source != 'osm':
+            raise Http404
+        
+        if request.GET.get('submitted') == 'true':
+            return mobile_render(request, context, 'maps/update_osm_done')
+        
+        form = UpdateOSMForm(entity.metadata['tags'])
+            
+        context['form'] = form
+        return mobile_render(request, context, 'maps/update_osm')
+        
+    def handle_POST(self, request, context, type_slug, id):
+        entity = context['entity'] = get_entity(type_slug, id)
+        if entity.entity_type.source != 'osm':
+            raise Http404
+
+        form = UpdateOSMForm(request.POST)
+        if form.is_valid():
+            new_metadata = copy.deepcopy(entity.metadata)
+            for k in ('name', 'operator', 'phone', 'opening_hours', 'url', 'cuisine', 'food', 'food__hours', 'atm', 'collection_times', 'ref', 'capacity'):
+                tag_name = k.replace('__', ':')
+                if tag_name in new_metadata and not form.cleaned_data[k]:
+                    del new_metadata['tags'][tag_name]
+                elif form.cleaned_data[k]:
+                    new_metadata['tags'][tag_name] = form.cleaned_data[k]
+            
+            new_metadata['attrs']['version'] = str(int(new_metadata['attrs']['version'])+1)
+            
+            osm_update = OSMUpdate(
+                contributor_name = form.cleaned_data['contributor_name'],
+                contributor_email = form.cleaned_data['contributor_email'],
+                contributor_attribute = form.cleaned_data['contributor_attribute'],
+                entity = entity,
+                old = simplejson.dumps(entity.metadata),
+                new = simplejson.dumps(new_metadata),
+                notes = form.cleaned_data['notes'],
+            )
+            osm_update.save()
+    
+            return HttpResponseRedirect(reverse('maps_entity_update', args=[type_slug, id])+'?submitted=true')
+        else:
+            context['form'] = form
+            return mobile_render(request, context, 'maps/update_osm')
+
 
 class NearbyEntityListView(NearbyListView):
     def get_metadata(self, request, type_slug, id):
@@ -244,24 +325,41 @@ class NearbyEntityDetailView(NearbyDetailView):
 
 class CategoryListView(BaseView):
     def initial_context(self, request):
-        entity_types = EntityType.objects.filter(show_in_category_list=True).order_by('verbose_name_plural')
+        entity_types = EntityType.objects.filter(show_in_category_list=True)
+        university = [et for et in entity_types if et.source == 'oxpoints']
+        public = [et for et in entity_types if et.source != 'oxpoints']
+        
+        
         return {
-            'entity_types': entity_types,
+            'university': university,
+            'public': public,
         }
     
     def handle_GET(self, request, context):
         return mobile_render(request, context, 'maps/category_list')
 
 class CategoryDetailView(BaseView):
-    def initial_context(self, request, ptype):
-        entity_type = get_object_or_404(EntityType, slug=ptype)
-        entities = entity_type.entity_set.filter(is_sublocation=False).order_by('title')
+    def initial_context(self, request, ptypes):
+        entity_types = tuple(get_object_or_404(EntityType, slug=t) for t in ptypes.split(';'))
+        
+        entities = Entity.objects.filter(is_sublocation=False)
+        for entity_type in entity_types:
+            entities = entities.filter(all_types=entity_type)
+        entities = entities.order_by('title')
+            
+        found_entity_types = set()    
+        for e in entities:
+            found_entity_types.add(e.entity_type)
+        found_entity_types -= set(entity_types)
+
         return {
-            'entity_type': entity_type,
+            'entity_types': entity_types,
+            'count': len(entities),
             'entities': entities,
+            'found_entity_types': found_entity_types,
         }
     
-    def handle_GET(self, request, context, ptype):
+    def handle_GET(self, request, context, ptypes):
         return mobile_render(request, context, 'maps/category_detail')
 
 class BusstopSearchView(BaseView):
