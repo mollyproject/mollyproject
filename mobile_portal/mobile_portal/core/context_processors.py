@@ -19,6 +19,7 @@ DEVICE_SPECIFIC_MEDIA = {
 #    }
 }
 
+
 DEVICE_SPECIFIC_MEDIA_SET = frozenset(DEVICE_SPECIFIC_MEDIA)
 
 def device_specific_media(request):
@@ -32,6 +33,10 @@ def device_specific_media(request):
     for devid in DEVICE_SPECIFIC_MEDIA_SET & device_parents[request.device.devid]:
         for key in media:
             media[key] |= DEVICE_SPECIFIC_MEDIA[devid][key]
+
+    if request.device.device_os == 'Symbian OS' and float(request.device.device_os_version) > 9.2 and request.device.mobile_browser == 'Safari':
+	        #media['js'].add( 'js/some/file.js' )
+	        media['css'].add( 'css/classes/touch.css' )
 
     dumb, smart, touch, multitouch, desktop = False, False, False, False, False
     if "apple_iphone_ver1" in device_parents[request.device.devid]:
