@@ -34,9 +34,50 @@ def device_specific_media(request):
         for key in media:
             media[key] |= DEVICE_SPECIFIC_MEDIA[devid][key]
 
-    if request.device.device_os == 'Symbian OS' and float(request.device.device_os_version) >= 9.2 and request.device.mobile_browser == 'Safari':
+
+#Symbian
+    #if request.device.device_os == 'Symbian OS' and float(request.device.device_os_version) >= 9.2 and request.device.mobile_browser == 'Safari':
 	        #media['js'].add( 'js/some/file.js' )
-	        media['css'].add( 'css/classes/touch.css' )
+	        #media['css'].add( 'css/classes/touch.css' )
+	
+	
+	
+#Windows Mobile	
+    ## Pocket Internet Explorer
+
+    # v5 or below
+    #if request.device.device_os == 'Windows Mobile OS' and float(request.device.device_os_version) < 6.0 and request.device.mobile_browser in ('Internet Explorer', 'Microsoft Mobile Explorer'):
+            #fail.
+
+    # v6
+    #if request.device.device_os == 'Windows Mobile OS' and float(request.device.device_os_version) == 6.0 and request.device.mobile_browser in ('Internet Explorer', 'Microsoft Mobile Explorer'):
+            #fail.
+
+    # v6.1
+	#if request.device.device_os == 'Windows Mobile OS' and float(request.device.device_os_version) == 6.1 and request.device.mobile_browser in ('Internet Explorer','Microsoft Mobile Explorer'):
+		    #fail.
+
+    # v6.5
+            #fail.
+
+
+    
+    
+
+#Blackberry
+# <= 5.0
+# <= 4.5
+
+#Palm - Web OS
+
+#Apple iPhone
+# v2
+# v3
+
+#Android
+## 1.5 Cupcake
+## 1.6 Donut
+## 2.0 Eclair
 
     dumb, smart, touch, multitouch, desktop = False, False, False, False, False
     if "apple_iphone_ver1" in device_parents[request.device.devid]:
