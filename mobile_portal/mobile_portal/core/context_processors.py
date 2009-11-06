@@ -34,7 +34,7 @@ def device_specific_media(request):
         for key in media:
             media[key] |= DEVICE_SPECIFIC_MEDIA[devid][key]
 
-    if request.device.device_os == 'Symbian OS' and float(request.device.device_os_version) > 9.2 and request.device.mobile_browser == 'Safari':
+    if request.device.device_os == 'Symbian OS' and float(request.device.device_os_version) >= 9.2 and request.device.mobile_browser == 'Safari':
 	        #media['js'].add( 'js/some/file.js' )
 	        media['css'].add( 'css/classes/touch.css' )
 
