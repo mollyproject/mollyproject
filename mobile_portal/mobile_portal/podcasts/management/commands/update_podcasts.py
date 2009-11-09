@@ -15,7 +15,7 @@ class Command(BaseCommand):
 
     requires_model_validation = True
 
-    OPML_FEED = 'http://rss.oucs.ox.ac.uk/oxitems/podcastingnewsfeeds.opml'
+    OPML_FEED = 'http://rss.oucs.ox.ac.uk/metafeeds/podcastingnewsfeeds.opml'
 
     PODCAST_ATTRS = (
         ('guid', 'guid'),
@@ -148,7 +148,7 @@ class Command(BaseCommand):
 
         for podcast_item in PodcastItem.objects.filter(podcast=podcast):
             if not podcast_item.guid in guids:
-                podcast_item.podcast_enclosure_set.all().delete()
+                podcast_item.podcastenclosure_set.all().delete()
                 podcast_item.delete()
 
         podcast.most_recent_item_date = max(i.published_date for i in PodcastItem.objects.filter(podcast=podcast))

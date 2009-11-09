@@ -5,6 +5,7 @@ from mobile_portal.podcasts import TOP_DOWNLOADS_RSS_URL
 MEDIUM_CHOICES = (
     ('audio', 'audio'),
     ('video', 'video'),
+    ('document', 'document'),
 )
 
 class PodcastCategory(models.Model):
@@ -29,7 +30,7 @@ class Podcast(models.Model):
     last_updated = models.DateTimeField(auto_now=True)
     category = models.ForeignKey(PodcastCategory, null=True)
     most_recent_item_date = models.DateTimeField(null=True)
-    medium = models.CharField(max_length=5, choices=MEDIUM_CHOICES, null=True)
+    medium = models.CharField(max_length=8, choices=MEDIUM_CHOICES, null=True)
     
     def get_absolute_url(self):
         if self.rss_url == TOP_DOWNLOADS_RSS_URL:
