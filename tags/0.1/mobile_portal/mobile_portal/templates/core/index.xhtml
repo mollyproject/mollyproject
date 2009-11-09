@@ -1,0 +1,99 @@
+{% extends "core/base.xhtml" %}
+{% load portal_misc %}{% load maps %}
+
+{% block stylesheets %}
+{{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/core/index.css"/>
+{% if touch or desktop %}
+    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/core/index-buttons.css"/>
+{% endif %}
+{% endblock %}
+
+{% block header %}
+    <div id="title">
+<!--        <img src="{{ MEDIA_URL }}png/headers/{{ device.resolution_width|header_width }}.png" alt="Mobile Oxford"/> -->
+        <img src="{{ MEDIA_URL }}png/header-logo.png" alt="Mobile Oxford"/>
+    </div>
+{% endblock %}
+
+{% block content %}
+
+    <div class="front-section">
+    <ol class="icon-menu">
+{% for link in front_page_links %}
+      <li id="menu-{{ link.slug }}">
+          <a accesskey="{{ forloop.counter }}" href="{{ link.url }}">{{ link.title }}</a>
+      </li>
+{% endfor %}
+    </ol>
+    <div class="clearhidden"> </div>
+    
+    </div>
+    
+    <div class="section-nopad">
+      <div class="section-content">
+        <form method="get" action="{% url googlesearch_index %}">
+         <p style="text-align:center">
+           {{ search_form.query }}
+           <input type="submit" value="Search"/>
+         </p>
+        </form>
+      </div>
+    </div>
+
+    <div class="list-section">
+        <ul class="ml">
+              
+{#            <li><a href="/help/">Using this site</a></li>#}
+{#            <li><a href="/customise/">Customise this page</a></li>#}
+{#            <li><a href="{% url core_update_location %}">Location-finding preferences</a></li> #}
+            <li class="top"><a href="{% url core_static_about %}">About this site</a></li>
+            <li><a href="{% url core_contact %}?referer={% url core_index %}">Provide feedback</a></li>
+{% if has_user_messages %}
+            <li><a href="{% url core_messages %}">Read messages from the developers</a></li>
+{% endif %}            
+{#            <li><a href="/legal/">Legal</a></li>#}
+
+        </ul>
+    </div>
+    
+    <div class="section-nopad">
+        <img src="{{ MEDIA_URL }}gif/brandmark.gif" alt="Oxford of Oxford" style="float:right;"/>
+        <img src="{{ MEDIA_URL }}png/oucs-logo-small.png" alt="Oxford University Computing Services" style="float:right;"/>
+    </div>
+<!--
+    <div class="section">
+        <h3>{{ session_key }}</h3>
+    </div>
+-->
+{% if user.is_superuser %}
+    <hr/>
+    <div class="section">
+        <h2>Session</h2>
+        <p>{{ session }}</p>
+    </div>
+
+    <hr/>
+    <div class="section">
+        <h2>Device</h2>
+        <p>{{ device.brand_name }} {{ device.model_name }} ({{ device.devid }})</p>
+    </div>
+    
+    <hr/>
+    <div class="section">
+        <h2>Meta</h2>
+        <dl>
+{% for a,b in meta.items %}
+            <dt>{{ a }}</dt>
+            <dd>{{ b }}</dd>
+{% endfor %}
+        </dl>
+    </div>
+    
+    <div class="list-section">
+        <h2>Preferences</h2>
+        <p>{{ preferences }}</p>
+    </div>
+            
+{% endif %}
+{% endblock %}

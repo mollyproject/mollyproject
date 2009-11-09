@@ -1,0 +1,31 @@
+{% extends "base.xhtml" %}
+
+{% block pagetitleclass %}results-header with-icon{% endblock %}
+{% block pagetitle %}Results releases{% endblock %}
+{% block title %}m.ox | Results releases{% endblock %}
+
+
+{% block content %}
+
+<div class="section-nopad">
+    <h2 class="section-header">About results releases</h2>
+    <div class="section-content">
+        This page lists the last twenty schools to have had results released. You can check your results using Student Self-Service from a desktop browser.
+    </div>
+</div>
+
+
+{% regroup items by pubDate as is %}
+{% for g in is %}
+	<div class="list-section">
+	<h2 class="section-header">{{ g.grouper|date:"d M Y" }}</h2>
+	<ul class="ml">
+{% for item in g.list %}
+<li class="non-link-item">
+{{ item.code }}: {{ item.title }}
+</li>
+{% endfor %}
+	</ul></div>
+{% endfor %}
+
+{% endblock %}

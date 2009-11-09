@@ -1,0 +1,16 @@
+{% extends "base.xhtml" %}
+
+{% block title %}m.ox | Location required{% endblock %}
+{% block pagetitle %}Location required{% endblock %}
+
+{% block content %}
+
+<div class="list-section">
+  <h2 class="section-header">Location required</h2>
+
+  <div class="list-note"><div class="bubble">
+    To be able to use this feature you need to <a href="{% url core_update_location %}?return_url={{ return_url|urlencode }}">choose a location</a>.
+  </div></div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends "maps/base.xhtml" %}
+
+{% block breadcrumbs %}
+{{ block.super }}
+	<li><a href="{% url maps_index %}">
+        {% if dumb %}Maps{% else %}<img src="{{ MEDIA_URL }}png/index-icons/maps-bc.png" alt="Maps"/>{% endif %}
+    </a></li>
+{% endblock %}
+
+{% block pagetitle %}Bus stop search{% endblock %}
+{% block title %}m.ox | Maps - Bus stop search{% endblock %}
+
+{% block content %}
+
+<div class="section-nopad">
+  <form method="get" action=".">
+    <h2 class="section-header">
+      {{ search_form.id.label }}
+    </h2>
+    <div class="list-note"><div class="bubble"><label for="busstop_id">
+        Enter an 8-digit oxontime code, or a central stop number (e.g. 'F3')
+    </label></div></div>
+    <div class="section-content">
+      <p style="text-align:center">
+        {{ search_form.id }}
+        <input type="submit" value="Search"/>
+      </p>
+      <!--<p>{{ search_form.application }}</p>-->
+    </div>
+  </form>
+</div>
+
+{% if search_form.is_valid %}
+<div class="list-section">
+  <h2 class="section-header">Results</h2>
+{% if entities %}
+  <ul class="ml">
+{% for entity in entities %}
+    <li>
+      <a href="{{ entity.get_absolute_url }}">
+          {{ entity.title }}      
+      </a>
+    </li>
+{% endfor %}
+  </ol>
+</div>
+{% else %}
+<div class="list-note"><div class="bubble">Sorry; your search returned no results.</div></div>
+{% endif %}
+
+
+{% endif %}
+
+{% endblock %}
