@@ -75,7 +75,7 @@ def device_specific_media(request):
 # v3
 
 #Android
-## 1.5 Cupcake
+##1.5 Cupcake
 ## 1.6 Donut
 ## 2.0 Eclair
 

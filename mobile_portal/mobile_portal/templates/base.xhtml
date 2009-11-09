@@ -1,7 +1,6 @@
 {% load portal_misc %}<!DOCTYPE HTML>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-GB" lang="en-GB" manifest="{{ MEDIA_URL }}cache/devices/iphone.manifest" >
   <head>
-	
 {# iPhone specific title to fit on home screen - code should perhaps be moved elsewhere? #}
 	<title>{% block title %}Mobile{% if not device|device_has_parent:"apple_iphone_ver1" %} {% endif %}Oxford{% endblock %}</title>
 	
