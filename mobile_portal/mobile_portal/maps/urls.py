@@ -1,5 +1,7 @@
 from django.conf.urls.defaults import *
 
+from mobile_portal.core.views import static_detail
+
 from views import (
     IndexView,
     NearbyListView, NearbyDetailView,
@@ -59,4 +61,9 @@ urlpatterns = patterns('mobile_portal.maps.views',
         'without_location', {},
         'maps_without_location'),
     
+    (r'^openstreetmap/$',
+        static_detail,
+        {'title':'About OpenStreetMap', 'template':'openstreetmap'},
+        'maps_static_openstreetmap'),
+   
 )

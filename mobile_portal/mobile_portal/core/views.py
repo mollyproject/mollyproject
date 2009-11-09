@@ -401,8 +401,8 @@ def run_command(request):
         'update_busstops': ('Update bus stop data', []),
         'update_rss': ('Update RSS feeds', []),
         'update_weather': ('Update weather feed', []),
-        'generate_markers': ('Generate map markers', []),
-        'pull_markers': ('Pull markers from external location', ['location']),
+#        'generate_markers': ('Generate map markers', []),
+#        'pull_markers': ('Pull markers from external location', ['location']),
     }
 
     if request.method == 'POST':

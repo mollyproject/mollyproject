@@ -18,11 +18,11 @@ def tag_atm(t, s, tags):
 def tag_food(t, s, tags):
     return 'serves food', yesno(s) or s
 
-def tag_phone(t, s, tags):
-    return 'phone', mark_safe('<a href="tel:%s">%s</a>' % (
-        ''.join(c for c in s if c in '0123456789+'),
-        s.replace('+44-', '0').replace('-', ' '),
-    ))
+#def tag_phone(t, s, tags):
+#    return 'phone', mark_safe('<a href="tel:%s">%s</a>' % (
+#        ''.join(c for c in s if c in '0123456789+'),
+#        s.replace('+44-', '0').replace('-', ' '),
+#    ))
     
 def tag_opening_hours(t, s, tags):
     return 'opening hours', s
@@ -50,16 +50,17 @@ def tag_cuisine(t, s, tags):
     except:
         return None
 
-def tag_url(t, s, tags):
-    title = tags.get('url:title', s)
-    return "URL", mark_safe('<a href="%s">%s</a>' % (xml_escape(s), xml_escape(title)))
-def tag_website(t, s, tags):
-    title = tags.get('website:title', s)
-    return "Website", mark_safe('<a href="%s">%s</a>' % (xml_escape(s), xml_escape(title)))
-def tag_wikipedia(t, s, tags):
-    if s.startswith("http://en.wikipedia.org/wiki/"):
-        s = s[29:]
-    return "Wikipedia article", mark_safe('<a href="http://en.m.wikipedia.org/wiki/%s">%s</a>' % (xml_escape(s), xml_escape(tags.get('wikipedia:title', s.replace("_", " ")))))
+#def tag_url(t, s, tags):
+#    title = tags.get('url:title', s)
+#    return "URL", mark_safe('<a href="%s">%s</a>' % (xml_escape(s), xml_escape(title)))
+#def tag_website(t, s, tags):
+#    title = tags.get('website:title', s)
+#    return "Website", mark_safe('<a href="%s">%s</a>' % (xml_escape(s), xml_escape(title)))
+
+#def tag_wikipedia(t, s, tags):
+#    if s.startswith("http://en.wikipedia.org/wiki/"):
+#        s = s[29:]
+#    return "Wikipedia article", mark_safe('<a href="http://en.m.wikipedia.org/wiki/%s">%s</a>' % (xml_escape(s), xml_escape(tags.get('wikipedia:title', s.replace("_", " ")))))
 
 tag_operator = verbatim('operator')
 tag_note = verbatim('note')
@@ -86,3 +87,10 @@ def osm_tags(entity):
                 return_tags.append(return_tag)
     
     return return_tags
+
+@register.filter(name='osm_tag_wikipedia_uri')
+def tag_wikipedia_uri(value):
+    if value.startswith("http://en.wikipedia.org/wiki/"):
+        value = value[29:]
+    return value
+

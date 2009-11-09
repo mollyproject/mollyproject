@@ -19,7 +19,7 @@ urlpatterns = patterns('mobile_portal.core.views',
         UpdateLocationView(), {},
         'core_update_location'),
 
-#    (r'^core/run_command/$', 'run_command', {}, 'core_run_command'),
+    (r'^core/run_command/$', 'run_command', {}, 'core_run_command'),
 
     (r'^external_images/(?P<slug>[0-9a-f]{8})/$',
         'external_image', {},

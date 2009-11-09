@@ -260,7 +260,9 @@ class EntityUpdateView(ZoomableView):
         if request.GET.get('submitted') == 'true':
             return mobile_render(request, context, 'maps/update_osm_done')
         
-        form = UpdateOSMForm(entity.metadata['tags'])
+        data = dict((k.replace(':','__'), v) for (k,v) in entity.metadata['tags'].items())
+        
+        form = UpdateOSMForm(data)
             
         context['form'] = form
         return mobile_render(request, context, 'maps/update_osm')

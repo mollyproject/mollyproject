@@ -83,8 +83,8 @@ UNUSUAL_NUMBERS = {
 }
 
 @register.filter(name="telephone")
-def telephone(value):
-    value = value.replace(" ", "")
+def telephone(value, arg):
+    value = value.replace(" ", "").replace("-", "")
     if value.startswith("0"):
         value = "+44" + value[1:]
 
@@ -103,7 +103,10 @@ def telephone(value):
         if value.startswith('01865 2'):
             value = "01865 (2)" + value[7:]
 
-    return mark_safe('<a href="tel:%s">%s</a>' % (normalised, value))
+    if arg == 'nolink':
+        return value
+    else:
+        return mark_safe('<a href="tel:%s">%s</a>' % (normalised, value))
 
 @register.filter
 def telephone_uri(value):
