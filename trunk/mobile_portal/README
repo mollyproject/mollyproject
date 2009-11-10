@@ -37,7 +37,7 @@ Now install Django 1.1 using easy_install:
 Apache configuration
 --------------------
 
-Create symlinks from /etc/apache/mods-enabled/ssl.(conf|load) to
+Create symlinks from /etc/apache2/mods-enabled/ssl.(conf|load) to
 /etc/apache2/mods-available/ssl.(conf|load) .
 
 
