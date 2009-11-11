@@ -130,6 +130,8 @@ div.list-section .top, h2.section-header, h3.section-header {
     border-radius-topright:8px;
     -moz-border-radius-topright:8px;
     -webkit-border-top-right-radius:8px;
+	background:transparent url('../../png/bg-images/gradient-section-header.png') repeat-x scroll left top;
+	
 }
 
 ul.ml li:last-child, ol.ml li:last-child, div.list-footer {
