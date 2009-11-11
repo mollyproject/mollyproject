@@ -187,7 +187,8 @@ div.section-content p {
 
 h2.section-header, h3.section-header, div.list-footer {
     background-color:#48505a;
-	background:transparent url('../../png/bg-images/gradient-section-header.png') repeat-x scroll left top;
+	background-image: none;
+	/*background:transparent url('../../png/bg-images/gradient-section-header.png') repeat-x scroll left top; */
     text-align:center;
     color:white;
     padding:2px;
