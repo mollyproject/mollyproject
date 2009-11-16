@@ -47,6 +47,7 @@ class IndexView(BaseView):
             'search_form': GoogleSearchForm(),
             'hide_feedback_link': True,
             'has_user_messages': UserMessage.objects.filter(session_key = request.session.session_key).count() > 0,
+            'ua': request.META.get('HTTP_USER_AGENT', ''),
 
         }
         return mobile_render(request, context, 'core/index')

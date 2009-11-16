@@ -27,7 +27,8 @@ urlpatterns = patterns('',
     (r'^news/', include('mobile_portal.rss.urls')),
     (r'^osm/', include('mobile_portal.osm.urls')),
     (r'^search/', include('mobile_portal.googlesearch.urls')),
-#    (r'^weblearn/', include('mobile_portal.sakai.urls')),
+    (r'^secure/', include('mobile_portal.secure.urls')),
+    (r'^weblearn/', include('mobile_portal.sakai.urls')),
 
     (r'', include('mobile_portal.core.urls')),
 )

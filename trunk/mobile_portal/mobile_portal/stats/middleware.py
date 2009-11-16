@@ -1,6 +1,6 @@
 from __future__ import division
 from datetime import datetime
-import socket
+import socket, time
 
 from django.contrib.auth.models import User
 from django.conf import settings
@@ -16,6 +16,7 @@ class StatisticsMiddleware(object):
         request.view_name = ".".join((view_func.__module__, view_func.__name__))
 
     def process_response(self, request, response):
+
         remote_ip = request.META['REMOTE_ADDR']
         
         try:

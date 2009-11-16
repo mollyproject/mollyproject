@@ -252,6 +252,11 @@ class EntityDetailView(ZoomableView):
 class EntityUpdateView(ZoomableView):
     default_zoom = 16
     
+    def get_metadata(self, request, type_slug, id):
+        return {
+            'exclude_from_search':True,
+        }
+    
     def handle_GET(self, request, context, type_slug, id):
         entity = context['entity'] = get_entity(type_slug, id)
         if entity.entity_type.source != 'osm':
