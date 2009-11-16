@@ -28,80 +28,15 @@ def device_specific_media(request):
     wurfl-detected device is a child of a given device id.
     """
     
-    media = {'js':set(), 'css':set()}
-    
-    for devid in DEVICE_SPECIFIC_MEDIA_SET & device_parents[request.device.devid]:
-        for key in media:
-            media[key] |= DEVICE_SPECIFIC_MEDIA[devid][key]
+    device, browser = request.device, request.browser
+    print device.brand_name, map(int, device.device_os_version.split('.'))
+    if device.brand_name == 'Apple' and tuple(map(int, device.device_os_version.split('.'))) >= (1,):
+        style_group = "iphone"
+    else:
+        style_group = "generic"
 
-
-#Symbian
-    #if request.device.device_os == 'Symbian OS' and float(request.device.device_os_version) >= 9.2 and request.device.mobile_browser == 'Safari':
-	        #media['js'].add( 'js/some/file.js' )
-	        #media['css'].add( 'css/classes/touch.css' )
-	
-	
-	
-#Windows Mobile	
-    ## Pocket Internet Explorer
-
-    # v5 or below
-    #if request.device.device_os == 'Windows Mobile OS' and float(request.device.device_os_version) < 6.0 and request.device.mobile_browser in ('Internet Explorer', 'Microsoft Mobile Explorer'):
-            #fail.
-
-    # v6
-    #if request.device.device_os == 'Windows Mobile OS' and float(request.device.device_os_version) == 6.0 and request.device.mobile_browser in ('Internet Explorer', 'Microsoft Mobile Explorer'):
-            #fail.
-
-    # v6.1
-	#if request.device.device_os == 'Windows Mobile OS' and float(request.device.device_os_version) == 6.1 and request.device.mobile_browser in ('Internet Explorer','Microsoft Mobile Explorer'):
-		    #fail.
-
-    # v6.5
-            #fail.
-
-
-    
-    
-
-#Blackberry
-# <= 5.0
-# <= 4.5
-
-#Palm - Web OS
-
-#Apple iPhone
-# v2
-# v3
-
-#Android
-##1.5 Cupcake
-## 1.6 Donut
-## 2.0 Eclair
-
-    dumb, smart, touch, multitouch, desktop = False, False, False, False, False
-    if "apple_iphone_ver1" in device_parents[request.device.devid]:
-        multitouch = True
-    if request.device.pointing_method == 'touchscreen':
-        touch = True
-    if request.device.ajax_support_javascript:
-        smart = True
-    if "generic_web_browser" in device_parents[request.device.devid]:
-        desktop = True
-    dumb = not (smart or touch or multitouch or desktop)
-    
-    if "MSIE 4" in request.META.get('HTTP_USER_AGENT', ''):
-        dumb, smart, touch, multitouch, desktop = True, False, False, False, False
-
-    #dumb, smart, touch, multitouch, desktop = True, False, False, False, False
-    
     return {
-        'device_specific_media':media,
-        'dumb': dumb,
-        'smart': smart,
-        'touch': touch,
-        'multitouch': multitouch,
-        'desktop': desktop,
+        'style_group': style_group,
     }    
 
 def geolocation(request):
