@@ -1,5 +1,5 @@
 import tempfile, os, os.path, gzip, urllib, itertools, optparse, pkg_resources, sys
-import pdb, subprocess
+import pdb, subprocess, shutil
 try:
     from cStringIO import StringIO
 except ImportError:
@@ -8,14 +8,6 @@ from xml.etree import ElementTree as ET
 
 from django.core.management.base import NoArgsCommand
 from pywurfl import wurflprocessor
-
-def delete_dir(dirname):
-    for root, dirs, files in os.walk(dirname, topdown=False):
-        for name in files:
-            os.remove(os.path.join(root, name))
-        for name in dirs:
-            os.rmdir(os.path.join(root, name))
-
 
 class Command(NoArgsCommand):
     option_list = NoArgsCommand.option_list
@@ -70,7 +62,7 @@ class Command(NoArgsCommand):
             print out_filename, gen_filename
             subprocess.call(['wurfl2python.py', out_filename, '-o', gen_filename])
             
-            os.rename(gen_filename, final_filename)
+            shutil.move(gen_filename, final_filename)
 
         finally:
-            delete_dir(tempdir)
+            shutil.rmtree(tempdir)
