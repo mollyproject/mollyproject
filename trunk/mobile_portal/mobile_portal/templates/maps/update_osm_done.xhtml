@@ -14,6 +14,9 @@
 
 {% block title %}m.ox | Update {{ entity.title }}{% endblock %}
 
+{% block extrahead %}{{ block.super }}
+<meta name="robots" content="noindex"/>{% endblock %}
+
 {% block content %}
 
 <div class="section-nopad">

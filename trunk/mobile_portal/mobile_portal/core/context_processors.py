@@ -29,7 +29,6 @@ def device_specific_media(request):
     """
     
     device, browser = request.device, request.browser
-    print device.brand_name, map(int, device.device_os_version.split('.'))
     if device.brand_name == 'Apple' and tuple(map(int, device.device_os_version.split('.'))) >= (1,):
         style_group = "iphone"
     else:

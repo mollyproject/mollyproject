@@ -1,9 +1,9 @@
 from django.conf.urls.defaults import *
 
-from views import RequestTokenReadyView
+#from views import RequestTokenView
 
 urlpatterns = patterns('',
-    ('^request_token_ready/$',
-        RequestTokenReadyView(), {},
-        'secure_request_token_ready'),
+#    ('^request_token/$',
+#        RequestTokenView(), {},
+#        'secure_request_token'),
 )
