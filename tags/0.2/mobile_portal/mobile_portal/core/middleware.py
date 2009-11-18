@@ -20,8 +20,8 @@ class LocationMiddleware(object):
         except (KeyError, DeviceNotFound):
             request.browser = devices.select_id('generic_xhtml')
 
-        if 'opera_mini_ver1' in device_parents[request.browser.devid]:
-            opera_device = request.META.get('HTTP_X_OPERAMINI_PHONE')
+        if 'HTTP_X_OPERAMINI_PHONE' in request.META:
+            opera_device = request.META['HTTP_X_OPERAMINI_PHONE']
             request.device = devices.select_ua(
                 opera_device,
                 search=LocationMiddleware.vsa
