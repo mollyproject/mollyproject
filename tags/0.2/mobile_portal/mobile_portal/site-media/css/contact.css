@@ -1,0 +1,36 @@
+ul.people {
+    width:100%;
+    list-style:none;
+    padding-left:0;
+}
+
+ul.people li {
+    padding:2px;
+}
+
+ul.people span.name {
+    text-align:left;
+    display:block;
+    float:left;
+}
+
+ul.people span.unit {
+    text-align:right;
+    display:block;
+    float:right;
+    font-style:italic;
+}
+
+ul.people span.email, ul.people span.phone {
+    clear:both;
+    display:block;
+    text-align:center;
+}
+
+li.li-odd {
+    background-color:#cfdae7;
+}
+
+li.li-even {
+    background-color:#ffffff;
+}

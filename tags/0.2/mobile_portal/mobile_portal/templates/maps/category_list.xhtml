@@ -1,0 +1,37 @@
+{% extends "maps/base.xhtml" %}
+
+{% block breadcrumbs %}
+{{ block.super }}
+	<li><a href="{% url maps_index %}">
+        {% if dumb %}Maps{% else %}<img src="{{ MEDIA_URL }}png/index-icons/maps-bc.png" alt="Maps"/>{% endif %}
+    </a></li>
+{% endblock %}
+
+{% block pagetitle %}Categories{% endblock %}
+{% block title %}m.ox | Maps - categories{% endblock %}
+
+{% block content %}
+
+<div class="list-section">
+  <h2 class="section-header">Public</h2>
+
+<ul class="ml">
+{% for entity_type in public %}
+    <li><a href="{% url maps_category_detail entity_type.slug %}">{{ entity_type.verbose_name_plural|capfirst }}</a></li>
+{% endfor %}
+</ul>
+
+</div>
+
+<div class="list-section">
+  <h2 class="section-header">University of Oxford</h2>
+
+<ul class="ml">
+{% for entity_type in university %}
+    <li><a href="{% url maps_category_detail entity_type.slug %}">{{ entity_type.verbose_name_plural|capfirst }}</a></li>
+{% endfor %}
+</ul>
+
+</div>
+
+{% endblock %}

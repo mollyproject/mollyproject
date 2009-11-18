@@ -1,0 +1,33 @@
+{% extends "core/base.xhtml" %}
+
+{% block pagetitle %}Run administrative commands{% endblock %}
+{% block title %}m.ox | Run administrative commands{% endblock %}
+
+{% block content %}
+
+
+{% for command,details in commands.items %}
+
+<h2>{{ details.0 }}</h2>
+
+<form method="post" action=".">
+<input type="hidden" name="command" value="{{ command }}">
+
+{% if details.1 %}
+<dl>
+{% for arg in details.1 %}
+    <dt>{{ arg }}</dt>
+    <dd>
+        <input name="{{ arg }}"/>
+    </dd>
+{% endfor %}
+</dl>
+{% endif %}
+
+<input type="submit" value="Run this command"/>
+
+</form>
+
+{% endfor %}
+
+{% endblock %}

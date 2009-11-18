@@ -1,0 +1,40 @@
+{% extends "webcams/base.xhtml" %}
+{% load portal_misc %}
+
+{% block extrahead %}
+    <meta http-equiv="refresh" content="60" />
+{% endblock %}
+
+{% block breadcrumbs %}
+{{ block.super }}
+            <li><a href="{% url webcams_index %}">
+                <img src="{{ MEDIA_URL }}png/index-icons/webcams-bc.png" alt="Webcams"/>
+            </a></li>
+{% endblock %}
+
+{% block pagetitle %}View{% endblock %}
+{% block title %}m.ox | Webcam: {{ webcam.title }}{% endblock %}
+
+
+{% block content %}
+
+<div class="section-nopad">
+<h2 class="section-header">{{ webcam.title }}<br /><small>{% now "G:i "%}</small></h2>
+
+{% if eis %}
+<div class="backgrounded-image" style="background-image:url('{{ eis.get_absolute_url }}'); height:{{ eis.height }}px;"> </div>
+{% else %}
+<div class="section-content">
+    Unfortunately, this webcam is currently unavailable. Please try again later.
+</div>
+{% endif %}
+
+<div class="list-footer">
+<p><small>{{ webcam.description }}</small></p>
+
+{% if webcam.credit %}
+<p><small>Credit: {{ webcam.credit|safe }}</small></p>
+{% endif %}
+
+</div></div>
+{% endblock %}

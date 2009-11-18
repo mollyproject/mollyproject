@@ -1,0 +1,83 @@
+[
+    {
+        "pk": "7",
+        "model": "core.FrontPageLink",
+        "fields": {
+            "slug": "rss",
+            "title": "News",
+            "urlconf_name": "rss_index"
+        }
+    },
+    {
+        "pk": "1",
+        "model": "rss.RSSFeed",
+        "fields": {
+            "title": "Computing Services News",
+            "unit": "oucs",
+            "rss_url": "http://www.oucs.ox.ac.uk/rss/news.rss",
+            "slug": "oucs-news",
+            "last_modified": "2009-01-01 00:00:00"
+        }
+    },
+    {
+        "pk": 4,
+        "model": "rss.rssfeed",
+        "fields":
+        {
+            "rss_url": "http://www.keble.ox.ac.uk/news/RSS",
+            "title": "Keble College news",
+            "show_predicate": null,
+            "last_modified": "2009-10-01 14:42:26",
+            "slug": "keble",
+            "unit": "kebl"
+        }
+    },
+    {
+        "pk": 5,
+        "model": "rss.rssfeed",
+        "fields": {
+            "rss_url": "http://www.lmh.ox.ac.uk/CMSPages/NewsRss.aspx",
+            "title": "Lady Margaret Hall news",
+            "show_predicate": null,
+            "last_modified": "2009-10-01 14:54:54",
+            "slug": "lmh",
+            "unit": "lmh"
+        }
+    },
+    {
+        "pk": 6,
+        "model": "rss.rssfeed",
+        "fields": {
+            "rss_url": "http://www.linacre.ox.ac.uk/Linacre/news-and-events/news/RSS",
+            "title": "Linacre College",
+            "show_predicate": null,
+            "last_modified": "2009-10-01 14:56:37",
+            "slug": "linacre",
+            "unit": "linacre"
+        }
+    },
+    {
+        "pk": 7,
+        "model": "rss.rssfeed",
+        "fields": {
+            "rss_url": "http://www.google.com/calendar/feeds/it-support%40sant.ox.ac.uk/public/basic?orderby=starttime&sortorder=ascending&futureevents=true&singleevents=true",
+            "title": "St. Antony's College Events",
+            "show_predicate": null,
+            "last_modified": "2009-10-01 15:03:24",
+            "slug": "st-antonys-events",
+            "unit": "sant"
+        }
+    },
+    {
+        "pk": 3,
+        "model": "rss.rssfeed",
+        "fields": {
+            "rss_url": "http://www.ox.ac.uk/news_rss.rm",
+            "title": "University of Oxford - Media",
+            "show_predicate": null,
+            "last_modified": "2009-10-01 14:40:19",
+            "slug": "offices-media",
+            "unit": "offices"
+        }
+    }
+]

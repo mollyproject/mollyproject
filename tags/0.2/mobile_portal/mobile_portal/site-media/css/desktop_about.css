@@ -1,0 +1,185 @@
+body {
+    font-family: Arial,"Liberation Sans", sans-serif;
+    margin:0;
+/*    background-color:#cfd9e5; */
+	background: #FFFFFF url(../png/desktop/backdrop.png) repeat-x scroll center top ;
+    min-width:730px;
+
+	font-size:0.75em;
+	font-size-adjust:none;
+	font-style:normal;
+	font-variant:normal;
+	font-weight:normal;
+	line-height:1.33;
+}
+
+a {
+	text-decoration: none;
+}
+
+h3 {
+	line-height:0.9;
+}
+
+div.container {
+    width:800px;
+    margin-left:auto;
+    margin-right:auto;
+    position:relative;
+}
+
+div.header {
+    position:relative;
+/*    background-color:#c5d2e0;*/
+    height:145px;
+
+}
+
+div.header-strapline {
+    position:absolute;
+    color:#ffffff;
+    bottom:15px;
+    left:15px;
+    padding:0;
+    margin:0;
+    margin-right:145px;
+	font-weight: bold;
+	font-size: 1.2em;
+}
+
+div.header-strapline h1 {
+    margin:0;
+}
+
+div.header img.brandmark {
+    position:absolute;
+    top:15px;
+    right:15px;
+    margin-left:15px;
+    border:0;
+}
+
+div.strapline {
+    padding:5px 0px 0px 0px;
+   /* color:#002147;*/
+	color:#FFF;
+}
+
+div.features, div.preview, div.access, div.data-usage, div.about {
+    background-color:#ffffff;
+    border-radius:6px;
+    -moz-border-radius:6px;
+    -webkit-border-radius:6px;
+
+    padding:15px;
+	
+	/* Does this go here? */
+	list-style:none;
+}
+
+div.about {
+    margin: 15px;
+    margin-bottom:0;
+}
+
+div.features h2, div.preview h2, div.access h2, div.data-usage h2 {
+    margin-top:0;
+}
+
+div.column-left {
+    float:left;
+    margin-left:15px;
+    margin-top:15px;
+}
+
+div.column-middle {
+    padding-left:15px;
+    width:220px;
+    float: left;
+    margin-top:15px;
+}
+
+div.access, div.data-usage {
+    margin-top:15px;
+}
+
+div.access ul {
+	padding:0;
+	list-style:none;
+}
+
+div.access li {
+    border-top:1px solid #000;
+    padding:5px 0;
+}
+
+div.access li:first-child {
+    border-top:0;
+}
+
+li#access-qrcode img {
+    margin-left:auto;
+    margin-right:auto;
+    display:block;
+}
+
+div.features {
+    width:505px;
+}
+
+div.features ul {
+    padding-left:0;
+    list-style:none;
+}
+
+div.features img.even {
+    float: left;
+    margin-right:10px;
+    margin-bottom:10px;
+}
+
+div.features img.odd {
+    float: right;
+    margin-right:10px;
+    margin-bottom:10px;
+}    
+
+div.features li.feature-contacts {
+	list-style-image:;
+}
+
+div.features li {
+    display:block;
+    clear:both;
+}
+
+div.footer {
+    clear:both;
+    padding-top:30px;
+    padding-bottom:15px;
+    text-align:center;
+}
+
+div.footer img {
+    margin:0 20px;
+    border:0;
+}
+
+div.footer ul {
+    padding-left:0;
+}
+
+div.footer li {
+    display:inline;
+    margin:auto 0.4em;
+}
+
+div.footer li a {
+    white-space:nowrap;
+}
+
+div.logos {
+    margin-bottom:30px;
+}
+
+

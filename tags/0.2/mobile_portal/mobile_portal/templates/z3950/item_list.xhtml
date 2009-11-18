@@ -1,0 +1,81 @@
+{% extends "z3950/base.xhtml" %}
+
+{% block breadcrumbs %}
+{{ block.super }}
+            <li><a href="{% url z3950_index %}">
+                <img src="{{ MEDIA_URL }}png/index-icons/z3950-bc.png" alt="Library"/>
+            </a></li>
+{% endblock %}
+
+{% block pagetitle %}Result list{% endblock %}
+{% block title %}m.ox | {% if page %}Result list{% else %}Search{% endif %}{% endblock %}
+
+{% block content %}
+
+{% if search_form %}{% include "z3950/search_form.xhtml" %}{% endif %}
+
+{% if error_message %}
+<div class="section">
+<div class="bubble">
+<p>There was an error with your search:</p>
+<p><strong>{{ error_message }}</strong></p>
+</div></div>
+{% endif %}
+
+{% if page %}
+<div class="list-section">
+<h2 class="section-header">Result list <small>(unsorted)</small></h2>
+{% if removed %}
+<div class="list-note"><div class="bubble">
+    The following common word{{ removed|length|pluralize:" was,s were" }} not included in your query:
+    {% for w in removed %}{% if forloop.last %}{% if not forloop.first %}and {% endif %}<em>{{ w }}</em>{% else %}<em>{{ w }}</em>, {% endif %}{% endfor %}
+</div></div>
+{% endif %}
+
+<div class="list-note pagination-nav">
+{% if page.has_previous %}
+    <a href="?title={{ title|urlencode }}&author={{ author|urlencode }}&isbn={{ isbn|urlencode }}&page={{ page.previous_page_number }}" title="Previous page" class="prev">
+        <img src="{{ MEDIA_URL }}png/icons/list-arrow-left.png" alt="&#8592;"/>
+    </a>
+{% endif %}
+    Showing results {{ page.start_index }} to {{ page.end_index }} of {{ paginator.object_list|length }}. Page {{ page.number }} of {{ paginator.num_pages }}.
+{% if page.has_next %}
+    <a href="?title={{ title|urlencode }}&author={{ author|urlencode }}&isbn={{ isbn|urlencode }}&page={{ page.next_page_number }}" title="Next page" class="next">
+        <img src="{{ MEDIA_URL }}png/icons/list-arrow.png" alt="&#8594;"/>
+    </a>
+{% endif %}
+</div>
+
+<ul class="ml">
+{% for item in page.object_list %}
+<li{% if forloop.last %} class="notbottom"{% endif %}>
+    <a href="{% url z3950_item_detail item.control_number %}">
+        {{ item }}{% if item.author %}
+        <br/><small><strong>Author:</strong> {{ item.author }}</small>{% endif %}
+        <br/><small><strong>Publisher:</strong> {{ item.publisher }}</small>{% if item.edition %}
+        <br/><small><strong>Edition:</strong> {{ item.edition }}</small>{% endif %}
+        <br/><small><strong>Libraries:</strong> {{ item.holding_libraries }}</small>
+    </a>
+</li>
+{% endfor %}
+</ul>
+
+<div class="list-footer pagination-nav">
+{% if page.has_previous %}
+    <a href="?title={{ title|urlencode }}&author={{ author|urlencode }}&isbn={{ isbn|urlencode }}&page={{ page.previous_page_number }}" title="Previous page" class="prev">
+        <img src="{{ MEDIA_URL }}png/icons/list-arrow-left.png" alt="&#8592;"/>
+    </a>
+{% endif %}
+    Showing results {{ page.start_index }} to {{ page.end_index }} of {{ paginator.object_list|length }}. Page {{ page.number }} of {{ paginator.num_pages }}.
+{% if page.has_next %}
+    <a href="?title={{ title|urlencode }}&author={{ author|urlencode }}&isbn={{ isbn|urlencode }}&page={{ page.next_page_number }}" title="Next page" class="next">
+        <img src="{{ MEDIA_URL }}png/icons/list-arrow.png" alt="&#8594;"/>
+    </a>
+{% endif %}
+</div>
+
+</div>
+
+{% endif %}
+
+{% endblock %}

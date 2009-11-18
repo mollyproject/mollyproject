@@ -1,0 +1,35 @@
+{% extends "podcasts/base.xhtml" %}
+
+{% block breadcrumbs %}
+{{ block.super }}
+            <li><a href="{% url podcasts_index %}">
+                <img src="{{ MEDIA_URL }}png/index-icons/podcasts-bc.png" alt="Podcasts"/>
+            </a></li>
+{% endblock %}
+
+{% block pagetitle %}{{ category.name }}{% endblock %}
+{% block title %}m.ox | Podcasts - {{ category.name }}{% endblock %}
+
+{% block content %}
+
+
+<div class="list-section">
+	<h2 class="section-header">{{ category.name }}</h2>
+    <div class="list-note"><div class="bubble">
+    Show
+    <a href="{% url podcasts_category_medium category.code,"audio" %}">audio</a>
+    <a href="{% url podcasts_category_medium category.code,"video" %}">video</a>
+    <a href="{% url podcasts_category category.code %}">all</a>
+podcasts.
+    </div></div>
+		<ul class="ml">
+
+
+{% for podcast in podcasts %}
+    <li><a href="{{ podcast.get_absolute_url }}"><span class="{{ podcast.medium }}">{{ podcast.title }} ({{ podcast.medium }})
+    <br /><small>{{ podcast.description }}</small></span></a></li>
+{% endfor %}
+		</ul>
+</div>
+
+{% endblock %}

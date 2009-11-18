@@ -1,0 +1,48 @@
+@import "../breadcrumbs.css";
+
+h2 {
+    font-weight:bold;
+    margin-top:10px;
+    margin-bottom:2px;
+    font-size:11pt;
+    border-bottom:1px solid #000000;
+}
+
+div.front-section {
+    background-color:#ffffff;
+    margin: 5px;
+    padding:10px
+}
+
+ol.icon-menu {
+    margin:0 0;
+    padding-left:0px;
+    list-style-position:inside;
+}
+
+div.section, div.list-section {
+    margin:5px;
+}
+
+ul.ml {
+    list-style:none;
+    list-style-position:inside;
+}
+
+ul.ml {
+    padding-left:0px;
+    margin-left:0px;
+}
+
+ul.ml li {
+    margin-top:5px;
+}
+
+ul.ml li.subitem {
+    margin-left:20px;
+    margin-top:0;
+}
+
+div.list-note {
+
+}

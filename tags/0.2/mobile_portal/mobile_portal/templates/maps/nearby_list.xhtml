@@ -1,0 +1,61 @@
+{% extends "maps/base.xhtml" %}
+
+{% block title %}m.ox | Maps - near{% if entity %} {{ entity.title }}{% else %}by{% endif %}{% endblock %}
+
+{% block breadcrumbs %}
+{{ block.super }}
+	<li><a href="{% url maps_index %}">
+        {% if dumb %}Maps{% else %}<img src="{{ MEDIA_URL }}png/index-icons/maps-bc.png" alt="Maps"/>{% endif %}
+    </a></li>
+{% endblock %}
+
+{% block pagetitle %}Things nearby{% endblock %}
+
+{% block extrahead %}<meta name="robots" content="noindex"/>{% endblock %}
+
+{% block content %}
+
+<div class="list-section">
+{% if entity %}
+<h2 class="section-header">Find things near {{ entity.title }}</h2>
+{% else %}
+<h2 class="section-header">Find things nearby</h2>
+
+<div class="list-note">
+{% if preferences.location.location %}
+<div class="bubble">
+We think you are near <strong class="location_name">{{ preferences.location.placemark.0 }}</strong>. If this is not correct, please <a class="location_update_link" href="{% url core_update_location %}?return_url={{ return_url|urlencode }}">update your location</a>. </div>
+{% else %}
+<div class="bubble">We do not yet have a location for you. Please <a class="location_update_link" href="{% url core_update_location %}?return_url={{ return_url|urlencode }}">update your location</a>.</div>
+{% endif %}
+</div>
+{% endif %}
+</div>
+
+<div class="list-section">
+  <h2 class="section-header">Public</h2>
+
+<ul class="ml">
+{% for entity_type in public %}{% if entity %}
+    <li><a href="{% url maps_entity_nearby_detail entity.entity_type.slug,entity.display_id,entity_type.slug %}">{{ entity_type.verbose_name_plural|capfirst }}</a></li>
+{% else %}
+    <li><a href="{% url maps_nearby_detail entity_type.slug %}">{{ entity_type.verbose_name_plural|capfirst }}</a></li>
+{% endif %}{% endfor %}
+</ul>
+
+</div>
+
+<div class="list-section">
+  <h2 class="section-header">University of Oxford</h2>
+
+<ul class="ml">
+{% for entity_type in university %}{% if entity %}
+    <li><a href="{% url maps_entity_nearby_detail entity.entity_type.slug,entity.display_id,entity_type.slug %}">{{ entity_type.verbose_name_plural|capfirst }}</a></li>
+{% else %}
+    <li><a href="{% url maps_nearby_detail entity_type.slug %}">{{ entity_type.verbose_name_plural|capfirst }}</a></li>
+{% endif %}{% endfor %}
+</ul>
+
+</div>
+
+{% endblock %}
