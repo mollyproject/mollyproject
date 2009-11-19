@@ -94,13 +94,15 @@ ul li {
     color:#ffffff;
     border-top:1px solid #98a1ac;
     background-color:#002B4C;
+    padding: 10px;
     padding-right: 10px; /* Moves background image (ul li a) away from edge */
+    display:block;
 }
 ul li a {
     color:#ffffff;
     text-decoration:none;
     display:block;
-    padding: 10px;
+
 
     text-align: left;
     background-position: right center;
@@ -231,11 +233,18 @@ div.note {
     padding: 5px;
     font-size: 12pt;
 }
+
 div.note a{
     text-decoration: none;
     font-color: #002B4C;;
 }
 
+div.article {
+    text-align: left;
+    padding: 5px;
+    font-color: #000000;
+    font-size:12pt;
+}
 
 .round-top {
     -webkit-border-top-left-radius: 8px;

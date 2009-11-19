@@ -7,11 +7,12 @@
 
 {% block content %}
 
+
 <div class="section">
     <h2 class="section-header">About results releases</h2>
-    <div class="section-content">
+    <div class="note"><div class="bubble pad-10">
         This page lists the last twenty schools to have had results released. You can check your results using Student Self-Service from a desktop browser.
-    </div>
+    </div></div>
 </div>
 
 
@@ -21,9 +22,7 @@
 	<h2 class="section-header">{{ g.grouper|date:"d M Y" }}</h2>
 	<ul>
 {% for item in g.list %}
-<li class="non-link-item">
-{{ item.code }}: {{ item.title }}
-</li>
+	<li>{{ item.code }}: {{ item.title }}</li>
 {% endfor %}
 	</ul></div>
 {% endfor %}
