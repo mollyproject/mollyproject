@@ -11,7 +11,7 @@ from django.conf import settings
 
 from mobile_portal.core.renderers import mobile_render
 from mobile_portal.core.handlers import BaseView
-from oauth_tools import SakaiOAuthClient
+from clients import SakaiOAuthClient
 from mobile_portal.secure.views import OAuthView
 
 def parse_iso_8601(s):
