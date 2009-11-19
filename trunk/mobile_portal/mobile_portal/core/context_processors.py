@@ -9,10 +9,10 @@ DEVICE_SPECIFIC_MEDIA = {
 #        'js': frozenset(['js/devices/apple_iphone.js']),
 #        'css': frozenset(['css/devices/apple_iphone.css']),
 #    },
-    'blackberry_generic_ver4_sub10': {
-        'js': frozenset(),
-        'css': frozenset(['css/devices/rim_blackberry.css']),
-    },
+#    'blackberry_generic_ver4_sub10': {
+#        'js': frozenset(),
+#        'css': frozenset(['css/devices/rim_blackberry.css']),
+#    },
 #    'generic': { # Firefox, actually
 #        'js': frozenset(['js/devices/apple_iphone.js']),
 #        'css': frozenset(['css/devices/apple_iphone.css']),

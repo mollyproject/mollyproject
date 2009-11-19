@@ -181,18 +181,18 @@ h1#bc-title.weather-header {  background-image:url('../../png/index-icons/weathe
 
 
 /* Contact Search */
-div.contact-search {
+div.search {
     text-align: center;
     padding:5px; margin: 0;
 }
 
-div.contact-search input#query {
+div.search input#query {
     width:90%;
     font-size: 1.4em;
     height: 1.4em;
 }
 
-div.contact-search button[type="submit"] {
+div.search button[type="submit"] {
     min-width: 80px ;
     font-size: 1.3em;
     min-height: 1.3em; 
