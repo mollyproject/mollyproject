@@ -110,12 +110,12 @@ ul li a {
     background-image:url('../../png/icons/list-arrow.png'); /* Default background image */
 }
 /* Background images primarily for list items */
-.phone {background:url('../../png/icons/list-phone.png') no-repeat;}
-.email {background:url('../../png/icons/list-email.png') no-repeat;}
-.external {background:url('../../png/icons/list-external.png') no-repeat;}
-.external-mobile {background:url('../../png/icons/list-external-mobile.png') no-repeat;}
-.audio {background:url('../../png/icons/list-audio.png') no-repeat;}
-.video {background:url('../../png/icons/list-video.png') no-repeat;}
+.phone {background-image:url('../../png/icons/list-phone.png');}
+.email {background-image:url('../../png/icons/list-email.png');}
+.external {background-image:url('../../png/icons/list-external.png');}
+.external-mobile {background-image:url('../../png/icons/list-external-mobile.png');}
+.audio {background-image:url('../../png/icons/list-audio.png');}
+.video {background-image:url('../../png/icons/list-video.png');}
 /* End background images for list items */
 /* End Standard List Styles */
 
@@ -219,7 +219,7 @@ h2.section-header {
 div.center {
     text-align:center;
 }
-div.bubble {    
+div.bubble {
    color:#002147;
    background-color:#ffffff;
    padding: 0;
@@ -228,7 +228,7 @@ div.bubble {
 }
 
 div.note {
-    font-color: #ffffff;
+    color: #ffffff;
     text-align:center;
     padding: 5px;
     font-size: 12pt;
@@ -236,14 +236,14 @@ div.note {
 
 div.note a{
     text-decoration: none;
-    font-color: #002B4C;;
+    color: #002B4C;;
 }
 
 /* News Articles */
 div.article {
     text-align: left;
     padding: 5px;
-    font-color: #000000;
+    color: #000000;
     font-size:12pt;
 }
 
