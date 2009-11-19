@@ -6,9 +6,9 @@
 
 {% block content %}
 
-<div class="list-section">
+<div class="section">
     <h2 class="section-header">Feeds</h2>
-    <ul class="ml">
+    <ul>
 {% for feed in feeds %}
         <li>
             <a href="{{ feed.get_absolute_url }}">{{ feed.title }}</a>

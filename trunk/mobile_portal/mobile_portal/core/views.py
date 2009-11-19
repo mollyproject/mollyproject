@@ -42,9 +42,12 @@ class IndexView(BaseView):
         fpls_prefs = sorted(request.preferences['front_page_links'].items(), key=lambda (slug,(order, display)): order)
         front_page_links = [fpls[slug] for (slug,(order, display)) in fpls_prefs if display and slug in fpls]
     
+        gsf = GoogleSearchForm()
+        gsf.fields['query'].widget.attrs['class'] = 'index-search-box'
+    
         context = {
             'front_page_links': front_page_links,
-            'search_form': GoogleSearchForm(),
+            'search_form': gsf,
             'hide_feedback_link': True,
             'has_user_messages': UserMessage.objects.filter(session_key = request.session.session_key).count() > 0,
             'ua': request.META.get('HTTP_USER_AGENT', ''),

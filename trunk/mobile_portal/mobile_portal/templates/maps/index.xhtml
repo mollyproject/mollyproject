@@ -8,9 +8,9 @@
 {% block content %}
 
 {% if preferences.maps.favourites %}
-<div class="list-section">
+<div class="section">
 	<h2 class="section-header">Favourites</h2>
-<ul class="ml">
+<ul>
 {% for entity_ref in preferences.maps.favourites %}
 {% with entity_ref|get_entity as entity %}
 	<li>
@@ -23,10 +23,10 @@
 {% endif %}
 
 
-<div class="list-section">
+<div class="section">
 <h2 class="section-header">Browse</h2>
 
-<ul class="ml">
+<ul>
     <li><a href="{% url maps_nearby_list %}">Near Me</a></li>
 	<li>
 	    <a href="{% url maps_category_list %}">By Category</a>
@@ -34,10 +34,10 @@
 </ul>
 </div>
 
-<div class="section-nopad">
+<div class="section">
   <form method="get" action="{% url maps_busstop_search %}">
     <h2 class="section-header">Bus stop search</h2>
-    <div class="list-note"><div class="bubble"><label for="busstop_id">
+    <div class="note"><div class="bubble"><label for="busstop_id">
         Enter an 8-digit oxontime code, or a central stop number (e.g. 'G3')
     </label></div></div>
     
