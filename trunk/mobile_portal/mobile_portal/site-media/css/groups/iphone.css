@@ -110,12 +110,12 @@ ul li a {
     background-image:url('../../png/icons/list-arrow.png'); /* Default background image */
 }
 /* Background images primarily for list items */
-.phone {background-image:url('../../png/icons/list-phone.png') no-repeat;}
-.email {background-image:url('../../png/icons/list-email.png') no-repeat;}
-.external {background-image:url('../../png/icons/list-external.png') no-repeat;}
-.external-mobile {background-image:url('../../png/icons/list-external-mobile.png') no-repeat;}
-.audio {background-image:url('../../png/icons/list-audio.png') no-repeat;}
-.video {background-image:url('../../png/icons/list-video.png') no-repeat;}
+.phone {background:url('../../png/icons/list-phone.png') no-repeat;}
+.email {background:url('../../png/icons/list-email.png') no-repeat;}
+.external {background:url('../../png/icons/list-external.png') no-repeat;}
+.external-mobile {background:url('../../png/icons/list-external-mobile.png') no-repeat;}
+.audio {background:url('../../png/icons/list-audio.png') no-repeat;}
+.video {background:url('../../png/icons/list-video.png') no-repeat;}
 /* End background images for list items */
 /* End Standard List Styles */
 
