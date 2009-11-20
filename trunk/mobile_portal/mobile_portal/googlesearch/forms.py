@@ -2,10 +2,10 @@ from django import forms
 
 APPLICATION_CHOICES = (
     ('', 'Show all'),
-    ('maps', 'Maps'),
-    ('podcasts', 'Podcasts'),
-    ('rss', 'News'),
-    ('webcams', 'Webcams'),
+    ('maps', 'maps'),
+    ('podcasts', 'podcasts'),
+    ('rss', 'news'),
+    ('webcams', 'webcams'),
 )
 
 class GoogleSearchForm(forms.Form):

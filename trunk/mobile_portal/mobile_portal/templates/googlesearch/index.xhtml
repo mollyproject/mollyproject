@@ -8,7 +8,7 @@
 <div class="section-nopad">
   <form method="get" action=".">
     <h2 class="section-header">
-      {{ search_form.query.label }}
+      {{ search_form.query.label }}{% if search_form.application %} {{ search_form.get_application_display }}{% endif %}
     </h2>
 
     <div class="section-content">
