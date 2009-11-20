@@ -67,7 +67,7 @@ def search_detail(request):
         try:
             if not error_message and (title or author or isbn):
                 query = "and".join(query)
-                results = search.OLISSearch(query)
+                results = search.OLISSearch(request.session.session_key, query)
     
                 paginator = Paginator(results, 10)
             
@@ -120,7 +120,7 @@ AVAIL_COLORS = ['red', 'amber', 'purple', 'blue', 'green']
 
 class ItemDetailView(BaseView):
     def initial_context(self, request, control_number):
-        items = search.ControlNumberSearch(control_number)
+        items = search.ControlNumberSearch(request.session.session_key, control_number)
         if len(items) == 0:
                 raise Http404
 

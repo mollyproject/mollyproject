@@ -5,6 +5,7 @@ from PyZ3950 import zoom
 from django.conf import settings
 
 from mobile_portal.oxpoints.models import Entity
+from z3950.conn_manager import Z3950Manager
 
 ITEM_RE = re.compile(r'(?P<heading>\d{1,3}) (..(\$(?P<sub>.)(?P<entry>[^\$]+) )+|(?P<raw>[^\$]+))')
 
@@ -99,39 +100,25 @@ class OLISResult(object):
     USM_LOCATION = 852
 
     def __init__(self, result):
-        self.result = result
-        self.str = str(result)
-        self.metadata = {OLISResult.USM_LOCATION: []}
-
-        items = self.str.split('\n')[1:]
-        for item in items:
-            heading, data = item.split(' ', 1)
-            heading = int(heading)
-            if heading == OLISResult.USM_CONTROL_NUMBER:
-                # We strip the 'UkOxUb' from the front.
-                self.control_number = data[6:]
-            
-            # We'll use a slice as data may not contain that many characters.
-            # LCN 12110145 is an example where this would otherwise fail.    
-            if data[2:3] != '$':
-                continue
-            
-            subfields = data[3:].split(' $')
-            subfields = [(s[0], s[1:]) for s in subfields]
-
-            if not heading in self.metadata:
-                self.metadata[heading] = []
-
-            m = {}
-            for subfield_id, content in subfields:
-                if not subfield_id in m:
-                    m[subfield_id] = []
-                m[subfield_id].append(content.decode('iso-8859-1'))
-            self.metadata[heading].append(m)
-
+        self.result = {}
+        for k in result:
+            if isinstance(result[k][0], unicode):
+                self.result[k] = result[k]
+            elif isinstance(result[k][0], tuple):
+                self.result[k] = []
+                for item in result[k]:
+                    datum = {}
+                    for subfield, value in item[2]:
+                        if not subfield in datum:
+                            datum[subfield] = []
+                        datum[subfield].append(value)
+                    self.result[k].append(datum)
+        new_result = self.result
+        
         self.libraries = {}
-
-        for datum in self.metadata[OLISResult.USM_LOCATION]:
+        
+        for datum in self.result[OLISResult.USM_LOCATION]:
+                
             library = Library(datum['b'])
             if not 'p' in datum:
                 availability = AVAIL_UNKNOWN
@@ -170,15 +157,20 @@ class OLISResult(object):
         for library in self.libraries:
             library.availability = max(l['availability'] for l in self.libraries[library])
             
+        print self.libraries
 
     def _metadata_property(heading, sep=' '):
         def f(self):
-            if not heading in self.metadata:
+            if not heading in self.result:
                     return None
-            field = self.metadata[heading][0]
+            field = self.result[heading][0]
             return sep.join(' '.join(field[k]) for k in sorted(field))
         return property(f)
-    
+
+    @property    
+    def control_number(self):
+        return self.result[1][0][6:]
+        
     title = _metadata_property(USM_TITLE_STATEMENT)
     publisher = _metadata_property(USM_PUBLICATION)
     author = _metadata_property(USM_AUTHOR)
@@ -203,38 +195,29 @@ class OLISResult(object):
         return self.title
 
 class OLISSearch(object):
-    def __init__(self, query):
-        self.connection = zoom.Connection(
-            getattr(settings, 'Z3950_HOST'),
-            getattr(settings, 'Z3950_PORT', 210),
-        )
-        self.connection.databaseName = getattr(settings, 'Z3950_DATABASE')
-        self.connection.preferredRecordSyntax = getattr(settings, 'Z3950_SYNTAX', 'USMARC')
-        
-        self.query = zoom.Query('CCL', query)
-        
-        self.results = self.connection.search(self.query)
-        
-    def __iter__(self):
-        for r in self.results:
-            yield OLISResult(r)
-        
+    def __init__(self, sessionkey, query):
+        manager = Z3950Manager()
+        manager.connect()
+        self.results = manager.search(sessionkey, query)
+    
     def __len__(self):
-        return len(self.results)        
-
-    def __getitem__(self, key):
-        if isinstance(key, slice):
-            if key.step:
-                raise NotImplementedError("Stepping not supported")
-            return map(OLISResult, self.results.__getslice__(key.start, key.stop))
-        return OLISResult(self.results[key])        
-        
+        return len(self.results)
+    def __getitem__(self, index):
+        if isinstance(index, slice):
+            r = map(OLISResult, self.results[index])
+            print self.results[index], index
+            return r
+        else:
+            return OLISResult(self.results[index])
+    def __iter__(self):
+        return imap(self.results)
+     
 class ISBNSearch(OLISSearch):
-    def __init__(self, isbn):
+    def __init__(self, sessionkey, isbn):
         query = 'isbn=%s' % isbn
-        super(ISBNSearch, self).__init__(query)
+        super(ISBNSearch, self).__init__(sessionkey, query)
 
 class ControlNumberSearch(OLISSearch):
-    def __init__(self, control_number):
-        query = '(1,1032)="%s"' % control_number
-        super(ControlNumberSearch, self).__init__(query)
+    def __init__(self, sessionkey, control_number):
+        query = '(1,1032)=%s' % control_number
+        super(ControlNumberSearch, self).__init__(sessionkey, query)
