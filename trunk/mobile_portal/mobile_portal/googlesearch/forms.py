@@ -12,7 +12,7 @@ class GoogleSearchForm(forms.Form):
     query = forms.CharField(label='Search')
     application = forms.ChoiceField(
         label='Filter',
-        widget=forms.RadioSelect(),
+        widget=forms.HiddenInput(),
         choices=APPLICATION_CHOICES,
         required=False,
     )
