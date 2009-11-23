@@ -313,3 +313,15 @@ table.weather-forecast {
     color:#ffffff;
 }
 /* End Weather */
+
+/* Library */
+div#library-search ul li{
+    border: none;
+    padding: 5px 0;
+    text-align:center;
+    font-size:10pt;
+    display:block;
+    background: none;
+}
+
+/* End Library */
