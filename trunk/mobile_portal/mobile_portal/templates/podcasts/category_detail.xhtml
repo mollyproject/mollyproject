@@ -13,16 +13,16 @@
 {% block content %}
 
 
-<div class="list-section">
+<div class="section">
 	<h2 class="section-header">{{ category.name }}</h2>
-    <div class="list-note"><div class="bubble">
+    <div class="note"><div class="bubble pad-10">
     Show
     <a href="{% url podcasts_category_medium category.code,"audio" %}">audio</a>
     <a href="{% url podcasts_category_medium category.code,"video" %}">video</a>
     <a href="{% url podcasts_category category.code %}">all</a>
 podcasts.
     </div></div>
-		<ul class="ml">
+		<ul>
 
 
 {% for podcast in podcasts %}

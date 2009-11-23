@@ -12,31 +12,31 @@
 
 {% block content %}
 
-<div class="section-nopad">
+<div class="section">
+	<div class="search">
   <form method="get" action=".">
     <h2 class="section-header">
       {{ search_form.id.label }}
     </h2>
-    <div class="list-note"><div class="bubble"><label for="busstop_id">
+    <div class="note"><div class="bubble pad-10"><label for="busstop_id">
         Enter an 8-digit oxontime code, or a central stop number (e.g. 'F3')
     </label></div></div>
-    <div class="section-content">
       <p style="text-align:center">
         {{ search_form.id }}
         <input type="submit" value="Search"/>
       </p>
-      <!--<p>{{ search_form.application }}</p>-->
-    </div>
+
   </form>
+	</div>
 </div>
 
 {% if search_form.is_valid %}
-<div class="list-section">
+<div class="section">
   <h2 class="section-header">Results</h2>
 {% if entities %}
-  <ul class="ml">
+  <ul>
 {% for entity in entities %}
-    <li>
+    <li{% if forloop.last %} class="round-bottom"{% endif %}>
       <a href="{{ entity.get_absolute_url }}">
           {{ entity.title }}      
       </a>
@@ -45,7 +45,7 @@
   </ol>
 </div>
 {% else %}
-<div class="list-note"><div class="bubble">Sorry; your search returned no results.</div></div>
+<div class="note"><div class="bubble pad-10">Sorry; your search returned no results.</div></div>
 {% endif %}
 
 

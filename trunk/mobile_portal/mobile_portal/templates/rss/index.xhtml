@@ -10,7 +10,7 @@
     <h2 class="section-header">Feeds</h2>
     <ul>
 {% for feed in feeds %}
-        <li>
+        <li {% if forloop.last %}class="round-bottom"{% endif %}>
             <a href="{{ feed.get_absolute_url }}">{{ feed.title }}</a>
         </li>
 {% endfor %}

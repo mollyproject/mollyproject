@@ -27,6 +27,7 @@ from mobile_portal.oxpoints.entity import get_resource_by_url, MissingResource, 
 
 from mobile_portal.maps.utils import get_entity, is_favourite, make_favourite, get_bearing
 from forms import BusstopSearchForm, UpdateOSMForm
+from mobile_portal.googlesearch.forms import GoogleSearchForm
 
 class IndexView(BaseView):
     def get_metadata(self, request):
@@ -36,6 +37,7 @@ class IndexView(BaseView):
         }
         
     def handle_GET(self, request, context):
+        context = {'search_form': GoogleSearchForm()}
         return mobile_render(request, context, 'maps/index')
 
 class NearbyListView(BaseView):

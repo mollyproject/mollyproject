@@ -7,51 +7,50 @@
 
 {% block content %}
 
-{% if device|device_has_parent:"apple_iphone_ver1" and show_itunesu_link %} {#  #}
+{% if device|device_has_parent:"apple_iphone_ver1" and show_itunesu_link %}
 <div style="background-color:#002341; margin:1em; padding:0.5em; color:#ffffff; font-size:120%; -webkit-border-radius: 8px; -webkit-box-shadow:0px 0px 7px #FFFFFF" id="itunesu_link_div">
-
-<p>It looks like you're using an {% if device|device_has_parent:"apple_ipod_touch_ver1" %}iPod Touch{% else %}iPhone{% endif %}!</p>
-
+<p>It looks like you're using an iPod/iPhone!</p>
 <P>Podcasts are also available from the University's iTunes U site, which you can view on your device.</p>
-
 <p>Please note that this will close Safari.</p>
-
 <form method="post" action="{% url podcasts_itunesu_redirect %}">
-
-<p>
-    <input type="checkbox" name="remember" id="remember"/>
-    <label for="remember">
-        Remember this preference in future.
-    </label>
+<p><input type="checkbox" name="remember" id="remember"/>
+   <label for="remember">
+   Remember this preference in future.
+   </label>
 </p>
-
 <p style="text-align:center">
     <button type="submit" name="use_itunesu" value="yes">Go to iTunes U</button>
     <button type="submit" name="cancel" id="hide_itunesu_link" value="no">Stay on m.ox</button>
 </p>
-
-</form>
-
-</div>
-
+</form></div>
 {% endif %}
 
-<div class="section">
-<ul class="category_list ml">
 
-	{#CHANGE Following line to have a "TOP" ICON PLZ!#}
-	<li class="top"><a href="{% url podcasts_top_downloads %}">Top downloads from iTunes U</a></li>
-</ul>
+<div class="section">
+<div class="search">
+	<form method="get" action="{% url googlesearch_index %}">
+		<h2 class="section-header">Podcasts Search</h2>
+  		<p>
+			{{ search_form.query }}
+			<input type="hidden" name="application" value="podcasts">
+			</p><p>
+    		<button type="submit">Go!</button>
+  		</p>
+	</form>
 </div>
+</div>
+
+<ul class="stand-alone">
+	<li class="round-bottom round-top"><a href="{% url podcasts_top_downloads %}">Top downloads from iTunes U</a></li>
+</ul>
+
 
 <div class="section" >
 	<h2 class="section-header">By category</h2>
-<ul class="category_list ml">
-	
-	
+<ul>
 {% for category in categories %}
-    <li><a href="{{ category.get_absolute_url }}">{{ category.name }}</a></li>
+    <li {% if forloop.last %}class="round-bottom" {% endif %}>
+	<a href="{{ category.get_absolute_url }}">{{ category.name }}</a></li>
 {% endfor %}
-</ul>
-</div>
+</ul></div>
 {% endblock %}

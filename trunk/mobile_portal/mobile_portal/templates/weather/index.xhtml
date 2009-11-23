@@ -15,9 +15,9 @@ th {
 
 {% block content %}
 
-<div class="section-nopad">
+<div class="section">
 	<h2 class="section-header">Latest observations for Oxford</h2>
-	<div class="list-note"><div class="bubble">
+	<div class="note"><div class="bubble">
 	    <img src="{{ MEDIA_URL }}png/weather/{{ weather.icon }}.png" alt="{{ weather.get_outlook_display|capfirst }}"/><br/>
 	    Observed on {{ weather.observed_date|date:"D j M Y \a\t H:m" }}
 	</div></div>
@@ -47,7 +47,7 @@ th {
     </table>
 </div>
 	
-<div class="section-nopad">
+<div class="section">
     <h2 class="section-header">Forecast</h2>
 
     <table class="section-table">

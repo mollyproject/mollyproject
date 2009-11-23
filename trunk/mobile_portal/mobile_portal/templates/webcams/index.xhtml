@@ -7,13 +7,11 @@
 {% block content %}
 
 
-
-
 <div class="section">
 	<h2 class="section-header">Webcams</h2>
 		<ul>
 {% for webcam in webcams %}
-		<li class="{% if forloop.last and more_pages %} notbottom{% endif %}">
+		<li {% if forloop.last %}class="round-bottom"{% endif %}>
         	<a href="{% url webcams_webcam webcam.slug %}">{{ webcam.title }}</a>
     	</li>
 {% endfor %}

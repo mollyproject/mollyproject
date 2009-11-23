@@ -27,7 +27,7 @@
       <label for="query">Search</label>
     </h2>
 	<p>
-	  <input id="query" name="q" value="{{ query }}"/>
+	  <input id="id_query" name="q" value="{{ query }}"/>
 	</p>
 	<p>
 	  <button type="submit" name="method" value="email">E-mail</button>
@@ -70,15 +70,15 @@
 
 	  <ul id="people">
 	    {% for person in people %}
-	    <li{% if forloop.last %} class="notbottom"{% endif %}>
+	    <li{% if forloop.last %} class="round-bottom"{% endif %}>
 	      {% ifequal method "email" %}
 	      <a class="email" href="mailto:{{ person.email }}">
 	      {% else %}
 	      <a class="phone" href="{{ person.phone.1|telephone_uri }}">
 	      {% endifequal %}
-	        <span class="name">{{ person.name }}</span>
+	        {{ person.name }}
 	        <br/>
-	        <small><span class="unit">{% if person.unit %}{{ person.unit }}{% else %}<em>Unknown affiliation</em>{% endif %}</span><br />
+	        <small>{% if person.unit %}{{ person.unit }}{% else %}<em>Unknown affiliation</em>{% endif %}<br />
 			{% ifequal method "email" %}
 			    {{ person.email }}
 	        {% else %}
@@ -119,7 +119,7 @@
 	<ul>
 	    <li><a class="phone" href="tel:+441865270000">General enquiries<br /><small>01865 (2)70000</small></a></li>
 	    <li><a class="phone" href="tel:+441865280000">Switchboard<br /><small>01865 (2)80000</small></a></li>
-	    <li><a class="phone" href="tel:+441865273200">Computing Services help desk<br /><small>01865 (2)73200</small></a></li>
+	    <li class="round-bottom"><a class="phone" href="tel:+441865273200">Computing Services help desk<br /><small>01865 (2)73200</small></a></li>
 	</ul>
 	</div>
 
@@ -129,7 +129,7 @@
 	    <li><a class="phone" href="tel:112">Emergency services<br /><small>112</small></a></li>
 	    <li><a class="phone" href="tel:+441865289999">University security <small>(emergency)<br />01865 (2)89999</small></a></li>
 	    <li><a class="phone" href="tel:+441865272944">University security <small>(enquiries)<br />01865 (2)72944</small></a></li>
-	    <li><a class="phone" href="tel:+448458505505">Thames Valley Police <small>(non-emergency)<br />08458 505505</small></a></li>
+	    <li class="round-bottom"><a class="phone" href="tel:+448458505505">Thames Valley Police <small>(non-emergency)<br />08458 505505</small></a></li>
 	</ul>
 	</div>
 
@@ -140,7 +140,7 @@
 	    <li><a class="phone" href="tel:+441865270300">Counselling Service<br /><small>01865 (2)70300</small></a></li>
 	    <li><a class="phone" href="tel:+441865270270">Oxford Nightline<br /><small>01865 (2)70270</small></a></li>
 	    <li><a class="phone" href="tel:+441865726295">Rape Crisis<br /><small>01865 726295</small></a></li>
-	    <li><a class="phone" href="tel:+448457909090">Samaritans<br /><small>08457 90 90 90</small></a></li>
+	    <li class="round-bottom"><a class="phone" href="tel:+448457909090">Samaritans<br /><small>08457 90 90 90</small></a></li>
 	</ul>
 	</div>
   

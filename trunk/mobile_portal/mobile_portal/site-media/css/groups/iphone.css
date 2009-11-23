@@ -95,20 +95,27 @@ ul li {
     border-top:1px solid #98a1ac;
     background-color:#002B4C;
     padding: 10px;
-    padding-right: 10px; /* Moves background image (ul li a) away from edge */
     display:block;
 }
 ul li a {
     color:#ffffff;
     text-decoration:none;
     display:block;
-
-
+    
+    padding-right: 20px; /* Moves background image (ul li a) away from edge */
     text-align: left;
     background-position: right center;
     background-repeat: no-repeat;
     background-image:url('../../png/icons/list-arrow.png'); /* Default background image */
 }
+
+ul li span {
+    background-position: left;
+    background-repeat: no-repeat;
+    display:block;
+    padding-left: 25px;
+}
+
 /* Background images primarily for list items */
 .phone {background-image:url('../../png/icons/list-phone.png');}
 .email {background-image:url('../../png/icons/list-email.png');}
@@ -188,12 +195,13 @@ div.search {
     padding:5px; margin: 0;
 }
 
-div.search input#query {
+div.search input#id_query {
     width:90%;
     font-size: 1.4em;
     height: 1.4em;
 }
 
+/* CSS 2.1 */
 div.search button[type="submit"] {
     min-width: 80px ;
     font-size: 1.3em;
@@ -228,16 +236,25 @@ div.bubble {
 }
 
 div.note {
-    color: #ffffff;
     text-align:center;
     padding: 5px;
     font-size: 12pt;
 }
 
 div.note a{
-    text-decoration: none;
     color: #002B4C;;
 }
+
+/* End Generic */
+
+
+/* Webcams/Maps Display */
+div.backgrounded-image {
+    background-repeat:no-repeat;
+    background-position: center center;
+    position: relative;
+}
+/* End Webcams/Maps */
 
 /* News Articles */
 div.article {
@@ -250,6 +267,7 @@ div.article {
 .round-top {
     -webkit-border-top-left-radius: 8px;
     -webkit-border-top-right-radius: 8px;
+    border-top: 0;
 }
 .round-bottom {
     -webkit-border-bottom-left-radius: 8px;

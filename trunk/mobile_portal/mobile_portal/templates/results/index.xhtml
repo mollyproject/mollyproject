@@ -22,7 +22,8 @@
 	<h2 class="section-header">{{ g.grouper|date:"d M Y" }}</h2>
 	<ul>
 {% for item in g.list %}
-	<li>{{ item.code }}: {{ item.title }}</li>
+	<li {% if forloop.last %}class="round-bottom"
+	{% endif %}>{{ item.code }}: {{ item.title }}</li>
 {% endfor %}
 	</ul></div>
 {% endfor %}

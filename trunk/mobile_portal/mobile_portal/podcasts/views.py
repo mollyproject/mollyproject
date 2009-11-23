@@ -10,6 +10,7 @@ from mobile_portal.core.handlers import BaseView
 from mobile_portal.podcasts.models import Podcast, PodcastCategory
 from mobile_portal.podcasts import TOP_DOWNLOADS_RSS_URL
 from mobile_portal.wurfl import device_parents
+from mobile_portal.googlesearch.forms import GoogleSearchForm
 
 OPML_FEED = 'http://rss.oucs.ox.ac.uk/oxitems/podcastingnewsfeeds.opml'
 
@@ -29,7 +30,8 @@ class IndexView(BaseView):
         #        return HttpResponseRedirect ("http://deimos.apple.com/WebObjects/Core.woa/Browse/ox-ac-uk-public")
         context = {
             'categories': PodcastCategory.objects.all(),
-            'show_itunesu_link': show_itunesu_link
+            'show_itunesu_link': show_itunesu_link,
+            'search_form': GoogleSearchForm()
         }    
         
         return mobile_render(request, context, 'podcasts/index')
