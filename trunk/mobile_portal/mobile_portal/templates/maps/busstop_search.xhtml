@@ -12,6 +12,26 @@
 
 {% block content %}
 
+
+{% if search_form.is_valid %}
+	<div class="section">
+	  <h2 class="section-header">Results</h2>
+	{% if entities %}
+	  <ul>
+	{% for entity in entities %}
+	    <li{% if forloop.last %} class="round-bottom"{% endif %}>
+	      <a href="{{ entity.get_absolute_url }}">
+	          {{ entity.title }}      
+	      </a>
+	    </li>
+	{% endfor %}
+	  </ul>
+	{% else %}
+	<div class="note"><div class="bubble pad-10">Sorry; your search returned no results.</div></div>
+	{% endif %}
+	</div>
+{% endif %}
+
 <div class="section">
 	<div class="search">
   <form method="get" action=".">
@@ -30,25 +50,8 @@
 	</div>
 </div>
 
-{% if search_form.is_valid %}
-<div class="section">
-  <h2 class="section-header">Results</h2>
-{% if entities %}
-  <ul>
-{% for entity in entities %}
-    <li{% if forloop.last %} class="round-bottom"{% endif %}>
-      <a href="{{ entity.get_absolute_url }}">
-          {{ entity.title }}      
-      </a>
-    </li>
-{% endfor %}
-  </ol>
-</div>
-{% else %}
-<div class="note"><div class="bubble pad-10">Sorry; your search returned no results.</div></div>
-{% endif %}
 
 
-{% endif %}
+
 
 {% endblock %}
