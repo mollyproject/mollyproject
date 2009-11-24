@@ -1,0 +1,73 @@
+{% extends "podcasts/base.xhtml" %}
+
+{% block breadcrumbs %}
+{{ block.super }}
+            <li><a href="{% url podcasts_index %}">
+                <img src="{{ MEDIA_URL }}png/index-icons/podcasts-bc.png" alt="Podcasts"/>
+            </a></li>
+{% if podcast.category %}
+    <li><a href="{{ podcast.category.get_absolute_url }}">...</a></li>
+{% endif %}
+{% endblock %}
+
+{% block pagetitle %}Podcast{% endblock %}
+{% block title %}m.ox | {{ podcast.title }}{% endblock %}
+
+
+{% block extrahead %}
+<link href="{{ podcast.rss_url }}?destination=moxacuk" type="application/rss+xml" rel="alternate" title="Podcast RSS feed" />
+{% endblock %}
+
+{% block content %}
+
+<div class="section-nopad">
+    <h2>{{ podcast.title }}</h2>
+    
+    <div class="section-content">{{ podcast.description|safe }}</div>
+</div>
+
+{% for item in items %}
+
+<div class="section-nopad">
+    <h3>{{ item.title }}</h3>
+    
+    <table class="section-table">
+        <tbody>
+    {% if item.duration %}
+            <tr>
+                <th>Duration:</th>
+                <td>{{ item.duration }}</td>
+            </tr>
+    {% endif %}
+            <tr>
+                <th>Published:</th>
+                <td>{{ item.published_date|date:"D j M Y, g:i A" }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="section-content">{{ item.description|safe }}</div>
+
+    <table class="section-table">
+        <thead>
+            <tr>
+                <th>Format</th>
+                <th>Size</th>
+                <th>Download</th>
+            </tr>
+        </thead>
+        <tbody>
+    {% for enc in item.podcastenclosure_set.all %}
+            <tr>
+                <td>{{ enc.get_mimetype_display|capfirst }}</td>
+                <td>{{ enc.length|filesizeformat }}</td>
+                <td><a href="{{ enc.url }}?CAMEFROM=moxacuk">Download</a></td>
+            </tr>
+    {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endfor %}
+
+{% endblock %}

@@ -1,0 +1,25 @@
+<div class="section">
+    <h2>Search</h2>
+    <div class="note"><div class="bubble pad-10">
+        Search OLIS by either some subset of title and author, or by ISBN.
+{% if not device.has_qwerty_keyboard %} You may use a '*' in place of an 'X' in an ISBN.{% endif %}
+    </div></div>
+	<div id="library-search">
+    <form method="get" action="{% url z3950_search %}">
+
+		<ul>
+			<li>{{ search_form.title.label }}
+			{{ search_form.title }}</li>
+		
+			<li>{{ search_form.author.label }}
+	        {{ search_form.author }}</li>
+
+			<li>{{ search_form.isbn.label }}
+	        {{ search_form.isbn }}</li>
+		</ul>
+	
+		<input type="submit" value="Search"/>
+	    <input type="reset" value="Reset"/>
+    </form>
+	</div>
+</div>

@@ -1,0 +1,72 @@
+{% extends "maps/base.xhtml" %}{% load portal_misc %}
+
+{% block pagetitle %}Maps{% endblock %}
+{% block pagetitleclass %}maps-header with-icon{% endblock %}
+{% block title %}m.ox | Maps{% endblock %}
+
+
+
+{% block content %}
+
+{# Favourites List (if exists) #}
+{% if preferences.maps.favourites %}
+<div class="section">
+	<h2>Favourites</h2>
+	<ul>
+		{% for entity_ref in preferences.maps.favourites %}
+			{% with entity_ref|get_entity as entity %}
+				<li><a href="{{ entity.get_absolute_url }}">{{ entity.title }}</a></li>
+			{% endwith %}
+		{% endfor %}
+	</ul>
+</div>
+{% endif %}
+{# End Favourites List #}
+
+
+{# Maps Search #}
+<div class="section">
+<div class="search">
+	<form method="get" action="{% url googlesearch_index %}">
+		<h2>Search for Places</h2>
+  		<p>
+			{{ search_form.query }}
+			<input type="hidden" name="application" value="maps">
+			</p><p>
+    		<button type="submit">Go!</button>
+  		</p>
+	</form>
+</div>
+</div>
+{# End Maps Search #}
+
+{# Points of Interest #}
+<div class="section">
+	<h2>Browse Points of Interest</h2>
+	<ul>
+    	<li><a href="{% url maps_nearby_list %}">Near Me</a></li>
+		<li class="round-bottom"><a href="{% url maps_category_list %}">By Category</a></li>
+	</ul>
+</div>
+{# End Points of Interest #}
+
+
+{# Bus Stop Search #}
+<div class="section">
+	<div class="search">
+		<form method="get" action="{% url maps_busstop_search %}">
+    		<h2>Bus Stop Search</h2>
+    		<div class="note"><div class="bubble pad-10">
+				<label for="busstop_id">
+				Enter an 8-digit oxontime code, or a central stop number (e.g. 'G3')</label>
+    		</div></div>
+      		<p style="text-align:center">
+        		<input name="id" id="busstop_id"/>
+        		<input type="submit" value="Go!"/>
+      		</p>
+  		</form>
+	</div>
+</div>
+{# End Bus Stop Search #}
+
+{% endblock %}

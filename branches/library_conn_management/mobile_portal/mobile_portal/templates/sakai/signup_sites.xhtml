@@ -1,0 +1,13 @@
+{% extends "sakai/base.xhtml" %}
+
+{% block pagetitle %}Sites{% endblock %}
+
+{% block content %}
+
+<ul class="ml">
+{% for id, title in sites %}
+    <li><a href="{% url sakai_signup_site id %}">{{ title }}</a></li>
+{% endfor %}
+</ul>
+
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends "maps/base.xhtml" %}
+{% load maps %}
+
+{% block title %}m.ox | Bus stop: {{ entity.title }}{% endblock %}
+
+{% block extrahead %}
+{% if with_meta_refresh %}
+    <meta http-equiv="refresh" content="45" />
+{% endif %}
+    <script type="text/javascript">
+        last = {{ services_json|safe }};
+    </script>
+{#    <script type="text/javascript" src="{{ MEDIA_URL}}js/busstop.js"> </script> #}
+{% endblock %}
+
+
+{% block breadcrumbs %}
+{{ block.super }}
+	<li><a href="{% url maps_index %}">
+        {% if dumb %}Maps{% else %}<img src="{{ MEDIA_URL }}png/index-icons/maps-bc.png" alt="Maps"/>{% endif %}
+    </a></li>
+    <li><a href="{% url maps_nearby_detail entity.entity_type.slug %}" alt="Bus stops">{% if dumb %}Bus stops{% else %}&hellip;{% endif %}</a></li>
+{% endblock %}
+
+{% block pagetitle %}Bus stop{% endblock %}
+
+{% block content %}
+
+<div class="section">
+	<h2><small>{{ entity.title }}<br /><span id="time_now">{% now "G:i:s "%}</span></small></h2>
+
+	
+{% if services %}
+<table class="section-table">
+    <thead style="display:none;">
+        <tr>
+            <th>Service</th>
+            <th>Destination</th>
+            <th>Expected</th>
+        </tr>
+    </thead>
+    <tbody id="bus_times">
+{% for service in services %}
+        <tr>
+            <td rowspan="2" style="font-size:200%; text-align:center;">{{ service.0 }}</td>
+            <td>{{ service.1 }}</td>
+            <td>{{ service.2 }}</td>
+        </tr>
+        <tr class="notopborder">
+            <td colspan="2"><small>Next: {% if service.3 %}{{ service.3|join:", " }}{% else %}<em>No further info</em>{% endif %}</small></td>
+        </tr>
+{% endfor %}
+    </tbody>
+</table>
+
+
+{% else %}
+<div class="note"><div class="bubble pad-10">
+        Sorry, there is currently no bus time information for this stop.
+</div></div>
+{% endif %}
+
+<div class="backgrounded-image" style="background-image:url('{% map_url entity.location %}'); height:{{ device.max_image_height }}px">
+{% include "maps/map_elements.xhtml" %}
+</div>
+
+<ul>
+    <li class="round-bottom">
+    <a href="{% url maps_entity_nearby_list entity.entity_type.slug,entity.display_id %}" rel="nofollow">Find things near here</a>
+    </li>
+</ul>
+
+</div>
+
+{% endblock %}

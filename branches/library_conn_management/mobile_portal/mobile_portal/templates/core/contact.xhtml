@@ -1,0 +1,43 @@
+{% extends "core/base.xhtml" %}
+
+{% block pagetitle %}Feedback{% endblock %}
+{% block title %}m.ox | Feedback{% endblock %}
+
+
+{% block content %}
+
+{% if sent %}
+<div class="section">
+  <p>Thank you for your feedback!</p>
+{% if referer %}
+  <p>You may wish to go <a href="{{ referer }}">back from whence you came</a>.</p>
+{% else %}
+  <p>You may wish to go <a href="{% url core_index %}">back to the beginning</a>.</p>
+{% endif %}
+</div>
+{% endif %}
+
+
+<form method="post" action=".">
+<input type="hidden" name="referer" value="{{ referer }}"/>
+
+<div class="section">
+
+  <dl class="form">
+    <dt>{{ contact_form.email.label}}:</dt>
+{% if contact_form.email.errors %}
+    <dd>{{ contact_form.email.errors.0 }}</dd>
+{% endif %}    <dd>{{ contact_form.email }}</dd>
+    <dt>{{ contact_form.body.label}}:</dt>
+    <dd>{{ contact_form.body }}</dd>
+  </dl>
+  <p>
+    <input type="submit" value="Submit"/>
+  </p>
+</div>
+
+
+
+</form>
+
+{% endblock %}
