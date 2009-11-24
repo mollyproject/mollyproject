@@ -4,8 +4,8 @@ try:
     from multiprocessing.managers import BaseManager, BaseProxy
 except ImportError:
     from processing.connection import Listener
-#    from processing import Manager as BaseManager
-    from processing.managers import BaseProxy, BaseManager
+    from processing.managers import BaseProxy, BaseManager, CreatorMethod
+import sys
 from threading import Thread, Lock, Event
 from datetime import datetime, timedelta
 from time import sleep
@@ -55,20 +55,7 @@ class ResultsProxy(BaseProxy):
     def __iter__(self):
         return self._callmethod('__iter__')
 
-class Z3950Manager(BaseManager):
-    def __init__(self):
-                                 
-        super(Z3950Manager, self).__init__(
-            ('localhost', settings.Z3950_CONN_MANAGER_LISTEN_PORT),
-            authkey=settings.Z3950_CONN_MANAGER_AUTHKEY)
 
-        
-        print "Here"
-
-    def serve_forever(self):
-        self.zcm.serve_forever()
-        self.get_server().serve_forever()
-        self.zcm.leaving()
 
         
 class Z3950ConnectionManager(object):
@@ -207,16 +194,36 @@ class Z3950ConnectionManager(object):
         self.we_are_going_now.set()
 
 zcm = Z3950ConnectionManager()
-Z3950Manager.register(
-    'search',
-    zcm.Search,
-    proxytype=ResultsProxy,
-    exposed=(
-        '__len__',
-        '__getitem__',
-        '__iter__',
+
+class Z3950Manager(BaseManager):
+    def __init__(self):
+                                 
+        super(Z3950Manager, self).__init__(
+            ('localhost', settings.Z3950_CONN_MANAGER_LISTEN_PORT),
+            authkey=settings.Z3950_CONN_MANAGER_AUTHKEY)
+
+        
+        print "Here"
+
+    def serve_forever(self):
+        self.zcm.serve_forever()
+        self.get_server().serve_forever()
+        self.zcm.leaving()
+        
+    if sys.version_info < (2, 6):
+        search = CreatorMethod(zcm.Search)
+
+if sys.version_info >= (2.6):
+    Z3950Manager.register(
+        'search',
+        zcm.Search,
+        proxytype=ResultsProxy,
+        exposed=(
+            '__len__',
+            '__getitem__',
+            '__iter__',
+        )
     )
-)
 
 if __name__ == '__main__':
     manager = Z3950Manager()
