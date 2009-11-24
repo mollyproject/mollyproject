@@ -9,7 +9,7 @@
 
 
 <div class="section">
-    <h2 class="section-header">About results releases</h2>
+    <h2>About results releases</h2>
     <div class="note"><div class="bubble pad-10">
         This page lists the last twenty schools to have had results released. You can check your results using Student Self-Service from a desktop browser.
     </div></div>
@@ -19,7 +19,7 @@
 {% regroup items by pubDate as is %}
 {% for g in is %}
 	<div class="section">
-	<h2 class="section-header">{{ g.grouper|date:"d M Y" }}</h2>
+	<h2>{{ g.grouper|date:"d M Y" }}</h2>
 	<ul>
 {% for item in g.list %}
 	<li {% if forloop.last %}class="round-bottom"

@@ -11,7 +11,7 @@
 {# Favourites List (if exists) #}
 {% if preferences.maps.favourites %}
 <div class="section">
-	<h2 class="section-header">Favourites</h2>
+	<h2>Favourites</h2>
 	<ul>
 		{% for entity_ref in preferences.maps.favourites %}
 			{% with entity_ref|get_entity as entity %}
@@ -28,7 +28,7 @@
 <div class="section">
 <div class="search">
 	<form method="get" action="{% url googlesearch_index %}">
-		<h2 class="section-header">Search for Places</h2>
+		<h2>Search for Places</h2>
   		<p>
 			{{ search_form.query }}
 			<input type="hidden" name="application" value="maps">
@@ -42,7 +42,7 @@
 
 {# Points of Interest #}
 <div class="section">
-	<h2 class="section-header">Browse Points of Interest</h2>
+	<h2>Browse Points of Interest</h2>
 	<ul>
     	<li><a href="{% url maps_nearby_list %}">Near Me</a></li>
 		<li class="round-bottom"><a href="{% url maps_category_list %}">By Category</a></li>
@@ -55,7 +55,7 @@
 <div class="section">
 	<div class="search">
 		<form method="get" action="{% url maps_busstop_search %}">
-    		<h2 class="section-header">Bus Stop Search</h2>
+    		<h2>Bus Stop Search</h2>
     		<div class="note"><div class="bubble pad-10">
 				<label for="busstop_id">
 				Enter an 8-digit oxontime code, or a central stop number (e.g. 'G3')</label>

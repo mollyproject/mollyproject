@@ -17,7 +17,7 @@
 {% block content %}
 
 <div class="section">
-	<h2 class="section-header">{{ data.dc_title }}</h2>
+	<h2>{{ data.dc_title }}</h2>
 
 	<dl>
 	{% if data.oxp_hasHomepage or data.oxp_hasITHomepage or data.oxp_hasWeblearn or data.oxp_hasLibraryHomepage %}
@@ -91,7 +91,7 @@
 
 {% if data.oxp_inImage %}
 <div class="section">
-	<h2 class="section-header">Images</h2>
+	<h2>Images</h2>
 	{% for image in data.oxp_inImage %}
 		{% external_image image.uri asdiv %}
 	{% endfor %}
@@ -100,7 +100,7 @@
 
 
 <div class="section">
-    <h2 class="section-header">Map</h2>
+    <h2>Map</h2>
 	{% if entity.location %}
 	<div class="backgrounded-image" style="background-image:url('{% map_url entity.location %}'); height:{{ device.max_image_height }}px">
 		{% include "maps/map_elements.xhtml" %}

@@ -58,31 +58,39 @@
         <hr/>
         <div class="section">
             <h2>Session</h2>
+			<div class="bubble pad-10">
             <p>{{ session }}</p>
+			</div>
         </div>
 
         <hr/>
         <div class="section">
             <h2>Device</h2>
+			<div class="bubble pad-10">
             <p>{{ device.brand_name }} {{ device.model_name }} ({{ device.devid }})</p>
             <p>{{ device.devua }}</p>
             <p>{{ ua }}</p>
+			</div>
         </div>
     
         <hr/>
         <div class="section">
             <h2>Meta</h2>
+			<div class="bubble pad-10">
             <dl>
     {% for a,b in meta.items %}
                 <dt>{{ a }}</dt>
                 <dd>{{ b }}</dd>
     {% endfor %}
             </dl>
+		    </div>
         </div>
     
-        <div class="list-section">
+        <div class="section">
             <h2>Preferences</h2>
+			<div class="bubble pad-10">
             <p>{{ preferences }}</p>
+			</div>
         </div>        
 {% endif %}
 

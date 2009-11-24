@@ -25,7 +25,7 @@
 {% block content %}
 
 <div class="section">
-<h2 class="section-header">{{ webcam.title }}<br /><small>{% now "G:i "%}</small></h2>
+<h2>{{ webcam.title }}<br /><small>{% now "G:i "%}</small></h2>
 
 {% if eis %}
 <div class="backgrounded-image" style="background-image:url('{{ eis.get_absolute_url }}'); height:{{ eis.height }}px;"> </div>

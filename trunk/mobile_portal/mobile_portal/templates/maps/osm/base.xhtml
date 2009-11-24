@@ -15,7 +15,7 @@
 {% block content %}
 
 <div class="section-nopad">
-<h2 class="section-header">{{ entity.title }}</h2>
+<h2>{{ entity.title }}</h2>
 
 <div class="backgrounded-image" style="background-image:url('{% map_url entity.location %}'); height:{{ device.max_image_height }}px">
 {% include "maps/map_elements.xhtml" %}
@@ -65,7 +65,7 @@
 </div>
 
 <div class="list-section">
-<h2 class="section-header">Note</h2>
+<h2>Note</h2>
 
 <div class="list-note bottom">
     This information is provided courtesy of

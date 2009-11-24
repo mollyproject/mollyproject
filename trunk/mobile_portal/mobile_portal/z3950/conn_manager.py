@@ -80,7 +80,7 @@ class Z3950ConnectionManager(object):
                             print "Sessionkey %s is %d seconds old " % (sessionkey, (datetime.now() - connection.last_used).seconds)
                 for i in range(10):
                     sleep(1)
-                    if self.we_are_going_now.is_set():
+                    if self.we_are_going_now.isSet():
                         raise SystemExit
         except SystemExit:
             pass
@@ -196,7 +196,7 @@ class Z3950ConnectionManager(object):
 zcm = Z3950ConnectionManager()
 
 class Z3950Manager(BaseManager):
-    def __init__(self):
+    def __init__(self, address=None, authkey=None):
                                  
         super(Z3950Manager, self).__init__(
             ('localhost', settings.Z3950_CONN_MANAGER_LISTEN_PORT),
@@ -207,18 +207,30 @@ class Z3950Manager(BaseManager):
 
     def serve_forever(self):
         self.zcm.serve_forever()
-        self.get_server().serve_forever()
+        try:
+            self.get_server().serve_forever()
+        except:
+            super(Z3950Manager, self).serve_forever()
         self.zcm.leaving()
         
     if sys.version_info < (2, 6):
-        search = CreatorMethod(zcm.Search)
+        search = CreatorMethod(
+            zcm.Search,
+            proxytype=ResultsProxy,
+            exposed=(
+                '__len__',
+                '__getitem__',
+                '__iter__',
+            )
+        )
         
-        def from_address(self):
-            return super(Z3950Manager, self).from_address(
+        @classmethod
+        def from_address(cls):
+            return super(cls, cls).from_address(
                 address=('localhost', settings.Z3950_CONN_MANAGER_LISTEN_PORT),
                 authkey=settings.Z3950_CONN_MANAGER_AUTHKEY)
 
-if sys.version_info >= (2.6):
+if sys.version_info >= (2, 6):
     Z3950Manager.register(
         'search',
         zcm.Search,

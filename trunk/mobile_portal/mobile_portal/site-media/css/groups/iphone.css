@@ -80,16 +80,17 @@ li#menu-weather {background-image:url('../../png/index-icons/weather.png');}
 
 
 /* Standard List Styles */
-ul {
+ul, ol.search-results {
     list-style: none;
     padding: 0; margin: 0;
 }
+
 
 ul.stand-alone {
     margin: 10px;
 }
 
-ul li {
+ul li, ol.search-results li {
     font-size:12pt;
     color:#ffffff;
     border-top:1px solid #98a1ac;
@@ -97,7 +98,8 @@ ul li {
     padding: 10px;
     display:block;
 }
-ul li a {
+
+ul li a, ol.search-results li a {
     color:#ffffff;
     text-decoration:none;
     display:block;
@@ -213,17 +215,23 @@ div.search button[type="submit"] {
 
 
 
-/* Generic */
+/*** Generic ***/
 div.section {
     background:#B88C54 url('../../png/new/gradients/gradient-50-nrWhite-Transparent.png') repeat-x;
     margin:10px;
     -webkit-border-radius:8px;
 }
-h2.section-header {
+h2 {
     text-align:center;
     color:white;
     padding: 5px 0; margin: 0;
 }
+h3 {
+    color:white;
+    padding: 5px 5px; margin: 0;
+    text-align: center;
+}
+
 div.center {
     text-align:center;
 }
@@ -240,11 +248,22 @@ div.note {
     padding: 5px;
     font-size: 12pt;
 }
-
 div.note a{
     color: #002B4C;;
 }
 
+.round-top {
+    -webkit-border-top-left-radius: 8px;
+    -webkit-border-top-right-radius: 8px;
+    border-top: 0;
+}
+.round-bottom {
+    -webkit-border-bottom-left-radius: 8px;
+    -webkit-border-bottom-right-radius: 8px;
+}
+div.pad-10 {
+    padding: 10px;
+}
 /* End Generic */
 
 
@@ -263,21 +282,8 @@ div.article {
     color: #000000;
     font-size:12pt;
 }
+/* End News Articles */
 
-.round-top {
-    -webkit-border-top-left-radius: 8px;
-    -webkit-border-top-right-radius: 8px;
-    border-top: 0;
-}
-.round-bottom {
-    -webkit-border-bottom-left-radius: 8px;
-    -webkit-border-bottom-right-radius: 8px;
-}
-
-div.pad-10 {
-    padding: 10px;
-}
-/* End Generic */
 
 /* Weather */
 div.weather-icon {
@@ -285,18 +291,15 @@ div.weather-icon {
     width: 128px;
     vertical-align:top;
 }
-
 div.weather-live-info {
     display:inline-block;
     vertical-align: top;
     width: 150px;
 }
-
 div.weather-live-info ul {
     list-style: none;
     padding: 0; margin: 0;
 }
-
 div.weather-live-info li {
     background: none;
     border: none;
@@ -306,7 +309,6 @@ div.weather-live-info li {
     color:#ffffff;
     display:block;
 }
-
 table.weather-forecast {
     padding: 20px;
     width: 100%;

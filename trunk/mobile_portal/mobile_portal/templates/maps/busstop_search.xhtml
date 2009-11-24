@@ -15,7 +15,7 @@
 
 {% if search_form.is_valid %}
 	<div class="section">
-	  <h2 class="section-header">Results</h2>
+	  <h2>Results</h2>
 	{% if entities %}
 	  <ul>
 	{% for entity in entities %}
@@ -35,7 +35,7 @@
 <div class="section">
 	<div class="search">
   <form method="get" action=".">
-    <h2 class="section-header">
+    <h2>
       {{ search_form.id.label }}
     </h2>
     <div class="note"><div class="bubble pad-10"><label for="busstop_id">

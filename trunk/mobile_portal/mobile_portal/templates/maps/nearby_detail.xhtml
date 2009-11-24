@@ -27,7 +27,7 @@
 {% block content %}
 
 <div class="list-section">
-  <h2 class="section-header">
+  <h2>
     Found {{ count }}
     {% ifequal count 1 %}
       {{ entity_types.0.verbose_name }}
@@ -95,7 +95,7 @@
 <!--
 {% ifequal entity_type.source "osm" %}
 <div class="section-nopad">
-<h2 class="section-header">Note</h2>
+<h2>Note</h2>
 
 <div class="list-note bottom">
     This information is provided courtesy of
