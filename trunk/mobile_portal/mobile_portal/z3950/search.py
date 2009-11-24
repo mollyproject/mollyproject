@@ -1,4 +1,4 @@
-import re, urllib, simplejson
+import re, urllib, simplejson, sys
 from datetime import datetime
 from PyZ3950 import zoom
 
@@ -196,8 +196,11 @@ class OLISResult(object):
 
 class OLISSearch(object):
     def __init__(self, sessionkey, query):
-        manager = Z3950Manager()
-        manager.connect()
+        if sys.version_info >= (2, 6):
+            manager = Z3950Manager()
+            manager.connect()
+        else:
+            manager = Z3950Manager.from_address()
         self.results = manager.search(sessionkey, query)
     
     def __len__(self):

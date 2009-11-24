@@ -212,6 +212,11 @@ class Z3950Manager(BaseManager):
         
     if sys.version_info < (2, 6):
         search = CreatorMethod(zcm.Search)
+        
+        def from_address(self):
+            return super(Z3950Manager, self).from_address(
+                address=('localhost', settings.Z3950_CONN_MANAGER_LISTEN_PORT),
+                authkey=settings.Z3950_CONN_MANAGER_AUTHKEY)
 
 if sys.version_info >= (2.6):
     Z3950Manager.register(
