@@ -75,62 +75,6 @@ li#menu-z3950 {background-image:url('../../png/index-icons/z3950.png');}
 li#menu-weather {background-image:url('../../png/index-icons/weather.png');}
 /* End Index Page Specific */
 
-
-
-
-
-/* Standard List Styles */
-ul, ol.search-results {
-    list-style: none;
-    padding: 0; margin: 0;
-}
-
-
-ul.stand-alone {
-    margin: 10px;
-}
-
-ul li, ol.search-results li {
-    font-size:12pt;
-    color:#ffffff;
-    border-top:1px solid #98a1ac;
-    background-color:#002B4C;
-    padding: 10px;
-    display:block;
-}
-
-ul li a, ol.search-results li a {
-    color:#ffffff;
-    text-decoration:none;
-    display:block;
-    
-    padding-right: 20px; /* Moves background image (ul li a) away from edge */
-    text-align: left;
-    background-position: right center;
-    background-repeat: no-repeat;
-    background-image:url('../../png/icons/list-arrow.png'); /* Default background image */
-}
-
-ul li span {
-    background-position: left;
-    background-repeat: no-repeat;
-    display:block;
-    padding-left: 25px;
-}
-
-/* Background images primarily for list items */
-.phone {background-image:url('../../png/icons/list-phone.png');}
-.email {background-image:url('../../png/icons/list-email.png');}
-.external {background-image:url('../../png/icons/list-external.png');}
-.external-mobile {background-image:url('../../png/icons/list-external-mobile.png');}
-.audio {background-image:url('../../png/icons/list-audio.png');}
-.video {background-image:url('../../png/icons/list-video.png');}
-/* End background images for list items */
-/* End Standard List Styles */
-
-
-
-
 /* Breadcrumb Trail Styles */
 div#bc-header {
     height:34px;
@@ -191,27 +135,49 @@ h1#bc-title.weather-header {  background-image:url('../../png/index-icons/weathe
 
 
 
-/* Contact Search */
-div.search {
-    text-align: center;
-    padding:5px; margin: 0;
+/* Standard List Styles */
+ul, ol.search-results {
+    list-style: none;
+    padding: 0; margin: 0;
+}
+ul.stand-alone {
+    margin: 10px;
+}
+ul li, ol.search-results li {
+    font-size:12pt;
+    color:#ffffff;
+    border-top:1px solid #98a1ac;
+    background-color:#002B4C;
+    padding: 10px;
+    display:block;
+}
+ul li a, ol.search-results li a {
+    color:#ffffff;
+    text-decoration:none;
+    display:block;
+    
+    padding-right: 20px; /* Moves background image (ul li a) away from edge */
+    text-align: left;
+    background-position: right center;
+    background-repeat: no-repeat;
+    background-image:url('../../png/icons/list-arrow.png'); /* Default background image */
+}
+ul li span {
+    background-position: left;
+    background-repeat: no-repeat;
+    display:block;
+    padding-left: 25px;
 }
 
-div.search input#id_query {
-    width:90%;
-    font-size: 1.4em;
-    height: 1.4em;
-}
-
-/* CSS 2.1 */
-div.search button[type="submit"] {
-    min-width: 80px ;
-    font-size: 1.3em;
-    min-height: 1.3em; 
-}
-/* End Contact Search */
-
-
+/* Background images primarily for list items */
+.phone {background-image:url('../../png/icons/list-phone.png');}
+.email {background-image:url('../../png/icons/list-email.png');}
+.external {background-image:url('../../png/icons/list-external.png');}
+.external-mobile {background-image:url('../../png/icons/list-external-mobile.png');}
+.audio {background-image:url('../../png/icons/list-audio.png');}
+.video {background-image:url('../../png/icons/list-video.png');}
+/* End background images for list items */
+/* End Standard List Styles */
 
 
 
@@ -316,7 +282,7 @@ table.weather-forecast {
 }
 /* End Weather */
 
-/* Library */
+/* Library Search */
 div#library-search ul li{
     border: none;
     padding: 5px 0;
@@ -325,5 +291,35 @@ div#library-search ul li{
     display:block;
     background: none;
 }
-
 /* End Library */
+
+/* Forms/Search */
+div.form {
+    text-align: center;
+    padding:5px; margin: 0;
+}
+div.form input#id_query {
+    width:90%;
+    font-size: 1.4em;
+    height: 1.4em;
+}
+
+div.form input#id_email {
+    width:90%;
+    font-size: 1.4em;
+    height: 1.4em;
+}
+
+div.form textarea#id_body {
+    width:90%;
+    font-size: 1.4em;
+    font-size: 1.4em;
+}
+/* CSS 2.1 */
+div.form button[type="submit"] {
+    min-width: 80px ;
+    font-size: 1.3em;
+    min-height: 1.3em; 
+}
+/* End Forms/Search */
+

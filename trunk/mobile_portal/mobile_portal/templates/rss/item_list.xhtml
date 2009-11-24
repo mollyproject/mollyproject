@@ -1,4 +1,4 @@
-{% extends "rss/base.xhtml" %}
+{% extends "rss/base.xhtml" %}{% load portal_misc %}
 
 {% block breadcrumbs %}
 {{ block.super }}
@@ -19,8 +19,16 @@
 {% for item in feed.rssitem_set.all %}
         <li>
             <a href="{{ item.get_absolute_url }}">
-                {{ item.title }}<br/>
-                <small>Item updated: <em>{{ item.last_modified_local|date:"D j M Y \a\t H:m" }}</em></small>
+                <small><em>
+                {% if not item.last_modified_local|this_year %}
+                    {{ item.last_modified_local|date:"j M Y \a\t H:m" }}
+                {% else %}
+                    {{ item.last_modified_local|date:"j M"}}
+                {% endif %}
+                
+                </em></small>
+                <br />{{ item.title }}
+                
             </a>
         </li>
 {% endfor %}
