@@ -1,5 +1,11 @@
-from multiprocessing.connection import Listener
-from multiprocessing.managers import BaseManager, BaseProxy
+from __future__ import with_statement
+try:
+    from multiprocessing.connection import Listener
+    from multiprocessing.managers import BaseManager, BaseProxy
+except ImportError:
+    from processing.connection import Listener
+#    from processing import Manager as BaseManager
+    from processing.managers import BaseProxy, BaseManager
 from threading import Thread, Lock, Event
 from datetime import datetime, timedelta
 from time import sleep
@@ -71,7 +77,7 @@ class Z3950ConnectionManager(object):
         self.translator = MARC8_to_Unicode()
         
     def log(self, **kwargs):
-        with self.log_lock:
+         with self.log_lock:
             print kwargs
         
     def purge_connections(self):
