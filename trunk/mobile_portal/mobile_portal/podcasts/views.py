@@ -1,7 +1,7 @@
 # Create your views here.
 import urllib
 from xml.etree import ElementTree as ET
-from django.http import HttpResponseRedirect, HttpResponse, Http404
+from django.http import HttpResponseRedirect, HttpResponsePermanentRedirect, HttpResponse, Http404
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 from mobile_portal.core.renderers import mobile_render
@@ -12,7 +12,7 @@ from mobile_portal.podcasts import TOP_DOWNLOADS_RSS_URL
 from mobile_portal.wurfl import device_parents
 from mobile_portal.googlesearch.forms import GoogleSearchForm
 
-from mobile_portal.core.breadcrumbs import Breadcrumb, BreadcrumbFactory, lazy_reverse, lazy_parent
+from mobile_portal.core.breadcrumbs import Breadcrumb, BreadcrumbFactory, lazy_reverse, lazy_parent, NullBreadcrumb
 
 OPML_FEED = 'http://rss.oucs.ox.ac.uk/oxitems/podcastingnewsfeeds.opml'
 
@@ -80,6 +80,10 @@ class CategoryDetailView(BaseView):
         return mobile_render(request, context, 'podcasts/category_detail')
 
 class PodcastDetailView(BaseView):
+    class RespondThus(Exception):
+        def __init__(self, response):
+            self.response = response
+            
     def get_metadata(cls, request, identifier=None, podcast=None):
         if not podcast:
             podcast = get_object_or_404(Podcast, identifier=identifier)
@@ -99,7 +103,7 @@ class PodcastDetailView(BaseView):
             'podcast': podcast,
             'category': podcast.category,
         }
-
+    
     @BreadcrumbFactory
     def breadcrumb(cls, request, context, identifier=None, podcast=None):
         return Breadcrumb('podcasts',
@@ -108,7 +112,9 @@ class PodcastDetailView(BaseView):
                           context['podcast'].title,
                           lazy_reverse('podcasts_podcast_detail'))
         
-    def handle_GET(cls, request, context, identifier=None, podcast=None):        
+    def handle_GET(cls, request, context, identifier=None, podcast=None):
+        if 'response' in context:
+            return context['response']        
         
         items = context['podcast'].podcastitem_set.order_by('order','-published_date')
         
@@ -157,3 +163,23 @@ def itunesu_redirect(request):
     else:
         return HttpResponseRedirect("http://deimos.apple.com/WebObjects/Core.woa/Browse/ox-ac-uk-public")
         
+class RedirectOldLinksView(BaseView):
+    breadcrumb = NullBreadcrumb
+    
+    def get_metadata(cls, request, code, id=None, medium=None):
+        if id:
+            podcast = get_object_or_404(Podcast, category__code=code, id=int(id))
+            return PodcastDetailView.get_metadata(request, podcast=podcast)
+        else:
+            return CategoryDetailView.get_metadata(request, code, medium)
+    
+    def handle_GET(cls, request, context, code, id=None, medium=None):
+        category = get_object_or_404(PodcastCategory, code=code)
+        if id:
+            podcast = get_object_or_404(Podcast, category=category, id=int(id))
+            url = reverse('podcasts_podcast', args=[podcast.identifier])
+        elif medium:
+            url = reverse('podcasts_category_medium', args=[category.code,medium])
+        else:
+            url = reverse('podcasts_category', args=[category.code])
+        return HttpResponsePermanentRedirect(url)

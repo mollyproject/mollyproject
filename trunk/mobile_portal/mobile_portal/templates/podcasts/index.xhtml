@@ -13,11 +13,11 @@
 <P>Podcasts are also available from the University's iTunes U site, which you can view on your device.</p>
 <p>Please note that this will close Safari.</p>
 <form method="post" action="{% url podcasts_itunesu_redirect %}">
-<p><input type="checkbox" name="remember" id="remember"/>
+{% comment %}<p><input type="checkbox" name="remember" id="remember"/>
    <label for="remember">
    Remember this preference in future.
    </label>
-</p>
+</p>{% endcomment %}
 <p style="text-align:center">
     <button type="submit" name="use_itunesu" value="yes">Go to iTunes U</button>
     <button type="submit" name="cancel" id="hide_itunesu_link" value="no">Stay on m.ox</button>
@@ -46,7 +46,7 @@
 
 
 <div class="section" >
-	<h2>By category</h2>
+	<h2>By division</h2>
 <ul>
 {% for category in categories %}
     <li {% if forloop.last %}class="round-bottom" {% endif %}>
