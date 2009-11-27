@@ -125,15 +125,15 @@ class SearchDetailView(BaseView):
         query, removed = [], set()
         title, author, isbn = '', '', ''
         if search_form.cleaned_data['author']:
-            author, new_removed = clean_input(search_form.cleaned_data['author'])
+            author, new_removed = cls.clean_input(search_form.cleaned_data['author'])
             removed |= new_removed
             query.append('(au="%s")' % author)
         if search_form.cleaned_data['title']:
-            title, new_removed = clean_input(search_form.cleaned_data['title'])
+            title, new_removed = cls.clean_input(search_form.cleaned_data['title'])
             removed |= new_removed
             query.append('(ti="%s")' % title)
         if search_form.cleaned_data['isbn']:
-            isbn = clean_isbn(search_form.cleaned_data['isbn'])
+            isbn = cls.clean_isbn(search_form.cleaned_data['isbn'])
             query.append('(isbn=%s)' % isbn)
             
         if (title or author) and isbn:
