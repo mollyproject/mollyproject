@@ -9,10 +9,10 @@ DEVICE_SPECIFIC_MEDIA = {
 #        'js': frozenset(['js/devices/apple_iphone.js']),
 #        'css': frozenset(['css/devices/apple_iphone.css']),
 #    },
-    'blackberry_generic_ver4_sub10': {
-        'js': frozenset(),
-        'css': frozenset(['css/devices/rim_blackberry.css']),
-    },
+#    'blackberry_generic_ver4_sub10': {
+#        'js': frozenset(),
+#        'css': frozenset(['css/devices/rim_blackberry.css']),
+#    },
 #    'generic': { # Firefox, actually
 #        'js': frozenset(['js/devices/apple_iphone.js']),
 #        'css': frozenset(['css/devices/apple_iphone.css']),
@@ -29,10 +29,11 @@ def device_specific_media(request):
     """
     
     device, browser = request.device, request.browser
+
     if device.brand_name == 'Apple' and tuple(map(int, device.device_os_version.split('.'))) >= (1,):
         style_group = "iphone"
     else:
-        style_group = "generic"
+        style_group = "iphone"
 
     return {
         'style_group': style_group,

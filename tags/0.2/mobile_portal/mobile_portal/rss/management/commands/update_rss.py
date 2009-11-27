@@ -19,6 +19,7 @@ class Command(NoArgsCommand):
             guids = set()
             
             for x_item in feed_data.entries:
+                print x_item
                 guid, last_modified = x_item.id, datetime(*x_item.date_parsed[:7])
                 
                 for i in items:

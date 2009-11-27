@@ -4,7 +4,7 @@ $(document).ready(function () {
     
     if (page == page_count) {
         $('#more_contact_results').remove();
-        $('#people').children().slice(-1).removeClass('notbottom');
+        $('#people').children().slice(-1).removeClass('round-bottom');
         return;
     }
     
@@ -63,7 +63,7 @@ $(document).ready(function () {
                 current_page = Number($('#h_current_page').val());
                 $('#h_current_page').val(current_page+1);
                 
-                new_person.addClass('notbottom');
+                new_person.addClass('round-bottom');
             }
                 
         });

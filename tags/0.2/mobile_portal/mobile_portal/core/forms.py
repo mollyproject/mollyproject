@@ -13,7 +13,7 @@ class LocationShareAddForm(forms.Form):
     limit = forms.FloatField(widget=forms.TextInput(attrs={'size':4}), required=False)
     accuracy = forms.ChoiceField(choices=LOCATION_ACCURACY_CHOICES)
     
-class ContactForm(forms.Form):
+class FeedbackForm(forms.Form):
     email = forms.EmailField(label="Your e-mail address (optional)", required=False)
     body = forms.CharField(widget=forms.Textarea(), label="Feedback")
 

@@ -30,6 +30,7 @@ class Command(BaseCommand):
     CATEGORY_ORDERS = {}
 
     CATEGORY_RE = re.compile('/([^\/]+)/([^,]+)')
+    
     @staticmethod
     def decode_category(category):
         category = dict(Command.CATEGORY_RE.match(s).groups() for s in category.split(','))
@@ -76,6 +77,7 @@ class Command(BaseCommand):
                 'philfac/uehiro-podcasts': 'audio',
                 'offices/undergrad-podcasts': 'audio',
             }.get(match_groups[0], match_groups[1])
+            podcast.identifier = match_groups[0]
 
             rss_urls.append(attrib['xmlUrl'])
 

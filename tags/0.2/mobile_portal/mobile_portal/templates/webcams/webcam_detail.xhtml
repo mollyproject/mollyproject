@@ -2,6 +2,12 @@
 {% load portal_misc %}
 
 {% block extrahead %}
+
+
+{% comment %}
+		TODO - Stop meta refresh if JS enabled
+{% endcomment %}
+
     <meta http-equiv="refresh" content="60" />
 {% endblock %}
 
@@ -18,23 +24,25 @@
 
 {% block content %}
 
-<div class="section-nopad">
-<h2 class="section-header">{{ webcam.title }}<br /><small>{% now "G:i "%}</small></h2>
+<div class="section">
+<h2>{{ webcam.title }}<br /><small>{% now "G:i "%}</small></h2>
 
 {% if eis %}
 <div class="backgrounded-image" style="background-image:url('{{ eis.get_absolute_url }}'); height:{{ eis.height }}px;"> </div>
 {% else %}
-<div class="section-content">
+<div class="note"><div class="bubble pad-10">
     Unfortunately, this webcam is currently unavailable. Please try again later.
-</div>
+</div></div>
 {% endif %}
 
-<div class="list-footer">
+
+
+<div class="note"><div class="bubble pad-5">
 <p><small>{{ webcam.description }}</small></p>
 
 {% if webcam.credit %}
-<p><small>Credit: {{ webcam.credit|safe }}</small></p>
+<p><small>{{ webcam.credit|safe }}</small></p>
 {% endif %}
 
-</div></div>
+</div></div></div>
 {% endblock %}

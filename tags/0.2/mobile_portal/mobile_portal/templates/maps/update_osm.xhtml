@@ -1,17 +1,6 @@
 {% extends "maps/base.xhtml" %}
 {% load maps %}{% load portal_misc %}
 
-{% block breadcrumbs %}
-{{ block.super }}
-	<li><a href="{% url maps_index %}">
-        {% if dumb %}Maps{% else %}<img src="{{ MEDIA_URL }}png/index-icons/maps-bc.png" alt="Maps"/>{% endif %}
-    </a></li>
-    <li><a href="{{ entity.get_absolute_url }}">
-        {% if dumb %}{{ entity.entity_type.verbose_name_plural|capfirst }}{% else %}&hellip;{% endif %}</a></li>
-{% endblock %}
-
-{% block pagetitle %}Update map{% endblock %}
-
 {% block title %}m.ox | Update {{ entity.title }}{% endblock %}
 
 {% block extrahead %}{{ block.super }}
@@ -20,7 +9,7 @@
 {% block content %}
 
 <div class="section-nopad">
-  <h2 class="section-header">Important information</h2>
+  <h2>Important information</h2>
   
   <div class="section-content" style="text-align:left;">
     <p>
@@ -55,7 +44,7 @@
 </div>
 
 <div class="section-nopad">
-  <h2 class="section-header">Map</h2>
+  <h2>Map</h2>
   <div class="list-note"><div class="bubble">
     You are submitting an update to the {{ entity.entity_type.verbose_name }}
     <em>&quot;{{ entity.title }}&quot;</em>.

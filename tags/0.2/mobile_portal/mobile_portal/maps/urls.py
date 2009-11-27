@@ -1,6 +1,6 @@
 from django.conf.urls.defaults import *
 
-from mobile_portal.core.views import static_detail
+from mobile_portal.core.views import StaticDetailView
 
 from views import (
     IndexView,
@@ -16,40 +16,40 @@ from views import (
 
 urlpatterns = patterns('mobile_portal.maps.views',
     (r'^$',
-        IndexView(), {},
+        IndexView, {},
         'maps_index'),
     
     (r'^nearby/$', 
-        NearbyListView(), {},
+        NearbyListView, {},
         'maps_nearby_list'),
     (r'^nearby/(?P<ptypes>[^/;]+(\;[^/;]+)*)/$',
-        NearbyDetailView(), {},
+        NearbyDetailView, {},
         'maps_nearby_detail'),
     
     (r'^category/$',
-        CategoryListView(), {},
+        CategoryListView, {},
         'maps_category_list'),
     (r'^category/(?P<ptypes>[^/;]+(\;[^/;]+)*)/$',
-        CategoryDetailView(), {},
+        CategoryDetailView, {},
         'maps_category_detail'),
 
     
     (r'^(?P<type_slug>[a-z_]+):(?P<id>[\dA-Z]+)/$',
-        EntityDetailView(), {},
+        EntityDetailView, {},
         'maps_entity'),
     (r'^(?P<type_slug>[a-z_]+):(?P<id>[\dA-Z]+)/nearby/$',
-        NearbyEntityListView(), {},
+        NearbyEntityListView, {},
         'maps_entity_nearby_list'),
     (r'^(?P<type_slug>[a-z_]+):(?P<id>[\dA-Z]+)/nearby/(?P<ptype>[^/]+)/$',
-        NearbyEntityDetailView(), {},
+        NearbyEntityDetailView, {},
         'maps_entity_nearby_detail'),
 
     (r'^(?P<type_slug>[a-z_]+):(?P<id>[\dA-Z]+)/update/$',
-        EntityUpdateView(), {},
+        EntityUpdateView, {},
         'maps_entity_update'),
         
     (r'^busstop_search/$',
-        BusstopSearchView(), {},
+        BusstopSearchView, {},
         'maps_busstop_search'),
         
     
@@ -62,7 +62,7 @@ urlpatterns = patterns('mobile_portal.maps.views',
         'maps_without_location'),
     
     (r'^openstreetmap/$',
-        static_detail,
+        StaticDetailView,
         {'title':'About OpenStreetMap', 'template':'openstreetmap'},
         'maps_static_openstreetmap'),
    

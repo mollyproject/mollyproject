@@ -2,6 +2,7 @@ import unittest, sys, inspect
 from django.conf import settings
 from django.utils.importlib import import_module
 from mobile_portal.core.handlers import BaseView
+from mobile_portal.core.breadcrumbs import NullBreadcrumb
 from search import GoogleSearch
 
 class Argspec(tuple):
@@ -32,29 +33,50 @@ class GenericSearchTestCase(unittest.TestCase):
                     continue
 
                 metadata_sig = None
+                breadcrumb_sig = None
                 handler_sigs = []
                 initial_context_sig = None
 
                 for func_name in dir(view):
                     func = getattr(view, func_name)
-
+                    
+                    
                     if func_name == 'get_metadata':
                         metadata_sig = getargspec(func)
                     elif func_name == 'initial_context':
                         initial_context_sig = getargspec(func)
                     elif func_name.startswith('handle_') and func_name[7:].upper() == func_name[7:]:
                         handler_sigs.append( (func_name, getargspec(func)) )
+                    elif func_name == 'breadcrumb':
+                        if func is NullBreadcrumb:
+                            breadcrumb_sig = True
+                            continue
+                        else:
+                            breadcrumb_sig = getargspec(func.breadcrumb_func)
+                    else:
+                        continue
+                    
+                    if func_name in view.__dict__:
+                        self.assert_(
+                            isinstance(view.__dict__[func_name], classmethod),
+                            "%s.%s.%s must be a classmethod, not %s" % (
+                                app_name, view_name, func_name, type(view.__dict__[func_name])
+                            )
+                        )
 
                 if not handler_sigs:
                     continue
+                    
+                if not breadcrumb_sig:
+                    self.fail('%s.%s does not define a breadcrumb' % (app_name, view_name))
 
                 # Keep track of the first handler sig to compare things to
                 fhn, fhs = handler_sigs[0]
-
+                
                 self.assertEqual(
                     fhs.args[:3],
-                    ['self','request','context'],
-                    "View handler %s.views.%s.%s must take (self, request, context) as its first three arguments" % (
+                    ['cls','request','context'],
+                    "View handler %s.views.%s.%s must take (cls, request, context) as its first three arguments" % (
                         app_name, view_name, fhn,
                     )
                 )
@@ -107,6 +129,14 @@ class GenericSearchTestCase(unittest.TestCase):
                         "get_metadata() for %s.views.%s takes **%s when it shouldn't" % (
                             app_name, view_name, metadata_sig.keywords
                         ),
+                    )
+                
+                if breadcrumb_sig != True:
+                    self.assertEqual(
+                        breadcrumb_sig, fhs,
+                        "breadcrumb signature for %s.%s differs from its view handlers (%s, %s)" % (
+                            app_name, view_name, breadcrumb_sig, fhs
+                        )
                     )
 
 

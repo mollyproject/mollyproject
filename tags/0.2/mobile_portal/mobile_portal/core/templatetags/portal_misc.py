@@ -1,4 +1,5 @@
 import simplejson, urllib, urllib2
+from datetime import datetime
 from django import template
 from django.utils.safestring import mark_safe
 
@@ -21,7 +22,12 @@ def lte(value, arg):
 @register.filter(name="contains")
 def gte(value, arg):
     return arg in value
-    
+
+@register.filter
+def this_year(value, arg=None):
+    if not arg:
+        arg = datetime.now()
+    return value.year == arg.year
     
 @register.filter(name="oxp_id")
 def oxp_id(value):

@@ -1,4 +1,4 @@
-{% extends "rss/base.xhtml" %}
+{% extends "rss/base.xhtml" %}{% load portal_misc %}
 
 {% block breadcrumbs %}
 {{ block.super }}
@@ -12,15 +12,22 @@
 
 {% block content %}
 
-<div class="list-section">
-    <h2 class="section-header">{{ feed.title }}</h2>
+<div class="section">
+    <h2>{{ feed.title }}</h2>
     
-    <ul class="ml">
+    <ul>
 {% for item in feed.rssitem_set.all %}
-        <li>
+        <li {% if forloop.last %}class="round-bottom"{% endif %}>
             <a href="{{ item.get_absolute_url }}">
-                {{ item.title }}<br/>
-                <small>Item updated: <em>{{ item.last_modified_local|date:"D j M Y \a\t H:m" }}</em></small>
+                {{ item.title }}<br />
+                <small><em>
+                {% if not item.last_modified_local|this_year %}
+                    {{ item.last_modified_local|date:"j M Y \a\t H:m" }}
+                {% else %}
+                    {{ item.last_modified_local|date:"j M"}}
+                {% endif %}
+                </em></small>
+                
             </a>
         </li>
 {% endfor %}

@@ -1,20 +1,29 @@
 # Create your views here.
 import urllib, re, email.utils, time, datetime
 from xml.etree import ElementTree as ET
+
 from mobile_portal.core.renderers import mobile_render
 from mobile_portal.core.handlers import BaseView
+
+from mobile_portal.core.breadcrumbs import Breadcrumb, BreadcrumbFactory, lazy_reverse, lazy_parent
+
 
 class IndexView(BaseView):
     RSS_FEED = 'http://twitter.com/statuses/user_timeline/46711686.rss'
     RESULT_RE = re.compile(r"(?P<code>[A-Z]+) \((?P<title>.+)\)")
     
-    def get_metadata(self, request):
+    def get_metadata(cls, request):
         return {
             'title': 'Results releases',
             'additional': 'View recently released Schools results'
         }
+        
+    @BreadcrumbFactory
+    def breadcrumb(cls, request, context):
+        return Breadcrumb('results', None, 'Results releases',
+                          lazy_reverse('results_index'))
 
-    def handle_GET(self, request, context):
+    def handle_GET(cls, request, context):
         try:
             xml = ET.fromstring(urllib.urlopen(IndexView.RSS_FEED).read())
             x_items = xml.findall('.//item')
@@ -30,8 +39,5 @@ class IndexView(BaseView):
         except:
             items = []
             
-        context = {
-            'items': items,
-        }
-        #raise Exception(items[0].getchildren())
+        context['items'] = items
         return mobile_render(request, context, 'results/index')

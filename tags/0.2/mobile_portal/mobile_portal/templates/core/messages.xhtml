@@ -6,13 +6,13 @@
 {% block content %}
 
 {% if formset.forms %}
-<div class="section-nopad">
-  <h2 class="section-header">Messages from the developers</h2>
-  <div class="section-content">
+<div class="section">
+  <h2>Messages from the developers</h2>
+  <div class="note"><div class="bubble pad-10">
     The developers would like to thank you for using Mobile Oxford,
     and would like to ask your help in making it better.
-  </div>
-</div>
+  </div></div>
+
 
 <form method="post" action=".">
 
@@ -22,8 +22,7 @@
 
 {{ form.id }}
 
-<div class="list-section">
-  <ul class="ml">
+  <ul>
     <li class="non-link-item top">
       {{ form.instance.message|linebreaks }}
       <small>Left on <em>{{ form.instance.when|date:"D j M Y, g:i A" }}</em></small><br/>
@@ -48,9 +47,9 @@
 
 {% else %}
 
-<div class="list-section">
-  <h2 class="section-header">Messages from the developers</h2>
-  <div class="list-footer"><div class="bubble">
+<div class="section">
+  <h2>Messages from the developers</h2>
+  <div class="note"><div class="bubble pad-10">
     You have no messages
   </div></div>
 </div>

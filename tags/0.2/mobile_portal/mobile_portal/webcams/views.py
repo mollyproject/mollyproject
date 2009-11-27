@@ -11,39 +11,50 @@ from mobile_portal.core.handlers import BaseView
 from mobile_portal.core.utils import resize_external_image
 from models import Webcam, WEBCAM_WIDTHS
 
+from mobile_portal.core.breadcrumbs import Breadcrumb, BreadcrumbFactory, lazy_reverse, lazy_parent
+
 
 class IndexView(BaseView):
-    def get_metadata(self, request):
+    def get_metadata(cls, request):
         return {
             'title': 'Webcams',
             'additional': 'View webcams from around the city and University',
         }
         
-    def handle_GET(self, request, context):
+    @BreadcrumbFactory
+    def breadcrumb(cls, request, context):
+        return Breadcrumb('webcams', None, 'Webcams', lazy_reverse('webcams_index'))
+        
+    def handle_GET(cls, request, context):
         webcams = Webcam.objects.all()
-        context = {
-            'webcams': webcams,
-        }
+        context['webcams'] = webcams
         return mobile_render(request, context, 'webcams/index')
     
 class WebcamDetailView(BaseView):
-    def get_metadata(self, request, slug):
+    def get_metadata(cls, request, slug):
         webcam = get_object_or_404(Webcam, slug=slug)
         return {
             'title': webcam.title,
             'additional': '<strong>Webcam</strong>, %s' % escape(webcam.description)
         }
         
-    def handle_GET(self, request, context, slug):
-        webcam = get_object_or_404(Webcam, slug=slug)
+    def initial_context(cls, request, slug):
+        return {
+            'webcam': get_object_or_404(Webcam, slug=slug)
+        }
+
+    @BreadcrumbFactory
+    def breadcrumb(cls, request, context, slug):
+        return Breadcrumb('webcams', lazy_parent(IndexView),
+                          'Webcams', lazy_reverse('webcams_webcam', args=[slug]))
         
+    def handle_GET(cls, request, context, slug):
         try:
-            eis = resize_external_image(webcam.url, request.device.max_image_width, timeout=5)
+            eis = resize_external_image(
+                context['webcam'].url,
+                request.device.max_image_width, timeout=5)
         except:
             eis = None
         
-        context = {
-            'webcam': webcam,
-            'eis': eis,
-        }
+        context['eis'] = eis
         return mobile_render(request, context, 'webcams/webcam_detail')

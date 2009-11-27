@@ -12,26 +12,22 @@
 
 {% block content %}
 
-<div class="list-section">
-  <h2 class="section-header">Public</h2>
-
-<ul class="ml">
-{% for entity_type in public %}
-    <li><a href="{% url maps_category_detail entity_type.slug %}">{{ entity_type.verbose_name_plural|capfirst }}</a></li>
-{% endfor %}
-</ul>
-
+<div class="section">
+  <h2>Public</h2>
+	<ul>
+	{% for entity_type in public %}
+	    <li{% if forloop.last %} class="round-bottom"{% endif %}><a href="{% url maps_category_detail entity_type.slug %}">{{ entity_type.verbose_name_plural|capfirst }}</a></li>
+	{% endfor %}
+	</ul>
 </div>
 
-<div class="list-section">
-  <h2 class="section-header">University of Oxford</h2>
-
-<ul class="ml">
-{% for entity_type in university %}
-    <li><a href="{% url maps_category_detail entity_type.slug %}">{{ entity_type.verbose_name_plural|capfirst }}</a></li>
-{% endfor %}
-</ul>
-
+<div class="section">
+  <h2>University of Oxford</h2>
+	<ul>
+	{% for entity_type in university %}
+	    <li{% if forloop.last %} class="round-bottom"{% endif %}><a href="{% url maps_category_detail entity_type.slug %}">{{ entity_type.verbose_name_plural|capfirst }}</a></li>
+	{% endfor %}
+	</ul>
 </div>
 
 {% endblock %}

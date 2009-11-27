@@ -15,12 +15,17 @@
 
 {% block content %}
 
-<div class="section-nopad">
-    <h2 class="section-header">{{ item.title }}</h2>
+<div class="section">
+    <h3>{{ item.title }}</h3>
     
-    <div class="section-content">
+    <div class="article"><div class="bubble pad-5" style="margin: 2px;">
         {{ description|safe }}
-    </div>
+        <br />
+        <small><em>
+            {{ item.last_modified_local|date:"j M Y \a\t H:m" }}<br />
+            Link: <a href="{{ item.link }}" title="{{ item.title }}">{{ item.link }}</a>
+        </em></small>
+    </div></div>
 </div>
 
 {% endblock %}
