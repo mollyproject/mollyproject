@@ -1,9 +1,9 @@
 {% load maps %}
 
-<div class="section-nopad tab" id="tab-auto">
+<div class="section" id="tab-auto">
 
 <h2>Automatic geolocation</h2>
-<div class="section-content">
+<div class="note"><div class="bubble pad-5">
 {% if preferences.location.placemark %}
         <p id="location_status">We think you are somewhere near <strong class="nobr">{{ preferences.location.placemark.0 }}</strong> ({{ preferences.location.location.0 }} {{ preferences.location.location.1 }}).</p>
 {% else %}
@@ -26,27 +26,24 @@
             if (positionMethodAvailable())
                 $('#location_update').append(' <a href="#" onclick="javascript:requestPosition();">Determine automatically<\/a>');
         </script>
-</div>
+        </div></div>
 </div>
 
-<div class="section-nopad tab" id="tab-manual">
+
+<div class="section" id="tab-manual">
 
 <h2>Update location manually</h2>
 
-<div class="section-content"><div class="bubble">Examples: 'oucs' (a unit code), 'Trinity College' (a college or department), 'Parks Road' (an address), 'OX1 3PG' (a postcode).</div></div>
+<div class="bubble pad-10">Examples: 'oucs' (a unit code), 'Trinity College' (a college or department), 'Parks Road' (an address), 'OX1 3PG' (a postcode).</div>
 
-
+<span style="text-align:center;">
 <form method="get" action="." id="manual_location_form">
-    <div class="section-content">
-      <div class="submit-line">
 {% if return_url %}
         <input name="return_url" type="hidden" value="{{ return_url }}"/>
 {% endif %}
         <input id="location" name="location" value="{{ location }}"/>
         <input type="submit" value="Update"/>
-        
-      </div>
-    </div>
+</span>
 
 </form>
 

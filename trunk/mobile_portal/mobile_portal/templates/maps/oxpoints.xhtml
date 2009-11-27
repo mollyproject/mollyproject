@@ -18,7 +18,7 @@
 
 <div class="section">
 	<h2>{{ data.dc_title }}</h2>
-
+<div class="article"><div class="bubble pad-5">
 	<dl>
 	{% if data.oxp_hasHomepage or data.oxp_hasITHomepage or data.oxp_hasWeblearn or data.oxp_hasLibraryHomepage %}
 		<dt>Websites</dt>
@@ -87,6 +87,7 @@
 		{% endfor %}
 	{% endif %}
 	</dl>
+	</div></div>
 </div>
 
 {% if data.oxp_inImage %}

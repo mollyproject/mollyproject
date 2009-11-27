@@ -91,9 +91,9 @@ class UpdateLocationView(BaseView):
         
     def handle_GET(cls, request, context):
         if 'location' in request.GET:
-            return self.confirm_stage(request, context)
+            return cls.confirm_stage(request, context)
         else:
-            return self.add_container_if_necessary(request, context, 'core/update_location')
+            return cls.add_container_if_necessary(request, context, 'core/update_location')
     
     def handle_POST(cls, request, context):
         try:
@@ -154,7 +154,7 @@ class UpdateLocationView(BaseView):
                 mimetype='application/json',
             )
         else:
-            return self.add_container_if_necessary(request, context, 'core/update_location_confirm')
+            return cls.add_container_if_necessary(request, context, 'core/update_location_confirm')
             
     def add_container_if_necessary(cls, request, context, template_name):
         if request.GET.get('ajax') != 'true':
