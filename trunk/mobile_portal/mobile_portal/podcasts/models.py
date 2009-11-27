@@ -26,6 +26,7 @@ class PodcastCategory(models.Model):
 class Podcast(models.Model):
     title = models.TextField(null=True)
     description = models.TextField(null=True)
+    identifier = models.TextField(null=True)
     rss_url = models.URLField()
     last_updated = models.DateTimeField(auto_now=True)
     category = models.ForeignKey(PodcastCategory, null=True)
@@ -36,7 +37,7 @@ class Podcast(models.Model):
         if self.rss_url == TOP_DOWNLOADS_RSS_URL:
             return reverse('podcasts_top_downloads')
         else:
-            return reverse('podcasts_podcast', args=[self.category.code, self.id])
+            return reverse('podcasts_podcast', args=[self.identifier])
         
     def __unicode__(self):
         return self.title or ''

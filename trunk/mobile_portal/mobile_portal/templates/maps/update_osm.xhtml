@@ -1,17 +1,6 @@
 {% extends "maps/base.xhtml" %}
 {% load maps %}{% load portal_misc %}
 
-{% block breadcrumbs %}
-{{ block.super }}
-	<li><a href="{% url maps_index %}">
-        {% if dumb %}Maps{% else %}<img src="{{ MEDIA_URL }}png/index-icons/maps-bc.png" alt="Maps"/>{% endif %}
-    </a></li>
-    <li><a href="{{ entity.get_absolute_url }}">
-        {% if dumb %}{{ entity.entity_type.verbose_name_plural|capfirst }}{% else %}&hellip;{% endif %}</a></li>
-{% endblock %}
-
-{% block pagetitle %}Update map{% endblock %}
-
 {% block title %}m.ox | Update {{ entity.title }}{% endblock %}
 
 {% block extrahead %}{{ block.super }}

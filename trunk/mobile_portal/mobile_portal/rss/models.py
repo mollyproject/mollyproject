@@ -1,8 +1,14 @@
 from pytz import utc, timezone
-from django.db import models
+from django.contrib.gis.db import models
 from django.core.urlresolvers import reverse
 from xml.etree import ElementTree as ET
 from mobile_portal.core.utils import resize_external_image
+from mobile_portal.oxpoints.models import Entity
+
+FEED_TYPE_CHOICES = (
+    ('n', 'news'),
+    ('e', 'event'),
+)
 
 class ShowPredicate(models.Model):
     name = models.TextField()
@@ -17,6 +23,8 @@ class RSSFeed(models.Model):
     last_modified = models.DateTimeField() # this one is in UTC
     
     show_predicate = models.ForeignKey(ShowPredicate, null=True, blank=True)
+
+    ptype = models.CharField(max_length=1, choices=FEED_TYPE_CHOICES)
     
     def __unicode__(self):
         return self.title
@@ -34,6 +42,13 @@ class RSSItem(models.Model):
     description = models.TextField()
     link = models.URLField()
     last_modified = models.DateTimeField() # this one is also in UTC
+    
+    dt_start = models.DateTimeField(null=True, blank=True)
+    dt_end = models.DateTimeField(null=True, blank=True)
+    location_entity = models.ForeignKey(Entity, null=True, blank=True)
+    location_name = models.TextField(blank=True)
+    location_point = models.PointField(null=True, blank=True)
+    
     
     @property
     def last_modified_local(self):

@@ -29,25 +29,46 @@ from mobile_portal.maps.utils import get_entity, is_favourite, make_favourite, g
 from forms import BusstopSearchForm, UpdateOSMForm
 from mobile_portal.googlesearch.forms import GoogleSearchForm
 
+from mobile_portal.core.breadcrumbs import Breadcrumb, BreadcrumbFactory, lazy_reverse, lazy_parent
+
 class IndexView(BaseView):
-    def get_metadata(self, request):
+    def get_metadata(cls, request):
         return {
             'title': 'Maps',
             'additional': 'Find University buildings and units, along with bus stops and local amenities',
         }
         
-    def handle_GET(self, request, context):
-        context = {'search_form': GoogleSearchForm()}
+    @BreadcrumbFactory
+    def breadcrumb(cls, request, context):
+        return Breadcrumb(
+            'maps',
+            None,
+            'Maps',
+            lazy_reverse('maps_index')
+        )
+        
+    def handle_GET(cls, request, context):
+        context['search_form'] = GoogleSearchForm()
         return mobile_render(request, context, 'maps/index')
 
 class NearbyListView(BaseView):
-    def get_metadata(self, request, entity=None):
+    def get_metadata(cls, request, entity=None):
         return {
             'title': 'Find things nearby',
             'additional': 'Search for things based on your current location',
         }
 
-    def handle_GET(self, request, context, entity=None):
+    @BreadcrumbFactory
+    def breadcrumb(cls, request, context, entity=None):
+        return Breadcrumb(
+            'maps',
+            lazy_parent(IndexView),
+            'Things nearby',
+            url = lazy_reverse('maps_nearby_list'),
+        )
+        
+
+    def handle_GET(cls, request, context, entity=None):
         if entity:
             return_url = reverse('maps_entity_nearby_list', args=[entity.entity_type.slug, entity.display_id])
         else:
@@ -58,18 +79,19 @@ class NearbyListView(BaseView):
         public = [et for et in entity_types if et.source != 'oxpoints']
         
         
-        context = {
+        context.update({
             'university': university,
             'public': public,
             'entity': entity,
             'return_url': return_url,
-        }
+        })
         if entity and not entity.location:
             return mobile_render(request, context, 'maps/entity_without_location')
         return mobile_render(request, context, 'maps/nearby_list')
 
+
 class NearbyDetailView(ZoomableView):
-    def initial_context(self, request, ptypes, entity=None):
+    def initial_context(cls, request, ptypes, entity=None):
         entity_types = tuple(get_object_or_404(EntityType, slug=t) for t in ptypes.split(';'))
         
         point, location = None, None
@@ -90,7 +112,7 @@ class NearbyDetailView(ZoomableView):
         else:
             entities = []
         
-        context = super(NearbyDetailView, self).initial_context(request, ptypes, entities)
+        context = super(NearbyDetailView, cls).initial_context(request, ptypes, entities)
         context.update({
             'entity_types': entity_types,
             'point': point,
@@ -100,8 +122,16 @@ class NearbyDetailView(ZoomableView):
         })
         return context
 
-    def get_metadata(self, request, ptypes, entity=None):
-        context = self.initial_context(request, ptypes, entity)
+    @BreadcrumbFactory
+    def breadcrumb(cls, request, context, ptypes, entity=None):
+        title = cls.get_metadata(request, ptypes, entity)['title']
+        return Breadcrumb('maps',
+                          lazy_parent(NearbyListView, entity=entity),
+                          title,
+                          lazy_reverse('maps_nearby_detail', args=[ptypes]))
+
+    def get_metadata(cls, request, ptypes, entity=None):
+        context = cls.initial_context(request, ptypes, entity)
         
         if len(context['entity_types']) > 1:
             return {
@@ -110,17 +140,17 @@ class NearbyDetailView(ZoomableView):
         
         return {
             'title': '%s near%s%s' % (
-                capfirst(context['entity_type'].verbose_name_plural),
+                capfirst(context['entity_types'][0].verbose_name_plural),
                 entity and ' ' or '',
                 entity and entity.title or 'by',
             ),
             'additional': '<strong>%d %s</strong> within 1km' % (
                 len([e for e in context['entities'] if e.location.transform(27700, clone=True).distance(context['point'].transform(27700, clone=True)) <= 1000]),
-                context['entity_type'].verbose_name_plural,
+                context['entity_types'][0].verbose_name_plural,
             ),
         }
         
-    def handle_GET(self, request, context, ptypes, entity=None):
+    def handle_GET(cls, request, context, ptypes, entity=None):
         entity_types, entities, point, location = (
             context['entity_types'], context['entities'],
             context['point'], context['location'],
@@ -171,7 +201,7 @@ class EntityDetailView(ZoomableView):
     OXPOINTS_URL = 'http://m.ox.ac.uk/oxpoints/id/%s.json'
     OXONTIME_URL = 'http://www.oxontime.com/pip/stop.asp?naptan=%s&textonly=1'
 
-    def get_metadata(self, request, type_slug, id):
+    def get_metadata(cls, request, type_slug, id):
         entity = get_entity(type_slug, id)
         user_location = request.preferences['location']['location']
         if user_location and entity.location:
@@ -189,14 +219,30 @@ class EntityDetailView(ZoomableView):
                 bearing,
             ),
         }
-    
-    def handle_GET(self, request, context, type_slug, id):
-        entity = context['entity'] = get_entity(type_slug, id)
+        
+    def initial_context(cls, request, type_slug, id):
+        context = super(cls, cls).initial_context(request)
+        context.update({
+            'entity': get_entity(type_slug, id),
+        })
+        return context
+
+    @BreadcrumbFactory
+    def breadcrumb(cls, request, context, type_slug, id):
+        return Breadcrumb(
+            'maps',
+            lazy_parent(NearbyDetailView, ptypes=type_slug),
+            context['entity'].title,
+            lazy_reverse('entity_detail_view', args=[type_slug,id]),
+        )
+
+    def handle_GET(cls, request, context, type_slug, id):
+        entity = context['entity']
         entity.is_favourite = is_favourite(request, entity)
-        entity_handler = getattr(self, 'display_%s' % entity.entity_type.source)
+        entity_handler = getattr(cls, 'display_%s' % entity.entity_type.source)
         return entity_handler(request, context, entity)
 
-    def display_oxpoints(self, request, context, entity):
+    def display_oxpoints(cls, request, context, entity):
         try:
             data = simplejson.load(urllib.urlopen(EntityDetailView.OXPOINTS_URL % entity.oxpoints_id))[0]
         except urllib2.HTTPError, e:
@@ -209,7 +255,7 @@ class EntityDetailView(ZoomableView):
     
         return mobile_render(request, context, 'maps/oxpoints')
 
-    def display_naptan(self, request, context, entity):
+    def display_naptan(cls, request, context, entity):
         try:
             xml = ES.parse(urllib.urlopen(EntityDetailView.OXONTIME_URL % entity.atco_code))
         except (TypeError, IOError):
@@ -248,18 +294,27 @@ class EntityDetailView(ZoomableView):
             context['services_json'] = simplejson.dumps(services)
             return mobile_render(request, context, 'maps/busstop')
     
-    def display_osm(self, request, context, entity):
+    def display_osm(cls, request, context, entity):
         return mobile_render(request, context, 'maps/osm/base')
 
 class EntityUpdateView(ZoomableView):
     default_zoom = 16
     
-    def get_metadata(self, request, type_slug, id):
+    def get_metadata(cls, request, type_slug, id):
         return {
             'exclude_from_search':True,
         }
+
+    @BreadcrumbFactory
+    def breadcrumb(cls, request, context, type_slug, id):
+        return Breadcrumb(
+            'maps',
+            lazy_parent(EntityDetailView, type_slug=type_slug, id=id),
+            'Things nearby',
+            lazy_reverse('entity_update_view', args=[type_slug,id])
+        )
     
-    def handle_GET(self, request, context, type_slug, id):
+    def handle_GET(cls, request, context, type_slug, id):
         entity = context['entity'] = get_entity(type_slug, id)
         if entity.entity_type.source != 'osm':
             raise Http404
@@ -274,7 +329,7 @@ class EntityUpdateView(ZoomableView):
         context['form'] = form
         return mobile_render(request, context, 'maps/update_osm')
         
-    def handle_POST(self, request, context, type_slug, id):
+    def handle_POST(cls, request, context, type_slug, id):
         entity = context['entity'] = get_entity(type_slug, id)
         if entity.entity_type.source != 'osm':
             raise Http404
@@ -309,31 +364,58 @@ class EntityUpdateView(ZoomableView):
 
 
 class NearbyEntityListView(NearbyListView):
-    def get_metadata(self, request, type_slug, id):
+    def get_metadata(cls, request, type_slug, id):
         entity = get_entity(type_slug, id)
-        return super(NearbyEntityListView, self).get_metadata(request, entity)
+        return super(NearbyEntityListView, cls).get_metadata(request, entity)
+        
+    def initial_context(cls, request, type_slug, id):
+        return {
+            'entity': get_entity(type_slug, id),
+        }
+        
+    @BreadcrumbFactory
+    def breadcrumb(cls, request, context, type_slug, id):
+        return Breadcrumb(
+            'maps',
+            lazy_parent(EntityDetailView, type_slug=type_slug, id=id),
+            'Things near %s' % context['entity'].title,
+            lazy_reverse('maps_entity_nearby_list', args=[type_slug,id])
+        )
 
-    def handle_GET(self, request, context, type_slug, id):
+    def handle_GET(cls, request, context, type_slug, id):
         entity = get_entity(type_slug, id)
-        return super(NearbyEntityListView, self).handle_GET(request, context, entity)
+        return super(NearbyEntityListView, cls).handle_GET(request, context, entity)
     
 class NearbyEntityDetailView(NearbyDetailView):
-    def initial_context(self, request, type_slug, id, ptype):
+    def initial_context(cls, request, type_slug, id, ptype):
         entity = get_entity(type_slug, id)
-        context = super(NearbyEntityDetailView, self).initial_context(request, ptype, entity)
+        context = super(NearbyEntityDetailView, cls).initial_context(request, ptype, entity)
         context['entity'] = entity
         return context
-        
-    def get_metadata(self, request, type_slug, id, ptype):
-        entity = get_entity(type_slug, id)
-        return super(NearbyEntityDetailView, self).get_metadata(request, ptype, entity)
 
-    def handle_GET(self, request, context, type_slug, id, ptype):
+    @BreadcrumbFactory
+    def breadcrumb(cls, request, context, type_slug, id, ptype):
+        entity_type = get_object_or_404(EntityType, ptype=ptype)
+        return Breadcrumb(
+            'maps',
+            lazy_parent(NearbyEntityListView, type_slug=type_slug, id=id),
+            '%s near %s' % (
+                capfirst(entity_type.verbose_name_plural),
+                context['entity'].title,
+            ),
+            lazy_reverse('maps_entity_nearby_detail', args=[type_slug,id,ptype])
+        )
+        
+    def get_metadata(cls, request, type_slug, id, ptype):
         entity = get_entity(type_slug, id)
-        return super(NearbyEntityDetailView, self).handle_GET(request, context, ptype, entity)
+        return super(NearbyEntityDetailView, cls).get_metadata(request, ptype, entity)
+
+    def handle_GET(cls, request, context, type_slug, id, ptype):
+        entity = get_entity(type_slug, id)
+        return super(NearbyEntityDetailView, cls).handle_GET(request, context, ptype, entity)
 
 class CategoryListView(BaseView):
-    def initial_context(self, request):
+    def initial_context(cls, request):
         entity_types = EntityType.objects.filter(show_in_category_list=True)
         university = [et for et in entity_types if et.source == 'oxpoints']
         public = [et for et in entity_types if et.source != 'oxpoints']
@@ -343,12 +425,21 @@ class CategoryListView(BaseView):
             'university': university,
             'public': public,
         }
-    
-    def handle_GET(self, request, context):
+
+    @BreadcrumbFactory
+    def breadcrumb(cls, request, context):
+        return Breadcrumb(
+            'maps',
+            lazy_parent(IndexView),
+            'Categories',
+            lazy_reverse('maps_category_list'),
+        )
+
+    def handle_GET(cls, request, context):
         return mobile_render(request, context, 'maps/category_list')
 
 class CategoryDetailView(BaseView):
-    def initial_context(self, request, ptypes):
+    def initial_context(cls, request, ptypes):
         entity_types = tuple(get_object_or_404(EntityType, slug=t) for t in ptypes.split(';'))
         
         entities = Entity.objects.filter(is_sublocation=False)
@@ -367,17 +458,35 @@ class CategoryDetailView(BaseView):
             'entities': entities,
             'found_entity_types': found_entity_types,
         }
-    
-    def handle_GET(self, request, context, ptypes):
+
+    @BreadcrumbFactory
+    def breadcrumb(cls, request, context, ptypes):
+        return Breadcrumb(
+            'maps',
+            lazy_parent(CategoryListView),
+            capfirst(context['entity_types'][0].verbose_name_plural),
+            lazy_reverse('maps_category_detail', args=[ptypes]),
+        )
+
+    def handle_GET(cls, request, context, ptypes):
         return mobile_render(request, context, 'maps/category_detail')
 
 class BusstopSearchView(BaseView):
-    def initial_context(self, request):
+    def initial_context(cls, request):
         return {
             'search_form': BusstopSearchForm(request.GET or None)
         }
+
+    @BreadcrumbFactory
+    def breadcrumb(cls, request, context):
+        return Breadcrumb(
+            'maps',
+            lazy_parent(IndexView),
+            'Search bus stops',
+            lazy_reverse('maps_busstop_search'),
+        )
         
-    def handle_GET(self, request, context):
+    def handle_GET(cls, request, context):
         id = request.GET.get('id', '').strip()
         if len(id) == 5:
             id = '693' + id

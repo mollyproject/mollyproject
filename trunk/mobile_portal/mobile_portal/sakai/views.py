@@ -8,6 +8,8 @@ from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.core.urlresolvers import reverse
 from django.conf import settings
 
+from mobile_portal.core.breadcrumbs import Breadcrumb, BreadcrumbFactory, lazy_reverse, lazy_parent, NullBreadcrumb
+
 
 from mobile_portal.core.renderers import mobile_render
 from mobile_portal.core.handlers import BaseView
@@ -18,41 +20,62 @@ def parse_iso_8601(s):
     return datetime.fromtimestamp(xml.utils.iso8601.parse(s)).replace(tzinfo=pytz.utc)
 
 class IndexView(BaseView):
-    def handle_GET(self, request, context):
+    @BreadcrumbFactory
+    def breadcrumb(cls, request, context):
+        return Breadcrumb(
+            'sakai',
+            None,
+            'WebLearn',
+            lazy_reverse('sakai_index'),
+        )
+        
+    def handle_GET(cls, request, context):
         return mobile_render(request, context, 'sakai/index')
 
 class SakaiView(OAuthView):
+    breadcrumb = NullBreadcrumb
+
     consumer_secret = settings.SAKAI_CONSUMER_SECRET
     access_token_name = 'sakai_access_token'
     client = SakaiOAuthClient
     signature_method = oauth.OAuthSignatureMethod_PLAINTEXT()
-    
-class SakaiView(BaseView):
-    def __call__(self, request, *args, **kwargs):
-        
-        opener = urllib2.build_opener()
-        opener.addheaders = [
-            ('Authorization', 'Basic %s' % base64.b64encode('admin:Cie9shoo')),
-            ('Cookie', 'JSESSIONID=fb00b3b3-3177-4149-a4c7-7ed37764676d.localhost'),
-            ('User-Agent', 'm.ox.ac.uk/0.2'),
-        ]
-        
-        return super(SakaiView, self).__call__(request, opener, *args, **kwargs)
-    
+
     def build_url(self, url):
         return '%s%s' % (settings.SAKAI_HOST, url)
 
-class SignupView(SakaiView):
-    def handle_GET(self, request, context, opener, site=None, event_id=None):
-        if site and event_id:
-            return self.handle_event(request, context, opener, site, event_id)
-        if site:
-            return self.handle_with_site(request, context, opener, site)
-        else:
-            return self.handle_without_site(request, context, opener)
+if False:
+    class SakaiView(BaseView):
+        def __new__(cls, request, *args, **kwargs):
+            opener = urllib2.build_opener()
+            opener.addheaders = [
+                ('Cookie', 'JSESSIONID=3491fbf8-5888-4a08-8d9d-4fdec03cec53.localhost')
+            ]
+    
+            return super(SakaiView, self).__call__(request, opener, *args, **kwargs)
+    
+        def build_url(self, url):
+            return '%s%s' % (settings.SAKAI_HOST, url)
 
-    def handle_event(self, request, context, opener, site, event_id):
-        url = self.build_url('direct/signupEvent/%s.json?siteId=%s' % (event_id, site))
+class SignupView(SakaiView):
+    @BreadcrumbFactory
+    def breadcrumb(cls, request, context, opener, site=None, event_id=None):
+        return Breadcrumb(
+            'sakai',
+            lazy_parent(IndexView),
+            'WebLearn',
+            lazy_reverse('sakai_signup'),
+        )
+        
+    def handle_GET(cls, request, context, opener, site=None, event_id=None):
+        if site and event_id:
+            return cls.handle_event(request, context, opener, site, event_id)
+        if site:
+            return cls.handle_with_site(request, context, opener, site)
+        else:
+            return cls.handle_without_site(request, context, opener)
+
+    def handle_event(cls, request, context, opener, site, event_id):
+        url = cls.build_url('direct/signupEvent/%s.json?siteId=%s' % (event_id, site))
         event = simplejson.load(opener.open(url))
         
         context.update({
@@ -61,8 +84,8 @@ class SignupView(SakaiView):
         return mobile_render(request, context, 'sakai/signup_detail')
         
             
-    def handle_with_site(self, request, context, opener, site):
-        url = self.build_url('direct/signupEvent/site/%s.xml' % site)
+    def handle_with_site(cls, request, context, opener, site):
+        url = cls.build_url('direct/signupEvent/site/%s.xml' % site)
         events_et = ET.parse(opener.open(url)).getroot().findall('signupEvent')
         events = {}
         for event_et in events_et:
@@ -82,7 +105,7 @@ class SignupView(SakaiView):
         return mobile_render(request, context, 'sakai/signup_list')
         
     
-    def handle_without_site(self, request, context, opener):
+    def handle_without_site(cls, request, context, opener):
         sites = ET.parse(opener.open(self.build_url('direct/site.xml')))
         context['sites'] = [
             (e.find('id').text, e.find('entityTitle').text)
@@ -90,12 +113,12 @@ class SignupView(SakaiView):
         ]
         return mobile_render(request, context, 'sakai/signup_sites')
     
-    def handle_POST(self, request, context, opener, site=None, event_id=None):
+    def handle_POST(cls, request, context, opener, site=None, event_id=None):
         if not site and event:
-            return self.method_not_acceptable(request)
+            return cls.method_not_acceptable(request)
             
         response = opener.open(
-            self.build_url('direct/signupEvent/%s/edit' % event_id), 
+            cls.build_url('direct/signupEvent/%s/edit' % event_id), 
             data = urllib.urlencode({
             'siteId': site,
             'allocToTSid': request.POST['timeslot_id'],
@@ -112,7 +135,21 @@ class SignupView(SakaiView):
         return HttpResponseRedirect(request.path)
                 
 class SiteView(SakaiView):
-    def handle_GET(self, request, context, opener):
+    def handle_GET(cls, request, context, opener):
         sites = ET.parse(opener.open(self.build_url('direct/site.xml')))
         context['sites'] = [e.find('entityTitle').text for e in sites.getroot()]
         return mobile_render(request, context, 'sakai/sites')
+        
+class DirectView(SakaiView):
+    @BreadcrumbFactory
+    def breadcrumb(cls, request, context, opener):
+        return Breadcrumb(
+            'sakai',
+            lazy_parent(IndexView),
+            'User information',
+            lazy_reverse('sakai_direct'),
+        )
+        
+    def handle_GET(cls, request, context, opener):
+        response = opener.open('http://perch.oucs.ox.ac.uk:8080/direct/user/current.json')
+        return HttpResponse(response.read())

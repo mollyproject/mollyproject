@@ -3,7 +3,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-GB" lang="en-GB" >
 <head>
-	<title>{% block title %}MobileOxford{% endblock %}</title>
+	<title>{% block title %}m.ox | {{ breadcrumbs.4 }}{% endblock %}</title>
     <meta name="viewport" content="width=device-width; initial-scale=1; user-scalable=no; maximum-scale=1; minimum-scale=1"/>
 
 
@@ -30,16 +30,31 @@
 {% block header %}
 <div id="bc-header">
 	<ol id="bc">	
-		{% block breadcrumbs %}
 		<li><a href="{% url core_index %}">
 	        <img src="{{ MEDIA_URL }}png/logo.png" alt="Home"/>
         </a></li>
-		{% endblock %}
+{% if breadcrumbs.2 %}
+        <li><a href="{{ breadcrumbs.1.1 }}" title="{{ breadcrumbs.1.0 }}">
+            <img src="{{ MEDIA_URL }}png/index-icons/{{ breadcrumbs.0 }}-bc.png" alt="{{ breadcrumb.1.0 }}"/>
+        </a></li>
+{% if not breadcrumbs.3 %}
+        <li><a href="{{ breadcrumbs.2.1 }}" title="{{ breadcrumbs.2.0 }}">
+            &hellip;
+        </a></li>
+{% endif %}
+
+{% endif %}
+
     </ol> 
-    <h1 id="bc-title" class="{% block pagetitleclass %}{% endblock %}">
-		{% block pagetitle %}{% endblock %}
+    <h1 id="bc-title" class="{% if not breadcrumbs.2 %}{{ breadcrumbs.0 }}-header with-icon{% endif %}">
+		{{ breadcrumbs.4 }}
 	</h1>
+	
+	{{ breadcrumbs }}
 </div>
+
+
+
 {% endblock %}
 
 
@@ -61,7 +76,7 @@
 
 {% if not hide_feedback_link %}
     <div class="bubble pad-10">
-        <a href="{% url core_contact %}?referer={{ path }}">Provide feedback for this page.</a><br />
+        <a href="{% url core_feedback %}?referer={{ path }}">Provide feedback for this page.</a><br />
 		<a href="http://chart.apis.google.com/chart?cht=qr&amp;chs={{ device.max_image_width }}x{{ device.max_image_width }}&amp;chl=http://m.ox.ac.uk{{ path }}">2D Barcode for this page</a>
     </div>
 {% endif %}
