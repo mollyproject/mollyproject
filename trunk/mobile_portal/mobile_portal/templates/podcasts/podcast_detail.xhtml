@@ -25,49 +25,26 @@
     
     <div class="article"><div class="bubble pad-10">{{ podcast.description|safe }}</div></div>
 
-
-{% for item in items %}
-
-    <h3>{{ item.title }}</h3>
+<ul>
+{% for item in items %}{% for enc in item.podcastenclosure_set.all %}
+{% if forloop.first %}
     
-    <table class="section-table">
-        <tbody>
-    {% if item.duration %}
-            <tr>
-                <th>Duration:</th>
-                <td>{{ item.duration }}</td>
-            </tr>
-    {% endif %}
-            <tr>
-                <th>Published:</th>
-                <td>{{ item.published_date|date:"j M Y" }}</td>
-            </tr>
-        </tbody>
-    </table>
+    <li {% if forloop.parentloop.last %}class="round-bottom"{% endif %}>
+<a href="{{ enc.url }}?CAMEFROM=moxacuk">
+    <h4>{{ item.title }}</h4>
+    <small>{{ item.description|safe }}<br />
+    {% if item.duration %}{{ item.duration }}{% endif %}
+    {{ item.published_date|date:"j M Y" }}<br />
 
-    <div class="section-content">{{ item.description|safe }}</div>
-
-    <table class="section-table">
-        <thead>
-            <tr>
-                <th>Format</th>
-                <th>Size</th>
-                <th>Download</th>
-            </tr>
-        </thead>
-        <tbody>
-    {% for enc in item.podcastenclosure_set.all %}
-            <tr>
-                <td>{{ enc.get_mimetype_display|capfirst }}</td>
-                <td>{{ enc.length|filesizeformat }}</td>
-                <td><a href="{{ enc.url }}?CAMEFROM=moxacuk">Download</a></td>
-            </tr>
-    {% endfor %}
-        </tbody>
-    </table>
+                {{ enc.get_mimetype_display|capfirst }}
+                {{ enc.length|filesizeformat }}
+    </small>    </a>
+    </li>
 
 
-{% endfor %}
+{% endif %}
+{% endfor %}{% endfor %}
+</ul>
 </div>
 
 {% endblock %}
