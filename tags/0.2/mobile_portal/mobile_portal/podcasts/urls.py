@@ -24,7 +24,7 @@ urlpatterns = patterns('mobile_portal.podcasts.views',
         RedirectOldLinksView, {},
         'podcasts_redirects'),
         
-    (r'^(?P<identifier>[a-zA-Zd_@.\-/]+)/$',
+    (r'^(?P<identifier>[a-zA-Z\d_@.\-/]+)/$',
         PodcastDetailView, {},
         'podcasts_podcast'),
 
