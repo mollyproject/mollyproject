@@ -227,9 +227,8 @@ div.note a{
     -webkit-border-bottom-left-radius: 8px;
     -webkit-border-bottom-right-radius: 8px;
 }
-div.pad-10 {
-    padding: 10px;
-}
+div.pad-10{padding: 10px;}
+div.pad-5 {padding:5px;}
 /* End Generic */
 
 
@@ -239,14 +238,37 @@ div.backgrounded-image {
     background-position: center center;
     position: relative;
 }
+
+a.zoom-out, a.zoom-in {
+    padding: 5px;
+    display: block;
+}
+
+a.zoom-out {float: left;}
+a.zoom-in {float: right;}
+
+a.zoom-out img, a.zoom-in img { border:0 ;}
+
+div.osm-license {
+    position: absolute;
+    top: auto;
+    right: 0;
+    bottom: 0;
+    font-size: 8pt;
+    text-align:right;
+    padding: 2px;
+    background: #ffffff;
+    background-opacity: 0.5;
+}
 /* End Webcams/Maps */
 
 /* News Articles */
 div.article {
-    text-align: left;
-    padding: 5px;
+    text-align:left;
     color: #000000;
-    font-size:12pt;
+    font-size:10pt;
+    margin: 0;
+    padding: 2px;
 }
 /* End News Articles */
 

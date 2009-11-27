@@ -73,7 +73,7 @@ class PodcastDetailView(BaseView):
             'category': 'podcast',
             'category_display': 'podcast',
             'last_updated': podcast.last_updated,
-            'additional': '<strong>Podcast</strong>, last updated: %s' % podcast.last_updated.strftime('%a, %d %b %Y')
+            'additional': '<strong>Podcast</strong> %s' % podcast.last_updated.strftime('%d %b %Y')
         }
         
     def handle_GET(self, request, context, code=None, id=None, podcast=None):

@@ -451,7 +451,7 @@ def handler500(request):
     context.update(device_specific_media(request))
     return render_to_response('500.html', context)
     
-def contact(request):
+def feedback(request):
     contact_form = ContactForm(request.POST or None)
     
     if contact_form.is_valid():
@@ -505,7 +505,7 @@ Message
        'referer': request.GET.get('referer', ''),
     }
    
-    return mobile_render(request, context, 'core/contact')
+    return mobile_render(request, context, 'core/feedback')
     
 class UserMessageView(BaseView):
     def initial_context(self, request):

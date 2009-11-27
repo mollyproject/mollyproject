@@ -12,7 +12,7 @@
 {% if results %}
   	<ol class="search-results">
 	{% for result in results %}
-	    <li>
+	    <li{% if forloop.last %} class="round-bottom"{% endif %}>
 	      <a href="{{ result.url }}">
 	      {% if result.application %}
 	        <img src="{{ MEDIA_URL }}png/index-icons/{{ result.application }}-bc.png" style="float:left; border:0; margin-right: 5px; margin-bottom: 5px;"/>
@@ -45,7 +45,7 @@
 	 <ul>
 	    <li><a href="{% url z3950_search %}?title={{ search_form.data.query }}">Title</a></li>
 	    <li><a href="{% url z3950_search %}?author={{ search_form.data.query }}">Author</a></li>
-	    <li><a href="{% url z3950_search %}?isbn={{ search_form.data.query }}">ISBN</a></li>
+	    <li class="round-bottom"><a href="{% url z3950_search %}?isbn={{ search_form.data.query }}">ISBN</a></li>
 	  </ul>
 	</div>
 	{# End Search Elsewhere #}

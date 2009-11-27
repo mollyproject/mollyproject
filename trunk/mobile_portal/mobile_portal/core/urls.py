@@ -39,7 +39,7 @@ urlpatterns = patterns('mobile_portal.core.views',
         DesktopAboutView(), {},
         'core_desktop_about'),
 
-    (r'^feedback/$', 'contact', {}, 'core_contact'),
+    (r'^feedback/$', 'feedback', {}, 'core_contact'),
 
     (r'^messages/$',
         UserMessageView(), {},

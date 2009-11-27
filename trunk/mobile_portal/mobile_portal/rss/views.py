@@ -30,7 +30,7 @@ class ItemListView(BaseView):
         return {
             'last_modified': feed.last_modified,
             'title': feed.title,
-            'additional': '<strong>News feed</strong>, last updated: %s' % feed.last_modified.strftime('%a, %d %b %Y'),
+            'additional': '<strong>News feed</strong> %s' % feed.last_modified.strftime('%a, %d %b %Y'),
         }
         
     def handle_GET(self, request, context, slug):

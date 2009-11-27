@@ -26,7 +26,7 @@
 
 {% block content %}
 
-<div class="list-section">
+<div class="section">
   <h2>
     Found {{ count }}
     {% ifequal count 1 %}
@@ -44,8 +44,8 @@
   </h2>
 
 {% if found_entity_types %}
-  <div class="list-note">
-    <div class="bubble">
+  <div class="note">
+    <div class="bubble pad-10">
       Limit to:
 {% for et in found_entity_types %}
 {% if entity_types.0.sub_types.all|contains:et %}
@@ -59,52 +59,37 @@
 {% endif %}
 
 {% if entity_type.note %}
-<div class="list-note"><div class="bubble">{{ entity_type.note }}</div></div>
+<div class="note"><div class="bubble pad-10">{{ entity_type.note }}</div></div>
 {% endif %}
 
 <div class="backgrounded-image" style="background-image:url('{% url osm_generated_map map_hash %}'); height:{{ device.max_image_height }}px">
 {% include "maps/map_elements.xhtml" %}
 </div>
 
-<ul class="ml">
+<ul>
 {% if entities %}
 {% for entity_group in entities %}
-{% ifequal entity_group|length 1 %}
-{% with entity_group.0 as entity %}
-    <li><a title="{{ entity.title }}" href="{{ entity.get_absolute_url }}">{{ forloop.counter }}. {{ entity.title }}<br /><small>{% if multiple_entity_types %}{{ entity.entity_type.verbose_name|capfirst }}, {% endif %}{{ entity.distance.km|floatformat:3 }} km {{ entity.bearing }}</small></a></li>
-{% endwith %}
-{% else %}
-{% with entity_group.0 as entity %}
-    <li class="non-link-item">{{ forloop.counter }}. <em>{{ entity_group|length }} {{ entity_type.0.verbose_name_plural }}</em> {{ entity.distance.km|floatformat:3 }} km {{ entity.bearing }}</li>
-{% endwith %}
-{% for entity in entity_group %}
-    <li class="subitem{% if forloop.last %} last-subitem{% endif %}"><a href="{{ entity.get_absolute_url }}">{{ entity.title }}{% if multiple_entity_types %}, <small>{{ entity.entity_type.verbose_name }}</small>{% endif %}</a></li>
-{% endfor %}
-{% endifequal %}
+    {% ifequal entity_group|length 1 %}
+    {% with entity_group.0 as entity %}
+        <li><a title="{{ entity.title }}" href="{{ entity.get_absolute_url }}">{{ forloop.counter }}. {{ entity.title }}<br /><small>{% if multiple_entity_types %}{{ entity.entity_type.verbose_name|capfirst }}, {% endif %}{{ entity.distance.km|floatformat:3 }} km {{ entity.bearing }}</small></a></li>
+    {% endwith %}
+    {% else %}
+    {% with entity_group.0 as entity %}
+        <li class="non-link-item">{{ forloop.counter }}. <em>{{ entity_group|length }} {{ entity_type.0.verbose_name_plural }}</em> {{ entity.distance.km|floatformat:3 }} km {{ entity.bearing }}</li>
+    {% endwith %}
+    {% for entity in entity_group %}
+        <li class="subitem{% if forloop.last %} last-subitem{% endif %}"><a href="{{ entity.get_absolute_url }}">{{ entity.title }}{% if multiple_entity_types %}, <small>{{ entity.entity_type.verbose_name }}</small>{% endif %}</a></li>
+    {% endfor %}
+    {% endifequal %}
 {% endfor %}
 
 {% else %}
-<div class="list-note">
+<div class="note">
     There isn't anything that close to you.
     Try <a class="no-icon" href="{% url core_update_location %}?return_url={{ path }}">updating
     your location</a>{% ifnotequal zoom 10 %} or <a class="no-icon" href="?zoom={{ zoom|add:"-1" }}">widening your search</a>{% endifnotequal %}.</div>
 {% endif %}
 </ul>
 </div>
-
-<!--
-{% ifequal entity_type.source "osm" %}
-<div class="section-nopad">
-<h2>Note</h2>
-
-<div class="list-note bottom">
-    This information is provided courtesy of
-    <a href="http://www.openstreetmap.org/">OpenStreetMap</a> under a
-    <a href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Attribution-ShareAlike 2.0</a> license.<br/>
-    Oxford University provides this information without warranty. For further
-    details, see our <a href="/legal/">legal information</a>.
-</div>
-{% endifequal %}
--->
 
 {% endblock %}
