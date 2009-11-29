@@ -88,10 +88,11 @@ ol#bc {
     display:block;
 }
 ol#bc li {
-    padding-right: 5px;
-    border-style: none solid none none;
-    border-width: 0 3px 0 0;
-    border-color:white;
+    background-image:url('../../png/sep.png');
+    background-repeat:no-repeat;
+    background-position: center right;
+    padding-right: 10px;
+    padding-left:0px;
     display:block;
     float:left;
     height:30px;
@@ -108,9 +109,15 @@ ol#bc li a {
 ol#bc img {
     border:0;
 }
-h1#bc-title {
+
+div#bc-title {
+    overflow:hidden;
+}
+
+div#bc-title h1 {
     margin: 0;
-    padding-top: 12px;
+    line-height:30px;
+    padding-top: 0px;
     float:left;
     font-size:12pt;
     text-align:left;
