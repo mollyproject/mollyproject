@@ -7,34 +7,25 @@
 #library-search table {
     width:100%;
     border-collapse:collapse;
+    color: #ffffff;
 }
+
 
 #library-search th {
-    width:5em;
+    width:4em;
+    padding-right: 5px;
+    text-align: right;
 }
 
-#library-search div {
-    /*border:1px solid #002147;*/
-    -moz-border-radius:5px;
-    -webkit-border-radius:5px;
-    padding:5px;
-    background-color:#ffffff;
-}
-
-
-#library-search th, #library-search td {
-    padding:0 0 5px 0;
-    border:0;
-    
+#library-search td {
+    padding-right:5px;
 }
 
 #library-search tbody input{
     width:100%;
-    padding:0px;
+    padding:3px;
     border:0px solid black;
-    #border-style:none;
-    background-image:none;
-    -khtml-appearance:none;
+    font-size: 1.4em;
 }
 
 </style>
@@ -52,7 +43,7 @@
         <tbody>
           <tr>
             <th>{{ search_form.title.label_tag }}:</th>
-            <td><div>{{ search_form.title }}</div></td>
+            <td>{{ search_form.title }}</td>
           </tr>
 
           <tr>

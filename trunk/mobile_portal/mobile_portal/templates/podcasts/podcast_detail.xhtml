@@ -31,7 +31,7 @@
     
     <li {% if forloop.parentloop.last %}class="round-bottom"{% endif %}>
 <a href="{{ enc.url }}?CAMEFROM=moxacuk">
-    <h4>{{ item.title }}</h4>
+    <h3>{{ item.title }}</h3>
     <small>{{ item.description|safe }}<br />
     {% if item.duration %}{{ item.duration }}{% endif %}
     {{ item.published_date|date:"j M Y" }}<br />
