@@ -1,12 +1,5 @@
 {% extends "z3950/base.xhtml" %}
 
-{% block breadcrumbs %}
-{{ block.super }}
-            <li><a href="{% url z3950_index %}">
-                <img src="{{ MEDIA_URL }}png/index-icons/z3950-bc.png" alt="Library"/>
-            </a></li>
-{% endblock %}
-
 {% block pagetitle %}Result list{% endblock %}
 {% block title %}m.ox | {% if page %}Result list{% else %}Search{% endif %}{% endblock %}
 
@@ -34,17 +27,15 @@
 
 <div class="note">
 
-{% comment %}
 {% if page.has_previous %}
-    <a href="?title={{ title|urlencode }}&author={{ author|urlencode }}&isbn={{ isbn|urlencode }}&page={{ page.previous_page_number }}" title="Previous page" class="prev">
-        <img src="{{ MEDIA_URL }}png/icons/list-arrow-left.png" alt="&#8592;"/>
-    </a>
+    <a href="?title={{ search_form.cleaned_data.title|urlencode }}&author={{ search_form.cleaned_data.author|urlencode }}&isbn={{ search_form.cleaned_data.isbn|urlencode }}&page={{ page.previous_page_number }}" title="Previous page" class="prev">
+        Previous</a>
 {% endif %}
-{% endcomment %}
 
     Showing results {{ page.start_index }} to {{ page.end_index }} of {{ paginator.object_list|length }}. Page {{ page.number }} of {{ paginator.num_pages }}.
+
 {% if page.has_next %}
-    <a href="?title={{ title|urlencode }}&author={{ author|urlencode }}&isbn={{ isbn|urlencode }}&page={{ page.next_page_number }}" title="Next page" class="next">
+    <a href="?title={{ search_form.cleaned_data.title|urlencode }}&author={{ search_form.cleaned_data.author|urlencode }}&isbn={{ search_form.cleaned_data.isbn|urlencode }}&page={{ page.next_page_number }}" title="Next page" class="next">
         Next
     </a>
 {% endif %}
@@ -65,9 +56,14 @@
 </ul>
 
 <div class="note">
+{% if page.has_previous %}
+    <a href="?title={{ search_form.cleaned_data.title|urlencode }}&author={{ search_form.cleaned_data.author|urlencode }}&isbn={{ search_form.cleaned_data.isbn|urlencode }}&page={{ page.previous_page_number }}" title="Previous page" class="prev">
+        Previous</a>
+{% endif %}
+
     Showing results {{ page.start_index }} to {{ page.end_index }} of {{ paginator.object_list|length }}. Page {{ page.number }} of {{ paginator.num_pages }}.
 {% if page.has_next %}
-    <a href="?title={{ title|urlencode }}&author={{ author|urlencode }}&isbn={{ isbn|urlencode }}&page={{ page.next_page_number }}" title="Next page" class="next">
+    <a href="?title={{ search_form.cleaned_data.title|urlencode }}&author={{ search_form.cleaned_data.author|urlencode }}&isbn={{ search_form.cleaned_data.isbn|urlencode }}&page={{ page.next_page_number }}" title="Next page" class="next">
         Next
     </a>
 {% endif %}

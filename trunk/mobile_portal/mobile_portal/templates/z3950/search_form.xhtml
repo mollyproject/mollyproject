@@ -1,25 +1,81 @@
+<style>
+
+#library-search {
+    padding:10px;
+}
+
+#library-search table {
+    width:100%;
+    border-collapse:collapse;
+}
+
+#library-search th {
+    width:5em;
+}
+
+#library-search div {
+    /*border:1px solid #002147;*/
+    -moz-border-radius:5px;
+    -webkit-border-radius:5px;
+    padding:5px;
+    background-color:#ffffff;
+}
+
+
+#library-search th, #library-search td {
+    padding:0 0 5px 0;
+    border:0;
+    
+}
+
+#library-search tbody input{
+    width:100%;
+    padding:0px;
+    border:0px solid black;
+    #border-style:none;
+    background-image:none;
+    -khtml-appearance:none;
+}
+
+</style>
+
 <div class="section">
-    <h2>Search</h2>
-    <div class="note"><div class="bubble pad-10">
-        Search OLIS by either some subset of title and author, or by ISBN.
+  <h2>Search</h2>
+  <div class="note"><div class="bubble pad-10">
+    Search OLIS by either some subset of title and author, or by ISBN.
 {% if not device.has_qwerty_keyboard %} You may use a '*' in place of an 'X' in an ISBN.{% endif %}
-    </div></div>
-	<div id="library-search">
+  </div></div>
+
+  <div id="library-search">
     <form method="get" action="{% url z3950_search %}">
+      <table>
+        <tbody>
+          <tr>
+            <th>{{ search_form.title.label_tag }}:</th>
+            <td><div>{{ search_form.title }}</div></td>
+          </tr>
 
-		<ul>
-			<li>{{ search_form.title.label }}
-			{{ search_form.title }}</li>
-		
-			<li>{{ search_form.author.label }}
-	        {{ search_form.author }}</li>
+          <tr>
+            <th>{{ search_form.author.label_tag }}:</th>
+            <td><div>{{ search_form.author }}</div></td>
+          </tr>
+    
+          <tr>
+            <th>{{ search_form.isbn.label_tag }}:</th>
+            <td><div>{{ search_form.isbn }}</div></td>
+          </tr>
+        </tbody>
+        
+        <tfoot>
+          <tr>
+            <td colspan="2">
+              <input type="submit" value="Search"/>
+              <input type="reset" value="Reset"/>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
 
-			<li>{{ search_form.isbn.label }}
-	        {{ search_form.isbn }}</li>
-		</ul>
-	
-		<input type="submit" value="Search"/>
-	    <input type="reset" value="Reset"/>
     </form>
-	</div>
+  </div>
 </div>

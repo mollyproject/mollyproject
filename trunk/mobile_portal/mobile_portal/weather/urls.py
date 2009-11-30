@@ -1,6 +1,8 @@
 from django.conf.urls.defaults import *
 
+from views import IndexView
+
 urlpatterns = patterns('mobile_portal.weather.views',
-    (r'^$', 'index', {}, 'weather_index'),
+    (r'^$', IndexView, {}, 'weather_index'),
 )
 

@@ -26,9 +26,7 @@ class IndexView(BaseView):
         
     def handle_GET(cls, request, context):
         feeds = RSSFeed.objects.all()
-        context = {
-            'feeds': feeds,
-        }
+        context['feeds'] = feeds
         return mobile_render(request, context, 'rss/index')
 
 class ItemListView(BaseView):

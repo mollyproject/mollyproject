@@ -46,8 +46,8 @@ class BaseView(object):
             response = getattr(cls, method_name)(request, context, *args, **kwargs)
             u = time.clock(), time.time()
             print "Response:    %4.6f %4.6f" % ((u[0] - t[0]), (u[1] - t[1]))
-            t = u
-            print '='*80, '\n'
+
+            response.display_time = True            
             return response
         else:
             return cls.method_not_acceptable(request)
