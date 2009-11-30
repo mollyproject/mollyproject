@@ -1,5 +1,5 @@
 
-<div class="list-section">
+<div class="section">
 
 <h2>Did you mean:</h2>
 
@@ -10,7 +10,7 @@
 {% endif %}
 
 <input type="hidden" name="location" value="{{ location }}"/>
-<ul class="ml">
+<ul>
 {% for option in options %}
     <li>
         <form method="post" action="." class="submit-location-form">

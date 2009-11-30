@@ -4,7 +4,7 @@
 
 {% block content %}
 
-<ul class="ml">
+<ul>
 {% for id, title in sites %}
     <li><a href="{% url sakai_signup_site id %}">{{ title }}</a></li>
 {% endfor %}

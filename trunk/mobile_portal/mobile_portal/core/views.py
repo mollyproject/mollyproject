@@ -497,7 +497,7 @@ class FeedbackView(BaseView):
            'sent': request.GET.get('sent') == 'true',
            'referer': request.GET.get('referer', ''),
         })
-        return mobile_render(request, context, 'core/contact')
+        return mobile_render(request, context, 'core/feedback')
         
     def handle_POST(cls, request, context):
         if context['feedback_form'].is_valid():
@@ -506,16 +506,16 @@ class FeedbackView(BaseView):
                 cls.get_email_body(request, context), None,
                 ('%s <%s>' % admin for admin in settings.ADMINS),
                 [], None, [],
-                {'Reply-To': contact_form.cleaned_data['email']},
+                {'Reply-To': context['feedback_form'].cleaned_data['email']},
             )
             email.send()
             
             qs = urllib.urlencode({
                 'sent':'true',
-                'referer': params['referer'],
+                'referer': request.POST.get('referer', ''),
             })
        
-            return HttpResponseRedirect('%s?%s' % (reverse('core_contact'), qs))
+            return HttpResponseRedirect('%s?%s' % (reverse('core_feedback'), qs))
             
         else:
             return cls.handle_GET(request, context)

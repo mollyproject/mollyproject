@@ -1,23 +1,13 @@
 {% extends "z3950/base.xhtml" %}{% load maps %}
 
-{% block breadcrumbs %}
-{{ block.super }}
-            <li><a href="{% url z3950_index %}">
-                <img src="{{ MEDIA_URL }}png/index-icons/z3950-bc.png" alt="Library"/>
-            </a></li>
-            <li><a href="{% url z3950_item_detail control_number %}">
-                &hellip;
-            </a></li>
-{% endblock %}
-
-{% block pagetitle %}Holdings detail{% endblock %}
 {% block title %}m.ox | {{ item.title }}{% endblock %}
 
 {% block content %}
 
-<div class="section-nopad">
-    <h2>{{ item.title }}</h2>
-    <table class="section-table">
+<div class="section">
+    <h2>{{ item.title }}</h2>   
+    <div class="article"><div class="bubble pad-5">
+    <table>
 {% if item.author %}
         <tr>
             <th>Author:</th>
@@ -42,6 +32,7 @@
             <td>{{ item.description }}</td>
         </tr>
 {% endif %}
+
 {% if item.isbns %}
 {% for isbn in item.isbns %}
         <tr>
@@ -52,6 +43,7 @@
         </tr>
 {% endfor %}
 {% endif %}
+
 {% if item.issns %}
 {% for issn in item.issns %}
         <tr>
@@ -63,9 +55,10 @@
 {% endfor %}
 {% endif %}
     </table>
+    </div></div>
 </div>
 
-<div class="list-section">
+<div class="section">
     <h2>{{ library.location|join:" - " }}</h2>
 {% if library.oxpoints_id and library.oxpoints_location %}
     <div class="backgrounded-image" style="background-image:url('{% map_url library.oxpoints_location %}'); height:{{ device.max_image_height }}px">
@@ -73,9 +66,10 @@
     </div>
 {% endif %}
 
-    <ul class="ml">
+    <ul>
 {% for book in books %}
-    <li class="non-link-item">
+    {# non-link-item #}
+    <li>
       Shelfmark: <em>{{ book.shelfmark }}</em>, availability: <em>{{ book.availability_display }}</em>{% if book.materials_specified %}, issue: <em>{{ book.materials_specified }}</em>{% endif %}
     </li>
 {% endfor %}
