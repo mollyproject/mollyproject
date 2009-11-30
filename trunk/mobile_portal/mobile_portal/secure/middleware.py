@@ -33,7 +33,7 @@ class SecureSessionMiddleware(object):
         """
         
         if not (request.is_secure() or settings.DEBUG):
-            return
+            return response
             
         try:
             accessed = request.secure_session.accessed
