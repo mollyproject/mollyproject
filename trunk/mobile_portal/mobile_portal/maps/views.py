@@ -238,7 +238,7 @@ class EntityDetailView(ZoomableView):
             'maps',
             lazy_parent(NearbyDetailView, ptypes=type_slug),
             context['entity'].title,
-            lazy_reverse('entity_detail_view', args=[type_slug,id]),
+            lazy_reverse('maps_entity', args=[type_slug,id]),
         )
 
     def handle_GET(cls, request, context, type_slug, id):
@@ -309,6 +309,12 @@ class EntityUpdateView(ZoomableView):
         return {
             'exclude_from_search':True,
         }
+        
+    def initial_context(cls, request, type_slug, id):
+        return dict(
+            super(EntityUpdateView, cls).initial_context(request),
+            entity=get_entity(type_slug, id),
+        )
 
     @BreadcrumbFactory
     def breadcrumb(cls, request, context, type_slug, id):
@@ -316,11 +322,11 @@ class EntityUpdateView(ZoomableView):
             'maps',
             lazy_parent(EntityDetailView, type_slug=type_slug, id=id),
             'Things nearby',
-            lazy_reverse('entity_update_view', args=[type_slug,id])
+            lazy_reverse('maps_entity_update', args=[type_slug,id])
         )
     
     def handle_GET(cls, request, context, type_slug, id):
-        entity = context['entity'] = get_entity(type_slug, id)
+        entity = context['entity']
         if entity.entity_type.source != 'osm':
             raise Http404
         
