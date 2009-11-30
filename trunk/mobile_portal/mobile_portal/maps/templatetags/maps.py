@@ -71,7 +71,7 @@ class MapNode(template.Node):
         else:
             lat, lng = [float(a.resolve(context)) for a in args]
 
-        width, height = context['device'].max_image_width-16, context['device'].max_image_height
+        width, height = context['map_width'], context['map_height']
         
         if False and device_parents[context['device'].devid] & OPENLAYERS_BROWSERS:
             return self.openlayers_map(context, lat, lng, width, height)

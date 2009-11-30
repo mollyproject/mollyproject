@@ -136,6 +136,11 @@ class NearbyDetailView(ZoomableView):
         if len(context['entity_types']) > 1:
             return {
                 'exclude_from_search':True,
+                'title': '%s near%s%s' % (
+                    capfirst(context['entity_types'][0].verbose_name_plural),
+                    entity and ' ' or '',
+                    entity and entity.title or 'by',
+                ),
             }
         
         return {
@@ -172,8 +177,8 @@ class NearbyDetailView(ZoomableView):
             points = ((e.location[1], e.location[0], 'red') for e in entities),
             min_points = min_points,
             zoom = context['zoom'],
-            width = request.device.max_image_width,
-            height = request.device.max_image_height,
+            width = request.map_width,
+            height = request.map_height,
         )
         
         entities = [[entities[i] for i in b] for a,b in new_points]

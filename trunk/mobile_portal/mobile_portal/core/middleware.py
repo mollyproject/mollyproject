@@ -28,6 +28,10 @@ class LocationMiddleware(object):
             )
         else:
             request.device = request.browser
+            
+        request.map_width = min(320, request.device.resolution_width-10)
+        request.map_height = min(320, request.device.resolution_height-10)
+        
 
 from django.db import connection
 

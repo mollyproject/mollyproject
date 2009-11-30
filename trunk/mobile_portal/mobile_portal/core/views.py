@@ -134,8 +134,8 @@ class UpdateLocationView(BaseView):
                 points = points,
                 min_points = len(points),
                 zoom = None if len(points)>1 else 15,
-                width = request.device.max_image_width,
-                height = min(request.device.max_image_height, 200),
+                width = request.map_width,
+                height = request.map_height,
             )
         else:
             map_hash, zoom = None, None
@@ -144,7 +144,6 @@ class UpdateLocationView(BaseView):
             'zoom': zoom,
             'map_hash': map_hash,
             'options': options,
-            'map_height': min(request.device.max_image_height, 200),
             'zoom_controls': False,
         })
         
