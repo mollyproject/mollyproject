@@ -35,7 +35,7 @@ class GoogleSearchView(BaseView):
         except OverrideResponse, e:
             return e.response
             
-        if len(results) == 1 and results[0]['redirect_if_sole_result']:
+        if len(results) == 1 and results[0].get('redirect_if_sole_result'):
             return HttpResponseRedirect(results[0]['url'])
         
         context.update({

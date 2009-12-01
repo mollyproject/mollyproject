@@ -232,8 +232,8 @@ class ItemDetailView(BaseView):
                 points = points,
                 min_points = 0 if context['zoom'] else len(points),
                 zoom = context['zoom'],
-                width = request.device.max_image_width,
-                height = request.device.max_image_height,
+                width = request.map_width,
+                height = request.map_height,
             )
         
             # Yes, this is weird. fit_to_map() groups libraries with the same location

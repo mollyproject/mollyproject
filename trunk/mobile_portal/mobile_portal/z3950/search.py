@@ -1,8 +1,10 @@
 import re, urllib, simplejson
 from datetime import datetime
 from PyZ3950 import zoom
+from itertools import cycle
 
 from django.conf import settings
+from django.core.urlresolvers import reverse
 
 from mobile_portal.oxpoints.models import Entity
 
@@ -238,3 +240,37 @@ class ControlNumberSearch(OLISSearch):
     def __init__(self, control_number):
         query = '(1,1032)="%s"' % control_number
         super(ControlNumberSearch, self).__init__(query)
+
+
+class SiteSearch(object):
+    def __new__(cls, query, only_app, request):
+        try:
+            isbn = [10 if d=='X' else int(d) for d in query.lower()]
+            if len(query) == 13 and all(d < 10 for d in isbn) and query.startswith('978'):
+                valid = (sum(d*m for d,m in zip(isbn, cycle([1,3]))) % 10) == 0
+            elif len(query) == 10:
+                valid = (sum((i+1)*d for i,d in enumerate(isbn[:9])) % 11) == isbn[9]
+            else:
+                valid = False
+            print "Valid", isbn
+        except ValueError:
+            valid = False
+        
+        if not valid:
+            return [], False, None
+            
+        results, items = [], ISBNSearch(query)
+        for item in items:
+            results.append({
+                'title': item.title,
+                'redirect_if_sole_result': True,
+                'application': 'z3950',
+                'excerpt': '',
+                'additional': '<strong>Library item</strong>, Publisher: %s' % item.publisher,
+                'url': reverse('z3950_item_detail', args=[item.control_number]),
+            })
+            
+        return results, False, None
+                
+            
+                

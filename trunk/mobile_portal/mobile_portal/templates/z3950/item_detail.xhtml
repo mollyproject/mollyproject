@@ -80,7 +80,7 @@
     </div></div> 
 
 {% if map_hash %}
-    <div class="backgrounded-image" style="background-image:url('{% url osm_generated_map map_hash %}'); height:{{ device.max_image_height }}px;"> </div>
+    <div class="backgrounded-image" style="background-image:url('{% url osm_generated_map map_hash %}'); height:{{ map_height }}px;"> </div>
 {% endif %}
 
     <ul>
