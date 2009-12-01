@@ -28,6 +28,7 @@ class SiteSearch(object):
                 'redirect_if_sole_result': True,
                 'url': entity.get_absolute_url(),
                 'excerpt': '',
+                'application': 'maps',
             }
             result.update(metadata)
             

@@ -133,7 +133,7 @@ class GoogleSearch(object):
 
     def check_applications(self):
         if self.application:
-            applications = 'mobile_portal.%s' % self.application
+            applications = ['mobile_portal.%s' % self.application]
         else:
             applications = settings.INSTALLED_APPS
             

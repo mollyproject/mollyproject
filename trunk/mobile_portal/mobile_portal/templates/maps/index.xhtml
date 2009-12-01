@@ -27,6 +27,9 @@
 <div class="form">
 	<form method="get" action="{% url googlesearch_index %}">
 		<h2>Search for Places</h2>
+		<p>
+		    To search for bus stops you can use an 8-digit oxontime code, or a central stop number (e.g. 'G3')
+		</p>
   		<p>
 			{{ search_form.query }}
 			<input type="hidden" name="application" value="maps">
@@ -47,24 +50,5 @@
 	</ul>
 </div>
 {# End Points of Interest #}
-
-
-{# Bus Stop Search #}
-<div class="section">
-	<div class="form">
-		<form method="get" action="{% url maps_busstop_search %}">
-    		<h2>Bus Stop Search</h2>
-    		<div class="note"><div class="bubble pad-10">
-				<label for="busstop_id">
-				Enter an 8-digit oxontime code, or a central stop number (e.g. 'G3')</label>
-    		</div></div>
-      		<p style="text-align:center">
-        		<input name="id" id="busstop_id"/>
-        		<input type="submit" value="Go!"/>
-      		</p>
-  		</form>
-	</div>
-</div>
-{# End Bus Stop Search #}
 
 {% endblock %}

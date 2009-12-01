@@ -406,7 +406,7 @@ class NearbyEntityDetailView(NearbyDetailView):
 
     @BreadcrumbFactory
     def breadcrumb(cls, request, context, type_slug, id, ptype):
-        entity_type = get_object_or_404(EntityType, ptype=ptype)
+        entity_type = get_object_or_404(EntityType, slug=ptype)
         return Breadcrumb(
             'maps',
             lazy_parent(NearbyEntityListView, type_slug=type_slug, id=id),
