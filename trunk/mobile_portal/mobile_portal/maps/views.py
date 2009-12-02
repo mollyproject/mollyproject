@@ -17,6 +17,7 @@ from django.template.defaultfilters import capfirst
 from mobile_portal.core.renderers import mobile_render
 #from mobile_portal import oxpoints
 from mobile_portal.core.handlers import BaseView, ZoomableView
+from mobile_portal.core.views import LocationRequiredView
 from mobile_portal.core.models import Feed
 from mobile_portal.core.decorators import require_location, location_required
 from mobile_portal.osm.utils import get_generated_map, fit_to_map
@@ -51,7 +52,7 @@ class IndexView(BaseView):
         context['search_form'] = GoogleSearchForm()
         return mobile_render(request, context, 'maps/index')
 
-class NearbyListView(BaseView):
+class NearbyListView(LocationRequiredView):
     def get_metadata(cls, request, entity=None):
         return {
             'title': 'Find things nearby',
@@ -90,7 +91,7 @@ class NearbyListView(BaseView):
         return mobile_render(request, context, 'maps/nearby_list')
 
 
-class NearbyDetailView(ZoomableView):
+class NearbyDetailView(LocationRequiredView, ZoomableView):
     def initial_context(cls, request, ptypes, entity=None):
         entity_types = tuple(get_object_or_404(EntityType, slug=t) for t in ptypes.split(';'))
         

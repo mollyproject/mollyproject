@@ -1,0 +1,83 @@
+{% load maps %}
+
+{% if preferences.location.name %}
+<p>We think you are someewhere near <span class="location">{{ preferences.location.name }}</span></p>
+{% else %}
+<p>We do not yet know where you are.</p>
+{% endif %}
+
+{% if not form.cleaned_data.name %}
+<div id="geolocate-js"> </div>
+{% endif %}
+
+{% if form.cleaned_data.name %}
+
+<h2>Did you mean:</h2>
+
+{% if map_url %}
+<div class="backgrounded-image" style="background-image:url('{{ map_url }}'); height:{{ map_height }}px">
+{% include "maps/map_elements.xhtml" %}
+</div>
+{% endif %}
+
+<ul>
+{% for placemark in placemarks %}
+    <li>
+        <form method="post" action="." class="submit-location-form">
+            <input type="hidden" name="name" value="{{ placemark.0 }}"/>
+            <input type="hidden" name="latitude" value="{{ placemark.1.0 }}"/>
+            <input type="hidden" name="longitude" value="{{ placemark.1.1 }}"/>
+            <input type="hidden" name="accuracy" value="{{ placemark.2 }}"/>
+            <input type="hidden" name="method" value="geocoded"/>
+            <input type="hidden" name="return_url" value="{{ return_url|default:"" }}"/>
+            <button class="as_link" type="submit" name="index" style="width:100%">{{ forloop.counter }}. {{ placemark.0 }}</button>
+        </form>
+    </li>
+{% endfor %}
+</ul>
+
+{% else %}
+
+<div class="bubble pad-10">Examples: 'oucs' (a unit code), 'Trinity College' (a college or department), 'Parks Road' (an address), 'OX1 3PG' (a postcode).</div>
+
+<form method="get" action="." id="manual_location_form">
+{% if return_url %}
+        <input name="return_url" type="hidden" value="{{ return_url }}"/>
+{% endif %}
+        <input id="location" name="name" value="{{ location }}"/>
+        <input type="submit" value="Update"/>
+
+</form>
+
+
+{% endif %}
+
+
+{% comment %}
+<h2>Automatic geolocation</h2>
+<div class="note"><div class="bubble pad-5">
+{% if preferences.location.placemark %}
+        <p id="location_status">We think you are somewhere near <strong class="nobr">{{ preferences.location.placemark.0 }}</strong> ({{ preferences.location.location.0 }} {{ preferences.location.location.1 }}).</p>
+{% else %}
+{% if preferences.location.location %}
+        <p id="location_status">We think you are somewhere near <strong class="nobr">{{ preferences.location.location.0 }} {{ preferences.location.location.1 }}</strong>.</p>
+{% else %}
+        <p id="location_status">Sorry, but we are unable to determine your location automatically.</p>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                if (require_location && positionMethodAvailable())
+                    $('#location_status').html('We do not yet have a location for you; please wait while we attempt to determine one.');
+                else if (positionMethodAvailable())
+                    $('#location_status').css('display', 'none');
+            });
+        </script>
+{% endif %}
+{% endif %}
+<p id="location_update"> </p>
+        <script type="text/javascript">
+            if (positionMethodAvailable())
+                $('#location_update').append(' <a href="#" onclick="javascript:requestPosition();">Determine automatically<\/a>');
+        </script>
+        </div></div>
+</div>
+{% endcomment %}

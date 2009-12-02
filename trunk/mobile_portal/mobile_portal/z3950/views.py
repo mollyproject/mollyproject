@@ -84,7 +84,7 @@ class SearchDetailView(BaseView):
     def handle_GET(cls, request, context):
         search_form = context['search_form']
         
-        if not search_form.is_valid():
+        if not (request.GET and search_form.is_valid()):
             return cls.handle_no_search(request, context)
 
         try:

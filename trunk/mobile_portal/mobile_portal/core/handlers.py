@@ -1,5 +1,5 @@
 from inspect import isfunction
-import traceback, time
+import traceback, time, simplejson
 from django.http import HttpResponse
 
 
@@ -61,6 +61,9 @@ class BaseView(object):
             zoom = min(max(10, zoom), 18)
         return zoom
         
+    def json_response(cls, data):
+        return HttpResponse(simplejson.dumps(data), mimetype="text/plain")
+        
 class ZoomableView(BaseView):
     default_zoom = None
     
@@ -74,3 +77,4 @@ class ZoomableView(BaseView):
         return {
             'zoom': zoom,
         }
+        
