@@ -28,28 +28,52 @@
 
 
 {% block header %}
-<div id="bc-header">
-  <ol id="bc">
-    <li><a href="{% url core_index %}">
-      <img src="{{ MEDIA_URL }}png/logo.png" alt="Home"/>
-    </a></li>
-{% if breadcrumbs.2 %}
-    <li><a href="{{ breadcrumbs.1.1 }}" title="{{ breadcrumbs.1.0 }}">
-      <img src="{{ MEDIA_URL }}png/index-icons/{{ breadcrumbs.0 }}-bc.png" alt="{{ breadcrumb.1.0 }}"/>
-    </a></li>
-{% if not breadcrumbs.3 %}
-    <li><a href="{{ breadcrumbs.2.1 }}" title="{{ breadcrumbs.2.0 }}">
-      &hellip;
-    </a></li>
-{% endif %}{% endif %}
-  </ol> 
-  <div id="bc-title">
-    <h1 class="{% if not breadcrumbs.2 %}{{ breadcrumbs.0 }}-header with-icon{% endif %}">
-      {{ breadcrumbs.4 }}
-    </h1>
-  </div>
-</div>
 
+{% ifnotequal style_group "dumb" %}
+    <div id="bc-header">
+      <ol id="bc">
+        <li><a href="{% url core_index %}">
+          <img src="{{ MEDIA_URL }}png/logo.png" alt="Home"/>
+        </a></li>
+    {% if breadcrumbs.2 %}
+        <li><a href="{{ breadcrumbs.1.1 }}" title="{{ breadcrumbs.1.0 }}">
+          <img src="{{ MEDIA_URL }}png/index-icons/{{ breadcrumbs.0 }}-bc.png" alt="{{ breadcrumb.1.0 }}"/>
+        </a></li>
+    {% if not breadcrumbs.3 %}
+        <li><a href="{{ breadcrumbs.2.1 }}" title="{{ breadcrumbs.2.0 }}">
+          &hellip;
+        </a></li>
+    {% endif %}{% endif %}
+      </ol> 
+      <div id="bc-title">
+        <h1 class="{% if not breadcrumbs.2 %}{{ breadcrumbs.0 }}-header with-icon{% endif %}">
+          {{ breadcrumbs.4 }}
+        </h1>
+      </div>
+    </div>
+{% else %}
+    <div id="bc-header">
+      <ol id="bc">
+        <li><a href="{% url core_index %}">
+          Home
+        </a></li>
+    {% if breadcrumbs.2 %}
+        <li><a href="{{ breadcrumbs.1.1 }}" title="{{ breadcrumbs.1.0 }}">
+            {{ breadcrumbs.1.0 }}
+        </a></li>
+    {% if not breadcrumbs.3 %}
+        <li><a href="{{ breadcrumbs.2.1 }}" title="{{ breadcrumbs.2.0 }}">
+            {{ breadcrumbs.2.0 }}
+        </a></li>
+    {% endif %}{% endif %}
+      </ol> 
+      <div id="bc-title">
+        <h1 class="{% if not breadcrumbs.2 %}{{ breadcrumbs.0 }}-header with-icon{% endif %}">
+          {{ breadcrumbs.4 }}
+        </h1>
+      </div>
+    </div>
+{% endifnotequal %}
 
 
 {% endblock %}

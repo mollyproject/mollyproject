@@ -7,19 +7,26 @@
 <div id="index-header">
     <div id="index-title">
 		<!-- <img src="{{ MEDIA_URL }}png/headers/{{ device.resolution_width|header_width }}.png" alt="Mobile Oxford"/> -->
-        <img src="{{ MEDIA_URL }}png/new/logos/logo-128x51-TRMargin-5px.png" alt="Mobile Oxford"/>
+		{% ifequal style_group "dumb" %}
+		    <img src="{{ MEDIA_URL }}png/new/logos/logo-90x55.jpg" alt="Mobile Oxford">
+		{% else %}
+            <img src="{{ MEDIA_URL }}png/new/logos/logo-128x51-TRMargin-5px.png" alt="Mobile Oxford"/>
+        {% endifequal %}
     </div>
     <div id="index-search">
 	     <form method="get" action="{% url googlesearch_index %}">
 		 <p>
 			{{ search_form.query }}
+		{% ifequal style_group "dumb" %}
+		    <input alt="Search" type="button" value="Search" />
+		{% else %}
 			<input alt="Search" type="image" src="{{ MEDIA_URL }}png/new/buttons/search-button.png" title="Search" />
+		{% endifequal %}
 		 </p>
 		 </form>
 	</div>
 </div>	
 {% endblock %}
-
 
 
 {% block content %}
@@ -90,5 +97,7 @@
 			</div>
         </div>        
 {% endif %}
+
+
 
 {% endblock %}
