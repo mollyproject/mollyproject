@@ -29,8 +29,9 @@ def device_specific_media(request):
     """
 
     device, browser = request.device, request.browser
-    print device.brand_name
-
+    
+    if browser.devid == 'generic_skyfire':
+        style_group = "dumb"
     if device.brand_name == 'Apple' and tuple(map(int, device.device_os_version.split('.'))) >= (1,):
         style_group = "smart"
     elif device.device_os == 'Symbian' and tuple(map(int, device.device_os_version.split('.'))) >= 9.2 : 
@@ -46,7 +47,7 @@ def device_specific_media(request):
     #elif 'generic_web_browser' in device_parents[browser.devid]:
     #    style_group = 'smart'
     else:
-        style_group = "smart"
+        style_group = "dumb"
     return {
         'style_group': style_group,
     }    
