@@ -46,7 +46,7 @@ class WebcamDetailView(BaseView):
     @BreadcrumbFactory
     def breadcrumb(cls, request, context, slug):
         return Breadcrumb('webcams', lazy_parent(IndexView),
-                          'Webcams', lazy_reverse('webcams_webcam', args=[slug]))
+                          'Webcam', lazy_reverse('webcams_webcam', args=[slug]))
         
     def handle_GET(cls, request, context, slug):
         try:

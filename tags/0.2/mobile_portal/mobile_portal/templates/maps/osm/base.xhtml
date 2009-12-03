@@ -14,12 +14,20 @@
 
 {% block content %}
 
-<div class="section-nopad">
+<div class="section">
 <h2>{{ entity.title }}</h2>
 
-<div class="backgrounded-image" style="background-image:url('{% map_url entity.location %}'); height:{{ device.max_image_height }}px">
-{% include "maps/map_elements.xhtml" %}
-</div>
+
+{% ifnotequal style_group "dumb" %}
+    <div class="backgrounded-image" style="background-image:url('{% map_url entity.location %}'); height:{{ map_height }}px">
+    {% include "maps/map_elements.xhtml" %}
+    </div>
+{% else %}
+    <img src="{% map_url entity.location %}" alt="Map"><br />
+    {% include "maps/map_elements.xhtml" %}
+{% endifnotequal %}
+
+
 
 {% if entity|osm_tags %}
 <table class="section-table">
@@ -34,7 +42,7 @@
 </table>
 {% endif %}
 
-<ul class="ml">
+<ul>
 {% if entity.metadata.tags.phone %}
     <li>
         <a class="phone" href="{{ entity.metadata.tags.phone|telephone_uri }}">
@@ -57,25 +65,25 @@
         </a>
     </li>
 {% endif %}
-    <li>
+    <li class="round-bottom">
         <a href="{% url maps_entity_nearby_list entity.entity_type.slug,entity.display_id %}" rel="nofollow">Find things near here</a>
     </li>
 </ul>
 
 </div>
 
-<div class="list-section">
+<div class="section">
 <h2>Note</h2>
 
-<div class="list-note bottom">
+<div class="note"><div class="bubble pad-10">
     This information is provided courtesy of
     <a href="{% url maps_static_openstreetmap %}">OpenStreetMap</a> under a
     Creative Commons Attribution-ShareAlike 2.0 license.<br/>
     Oxford University provides this information without warranty.
-</div>
+</div></div>
 
-<ul class="ml">
-  <li>
+<ul>
+  <li class="round-bottom">
     <a href="{% url maps_entity_update entity.entity_type.slug,entity.display_id %}">
       Suggest a correction
     </a>

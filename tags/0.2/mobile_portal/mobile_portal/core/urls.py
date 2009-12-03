@@ -2,7 +2,7 @@ from django.conf.urls.defaults import *
 from django.conf import settings
 
 from mobile_portal.core.views import (
-    IndexView, UpdateLocationView, DesktopAboutView,
+    IndexView, LocationUpdateView, DesktopAboutView,
     UserMessageView, AjaxUpdateLocationView,
     ExternalImageView, RunCommandView, FeedbackView,
     StaticDetailView
@@ -14,11 +14,8 @@ urlpatterns = patterns('mobile_portal.core.views',
         IndexView, {},
         'core_index'),
         
-    (r'^ajax/update_location/$',
-        AjaxUpdateLocationView, {},
-        'core_ajax_update_location'),
     (r'^update_location/$',
-        UpdateLocationView, {},
+        LocationUpdateView, {},
         'core_update_location'),
 
     (r'^core/run_command/$',

@@ -26,8 +26,27 @@ class LocationMiddleware(object):
                 opera_device,
                 search=LocationMiddleware.vsa
             )
+        if 'HTTP_X_SKYFIRE_PHONE' in request.META:
+            opera_device = request.META['HTTP_X_SKYFIRE_PHONE']
+            print opera_device
+            request.device = devices.select_ua(
+                opera_device,
+                search=LocationMiddleware.vsa
+            )
+            try:
+                request.device.resolution_width, request.device.resolution_height = \
+                    map(int, request.META['HTTP_X_SKYFIRE_SCREEN'].split(','))[2:4]
+                print "Found resolution", request.device.resolution_width, request.device.resolution_height
+            except (KeyError, ValueError):
+                print "Failed resolution"
         else:
             request.device = request.browser
+            
+        print request.device.devid, request.browser.devid
+            
+        request.map_width = min(320, request.device.resolution_width-10)
+        request.map_height = min(320, request.device.resolution_height-10)
+        
 
 from django.db import connection
 

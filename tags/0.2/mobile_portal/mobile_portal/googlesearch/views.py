@@ -1,9 +1,11 @@
+from django.http import HttpResponseRedirect
+
 from mobile_portal.core.handlers import BaseView
 from mobile_portal.core.renderers import mobile_render
 
 from mobile_portal.core.breadcrumbs import Breadcrumb, BreadcrumbFactory, lazy_reverse, lazy_parent, NullBreadcrumb
 
-from search import GoogleSearch
+from search import GoogleSearch, OverrideResponse
 from forms import GoogleSearchForm
 
 class GoogleSearchView(BaseView):
@@ -28,7 +30,13 @@ class GoogleSearchView(BaseView):
         application = context['search_form'].cleaned_data['application'] or None
         query = context['search_form'].cleaned_data['query']
         
-        results = GoogleSearch('m.ox.ac.uk', application, query, request)
+        try:
+            results = list(GoogleSearch('m.ox.ac.uk', application, query, request))
+        except OverrideResponse, e:
+            return e.response
+            
+        if len(results) == 1 and results[0].get('redirect_if_sole_result'):
+            return HttpResponseRedirect(results[0]['url'])
         
         context.update({
             'results': list(results)[:20],

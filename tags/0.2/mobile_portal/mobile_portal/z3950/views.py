@@ -58,10 +58,11 @@ class SearchDetailView(BaseView):
     
     @BreadcrumbFactory
     def breadcrumb(cls, request, context):
+        x = 'item' in context or context['search_form'].is_valid()
         return Breadcrumb(
             'z3950',
             lazy_parent(IndexView),
-            'Search results' if context['search_form'].is_valid() else 'Library search',
+            'Search results' if x else 'Library search',
             lazy_reverse('z3950_search'),
         )
         
@@ -83,7 +84,7 @@ class SearchDetailView(BaseView):
     def handle_GET(cls, request, context):
         search_form = context['search_form']
         
-        if not search_form.is_valid():
+        if not (request.GET and search_form.is_valid()):
             return cls.handle_no_search(request, context)
 
         try:
@@ -160,7 +161,7 @@ class ItemDetailView(BaseView):
             display_map = (not request.preferences['location']['location'] is None)
         
         return {
-            'zoom': self.get_zoom(request, None),
+            'zoom': cls.get_zoom(request, None),
             'item': items[0],
             'control_number': control_number,
             'display_map': display_map,
@@ -176,7 +177,7 @@ class ItemDetailView(BaseView):
         )
                
     def handle_GET(cls, request, context, control_number):
-        return (self.handle_with_location if context['display_map'] else self.handle_without_location)(request, context)
+        return (cls.handle_with_location if context['display_map'] else cls.handle_without_location)(request, context)
 
     def handle_with_location(cls, request, context):
         points = []
@@ -200,7 +201,7 @@ class ItemDetailView(BaseView):
                 without_location = entities.filter(location__isnull=True)
                 
                 if with_location.count() == 0:
-                    return self.handle_without_location(request, context)
+                    return cls.handle_without_location(request, context)
                 
                 entities = chain(
                     with_location.distance(point).order_by('distance'),
@@ -231,8 +232,8 @@ class ItemDetailView(BaseView):
                 points = points,
                 min_points = 0 if context['zoom'] else len(points),
                 zoom = context['zoom'],
-                width = request.device.max_image_width,
-                height = request.device.max_image_height,
+                width = request.map_width,
+                height = request.map_height,
             )
         
             # Yes, this is weird. fit_to_map() groups libraries with the same location
@@ -261,7 +262,7 @@ class ItemDetailView(BaseView):
 
 
         
-    def handle_without_location(self, request, context):
+    def handle_without_location(cls, request, context):
         libraries = context['item'].libraries.items()
         libraries.sort(key=lambda (l,i):l.location)
         

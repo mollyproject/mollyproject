@@ -88,10 +88,11 @@ ol#bc {
     display:block;
 }
 ol#bc li {
-    padding-right: 5px;
-    border-style: none solid none none;
-    border-width: 0 3px 0 0;
-    border-color:white;
+    background-image:url('../../png/sep.png');
+    background-repeat:no-repeat;
+    background-position: center right;
+    padding-right: 10px;
+    padding-left:0px;
     display:block;
     float:left;
     height:30px;
@@ -108,28 +109,34 @@ ol#bc li a {
 ol#bc img {
     border:0;
 }
-h1#bc-title {
+
+div#bc-title {
+    overflow:hidden;
+}
+
+div#bc-title h1 {
     margin: 0;
-    padding-top: 12px;
+    line-height:30px;
+    padding-top: 0px;
     float:left;
     font-size:12pt;
     text-align:left;
     color:#ffffff;
     white-space: nowrap;
 }
-h1#bc-title.with-icon {
+div#bc-title h1.with-icon {
     background-repeat: no-repeat;
     background-position: left center;
     padding-left: 34px; /* Moves text to allow background breadcrumb image to coexist */
 }
-h1#bc-title.maps-header {     background-image:url('../../png/index-icons/maps-bc.png');}
-h1#bc-title.contact-header {  background-image:url('../../png/index-icons/contact-bc.png');}
-h1#bc-title.webcams-header {  background-image:url('../../png/index-icons/webcams-bc.png');}
-h1#bc-title.podcasts-header { background-image:url('../../png/index-icons/podcasts-bc.png');}
-h1#bc-title.results-header {  background-image:url('../../png/index-icons/results-bc.png');}
-h1#bc-title.z3950-header {    background-image:url('../../png/index-icons/z3950-bc.png');}
-h1#bc-title.rss-header {      background-image:url('../../png/index-icons/rss-bc.png');}
-h1#bc-title.weather-header {  background-image:url('../../png/index-icons/weather-bc.png');}
+div#bc-title h1.maps-header {     background-image:url('../../png/index-icons/maps-bc.png');}
+div#bc-title h1.contact-header {  background-image:url('../../png/index-icons/contact-bc.png');}
+div#bc-title h1.webcams-header {  background-image:url('../../png/index-icons/webcams-bc.png');}
+div#bc-title h1.podcasts-header { background-image:url('../../png/index-icons/podcasts-bc.png');}
+div#bc-title h1.results-header {  background-image:url('../../png/index-icons/results-bc.png');}
+div#bc-title h1.z3950-header {    background-image:url('../../png/index-icons/z3950-bc.png');}
+div#bc-title h1.rss-header {      background-image:url('../../png/index-icons/rss-bc.png');}
+div#bc-title h1.weather-header {  background-image:url('../../png/index-icons/weather-bc.png');}
 /* End Breadcrumb Trail Styles */
 
 

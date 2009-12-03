@@ -2,23 +2,6 @@
 
 {% block title %}m.ox | Contact search{% if query %}: {{ query }}{% endif %}{% endblock %}
 
-{% block extrahead %}{{ block.super }}
-{% if query %}
-<script type="text/javascript">
-    var query = "{{ query }}";
-    var query_enc = "{{ query|urlencode }}";
-    var page = {{ page }};
-    var page_count = {{ page_count }};
-    var method = "{{ method }}";
-</script>
-{% endif %}
-<script type="text/javascript" src="{{ MEDIA_URL }}js/contact.js"> </script>
-{% endblock %}
-
-
-{% block pagetitleclass %}contact-header with-icon{% endblock %}
-{% block pagetitle %}Contact search{% endblock %}
-
 {% block content %}
 <div class="section">
   <div class="form">	
@@ -38,111 +21,106 @@
 </div>
 
 {% if query %}
-	<div class="section">
-	  <h2>Results</h2>
-	  {% if message %}
-		  <div class="bubble"><div class="note pad-10">
-		   	 {{ message }}
-		  </div></div>
-	  {% endif %}
+<div class="section">
+  <h2>Results</h2>
+  {% if message %}
+  <div class="bubble"><div class="note pad-10">
+    {{ message }}
+  </div></div>
+  {% endif %}
 
-	  {% if people %}
+  {% if people %}
 	  	
-		  {% if page_count|gte:4 %}<div class="bubble"><div class="note pad-10">
-		  Your search returned {{results_count}} item{{ results_count|pluralize }}. Try adding an initial to get more specific results.</div></div>
-		  {% else %}<div class="bubble"><div class="note pad-10">
-		  Your search returned {{results_count}} item{{ results_count|pluralize }}.</div></div>
-	  	  {% endif %}
+  <div class="bubble"><div class="note pad-10">
+    {% if page_count|gte:4 %}
+    Your search returned {{results_count}} item{{ results_count|pluralize }}. Try adding an initial to get more specific results.
+    {% else %}
+    Your search returned {{results_count}} item{{ results_count|pluralize }}.
+    {% endif %}
+  </div></div>
 
-	 
-	 {% ifnotequal 1 page_count %}
-     <div class="note">
-  				  Pages:
-				    {% for page in pages %}<a href="?page={{ page }}&amp;method={{ method }}&amp;q={{ query|urlencode }}" style="padding:0 7px 0 0;">{{ page }}</a>
-				    {% endfor %}
-				    {% if more_pages %}
-				    <a href="?page={{ page|add:1 }}&amp;method={{ method }}&amp;q={{ query|urlencode }}" style="display:inline;">Next >></a>
-				    {% endif %}
-	  </div>
-	  {% endifnotequal %}
+  {% ifnotequal 1 page_count %}
+  <div class="note">
+    Pages:
+    {% for page in pages %}
+    <a href="?page={{ page }}&amp;method={{ method }}&amp;q={{ query|urlencode }}" style="padding:0 7px 0 0;">{{ page }}</a>
+    {% endfor %}
+  </div>
+  {% endifnotequal %}
 
+  <ul id="people">
+  {% for person in people %}
+    <li{% if forloop.last %} class="round-bottom"{% endif %}>
+    {% ifequal method "email" %}
+      <a class="email" href="mailto:{{ person.email }}">
+    {% else %}
+      <a class="phone" href="{{ person.phone.1|telephone_uri }}">
+    {% endifequal %}
+        {{ person.name }}
+        <br/>
+        <small>
+          {% if person.unit %}{{ person.unit }}{% else %}<em>Unknown affiliation</em>{% endif %}<br />
+    {% ifequal method "email" %}
+          {{ person.email }}
+    {% else %}
+          {{ person.phone.1 }}
+    {% endifequal %}
+        </small>
+      </a>
+    </li>
+  {% endfor %}
+  </ul>
 
+  {% ifnotequal 1 page_count %}
+  <div class="note">
+    Pages:
+    {% for page in pages %}
+    <a href="?page={{ page }}&amp;method={{ method }}&amp;q={{ query|urlencode }}" style="padding:0 7px 0 0;">{{ page }}</a>
+    {% endfor %}
+  </div>
+  {% endifnotequal %}
 
-	  <ul id="people">
-	    {% for person in people %}
-	    <li{% if forloop.last %} class="round-bottom"{% endif %}>
-	      {% ifequal method "email" %}
-	      <a class="email" href="mailto:{{ person.email }}">
-	      {% else %}
-	      <a class="phone" href="{{ person.phone.1|telephone_uri }}">
-	      {% endifequal %}
-	        {{ person.name }}
-	        <br/>
-	        <small>{% if person.unit %}{{ person.unit }}{% else %}<em>Unknown affiliation</em>{% endif %}<br />
-			{% ifequal method "email" %}
-			    {{ person.email }}
-	        {% else %}
-			    {{ person.phone.1 }}
-			{% endifequal %}
-			</small>
-	      </a>
-	    </li>
-	    {% endfor %}
-	  </ul>
+{% else %}
+  {% if not message %}
+  <div class="note"><div class="bubble pad-10">
+    Your search didn't return any results.
+  </div></div>
+  {% endif %}
+{% endif %}
+</div>
 
-
-	  {% ifnotequal 1 page_count %}
-	  <div class="note" id="more_contact_results">
-	      Pages:
-	          {% for page in pages %}
-	      <a href="?page={{ page }}&amp;method={{ method }}&amp;q={{ query|urlencode }}" style="padding:0 7px 0 0;">{{ page }}</a>
-	          {% endfor %}
-			{% if more_pages %}
-	          <a href="?page={{ page|add:1 }}&amp;method={{ method }}&amp;q={{ query|urlencode }}" style="display:inline;">Next >></a>
-	  		  {% endif %}
-	  </div>
-	  {% endifnotequal %}
-
-
-	  {% else %}{% if not message %}
-	  <div class="note"><div class="bubble pad-10">
-	    Your search didn't return any results.
-	  </div></div>
-	  {% endif %}
-	  {% endif %}
-	</div>
 {% endif %}
 
 {% if not query %}
-	<div class="section">
-	<h2>University contacts</h2>
-	<ul>
-	    <li><a class="phone" href="tel:+441865270000">General enquiries<br /><small>01865 (2)70000</small></a></li>
-	    <li><a class="phone" href="tel:+441865280000">Switchboard<br /><small>01865 (2)80000</small></a></li>
-	    <li class="round-bottom"><a class="phone" href="tel:+441865273200">Computing Services help desk<br /><small>01865 (2)73200</small></a></li>
-	</ul>
-	</div>
+<div class="section">
+  <h2>University contacts</h2>
+  <ul>
+    <li><a class="phone" href="tel:+441865270000">General enquiries<br /><small>01865 (2)70000</small></a></li>
+    <li><a class="phone" href="tel:+441865280000">Switchboard<br /><small>01865 (2)80000</small></a></li>
+    <li class="round-bottom"><a class="phone" href="tel:+441865273200">Computing Services help desk<br /><small>01865 (2)73200</small></a></li>
+  </ul>
+</div>
 
-	<div class="section">
-	<h2>Emergency contacts</h2>
-	<ul>
-	    <li><a class="phone" href="tel:112">Emergency services<br /><small>112</small></a></li>
-	    <li><a class="phone" href="tel:+441865289999">University security <small>(emergency)<br />01865 (2)89999</small></a></li>
-	    <li><a class="phone" href="tel:+441865272944">University security <small>(enquiries)<br />01865 (2)72944</small></a></li>
-	    <li class="round-bottom"><a class="phone" href="tel:+448458505505">Thames Valley Police <small>(non-emergency)<br />08458 505505</small></a></li>
-	</ul>
-	</div>
+<div class="section">
+  <h2>Emergency contacts</h2>
+  <ul>
+    <li><a class="phone" href="tel:112">Emergency services<br /><small>112</small></a></li>
+    <li><a class="phone" href="tel:+441865289999">University security <small>(emergency)<br />01865 (2)89999</small></a></li>
+    <li><a class="phone" href="tel:+441865272944">University security <small>(enquiries)<br />01865 (2)72944</small></a></li>
+    <li class="round-bottom"><a class="phone" href="tel:+448458505505">Thames Valley Police <small>(non-emergency)<br />08458 505505</small></a></li>
+  </ul>
+</div>
 
-	<div class="section">
-	<h2>Health and welfare</h2>
-	<ul>
-	    <li><a class="phone" href="tel:+448454647">NHS Direct<br /><small>0845 46 47</small></a></li>
-	    <li><a class="phone" href="tel:+441865270300">Counselling Service<br /><small>01865 (2)70300</small></a></li>
-	    <li><a class="phone" href="tel:+441865270270">Oxford Nightline<br /><small>01865 (2)70270</small></a></li>
-	    <li><a class="phone" href="tel:+441865726295">Rape Crisis<br /><small>01865 726295</small></a></li>
-	    <li class="round-bottom"><a class="phone" href="tel:+448457909090">Samaritans<br /><small>08457 90 90 90</small></a></li>
-	</ul>
-	</div>
+<div class="section">
+  <h2>Health and welfare</h2>
+  <ul>
+    <li><a class="phone" href="tel:+448454647">NHS Direct<br /><small>0845 46 47</small></a></li>
+    <li><a class="phone" href="tel:+441865270300">University Counselling Service<br /><small>01865 (2)70300</small></a></li>
+    <li><a class="phone" href="tel:+441865270270">Oxford Nightline<br /><small>01865 (2)70270</small></a></li>
+    <li><a class="phone" href="tel:+441865726295">Rape Crisis<br /><small>01865 726295</small></a></li>
+    <li class="round-bottom"><a class="phone" href="tel:+448457909090">Samaritans<br /><small>08457 90 90 90</small></a></li>
+  </ul>
+</div>
   
 			{% comment %}  
 			{# Update to retrieve College/Department contacts #}

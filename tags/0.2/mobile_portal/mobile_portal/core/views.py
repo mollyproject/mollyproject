@@ -19,7 +19,7 @@ import pytz, simplejson, urllib
 from mobile_portal.googlesearch.forms import GoogleSearchForm
 
 from models import FrontPageLink, ExternalImageSized, LocationShare, UserMessage
-from forms import LocationShareForm, LocationShareAddForm, FeedbackForm, UserMessageFormSet
+from forms import LocationShareForm, LocationShareAddForm, FeedbackForm, UserMessageFormSet, LocationUpdateForm
 from utils import find_or_create_user_by_email
 from ldap_queries import get_person_units
 from context_processors import device_specific_media
@@ -56,6 +56,7 @@ class IndexView(BaseView):
             'search_form': gsf,
             'hide_feedback_link': True,
             'has_user_messages': UserMessage.objects.filter(session_key = request.session.session_key).count() > 0,
+            'parents': device_parents[request.device.devid]
 
         }
         return mobile_render(request, context, 'core/index')
@@ -90,9 +91,9 @@ class UpdateLocationView(BaseView):
         
     def handle_GET(cls, request, context):
         if 'location' in request.GET:
-            return self.confirm_stage(request, context)
+            return cls.confirm_stage(request, context)
         else:
-            return self.add_container_if_necessary(request, context, 'core/update_location')
+            return cls.add_container_if_necessary(request, context, 'core/update_location')
     
     def handle_POST(cls, request, context):
         try:
@@ -133,8 +134,8 @@ class UpdateLocationView(BaseView):
                 points = points,
                 min_points = len(points),
                 zoom = None if len(points)>1 else 15,
-                width = request.device.max_image_width,
-                height = min(request.device.max_image_height, 200),
+                width = request.map_width,
+                height = request.map_height,
             )
         else:
             map_hash, zoom = None, None
@@ -143,7 +144,6 @@ class UpdateLocationView(BaseView):
             'zoom': zoom,
             'map_hash': map_hash,
             'options': options,
-            'map_height': min(request.device.max_image_height, 200),
             'zoom_controls': False,
         })
         
@@ -153,7 +153,7 @@ class UpdateLocationView(BaseView):
                 mimetype='application/json',
             )
         else:
-            return self.add_container_if_necessary(request, context, 'core/update_location_confirm')
+            return cls.add_container_if_necessary(request, context, 'core/update_location_confirm')
             
     def add_container_if_necessary(cls, request, context, template_name):
         if request.GET.get('ajax') != 'true':
@@ -322,6 +322,91 @@ class AjaxUpdateLocationView(BaseView):
             response_data = ''
     
         return HttpResponse(response_data, mimetype='text/plain')
+
+class LocationUpdateView(BaseView):
+    breadcrumb = NullBreadcrumb
+
+    def initial_context(cls, request):
+        data = dict(request.REQUEST.items())
+        data['http_method'] = request.method
+        return {
+            'form': LocationUpdateForm(data),
+            'format': request.REQUEST.get('format'),
+            'return_url': request.REQUEST.get('return_url', ''),
+            'requiring_url': hasattr(request, 'requiring_url'),
+        }
+        
+    def handle_GET(cls, request, context):
+        form = context['form']
+        
+        if form.is_valid():
+            placemarks = geolocation.geocode(form.cleaned_data['name'])
+            if placemarks:
+                points = [(o[1][0], o[1][1], 'red') for o in placemarks]
+                map_hash, (new_points, zoom) = fit_to_map(
+                    None,
+                    points = points,
+                    min_points = len(points),
+                    zoom = None if len(points)>1 else 15,
+                    width = request.map_width,
+                    height = request.map_height,
+                )
+            else:
+                map_hash, zoom = None, None
+            context.update({
+                'placemarks': placemarks,
+                'map_url': reverse('osm_generated_map', args=[map_hash]) if map_hash else None,
+                'zoom': zoom,
+                'zoom_controls': False,
+            })
+#        else:
+#            context['placemarks'] = []
+            
+        if context['format'] == 'json':
+            del context['form']
+            del context['format']
+            del context['breadcrumbs']
+            return cls.json_response(context)
+        elif context['format'] == 'embed':
+            if form.is_valid():
+                return mobile_render(request, context, 'core/update_location_confirm')
+            else:
+                return mobile_render(request, context, 'core/update_location_embed')
+        else:
+            return mobile_render(request, context, 'core/update_location')
+            
+        
+    def handle_POST(cls, request, context):
+        form = context['form']
+        
+        if form.is_valid():
+            geolocation.set_location(request,
+                                     form.cleaned_data['name'],
+                                     form.cleaned_data['location'],
+                                     form.cleaned_data['accuracy'],
+                                     form.cleaned_data['method'])
+        
+        if context['format'] == 'json':
+            print "LOCATION", form.cleaned_data['name']
+            return cls.json_response({
+                'name': form.cleaned_data['name'],
+            })
+        else:
+            if context.get('return_url'):
+                return HttpResponseRedirect(context['return_url'])
+            else:
+                return HttpResponseRedirect(reverse('core_index'))
+
+class LocationRequiredView(BaseView):
+    def __new__(cls, request, *args, **kwargs):
+        if request.preferences['location']['location']:
+            return super(LocationRequiredView, cls).__new__(cls, request, *args, **kwargs)
+        else:
+            request.GET = dict(request.GET.items())
+            request.GET['return_url'] = request.path
+            request.requiring_location = True
+            return LocationUpdateView(request)
+
 
 if False:
     @require_auth
@@ -497,7 +582,7 @@ class FeedbackView(BaseView):
            'sent': request.GET.get('sent') == 'true',
            'referer': request.GET.get('referer', ''),
         })
-        return mobile_render(request, context, 'core/contact')
+        return mobile_render(request, context, 'core/feedback')
         
     def handle_POST(cls, request, context):
         if context['feedback_form'].is_valid():
@@ -506,16 +591,16 @@ class FeedbackView(BaseView):
                 cls.get_email_body(request, context), None,
                 ('%s <%s>' % admin for admin in settings.ADMINS),
                 [], None, [],
-                {'Reply-To': contact_form.cleaned_data['email']},
+                {'Reply-To': context['feedback_form'].cleaned_data['email']},
             )
             email.send()
             
             qs = urllib.urlencode({
                 'sent':'true',
-                'referer': params['referer'],
+                'referer': request.POST.get('referer', ''),
             })
        
-            return HttpResponseRedirect('%s?%s' % (reverse('core_contact'), qs))
+            return HttpResponseRedirect('%s?%s' % (reverse('core_feedback'), qs))
             
         else:
             return cls.handle_GET(request, context)

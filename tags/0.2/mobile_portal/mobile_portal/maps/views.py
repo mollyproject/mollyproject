@@ -17,6 +17,7 @@ from django.template.defaultfilters import capfirst
 from mobile_portal.core.renderers import mobile_render
 #from mobile_portal import oxpoints
 from mobile_portal.core.handlers import BaseView, ZoomableView
+from mobile_portal.core.views import LocationRequiredView
 from mobile_portal.core.models import Feed
 from mobile_portal.core.decorators import require_location, location_required
 from mobile_portal.osm.utils import get_generated_map, fit_to_map
@@ -51,7 +52,7 @@ class IndexView(BaseView):
         context['search_form'] = GoogleSearchForm()
         return mobile_render(request, context, 'maps/index')
 
-class NearbyListView(BaseView):
+class NearbyListView(LocationRequiredView):
     def get_metadata(cls, request, entity=None):
         return {
             'title': 'Find things nearby',
@@ -90,7 +91,7 @@ class NearbyListView(BaseView):
         return mobile_render(request, context, 'maps/nearby_list')
 
 
-class NearbyDetailView(ZoomableView):
+class NearbyDetailView(LocationRequiredView, ZoomableView):
     def initial_context(cls, request, ptypes, entity=None):
         entity_types = tuple(get_object_or_404(EntityType, slug=t) for t in ptypes.split(';'))
         
@@ -136,6 +137,11 @@ class NearbyDetailView(ZoomableView):
         if len(context['entity_types']) > 1:
             return {
                 'exclude_from_search':True,
+                'title': '%s near%s%s' % (
+                    capfirst(context['entity_types'][0].verbose_name_plural),
+                    entity and ' ' or '',
+                    entity and entity.title or 'by',
+                ),
             }
         
         return {
@@ -172,8 +178,8 @@ class NearbyDetailView(ZoomableView):
             points = ((e.location[1], e.location[0], 'red') for e in entities),
             min_points = min_points,
             zoom = context['zoom'],
-            width = request.device.max_image_width,
-            height = request.device.max_image_height,
+            width = request.map_width,
+            height = request.map_height,
         )
         
         entities = [[entities[i] for i in b] for a,b in new_points]
@@ -233,7 +239,7 @@ class EntityDetailView(ZoomableView):
             'maps',
             lazy_parent(NearbyDetailView, ptypes=type_slug),
             context['entity'].title,
-            lazy_reverse('entity_detail_view', args=[type_slug,id]),
+            lazy_reverse('maps_entity', args=[type_slug,id]),
         )
 
     def handle_GET(cls, request, context, type_slug, id):
@@ -304,6 +310,12 @@ class EntityUpdateView(ZoomableView):
         return {
             'exclude_from_search':True,
         }
+        
+    def initial_context(cls, request, type_slug, id):
+        return dict(
+            super(EntityUpdateView, cls).initial_context(request),
+            entity=get_entity(type_slug, id),
+        )
 
     @BreadcrumbFactory
     def breadcrumb(cls, request, context, type_slug, id):
@@ -311,11 +323,11 @@ class EntityUpdateView(ZoomableView):
             'maps',
             lazy_parent(EntityDetailView, type_slug=type_slug, id=id),
             'Things nearby',
-            lazy_reverse('entity_update_view', args=[type_slug,id])
+            lazy_reverse('maps_entity_update', args=[type_slug,id])
         )
     
     def handle_GET(cls, request, context, type_slug, id):
-        entity = context['entity'] = get_entity(type_slug, id)
+        entity = context['entity']
         if entity.entity_type.source != 'osm':
             raise Http404
         
@@ -395,7 +407,7 @@ class NearbyEntityDetailView(NearbyDetailView):
 
     @BreadcrumbFactory
     def breadcrumb(cls, request, context, type_slug, id, ptype):
-        entity_type = get_object_or_404(EntityType, ptype=ptype)
+        entity_type = get_object_or_404(EntityType, slug=ptype)
         return Breadcrumb(
             'maps',
             lazy_parent(NearbyEntityListView, type_slug=type_slug, id=id),

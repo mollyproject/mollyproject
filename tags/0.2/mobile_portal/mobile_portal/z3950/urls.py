@@ -16,7 +16,7 @@ urlpatterns = patterns('mobile_portal.z3950.views',
     (r'^item:(?P<control_number>\d{8})/$',
         ItemDetailView, {},
         'z3950_item_detail'),
-    (r'^item:(?P<control_number>\d{8})/(?P<sublocation>[^\/]+)/$',
+    (r'^item:(?P<control_number>\d{8})/(?P<sublocation>.+)/$',
         ItemHoldingsView, {},
         'z3950_item_holdings_detail'),
 )

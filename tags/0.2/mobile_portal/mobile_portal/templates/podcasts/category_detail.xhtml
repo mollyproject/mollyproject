@@ -23,14 +23,12 @@
 podcasts.
     </div></div>
 		
-		<ul>
-
-
+<ul>
 {% for podcast in podcasts %}
     <li><a href="{{ podcast.get_absolute_url }}"><span class="{{ podcast.medium }}">{{ podcast.title }} ({{ podcast.medium }})
     <br /><small>{{ podcast.description }}</small></span></a></li>
 {% endfor %}
-		</ul>
+</ul>
 </div>
 
 {% endblock %}

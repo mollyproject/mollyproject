@@ -26,9 +26,7 @@ class IndexView(BaseView):
         
     def handle_GET(cls, request, context):
         feeds = RSSFeed.objects.all()
-        context = {
-            'feeds': feeds,
-        }
+        context['feeds'] = feeds
         return mobile_render(request, context, 'rss/index')
 
 class ItemListView(BaseView):
@@ -47,7 +45,7 @@ class ItemListView(BaseView):
             'rss',
             lazy_parent(IndexView),
             'News feed',
-            lazy_reverse('rss_item_view', args=[slug])
+            lazy_reverse('rss_item_list', args=[slug])
         )
         
     def handle_GET(cls, request, context, slug):
@@ -69,7 +67,7 @@ class ItemDetailView(BaseView):
     def breadcrumb(cls, request, context, slug, id):
         return Breadcrumb(
             'rss',
-            lazy_parent(ItemDetailView, slug=slug),
+            lazy_parent(ItemListView, slug=slug),
             'News item',
             lazy_reverse('rss_item_detail', args=[slug,id])
         )

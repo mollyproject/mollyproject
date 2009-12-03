@@ -2,17 +2,6 @@
 
 {% block title %}m.ox | {{ entity_type.verbose_name_plural|capfirst }} near {% if entity %}{{ entity.type }}{% else %}me{% endif %}{% endblock %}
 
-{% block breadcrumbs %}
-{{ block.super }}
-	<li><a href="{% url maps_index %}">
-        {% if dumb %}Maps{% else %}<img src="{{ MEDIA_URL }}png/index-icons/maps-bc.png" alt="Maps"/>{% endif %}
-    </a></li>
-    <li><a href="{{ entity.get_absolute_url }}">
-        {% if dumb %}{{ entity.title }}{% else %}&hellip;{% endif %}
-    </a></li>
-{% endblock %}
-
-{% block pagetitle %}Nearby{% endblock %}
 
 {% block content %}
 

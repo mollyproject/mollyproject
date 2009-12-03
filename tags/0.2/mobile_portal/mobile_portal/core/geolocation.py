@@ -145,13 +145,13 @@ def geocode(query):
     
     return results
 
-def set_location(request, location, accuracy, method, placemark=None):
+def set_location(request, name, location, accuracy, method):
     if isinstance(location, list):
         location = tuple(location)
 
     request.preferences['location']['location'] = location
     request.preferences['location']['updated'] = datetime.now()
-    request.preferences['location']['placemark'] = placemark
+    request.preferences['location']['name'] = name
     request.preferences['location']['method'] = method
     request.preferences['location']['accuracy'] = accuracy
 

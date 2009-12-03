@@ -27,14 +27,26 @@ def device_specific_media(request):
     Uses DEVICE_SPECIFIC_MEDIA as a basis to pass extra context when the
     wurfl-detected device is a child of a given device id.
     """
-    
+
     device, browser = request.device, request.browser
+    print device.brand_name
 
     if device.brand_name == 'Apple' and tuple(map(int, device.device_os_version.split('.'))) >= (1,):
-        style_group = "iphone"
+        style_group = "smart"
+    elif device.device_os == 'Symbian' and tuple(map(int, device.device_os_version.split('.'))) >= 9.2 : 
+        style_group = "smart"
+    elif device.brand_name == 'RIM' :
+        style_group = 'smart'
+    elif device.device_os == 'Android' :
+        style_group = 'smart'
+    elif device.device_os == 'Web OS' :
+        style_group = 'smart'
+    elif browser.brand_name == 'Opera':
+        style_group = 'smart'
+    #elif 'generic_web_browser' in device_parents[browser.devid]:
+    #    style_group = 'smart'
     else:
-        style_group = "iphone"
-
+        style_group = "smart"
     return {
         'style_group': style_group,
     }    
@@ -73,7 +85,10 @@ def geolocation(request):
 
         # Debug information follows.        
         'session': request.session.items(),
+        'browser': request.browser,
         'device': request.device,
+        'map_width': request.map_width,
+        'map_height': request.map_height,
         'meta': dict((a,b) for (a,b) in request.META.items() if a.startswith('HTTP_')),
     }
 

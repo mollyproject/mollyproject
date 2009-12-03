@@ -1,54 +1,14 @@
-{% load maps %}
+{% extends "core/base.xhtml" %}
 
-<div class="section-nopad tab" id="tab-auto">
+{% block title %}m.ox | Update location{% endblock %}
 
-<h2>Automatic geolocation</h2>
-<div class="section-content">
-{% if preferences.location.placemark %}
-        <p id="location_status">We think you are somewhere near <strong class="nobr">{{ preferences.location.placemark.0 }}</strong> ({{ preferences.location.location.0 }} {{ preferences.location.location.1 }}).</p>
-{% else %}
-{% if preferences.location.location %}
-        <p id="location_status">We think you are somewhere near <strong class="nobr">{{ preferences.location.location.0 }} {{ preferences.location.location.1 }}</strong>.</p>
-{% else %}
-        <p id="location_status">Sorry, but we are unable to determine your location automatically.</p>
-        <script type="text/javascript">
-            $(document).ready(function() {
-                if (require_location && positionMethodAvailable())
-                    $('#location_status').html('We do not yet have a location for you; please wait while we attempt to determine one.');
-                else if (positionMethodAvailable())
-                    $('#location_status').css('display', 'none');
-            });
-        </script>
-{% endif %}
-{% endif %}
-<p id="location_update"> </p>
-        <script type="text/javascript">
-            if (positionMethodAvailable())
-                $('#location_update').append(' <a href="#" onclick="javascript:requestPosition();">Determine automatically<\/a>');
-        </script>
-</div>
-</div>
+{% block extrahead %}{{ block.super }}
+<meta name="robots" content="noindex"/>
+{% endblock %}
 
-<div class="section-nopad tab" id="tab-manual">
+{% block content %}
 
-<h2>Update location manually</h2>
-
-<div class="section-content"><div class="bubble">Examples: 'oucs' (a unit code), 'Trinity College' (a college or department), 'Parks Road' (an address), 'OX1 3PG' (a postcode).</div></div>
+{% include "core/update_location_embed.xhtml" %}
 
 
-<form method="get" action="." id="manual_location_form">
-    <div class="section-content">
-      <div class="submit-line">
-{% if return_url %}
-        <input name="return_url" type="hidden" value="{{ return_url }}"/>
-{% endif %}
-        <input id="location" name="location" value="{{ location }}"/>
-        <input type="submit" value="Update"/>
-        
-      </div>
-    </div>
-
-</form>
-
-</div>
-
+{% endblock %}

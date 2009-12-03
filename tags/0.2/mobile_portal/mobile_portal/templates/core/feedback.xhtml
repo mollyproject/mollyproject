@@ -8,31 +8,33 @@
 
 {% if sent %}
 	<div class="section">
-	  <p>Thank you for your feedback!</p>
+	  <h2>Thank you for your feedback!</h2>
+	  <div class="note"><div class="bubble pad-10">
 	{% if referer %}
 	  <p>You may wish to go <a href="{{ referer }}">back from whence you came</a>.</p>
 	{% else %}
 	  <p>You may wish to go <a href="{% url core_index %}">back to the beginning</a>.</p>
 	{% endif %}
+	</div></div>
 	</div>
 {% endif %}
 
-
+{% if not sent %}
 <form method="post" action=".">
 <input type="hidden" name="referer" value="{{ referer }}"/>
 
 <div class="section">
 	<div class="form">
-	<h3>{{ contact_form.email.label}}</h3>
-	{% if contact_form.email.errors %}
-	    <p>{{ contact_form.email.errors.0 }}</p>
-	{% endif %}  <p>{{ contact_form.email }}</p>
-	<h3>{{ contact_form.body.label}}</h3>
-	<p>{{ contact_form.body }}</p>
+	<h3>{{ feedback_form.email.label}}</h3>
+	{% if feedback_form.email.errors %}
+	    <p>{{ feedback_form.email.errors.0 }}</p>
+	{% endif %}  <p>{{ feedback_form.email }}</p>
+	<h3>{{ feedback_form.body.label}}</h3>
+	<p>{{ feedback_form.body }}</p>
 	<p><input type="submit" value="Submit" /></p>
 	</div>
 </div>
-
 </form>
+{% endif %}
 
 {% endblock %}

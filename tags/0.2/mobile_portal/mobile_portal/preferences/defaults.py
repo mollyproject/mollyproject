@@ -15,7 +15,7 @@ defaults = {
         'location': (EPOCH, {
             'method': None,
             'location': None,
-            'placemark': None,
+            'name': None,
             'accuracy': None,
             'requested': None,
             'updated': None,

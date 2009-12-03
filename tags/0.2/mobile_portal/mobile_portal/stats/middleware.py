@@ -1,6 +1,6 @@
 from __future__ import division
 from datetime import datetime
-import socket, time
+import socket
 
 from django.contrib.auth.models import User
 from django.conf import settings
@@ -10,13 +10,13 @@ class StatisticsMiddleware(object):
     def process_request(self, request):
 
         request.requested = datetime.utcnow()
+        request.clock = time.clock(), time.time()
 
     def process_view(self, request, view_func, view_args, view_kwargs):
 
         request.view_name = ".".join((view_func.__module__, view_func.__name__))
 
     def process_response(self, request, response):
-
         remote_ip = request.META['REMOTE_ADDR']
         
         try:
@@ -66,5 +66,10 @@ class StatisticsMiddleware(object):
             status_code = str(response.status_code),
             redirect_to = response.get('Location', None),
         )
+
+        if hasattr(response, 'display_time'):
+            clock = time.clock() - request.clock[0], time.time() - request.clock[1]
+            print "Complete:    %.6f %.6f" % clock
+            print '='*80,'\n'
 
         return response
