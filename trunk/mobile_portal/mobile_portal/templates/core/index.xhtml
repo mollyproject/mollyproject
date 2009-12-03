@@ -51,11 +51,17 @@
 			{% endif %}
             <li class="round-bottom"><a href="{% url core_feedback %}?referer={% url core_index %}">Provide feedback</a></li>
     </ul>
+
     <div class="center">
+        {% ifequal style_group "dumb" %}
+            Produced by Oxford University Computing Services <br /><a href="http://www.oucs.ox.ac.uk">www.oucs.ox.ac.uk</a>
+        {% else %}
     <div class="bubble" style="padding:8px;">
+    
         <img src="{{ MEDIA_URL }}png/oucs-logo-small.png" alt="Oxford University Computing Services"/>
         <img src="{{ MEDIA_URL }}gif/brandmark.gif" alt="University of Oxford" />
     </div>
+        {% endif %}
     </div>
 
 {% if 1 %}
