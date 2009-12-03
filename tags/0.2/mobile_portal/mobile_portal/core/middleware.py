@@ -37,6 +37,7 @@ class LocationMiddleware(object):
                 request.device.resolution_width, request.device.resolution_height = \
                     map(int, request.META['HTTP_X_SKYFIRE_SCREEN'].split(','))[2:4]
             except (KeyError, ValueError):
+                pass
         else:
             request.device = request.browser
             

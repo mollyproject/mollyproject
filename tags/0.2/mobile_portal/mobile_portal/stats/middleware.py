@@ -10,7 +10,6 @@ class StatisticsMiddleware(object):
     def process_request(self, request):
 
         request.requested = datetime.utcnow()
-        request.clock = time.clock(), time.time()
 
     def process_view(self, request, view_func, view_args, view_kwargs):
 
