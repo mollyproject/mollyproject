@@ -62,7 +62,7 @@ class BaseView(object):
         return zoom
         
     def json_response(cls, data):
-        return HttpResponse(simplejson.dumps(data), mimetype="text/plain")
+        return HttpResponse(simplejson.dumps(data), mimetype="application/json")
         
 class ZoomableView(BaseView):
     default_zoom = None

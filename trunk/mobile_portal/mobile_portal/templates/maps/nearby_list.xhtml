@@ -12,7 +12,7 @@
 		<div class="note">
 		{% if preferences.location.location %}
 			<div class="bubble pad-10">
-			We think you are near <strong class="location_name">{{ preferences.location.placemark.0 }}</strong>. If this is not correct, please <a class="location_update_link" href="{% url core_update_location %}?return_url={{ return_url|urlencode }}">update your location</a>. </div>
+			We think you are near <strong class="location_name">{{ preferences.location.name }}</strong>. If this is not correct, please <a class="location_update_link" href="{% url core_update_location %}?return_url={{ return_url|urlencode }}">update your location</a>. </div>
 			{% else %}
 			<div class="bubble pad-10">We do not yet have a location for you. Please <a class="location_update_link" href="{% url core_update_location %}?return_url={{ return_url|urlencode }}">update your location</a>.</div>
 		{% endif %}

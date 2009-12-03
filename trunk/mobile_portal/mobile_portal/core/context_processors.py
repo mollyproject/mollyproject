@@ -33,7 +33,7 @@ def device_specific_media(request):
 
     if device.brand_name == 'Apple' and tuple(map(int, device.device_os_version.split('.'))) >= (1,):
         style_group = "smart"
-    elif device.device_os == 'Symbian' and device.device_os_version >= 9.2 : 
+    elif device.device_os == 'Symbian' and tuple(map(int, device.device_os_version.split('.'))) >= 9.2 : 
         style_group = "smart"
     elif device.brand_name == 'RIM' :
         style_group = 'smart'
@@ -41,7 +41,9 @@ def device_specific_media(request):
         style_group = 'smart'
     elif device.device_os == 'Web OS' :
         style_group = 'smart'
-    elif browser.brand_name == 'Opera' :
+    elif browser.brand_name == 'Opera':
+        style_group = 'smart'
+    elif 'generic_web_browser' in device_parents[browser.devid]:
         style_group = 'smart'
     else:
         style_group = "dumb"
@@ -83,6 +85,7 @@ def geolocation(request):
 
         # Debug information follows.        
         'session': request.session.items(),
+        'browser': request.browser,
         'device': request.device,
         'map_width': request.map_width,
         'map_height': request.map_height,

@@ -191,7 +191,7 @@ class OLISResult(object):
 
     def isbns(self):
         if OLISResult.USM_ISBN in self.metadata:
-            return [a.get('a', ["%s (invalid)" % a['z'][0]])[0] for a in self.metadata[OLISResult.USM_ISBN]]
+            return [a.get('a', ["%s (invalid)" % a.get('z', ['Unknown'])[0]])[0] for a in self.metadata[OLISResult.USM_ISBN]]
         else:
             return []
     

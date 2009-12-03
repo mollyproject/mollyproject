@@ -41,9 +41,12 @@
 </div>
 {# End Maps Search #}
 
+
+
 {# Points of Interest #}
 <div class="section">
   <h2>Browse Points of Interest</h2>
+  {% include "core/update_location_embed.xhtml" %}
   <ul>
     <li><a href="{% url maps_nearby_list %}">Near Me</a></li>
     <li class="round-bottom"><a href="{% url maps_category_list %}">By Category</a></li>

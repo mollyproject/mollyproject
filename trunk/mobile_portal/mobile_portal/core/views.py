@@ -57,6 +57,7 @@ class IndexView(BaseView):
             'hide_feedback_link': True,
             'has_user_messages': UserMessage.objects.filter(session_key = request.session.session_key).count() > 0,
             'ua': request.META.get('HTTP_USER_AGENT', ''),
+            'parents': device_parents[request.device.devid]
 
         }
         return mobile_render(request, context, 'core/index')
@@ -384,7 +385,10 @@ class LocationUpdateView(BaseView):
                                      form.cleaned_data['method'])
         
         if context['format'] == 'json':
-            return cls.json_response(None)
+            print "LOCATION", form.cleaned_data['name']
+            return cls.json_response({
+                'name': form.cleaned_data['name'],
+            })
         else:
             if context.get('return_url'):
                 return HttpResponseRedirect(context['return_url'])

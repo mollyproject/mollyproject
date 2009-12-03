@@ -1,10 +1,21 @@
 {% load maps %}
 
+<div class="note"><div class="bubble pad-10">
 {% if preferences.location.name %}
-<p>We think you are someewhere near <span class="location">{{ preferences.location.name }}</span></p>
+
+<p class="location-container">
+  <span class="location-status">
+    Current location: <span class="location">{{ preferences.location.name }}
+  </span>.
+</p>
+
 {% else %}
-<p>We do not yet know where you are.</p>
+<p class="location-container">
+  <span class="location-status">We do not yet know where you are.</span>
+</p>
 {% endif %}
+
+<div class="update-location">
 
 {% if not form.cleaned_data.name %}
 <div id="geolocate-js"> </div>
@@ -23,7 +34,7 @@
 <ul>
 {% for placemark in placemarks %}
     <li>
-        <form method="post" action="." class="submit-location-form">
+        <form method="post" action="{% url core_update_location %}" class="submit-location-form">
             <input type="hidden" name="name" value="{{ placemark.0 }}"/>
             <input type="hidden" name="latitude" value="{{ placemark.1.0 }}"/>
             <input type="hidden" name="longitude" value="{{ placemark.1.1 }}"/>
@@ -38,20 +49,19 @@
 
 {% else %}
 
-<div class="bubble pad-10">Examples: 'oucs' (a unit code), 'Trinity College' (a college or department), 'Parks Road' (an address), 'OX1 3PG' (a postcode).</div>
-
-<form method="get" action="." id="manual_location_form">
-{% if return_url %}
-        <input name="return_url" type="hidden" value="{{ return_url }}"/>
-{% endif %}
+<form method="get" action="{% url core_update_location %}" id="manual_location_form">
+        <label for="location">Set a new location</label>:
+        <input name="return_url" type="hidden" value="{{ return_url|default:path }}"/>
         <input id="location" name="name" value="{{ location }}"/>
-        <input type="submit" value="Update"/>
+        <input type="submit" value="Update"/><br/>
+        <small>Examples: 'oucs' (a unit code), 'Trinity College' (a college or department), 'Parks Road' (an address), 'OX1 3PG' (a postcode).</small>
 
 </form>
 
-
 {% endif %}
 
+
+</div></div></div>
 
 {% comment %}
 <h2>Automatic geolocation</h2>

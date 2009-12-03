@@ -58,7 +58,7 @@
     </div>
     </div>
 
-{% if user.is_superuser %}
+{% if 1 %}
         <hr/>
         <div class="section">
             <h2>Session</h2>
@@ -74,6 +74,12 @@
             <p>{{ device.brand_name }} {{ device.model_name }} ({{ device.devid }})</p>
             <p>{{ device.devua }}</p>
             <p>{{ ua }}</p>
+			<p>{{ parents }}</p>
+			</div>
+            <h2>Browser</h2>
+			<div class="bubble pad-10">
+            <p>{{ browser.brand_name }} {{ browser.model_name }} ({{ browser.devid }})</p>
+            <p>{{ browser.devua }}</p>
 			</div>
         </div>
     
