@@ -67,9 +67,4 @@ class StatisticsMiddleware(object):
             redirect_to = response.get('Location', None),
         )
 
-        if hasattr(response, 'display_time'):
-            clock = time.clock() - request.clock[0], time.time() - request.clock[1]
-            print "Complete:    %.6f %.6f" % clock
-            print '='*80,'\n'
-
         return response

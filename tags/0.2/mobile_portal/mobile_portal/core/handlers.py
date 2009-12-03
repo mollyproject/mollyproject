@@ -33,21 +33,9 @@ class BaseView(object):
     def __new__(cls, request, *args, **kwargs):
         method_name = 'handle_%s' % request.method
         if hasattr(cls, method_name):
-            t = time.clock(), time.time()
-            print '\n', '='*80
             context = cls.initial_context(request, *args, **kwargs)
-            u = time.clock(), time.time()
-            print "Context:     %4.6f %4.6f" % ((u[0] - t[0]), (u[1] - t[1]))
-            t = u
             context['breadcrumbs'] = cls.breadcrumb.render(cls, request, context, *args, **kwargs)
-            u = time.clock(), time.time()
-            print "Breadcrumbs: %4.6f %4.6f" % ((u[0] - t[0]), (u[1] - t[1]))
-            t = u
             response = getattr(cls, method_name)(request, context, *args, **kwargs)
-            u = time.clock(), time.time()
-            print "Response:    %4.6f %4.6f" % ((u[0] - t[0]), (u[1] - t[1]))
-
-            response.display_time = True            
             return response
         else:
             return cls.method_not_acceptable(request)
