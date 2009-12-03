@@ -1,5 +1,5 @@
 body {
-    background:#ffffff;
+    background:#fff0f0;
     text-align: left;1
 }
 
@@ -24,4 +24,8 @@ div#index-title {
 }
 div#index-search {
 
+}
+
+div.section {
+    padding: 3px;
 }
