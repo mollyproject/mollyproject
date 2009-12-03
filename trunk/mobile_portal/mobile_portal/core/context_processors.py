@@ -46,7 +46,7 @@ def device_specific_media(request):
     #elif 'generic_web_browser' in device_parents[browser.devid]:
     #    style_group = 'smart'
     else:
-        style_group = "dumb"
+        style_group = "smart"
     return {
         'style_group': style_group,
     }    

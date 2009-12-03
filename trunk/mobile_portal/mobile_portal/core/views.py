@@ -369,7 +369,10 @@ class LocationUpdateView(BaseView):
             del context['breadcrumbs']
             return cls.json_response(context)
         elif context['format'] == 'embed':
-            return mobile_render(request, context, 'core/update_location_embed')
+            if form.is_valid():
+                return mobile_render(request, context, 'core/update_location_confirm')
+            else:
+                return mobile_render(request, context, 'core/update_location_embed')
         else:
             return mobile_render(request, context, 'core/update_location')
             

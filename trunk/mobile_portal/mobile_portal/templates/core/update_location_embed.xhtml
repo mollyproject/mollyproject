@@ -3,16 +3,18 @@
 <div class="note"><div class="bubble pad-10">
 {% if preferences.location.name %}
 
-<p class="location-container">
+<div class="location-container">
   <span class="location-status">
-    Current location: <span class="location">{{ preferences.location.name }}
-  </span>.
-</p>
+    Current location: <span class="location">{{ preferences.location.name }}</span>.
+  </span>
+  <span class="location-action"> </span>
+</div>
 
 {% else %}
-<p class="location-container">
+<div class="location-container">
   <span class="location-status">We do not yet know where you are.</span>
-</p>
+  <span class="location-action"> </span>
+</divp>
 {% endif %}
 
 <div class="update-location">
@@ -21,53 +23,24 @@
 <div id="geolocate-js"> </div>
 {% endif %}
 
+<div class="manual-update-location">
 {% if form.cleaned_data.name %}
 
-<h2>Did you mean:</h2>
-
-{% if map_url %}
-
-{% ifnotequal style_group "dumb" %}
-    <div class="backgrounded-image" style="background-image:url('{{ map_url }}'); height:{{ map_height }}px">
-    {% include "maps/map_elements.xhtml" %}
-    </div>
-{% else %}
-    <img src="{{ map_url }}}" alt="Map"><br />
-    {% include "maps/map_elements.xhtml" %}
-{% endifnotequal %}
-
-
-{% endif %}
-
-<ul>
-{% for placemark in placemarks %}
-    <li>
-        <form method="post" action="{% url core_update_location %}" class="submit-location-form">
-            <input type="hidden" name="name" value="{{ placemark.0 }}"/>
-            <input type="hidden" name="latitude" value="{{ placemark.1.0 }}"/>
-            <input type="hidden" name="longitude" value="{{ placemark.1.1 }}"/>
-            <input type="hidden" name="accuracy" value="{{ placemark.2 }}"/>
-            <input type="hidden" name="method" value="geocoded"/>
-            <input type="hidden" name="return_url" value="{{ return_url|default:"" }}"/>
-            <button class="as_link" type="submit" name="index" style="width:100%">{{ forloop.counter }}. {{ placemark.0 }}</button>
-        </form>
-    </li>
-{% endfor %}
-</ul>
+{% include "core/update_location_confirm.xhtml" %}
 
 {% else %}
 
-<form method="get" action="{% url core_update_location %}" id="manual_location_form">
+<form method="get" action="{% url core_update_location %}" class="manual-update-form">
         <label for="location">Set a new location</label>:
         <input name="return_url" type="hidden" value="{{ return_url|default:path }}"/>
-        <input id="location" name="name" value="{{ location }}"/>
+        <input id="location-name" name="name" value="{{ location }}"/>
         <input type="submit" value="Update"/><br/>
         <small>Examples: 'oucs' (a unit code), 'Trinity College' (a college or department), 'Parks Road' (an address), 'OX1 3PG' (a postcode).</small>
 
 </form>
 
 {% endif %}
-
+</div>
 
 </div></div></div>
 

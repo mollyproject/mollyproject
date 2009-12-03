@@ -67,10 +67,12 @@ class LocationUpdateForm(forms.Form):
                         
                 if not self._errors:
                     cleaned_data['location'] = cleaned_data['latitude'], cleaned_data['longitude']
-                    if cleaned_data.get('name') is None:
+                    if not cleaned_data.get('name'):
                         cleaned_data['name'] = geolocation.reverse_geocode(
                             self.cleaned_data['latitude'],
-                            self.cleaned_data['longitude'])
+                            self.cleaned_data['longitude'])[0][0]
+                        print "LOC NAME", cleaned_data['name']
+                    print "FOO NAME"
             elif cleaned_data['method'] in ('denied', 'error'):
                 for key in ('latitude', 'longitude', 'accuracy'):
                     if cleaned_data.get(key) is None:
