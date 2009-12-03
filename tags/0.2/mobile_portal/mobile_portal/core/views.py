@@ -62,7 +62,6 @@ class IndexView(BaseView):
         return mobile_render(request, context, 'core/index')
     
     def handle_POST(cls, request, context):
-        print "Foo"
         no_desktop_about = {'true':True, 'false':False}.get(request.POST.get('no_desktop_about'))
         if not no_desktop_about is None:
             request.preferences['core']['desktop_about_shown'] = no_desktop_about
@@ -387,7 +386,6 @@ class LocationUpdateView(BaseView):
                                      form.cleaned_data['method'])
         
         if context['format'] == 'json':
-            print "LOCATION", form.cleaned_data['name']
             return cls.json_response({
                 'name': form.cleaned_data['name'],
             })
