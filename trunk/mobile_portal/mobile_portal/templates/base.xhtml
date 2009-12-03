@@ -57,26 +57,18 @@
     </div>
 {% else %}
     <div id="bc-header">
-      <ol id="bc">
-        <li><a href="{% url core_index %}">
-          Home
-        </a></li>
-    {% if breadcrumbs.2 %}
-        <li><a href="{{ breadcrumbs.1.1 }}" title="{{ breadcrumbs.1.0 }}">
-            {{ breadcrumbs.1.0 }}
-        </a></li>
-    {% if not breadcrumbs.3 %}
-        <li><a href="{{ breadcrumbs.2.1 }}" title="{{ breadcrumbs.2.0 }}">
-            {{ breadcrumbs.2.0 }}
-        </a></li>
-    {% endif %}{% endif %}
-      </ol> 
-      <div id="bc-title">
-        <h1 class="{% if not breadcrumbs.2 %}{{ breadcrumbs.0 }}-header with-icon{% endif %}">
-          {{ breadcrumbs.4 }}
-        </h1>
-      </div>
-    </div>
+           <a href="{% url core_index %}">m.ox</a>
+       {% if breadcrumbs.2 %}
+           / <a href="{{ breadcrumbs.1.1 }}" title="{{ breadcrumbs.1.0 }}">{{ breadcrumbs.1.0 }}</a>
+       {% if not breadcrumbs.3 %}
+            / <a href="{{ breadcrumbs.2.1 }}" title="{{ breadcrumbs.2.0 }}">&hellip;</a>
+       {% endif %}{% endif %}
+         <div id="bc-title">
+           <h1>
+             {{ breadcrumbs.4 }}
+           </h1>
+         </div>
+       </div>
 {% endifnotequal %}
 
 

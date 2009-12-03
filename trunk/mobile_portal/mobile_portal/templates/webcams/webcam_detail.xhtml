@@ -28,11 +28,15 @@
 <h2>{{ webcam.title }}<br /><small>{% now "G:i "%}</small></h2>
 
 {% if eis %}
-<div class="backgrounded-image" style="background-image:url('{{ eis.get_absolute_url }}'); height:{{ eis.height }}px;"> </div>
+    {% ifnotequal style_group "dumb" %}
+        <div class="backgrounded-image" style="background-image:url('{{ eis.get_absolute_url }}'); height:{{ eis.height }}px;"> </div>
+      {% else %}
+        <img src="{{ eis.get_absolute_url }}" alt="Map">
+    {% endifnotequal %}
 {% else %}
-<div class="note"><div class="bubble pad-10">
-    Unfortunately, this webcam is currently unavailable. Please try again later.
-</div></div>
+    <div class="note"><div class="bubble pad-10">
+        Unfortunately, this webcam is currently unavailable. Please try again later.
+    </div></div>
 {% endif %}
 
 
