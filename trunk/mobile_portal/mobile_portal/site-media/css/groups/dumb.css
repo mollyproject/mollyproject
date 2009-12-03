@@ -1,0 +1,27 @@
+body {
+    background:#ffffff;
+    text-align: left;1
+}
+
+/* Index Page Specific 
+    - 1 CSS 2.1 Selector
+    - 4 Webkit Only Tags
+    -- Written in order of use on index.html
+*/
+
+ol {
+    text-align: left;
+}
+
+
+
+div#index-header {
+    width:100%;
+ 
+}
+div#index-title {
+
+}
+div#index-search {
+
+}

@@ -41,7 +41,7 @@ def device_specific_media(request):
         style_group = 'smart'
     elif device.device_os == 'Web OS' :
         style_group = 'smart'
-    elif device.mobile_browser == 'Opera' :
+    elif browser.brand_name == 'Opera' :
         style_group = 'smart'
     else:
         style_group = "dumb"
