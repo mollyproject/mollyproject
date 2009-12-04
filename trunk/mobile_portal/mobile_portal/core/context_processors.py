@@ -42,7 +42,7 @@ def device_specific_media(request):
     elif device.device_os == 'Symbian' and tuple(map(int, device.device_os_version.split('.'))) >= 9.2 : 
         style_group = "smart"
     # Nokia Maemo 
-    elif device.brand_name == 'Nokia' and device.device_os == 'Linux Smartphone OS'
+    elif device.brand_name == 'Nokia' and device.device_os == 'Linux Smartphone OS' :
         style_group = "smart"
         
     # Blackberries 
