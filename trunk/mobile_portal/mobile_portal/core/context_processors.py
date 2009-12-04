@@ -29,6 +29,7 @@ def device_specific_media(request):
     """
 
     device, browser = request.device, request.browser
+    use_javascript = True
     
     # Skyfire
     if browser.devid == 'generic_skyfire':
@@ -48,6 +49,7 @@ def device_specific_media(request):
     # Blackberries 
     elif device.brand_name == 'RIM' :
         style_group = 'smart'
+        use_javascript = False
         
     # Android
     elif device.device_os == 'Android' :
@@ -68,8 +70,11 @@ def device_specific_media(request):
     # All Others
     else:
         style_group = "dumb"
+        use_javascript = False
+        
     return {
         'style_group': style_group,
+        'use_javascript': use_javascript,
     }    
 
 def geolocation(request):
