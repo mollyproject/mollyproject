@@ -167,7 +167,7 @@ class OxfordHandler(handler.ContentHandler):
         if name == 'node':
             lat, lon = float(attrs['lat']), float(attrs['lon'])
             
-            self.valid = (51.5 < lat and lat < 52.1 and -1.6 < lon and lon < -1.0)
+            self.valid = (51.5 < lat < 52.1 and -1.6 < lon < -1.0)
             if not self.valid:
                 return
                 

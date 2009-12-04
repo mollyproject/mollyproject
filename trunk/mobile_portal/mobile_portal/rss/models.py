@@ -15,6 +15,14 @@ class ShowPredicate(models.Model):
     description = models.TextField(null=True, blank=True)
     predicate = models.TextField()
 
+class EventsManager(models.Manager):
+    def get_query_set(self):
+        return super(EventsManager, self).get_query_set().filter(ptype='e')
+class NewsManager(models.Manager):
+    def get_query_set(self):
+        return super(NewsManager, self).get_query_set().filter(ptype='n')
+
+
 class RSSFeed(models.Model):
     title = models.TextField()
     unit = models.CharField(max_length=10,null=True,blank=True)
@@ -25,6 +33,10 @@ class RSSFeed(models.Model):
     show_predicate = models.ForeignKey(ShowPredicate, null=True, blank=True)
 
     ptype = models.CharField(max_length=1, choices=FEED_TYPE_CHOICES)
+    
+    objects = models.Manager()
+    events = EventsManager()
+    news = NewsManager()
     
     def __unicode__(self):
         return self.title
@@ -47,7 +59,10 @@ class RSSItem(models.Model):
     dt_end = models.DateTimeField(null=True, blank=True)
     location_entity = models.ForeignKey(Entity, null=True, blank=True)
     location_name = models.TextField(blank=True)
+    
     location_point = models.PointField(null=True, blank=True)
+    location_address = models.TextField(blank=True)
+    location_url = models.URLField(blank=True)
     
     
     @property

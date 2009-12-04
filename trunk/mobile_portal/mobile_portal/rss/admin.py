@@ -6,7 +6,8 @@ class RSSFeedAdmin(admin.ModelAdmin):
     list_filter = ('unit',)
     
 class RSSItemAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('feed', 'title', 'location_name', 'location_point')
+    list_filter = ('feed', )
 
 class ShowPredicateAdmin(admin.ModelAdmin):
     pass

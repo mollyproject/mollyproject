@@ -12,7 +12,7 @@ class Command(NoArgsCommand):
     requires_model_validation = True
     
     def handle_noargs(self, **options):
-        for feed in RSSFeed.objects.all():
+        for feed in RSSFeed.news.all():
         
             feed_data = feedparser.parse(feed.rss_url)
             items = list(feed.rssitem_set.all())

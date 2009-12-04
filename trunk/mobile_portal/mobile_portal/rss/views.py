@@ -25,13 +25,13 @@ class IndexView(BaseView):
         )
         
     def handle_GET(cls, request, context):
-        feeds = RSSFeed.objects.all()
+        feeds = RSSFeed.news.all()
         context['feeds'] = feeds
         return mobile_render(request, context, 'rss/index')
 
 class ItemListView(BaseView):
     def get_metadata(cls, request, slug):
-        feed = get_object_or_404(RSSFeed, slug=slug)
+        feed = get_object_or_404(RSSFeed.news, slug=slug)
         
         return {
             'last_modified': feed.last_modified,
@@ -49,7 +49,7 @@ class ItemListView(BaseView):
         )
         
     def handle_GET(cls, request, context, slug):
-        feed = get_object_or_404(RSSFeed, slug=slug)
+        feed = get_object_or_404(RSSFeed.news, slug=slug)
         context['feed'] = feed
         return mobile_render(request, context, 'rss/item_list')
 
