@@ -30,22 +30,42 @@ def device_specific_media(request):
 
     device, browser = request.device, request.browser
     
+    # Skyfire
     if browser.devid == 'generic_skyfire':
         style_group = "dumb"
-    if device.brand_name == 'Apple' and tuple(map(int, device.device_os_version.split('.'))) >= (1,):
+        
+    # Apple products
+    elif device.brand_name == 'Apple' :
         style_group = "smart"
+        
+    # Symbian S60 v3 and above (iresspective of browser)
     elif device.device_os == 'Symbian' and tuple(map(int, device.device_os_version.split('.'))) >= 9.2 : 
         style_group = "smart"
+    # Nokia Maemo 
+    elif device.brand_name == 'Nokia' and device.device_os == 'Linux Smartphone OS'
+        style_group = "smart"
+        
+    # Blackberries 
     elif device.brand_name == 'RIM' :
         style_group = 'smart'
+        
+    # Android
     elif device.device_os == 'Android' :
         style_group = 'smart'
+        
+    # Palm Web OS
     elif device.device_os == 'Web OS' :
         style_group = 'smart'
+        
+    # Opera Mini/Mobile Browsers
     elif browser.brand_name == 'Opera':
         style_group = 'smart'
+        
+    # Desktop browsers
     elif 'generic_web_browser' in device_parents[browser.devid]:
         style_group = 'smart'
+        
+    # All Others
     else:
         style_group = "dumb"
     return {
