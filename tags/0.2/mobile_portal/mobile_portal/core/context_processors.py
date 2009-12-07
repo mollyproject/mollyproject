@@ -66,7 +66,11 @@ def device_specific_media(request):
     # Desktop browsers
     elif 'generic_web_browser' in device_parents[browser.devid]:
         style_group = 'smart'
-        
+      
+    # Windows Mobile 6.5 Test
+    elif device.device_os == 'Windows Mobile OS' and device.device_os_version.startswith('6.5'):
+        style_group = 'smart'
+ 
     # All Others
     else:
         style_group = "dumb"
