@@ -69,10 +69,12 @@ li#menu-contact {background-image:url('../../png/index-icons/contact.png');}
 li#menu-maps {background-image:url('../../png/index-icons/maps.png');}
 li#menu-podcasts {background-image:url('../../png/index-icons/podcasts.png');}
 li#menu-webcams {background-image:url('../../png/index-icons/webcams.png');}
-li#menu-rss {background-image:url('../../png/index-icons/rss.png');}
+li#menu-news {background-image:url('../../png/index-icons/news.png');}
+li#menu-events {background-image:url('../../png/index-icons/events.png');}
 li#menu-results {background-image:url('../../png/index-icons/results.png');}
 li#menu-z3950 {background-image:url('../../png/index-icons/z3950.png');}
 li#menu-weather {background-image:url('../../png/index-icons/weather.png');}
+li#menu-sakai {background-image:url('../../png/index-icons/sakai.png');}
 /* End Index Page Specific */
 
 /* Breadcrumb Trail Styles */
