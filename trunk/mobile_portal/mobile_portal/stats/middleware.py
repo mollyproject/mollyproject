@@ -21,6 +21,7 @@ class StatisticsMiddleware(object):
         remote_ip = request.META['REMOTE_ADDR']
         
         try:
+            raise NotImplementedError("This really should be done in non-real-time.")
             rdns = socket.gethostbyaddr(remote_ip)[0].split('.')
             rdns.reverse()
             rdns = ".".join(rdns)

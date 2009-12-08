@@ -1,7 +1,7 @@
 # An OSM ID beginning with an 'N' is a node, a 'W' a way, and an 'R' a
 # relation, and can be looked up at OxPoints IDs can be looked up at
-# http://www.openstreetmap.org/api/0.6/(node|way|relation)/(?<id>\d+)
-# OxPoints IDs can be looked up at http://m.ox.ac.uk/oxpoints/id/(?<id>\d+)
+# http://www.openstreetmap.org/api/0.6/(node|way|relation)/(?P<id>\d+)
+# OxPoints IDs can be looked up at http://m.ox.ac.uk/oxpoints/id/(?P<id>\d+)
 
 daily_info_ids = {
       80: ('osm',      'N175028262'), # Cape of Good Hope
