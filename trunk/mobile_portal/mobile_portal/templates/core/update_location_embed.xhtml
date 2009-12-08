@@ -54,14 +54,6 @@
         <p id="location_status">We think you are somewhere near <strong class="nobr">{{ preferences.location.location.0 }} {{ preferences.location.location.1 }}</strong>.</p>
 {% else %}
         <p id="location_status">Sorry, but we are unable to determine your location automatically.</p>
-        <script type="text/javascript">
-            $(document).ready(function() {
-                if (require_location && positionMethodAvailable())
-                    $('#location_status').html('We do not yet have a location for you; please wait while we attempt to determine one.');
-                else if (positionMethodAvailable())
-                    $('#location_status').css('display', 'none');
-            });
-        </script>
 {% endif %}
 {% endif %}
 <p id="location_update"> </p>
