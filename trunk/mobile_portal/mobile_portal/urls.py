@@ -25,8 +25,8 @@ urlpatterns = patterns('',
     (r'^weather/', include('mobile_portal.weather.urls')),
     #(r'^auth/', include('mobile_portal.webauth.urls')),
     
-    (r'^news/', include('mobile_portal.rss.urls.news')),
-    (r'^events/', include('mobile_portal.rss.urls.events')),
+    (r'^news/', include('mobile_portal.rss.news.urls')),
+    (r'^events/', include('mobile_portal.rss.events.urls')),
     
     (r'^osm/', include('mobile_portal.osm.urls')),
     (r'^search/', include('mobile_portal.googlesearch.urls')),

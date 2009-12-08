@@ -4,7 +4,8 @@ APPLICATION_CHOICES = (
     ('', 'Show all'),
     ('maps', 'maps'),
     ('podcasts', 'podcasts'),
-    ('rss', 'news'),
+    ('news', 'news'),
+    ('events', 'events'),
     ('webcams', 'webcams'),
 )
 

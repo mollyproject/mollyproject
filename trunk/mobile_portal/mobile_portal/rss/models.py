@@ -42,7 +42,10 @@ class RSSFeed(models.Model):
         return self.title
         
     def get_absolute_url(self):
-        return reverse('rss_item_list', args=[self.slug])
+        if self.ptype == 'n':
+            return reverse('news_item_list', args=[self.slug])
+        else:
+            return reverse('events_item_list', args=[self.slug])
         
     class Meta:
         ordering = ('title',)
@@ -64,6 +67,15 @@ class RSSItem(models.Model):
     location_address = models.TextField(blank=True)
     location_url = models.URLField(blank=True)
     
+    ptype = models.CharField(max_length=1, choices=FEED_TYPE_CHOICES)
+
+    objects = models.Manager()
+    events = EventsManager()
+    news = NewsManager()
+
+    @property
+    def location_mobile_url(self):
+        return self.location_url.replace('/reviews/venue/', '/reviews/phone/venue/')
     
     @property
     def last_modified_local(self):
@@ -73,7 +85,10 @@ class RSSItem(models.Model):
             return repr(e)
     
     def get_absolute_url(self):
-        return reverse('rss_item_detail', args=[self.feed.slug, self.id])
+        if self.ptype == 'n':
+            return reverse('news_item_detail', args=[self.feed.slug, self.id])
+        else:
+            return reverse('events_item_detail', args=[self.feed.slug, self.id])
         
         
     def get_description_display(self, device):
@@ -84,7 +99,10 @@ class RSSItem(models.Model):
             img.attrib['width'] = '%d' % eis.width
             img.attrib['height'] = '%d' % eis.height
         return ET.tostring(html)[6:-7]
-            
+    
+    def save(self, *args, **kwargs):
+        self.ptype = self.feed.ptype
+        super(RSSItem, self).save(*args, **kwargs)
         
     
     class Meta:

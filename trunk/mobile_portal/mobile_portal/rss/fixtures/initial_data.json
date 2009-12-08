@@ -3,9 +3,18 @@
         "pk": "7",
         "model": "core.FrontPageLink",
         "fields": {
-            "slug": "rss",
+            "slug": "news",
             "title": "News",
-            "urlconf_name": "rss_index"
+            "urlconf_name": "news_index"
+        }
+    },
+    {
+        "pk": "8",
+        "model": "core.FrontPageLink",
+        "fields": {
+            "slug": "events",
+            "title": "Events",
+            "urlconf_name": "events_index"
         }
     },
     {

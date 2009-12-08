@@ -45,9 +45,12 @@ class Command(NoArgsCommand):
             for x_item in feed_data.entries:
                 guid, last_modified = x_item.id, datetime(*x_item.date_parsed[:7])
                 
+                #print x_item.link
+                #if x_item.link != 'http://www.dailyinfo.co.uk/events.php?colname=Lectures%2C+Seminars+and+Conferences&period=7&eventday=10&eventmonth=12&eventyear=2009#70276':
+                #    continue
                 
                 print x_item.items()
-                
+                            
                 for i in items:
                     if i.guid == guid:
                         item = i
@@ -56,7 +59,7 @@ class Command(NoArgsCommand):
                     item = RSSItem(guid=guid, last_modified=datetime(1900,1,1), feed=feed)
                     
                 if True or item.last_modified < last_modified:
-                    item.title = x_item.xcal_summary
+                    item.title = x_item.title.split(': ', 1)[1]
                     
                     try:
                         item.description = sanitise_html(Command.SUMMARY_RE.match(x_item.summary).groups(0)[0])
@@ -86,13 +89,18 @@ class Command(NoArgsCommand):
                             venue_et = ES.parse(urllib.urlopen(item.location_url))
                             item.location_name = [e for e in venue_et.findall('.//div') if e.attrib.get('class')=='heading'][0].text.strip()
                             
-                            for link in venue_et.findall('.//a'):
-                                match = Command.GOOGLE_MAPS_LINK_RE.match(link.attrib.get('href', ''))
-                                if match:
-                                    item.location_point = self.postcode_to_point(match.groups(0)[0])
-                                    break
-                            else:
-                                item.location_point = None
+                            try:
+                                item.location_point = Point(float(x_item.geo_long),
+                                                            float(x_item.geo_lat))
+                                print x_item.geo_lat, x_item.geo_long
+                            except AttributeError, ValueError:
+                                for link in venue_et.findall('.//a'):
+                                    match = Command.GOOGLE_MAPS_LINK_RE.match(link.attrib.get('href', ''))
+                                    if match:
+                                        item.location_point = self.postcode_to_point(match.groups(0)[0])
+                                        break
+                                else:
+                                    item.location_point = None
                             
                             for para in venue_et.findall('.//p')[1:]:
                                 item.location_address = (para.text or '').strip()
@@ -105,6 +113,7 @@ class Command(NoArgsCommand):
                                     break
                                     
                                 item.location_point = self.postcode_to_point(match.groups(0)[0])
+                                print item.location_point
                                 break
                             
                             location_data[venue_id] = item.location_name, item.location_address, item.location_point

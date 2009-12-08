@@ -7,55 +7,58 @@ from mobile_portal.core.ldap_queries import get_person_units
 from mobile_portal.core.renderers import mobile_render
 from mobile_portal.core.handlers import BaseView
 
-from models import RSSFeed, RSSItem
+from ..models import RSSFeed, RSSItem
 
 from mobile_portal.core.breadcrumbs import Breadcrumb, BreadcrumbFactory, lazy_reverse, lazy_parent, NullBreadcrumb
 
 class IndexView(BaseView):
     def get_metadata(cls, request):
         return {
-            'title': 'News',
-            'additional': 'View news feeds and events from across the University.',
+            'title': 'Events',
+            'additional': 'Upcoming events from across the University and city',
         }
         
     @BreadcrumbFactory
     def breadcrumb(cls, request, context):
         return Breadcrumb(
-            'rss', None, 'News', lazy_reverse('rss_index')
+            'events', None, 'Events', lazy_reverse('events_index')
         )
         
     def handle_GET(cls, request, context):
-        feeds = RSSFeed.news.all()
+        feeds = RSSFeed.events.all()
         context['feeds'] = feeds
         return mobile_render(request, context, 'rss/index')
 
 class ItemListView(BaseView):
     def get_metadata(cls, request, slug):
-        feed = get_object_or_404(RSSFeed.news, slug=slug)
+        feed = get_object_or_404(RSSFeed.events, slug=slug)
         
         return {
             'last_modified': feed.last_modified,
             'title': feed.title,
             'additional': '<strong>News feed</strong> %s' % feed.last_modified.strftime('%a, %d %b %Y'),
         }
+    
+    def initial_context(cls, request, slug):
+        return {
+            'feed': get_object_or_404(RSSFeed.events, slug=slug),
+        }
 
     @BreadcrumbFactory
     def breadcrumb(cls, request, context, slug):
         return Breadcrumb(
-            'rss',
+            'events',
             lazy_parent(IndexView),
-            'News feed',
-            lazy_reverse('rss_item_list', args=[slug])
+            context['feed'].title,
+            lazy_reverse('events_item_list', args=[slug])
         )
         
     def handle_GET(cls, request, context, slug):
-        feed = get_object_or_404(RSSFeed.news, slug=slug)
-        context['feed'] = feed
         return mobile_render(request, context, 'rss/item_list')
 
 class ItemDetailView(BaseView):
     def get_metadata(cls, request, slug, id):
-        item = get_object_or_404(RSSItem, feed__slug=slug, id=id)
+        item = get_object_or_404(RSSItem.events, feed__slug=slug, id=id)
         
         return {
             'last_modified': item.last_modified,
@@ -63,19 +66,25 @@ class ItemDetailView(BaseView):
             'additional': '<strong>News item</strong>, %s, %s' % (escape(item.feed.title), item.last_modified.strftime('%a, %d %b %Y')),
         }
 
+    def initial_context(cls, request, slug, id):
+        item = get_object_or_404(RSSItem.events, feed__slug=slug, id=id)
+        return {
+            'item': item,
+            'feed': item.feed,
+            'zoom': cls.get_zoom(request),
+        }
+
     @BreadcrumbFactory
     def breadcrumb(cls, request, context, slug, id):
         return Breadcrumb(
-            'rss',
+            'events',
             lazy_parent(ItemListView, slug=slug),
-            'News item',
-            lazy_reverse('rss_item_detail', args=[slug,id])
+            context['item'].title,
+            lazy_reverse('events_item_detail', args=[slug,id])
         )
         
     def handle_GET(cls, request, context, slug, id):
-        item = get_object_or_404(RSSItem, feed__slug=slug, id=id)
         context.update({
-            'item': item,
-            'description': item.get_description_display(request.device)
+            'description': context['item'].get_description_display(request.device)
         })
-        return mobile_render(request, context, 'rss/item_detail')
+        return mobile_render(request, context, 'rss/event_detail')
