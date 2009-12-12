@@ -35,7 +35,8 @@ project's 'settings.py' file:
 
 import unittest, xmlrunner
 
-def run_tests(test_labels, verbosity=1, interactive=True, extra_tests=[], suite=None):
+def run_tests(test_labels, verbosity=1, interactive=True,
+              extra_tests=(), suite=None):
     """
     Set `TEST_RUNNER` in your settings with this routine in order to
     scaffold test spatial databases correctly for your GeoDjango models.

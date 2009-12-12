@@ -1,0 +1,17 @@
+{% extends "oucs_status/base.xhtml" %}
+
+{% block content %}
+
+<ul>
+{% for service in services %}
+  <li class="service_status_{{ service.status }}">
+    <span class="service_name">{{ service.name }}</span>
+    <span class="service_status">{{ service.status|capfirst }}</span>
+{% if service.detail %}
+    <span class="service_detail">{{ service.detail }}</span>
+{% endif %}
+  </li>
+{% endfor %}
+</ul>
+
+{% endblock %}

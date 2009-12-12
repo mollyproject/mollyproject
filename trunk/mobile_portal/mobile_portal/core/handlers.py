@@ -52,6 +52,18 @@ class BaseView(object):
         else:
             return cls.method_not_acceptable(request)
             
+    def handle_HEAD(cls, request, *args, **kwargs):
+        """
+        Provides a default HEAD handler that strips the content from the
+        response returned by the GET handler.
+        """
+        if hasattr(cls, 'handle_GET'):
+            response = cls.handle_GET(request, *args, **kwargs)
+        else:
+            response = cls.method_not_acceptable(request)
+        response.content = ''
+        return response
+            
     def get_zoom(cls, request, default=16):
         try:
             zoom = int(request.GET['zoom'])
