@@ -187,7 +187,7 @@ def get_fitted_map(centre_point, points, min_points, zoom, width, height, filena
     if not zoom:
         zoom = 18
 
-    box = width - 20, height-35
+    box = max(64, width - 20), max(64, height-35)
     
     new_points = []
     for i, point in enumerate(points):
