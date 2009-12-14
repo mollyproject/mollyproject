@@ -609,9 +609,10 @@ class FeedbackView(BaseView):
         params = {
             'email': form.cleaned_data['email'],
             'devid': request.device.devid,
-            'ua': request.META['HTTP_USER_AGENT'],
+            'ua': urllib.urlencode({'user_agent':request.META['HTTP_USER_AGENT']}),
             'referer': request.POST.get('referer', ''),
-            'location': request.preferences['location']['location'],
+            'lat': request.preferences['location']['location'][0],
+            'lon': request.preferences['location']['location'][1],
             'body': form.cleaned_data['body'],
             'session_key': request.session.session_key,
         }
@@ -620,10 +621,10 @@ Meta
 ====
 
 E-mail:      %(email)s
-Device:      %(devid)s
-User-agent:  %(ua)s
+Device:      http://www.wurflpro.com/device/results?user_agent=&identifier=%(devid)s
+User-agent:  http://www.wurflpro.com/device/results?%(ua)s
 Referer:     %(referer)s
-Location:    %(location)s
+Location:    http://www.google.co.uk/search?q=%(lat)f,%(lon)f
 Session key: %(session_key)s
 
 Message
