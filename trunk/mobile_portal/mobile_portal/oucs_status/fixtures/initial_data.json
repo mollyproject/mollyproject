@@ -1,0 +1,11 @@
+[
+    {
+        "pk": "9",
+        "model": "core.FrontPageLink",
+        "fields": {
+            "slug": "oucs_status",
+            "title": "OUCS Status",
+            "urlconf_name": "oucs_status_index"
+        }
+    }
+]

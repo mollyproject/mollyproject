@@ -30,6 +30,7 @@ defaults = {
             'events': (EPOCH, (7, True)),
             'z3950': (EPOCH, (8, True)),
             'weather': (EPOCH, (9, True)),
+            'oucs_status': (EPOCH, (10, True)),
         })),
         'rss': (EPOCH, PreferenceSet({
             'hidden_items': (EPOCH, set()),

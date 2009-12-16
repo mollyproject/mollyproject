@@ -75,6 +75,7 @@ li#menu-results {background-image:url('../../png/index-icons/results.png');}
 li#menu-z3950 {background-image:url('../../png/index-icons/z3950.png');}
 li#menu-weather {background-image:url('../../png/index-icons/weather.png');}
 li#menu-sakai {background-image:url('../../png/index-icons/sakai.png');}
+li#menu-oucs_status {background-image:url('../../png/index-icons/oucs_status.png');}
 /* End Index Page Specific */
 
 /* Breadcrumb Trail Styles */
@@ -139,6 +140,7 @@ div#bc-title h1.results-header {  background-image:url('../../png/index-icons/re
 div#bc-title h1.z3950-header {    background-image:url('../../png/index-icons/z3950-bc.png');}
 div#bc-title h1.rss-header {      background-image:url('../../png/index-icons/rss-bc.png');}
 div#bc-title h1.weather-header {  background-image:url('../../png/index-icons/weather-bc.png');}
+div#bc-title h1.oucs_status-header {  background-image:url('../../png/index-icons/oucs_status-bc.png');}
 /* End Breadcrumb Trail Styles */
 
 
@@ -354,3 +356,27 @@ div.form button[type="submit"] {
 }
 /* End Forms/Search */
 
+/* OUCS Status */
+li.service_status {
+    background-position:10px center;
+    background-repeat:no-repeat;
+    padding-left:25px;
+}
+
+li.service_status_up {
+    background-image:url('../../png/icons/service-up.png');
+}
+li.service_status_partial, li.service_status_unknown {
+    background-image:url('../../png/icons/service-middle.png');
+}
+li.service_status_down {
+    background-image:url('../../png/icons/service-down.png');
+}
+
+span.service_status, span.service_detail {
+    font-size:90%;
+}
+
+span.service_detail {
+    font-style:italic;
+}

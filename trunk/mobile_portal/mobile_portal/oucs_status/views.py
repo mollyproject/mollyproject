@@ -38,7 +38,6 @@ class IndexView(BaseView):
         """
         Normalises status names to a set we can have icons for.
         """
-
         name = (name or '').lower()
         if name in ('up', 'down', 'partial', 'unknown'):
             return name
