@@ -31,7 +31,7 @@
 {% else %}
 
 <form method="get" action="{% url core_update_location %}" class="manual-update-form">
-        <label for="location">Set a new location</label>:
+        <label for="location-name">Set a new location</label>:
         <input name="return_url" type="hidden" value="{{ return_url|default:path }}"/>
         <input id="location-name" name="name" value="{{ location }}"/>
         <input type="submit" value="Update"/><br/>
