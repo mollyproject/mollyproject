@@ -18,9 +18,9 @@
 		 <p>
 			{{ search_form.query }}
 		{% ifequal style_group "dumb" %}
-		    <input alt="Search" type="button" value="Search" />
+		    <input type="button" value="Search" />
 		{% else %}
-			<input alt="Search" type="image" src="{{ MEDIA_URL }}png/new/buttons/search-button.png" title="Search" />
+			<input type="image" src="{{ MEDIA_URL }}png/new/buttons/search-button.png" title="Search" />
 		{% endifequal %}
 		 </p>
 		 </form>
