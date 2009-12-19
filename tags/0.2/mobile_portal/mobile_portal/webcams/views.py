@@ -52,7 +52,7 @@ class WebcamDetailView(BaseView):
         try:
             eis = resize_external_image(
                 context['webcam'].url,
-                request.device.max_image_width, timeout=5)
+                request.map_width, timeout=5)
         except:
             eis = None
         

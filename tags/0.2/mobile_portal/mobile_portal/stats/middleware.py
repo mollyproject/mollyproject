@@ -19,9 +19,10 @@ class StatisticsMiddleware(object):
         remote_ip = request.META['REMOTE_ADDR']
         
         try:
-            rdns = socket.gethostbyaddr(remote_ip)[0].split('.')
-            rdns.reverse()
-            rdns = ".".join(rdns)
+            rdns = None
+            # rdns = socket.gethostbyaddr(remote_ip)[0].split('.')
+            # rdns.reverse()
+            # rdns = ".".join(rdns)
         except:
             rdns = None
 

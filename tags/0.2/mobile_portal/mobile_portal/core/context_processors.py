@@ -122,8 +122,6 @@ def geolocation(request):
         'meta': dict((a,b) for (a,b) in request.META.items() if a.startswith('HTTP_')),
     }
 
-from django.db import connection
-
 def weather(request):
     """
     Adds weather information to the context in keys 'weather' and 'weather_icon'.
@@ -135,7 +133,6 @@ def weather(request):
         'common_name': request.session.get('common_name'),
         'preferences': request.preferences,
         'session_key': request.session.session_key,
-        'queries': connection.queries,
         'path': request.path,
         'unread_user_messages': UserMessage.objects.filter(session_key = request.session.session_key, read=False).count() > 0,
     }
