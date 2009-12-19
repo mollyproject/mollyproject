@@ -60,7 +60,7 @@
 {% endif %}
 {% if entity.metadata.tags.url %}
     <li>
-        <a class="external" href="{{ entity.metadata.tags.url|urlencode }}">
+        <a class="external" href="{{ entity.metadata.tags.url|escape }}">
             Website
         </a>
     </li>

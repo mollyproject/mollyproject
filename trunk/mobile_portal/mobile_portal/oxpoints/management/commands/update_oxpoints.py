@@ -1,6 +1,5 @@
 import rdflib, Queue
 from django.core.management.base import NoArgsCommand
-from django.db import transaction
 from django.contrib.gis.geos import Point
 from mobile_portal.oxpoints.models import Entity, EntityType
 
@@ -123,7 +122,6 @@ class Command(NoArgsCommand):
                 entity.is_sublocation = False
             entity.save()
 
-    @transaction.commit_on_success
     def handle_noargs(self, **options):
         self.load_entity_types()
         self.load_oxpoints_graph()

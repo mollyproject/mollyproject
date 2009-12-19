@@ -45,11 +45,3 @@ class LocationMiddleware(object):
         request.map_height = min(320, request.device.resolution_height-10)
         
 
-from django.db import connection
-
-class PrintQueriesMiddleware(object):
-    def process_response(self, request, response):
-        for query in connection.queries:
-            print '-'*80
-            print query['sql']
-        return response

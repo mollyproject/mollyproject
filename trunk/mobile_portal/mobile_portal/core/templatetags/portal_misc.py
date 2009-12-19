@@ -116,9 +116,10 @@ def telephone(value, arg):
 
 @register.filter
 def telephone_uri(value):
-    value = value.replace(" ", "")
+    value = value.replace(" ", "").replace('-','')
     if value.startswith("0"):
-        value = "tel:+44" + value[1:]
+        value = "+44" + value[1:]
+    value = "tel:" + value
 
     return value
 
