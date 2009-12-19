@@ -213,6 +213,10 @@ class OxfordHandler(handler.ContentHandler):
             # We already have these from OxPoints, so leave them alone.            
             if self.tags.get('amenity') == 'library' and self.tags.get('operator') == 'University of Oxford':
                 return
+
+            # Ignore disused and under-construction entities
+            if self.tags.get('life_cycle', 'in_use') != 'in_use' or self.tags.get('disused') in ('1', 'yes', 'true'):
+                return
                 
             entity, created = Entity.objects.get_or_create(osm_id=self.id)
             
