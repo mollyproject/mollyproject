@@ -1,20 +1,21 @@
 from itertools import chain
 from PyZ3950 import zoom
+import logging
 
 from django.http import Http404, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.core.paginator import Paginator
 from django.contrib.gis.geos import Point
 
-from mobile_portal.core.renderers import mobile_render
-from mobile_portal.core.handlers import BaseView
-from mobile_portal.z3950 import search
-from mobile_portal.z3950.forms import SearchForm
+from mobile_portal.utils.views import BaseView
+from mobile_portal.utils.breadcrumbs import *
+from mobile_portal.utils.renderers import mobile_render
 
 from mobile_portal.oxpoints.models import Entity
 from mobile_portal.osm.utils import fit_to_map
 
-from mobile_portal.core.breadcrumbs import Breadcrumb, BreadcrumbFactory, lazy_parent, lazy_reverse
+from . import search
+from .forms import SearchForm
 
 STOP_WORDS = frozenset( (
     "a,able,about,across,after,all,almost,also,am,among,an,and,any,are,as,at,"
@@ -25,6 +26,9 @@ STOP_WORDS = frozenset( (
   + "say,says,she,should,since,so,some,than,that,the,their,them,then,there,"
   + "these,they,this,tis,to,too,twas,us,wants,was,we,were,what,when,where,"
   + "which,while,who,whom,why,will,with,would,yet,you,your" ).split(',') )
+
+search_logger = logging.getLogger('mobile_portal.z3950.searches')
+logger = logging.getLogger('mobile_portal.z3950')
 
 class IndexView(BaseView):
     def get_metadata(cls, request):
@@ -88,13 +92,14 @@ class SearchDetailView(BaseView):
             return cls.handle_no_search(request, context)
 
         try:
-            query, removed = cls.construct_query(search_form)
+            query, removed = cls.construct_query(request, search_form)
         except cls.InconsistentQuery, e:
             return cls.handle_error(request, context, e.msg)
 
         try:
             results = search.OLISSearch(query)
         except Exception, e:
+            logger.exception("Library query error")
             return cls.handle_error(request, context, 'An error occurred')
     
         paginator = Paginator(results, 10)
@@ -122,7 +127,7 @@ class SearchDetailView(BaseView):
         context['error_message'] = message
         return mobile_render(request, context, 'z3950/item_list')
         
-    def construct_query(cls, search_form):
+    def construct_query(cls, request, search_form):
         query, removed = [], set()
         title, author, isbn = '', '', ''
         if search_form.cleaned_data['author']:
@@ -142,7 +147,14 @@ class SearchDetailView(BaseView):
             
         if not (title or author or isbn):
             raise cls.InconsistentQuery("You must supply some subset of title or author, and ISBN.")
-            
+
+        search_logger.info("Library query", extra={
+            'session_key': request.session.session_key,
+            'title': title,
+            'author': author,
+            'isbn': isbn,
+        })        
+        
         return "and".join(query), removed
 
 

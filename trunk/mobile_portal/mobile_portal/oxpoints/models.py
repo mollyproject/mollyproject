@@ -27,6 +27,7 @@ class Entity(models.Model):
     atco_code = models.CharField(max_length=12, null=True, blank=True)
     central_stop_id = models.CharField(max_length=2, null=True, blank=True)
     osm_id = models.CharField(max_length=16, null=True, blank=True)
+    post_code = models.CharField(max_length=8, null=True, blank=True)
     title = models.TextField(blank=True)
     entity_type = models.ForeignKey(EntityType, null=True)
     all_types = models.ManyToManyField(EntityType, blank=True, related_name='all_entities')
@@ -76,7 +77,11 @@ class Entity(models.Model):
 
     @property
     def display_id(self):
-        return getattr(self, self.entity_type.id_field)
+        if self.entity_type.slug == 'postcode':
+            return getattr(self, self.entity_type.id_field).strip()
+        else:
+            return getattr(self, self.entity_type.id_field)
+        
         
 class PostCode(models.Model):
     post_code = models.CharField(max_length=8)

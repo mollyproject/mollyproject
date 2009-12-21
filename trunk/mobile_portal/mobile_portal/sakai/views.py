@@ -8,13 +8,13 @@ from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.core.urlresolvers import reverse
 from django.conf import settings
 
-from mobile_portal.core.breadcrumbs import Breadcrumb, BreadcrumbFactory, lazy_reverse, lazy_parent, NullBreadcrumb
+from mobile_portal.utils.views import BaseView
+from mobile_portal.utils.breadcrumbs import *
+from mobile_portal.utils.renderers import mobile_render
 
-
-from mobile_portal.core.renderers import mobile_render
-from mobile_portal.core.handlers import BaseView
-from clients import SakaiOAuthClient
 from mobile_portal.secure.views import OAuthView
+
+from .clients import SakaiOAuthClient
 
 def parse_iso_8601(s):
     return datetime.fromtimestamp(xml.utils.iso8601.parse(s)).replace(tzinfo=pytz.utc)

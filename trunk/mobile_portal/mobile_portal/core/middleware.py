@@ -1,5 +1,5 @@
 from django.conf import settings
-import geolocation
+from mobile_portal.utils import geolocation
 
 from mobile_portal.wurfl.wurfl_data import devices
 from mobile_portal.wurfl import device_parents

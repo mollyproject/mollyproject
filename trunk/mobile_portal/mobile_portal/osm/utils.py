@@ -3,7 +3,7 @@ try:
 except ImportError:
     import pickle
     
-import hashlib, os, os.path
+import hashlib, os, os.path, logging, time
 from datetime import datetime
 from django.conf import settings
 from django.db import IntegrityError
@@ -21,9 +21,11 @@ MARKER_COLORS = (
 
 MARKER_RANGE = xrange(1, 100)
 
+logger = logging.getLogger('mobile_portal.osm.generation')
+
 def get_or_create_map(f, args):
     # This assumes that f is functional, i.e. its return value is determined
-    # solely by it's arguments. In the case that a map is requested again
+    # solely by its arguments. In the case that a map is requested again
     # before the original map generation has finished, the following happens:
     # * Nothing has yet been saved to the database as we have to wait for the
     #   metadata to come back. Hence, we get a DoesNotExist.
@@ -42,6 +44,9 @@ def get_or_create_map(f, args):
     # duration of f. Subsequent attempts to get the map with that hash then
     # throws a MultipleObjectsReturned exception. Yes, this did happen. Seven
     # times, no less.
+
+    start_time = time.time()
+    
     hash = hashlib.sha224(pickle.dumps(repr(args))).hexdigest()[:16]
     
     try:
@@ -49,6 +54,7 @@ def get_or_create_map(f, args):
         gm.last_accessed = datetime.utcnow()
         gm.save()
         metadata = gm.metadata
+        logger.debug("Found previously generated map: %s", hash)
     except GeneratedMap.DoesNotExist:
         if not os.path.exists(settings.GENERATED_MAP_DIR):
             os.makedirs(settings.GENERATED_MAP_DIR)
@@ -62,12 +68,22 @@ def get_or_create_map(f, args):
         try:
             gm.save()
         except IntegrityError:
-            pass
+            logger.debug("Map generated: %s, took %.5f seconds (with race)", (hash, time.time()-start_time)) 
+        else:
+            logger.debug("Map generated: %s, took %.5f seconds", (hash, time.time()-start_time)) 
+    
 
         if GeneratedMap.objects.all().count() > 25000:
+            youngest = None
             for gm in GeneratedMap.objects.order_by('last_accessed')[:50]:
-                gm.delete()    
-    
+                if not youngest:
+                    youngest = gm.last_accessed
+                gm.delete()
+            age = (datetime.now()-youngest)
+            age = age.days*24 + age.seconds/3600.0
+            logger.debug("Cleared out old maps, youngest is %f hours", age)
+                
+        
     return hash, metadata
 
 

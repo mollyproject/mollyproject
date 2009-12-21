@@ -1,8 +1,44 @@
-from views import EntityDetailView
+import re
+
+from django.core.urlresolvers import reverse
+
+from views import EntityDetailView, PostCodeDetailView
 from mobile_portal.oxpoints.models import Entity
 
+
 class SiteSearch(object):
+    POSTCODE_RE = re.compile('OX\d{1,2} ?\d[A-Z]{2}')
+    
     def __new__(cls, query, only_app, request):
+        return (
+            cls.busstops(query, only_app, request)
+          + cls.postcodes(query, only_app, request)
+        ), False, None
+    
+    @classmethod
+    def postcodes(cls, query, only_app, request):
+        if not cls.POSTCODE_RE.match(query.upper()):
+            return []
+            
+        query = query.upper().replace(' ', '')
+        
+        try:
+            entity = Entity.objects.get(entity_type__slug='postcode', post_code=query)
+        except Entity.DoesNotExist:
+            return []
+        
+        metadata = {
+            'redirect_if_sole_result': True,
+            'url': reverse('maps_entity_nearby_list', args=['postcode',query]),
+            'excerpt': '',
+            'application': 'maps',
+        }
+        #metadata.update(NearbyEntityList.get_metadata(request, query))
+        
+        return [metadata]
+    
+    @classmethod
+    def busstops(cls, query, only_app, request):
         print "Here"
         
         id = query.strip()
@@ -35,4 +71,4 @@ class SiteSearch(object):
             results.append(result)
         
         print "Results", results
-        return results, False, None
+        return results

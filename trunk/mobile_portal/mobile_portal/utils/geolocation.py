@@ -10,7 +10,7 @@ from django.conf import settings
 from django.http import HttpRequest
 from django.contrib.gis.geos import Point
 from django.contrib.gis.gdal import OGRException
-from models import Placemarks
+from mobile_portal.core.models import Placemarks
 from mobile_portal.oxpoints.models import Entity, PostCode
 
 CLOUDMADE_REVERSE_GEOCODE_URL = 'http://geocoding.cloudmade.com/%(api_key)s/geocoding/closest/road/%(lat)f,%(lon)f.js'

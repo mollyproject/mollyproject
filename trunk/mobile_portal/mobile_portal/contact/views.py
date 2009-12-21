@@ -1,10 +1,10 @@
 import simplejson, hashlib, urllib2
 from django.http import HttpResponse
-from mobile_portal.core.renderers import mobile_render
 from search import contact_search
 
-from mobile_portal.core.handlers import BaseView
-from mobile_portal.core.breadcrumbs import BreadcrumbFactory, Breadcrumb, NullBreadcrumb, lazy_parent, lazy_reverse
+from mobile_portal.utils.renderers import mobile_render
+from mobile_portal.utils.views import BaseView
+from mobile_portal.utils.breadcrumbs import *
 
 # See http://en.wikipedia.org/wiki/Nobility_particle for more information.
 NOBILITY_PARTICLES = set([

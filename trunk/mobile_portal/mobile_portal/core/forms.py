@@ -3,7 +3,7 @@ from django.forms.models import modelformset_factory
 from django.forms.util import ErrorList
 
 from models import LocationShare, UserMessage, LOCATION_ACCURACY_CHOICES
-import geolocation
+from mobile_portal.utils import geolocation
 
 class LocationShareForm(forms.ModelForm):
     class Meta:

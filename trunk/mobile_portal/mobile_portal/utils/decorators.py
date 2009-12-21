@@ -1,4 +1,4 @@
-from renderers import mobile_render
+from .renderers import mobile_render
 
 def require_location(f):
     def g(request, *args, **kwargs):

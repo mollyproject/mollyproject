@@ -11,7 +11,7 @@ from views import (
     NearbyEntityListView, NearbyEntityDetailView,
     CategoryListView, CategoryDetailView,
     
-    BusstopSearchView,
+    BusstopSearchView, PostCodeDetailView
 )
 
 urlpatterns = patterns('mobile_portal.maps.views',
@@ -33,6 +33,10 @@ urlpatterns = patterns('mobile_portal.maps.views',
         CategoryDetailView, {},
         'maps_category_detail'),
 
+#    (r'^postcode:(?P<post_code>OX\d{2,3}[A-Z]{2})/((?P<ptypes>[^/;]+(\;[^/;]+)*)/)?$',
+#        PostCodeDetailView, {},
+#        'maps_postcode_detail'),
+    
     
     (r'^(?P<type_slug>[a-z_]+):(?P<id>[\dA-Z]+)/$',
         EntityDetailView, {},

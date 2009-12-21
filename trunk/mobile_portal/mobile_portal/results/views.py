@@ -1,12 +1,11 @@
-# Create your views here.
-import urllib, re, email.utils, time, datetime
+import urllib, re, email.utils, time, datetime, logging
 from xml.etree import ElementTree as ET
 
-from mobile_portal.core.renderers import mobile_render
-from mobile_portal.core.handlers import BaseView
+from mobile_portal.utils.views import BaseView
+from mobile_portal.utils.breadcrumbs import *
+from mobile_portal.utils.renderers import mobile_render
 
-from mobile_portal.core.breadcrumbs import Breadcrumb, BreadcrumbFactory, lazy_reverse, lazy_parent
-
+logger = logging.getLogger('mobile_portal.results')
 
 class IndexView(BaseView):
     RSS_FEED = 'http://twitter.com/statuses/user_timeline/46711686.rss'
@@ -36,7 +35,8 @@ class IndexView(BaseView):
                     'code': match.groups()[0],
                     'title': match.groups()[1],
                 })
-        except:
+        except Exception, e:
+            logger.exception("Could not parse results feed")
             items = []
             
         context['items'] = items

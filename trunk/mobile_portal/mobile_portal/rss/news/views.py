@@ -3,13 +3,11 @@ from django.core.paginator import Paginator, EmptyPage, InvalidPage
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 
-from mobile_portal.core.ldap_queries import get_person_units
-from mobile_portal.core.renderers import mobile_render
-from mobile_portal.core.handlers import BaseView
+from mobile_portal.utils.views import BaseView
+from mobile_portal.utils.breadcrumbs import *
+from mobile_portal.utils.renderers import mobile_render
 
 from ..models import RSSFeed, RSSItem
-
-from mobile_portal.core.breadcrumbs import Breadcrumb, BreadcrumbFactory, lazy_reverse, lazy_parent, NullBreadcrumb
 
 class IndexView(BaseView):
     def get_metadata(cls, request):

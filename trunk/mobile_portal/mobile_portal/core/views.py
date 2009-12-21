@@ -1,5 +1,7 @@
 # Create your views here.
 from datetime import datetime, timedelta
+import pytz, simplejson, urllib
+
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404, render_to_response
@@ -8,24 +10,21 @@ from django.core.management import call_command
 from django.template import loader, Context, RequestContext
 from django.core.mail import EmailMessage
 from django import forms
-from mobile_portal.core.renderers import mobile_render
-from mobile_portal.webauth.utils import require_auth
+
+from mobile_portal.utils.views import BaseView
+from mobile_portal.utils.renderers import mobile_render
+from mobile_portal.utils import geolocation
+from mobile_portal.utils.breadcrumbs import *
+
 from mobile_portal.osm.utils import fit_to_map
 from mobile_portal.wurfl import device_parents
-import geolocation
-
-import pytz, simplejson, urllib
-
 from mobile_portal.googlesearch.forms import GoogleSearchForm
 
 from models import FrontPageLink, ExternalImageSized, LocationShare, UserMessage
 from forms import LocationShareForm, LocationShareAddForm, FeedbackForm, UserMessageFormSet, LocationUpdateForm
-from utils import find_or_create_user_by_email
-from ldap_queries import get_person_units
+
 from context_processors import device_specific_media
 
-from handlers import BaseView
-from breadcrumbs import BreadcrumbFactory, Breadcrumb, NullBreadcrumb, lazy_parent, lazy_reverse
 
 class IndexView(BaseView):
 
@@ -68,260 +67,6 @@ class IndexView(BaseView):
             request.preferences['core']['desktop_about_shown'] = no_desktop_about
             
         return HttpResponseRedirect(reverse('core_index'))
-
-class UpdateLocationView(BaseView):
-    def initial_context(cls, request):
-        try:
-            zoom = int(request.GET['zoom'])
-        except (IndexError, KeyError):
-            zoom = 16
-        else:
-            zoom = min(max(10, zoom), 18)
-        return_url = (request.POST if request.method == 'POST' else request.GET).get('return_url')
-        return {
-            'zoom': zoom,
-            'return_url': return_url,
-        }
-        
-    @BreadcrumbFactory
-    def breadcrumb(cls, request, context):
-        return Breadcrumb('core',
-                          None, 'Update location',
-                          lazy_reverse('core_update_location'))
-        
-    def handle_GET(cls, request, context):
-        if 'location' in request.GET:
-            return cls.confirm_stage(request, context)
-        else:
-            return cls.add_container_if_necessary(request, context, 'core/update_location')
-    
-    def handle_POST(cls, request, context):
-        try:
-            title, accuracy, latitude, longitude = (
-                request.POST['title'],
-                float(request.POST['accuracy']),
-                float(request.POST['latitude']),
-                float(request.POST['longitude']),
-            )
-        except (KeyError, ValueError):
-            return cls.bad_request(request)
-                
-        location = latitude, longitude
-        placemark = (title, location, accuracy)
-        geolocation.set_location(request, location, accuracy, 'geocoded', placemark)
-        
-        if 'no_redirect' in request.POST:
-            return HttpResponse('')
-            
-        if context.get('return_url'):
-            response = HttpResponseRedirect(context['return_url'])
-        else:
-            response = HttpResponseRedirect(reverse('core_index'))
-            
-        response.status_code = 303
-        return response
-
-    @classmethod
-    def confirm_stage(cls, request, context):
-        location = request.GET['location']
-        
-        options = geolocation.geocode(location)
-        points = [(o[1][0], o[1][1], 'red') for o in options]        
-        
-        if points:
-            map_hash, (new_points, zoom) = fit_to_map(
-                None,
-                points = points,
-                min_points = len(points),
-                zoom = None if len(points)>1 else 15,
-                width = request.map_width,
-                height = request.map_height,
-            )
-        else:
-            map_hash, zoom = None, None
-        
-        context.update({
-            'zoom': zoom,
-            'map_hash': map_hash,
-            'options': options,
-            'zoom_controls': False,
-        })
-        
-        if request.GET.get('format') == 'json':
-            return HttpResponse(
-                simplejson.dumps(context),
-                mimetype='application/json',
-            )
-        else:
-            return cls.add_container_if_necessary(request, context, 'core/update_location_confirm')
-            
-    def add_container_if_necessary(cls, request, context, template_name):
-        if request.GET.get('ajax') != 'true':
-            template = loader.get_template(template_name+'.xhtml')
-            context = RequestContext(request, context)
-            
-            context = {
-                'content': template.render(context),
-            }
-            
-            template_name = 'core/update_location_container'
-        else:
-            request.preferences['last_ajaxed'] = datetime.now()
-        
-        return mobile_render(request, context, template_name)
-                    
-
-class AjaxUpdateLocationView(BaseView):
-
-    breadcrumb = NullBreadcrumb
-
-    def handle_POST(cls, request, context):
-        """
-        This resource will only accept POST requests with the following arguments:
-    
-        'latitude' and 'longitude' [optional]
-            Expressed in decimal degrees using the WGS84 projection.
-        'accuracy' [optional]
-            Expressed as a float in metres.
-        'method' [required]
-            One of 'html5', 'gears', 'manual', 'geocoded', 'other', 'denied', 'error'.
-    
-        If method is one of 'html5', 'gears', 'manual', 'other' then a position
-        must be provided. If method is one of 'denied', 'error' then neither
-        position nor accuracy may be provided.
-    
-        The methods have the following semantics:
-    
-        'html5'
-            The position was determined using the HTML5 geolocation API, to be
-            found in draft form at http://dev.w3.org/geo/api/spec-source.html.
-        'gears'
-            The position was determined using the Google Gears geolocation API,
-            found at http://code.google.com/apis/gears/api_geolocation.html.
-        'blackberry'
-            The position was determined using the BlackBerry geolocation API,
-            http://docs.blackberry.com/en/developers/deliverables/8861/blackberry_location_568404_11.jsp.
-        'manual'
-            The user provided the location directly.
-        'geocoded'
-            The user provided a string that was then geocoded to acquire a location.
-        'other'
-            Some other location method was used.
-        'denied'
-            A request was made to the user to be provided with the user's location
-            but it was denied.
-        'error'
-            An unspecified error occured, as provided for in the HTML5 spec.
-    
-        If a location was provided, a successful request will return a reverse
-        geocoded address if one is available, otherwise a space-delimited
-        latitude-longitude pair. Without a location the empty string will be
-        returned. In either case there will be an HTTP status code of 200.
-    
-        A request that does not meet this specification will result in an HTTP
-        status code of 400, accompanied by a plain text body detailing the errors.
-        """
-        
-        request.preferences['last_ajaxed'] = datetime.now()
-
-        errors = []
-    
-        # Decipher the location if given. Will through 400s in the following scenarios:
-        #  * One or other of latitude and longitude isn't provided.
-        #  * One or other of latitude and longitude isn't in the allowed range
-        #  * One or other of latitude and longitude cannot be interpretted as a float.
-        # If neither is provided then 
-        location = request.POST.get('latitude'), request.POST.get('longitude')
-        if any(location):
-            try:
-                location = tuple(map(float, location))
-                lat, lon = location
-                if not (-90 <= lat and lat <= 90 and -180 <= lon and lon < 180):
-                    raise ValueError
-            except ValueError:
-                errors.append(
-                    'Please provide latitude and longitude arguments as decimal degrees.',
-                )
-        else:
-            location = None
-    
-        accuracy = request.POST.get('accuracy')
-        if accuracy:
-            try:
-                accuracy = float(accuracy)
-                if accuracy < 0:
-                    raise ValueError
-                if not location:
-                    raise AssertionError
-            except ValueError:
-                errors.append(
-                    'If you provide accuracy, it must be a positive float expressed in metres.'
-                )
-            except AssertionError:
-                errors.append(
-                    'You cannot specify accuracy without also providing a location.'
-                )
-    
-        try:
-            method = request.POST['method']
-        except KeyError:
-            errors.append(
-                'You must provide a method.'
-            )
-        else:
-            if method in ('html5', 'gears', 'manual', 'geocoded', 'blackberry', 'other'):
-                if not location:
-                    errors.append(
-                        'A position is required for the method you provided.'
-                    )
-            elif method in ('denied', 'error'):
-                if location:
-                    errors.append(
-                        'You must not provide a position for the method you provided.'
-                    )
-            else:
-                errors.append(
-                    'The method you provided was not in the permitted set.'
-                )
-    
-        if errors:
-            return HttpResponse(
-                """\
-    There were errors in the data you POST:
-    
-     * %s
-    
-    For more information on acceptable requests perform a GET on this resource.
-    """ % "\n * ".join(errors),
-                status=400,
-                mimetype='text/plain'
-            )
-    
-        if location:
-            try:
-                placemark = geolocation.reverse_geocode(*location)[0]
-            except IndexError:
-                placemark = None
-        else:
-            placemark = None
-    
-        geolocation.set_location(
-            request,
-            location,
-            accuracy,
-            method,
-            placemark,
-        )
-    
-        if location:
-            if placemark:
-                response_data = placemark[0]
-            else:
-                response_data = "%.4f %.4f" % location
-        else:
-            response_data = ''
-    
-        return HttpResponse(response_data, mimetype='text/plain')
 
 class LocationUpdateView(BaseView):
     breadcrumb = NullBreadcrumb
@@ -552,6 +297,7 @@ class DesktopAboutView(BaseView):
         }
     
     breadcrumb = NullBreadcrumb
+    cache_page_duration = 60*15
     
     def handle_GET(cls, request, context):
         return render_to_response('core/desktop_about.xhtml', {}, context_instance=RequestContext(request))    

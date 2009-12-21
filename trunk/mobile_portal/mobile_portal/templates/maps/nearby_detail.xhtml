@@ -7,6 +7,9 @@
 
 <div class="section">
   <h2>
+{% if entity_types|length_is:0 %}
+    Found {{ count }} thing{{ count|pluralize }} near {{ entity.title }}
+{% else %}
     Found {{ count }}
     {% ifequal count 1 %}
       {{ entity_types.0.verbose_name }}
@@ -20,6 +23,7 @@
         that are also {% for et in entity_types|slice:"1:" %}{% if not forloop.first %}, {% if forloop.last %}and {% endif %}{% endif %}{{ et.verbose_name_plural }}{% endfor %}
       {% endifnotequal %} 
     {% endifequal %}
+{% endif %}
   </h2>
 
 {% if found_entity_types %}
@@ -27,7 +31,7 @@
     <div class="bubble pad-10">
       Limit to:
 {% for et in found_entity_types %}
-{% if entity_types.0.sub_types.all|contains:et %}
+{% if entity_types and entity_types.0.sub_types.all|contains:et %}
       <a href="{% url maps_nearby_detail et.slug %}">{{ et.verbose_name_plural }}</a>
 {% else %}
       <a href="{% url maps_nearby_list %}{{ et.slug }}{% for oet in entity_types %};{{ oet.slug }}{% endfor %}/">{{ et.verbose_name_plural }}</a>

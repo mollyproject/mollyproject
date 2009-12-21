@@ -1,8 +1,8 @@
 from datetime import datetime
-from mobile_portal.core.renderers import mobile_render
 
-from mobile_portal.core.handlers import BaseView
-from mobile_portal.core.breadcrumbs import Breadcrumb, BreadcrumbFactory, lazy_reverse
+from mobile_portal.utils.views import BaseView
+from mobile_portal.utils.breadcrumbs import *
+from mobile_portal.utils.renderers import mobile_render
 
 from models import Weather
 

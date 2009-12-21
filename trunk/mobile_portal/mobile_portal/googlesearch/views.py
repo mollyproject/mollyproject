@@ -1,9 +1,8 @@
 from django.http import HttpResponseRedirect
 
-from mobile_portal.core.handlers import BaseView
-from mobile_portal.core.renderers import mobile_render
-
-from mobile_portal.core.breadcrumbs import Breadcrumb, BreadcrumbFactory, lazy_reverse, lazy_parent, NullBreadcrumb
+from mobile_portal.utils.views import BaseView
+from mobile_portal.utils.renderers import mobile_render
+from mobile_portal.utils.breadcrumbs import *
 
 from search import GoogleSearch, OverrideResponse
 from forms import GoogleSearchForm

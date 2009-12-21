@@ -5,14 +5,12 @@ from xml.sax.saxutils import escape
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse, Http404
 
-from mobile_portal.core.renderers import mobile_render
-from mobile_portal.core.models import Feed
-from mobile_portal.core.handlers import BaseView
+from mobile_portal.utils.views import BaseView
+from mobile_portal.utils.breadcrumbs import *
+from mobile_portal.utils.renderers import mobile_render
+
 from mobile_portal.core.utils import resize_external_image
 from models import Webcam, WEBCAM_WIDTHS
-
-from mobile_portal.core.breadcrumbs import Breadcrumb, BreadcrumbFactory, lazy_reverse, lazy_parent
-
 
 class IndexView(BaseView):
     def get_metadata(cls, request):

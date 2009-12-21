@@ -54,7 +54,7 @@ class OSMTile(models.Model):
     @staticmethod
     def get_data(xtile, ytile, zoom):
         try:
-            osm_tile = OSMTile.objects.get(xtile=xtile, ytile=ytile, zoom=zoom, last_fetched__lt = datetime.now() - timedelta(1))
+            osm_tile = OSMTile.objects.get(xtile=xtile, ytile=ytile, zoom=zoom, last_fetched__gt = datetime.now() - timedelta(1))
             return open(osm_tile.get_filename())
         except (OSMTile.DoesNotExist, IOError):
             try:

@@ -1,20 +1,20 @@
-# Create your views here.
 import urllib
 from xml.etree import ElementTree as ET
+
 from django.http import HttpResponseRedirect, HttpResponsePermanentRedirect, HttpResponse, Http404
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
-from mobile_portal.core.renderers import mobile_render
-from mobile_portal.core.models import Feed
-from mobile_portal.core.handlers import BaseView
-from mobile_portal.podcasts.models import Podcast, PodcastCategory
-from mobile_portal.podcasts import TOP_DOWNLOADS_RSS_URL
+
+from mobile_portal.utils.renderers import mobile_render
+from mobile_portal.utils.views import BaseView
+from mobile_portal.utils.breadcrumbs import *
+
 from mobile_portal.wurfl import device_parents
 from mobile_portal.googlesearch.forms import GoogleSearchForm
 
-from mobile_portal.core.breadcrumbs import Breadcrumb, BreadcrumbFactory, lazy_reverse, lazy_parent, NullBreadcrumb
+from .models import Podcast, PodcastCategory
+from . import TOP_DOWNLOADS_RSS_URL
 
-OPML_FEED = 'http://rss.oucs.ox.ac.uk/oxitems/podcastingnewsfeeds.opml'
 
 class IndexView(BaseView):
     def get_metadata(cls, request):

@@ -3,7 +3,7 @@ from django.conf import settings
 
 from mobile_portal.core.views import (
     IndexView, LocationUpdateView, DesktopAboutView,
-    UserMessageView, AjaxUpdateLocationView,
+    UserMessageView,
     ExternalImageView, RunCommandView, FeedbackView,
     StaticDetailView
 )
