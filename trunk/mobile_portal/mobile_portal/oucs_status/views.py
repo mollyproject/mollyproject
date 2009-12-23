@@ -29,10 +29,11 @@ class IndexView(BaseView):
         for service_feed in services_feed.entries:
             service = {
                 'name': service_feed.title,
-                'detail': service_feed.get('description', None),
+                'detail': service_feed.get('description', 'The quick brown fox jumped over the lazy dog and landed on his large slightly obese backside'),
                 'status': cls.get_category(service_feed.category),
             }
             services.append(service)
+        context['all_up'] = all(s['status'] == 'up' for s in services)
         return mobile_render(request, context, 'oucs_status/index')
 
     def get_category(cls, name):
