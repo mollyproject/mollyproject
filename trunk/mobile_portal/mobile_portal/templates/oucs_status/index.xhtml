@@ -3,13 +3,15 @@
 {% block content %}
 
 <div class="section">
-  <ul>
+    <h2>OUCS Status</h2>
+
+  <ul class="service-status">
 {% for service in services %}
-    <li class="service_status service_status_{{ service.status }}{% if forloop.first %} round_top{% endif %}{% if forloop.last %} round_bottom{% endif %}">
-      <span class="service_name">{{ service.name }}</span>
-      <span class="service_status">{{ service.status|capfirst }}</span>
+    <li class="service-status service-status-{{ service.status }}{% if forloop.first %} round_top{% endif %}{% if forloop.last %} round_bottom{% endif %}">
+      <span class="service-name">{{ service.name }}</span>
+      <span class="service-status">{{ service.status|capfirst }}</span>
 {% if service.detail %}
-      <span class="service_detail">{{ service.detail }}</span>
+      <span class="service-detail">{{ service.detail }}</span>
 {% endif %}
     </li>
 {% endfor %}
