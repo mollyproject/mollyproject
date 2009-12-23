@@ -1,0 +1,23 @@
+{% extends "desktop/base.xhtml" %}
+
+{% block content %}
+
+Oh blogger blogger blogger blogger blogger blogger blogger blogger dustroom dustroom.
+
+
+{% for article in articles %}
+    <ul>
+        {% for key,value in article.items %}
+            <li>{{ key }}: {{ value }}</li>
+        {% endfor %}
+        <li>{{ article.title }} </li>
+        <li>{{ article.posterous_displayname }} <img src="{{ article.posterous_userimage|safe }}"/></li>
+        <li>{{ article.updated }}</li>
+
+        <li>{{ article.description|safe }}</li>
+        
+    </ul>
+    <br />
+{% endfor %}
+
+{% endblock %}
