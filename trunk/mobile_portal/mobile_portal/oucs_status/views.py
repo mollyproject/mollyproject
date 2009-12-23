@@ -10,6 +10,7 @@ class IndexView(BaseView):
     """
 
     STATUS_URL = 'http://status.ox.ac.uk/verboserss.xml'
+    ANNOUNCE_URL = 'http://status.ox.ac.uk/oxitems/generatersstwo2.php?channel_name=oucs/status-announce'
 
     def get_metadata(cls, request):
         return {
@@ -33,6 +34,7 @@ class IndexView(BaseView):
                 'status': cls.get_category(service_feed.category),
             }
             services.append(service)
+        context['announce'] = feedparser.parse(cls.ANNOUNCE_URL)
         context['all_up'] = all(s['status'] == 'up' for s in services)
         return mobile_render(request, context, 'oucs_status/index')
 
