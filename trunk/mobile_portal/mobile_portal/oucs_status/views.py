@@ -30,7 +30,7 @@ class IndexView(BaseView):
         for service_feed in services_feed.entries:
             service = {
                 'name': service_feed.title,
-                'detail': service_feed.get('description', 'The quick brown fox jumped over the lazy dog and landed on his large slightly obese backside'),
+                'detail': service_feed.get('description'),
                 'status': cls.get_category(service_feed.category),
             }
             services.append(service)
@@ -42,8 +42,6 @@ class IndexView(BaseView):
         """
         Normalises status names to a set we can have icons for.
         """
-        import random
-        return random.choice(['up', 'down', 'partial', 'unknown'])
         name = (name or '').lower()
         if name in ('up', 'down', 'partial', 'unknown'):
             return name

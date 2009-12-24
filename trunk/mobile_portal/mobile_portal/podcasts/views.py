@@ -29,6 +29,9 @@ class IndexView(BaseView):
                           'Podcasts', lazy_reverse('podcasts_index'))
         
     def handle_GET(cls, request, context):
+        if request.GET.get('foo') == 'bar':
+            raise AssertionError('foo')
+            
         show_itunesu_link = not request.device.devid in request.preferences['podcasts']['use_itunesu']
         if 'show_itunesu_link' in request.GET:
             show_itunesu_link = request.GET['show_itunesu_link'] != 'false'

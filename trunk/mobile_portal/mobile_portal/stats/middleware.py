@@ -1,13 +1,13 @@
 from __future__ import division, absolute_import
 from datetime import datetime
-import socket, time, logging
+import socket, time, logging, sys, traceback
 import xml.utils.iso8601
 from django.contrib.auth.models import User
 from django.conf import settings
 from mobile_portal.stats.models import Hit
 
 
-logger = logging.getLogger('mobile_portal.core.requests')
+logger = logging.getLogger('mobile_portal.stats.requests')
 
 class StatisticsMiddleware(object):
     def process_request(self, request):
@@ -19,17 +19,13 @@ class StatisticsMiddleware(object):
         request.view_name = ".".join((view_func.__module__, view_func.__name__))
 
     def process_response(self, request, response):
-        print "Foo"
         logger.info("Request", extra=self.request_details(request, response))
-        #print self.request_details(request, response)
-
         return response
 
     def process_exception(self, request, exception):
         details = self.request_details(request)
-        #details['exception'] = exception
+        details['traceback'] = traceback.format_exc()
         
-        logger.exception("Uncaught exception")
         logger.error("Uncaught exception", extra=details)
     
     def request_details(self, request, response=None):

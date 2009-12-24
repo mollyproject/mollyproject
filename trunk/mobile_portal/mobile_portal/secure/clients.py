@@ -1,6 +1,35 @@
 from oauth import oauth
 import urllib2
 
+class OAuthHTTPError(urllib2.HTTPError):
+    def __init__(self, e):
+        self.exception = e
+        return
+        for name in dir(e):
+            try:
+                setattr(self, name, getattr(e, name))
+            except AttributeError:
+                pass
+
+class OAuthOpener(object):
+    def __init__(self, opener):
+        self.__dict__['_opener'] = opener
+    
+    # Pass everything through to the inner opener
+    def __getattr__(self, name):
+        return getattr(self._opener, name)
+    def __setattr__(self, name, value):
+        return setattr(self._opener, name, value)
+    def __delattr__(self, name):
+        return delattr(self._opener, name)
+        
+    def open(self, *args, **kwargs):
+        try:
+            return self.__dict__['_opener'].open(*args, **kwargs)
+        except urllib2.HTTPError, e:
+            raise OAuthHTTPError(e)
+    
+
 class OAuthHandler(urllib2.BaseHandler):
     def __init__(self, consumer, access_token, signature_method):
         self.consumer, self.access_token = consumer, access_token
@@ -45,6 +74,6 @@ class SimpleOAuthClient(oauth.OAuthClient):
         return response.read()
         
     def get_opener(self, consumer, access_token, signature_method):
-        return urllib2.build_opener(OAuthHandler(consumer,
-                                                 access_token,
-                                                 signature_method))
+        return OAuthOpener(urllib2.build_opener(OAuthHandler(consumer,
+                                                             access_token,
+                                                             signature_method)))

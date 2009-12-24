@@ -1,18 +1,22 @@
 from django.conf.urls.defaults import *
 
-from views import IndexView, SignupView, SiteView, DirectView
+from views import (
+    IndexView, SiteView, DirectView,
+    
+    SignupIndexView, SignupSiteView, SignupEventView,
+)
 
 urlpatterns = patterns('mobile_portal.sakai.views',
    (r'^$', IndexView, {}, 'sakai_index'),
    
    (r'^signups/$',
-       SignupView, {},
+       SignupIndexView, {},
        'sakai_signup'),
    (r'^signups/(?P<site>[^/]+)/$',
-       SignupView, {},
+       SignupSiteView, {},
        'sakai_signup_site'),
    (r'^signups/(?P<site>[^/]+)/(?P<event_id>\d+)/$',
-       SignupView, {},
+       SignupEventView, {},
        'sakai_signup_event'),
 
    (r'^sites/$', SiteView, {}, 'sakai_sites'),

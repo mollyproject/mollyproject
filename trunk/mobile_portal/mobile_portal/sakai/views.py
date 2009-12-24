@@ -20,6 +20,7 @@ def parse_iso_8601(s):
     return datetime.fromtimestamp(xml.utils.iso8601.parse(s)).replace(tzinfo=pytz.utc)
 
 class IndexView(BaseView):
+
     @BreadcrumbFactory
     def breadcrumb(cls, request, context):
         return Breadcrumb(
@@ -39,52 +40,39 @@ class SakaiView(OAuthView):
     access_token_name = 'sakai_access_token'
     client = SakaiOAuthClient
     signature_method = oauth.OAuthSignatureMethod_PLAINTEXT()
+    service_name = 'WebLearn'
 
-    def build_url(self, url):
+    def build_url(cls, url):
         return '%s%s' % (settings.SAKAI_HOST, url)
 
-if False:
-    class SakaiView(BaseView):
-        def __new__(cls, request, *args, **kwargs):
-            opener = urllib2.build_opener()
-            opener.addheaders = [
-                ('Cookie', 'JSESSIONID=3491fbf8-5888-4a08-8d9d-4fdec03cec53.localhost')
-            ]
-    
-            return super(SakaiView, self).__call__(request, opener, *args, **kwargs)
-    
-        def build_url(self, url):
-            return '%s%s' % (settings.SAKAI_HOST, url)
+class SignupIndexView(SakaiView):
+    def initial_context(cls, request, opener):
+        sites = ET.parse(opener.open(cls.build_url('direct/site.xml')))
+        return {
+            'sites': [
+                (e.find('id').text, e.find('entityTitle').text)
+                for e in sites.getroot()
+            ],
+        }
 
-class SignupView(SakaiView):
     @BreadcrumbFactory
-    def breadcrumb(cls, request, context, opener, site=None, event_id=None):
+    def breadcrumb(cls, request, context, opener):
         return Breadcrumb(
             'sakai',
             lazy_parent(IndexView),
-            'WebLearn',
+            'Tutorial sign-ups',
             lazy_reverse('sakai_signup'),
         )
-        
-    def handle_GET(cls, request, context, opener, site=None, event_id=None):
-        if site and event_id:
-            return cls.handle_event(request, context, opener, site, event_id)
-        if site:
-            return cls.handle_with_site(request, context, opener, site)
-        else:
-            return cls.handle_without_site(request, context, opener)
 
-    def handle_event(cls, request, context, opener, site, event_id):
-        url = cls.build_url('direct/signupEvent/%s.json?siteId=%s' % (event_id, site))
-        event = simplejson.load(opener.open(url))
-        
-        context.update({
-            'event': event,
-        })
-        return mobile_render(request, context, 'sakai/signup_detail')
-        
-            
-    def handle_with_site(cls, request, context, opener, site):
+    def handle_GET(cls, request, context, opener):
+        if not 'sakai_site_titles' in request.secure_session:
+            request.secure_session['sakai_site_titles'] = {}
+        for site_id, title in context['sites']:
+            request.secure_session['sakai_site_titles'][site_id] = title
+        return mobile_render(request, context, 'sakai/signup_sites')
+
+class SignupSiteView(SakaiView):
+    def initial_context(cls, request, opener, site):
         url = cls.build_url('direct/signupEvent/site/%s.xml' % site)
         events_et = ET.parse(opener.open(url)).getroot().findall('signupEvent')
         events = {}
@@ -97,26 +85,46 @@ class SignupView(SakaiView):
                 'id': event_et.find('id').text,
             }
             events[event['id']] = event
-        
-        context.update({
-            'events': events,
+        return {
             'site': site,
-        })
-        return mobile_render(request, context, 'sakai/signup_list')
+            'events': events,
+            'title': request.secure_session.get('sakai_site_titles', {}).get(site, 'Site'),
+        }
+
+    @BreadcrumbFactory
+    def breadcrumb(cls, request, context, opener, site):
+        return Breadcrumb(
+            'sakai',
+            lazy_parent(SignupIndexView, opener),
+            context.get('title', 'Tutorial sign-ups'),
+            lazy_reverse('sakai_signup_site', args=[site]),
+        )
         
-    
-    def handle_without_site(cls, request, context, opener):
-        sites = ET.parse(opener.open(self.build_url('direct/site.xml')))
-        context['sites'] = [
-            (e.find('id').text, e.find('entityTitle').text)
-            for e in sites.getroot()
-        ]
-        return mobile_render(request, context, 'sakai/signup_sites')
-    
-    def handle_POST(cls, request, context, opener, site=None, event_id=None):
-        if not site and event:
-            return cls.method_not_acceptable(request)
-            
+    def handle_GET(cls, request, context, opener, site):
+        return mobile_render(request, context, 'sakai/signup_list')
+
+class SignupEventView(SakaiView):
+    def initial_context(cls, request, opener, site, event_id):
+        url = cls.build_url('direct/signupEvent/%s.json?siteId=%s' % (event_id, site))
+        event = simplejson.load(opener.open(url))
+        
+        return {
+            'event': event,
+        }
+        
+    @BreadcrumbFactory
+    def breadcrumb(cls, request, context, opener, site, event_id):
+        return Breadcrumb(
+            'sakai',
+            lazy_parent(SignupSiteView, opener, site),
+            context['event']['title'] if 'event' in context else 'Tutorial sign-ups',
+            lazy_reverse('sakai_signup_detail', args=[site, event_id]),
+        )
+
+    def handle_GET(cls, request, context, opener, site, event_id):
+        return mobile_render(request, context, 'sakai/signup_detail')
+
+    def handle_POST(cls, request, context, opener, site, event_id):
         response = opener.open(
             cls.build_url('direct/signupEvent/%s/edit' % event_id), 
             data = urllib.urlencode({
@@ -133,10 +141,10 @@ class SignupView(SakaiView):
         }
         
         return HttpResponseRedirect(request.path)
-                
+
 class SiteView(SakaiView):
     def handle_GET(cls, request, context, opener):
-        sites = ET.parse(opener.open(self.build_url('direct/site.xml')))
+        sites = ET.parse(opener.open(cls.build_url('direct/site.xml')))
         context['sites'] = [e.find('entityTitle').text for e in sites.getroot()]
         return mobile_render(request, context, 'sakai/sites')
         

@@ -1,0 +1,11 @@
+[
+    {
+        "pk": "12",
+        "model": "core.FrontPageLink",
+        "fields": {
+            "slug": "sakai",
+            "title": "WebLearn",
+            "urlconf_name": "sakai_index"
+        }
+    }
+]

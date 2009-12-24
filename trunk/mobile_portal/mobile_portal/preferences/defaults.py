@@ -29,8 +29,9 @@ defaults = {
             'news': (EPOCH, (6, True)),
             'events': (EPOCH, (7, True)),
             'z3950': (EPOCH, (8, True)),
-            'weather': (EPOCH, (9, True)),
+            'weather': (EPOCH, (12, True)),
             'oucs_status': (EPOCH, (10, True)),
+            'sakai': (EPOCH, (11, True)),
         })),
         'rss': (EPOCH, PreferenceSet({
             'hidden_items': (EPOCH, set()),
