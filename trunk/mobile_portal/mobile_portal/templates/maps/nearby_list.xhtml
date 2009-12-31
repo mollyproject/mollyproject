@@ -2,6 +2,9 @@
 
 {% block title %}m.ox | Maps - near{% if entity %} {{ entity.title }}{% else %}by{% endif %}{% endblock %}
 
+{% block extrahead %}{{ block.super }}{% if entity %}
+<meta name="robots" content="noindex" />{% endif %}{% endblock %}
+
 {% block content %}
 
 <div class="section">
