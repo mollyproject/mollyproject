@@ -1,5 +1,5 @@
 function create_map(id, lat, lon, points) {
-    OpenLayers.Util.getImagesLocation = function() { return '/beta/site-media/openlayers/img/'; };
+    OpenLayers.Util.getImagesLocation = function() { return '/site-media/openlayers/img/'; };
     var options = {
         projection: new OpenLayers.Projection("EPSG:900913"),
         displayProjection: new OpenLayers.Projection("EPSG:4326"),
@@ -16,7 +16,7 @@ function create_map(id, lat, lon, points) {
         {
             type: 'png', getURL: osm_getTileURL,
             displayOutsideMaxExtent: true,
-            //attribution: '<a href="http://www.openstreetmap.org/">OpenStreetMap</a>'
+//            attribution: '<a href="http://www.openstreetmap.org/">OpenStreetMap</a>'
         }
     );
     var size = new OpenLayers.Size(21, 25);
@@ -30,8 +30,8 @@ function create_map(id, lat, lon, points) {
         size,
         new OpenLayers.Pixel(-(size.w/2), -size.h)
     );
-    var markers = new OpenLayers.Layer.Markers("Markers");
-    markers.addMarker( new OpenLayers.Marker(new OpenLayers.LonLat(lon,lat).transform(map.displayProjection, map.projection), icon_red));
+    
+    markers = new OpenLayers.Layer.Markers("Markers");
     
     if (points != null) {
         for (i=0; i<points.length; i++) {
@@ -51,7 +51,7 @@ function create_map(id, lat, lon, points) {
     
     map.setCenter(new OpenLayers.LonLat(lon, lat).transform(map.displayProjection, map.projection), 12);
     
-    
+    return map;
 }
 
 function osm_getTileURL(bounds) {

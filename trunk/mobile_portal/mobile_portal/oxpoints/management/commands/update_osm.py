@@ -101,6 +101,11 @@ AMENITIES = {
         True, True,
         (),
     ),
+    'place_of_worship': (
+        'a', 'place of worship', 'places of worship',
+        False, False,
+        (),
+    ),
     'fast_food': (
         'a', 'fast food outlet', 'fast food outlets',
         False, False,

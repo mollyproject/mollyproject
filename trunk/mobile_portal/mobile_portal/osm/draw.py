@@ -76,9 +76,12 @@ def get_map(points, width, height, filename, zoom=None, lat_center=None, lon_cen
     for tile in tiles:
         offx = (tile['ref'][0] - tx_min) * 256 - ox
         offy = (tile['ref'][1] - ty_min) * 256 - oy
+
         
         if not (-256 < offx and offx < width and -256 < offy and offy < height):
             continue  
+
+        print offx, offy
         
         tile_data = OSMTile.get_data(tile['ref'][0], tile['ref'][1], zoom)
         
