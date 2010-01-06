@@ -3,7 +3,7 @@ from django.core.management.base import NoArgsCommand
 from django.contrib.gis.geos import Point, LineString, LinearRing
 from django.conf import settings
 from mobile_portal.oxpoints.models import Entity, EntityType
-from mobile_portal.core.geolocation import reverse_geocode
+from mobile_portal.utils.geolocation import reverse_geocode
 from mobile_portal.core.models import Config
 from mobile_portal.core.utils import AnyMethodRequest
 from xml.sax import saxutils, handler, make_parser

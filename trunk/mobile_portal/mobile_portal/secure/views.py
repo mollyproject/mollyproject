@@ -12,7 +12,10 @@ from .clients import OAuthHTTPError
 
 logger = logging.getLogger('mobile_portal.oauth')
 
-class OAuthView(BaseView):
+class SecureView(BaseView):
+    pass
+
+class OAuthView(SecureView):
     def __new__(cls, request, *args, **kwargs):
          token_type, request.access_token = request.secure_session.get(cls.access_token_name, (None, None))
          

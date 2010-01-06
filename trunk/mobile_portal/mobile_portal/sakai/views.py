@@ -53,6 +53,7 @@ class SignupIndexView(SakaiView):
                 (e.find('id').text, e.find('entityTitle').text)
                 for e in sites.getroot()
             ],
+            'complex_shorten': True,
         }
 
     @BreadcrumbFactory
@@ -89,6 +90,7 @@ class SignupSiteView(SakaiView):
             'site': site,
             'events': events,
             'title': request.secure_session.get('sakai_site_titles', {}).get(site, 'Site'),
+            'complex_shorten': True,
         }
 
     @BreadcrumbFactory
@@ -138,6 +140,7 @@ class SignupEventView(SakaiView):
             'siteId': site,
             'allocToTSid': request.POST['timeslot_id'],
             'userActionType': request.POST['action'],
+            'complex_shorten': True,
         }
         
         return HttpResponseRedirect(request.path)

@@ -106,17 +106,18 @@ class NearbyDetailView(ZoomableView):
                 if location:
                     point = Point(location[1], location[0], srid=4326)
 
+        entity_types = tuple(get_object_or_404(EntityType, slug=t) for t in ptypes.split(';'))        
+
         if point:
             entities = Entity.objects.filter(location__isnull = False, is_sublocation = False)
             if ptypes:
-                entity_types = tuple(get_object_or_404(EntityType, slug=t) for t in ptypes.split(';'))        
                 for et in entity_types:
                     entities = entities.filter(all_types=et)
             else:
                 entity_types = []
             entities = entities.distance(point).order_by('distance')[:99]
         else:
-            entities, entity_types = [], []
+            entities = []
         
         context = super(NearbyDetailView, cls).initial_context(request, ptypes, entities)
         context.update({

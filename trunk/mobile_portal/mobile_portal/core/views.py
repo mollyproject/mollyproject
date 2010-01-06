@@ -1,9 +1,9 @@
 # Create your views here.
 from datetime import datetime, timedelta
-import pytz, simplejson, urllib
+import pytz, simplejson, urllib, random
 
-from django.http import HttpResponse, HttpResponseRedirect, Http404
-from django.core.urlresolvers import reverse
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponsePermanentRedirect, Http404
+from django.core.urlresolvers import reverse, resolve
 from django.shortcuts import get_object_or_404, render_to_response
 from django.conf import settings
 from django.core.management import call_command
@@ -20,7 +20,7 @@ from mobile_portal.osm.utils import fit_to_map
 from mobile_portal.wurfl import device_parents
 from mobile_portal.googlesearch.forms import GoogleSearchForm
 
-from models import FrontPageLink, ExternalImageSized, LocationShare, UserMessage
+from models import FrontPageLink, ExternalImageSized, LocationShare, UserMessage, ShortenedURL
 from forms import LocationShareForm, LocationShareAddForm, FeedbackForm, UserMessageFormSet, LocationUpdateForm
 
 from context_processors import device_specific_media
@@ -417,4 +417,73 @@ class UserMessageView(BaseView):
             context['formset'].save()
             
         return HttpResponseRedirect(reverse('core_messages'))
+
+class ShortenedURLRedirectView(BaseView):
+    breadcrumb = NullBreadcrumb
+
+    def handle_GET(cls, request, context, slug):
+        shortened_url = get_object_or_404(ShortenedURL, slug=slug)
+        return HttpResponsePermanentRedirect(shortened_url.path)
+
+class ShortenURLView(BaseView):
+    # We'll omit characters that look similar to one another
+    AVAILABLE_CHARS = '23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghkmnpqrstuvwxyz'
+    
+    def initial_context(cls, request):
+        try:
+            path = request.GET['path']
+            view, view_args, view_kwargs = resolve(path.split('?')[0])
+            view_context = view.initial_context(request, *view_args, **view_kwargs)
+            
+        except (KeyError, ):
+            raise Http404
+            
+        return {
+            'path': path,
+            'view': view,
+            'view_args': view_args,
+            'view_kwargs': view_kwargs,
+            'view_context': view_context,
+            'complex_shorten': ('?' in path) or view_context.get('complex_shorten', False),
+        }
+
+    def breadcrumb_render(cls, request, context):
+        view, view_context = context['view'], context['view_context']
+        view_args, view_kwargs = context['view_args'], context['view_kwargs']
         
+        breadcrumb = view.breadcrumb.render(view, request, view_context, *view_args, **view_kwargs)
+        return (
+            breadcrumb[0],
+            breadcrumb[1],
+            (breadcrumb[4], context['path']),
+            breadcrumb[1] == (breadcrumb[4], context['path']),
+            'Shorten link',
+        )
+
+    # Create a 'blank' object to attach our render method to by constructing
+    # a class and then calling its constructor. It's a bit messy, and probably
+    # points at a need to refactor breadcrumbs so that view.breadcrumb returns
+    # the five-tuple passed to the template as opposed to
+    # view.breadcrumb.render. 
+    breadcrumb = type('bc', (object,), {})()
+    breadcrumb.render = breadcrumb_render
+
+            
+    def handle_GET(cls, request, context):
+        print context['complex_shorten']
+        try:
+            path = request.GET['path']
+        except (KeyError):
+            return cls.invalid_path(request, context)
+
+        context['shortened_url'], created = ShortenedURL.objects.get_or_create(path=path)
+        
+        if created:
+            if context['complex_shorten']:
+                slug = '0'+''.join(random.choice(cls.AVAILABLE_CHARS) for i in range(5))
+            else:
+                slug = unicode(context['shortened_url'].id)
+            context['shortened_url'].slug = slug
+            context['shortened_url'].save()
+
+        return mobile_render(request, context, 'core/shorten_url')

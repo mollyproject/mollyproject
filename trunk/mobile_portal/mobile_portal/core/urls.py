@@ -5,7 +5,8 @@ from mobile_portal.core.views import (
     IndexView, LocationUpdateView, DesktopAboutView,
     UserMessageView,
     ExternalImageView, RunCommandView, FeedbackView,
-    StaticDetailView
+    StaticDetailView,
+    ShortenURLView, ShortenedURLRedirectView,
 )
 
 urlpatterns = patterns('mobile_portal.core.views',
@@ -47,4 +48,11 @@ urlpatterns = patterns('mobile_portal.core.views',
     (r'^messages/$',
         UserMessageView, {},
         'core_messages'),
+        
+    (r'^shorten_url/$',
+        ShortenURLView, {},
+        'core_shorten_url'),
+    (r'^(?P<slug>[0-9][0-9A-Za-z]*)/?$',
+        ShortenedURLRedirectView, {},
+        'core_shortened_url_redirect'),
 )

@@ -130,6 +130,7 @@ def weather(request):
         'preferences': request.preferences,
         'session_key': request.session.session_key,
         'path': request.path,
+        'full_path': request.get_full_path(),
         'unread_user_messages': UserMessage.objects.filter(session_key = request.session.session_key, read=False).count() > 0,
     }
     

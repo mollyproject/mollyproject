@@ -4,9 +4,9 @@ from xml.sax.saxutils import escape
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 
-from mobile_portal.core.handlers import BaseView
-from mobile_portal.core.breadcrumbs import *
-from mobile_portal.core.renderers import mobile_render
+from mobile_portal.utils.views import BaseView
+from mobile_portal.utils.breadcrumbs import *
+from mobile_portal.utils.renderers import mobile_render
 from mobile_portal.core.utils import AnyMethodRequest
 
 from mobile_portal.oxpoints.models import Entity

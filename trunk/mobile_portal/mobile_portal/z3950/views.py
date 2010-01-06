@@ -177,6 +177,7 @@ class ItemDetailView(BaseView):
             'item': items[0],
             'control_number': control_number,
             'display_map': display_map,
+            'complex_shorten': True,
         }
         
     @BreadcrumbFactory

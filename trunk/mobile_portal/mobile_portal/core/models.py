@@ -222,3 +222,10 @@ class UserMessage(models.Model):
     message = models.TextField()
     read = models.BooleanField(default=False)
     when = models.DateTimeField(auto_now_add=True)
+    
+class ShortenedURL(models.Model):
+    path = models.TextField()
+    slug = models.TextField(max_length=7)
+    
+    def get_absolute_url(self):
+        return reverse('core_shortened_url_redirect', args=[self.slug])
