@@ -1,0 +1,55 @@
+{% extends "secure/base.xhtml" %}
+
+{% block content %}
+
+<div class="section">
+  <h2>Your secure session has timed out.</h2>
+
+  <div class="note"><div class="bubble">
+    <p>
+      As a security feature your session has timed out due to a period of
+      inactivity. By default this is fifteen minutes, but you may have set
+      it to something different.
+    </p>
+{% if has_pin %}
+    <p>
+      As you have previously set a PIN you may enter it now to re-enable your
+      session:
+    </p>
+    <p>
+      <form method="post" action=".">
+        <label for="pin">
+          Enter your PIN
+        </label>
+        <input id="pin" name="pin" type="password"/>
+        <input type="submit" name="reauthenticate" value="Submit"/>
+      </form>
+    </p>
+    <p>
+      If you are unable to remember your PIN, you may reset your session by
+      using the button below. Please note that all preferences will be lost,
+      requiring you reauthenticate to any services you were previously using.
+    </p>
+{% else %}
+    <p>
+      In this instance there is no way to re-enable your session, however in
+      future you may set a PIN for this purpose.
+    </p>
+    <p>
+      The button below will clear your secure session, allowing you to
+      reauthenticate with any services you were previously using.
+    </p>
+{% endif %}
+    <p>
+      <form method="post" action=".">
+        <input type="submit" name="clear_session" value="Start over"/>
+      </form>
+    </p>
+    <p>
+      You may set a new PIN at any point by using the link at the bottom of an
+      authenticated page.
+    </p>
+  </div></div>
+</div>
+
+{% endblock %}
