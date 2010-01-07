@@ -51,6 +51,11 @@ def lazy_reverse(view_name, *args, **kwargs):
         return reverse(view_name, *args, **kwargs)
     return f
     
+def static_reverse(path):
+    def f():
+        return path
+    return f
+    
 def lazy_parent(view, *args, **kwargs):
     def f(request, context):
         return view.breadcrumb(request, context, *args, **kwargs)

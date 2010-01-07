@@ -9,7 +9,7 @@ class IndexView(BaseView):
     View to display the OUCS service status information.
     """
 
-    STATUS_URL = 'http://status.ox.ac.uk/verboserss.xml'
+    STATUS_URL = 'http://status.ox.ac.uk/verboserss.php'
     ANNOUNCE_URL = 'http://status.ox.ac.uk/oxitems/generatersstwo2.php?channel_name=oucs/status-announce'
 
     def get_metadata(cls, request):

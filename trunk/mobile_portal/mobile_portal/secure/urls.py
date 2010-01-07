@@ -1,9 +1,9 @@
 from django.conf.urls.defaults import *
 
-#from views import RequestTokenView
+from views import IndexView
 
 urlpatterns = patterns('',
-#    ('^request_token/$',
-#        RequestTokenView(), {},
-#        'secure_request_token'),
+    (r'^$',
+        IndexView, {},
+        'secure_index'),
 )

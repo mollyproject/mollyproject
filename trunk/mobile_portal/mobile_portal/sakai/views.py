@@ -41,6 +41,7 @@ class SakaiView(OAuthView):
     client = SakaiOAuthClient
     signature_method = oauth.OAuthSignatureMethod_PLAINTEXT()
     service_name = 'WebLearn'
+    app_name = 'sakai'
 
     def build_url(cls, url):
         return '%s%s' % (settings.SAKAI_HOST, url)

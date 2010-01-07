@@ -1,21 +1,153 @@
 from oauth import oauth
 import urllib, urllib2, urlparse, logging
+from datetime import datetime, timedelta
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponse
+from django.forms.util import ErrorList
 
 from mobile_portal.utils.views import BaseView
 from mobile_portal.utils.renderers import mobile_render
+from mobile_portal.utils.breadcrumbs import BreadcrumbFactory, Breadcrumb, static_reverse, lazy_reverse
 
 from .clients import OAuthHTTPError
+from .forms import PreferencesForm
 
 logger = logging.getLogger('mobile_portal.oauth')
 
 class SecureView(BaseView):
-    pass
+    """
+    An 'abstract' view for all secure pages.
+    
+    Implements a timeout so that people will need to reauthenticate if a
+    secure page hasn't been accessed recently. The SecureMidddleware checks
+    for this class in a view's MRO in order to enforce an HTTPS connection.
+    """
+     
+    def __new__(cls, request, *args, **kwargs):
+        """
+        Enforces timeouts for idle sessions.
+        """
+        
+        # If the SecureMiddleware hasn't redirected requests over !HTTPS
+        # something has gone wrong. We ignore this for debugging purposes.
+        assert settings.DEBUG or request.is_secure()
+        
+        last_accessed = request.secure_session.get('last_accessed', datetime.now())
+        timeout_period = request.secure_session.get('timeout_period', 15)
+        if last_accessed < datetime.now() - timedelta(minutes=timeout_period):
+            return TimedOutView(request, cls, *args, **kwargs)
+        request.secure_session['last_accessed'] = datetime.now()
+        
+        return super(SecureView, cls).__new__(cls, request, *args, **kwargs)
 
-class OAuthView(SecureView):
+class TimedOutView(BaseView):
+    """
+    Handles the case where a user's secure session has been inactive for too
+    long.
+    
+    This view should not be included in a urlconf as it is referenced only by
+    SecureView.
+    """
+
+    def initial_context(cls, request, view, *args, **kwargs):
+        return {
+            'has_pin': 'pin' in request.secure_session,
+        }    
+    
+    @BreadcrumbFactory
+    def breadcrumb(cls, request, context, view, *args, **kwargs):
+        return Breadcrumb(
+            view.app_name,
+            None,
+            'Session expired',
+            static_reverse(request.get_full_path()),
+        )
+    
+    def handle_GET(cls, request, context, view, *args, **kwargs):
+        return mobile_render(request, context, 'secure/timed_out')
+            
+    def handle_POST(cls, request, context, view, *args, **kwargs):
+        if 'clear_session' in request.POST:
+            for key in request.secure_session.keys():
+                del request.secure_session[key]
+            return HttpResponseRedirect('.')
+        elif 'reauthenticate' in request.POST and context['has_pin']:
+            valid_pin = request.POST.get('pin') == request.secure_session['pin']
+            if valid_pin:
+                # Reauthenticating brings the inactivity measure to zero
+                request.secure_session['last_accessed'] = datetime.now()
+                return HttpResponseRedirect('.')
+            else:
+                context['incorrect_pin'] = True
+                return mobile_render(request, context, 'secure/timed_out')
+        else:
+            return HttpResponse('', status=400)
+        
+class IndexView(SecureView):
+    app_name = 'secure'
+    
+    def initial_context(cls, request):
+        return {
+            'form': PreferencesForm(request.POST or {
+                'timeout_period': request.secure_session.get('timeout_period', 15),
+            }),
+            'has_pin': 'pin' in request.secure_session,
+        }
+        
+    @BreadcrumbFactory
+    def breadcrumb(cls, request, context):
+        return Breadcrumb(
+            'secure',
+            None,
+            'Authentication preferences',
+            lazy_reverse('secure_index'),
+        )
+        
+    def handle_GET(cls, request, context):
+        return mobile_render(request, context, 'secure/index')
+    
+    def handle_POST(cls, request, context):
+        form = context['form']
+        
+        if not form.is_valid():
+            return mobile_render(request, context, 'secure/index')
+            
+        if context['has_pin'] and form.cleaned_data['old_pin'] != request.secure_session['pin']:
+            form.errors['old_pin'] = ErrorList(['You supplied an incorrect PIN. Please try again.'])
+            return mobile_render(request, context, 'secure/index')
+
+        request.secure_session['timeout_period'] = form.cleaned_data['timeout_period']
+        
+        if form.cleaned_data['new_pin_a']:
+            if form.cleaned_data['new_pin_a'] == form.cleaned_data['new_pin_b']:
+                request.secure_session['pin'] = form.cleaned_data['new_pin_a']
+            else:
+                form.errors['new_pin_b'] = ErrorList(['Your repeated PIN did not match.'])
+                return mobile_render(request, context, 'secure/index')
+        
+        return HttpResponseRedirect('.')
+        
+# Our intention with OAuthView is that it our timeout code is called before we
+# do any OAuth token manipulation. Our intended Method Resolution Order is
+# therefore [SecureView, _OAuthView, BaseView], with the latter despatching to
+# the handle_METHOD methods. To acheive this we have a _OAuthView that handles
+# OAuth tokens without worrying about more general secured page issues.
+# Finally we have OAuthView which subclasses SecureView and _OAuthView to
+# provide the desired MRO. OAuthView has an empty definition (i.e. 'pass') and
+# exists solely to twiddle the MRO.
+# See [0] for more information about the Python Method Resolution Order.
+# 
+# [0] http://www.python.org/download/releases/2.3/mro/
+
+class _OAuthView(BaseView):
+    """
+    Private 'abstract' view implementing OAuth authentication.
+    
+    See the docstring for OAuthView for more details.
+    """
+    
     def __new__(cls, request, *args, **kwargs):
          token_type, request.access_token = request.secure_session.get(cls.access_token_name, (None, None))
          
@@ -33,7 +165,7 @@ class OAuthView(SecureView):
                                             cls.signature_method)
          
          try:
-             return super(OAuthView, cls).__new__(cls, request, opener, *args, **kwargs)
+             return super(_OAuthView, cls).__new__(cls, request, opener, *args, **kwargs)
          except OAuthHTTPError, e:
              return cls.handle_error(request, e.exception, *args, **kwargs)
         
@@ -114,4 +246,6 @@ class OAuthView(SecureView):
             'service_name': cls.service_name,
         }
         return mobile_render(request, context, 'secure/oauth_error')
-        
+
+class OAuthView(SecureView, _OAuthView):
+    pass

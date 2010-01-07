@@ -6,6 +6,8 @@ from django.utils.http import cookie_date
 from django.utils.importlib import import_module
 from django.http import HttpResponseRedirect
 
+from .views import SecureView
+
 class SecureSessionMiddleware(object):
     def process_request(self, request):
         if request.is_secure() or settings.DEBUG:
@@ -17,13 +19,12 @@ class SecureSessionMiddleware(object):
 
     def process_view(self, request, view_func, view_args, view_kwargs):
         if not (request.is_secure() or settings.DEBUG):
-            for app_name in settings.SECURE_APPS:
-                if view_func.__module__.startswith(app_name+'.'):
-                    uri = request.build_absolute_uri().split(':', 1)
-                    uri = 'https:' + uri[1]
-                    return HttpResponseRedirect(
-                        uri
-                    )
+            if SecureView in view_func.__mro__:
+                uri = request.build_absolute_uri().split(':', 1)
+                uri = 'https:' + uri[1]
+                return HttpResponseRedirect(
+                    uri
+                )
                     
 
     def process_response(self, request, response):
