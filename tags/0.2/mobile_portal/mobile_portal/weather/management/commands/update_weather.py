@@ -72,7 +72,6 @@ class Command(NoArgsCommand):
         data = Command.OBSERVATIONS_TITLE_RE.match(title).groupdict()
         data.update(Command.OBSERVATIONS_RE.match(description).groupdict())
         
-        print channel_title, Command.OBSERVATIONS_TITLE_RE
         data.update(Command.CHANNEL_TITLE_RE.match(channel_title).groupdict())
         
         # Normalise integer fields with None for unknown values
@@ -150,8 +149,7 @@ class Command(NoArgsCommand):
         
     @staticmethod
     def find_choice_match(choices, verbose):
-        matches = [a for a,b in choices if verbose.lower() == b]
-        print matches
+        matches = [a for a,b in choices if (verbose or '').lower() == b]
         if len(matches) == 1:
             return matches[0]
         else:
@@ -160,7 +158,6 @@ class Command(NoArgsCommand):
     def handle_noargs(self, **options):
         observations = Command.get_observations_data(Command.OXFORD_BBC_ID)
         forecasts = Command.get_forecast_data(Command.OXFORD_BBC_ID)
-        print forecasts
         
         weathers = [(
             Weather.objects.get_or_create(bbc_id = Command.OXFORD_BBC_ID, ptype='o')[0], observations
@@ -186,7 +183,6 @@ class Command(NoArgsCommand):
         )
         
         for weather, data in weathers:
-            print data
             for k in VERBATIM:
                 if k in data:
                     setattr(weather, k, data[k])

@@ -43,6 +43,7 @@ OUTLOOK_CHOICES = (
     ('lsn', 'light snow'),
     ('sn', 'snow'),
     ('hsn', 'heavy snow'),
+    ('unk', 'n/a'),
 )
 
 OUTLOOK_TO_ICON = {
@@ -64,6 +65,7 @@ OUTLOOK_TO_ICON = {
     'lsn': 'snow1%(night)s',
     'sn':  'snow3%(night)s',
     'hsn': 'snow5',
+    'unk': 'unknown',
 }
 
 SCALE_CHOICES = (
