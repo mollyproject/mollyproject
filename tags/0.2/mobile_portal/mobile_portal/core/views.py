@@ -32,25 +32,25 @@ class IndexView(BaseView):
     @BreadcrumbFactory
     def breadcrumb(cls, request, context):
         return Breadcrumb('core', None, 'Home', lazy_reverse('core_index'))
-        
+
     def handle_GET(cls, request, context):
         internal_referer = request.META.get('HTTP_REFERER', '').startswith('http://oucs-alexd:8000/')
         internal_referer = request.META.get('HTTP_REFERER', '').startswith('http://m.ox.ac.uk/')
-    
+
         if ("generic_web_browser" in device_parents[request.device.devid]
             and not request.preferences['core']['desktop_about_shown']
             and not request.GET.get('preview') == 'true'
             and not internal_referer
             and not settings.DEBUG):
             return HttpResponseRedirect(reverse('core_desktop_about'))
-    
+
         fpls = dict((fpl.slug, fpl) for fpl in FrontPageLink.objects.all())
         fpls_prefs = sorted(request.preferences['front_page_links'].items(), key=lambda (slug,(order, display)): order)
         front_page_links = [fpls[slug] for (slug,(order, display)) in fpls_prefs if display and slug in fpls]
-    
+
         gsf = GoogleSearchForm()
         gsf.fields['query'].widget.attrs['class'] = 'index-search-box'
-    
+
         context = {
             'front_page_links': front_page_links,
             'search_form': gsf,
@@ -60,12 +60,12 @@ class IndexView(BaseView):
 
         }
         return mobile_render(request, context, 'core/index')
-    
+
     def handle_POST(cls, request, context):
         no_desktop_about = {'true':True, 'false':False}.get(request.POST.get('no_desktop_about'))
         if not no_desktop_about is None:
             request.preferences['core']['desktop_about_shown'] = no_desktop_about
-            
+
         return HttpResponseRedirect(reverse('core_index'))
 
 class UpdateLocationView(BaseView):
@@ -81,19 +81,19 @@ class UpdateLocationView(BaseView):
             'zoom': zoom,
             'return_url': return_url,
         }
-        
+
     @BreadcrumbFactory
     def breadcrumb(cls, request, context):
         return Breadcrumb('core',
                           None, 'Update location',
                           lazy_reverse('core_update_location'))
-        
+
     def handle_GET(cls, request, context):
         if 'location' in request.GET:
             return cls.confirm_stage(request, context)
         else:
             return cls.add_container_if_necessary(request, context, 'core/update_location')
-    
+
     def handle_POST(cls, request, context):
         try:
             title, accuracy, latitude, longitude = (
@@ -104,14 +104,14 @@ class UpdateLocationView(BaseView):
             )
         except (KeyError, ValueError):
             return cls.bad_request(request)
-                
+
         location = latitude, longitude
         placemark = (title, location, accuracy)
         geolocation.set_location(request, location, accuracy, 'geocoded', placemark)
-        
+
         if 'no_redirect' in request.POST:
             return HttpResponse('')
-            
+
         if context.get('return_url'):
             response = HttpResponseRedirect(context['return_url'])
         else:
@@ -560,7 +560,9 @@ def handler500(request):
         'MEDIA_URL': settings.MEDIA_URL,
     }
     context.update(device_specific_media(request))
-    return render_to_response('500.html', context)
+    response = render_to_response('500.html', context)
+    response.status_code = 500
+    return response
 
 class FeedbackView(BaseView):
     @BreadcrumbFactory
@@ -655,7 +657,7 @@ class UserMessageView(BaseView):
                 queryset=UserMessage.objects.filter(
                     session_key=request.session.session_key
                 )
-            )            
+            )
         return {
             'formset': formset,
         }
@@ -663,10 +665,10 @@ class UserMessageView(BaseView):
     def handle_GET(cls, request, context):
         UserMessage.objects.filter(session_key=request.session.session_key).update(read=True)
         return mobile_render(request, context, 'core/messages')
-        
+
     def handle_POST(cls, request, context):
         if context['formset'].is_valid():
             context['formset'].save()
-            
+
         return HttpResponseRedirect(reverse('core_messages'))
-        
+
