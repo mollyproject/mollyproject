@@ -307,7 +307,9 @@ def handler500(request):
         'MEDIA_URL': settings.MEDIA_URL,
     }
     context.update(device_specific_media(request))
-    return render_to_response('500.html', context)
+    response = render_to_response('500.html', context)
+    response.status_code = 500
+    return response
 
 class FeedbackView(BaseView):
     @BreadcrumbFactory
