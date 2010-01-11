@@ -368,8 +368,8 @@ ul.service-status li {
     padding-left:25px;
 }
 ul.service-status li.service-status-up { background-image:url('../../png/icons/service-up.png'); background-color: #102821;}
-ul.service-status li.service-status-partial { background-image:url('../../png/icons/service-middle.png'); background-color: #272810;}
-ul.service-status li.service-status-unknown { background-image:url('../../png/icons/service-middle.png'); background-color: #272810;}
+ul.service-status li.service-status-partial { background-image:url('../../png/icons/service-partial.png'); background-color: #272810;}
+ul.service-status li.service-status-unknown { background-image:url('../../png/icons/service-unknown.png'); background-color: #101b28;}
 ul.service-status li.service-status-down { background-image:url('../../png/icons/service-down.png'); background-color: #281010;}
 span.service-status, span.service-detail { font-size:90%; }
 span.service-detail { font-style:italic; }

@@ -1,4 +1,4 @@
-import feedparser
+import feedparser, random
 
 from mobile_portal.utils.views import BaseView
 from mobile_portal.utils.breadcrumbs import *
@@ -42,6 +42,7 @@ class IndexView(BaseView):
         """
         Normalises status names to a set we can have icons for.
         """
+        return random.choice(('up', 'down', 'partial', 'unknown'))
         name = (name or '').lower()
         if name in ('up', 'down', 'partial', 'unknown'):
             return name
