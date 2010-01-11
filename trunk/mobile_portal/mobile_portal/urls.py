@@ -32,7 +32,7 @@ urlpatterns = patterns('',
     (r'^search/', include('mobile_portal.googlesearch.urls')),
     (r'^secure/', include('mobile_portal.secure.urls')),
     (r'^weblearn/', include('mobile_portal.sakai.urls')),
-    (r'^oucs_status/', include('mobile_portal.oucs_status.urls')),
+    (r'^oucs-status/', include('mobile_portal.oucs_status.urls')),
 
     (r'', include('mobile_portal.core.urls')),
 )
