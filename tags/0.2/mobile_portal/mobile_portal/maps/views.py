@@ -561,37 +561,48 @@ class APIView(BaseView):
             limit, offset = int(limit), int(offset)
         except (ValueError, TypeError):
             limit, offset = 100, 0
+        limit = min(limit, 200)
         
         if 'type' in request.GET:
-            entities = entities.filter(entity_type__slug = request.GET['type'])
+            entities = entities.filter(all_types__slug = request.GET['type'])
         if 'source' in request.GET:
             entities = entities.filter(entity_type__source = request.GET['source'])
             
         if 'near' in request.GET:
             try:
+                point = Point(map(float, request.GET['near'].split(',')), srid=4326).transform(27700, clone=True)
+
                 entities = entities.filter(location__isnull=False)
                 entities = entities.distance(point).order_by('distance')
                 
-                point = Point(map(float, request.GET['near'].split(',')), srid=4326).transform(srid=27700, clone=True)
-
+                for entity in entities:
+                    entity.distance = entity.location.transform(27700, clone=True).distance(point)
+                
                 if 'max_distance' in request.GET:
-                    dinstance = float(request.GET['max_distance'])
-                    entities = [e for e in entities if e.transform(srid=27700, clone=True).distance(point) <= distance]
+                    max_distance = float(request.GET['max_distance'])
+                    new_entities = []
+                    for entity in entities:
+                        if entity.distance > max_distance:
+                            break
+                        new_entities.append(entity)
+                    entities = new_entities
                     count = len(entities)
 
                     if 'limit' in request.GET:
                         entities = islice(entities, offset, offset+limit)
+                else:
+                    count = entities.count()
             except:
-                entites, count, error = [], 0, True
+                entities, count, error = [], 0, True
         elif 'max_distance' in request.GET:
-            entites, count, error = [], 0, True
+            entities, count, error = [], 0, True
                 
-        if not 'max_distance' in request.GET:
+        if not 'near' in request.GET:
             count = entities.count()
             try:
                 entities = entities[offset:offset+limit]
             except ValueError:
-                entites, count, error = [], 0, True
+                entities, count, error = [], 0, True
                 
         out = []
         for entity in entities:
@@ -604,6 +615,8 @@ class APIView(BaseView):
                 'metadata': entity.metadata,
                 'url': entity.get_absolute_url(),
             })
+            if 'near' in request.GET:
+                out[-1]['distance'] = entity.distance
             
         out = {
             'offset': offset,
@@ -614,5 +627,5 @@ class APIView(BaseView):
             'returned': len(out),
         }
 
-        return HttpResponse(simplejson.dumps(out), mimetype='text/plain')
+        return HttpResponse(simplejson.dumps(out), mimetype='application/json')
 
