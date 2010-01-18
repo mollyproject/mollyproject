@@ -41,6 +41,11 @@ div#index-search input[type="text"] {
     -webkit-border-bottom-left-radius: 5px;
     -webkit-border-top-right-radius:0;
     -webkit-border-bottom-right-radius:0;
+    
+    -moz-border-radius-topleft: 5px;
+    -moz-border-radius-bottomleft: 0px;
+    -moz-border-radius-topright: 0px;
+    -moz-border-radius-bottomright: 0px;
 }
 /* icon-menu & menu-x handles the menu icons on the front page 
     - this section would ideally be rewritten to handle a little more gracefully on varied sizes of screens */
@@ -223,6 +228,7 @@ div.bubble {
    padding: 0;
    margin: 10px;
    -webkit-border-radius: 8px;
+   -moz-border-radius: 8px;
 }
 
 div.note {
@@ -237,11 +243,15 @@ div.note a{
 .round-top {
     -webkit-border-top-left-radius: 8px;
     -webkit-border-top-right-radius: 8px;
+    -moz-border-radius-topleft: 8px;
+    -moz-border-radius-topright: 8px;
     border-top: 0;
 }
 .round-bottom {
     -webkit-border-bottom-left-radius: 8px;
     -webkit-border-bottom-right-radius: 8px;
+    -moz-border-radius-bottomleft: 8px;
+    -moz-border-radius-bottomright: 8px;
 }
 div.pad-10{padding: 10px;}
 div.pad-5 {padding:5px;}
