@@ -12,6 +12,7 @@ from views import (
     CategoryListView, CategoryDetailView,
     
     BusstopSearchView,
+    APIView,
 )
 
 urlpatterns = patterns('mobile_portal.maps.views',
@@ -66,4 +67,7 @@ urlpatterns = patterns('mobile_portal.maps.views',
         {'title':'About OpenStreetMap', 'template':'openstreetmap'},
         'maps_static_openstreetmap'),
    
+    (r'^api/$',
+        APIView, {},
+        'maps_api'),
 )
