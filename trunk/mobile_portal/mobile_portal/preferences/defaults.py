@@ -30,7 +30,7 @@ defaults = {
             'events': (EPOCH, (7, True)),
             'z3950': (EPOCH, (8, True)),
             'weather': (EPOCH, (12, True)),
-            'oucs_status': (EPOCH, (10, True)),
+            'service_status': (EPOCH, (10, True)),
             'sakai': (EPOCH, (11, True)),
         })),
         'rss': (EPOCH, PreferenceSet({

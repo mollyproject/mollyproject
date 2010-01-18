@@ -1,4 +1,4 @@
-{% extends "oucs_status/base.xhtml" %}
+{% extends "service_status/base.xhtml" %}
 
 {% block content %}
 
@@ -20,8 +20,9 @@
 
 {% endif %}
 
+{% for group_name, services in all_services %}
 <div class="section">
-    <h2>OUCS Status</h2>
+    <h2>{{ group_name }}</h2>
 
   <ul class="service-status">
 {% for service in services %}
@@ -35,5 +36,6 @@
 {% endfor %}
   </ul>
 </div>
+{% endfor %}
 
 {% endblock %}

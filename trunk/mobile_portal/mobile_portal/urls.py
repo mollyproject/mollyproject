@@ -4,6 +4,15 @@ from django.conf import settings
 from django.contrib import admin
 admin.autodiscover()
 
+from django.http import HttpResponsePermanentRedirect
+
+def app_moved(old, new):
+    def f(request):
+        return HttpResponsePermanentRedirect(
+            new+request.get_full_path()[len(old):]
+        )
+    return f
+
 urlpatterns = patterns('',
     # Example:
     # (r'^mobile_portal/', include('mobile_portal.foo.urls')),
@@ -32,9 +41,12 @@ urlpatterns = patterns('',
     (r'^search/', include('mobile_portal.googlesearch.urls')),
     (r'^secure/', include('mobile_portal.secure.urls')),
     (r'^weblearn/', include('mobile_portal.sakai.urls')),
-    (r'^oucs-status/', include('mobile_portal.oucs_status.urls')),
+    (r'^service-status/', include('mobile_portal.service_status.urls')),
 
     (r'', include('mobile_portal.core.urls')),
+    
+    # We've moved oucs-status to service-status, so we'd better keep people informed
+    (r'^oucs-status/', app_moved('/oucs-status/', '/service-status/')),
 )
 
 handler500 = 'mobile_portal.core.views.handler500'
