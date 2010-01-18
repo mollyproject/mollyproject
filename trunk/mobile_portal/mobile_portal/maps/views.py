@@ -612,3 +612,72 @@ def without_location(request):
     )
     
     return HttpResponse(data, mimetype='text/csv')
+
+
+class APIView(BaseView):
+    breadcrumb = NullBreadcrumb
+    
+    def handle_GET(cls, request, context):
+        entities = Entity.objects.order_by('title', 'id')
+        error = False
+        
+        limit, offset = request.GET.get('limit', 100), request.GET.get('offset', 0)
+        try:
+            limit, offset = int(limit), int(offset)
+        except (ValueError, TypeError):
+            limit, offset = 100, 0
+        
+        if 'type' in request.GET:
+            entities = entities.filter(entity_type__slug = request.GET['type'])
+        if 'source' in request.GET:
+            entities = entities.filter(entity_type__source = request.GET['source'])
+            
+        if 'near' in request.GET:
+            try:
+                entities = entities.filter(location__isnull=False)
+                entities = entities.distance(point).order_by('distance')
+                
+                point = Point(map(float, request.GET['near'].split(',')), srid=4326).transform(srid=27700, clone=True)
+
+                if 'max_distance' in request.GET:
+                    dinstance = float(request.GET['max_distance'])
+                    entities = [e for e in entities if e.transform(srid=27700, clone=True).distance(point) <= distance]
+                    count = len(entities)
+
+                    if 'limit' in request.GET:
+                        entities = islice(entities, offset, offset+limit)
+            except:
+                entites, count, error = [], 0, True
+        elif 'max_distance' in request.GET:
+            entites, count, error = [], 0, True
+                
+        if not 'max_distance' in request.GET:
+            count = entities.count()
+            try:
+                entities = entities[offset:offset+limit]
+            except ValueError:
+                entites, count, error = [], 0, True
+                
+        out = []
+        for entity in entities:
+            out.append({
+                'type': entity.entity_type.slug,
+                'all_types': [et.slug for et in entity.all_types.all()],
+                'source': entity.entity_type.source,
+                'name': entity.title,
+                'location': tuple(entity.location),
+                'metadata': entity.metadata,
+                'url': entity.get_absolute_url(),
+            })
+            
+        out = {
+            'offset': offset,
+            'limit': limit,
+            'entities': out,
+            'count': count,
+            'error': error,
+            'returned': len(out),
+        }
+
+        return HttpResponse(simplejson.dumps(out), mimetype='text/plain')
+                
