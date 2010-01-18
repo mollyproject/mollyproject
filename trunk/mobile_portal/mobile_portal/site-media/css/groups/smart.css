@@ -207,6 +207,7 @@ div.section {
     background:#B88C54 url('../../png/new/gradients/gradient-50-nrWhite-Transparent.png') repeat-x;
     margin:10px;
     -webkit-border-radius:8px;
+    -moz-border-radius: 8px;
 }
 h2 {
     text-align:center;
@@ -223,12 +224,12 @@ div.center {
     text-align:center;
 }
 div.bubble {
-   color:#002147;
-   background-color:#ffffff;
-   padding: 0;
-   margin: 10px;
-   -webkit-border-radius: 8px;
-   -moz-border-radius: 8px;
+    color:#002147;
+    background-color:#ffffff;
+    padding: 0;
+    margin: 10px;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
 }
 
 div.note {
