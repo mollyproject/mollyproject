@@ -1,5 +1,6 @@
 import simplejson, hashlib, urllib2
 from django.http import HttpResponse
+from django.core.paginator import Paginator
 from search import contact_search
 
 from mobile_portal.utils.renderers import mobile_render
@@ -12,6 +13,12 @@ NOBILITY_PARTICLES = set([
 ])
 
 class IndexView(BaseView):
+    def initial_context(cls, request):
+        return {
+            'method': 'phone' if request.GET.get('method')=='phone' else 'email',
+            'query': request.GET.get('q', ''),
+        }
+        
     @BreadcrumbFactory
     def breadcrumb(cls, request, context):
         return Breadcrumb(
@@ -23,12 +30,6 @@ class IndexView(BaseView):
         
     def handle_GET(cls, request, context):
         if request.GET and request.GET.get('q', '').strip():
-            method = request.GET.get('method')
-            method = 'phone' if method == 'phone' else 'email'
-            try:
-                page = int(request.GET.get('page'))
-            except:
-                page = 1
     
             # Examples of initial / surname splitting
             # William Bloggs is W, Bloggs
@@ -59,28 +60,34 @@ class IndexView(BaseView):
                 surname, initial = parts[1], parts[0][:1]
     
             try:
-                people, page_count, results_count = contact_search(surname, initial, True, method, page)
+                people = contact_search(surname, initial, True, context['method'])
             except urllib2.URLError:
-                context.update({
-                    'query': request.GET.get('q', ''),
-                    'method': method,
-                    'message': 'Sorry; there was a temporary issue retrieving results. Please try again shortly.',
-                })
-            else:
-                context.update({
-                    'people': people,
-                    'page': page,
-                    'page_count': page_count,
-                    'results_count': results_count,
-                    'more_pages': page != page_count,
-                    'pages': range(1, page_count+1),
-                    'query': request.GET.get('q', ''),
-                    'method': method,
-                })
+                return cls.handle_error(
+                    request, context, 
+                    'Sorry; there was a temporary issue retrieving results.' +
+                    ' Please try again shortly.'
+                )
+                
+            paginator = Paginator(people, 10)
+            try:
+                page = int(request.GET.get('page', '1'))
+            except ValueError:
+                page = 1
+            if not (1 <= page <= paginator.num_pages):
+                return cls.handle_error(
+                    request, context,
+                    'There are no results for this page.',
+                )
+            page = paginator.page(page) 
+            
+            context.update({
+                'people': people,
+                'page': page,
+                'paginator': paginator,
+            })
         else:
             context.update({
                 'people': None,
-                'method': 'email'
             })
             
         if 'format' in request.GET and request.GET['format'] == 'json':
@@ -94,6 +101,13 @@ class IndexView(BaseView):
             return response
         else:
             return mobile_render(request, context, 'contact/index')
+            
+    def handle_error(cls, request, context, message):
+        context.update({
+            'message': message,
+        })
+                
+        return mobile_render(request, context, 'contact/index')
 
 if False:
     def quick_contacts(request):
