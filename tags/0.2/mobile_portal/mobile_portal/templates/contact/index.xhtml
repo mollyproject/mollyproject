@@ -24,37 +24,37 @@
 <div class="section">
   <h2>Results</h2>
   {% if message %}
-  <div class="bubble"><div class="note pad-10">
+  <div class="note"><div class="bubble pad-10">
     {{ message }}
   </div></div>
   {% endif %}
 
   {% if people %}
 	  	
-  <div class="bubble"><div class="note pad-10">
-    {% if page_count|gte:4 %}
-    Your search returned {{results_count}} item{{ results_count|pluralize }}. Try adding an initial to get more specific results.
+  <div class="note"><div class="bubble pad-10">
+    {% if paginator.num_pages|gte:4 %}
+    Your search returned {{ paginator.count }} item{{ paginator.count|pluralize }}. Try adding an initial to get more specific results.
     {% else %}
-    Your search returned {{results_count}} item{{ results_count|pluralize }}.
+    Your search returned {{ paginator.count }} item{{ paginator.count|pluralize }}.
     {% endif %}
   </div></div>
 
   {% ifnotequal 1 page_count %}
   <div class="note">
     Pages:
-    {% for page in pages %}
-    <a href="?page={{ page }}&amp;method={{ method }}&amp;q={{ query|urlencode }}" style="padding:0 7px 0 0;">{{ page }}</a>
+    {% for page_number in paginator.page_range %}
+    <a href="?page={{ page_number }}&amp;method={{ method }}&amp;q={{ query|urlencode }}" style="padding:0 7px 0 0;">{{ page_number }}</a>
     {% endfor %}
   </div>
   {% endifnotequal %}
 
   <ul id="people">
-  {% for person in people %}
+  {% for person in page.object_list %}
     <li{% if forloop.last %} class="round-bottom"{% endif %}>
     {% ifequal method "email" %}
       <a class="email" href="mailto:{{ person.email }}">
     {% else %}
-      <a class="phone" href="{{ person.phone.1|telephone_uri }}">
+      <a class="phone" href="{{ person.external|telephone_uri }}">
     {% endifequal %}
         {{ person.name }}
         <br/>
@@ -63,7 +63,7 @@
     {% ifequal method "email" %}
           {{ person.email }}
     {% else %}
-          {{ person.phone.1 }}
+          {{ person.external }}
     {% endifequal %}
         </small>
       </a>
@@ -74,7 +74,7 @@
   {% ifnotequal 1 page_count %}
   <div class="note">
     Pages:
-    {% for page in pages %}
+    {% for page in paginator.page_range %}
     <a href="?page={{ page }}&amp;method={{ method }}&amp;q={{ query|urlencode }}" style="padding:0 7px 0 0;">{{ page }}</a>
     {% endfor %}
   </div>
