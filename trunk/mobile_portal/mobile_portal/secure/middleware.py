@@ -19,7 +19,7 @@ class SecureSessionMiddleware(object):
 
     def process_view(self, request, view_func, view_args, view_kwargs):
         if not (request.is_secure() or settings.DEBUG):
-            if SecureView in view_func.__mro__:
+            if isinstance(view_func, type) and SecureView in view_func.__mro__:
                 uri = request.build_absolute_uri().split(':', 1)
                 uri = 'https:' + uri[1]
                 return HttpResponseRedirect(
