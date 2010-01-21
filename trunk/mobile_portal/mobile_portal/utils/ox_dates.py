@@ -73,7 +73,7 @@ def normal_to_ox(pdate):
     return (year, term, week, day)
     
 def ox_date_dict(dt=None):
-    dt = dt.date() or date.today()
+    dt = dt.date() if dt else date.today()
     year, term, week, day = normal_to_ox(dt)
     return {
         'day_name': DAY_NAMES[day],

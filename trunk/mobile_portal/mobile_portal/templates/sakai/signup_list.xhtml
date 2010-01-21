@@ -15,9 +15,9 @@
   <tbody>
 {% for id,event in events.items %}
 <tr>
-<a href="{% url sakai_signup_event site,id %}">
 
-      <td>{{ event.title }}</td>
+      <td><a href="{% url sakai_signup_event site,id %}">
+{{ event.title }}</a></td>
       {% ifequal event.start|date:"dMY" event.end|date:"dMY" %}
       {# If start and end time are on the same day #}
         {% ifequal event.start|date:"A" event.end|date:"A"  %}
@@ -33,7 +33,7 @@
         <td>{{ event.start|date:"g:iA"|lower}}{{ event.start|date:"D, j F y" }}-{{ event.end|date:"g:iA"|lower}}{{ event.end|date:"D, j F y" }}</td>
         <td></td>
       {% endifequal %}
-    </a></tr>
+    </tr>
 
 {% endfor %}
   </tbody>

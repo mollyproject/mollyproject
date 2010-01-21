@@ -227,6 +227,7 @@ class _OAuthView(BaseView):
     def handle_error(cls, request, exception, token_type='access_token', *args, **kwargs):
         body = exception.read()
         try:
+            raise Exception(body)
             d = urlparse.parse_qs(body)
         except ValueError:
             error = 'unexpected_response'
@@ -239,7 +240,7 @@ class _OAuthView(BaseView):
             request.secure_session[cls.access_token_name] = (None, None)
         
         context = {
-            'breadcrumbs': cls.breadcrumb.render(cls, request, {}, None, *args, **kwargs),
+            'breadcrumbs': cls.breadcrumb(request, {}, None, *args, **kwargs),
             'error':error,
             'oauth_problem': oauth_problem,
             'token_type': token_type,

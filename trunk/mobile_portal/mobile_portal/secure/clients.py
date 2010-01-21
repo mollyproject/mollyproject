@@ -27,7 +27,10 @@ class OAuthOpener(object):
         try:
             return self.__dict__['_opener'].open(*args, **kwargs)
         except urllib2.HTTPError, e:
-            raise OAuthHTTPError(e)
+            if e.code == 403:
+                raise OAuthHTTPError(e)
+            else:
+                raise
     
 
 class OAuthHandler(urllib2.BaseHandler):
