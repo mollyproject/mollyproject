@@ -42,6 +42,7 @@ class SakaiView(OAuthView):
     signature_method = oauth.OAuthSignatureMethod_PLAINTEXT()
     service_name = 'WebLearn'
     app_name = 'sakai'
+    simple_shorten_breadcrumb = True
 
     def build_url(cls, url):
         return '%s%s' % (settings.SAKAI_HOST, url)
@@ -111,8 +112,10 @@ class SignupEventView(SakaiView):
         url = cls.build_url('direct/signupEvent/%s.json?siteId=%s' % (event_id, site))
         event = simplejson.load(opener.open(url))
         
+        
         return {
             'event': event,
+            'signedUp': any(e['signedUp'] for e in event['signupTimeSlotItems']),
         }
         
     @BreadcrumbFactory

@@ -1,8 +1,10 @@
-{% extends "sakai/base.xhtml" %}
+{% extends "sakai/base.xhtml" %}{% load sakai %}
 
 {% block pagetitle %}Meetings{% endblock %}
 
 {% block content %}
+
+{{ event }}
 
 <dl>
   <dt>Title</dt>
@@ -11,6 +13,22 @@
   <dd>{{ event.organizerName }}</dd>
   <dt>Location</dt>
   <dd>{{ event.location }}</dd>
+  <dt>Time</dt>
+  <dd>{{ event.startTime|from_sakai_timestamp|date:"d M Y, H:i" }} - {{ event.endTime|from_sakai_timestamp|date:"H:i" }}</dd>
+  <dt>Status</dt>
+{% if event.startToSignUp %}
+  <dd>Open to sign up (closes {{ event.signupDeadline|from_sakai_timestamp|date:"d M Y, H:i" }})</dd>
+{% else %}
+  {% if event.passedDeadline %}
+  <dd>Sign up deadline has passed</dd>
+  {% else %}
+    {% if event.meetingExpired %}
+  <dd>This meeting has expired</dd>
+    {% else %}
+  <dd>Sign up will open at {{ event.signupBegins|from_sakai_timestamp|date:"d M Y, H:i" }}</dd>
+    {% endif %}
+  {% endif %}
+{% endif %}
 </dl>
 
 <table>
@@ -27,25 +45,37 @@
 {% for ts in event.signupTimeSlotItems %}
     <tr>
       <td>
-        {{ ts.startTime }} - {{ ts.endTime }}
+        {{ ts.startTime|from_sakai_timestamp|date:"H:i" }} - {{ ts.endTime|from_sakai_timestamp|date:"H:i" }}
       </td>
       <td>{{ ts.maxNoOfAttendees }}</td>
       <td>
 {% if ts.displayAttendees %}
         <ul>
-{% for attendee in ts.attendees %}
+  {% for attendee in ts.attendees %}
           <li>{{ attendee.displayName }}</li>
-{% endfor %}
+  {% endfor %}
         </ul>
 {% else %}
-        <em>private</em>
+  {% if ts.signedUp %}
+    {% if ts.attendees|length_is:"1" %}
+        You
+    {% else %}
+        You and {{ ts.attendees|length }} other{{ ts.attendees|length|pluralize }}
+    {% endif %}
+  {% else %}
+    {% if ts.attendees|length_is:"0" %}
+        No one yet
+    {% else %}
+        {{ ts.attendees|length }} attendee{{ ts.attendees|length|pluralize }}
+    {% endif %}
+  {% endif %}
 {% endif %}
       </td>
       <td>{% if ts.signedUp %}Signed up{% else %}{% if ts.onWaitList %}On waiting list{% endif %}{% endif %}</td>
       <td>
         <form method="post" action=".">
           <input type="hidden" name="timeslot_id" value="{{ ts.id }}"/>
-{% if not event.meetingExpired and not event.passedDeadline and event.startToSignUp %}
+{% if not event.meetingExpired and not event.passedDeadline and event.startToSignUp and not ts.locked %}
   {% if ts.signedUp %}
           <button type="submit" name="action" value="cancelSignup">Cancel</button>
   {% else %}
@@ -53,7 +83,11 @@
           <button type="submit" name="action" value="removeWaitList">Leave waiting list</button>
     {% else %}
       {% if ts.available %}
+        {% if signedUp %}
+          <button type="submit" name="action" value="addToWaitList">Move here</button>
+        {% else %}
           <button type="submit" name="action" value="signup">Sign up</button>
+        {% endif %}
       {% else %}      
           <button type="submit" name="action" value="addToWaitList">Join waiting list</button>
       {% endif %}
