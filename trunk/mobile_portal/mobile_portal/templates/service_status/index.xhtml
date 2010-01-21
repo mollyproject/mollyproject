@@ -26,7 +26,7 @@
 
   <ul class="service-status">
 {% for service in services %}
-    <li class="service-status service-status-{{ service.status }}{% if forloop.first %} round_top{% endif %}{% if forloop.last %} round_bottom{% endif %}">
+    <li class="service-status service-status-{{ service.status }}{% if forloop.first %} round-top{% endif %}{% if forloop.last %} round-bottom{% endif %}">
       <span class="service-name">{{ service.name }}</span>
       <span class="service-status">{{ service.status|capfirst }}</span>
 {% if service.detail %}
