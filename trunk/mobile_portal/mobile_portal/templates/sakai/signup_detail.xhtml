@@ -1,21 +1,29 @@
-{% extends "sakai/base.xhtml" %}{% load sakai %}
+{% extends "sakai/base.xhtml" %}{% load sakai %}{% load portal_misc %}
 
 {% block content %}
 
 {{ event }}
 <div class="section">
+    <h2>{{ event.title }}</h2>
 <dl>
-  <dt>Title</dt>
-  <dd>{{ event.title }}</dd>
   <dt>Organiser</dt>
   <dd>{{ event.organizerName }}</dd>
   <dt>Location</dt>
   <dd>{{ event.location }}</dd>
-  <dt>Time</dt>
-  <dd>{{ event.startTime|from_sakai_timestamp|date:"d M Y, g:iA"|lower }} - {{ event.endTime|from_sakai_timestamp|date:"g:iA"|lower }}</dd>
+  <dt>Date/Time</dt>
+  <dd>{% ifequal event.start|date:"dMY" event.end|date:"dMY" %}
+      {# Display Term Week + Name, Date + Time start -> end #}
+        {{ event.startTime|from_sakai_timestamp|oxdate:"%(week)s%(ordinal)s Week %(term_long)s Term" }}, {{ event.startTime|from_sakai_timestamp|date:"d M Y" }} 
+        {{ event.startTime|from_sakai_timestamp|date:"g:iA"|lower }} - {{ event.endTime|from_sakai_timestamp|date:"g:iA"|lower }}
+      {% else %}
+      {# Display startTime + startDate - endTime + endDate #}
+        {{ event.startTime|from_sakai_timestamp|date:"g:iA, d M Y"|lower }} - {{ event.endTime|from_sakai_timestamp|date:"g:iA, d M Y"|lower }}
+      {% endifequal %}
+  </dd>
+      
   <dt>Status</dt>
 {% if event.startToSignUp and not event.passedDeadline %}
-  <dd>Open to sign up (closes {{ event.signupDeadline|from_sakai_timestamp|date:"d M Y, g:iA"|lower }})</dd>
+  <dd>Open to sign up until {{ event.signupDeadline|from_sakai_timestamp|date:"d M Y, g:iA"|lower }}</dd>
 {% else %}
   {% if event.passedDeadline and not event.meetingExpired %}
   <dd>Sign up deadline has passed</dd>
@@ -41,6 +49,8 @@
   </thead>
   <tbody>
 {% for ts in event.signupTimeSlotItems %}
+
+
     <tr>
       <td>
         {{ ts.startTime|from_sakai_timestamp|date:"g:iA"|lower }} - {{ ts.endTime|from_sakai_timestamp|date:"g:iA"|lower }}
@@ -95,6 +105,8 @@
         </form>
       </td>
     </tr>
+    
+    
 {% endfor %}
   </tbody>
 </table>

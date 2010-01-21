@@ -4,39 +4,31 @@
 
 {% block content %}
 <div class="section">
-<table>
-  <thead style="display:none">
-    <tr>
-      <th>Title</th>
-      <th>Time</th>
-      <th>Date</th>
-    </tr>
-  </thead>
-  <tbody>
+    <h2>Available Tutorials</h2>
+<ul>
 {% for id,event in events.items %}
-<tr>
 
-      <td><a href="{% url sakai_signup_event site,id %}">
-{{ event.title }}</a></td>
+<li {% if forloop.last %}class="round-bottom"{% endif %}><a href="{% url sakai_signup_event site,id %}">
+
+{{ event.title }} <small>{{ event.start|oxdate:"%(week)s%(ordinal)s Week %(term_long)s Term" }}</small>
+<br /><small>
       {% ifequal event.start|date:"dMY" event.end|date:"dMY" %}
       {# If start and end time are on the same day #}
         {% ifequal event.start|date:"A" event.end|date:"A"  %}
             {# If start and end times are both am or pm #}
-            <td>{{ event.start|date:"g:i"|lower }}-{{ event.end|date:"g:iA"|lower }}</td>
-            <td>{{ event.start|date:"D, j F y"}} {{ event.start|oxdate:"%(week)s%(ordinal)s" }} Week</td>
+            {{ event.start|date:"g:i"|lower }}-{{ event.end|date:"g:iA"|lower }}
+            {{ event.start|date:"D, j F y"}}
         {% else %}
-            <td>{{ event.start|date:"g:iA"|lower }}-{{ event.end|date:"g:iA"|lower }}</td>
-            <td>{{ event.start|date:"D, j F y"}}</td>
+            {{ event.start|date:"g:iA"|lower }}-{{ event.end|date:"g:iA"|lower }}
+            {{ event.start|date:"D, j F y"}}
         {% endifequal %}
       {% else %}
       {# Handle the rare occurence that tutorials start and end on different days #}
-        <td>{{ event.start|date:"g:iA"|lower}}{{ event.start|date:"D, j F y" }}-{{ event.end|date:"g:iA"|lower}}{{ event.end|date:"D, j F y" }}</td>
-        <td></td>
+        {{ event.start|date:"g:iA"|lower}}{{ event.start|date:"D, j F y" }}-{{ event.end|date:"g:iA"|lower}}{{ event.end|date:"D, j F y" }}
       {% endifequal %}
-    </tr>
-
+</small>
+</a></li>
 {% endfor %}
-  </tbody>
-</table>
+</ul>
 </div>
 {% endblock %}

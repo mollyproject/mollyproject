@@ -155,13 +155,12 @@ class SignupEventView(SakaiView):
                 'allocToTSid': request.POST['timeslot_id'],
                 'userActionType': request.POST['action'],
             }))
-        except urllib2.HTTPerror, e:
+        except urllib2.HTTPError, e:
             if e.code == 204:
                 pass
             else:
                 raise
         
-        print response.getcode()
         print {
             'siteId': site,
             'allocToTSid': request.POST['timeslot_id'],
