@@ -249,3 +249,25 @@ class _OAuthView(BaseView):
 
 class OAuthView(SecureView, _OAuthView):
     pass
+    
+class ClearSessionView(SecureView):
+    def initial_context(cls, request):
+        return {
+            'path': request.REQUEST.get('path'),
+        }
+        
+    @BreadcrumbFactory
+    def breadcrumb(cls, request, context):
+        return breadcrumb(
+            'secure',
+        )
+            
+    def handle_GET(cls, request, context):
+        return mobile_render(request, context, 'secure/clear_session')
+    def handle_POST(cls, request, context):
+        for key in request.secure_session.keys():
+            del request.secure_session[key]
+        if context['path']:
+            return HttpResponseRedirect(context['path'])
+        else:
+            return HttpResponseRedirect('.')

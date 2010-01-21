@@ -8,7 +8,7 @@ from mobile_portal.core.models import ExternalImage, ExternalImageSized
 from mobile_portal.oxpoints.models import Entity
 from mobile_portal.wurfl import device_parents
 from mobile_portal.maps.utils import get_entity
-from mobile_portal.utils.ox_dates import format_today
+from mobile_portal.utils.ox_dates import format_today, ox_date_dict
 
 register = template.Library()
 
@@ -147,3 +147,7 @@ def get_entity_filter(value):
 @register.simple_tag
 def oxford_date_today():
     return format_today()
+    
+@register.filter('oxdate')
+def oxdate(value, arg):
+    return arg % ox_date_dict(value)

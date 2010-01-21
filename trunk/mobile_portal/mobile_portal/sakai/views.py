@@ -46,6 +46,15 @@ class SakaiView(OAuthView):
 
     def build_url(cls, url):
         return '%s%s' % (settings.SAKAI_HOST, url)
+        
+    def get_site_title(cls, request, opener, id):
+        if not 'sakai_site_titles' in request.secure_session:
+            request.secure_session['sakai_site_titles'] = {}
+        json = simplejson.load(opener.open(cls.build_url('direct/site.json')))
+        for site in json['site_collection']:
+            request.secure_session['sakai_site_titles'][site['id']] = site['title']
+        return request.secure_session['sakai_site_titles'].get(id, 'Unknown site(%s)' % id)
+
 
 class SignupIndexView(SakaiView):
     def initial_context(cls, request, opener):
@@ -91,7 +100,7 @@ class SignupSiteView(SakaiView):
         return {
             'site': site,
             'events': events,
-            'title': request.secure_session.get('sakai_site_titles', {}).get(site, 'Site'),
+            'title': cls.get_site_title(request, opener, site),
             'complex_shorten': True,
         }
 
@@ -166,5 +175,32 @@ class DirectView(SakaiView):
         )
         
     def handle_GET(cls, request, context, opener):
-        response = opener.open('http://perch.oucs.ox.ac.uk:8080/direct/user/current.json')
-        return HttpResponse(response.read())
+        context['user_details'] = simplejson.load(
+            opener.open(cls.build_url('/direct/user/current.json')))
+        return mobile_render(request, context, 'sakai/direct')
+        
+class PollIndexView(SakaiView):
+    def initial_context(cls, request, opener):
+        json = simplejson.load(opener.open(cls.build_url('direct/poll.json')))
+        polls = []
+        for poll in json['poll_collection']:
+            poll['title'] = cls.get_site_title(request, opener, poll['siteId'])
+            polls.append(poll)
+        
+        return {
+            'polls': polls,
+            'complex_shorten': True,
+        }
+
+    @BreadcrumbFactory
+    def breadcrumb(cls, request, context, opener):
+        return Breadcrumb(
+            'sakai',
+            lazy_parent(IndexView),
+            'Polls',
+            lazy_reverse('sakai_signup'),
+        )
+
+    def handle_GET(cls, request, context, opener):
+        return mobile_render(request, context, 'sakai/poll_index')
+

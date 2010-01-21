@@ -72,16 +72,21 @@ def normal_to_ox(pdate):
     week, day = divmod((pdate - OFFSET_TERM_STARTS[(year, term)] - timedelta(14)).days, 7)
     return (year, term, week, day)
     
-def format_today():
-    today = date.today()
-    year, term, week, day = normal_to_ox(today)
-    return "%(dayname)s, %(week)d%(ordinal)s week, %(term)s %(year)d (%(day)d %(month)s)" % {
-        'dayname': DAY_NAMES[day],
+def ox_date_dict(dt=None):
+    dt = dt or date.today()
+    year, term, week, day = normal_to_ox(dt)
+    return {
+        'day_name': DAY_NAMES[day],
+        'day': day,
         'week': week,
         'ordinal': 'th' if 10<week<20 else {1:'st',2:'nd',3:'rd'}.get(abs(week)%10, 'th'),
-        'term': TERM_NAMES[term],
+        'term': term,
+        'term_short': TERM_LETTERS[term].upper(),
+        'term_long': TERM_NAMES[term],
         'year': year,
-        'day': today.day,
-        'month': today.strftime('%b'),
+        'day_number': dt.day,
+        'month': dt.strftime('%b'),
     }
-    
+
+def format_today():
+    return "%(day_name)s, %(week)d%(ordinal)s week, %(term_long)s %(year)d (%(day_number)d %(month)s)" % ox_date_dict()
