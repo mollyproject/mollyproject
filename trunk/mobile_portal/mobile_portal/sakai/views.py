@@ -96,7 +96,8 @@ class SignupSiteView(SakaiView):
                 'title': event_et.find('title').text,
                 'id': event_et.find('id').text,
             }
-            events[event['id']] = event
+            if event['end'] >= datetime.utcnow().replace(tzinfo=pytz.utc):
+                events[event['id']] = event
         return {
             'site': site,
             'events': events,
@@ -146,13 +147,19 @@ class SignupEventView(SakaiView):
         return mobile_render(request, context, 'sakai/signup_detail')
 
     def handle_POST(cls, request, context, opener, site, event_id):
-        response = opener.open(
-            cls.build_url('direct/signupEvent/%s/edit' % event_id), 
-            data = urllib.urlencode({
-            'siteId': site,
-            'allocToTSid': request.POST['timeslot_id'],
-            'userActionType': request.POST['action'],
-        }))
+        try:
+            response = opener.open(
+                cls.build_url('direct/signupEvent/%s/edit' % event_id), 
+                data = urllib.urlencode({
+                'siteId': site,
+                'allocToTSid': request.POST['timeslot_id'],
+                'userActionType': request.POST['action'],
+            }))
+        except urllib2.HTTPerror, e:
+            if e.code == 204:
+                pass
+            else:
+                raise
         
         print response.getcode()
         print {
