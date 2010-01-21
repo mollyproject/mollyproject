@@ -2,10 +2,13 @@
 
 {% block content %}
 
-{{ event }}
 <div class="section">
     <h2>{{ event.title }}</h2>
+<div class="bubble"><div class="article pad-10">
 <dl>
+  <dt>Description</dt>
+  {# CLENSE ME! #}
+  <dd>{{ event.description }}</dd>
   <dt>Organiser</dt>
   <dd>{{ event.organizerName }}</dd>
   <dt>Location</dt>
@@ -37,26 +40,16 @@
 {% endif %}
 </dl>
 
-<table>
-  <thead>
-    <tr>
-      <th>Timeslot</th>
-      <th>Max participants</th>
-      <th>Participants</th>
-      <th>Status</th>
-      <th>Action</th>
-    </tr>
-  </thead>
-  <tbody>
+</div></div>
+
+
+<ul>
 {% for ts in event.signupTimeSlotItems %}
-
-
-    <tr>
-      <td>
-        {{ ts.startTime|from_sakai_timestamp|date:"g:iA"|lower }} - {{ ts.endTime|from_sakai_timestamp|date:"g:iA"|lower }}
-      </td>
-      <td>{{ ts.maxNoOfAttendees }}</td>
-      <td>
+<li>
+    {{ ts.startTime|from_sakai_timestamp|date:"g:iA"|lower }} - {{ ts.endTime|from_sakai_timestamp|date:"g:iA"|lower }}
+    <br />
+    <small>Max Slots:{{ ts.maxNoOfAttendees }}</small>
+      
 {% if ts.displayAttendees %}
         <ul>
   {% for attendee in ts.attendees %}
@@ -66,9 +59,9 @@
 {% else %}
   {% if ts.signedUp %}
     {% if ts.attendees|length_is:"1" %}
-        You
+        You 
     {% else %}
-        You and {{ ts.attendees|length }} other{{ ts.attendees|length|pluralize }}
+        You and {{ ts.attendees|length|add:"-1" }} other{{ ts.attendees|length|add:"-1"|pluralize }}
     {% endif %}
   {% else %}
     {% if ts.attendees|length_is:"0" %}
@@ -78,9 +71,7 @@
     {% endif %}
   {% endif %}
 {% endif %}
-      </td>
-      <td>{% if ts.signedUp %}Signed up{% else %}{% if ts.onWaitList %}On waiting list{% endif %}{% endif %}</td>
-      <td>
+      {% if ts.signedUp %}Signed up{% else %}{% if ts.onWaitList %}On waiting list{% endif %}{% endif %}
         <form method="post" action=".">
           <input type="hidden" name="timeslot_id" value="{{ ts.id }}"/>
 {% if not event.meetingExpired and not event.passedDeadline and event.startToSignUp and not ts.locked %}
@@ -103,12 +94,8 @@
   {% endif %}
 {% endif %}
         </form>
-      </td>
-    </tr>
-    
-    
+</li>
 {% endfor %}
-  </tbody>
-</table>
+</ul>
 </div>
 {% endblock %}
