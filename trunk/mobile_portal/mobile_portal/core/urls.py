@@ -2,7 +2,7 @@ from django.conf.urls.defaults import *
 from django.conf import settings
 
 from mobile_portal.core.views import (
-    IndexView, LocationUpdateView, DesktopAboutView,
+    IndexView, LocationUpdateView, DesktopIndexView,
     UserMessageView,
     ExternalImageView, RunCommandView, FeedbackView,
     StaticDetailView,
@@ -37,9 +37,9 @@ urlpatterns = patterns('mobile_portal.core.views',
         {'title':'About', 'template':'about'},
         'core_static_about'),
     
-    (r'^desktop_about/$',
-        DesktopAboutView, {},
-        'core_desktop_about'),
+    (r'^desktop/((?P<page>blog|about)/)?$',
+        DesktopIndexView, {},
+        'desktop_index'),
 
     (r'^feedback/$',
         FeedbackView, {},

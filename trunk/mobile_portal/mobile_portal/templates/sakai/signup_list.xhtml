@@ -1,30 +1,42 @@
-{% extends "sakai/base.xhtml" %}
+{% extends "sakai/base.xhtml" %}{% load portal_misc %}
 
 {% block pagetitle %}Meetings{% endblock %}
 
 {% block content %}
-
+<div class="section">
 <table>
-  <thead>
+  <thead style="display:none">
     <tr>
       <th>Title</th>
-      <th>Start</th>
-      <th>End</th>
+      <th>Time</th>
+      <th>Date</th>
     </tr>
   </thead>
   <tbody>
 {% for id,event in events.items %}
-    <tr>
-      <td>
-        <a href="{% url sakai_signup_event site,id %}">
-          {{ event.title }}
-        </a>
-      </td>
-      <td>{{ event.start }}</td>
-      <td>{{ event.end }}</td>
-    </tr>
+<tr>
+<a href="{% url sakai_signup_event site,id %}">
+
+      <td>{{ event.title }}</td>
+      {% ifequal event.start|date:"dMY" event.end|date:"dMY" %}
+      {# If start and end time are on the same day #}
+        {% ifequal event.start|date:"A" event.end|date:"A"  %}
+            {# If start and end times are both am or pm #}
+            <td>{{ event.start|date:"g:i"|lower }}-{{ event.end|date:"g:iA"|lower }}</td>
+            <td>{{ event.start|date:"D, j F y"}} {{ event.start|oxdate:"%(week)s%(ordinal)s" }} Week</td>
+        {% else %}
+            <td>{{ event.start|date:"g:iA"|lower }}-{{ event.end|date:"g:iA"|lower }}</td>
+            <td>{{ event.start|date:"D, j F y"}}</td>
+        {% endifequal %}
+      {% else %}
+      {# Handle the rare occurence that tutorials start and end on different days #}
+        <td>{{ event.start|date:"g:iA"|lower}}{{ event.start|date:"D, j F y" }}-{{ event.end|date:"g:iA"|lower}}{{ event.end|date:"D, j F y" }}</td>
+        <td></td>
+      {% endifequal %}
+    </a></tr>
+
 {% endfor %}
   </tbody>
 </table>
-
+</div>
 {% endblock %}

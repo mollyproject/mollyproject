@@ -3,11 +3,15 @@
 {% block pagetitle %}Sites{% endblock %}
 
 {% block content %}
-
+<div class="section">
+    <h2>Sites</h2>
 <ul>
 {% for id, title in sites %}
-    <li><a href="{% url sakai_signup_site id %}">{{ title }}</a></li>
+    <li {% if forloop.last %}class="round-bottom"{% endif %}>
+        <a href="{% url sakai_signup_site id %}">{{ title }}</a>
+    </li>
 {% endfor %}
 </ul>
+</div>
 
 {% endblock %}

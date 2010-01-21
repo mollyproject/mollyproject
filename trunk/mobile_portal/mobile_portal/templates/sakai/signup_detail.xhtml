@@ -1,11 +1,9 @@
 {% extends "sakai/base.xhtml" %}{% load sakai %}
 
-{% block pagetitle %}Meetings{% endblock %}
-
 {% block content %}
 
 {{ event }}
-
+<div class="section">
 <dl>
   <dt>Title</dt>
   <dd>{{ event.title }}</dd>
@@ -14,18 +12,18 @@
   <dt>Location</dt>
   <dd>{{ event.location }}</dd>
   <dt>Time</dt>
-  <dd>{{ event.startTime|from_sakai_timestamp|date:"d M Y, H:i" }} - {{ event.endTime|from_sakai_timestamp|date:"H:i" }}</dd>
+  <dd>{{ event.startTime|from_sakai_timestamp|date:"d M Y, g:iA"|lower }} - {{ event.endTime|from_sakai_timestamp|date:"g:iA"|lower }}</dd>
   <dt>Status</dt>
-{% if event.startToSignUp %}
-  <dd>Open to sign up (closes {{ event.signupDeadline|from_sakai_timestamp|date:"d M Y, H:i" }})</dd>
+{% if event.startToSignUp and not event.passedDeadline %}
+  <dd>Open to sign up (closes {{ event.signupDeadline|from_sakai_timestamp|date:"d M Y, g:iA"|lower }})</dd>
 {% else %}
-  {% if event.passedDeadline %}
+  {% if event.passedDeadline and not event.meetingExpired %}
   <dd>Sign up deadline has passed</dd>
   {% else %}
     {% if event.meetingExpired %}
-  <dd>This meeting has expired</dd>
+  <dd>This meeting has already happened!</dd>
     {% else %}
-  <dd>Sign up will open at {{ event.signupBegins|from_sakai_timestamp|date:"d M Y, H:i" }}</dd>
+  <dd>Sign up will open at {{ event.signupBegins|from_sakai_timestamp|date:"d M Y, g:iA"|lower }}</dd>
     {% endif %}
   {% endif %}
 {% endif %}
@@ -45,7 +43,7 @@
 {% for ts in event.signupTimeSlotItems %}
     <tr>
       <td>
-        {{ ts.startTime|from_sakai_timestamp|date:"H:i" }} - {{ ts.endTime|from_sakai_timestamp|date:"H:i" }}
+        {{ ts.startTime|from_sakai_timestamp|date:"g:iA"|lower }} - {{ ts.endTime|from_sakai_timestamp|date:"g:iA"|lower }}
       </td>
       <td>{{ ts.maxNoOfAttendees }}</td>
       <td>
@@ -100,5 +98,5 @@
 {% endfor %}
   </tbody>
 </table>
-
+</div>
 {% endblock %}

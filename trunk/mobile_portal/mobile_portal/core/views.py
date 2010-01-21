@@ -41,7 +41,7 @@ class IndexView(BaseView):
             and not request.GET.get('preview') == 'true'
             and not internal_referer
             and not settings.DEBUG):
-            return HttpResponseRedirect(reverse('core_desktop_about'))
+            return HttpResponseRedirect(reverse('desktop_index'))
     
         fpls = dict((fpl.slug, fpl) for fpl in FrontPageLink.objects.all())
         fpls_prefs = sorted(request.preferences['front_page_links'].items(), key=lambda (slug,(order, display)): order)
@@ -290,7 +290,7 @@ class StaticDetailView(BaseView):
         })
         return mobile_render(request, context, 'core/static_detail')
 
-class DesktopAboutView(BaseView):
+class DesktopIndexView(BaseView):
     def get_metadata(cls, request):
         return {
             'exclude_from_search': True
@@ -299,8 +299,10 @@ class DesktopAboutView(BaseView):
     breadcrumb = NullBreadcrumb
     cache_page_duration = 60*15
     
-    def handle_GET(cls, request, context):
-        return render_to_response('core/desktop_about.xhtml', {}, context_instance=RequestContext(request))    
+    def handle_GET(cls, request, context, page):
+        if not page:
+            page = 'index'
+        return render_to_response('desktop/%s.xhtml' % page, {}, context_instance=RequestContext(request))    
 
 def handler500(request):
     context = {
