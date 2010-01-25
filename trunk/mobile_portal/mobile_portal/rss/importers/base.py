@@ -1,0 +1,2 @@
+class BaseImporter(object):
+    pass

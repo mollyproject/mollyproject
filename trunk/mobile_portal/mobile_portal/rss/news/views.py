@@ -7,7 +7,7 @@ from mobile_portal.utils.views import BaseView
 from mobile_portal.utils.breadcrumbs import *
 from mobile_portal.utils.renderers import mobile_render
 
-from ..models import RSSFeed, RSSItem
+from ..models import Feed, Item
 
 class IndexView(BaseView):
     def get_metadata(cls, request):
@@ -23,13 +23,13 @@ class IndexView(BaseView):
         )
         
     def handle_GET(cls, request, context):
-        feeds = RSSFeed.news.all()
+        feeds = Feed.news.all()
         context['feeds'] = feeds
         return mobile_render(request, context, 'rss/index')
 
 class ItemListView(BaseView):
     def get_metadata(cls, request, slug):
-        feed = get_object_or_404(RSSFeed.news, slug=slug)
+        feed = get_object_or_404(Feed.news, slug=slug)
         
         return {
             'last_modified': feed.last_modified,
@@ -47,13 +47,13 @@ class ItemListView(BaseView):
         )
         
     def handle_GET(cls, request, context, slug):
-        feed = get_object_or_404(RSSFeed.news, slug=slug)
+        feed = get_object_or_404(Feed.news, slug=slug)
         context['feed'] = feed
         return mobile_render(request, context, 'rss/item_list')
 
 class ItemDetailView(BaseView):
     def get_metadata(cls, request, slug, id):
-        item = get_object_or_404(RSSItem, feed__slug=slug, id=id)
+        item = get_object_or_404(Item, feed__slug=slug, id=id)
         
         return {
             'last_modified': item.last_modified,
@@ -71,7 +71,7 @@ class ItemDetailView(BaseView):
         )
         
     def handle_GET(cls, request, context, slug, id):
-        item = get_object_or_404(RSSItem, feed__slug=slug, id=id)
+        item = get_object_or_404(Item, feed__slug=slug, id=id)
         context.update({
             'item': item,
             'description': item.get_description_display(request.device)

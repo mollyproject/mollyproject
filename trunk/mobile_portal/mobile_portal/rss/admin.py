@@ -1,17 +1,13 @@
 from django.contrib import admin
-from models import RSSFeed, RSSItem, ShowPredicate
+from models import Feed, Item
 
-class RSSFeedAdmin(admin.ModelAdmin):
+class FeedAdmin(admin.ModelAdmin):
     list_display = ('title', 'unit', 'rss_url')
     list_filter = ('unit',)
     
-class RSSItemAdmin(admin.ModelAdmin):
-    list_display = ('feed', 'title', 'location_name', 'location_point')
+class ItemAdmin(admin.ModelAdmin):
+    #list_display = ('feed', 'title', 'location_name', 'location_point')
     list_filter = ('feed', )
 
-class ShowPredicateAdmin(admin.ModelAdmin):
-    pass
-
-admin.site.register(RSSFeed, RSSFeedAdmin)
-admin.site.register(RSSItem, RSSItemAdmin)
-admin.site.register(ShowPredicate, ShowPredicateAdmin)
+admin.site.register(Feed, FeedAdmin)
+admin.site.register(Item, ItemAdmin)

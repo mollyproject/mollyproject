@@ -19,80 +19,172 @@
     },
     {
         "pk": "1",
-        "model": "rss.RSSFeed",
+        "model": "rss.Tag",
+        "fields": { 
+            "value": "theatre"
+        }
+    },
+    {
+        "pk": "2",
+        "model": "rss.Tag",
+        "fields": { 
+            "value": "performance"
+        }
+    },
+    {
+        "pk": "3",
+        "model": "rss.Tag",
+        "fields": { 
+            "value": "concert"
+        }
+    },
+    {
+        "pk": "4",
+        "model": "rss.Tag",
+        "fields": { 
+            "value": "meeting"
+        }
+    },
+    {
+        "pk": "5",
+        "model": "rss.Tag",
+        "fields": { 
+            "value": "gig"
+        }
+    },
+    {
+        "pk": "1",
+        "model": "rss.Feed",
         "fields": {
             "title": "Computing Services News",
             "unit": "oucs",
             "rss_url": "http://www.oucs.ox.ac.uk/rss/news.rss",
             "slug": "oucs-news",
-            "last_modified": "2009-01-01 00:00:00",
-            "ptype": "n"
+            "ptype": "n",
+            "importer": "generic_rss"
         }
     },
     {
         "pk": 4,
-        "model": "rss.rssfeed",
+        "model": "rss.Feed",
         "fields":
         {
             "rss_url": "http://www.keble.ox.ac.uk/news/RSS",
             "title": "Keble College news",
-            "show_predicate": null,
-            "last_modified": "2009-10-01 14:42:26",
             "slug": "keble",
             "unit": "kebl",
-            "ptype": "n"
+            "ptype": "n",
+            "importer": "generic_rss"
         }
     },
     {
         "pk": 5,
-        "model": "rss.rssfeed",
+        "model": "rss.Feed",
         "fields": {
             "rss_url": "http://www.lmh.ox.ac.uk/CMSPages/NewsRss.aspx",
             "title": "Lady Margaret Hall news",
-            "show_predicate": null,
-            "last_modified": "2009-10-01 14:54:54",
             "slug": "lmh",
             "unit": "lmh",
-            "ptype": "n"
+            "ptype": "n",
+            "importer": "generic_rss"
         }
     },
     {
         "pk": 6,
-        "model": "rss.rssfeed",
+        "model": "rss.Feed",
         "fields": {
             "rss_url": "http://www.linacre.ox.ac.uk/Linacre/news-and-events/news/RSS",
             "title": "Linacre College",
-            "show_predicate": null,
-            "last_modified": "2009-10-01 14:56:37",
             "slug": "linacre",
             "unit": "linacre",
-            "ptype": "n"
+            "ptype": "n",
+            "importer": "generic_rss"
         }
     },
     {
         "pk": 7,
-        "model": "rss.rssfeed",
+        "model": "rss.Feed",
         "fields": {
             "rss_url": "http://www.google.com/calendar/feeds/it-support%40sant.ox.ac.uk/public/basic?orderby=starttime&sortorder=ascending&futureevents=true&singleevents=true",
             "title": "St. Antony's College Events",
-            "show_predicate": null,
-            "last_modified": "2009-10-01 15:03:24",
             "slug": "st-antonys-events",
             "unit": "sant",
-            "ptype": "n"
+            "ptype": "n",
+            "importer": "generic_rss"
+
         }
     },
     {
         "pk": 3,
-        "model": "rss.rssfeed",
+        "model": "rss.Feed",
         "fields": {
             "rss_url": "http://www.ox.ac.uk/news_rss.rm",
             "title": "University of Oxford - Media",
-            "show_predicate": null,
-            "last_modified": "2009-10-01 14:40:19",
             "slug": "offices-media",
             "unit": "offices",
-            "ptype": "n"
+            "ptype": "n",
+            "importer": "generic_rss"
+
+        }
+    },
+    {
+        "pk": 8,
+        "model": "rss.Feed",
+        "fields": {
+            "rss_url": "http://www.dailyinfo.co.uk/rss/events.php?colname=Theatre",
+            "title": "Daily Info - Theatre",
+            "slug": "theatre",
+            "unit": "daily-info",
+            "ptype": "e",
+            "importer": "daily_info",
+            "tags": [
+                1, 2
+            ]
+        }
+    },
+    {
+        "pk": 9,
+        "model": "rss.Feed",
+        "fields": {
+            "rss_url": "http://www.dailyinfo.co.uk/rss/events.php?colname=Concert",
+            "title": "Daily Info - Concert",
+            "slug": "concert",
+            "unit": "daily-info",
+            "ptype": "e",
+            "importer": "daily_info",
+            "tags": [
+                2, 3
+            ]
+        }
+    },
+    {
+        "pk": 10,
+        "model": "rss.Feed",
+        "fields": {
+            "rss_url": "http://www.dailyinfo.co.uk/rss/events.php?colname=Meeting",
+            "title": "Daily Info - Meeting",
+            "slug": "meeting",
+            "unit": "daily-info",
+            "ptype": "e",
+            "importer": "daily_info",
+            "tags": [
+                4
+            ]
+        }
+    },
+    {
+        "pk": 11,
+        "model": "rss.Feed",
+        "fields": {
+            "rss_url": "http://www.dailyinfo.co.uk/rss/events.php?colname=Gig",
+            "title": "Daily Info - Gigs and comedy",
+            "slug": "gigs-comedy",
+            "unit": "daily-info",
+            "ptype": "e",
+            "importer": "daily_info",
+            "tags": [
+                2, 5
+            ]
         }
     }
 ]

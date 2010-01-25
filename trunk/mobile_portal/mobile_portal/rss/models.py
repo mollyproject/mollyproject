@@ -1,5 +1,6 @@
 from pytz import utc, timezone
 from django.contrib.gis.db import models
+
 from django.core.urlresolvers import reverse
 from xml.etree import ElementTree as ET
 from mobile_portal.core.utils import resize_external_image
@@ -10,10 +11,19 @@ FEED_TYPE_CHOICES = (
     ('e', 'event'),
 )
 
-class ShowPredicate(models.Model):
-    name = models.TextField()
-    description = models.TextField(null=True, blank=True)
-    predicate = models.TextField()
+IMPORTER_CHOICES = (
+    ('generic_rss', 'Generic RSS'),
+    ('daily_info', 'Daily Info'),
+    ('google_cal', 'Google Calendar'),
+    ('icalendar', 'iCalendar'),
+)
+
+FORMAT_CHOICES = tuple((x, x) for x in (
+    'lecture', 'class', 'tutorial', 'seminar', 'performance', 'workshop',
+    'exhibition', 'meeting',
+))
+
+
 
 class EventsManager(models.Manager):
     def get_query_set(self):
@@ -23,20 +33,31 @@ class NewsManager(models.Manager):
         return super(NewsManager, self).get_query_set().filter(ptype='n')
 
 
-class RSSFeed(models.Model):
+class Tag(models.Model):
+    value = models.CharField(max_length=128)
+
+class Feed(models.Model):
     title = models.TextField()
     unit = models.CharField(max_length=10,null=True,blank=True)
     rss_url = models.URLField()
     slug = models.SlugField()
-    last_modified = models.DateTimeField() # this one is in UTC
+    last_modified = models.DateTimeField(null=True, blank=True) # this one is in UTC
     
-    show_predicate = models.ForeignKey(ShowPredicate, null=True, blank=True)
-
     ptype = models.CharField(max_length=1, choices=FEED_TYPE_CHOICES)
+    importer = models.CharField(max_length=20, choices=IMPORTER_CHOICES)
+    _importer_params = models.TextField(default='null')
+    
+    def _set_importer_params(self, value):
+        self._importer_params = simplejson.dumps(value)
+    def _get_importer_params(self):
+        return simplejson.loads(self._importer_params)
+    importer_params = property(_get_importer_params, _set_importer_params) 
     
     objects = models.Manager()
     events = EventsManager()
     news = NewsManager()
+
+    tags = models.ManyToManyField(Tag, blank=True)
     
     def __unicode__(self):
         return self.title
@@ -49,30 +70,59 @@ class RSSFeed(models.Model):
         
     class Meta:
         ordering = ('title',)
+
+class vCard(models.Model):
+    uri = models.TextField()
+
+    name = models.TextField(blank=True)
+    address = models.TextField(blank=True)
+    telephone = models.TextField(blank=True)
+    location = models.PointField(null=True)
+    entity = models.ForeignKey(Entity, null=True, blank=True)
     
-class RSSItem(models.Model):
-    feed = models.ForeignKey(RSSFeed)
+#    def save(self, *args, **kwargs):
+#        g = rdflib.Graph()
+#        g.parse(StringIO(self.rdf))
+#        g
+#        super(vCard, self).save(*args, **kwargs)
+    
+class Series(models.Model):
+    feed = models.ForeignKey(Feed)
+    guid = models.TextField()
+    title = models.TextField()
+    unit = models.ForeignKey(vCard, null=True, blank=True)
+
+    tags = models.ManyToManyField(Tag, blank=True)
+
+class Item(models.Model):
+    feed = models.ForeignKey(Feed)
     title = models.TextField()
     guid = models.TextField()
     description = models.TextField()
     link = models.URLField()
     last_modified = models.DateTimeField() # this one is also in UTC
     
-    dt_start = models.DateTimeField(null=True, blank=True)
-    dt_end = models.DateTimeField(null=True, blank=True)
-    location_entity = models.ForeignKey(Entity, null=True, blank=True)
-    location_name = models.TextField(blank=True)
+    ptype = models.CharField(max_length=16, choices=FEED_TYPE_CHOICES)
     
-    location_point = models.PointField(null=True, blank=True)
-    location_address = models.TextField(blank=True)
-    location_url = models.URLField(blank=True)
+    organiser = models.ForeignKey(vCard, related_name='organising_set', null=True, blank=True)
+    speaker = models.ForeignKey(vCard, related_name='speaking_set', null=True, blank=True)
+    venue = models.ForeignKey(vCard, related_name='venue_set', null=True, blank=True)
+    contact = models.ForeignKey(vCard, related_name    ='contact_set', null=True, blank=True)
     
-    ptype = models.CharField(max_length=1, choices=FEED_TYPE_CHOICES)
+    series = models.ForeignKey(Series, null=True, blank=True)
+    ordinal = models.IntegerField(null=True)
+    track = models.TextField(blank=True)
+    
+    tags = models.ManyToManyField(Tag, blank=True)
 
     objects = models.Manager()
     events = EventsManager()
     news = NewsManager()
 
+    dt_start = models.DateTimeField(null=True, blank=True)
+    dt_end = models.DateTimeField(null=True, blank=True)
+    dt_has_time = models.BooleanField(default=False)
+    
     @property
     def location_mobile_url(self):
         return self.location_url.replace('/reviews/venue/', '/reviews/phone/venue/')
@@ -102,8 +152,10 @@ class RSSItem(models.Model):
     
     def save(self, *args, **kwargs):
         self.ptype = self.feed.ptype
-        super(RSSItem, self).save(*args, **kwargs)
+        super(Item, self).save(*args, **kwargs)
         
     
     class Meta:
         ordering = ('-last_modified',)
+
+    

@@ -2,8 +2,9 @@ from django.core.management.base import NoArgsCommand
 
 from datetime import datetime, timedelta
 import urllib, re, email, feedparser
-from mobile_portal.rss.models import RSSItem, RSSFeed
+from mobile_portal.rss.models import Feed
 from mobile_portal.rss.utils import sanitise_html
+from mobile_portal.rss.importers import importers
 
 class Command(NoArgsCommand):
     option_list = NoArgsCommand.option_list
@@ -12,33 +13,13 @@ class Command(NoArgsCommand):
     requires_model_validation = True
     
     def handle_noargs(self, **options):
-        for feed in RSSFeed.news.all():
-        
-            feed_data = feedparser.parse(feed.rss_url)
-            items = list(feed.rssitem_set.all())
-            guids = set()
+        for feed in Feed.events.all():
             
-            for x_item in feed_data.entries:
-                print x_item
-                guid, last_modified = x_item.id, datetime(*x_item.date_parsed[:7])
-                
-                for i in items:
-                    if i.guid == guid:
-                        item = i
-                        break
-                else:
-                    item = RSSItem(guid=guid, last_modified=datetime(1900,1,1), feed=feed)
-                    
-                if True or item.last_modified < last_modified:
-                    item.title = x_item.title
-                    item.description = sanitise_html(x_item.description)
-                    item.link = x_item.link
-                    item.last_modified = last_modified
-                    item.save()
-                
-                guids.add(guid)
+            print "Importing %s" % feed.rss_url
+            importer = importers[feed.importer]
+            item_set = importer.update(feed)
             
-            for item in items:
-            
-                if not item.guid in guids:
+            for item in feed.item_set.all():
+                if item not in item_set:
                     item.delete()
+            
