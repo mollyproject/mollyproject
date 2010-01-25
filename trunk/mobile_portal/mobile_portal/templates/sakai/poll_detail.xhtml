@@ -1,0 +1,23 @@
+{% extends "sakai/base.xhtml" %}{% load sakai %}
+
+{% block content %}
+
+<div class="section">
+  <h2>{{ poll.text }}</h2>
+
+{% if poll.details %}  
+  <div class="content pad-10">
+    {{ poll.details }}
+  </div>
+{% endif %}
+  
+    <ul>
+{% for option in options %}
+      <li{% if forloop.last %} class="round-bottom"{% endif %}>{{ option.text }}</li>
+{% endfor %}
+    </ul>
+</div>
+      
+
+
+{% endblock %}

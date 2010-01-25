@@ -216,3 +216,34 @@ class PollIndexView(SakaiView):
     def handle_GET(cls, request, context, opener):
         return mobile_render(request, context, 'sakai/poll_index')
 
+class PollDetailView(SakaiView):
+    def initial_context(cls, request, opener, id):
+        try:
+            url = cls.build_url('direct/poll/%s.json' % id)
+            poll = simplejson.load(opener.open(url))
+        except urllib2.HTTPError, e:
+            if e.code == 404:
+                raise Http404
+            else:
+                raise
+        
+        url = cls.build_url('direct/poll/%s/option.json' % id)
+        options = simplejson.load(opener.open(url))
+        
+        return {
+            'poll': poll,
+            'options': options['poll-option_collection'],
+            'site_title': cls.get_site_title(request, opener, poll['siteId']),
+        }
+        
+    @BreadcrumbFactory
+    def breadcrumb(cls, request, context, opener, id):
+        return Breadcrumb(
+            'sakai',
+            lazy_parent(PollIndexView, opener),
+            "Poll: %s" % context['poll']['text'],
+            lazy_reverse('sakai_poll_detail'),
+        )
+        
+    def handle_GET(cls, request, context, opener, id):
+        return mobile_render(request, context, 'sakai/poll_detail')

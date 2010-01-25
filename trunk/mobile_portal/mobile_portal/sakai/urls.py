@@ -5,7 +5,7 @@ from views import (
     
     SignupIndexView, SignupSiteView, SignupEventView,
     
-    PollIndexView,
+    PollIndexView, PollDetailView,
 )
 
 urlpatterns = patterns('mobile_portal.sakai.views',
@@ -24,6 +24,9 @@ urlpatterns = patterns('mobile_portal.sakai.views',
    (r'^polls/$',
        PollIndexView, {},
        'sakai_poll'),
+   (r'^polls/(?P<id>\d+)/$',
+       PollDetailView, {},
+       'sakai_poll_detail'),
 
    (r'^sites/$', SiteView, {}, 'sakai_sites'),
    (r'^direct/$', DirectView, {}, 'sakai_direct'),
