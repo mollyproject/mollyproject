@@ -39,7 +39,7 @@ div.header-strapline {
     position:absolute;
     color:#ffffff;
     bottom:15px;
-    left:15px;
+    left:0px;
     padding:0;
     margin:0;
     margin-right:145px;
@@ -54,7 +54,7 @@ div.header-strapline h1 {
 div.header img.brandmark {
     position:absolute;
     top:15px;
-    right:15px;
+    right:0px;
     margin-left:15px;
     border:0;
 }

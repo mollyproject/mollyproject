@@ -47,6 +47,7 @@ urlpatterns = patterns('',
     
     # We've moved oucs-status to service-status, so we'd better keep people informed
     (r'^oucs-status/', app_moved('/oucs-status/', '/service-status/')),
+    (r'^desktop_about/', app_moved('/desktop_about/', '/exposition/')),
 )
 
 handler500 = 'mobile_portal.core.views.handler500'

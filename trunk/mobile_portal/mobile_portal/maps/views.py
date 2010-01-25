@@ -615,6 +615,40 @@ def without_location(request):
 
 
 class APIView(BaseView):
+    """
+    Returns a JSON object containing entity details.
+    
+    Valid parameters are:
+    
+    * type: Filters by an EntityType slug
+    * source: Filters by data source; one of 'oxpoints','osm','naptan'
+    * near: A long,lat pair to order by
+    * max_distance: Filters out those more than the specified distance from the point given above.
+    * limit: The number of results to return; defaults to 100; capped at 200
+    * offset: The number of results to skip; defaults to 0
+    
+    It is an error to specify max_distance without near. Entities are ordered
+    by name and then DB id; hence the order is deterministic.
+    
+    Returns a JSON object with the following attributes:
+    
+    * count: The number of entities that survived the filters
+    * returned: The number of entities returned once limit and offset were taken into account
+    * limit: The limit used. This may differ from that provided when the latter was invalid.
+    * offset: The offset used. This may differ as above.
+    * entities: A list of entities
+    
+    Entities are JSON objects with the following attributes:
+    
+    * type: The primary type of the entity
+    * all_types: A list containing all types of the object
+    * source: The data source for the entity, with the same domain as given above
+    * url: The location of this resource on this host
+    * name: The title of the entity.
+    * location: A two-element list containing longitude and latitude
+    * metadata: Any further metadata as provided by the data source
+    """
+    
     breadcrumb = NullBreadcrumb
     
     def handle_GET(cls, request, context):
@@ -626,7 +660,7 @@ class APIView(BaseView):
             limit, offset = int(limit), int(offset)
         except (ValueError, TypeError):
             limit, offset = 100, 0
-        limit = min(limit, 200)
+        limit, offset = min(limit, 200), max(offset, 0)
         
         if 'type' in request.GET:
             entities = entities.filter(all_types__slug = request.GET['type'])

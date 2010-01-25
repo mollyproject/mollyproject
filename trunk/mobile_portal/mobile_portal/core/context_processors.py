@@ -40,8 +40,9 @@ def device_specific_media(request):
         style_group = "smart"
         
     # Symbian S60 v3 and above (iresspective of browser)
-    elif device.device_os == 'Symbian' and tuple(map(int, device.device_os_version.split('.'))) >= 9.2 : 
+    elif device.device_os in ('Symbian', 'Symbian OS') and tuple(map(int, device.device_os_version.split('.'))) >= (9, 2) : 
         style_group = "smart"
+        
     # Nokia Maemo 
     elif device.brand_name == 'Nokia' and device.device_os == 'Linux Smartphone OS' :
         style_group = "smart"

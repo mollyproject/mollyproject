@@ -35,7 +35,7 @@ class BaseView(object):
         method_name = 'handle_%s' % request.method
         if hasattr(cls, method_name):
             context = cls.initial_context(request, *args, **kwargs)
-            context['breadcrumbs'] = cls.breadcrumb.render(cls, request, context, *args, **kwargs)
+            context['breadcrumbs'] = cls.breadcrumb(request, context, *args, **kwargs)
             response = getattr(cls, method_name)(request, context, *args, **kwargs)
             return response
         else:

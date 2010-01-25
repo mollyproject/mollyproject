@@ -41,7 +41,7 @@ class IndexView(BaseView):
             and not request.GET.get('preview') == 'true'
             and not internal_referer
             and not settings.DEBUG):
-            return HttpResponseRedirect(reverse('desktop_index'))
+            return HttpResponseRedirect(reverse('core_exposition'))
     
         fpls = dict((fpl.slug, fpl) for fpl in FrontPageLink.objects.all())
         fpls_prefs = sorted(request.preferences['front_page_links'].items(), key=lambda (slug,(order, display)): order)
@@ -290,8 +290,8 @@ class StaticDetailView(BaseView):
         })
         return mobile_render(request, context, 'core/static_detail')
 
-class DesktopIndexView(BaseView):
-    def get_metadata(cls, request):
+class ExpositionView(BaseView):
+    def get_metadata(cls, request, page):
         return {
             'exclude_from_search': True
         }
@@ -300,9 +300,16 @@ class DesktopIndexView(BaseView):
     cache_page_duration = 60*15
     
     def handle_GET(cls, request, context, page):
-        if not page:
-            page = 'index'
-        return render_to_response('desktop/%s.xhtml' % page, {}, context_instance=RequestContext(request))    
+        page = page or 'about'
+        template = loader.get_template('core/exposition/%s.xhtml' % page)
+        content = template.render(RequestContext(request))
+        
+        if request.GET.get('ajax') == 'true':
+            return HttpResponse(content)
+        else:
+            return render_to_response('core/exposition/container.xhtml', {
+                'content': content,
+            }, context_instance=RequestContext(request))    
 
 def handler500(request):
     context = {
@@ -437,7 +444,10 @@ class ShortenURLView(BaseView):
         try:
             path = request.GET['path']
             view, view_args, view_kwargs = resolve(path.split('?')[0])
-            view_context = view.initial_context(request, *view_args, **view_kwargs)
+            if getattr(view, 'simple_shorten_breadcrumb', False):
+                view_context = None
+            else:
+                view_context = view.initial_context(request, *view_args, **view_kwargs)
             
         except (KeyError, ):
             raise Http404
@@ -448,21 +458,32 @@ class ShortenURLView(BaseView):
             'view_args': view_args,
             'view_kwargs': view_kwargs,
             'view_context': view_context,
-            'complex_shorten': ('?' in path) or view_context.get('complex_shorten', False),
+            'complex_shorten': ('?' in path) or view_context is None or view_context.get('complex_shorten', False),
         }
 
     def breadcrumb_render(cls, request, context):
         view, view_context = context['view'], context['view_context']
         view_args, view_kwargs = context['view_args'], context['view_kwargs']
         
-        breadcrumb = view.breadcrumb.render(view, request, view_context, *view_args, **view_kwargs)
-        return (
-            breadcrumb[0],
-            breadcrumb[1],
-            (breadcrumb[4], context['path']),
-            breadcrumb[1] == (breadcrumb[4], context['path']),
-            'Shorten link',
-        )
+        if view_context:
+            breadcrumb = view.breadcrumb.render(view, request, view_context, *view_args, **view_kwargs)
+            return (
+                breadcrumb[0],
+                breadcrumb[1],
+                (breadcrumb[4], context['path']),
+                breadcrumb[1] == (breadcrumb[4], context['path']),
+                'Shorten link',
+            )
+        else:
+            index = resolve(reverse('%s_index' % view.app_name))[0].breadcrumb(request, context)
+            index = index.title, index.url()
+            return (
+                view.app_name,
+                index,
+                (u'Back\u2026', context['path']),
+                False,
+                'Shorten link',
+            )
 
     # Create a 'blank' object to attach our render method to by constructing
     # a class and then calling its constructor. It's a bit messy, and probably
