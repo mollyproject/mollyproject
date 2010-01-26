@@ -65,7 +65,7 @@ OUTLOOK_TO_ICON = {
     'lsn': 'snow1%(night)s',
     'sn':  'snow3%(night)s',
     'hsn': 'snow5',
-    'unk': 'unknown',
+    'unk': 'dunno',
 }
 
 SCALE_CHOICES = (
