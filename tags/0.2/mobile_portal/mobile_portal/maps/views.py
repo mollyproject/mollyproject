@@ -303,6 +303,11 @@ class EntityDetailView(ZoomableView):
     def display_osm(cls, request, context, entity):
         return mobile_render(request, context, 'maps/osm/base')
 
+    def display_postcode(cls, request, context, entity):
+        context['entities'] = Entity.objects.filter(post_code=entity.post_code)
+        return mobile_render(request, context, 'maps/postcode')
+
+
 class EntityUpdateView(ZoomableView):
     default_zoom = 16
     
@@ -522,17 +527,17 @@ def entity_favourite(request, type_slug, id):
     
     if request.method != 'POST':
         return HttpResponse('', mimetype='text/plain', status=405)
-        
+
     try:
         value = request.POST['is_favourite'] == 'true'
     except KeyError:
         return HttpResponse('', mimetype='text/plain', status=400)
-        
+
     make_favourite(request, entity, value)
-    
+
     if 'no_redirect' in request.POST:
         return HttpResponse('', mimetype='text/plain', status=400)
-        
+
     if 'return_url' in request.POST:
         return HttpResponseRedirect(request.POST['return_url'])
     else:
@@ -541,43 +546,43 @@ def entity_favourite(request, type_slug, id):
 
 def without_location(request):
     entities = Entity.objects.filter(entity_type__source='oxpoints', location__isnull=True)
-    
+
     data = (
         '%d,"%s","%s"\n' % (e.oxpoints_id, e.title.replace('"', r'\"'), e.entity_type.slug) for e in entities
     )
-    
+
     return HttpResponse(data, mimetype='text/csv')
 
 
 class APIView(BaseView):
     breadcrumb = NullBreadcrumb
-    
+
     def handle_GET(cls, request, context):
         entities = Entity.objects.order_by('title', 'id')
         error = False
-        
+
         limit, offset = request.GET.get('limit', 100), request.GET.get('offset', 0)
         try:
             limit, offset = int(limit), int(offset)
         except (ValueError, TypeError):
             limit, offset = 100, 0
         limit = min(limit, 200)
-        
+
         if 'type' in request.GET:
             entities = entities.filter(all_types__slug = request.GET['type'])
         if 'source' in request.GET:
             entities = entities.filter(entity_type__source = request.GET['source'])
-            
+
         if 'near' in request.GET:
             try:
                 point = Point(map(float, request.GET['near'].split(',')), srid=4326).transform(27700, clone=True)
 
                 entities = entities.filter(location__isnull=False)
                 entities = entities.distance(point).order_by('distance')
-                
+
                 for entity in entities:
                     entity.distance = entity.location.transform(27700, clone=True).distance(point)
-                
+
                 if 'max_distance' in request.GET:
                     max_distance = float(request.GET['max_distance'])
                     new_entities = []
@@ -596,14 +601,14 @@ class APIView(BaseView):
                 entities, count, error = [], 0, True
         elif 'max_distance' in request.GET:
             entities, count, error = [], 0, True
-                
+
         if not 'near' in request.GET:
             count = entities.count()
             try:
                 entities = entities[offset:offset+limit]
             except ValueError:
                 entities, count, error = [], 0, True
-                
+
         out = []
         for entity in entities:
             out.append({
@@ -617,7 +622,7 @@ class APIView(BaseView):
             })
             if 'near' in request.GET:
                 out[-1]['distance'] = entity.distance
-            
+
         out = {
             'offset': offset,
             'limit': limit,

@@ -6,6 +6,9 @@ from mobile_portal.oxpoints.models import Entity, EntityType
 
 OXPOINTS_NS = 'http://ns.ox.ac.uk/namespace/oxpoints/2009/02/owl#'
 
+ns_vcard = rdflib.Namespace("http://nwalsh.com/rdf/vCard#")
+
+
 class Command(NoArgsCommand):
     option_list = NoArgsCommand.option_list
     help = "Loads OxPoints data from http://m.ox.ac.uk/oxpoints/all.xml"
@@ -61,6 +64,7 @@ class Command(NoArgsCommand):
 
     def update_oxpoints_entity(self, uri, location, title, ptype, depth=0):
         oxpoints_id = int(uri.split('/')[-1])
+        print oxpoints_id
 
         if oxpoints_id in self.seen:
             return
@@ -96,6 +100,19 @@ class Command(NoArgsCommand):
         if entity.entity_type.slug == 'sublibrary':
             entity.is_stack = any((x in entity.title.lower()) for x in ('stack', 'nuneham', 'offsite'))
 
+        # Find the postcode
+        post_codes = self.graph.query("""
+            SELECT ?p WHERE {
+                ?e ?ha ?a
+              . ?a ?pc ?p }""",
+            initBindings = {
+                '?e': uri, '?ha': ns_vcard['adr'], '?pc': ns_vcard['postal_code']
+            })
+            
+        for post_code in post_codes:
+            post_code = unicode(post_code[0])
+            entity.post_code = post_code.replace(' ', '')
+        
         entity.save()
 
         other_places =  self.graph.query("""

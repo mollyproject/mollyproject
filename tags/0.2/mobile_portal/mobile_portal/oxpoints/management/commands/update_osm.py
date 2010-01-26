@@ -261,6 +261,11 @@ class OxfordHandler(handler.ContentHandler):
                 
                 for et in entity_type.all_types:
                     entity.all_types.add(et)
+                    
+                if 'addr:postcode' in self.tags:
+                    entity.post_code = self.tags['addr:postcode'].replace(' ', '')
+                else:
+                    entity.post_code = ""
                 
                 if self.tags.get('atm') == 'yes':
                     entity.all_types.add(self.entity_types['atm'])
