@@ -8,15 +8,6 @@
 {% block content %}
 
 <div class="section">
-	{% if entity %}
-		<h2>Find things near {{ entity.title }}</h2>
-		{% else %}
-		<h2>Find things nearby</h2>
-		{% include "core/update_location_embed.xhtml" %}
-	{% endif %}
-</div>
-
-<div class="section">
   <h2>Public</h2>
 	<ul>
 	{% for entity_type in public %}{% if entity %}

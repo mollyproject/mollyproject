@@ -326,7 +326,8 @@ class EntityDetailView(ZoomableView):
         return mobile_render(request, context, 'maps/osm/base')
         
     def display_postcode(cls, request, context, entity):
-        raise Http404
+        context['entities'] = Entity.objects.filter(post_code=entity.post_code)
+        return mobile_render(request, context, 'maps/postcode')
 
 class EntityUpdateView(ZoomableView):
     default_zoom = 16
