@@ -227,7 +227,6 @@ class _OAuthView(BaseView):
     def handle_error(cls, request, exception, token_type='access_token', *args, **kwargs):
         body = exception.read()
         try:
-            raise Exception(body)
             d = urlparse.parse_qs(body)
         except ValueError:
             error = 'unexpected_response'

@@ -27,7 +27,7 @@ class OAuthOpener(object):
         try:
             return self.__dict__['_opener'].open(*args, **kwargs)
         except urllib2.HTTPError, e:
-            if e.code == 403:
+            if e.code == 401:
                 raise OAuthHTTPError(e)
             else:
                 raise
@@ -38,7 +38,7 @@ class OAuthHandler(urllib2.BaseHandler):
         self.consumer, self.access_token = consumer, access_token
         self.signature_method = signature_method
         
-    def http_request(self, request):
+    def https_request(self, request):
         oauth_request = oauth.OAuthRequest.from_consumer_and_token(self.consumer,
                                                                    self.access_token)
         oauth_request.sign_request(self.signature_method,
@@ -46,8 +46,8 @@ class OAuthHandler(urllib2.BaseHandler):
                                    self.access_token)
         request.add_header('Authorization',
                            oauth_request.to_header()['Authorization'])
-        print "Auth header", oauth_request.to_header()['Authorization']
         return request
+    http_request = https_request
 
 class SimpleOAuthClient(oauth.OAuthClient):
 
