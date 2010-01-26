@@ -2,7 +2,6 @@ body {
     font-family: Arial,"Liberation Sans", sans-serif;
     margin:0;
 /*    background-color:#cfd9e5; */
-	background: #FFFFFF url(../png/desktop/backdrop.png) repeat-x scroll center top ;
     min-width:730px;
 
 	font-size:0.75em;
@@ -11,6 +10,7 @@ body {
 	font-variant:normal;
 	font-weight:normal;
 	line-height:1.33;
+	overflow:scroll;
 }
 
 a {
@@ -32,13 +32,19 @@ div.header {
     position:relative;
 /*    background-color:#c5d2e0;*/
     height:145px;
+    border-bottom:1px solid #002147;
+}
 
+div.header {
+	background: #ffffff url(../png/desktop/backdrop.png) repeat-x scroll center top ;
+	margin-bottom:20px;
+    
 }
 
 div.header-strapline {
     position:absolute;
     color:#ffffff;
-    bottom:15px;
+    top:30px;
     left:0px;
     padding:0;
     margin:0;
