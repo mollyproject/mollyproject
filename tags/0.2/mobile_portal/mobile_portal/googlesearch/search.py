@@ -71,16 +71,6 @@ class GoogleSearch(object):
 
         xml = ET.parse(response)
         
-        print urllib2.urlopen(GOOGLE_SEARCH_URL % urllib.urlencode({
-            'as_sitesearch': self.domain,
-            'client': 'oxford',
-            'Go':'Go!',
-            'q': self.query.encode('utf8'),
-            'output': 'xml',
-            'ie': 'utf8',
-            'oe': 'utf8',
-        })).read()
-        
         resolver = RegexURLResolver(r'^/', settings.ROOT_URLCONF)
 
         SCHEME_HOST_RE = re.compile(r'[a-z\d]+:\/\/[a-z.\-\d]+\/')
@@ -140,21 +130,18 @@ class GoogleSearch(object):
         all_results, overrides, redirects = [], set(), set()
             
         for app in applications:
-            print "Searching", app
             try:
                 site_search_name = '%s.search' % app
                 _temp = __import__(site_search_name,
                                    globals(), locals(),
                                    ['SiteSearch'], -1)
-                print dir(_temp)
                 if not hasattr(_temp, 'SiteSearch'):
                     raise ImportError
-            except ImportError:
+            except ImportError, e:
                 continue
             else:
                 site_search = _temp.SiteSearch
                 
-            print "Found searcher"
             
             results, override, redirect = site_search(
                 self.query,

@@ -35,7 +35,7 @@ class Command(NoArgsCommand):
         entity_type = self.load_entity_type()
         valid_areas = ('OX', 'GL', 'CV', 'NN', 'MK', 'HP', 'SL', 'RG', 'SN')
         
-        reader = csv.reader(open('/home/alex/NSPDF_AUG_2009_UK_1M_FP.csv', 'r'))
+        reader = csv.reader(open('/var/cache/mobile_portal/NSPDF_AUG_2009_UK_1M_FP.csv', 'r'))
         
         j = 0
         for i, line in enumerate(reader):

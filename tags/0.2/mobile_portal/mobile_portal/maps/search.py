@@ -2,7 +2,7 @@ import re, simplejson, urllib2
 
 from django.core.urlresolvers import reverse
 
-from views import EntityDetailView, PostCodeDetailView, EntityDetailView
+from views import EntityDetailView
 from mobile_portal.oxpoints.models import Entity
 
 
@@ -40,7 +40,6 @@ class SiteSearch(object):
 
     @classmethod
     def busstops(cls, query, only_app, request):
-        print "Here"
 
         id = query.strip()
         if len(id) == 5: 
@@ -71,7 +70,6 @@ class SiteSearch(object):
 
             results.append(result)
 
-        print "Results", results
         return results
 
     @classmethod
