@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-import urllib, re, email, feedparser
+import urllib, re, email, feedparser, time
 from mobile_portal.rss.models import Item, Feed
 from mobile_portal.rss.utils import sanitise_html
 
@@ -8,13 +8,25 @@ from base import BaseImporter
 
 __all__ = ['GenericRSSImporter']
 
+def parse_date(s):
+    return struct_to_datetime(feedparser._parse_date(s))
+def struct_to_datetime(s):
+    return datetime.fromtimestamp(time.mktime(s))
+ 
 class GenericRSSImporter(BaseImporter):
     slug = 'generic_rss'
     
     def update(self, feed):
         feed_data = feedparser.parse(feed.rss_url)
+        try:
+            feed.last_modified = struct_to_datetime(feed_data.feed.updated_parsed)
+            print "RRRRRRRRRRRRRRRRRRRRRRRRRRRR"
+        except:
+            feed.last_modified = parse_date(feed_data.headers.get('last-modified', datetime.now().strftime("%a, %d %b %Y %H:%M:%S +0000")))
+            
+        feed.save()
         
-        item = set()
+        items = set()
         for x_item in feed_data.entries:
             guid, last_modified = x_item.id, datetime(*x_item.date_parsed[:7])
             

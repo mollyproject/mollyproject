@@ -9,7 +9,7 @@ from django.forms.util import ErrorList
 
 from mobile_portal.utils.views import BaseView
 from mobile_portal.utils.renderers import mobile_render
-from mobile_portal.utils.breadcrumbs import BreadcrumbFactory, Breadcrumb, static_reverse, lazy_reverse
+from mobile_portal.utils.breadcrumbs import BreadcrumbFactory, Breadcrumb, static_reverse, lazy_reverse, static_parent
 
 from .clients import OAuthHTTPError
 from .forms import PreferencesForm
@@ -253,13 +253,17 @@ class OAuthView(SecureView, _OAuthView):
 class ClearSessionView(SecureView):
     def initial_context(cls, request):
         return {
-            'path': request.REQUEST.get('path'),
+            'return_url': request.REQUEST.get('return_url', '/'),
         }
         
     @BreadcrumbFactory
     def breadcrumb(cls, request, context):
-        return breadcrumb(
+        return Breadcrumb(
             'secure',
+            static_parent(context['return_url'], 'Back'),
+            'Clear session',
+            lazy_reverse('secure_clear_session'),
+            
         )
             
     def handle_GET(cls, request, context):
@@ -267,7 +271,7 @@ class ClearSessionView(SecureView):
     def handle_POST(cls, request, context):
         for key in request.secure_session.keys():
             del request.secure_session[key]
-        if context['path']:
-            return HttpResponseRedirect(context['path'])
+        if context['return_url']:
+            return HttpResponseRedirect(context['return_url'])
         else:
             return HttpResponseRedirect('.')

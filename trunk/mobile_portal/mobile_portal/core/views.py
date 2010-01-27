@@ -309,6 +309,7 @@ class ExpositionView(BaseView):
         else:
             return render_to_response('core/exposition/container.xhtml', {
                 'content': content,
+                'page': page,
             }, context_instance=RequestContext(request))    
 
 def handler500(request):

@@ -13,7 +13,7 @@ class Command(NoArgsCommand):
     requires_model_validation = True
     
     def handle_noargs(self, **options):
-        for feed in Feed.events.all():
+        for feed in Feed.objects.all():
             
             print "Importing %s" % feed.rss_url
             importer = importers[feed.importer]

@@ -54,23 +54,27 @@
   
   .feature-info {
     float:right;
-    width: 299px;
+    width: 269px;
     height: 473px;
     padding: 5px 10px 0 10px;
     -moz-border-radius-bottomright:10px;
     
   }
   
-  .feature-info h2 {
+  .feature-info h3 {
     margin-top:0;
   }
   
   #feature-descriptions {
-    width:640px;
+    width:610px;
     height:480px;
     float:left;
     position:relative;
     overflow:hidden;
+  }
+  
+  video {
+    -moz-border-radius:15px;
   }
 </style>
 <script type="text/javascript">
@@ -136,7 +140,7 @@
 <div id="feature-descriptions">
   <div class="feature-description" id="features-contact">
     <div class="feature-info">
-      <h2>Contact search</h2>
+      <h3>Contact search</h3>
     
       <p>Search the University e-mail and telephone directories from your
          phone.</p>
@@ -161,7 +165,7 @@
 
   <div class="feature-description" id="features-maps">
     <div class="feature-info">
-      <h2>Maps</h2>
+      <h3>Maps</h3>
     
       <p>We have maps!</p>
     </div>
@@ -185,7 +189,7 @@
 
   <div class="feature-description" id="features-z3950">
     <div class="feature-info">
-      <h2>Library search</h2>
+      <h3>Library search</h3>
     
       <p>Search the University's libraries.</p>
     </div>
@@ -209,7 +213,7 @@
 
   <div class="feature-description" id="features-podcasts">
     <div class="feature-info">
-      <h2>Podcasts</h2>
+      <h3>Podcasts</h3>
     
       <p>There are podcasts.</p>
     </div>
@@ -233,14 +237,14 @@
 
   <div class="feature-description" id="features-search">
     <div class="feature-info">
-      <h2>Search</h2>
+      <h3>Search</h3>
     
       <p>Search is heavily integrated into Mobile Oxford.</p>
     </div>
   
     <div class="feature-video">
       <video width="320" height="480" controls="controls" poster="{{ MEDIA_URL}}png/poster.png">
-        <source src="{{ MEDIA_URL }}ogv/features/contact.ogv" type="video/ogg; codecs=&quot;theora, vorbis&quot;" />
+        <source src="{{ MEDIA_URL }}ogv/features/search.ogv" type="video/ogg; codecs=&quot;theora, vorbis&quot;" />
       
         <div class="no-video">
           This video requires a browser with support for open video:
@@ -257,7 +261,7 @@
 
   <div class="feature-description" id="features-other">
     <div class="feature-info">
-      <h2>Other features</h2>
+      <h3>Other features</h3>
     
       <p>Foo</p>
     </div>

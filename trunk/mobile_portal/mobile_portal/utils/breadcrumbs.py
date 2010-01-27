@@ -61,6 +61,10 @@ def lazy_parent(view, *args, **kwargs):
         return view.breadcrumb.data(cls, request, context, *args, **kwargs)
     return f
 
-def lazy_parent_path(path, app=None):
-    def f(request, context):
-        pass
+def static_parent(path, title, application=None):
+    def f(cls, request, context):
+        return Breadcrumb(
+            application, None, title, lambda: path
+        )
+    return f
+    

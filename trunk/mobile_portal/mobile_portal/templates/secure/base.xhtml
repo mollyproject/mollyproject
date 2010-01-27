@@ -2,6 +2,6 @@
 
 {% block bottom_links %}{{ block.super }}<br/>
   <a href="{% url secure_index %}">Security preferences</a><br/>
-  <a href="{% url secure_index %}">Clear secure session</a>
+  <a href="{% url secure_clear_session %}?return_url={{ path }}">Clear secure session</a>
 {% endblock %}
     
