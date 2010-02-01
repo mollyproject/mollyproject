@@ -1,0 +1,28 @@
+<p>Did you mean&hellip;</p>
+
+{% if map_url %}
+{% ifnotequal style_group "dumb" %}
+    <div class="backgrounded-image" style="background-image:url('{{ map_url }}'); height:{{ map_height }}px">
+    {% include "maps/map_elements.xhtml" %}
+    </div>
+{% else %}
+    <img src="{{ map_url }}}" alt="Map"><br />
+    {% include "maps/map_elements.xhtml" %}
+{% endifnotequal %}
+{% endif %}
+
+<ul>
+{% for placemark in placemarks %}
+    <li>
+        <form method="post" action="{% url core_update_location %}" class="submit-location-form">
+            <input type="hidden" name="name" value="{{ placemark.0 }}"/>
+            <input type="hidden" name="latitude" value="{{ placemark.1.0 }}"/>
+            <input type="hidden" name="longitude" value="{{ placemark.1.1 }}"/>
+            <input type="hidden" name="accuracy" value="{{ placemark.2 }}"/>
+            <input type="hidden" name="method" value="geocoded"/>
+            <input type="hidden" name="return_url" value="{{ return_url|default:"" }}"/>
+            <button class="submit-location-form-button" type="submit" name="index" style="width:100%">{{ forloop.counter }}. {{ placemark.0 }}</button>
+        </form>
+    </li>
+{% endfor %}
+</ul>

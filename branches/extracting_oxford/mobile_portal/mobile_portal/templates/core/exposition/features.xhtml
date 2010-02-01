@@ -1,0 +1,286 @@
+
+<style>
+  .feature-list {
+    float:right;
+    width:160px;
+  }
+  
+  .feature-list ul {
+    list-style:none;
+    margin:0;
+    padding-left:0;
+    -moz-border-radius:10px;
+    -webkit-border-radius:10px;
+  }
+  
+  .feature-list li {
+    border:1px solid #002147;
+    border-top:1px solid #a0a0a0;
+    border-bottom:0;
+    border-left:0;
+    margin:0;
+    
+  }
+  
+  .feature-list li a {
+    color:#002147;
+  }
+  
+  .feature-list li:hover {
+    background-color:#002147;
+    color:#ffffff;
+  }
+  
+  .feature-list li:hover a {
+    color:#ffffff;
+  }
+  
+  .feature-list li:first-child {
+    border-top:1px solid #002147;
+    -moz-border-radius-topright:10px;
+    -webkit-border-radius:10px;
+  }
+  
+  .feature-list li:last-child {
+    border-bottom:1px solid #002147;
+    -moz-border-radius-bottomright:10px;
+    -webkit-border-radius:10px;
+  }
+  
+  .feature-list a {
+    display:block;
+    padding:10px 4px;
+  }
+  
+  .feature-info {
+    float:right;
+    width: 269px;
+    height: 473px;
+    padding: 5px 10px 0 10px;
+    -moz-border-radius-bottomright:10px;
+    
+  }
+  
+  .feature-info h3 {
+    margin-top:0;
+  }
+  
+  #feature-descriptions {
+    width:610px;
+    height:480px;
+    float:left;
+    position:relative;
+    overflow:hidden;
+  }
+  
+  video {
+    -moz-border-radius:15px;
+  }
+</style>
+<script type="text/javascript">
+  page_name = "features";
+  
+  hash = window.location.hash.substring(1).split('-');
+  expected_page_name = hash[0];
+  feature_name = (hash.length == 2) ? hash[1] : "contact";
+  var current_feature = null;
+  
+  function show_feature(e) {
+    next_feature = $(e.data);
+    
+    if (true || next_feature.css("opacity") != "1" && next_feature.is(":not(animated)")) {
+      current_feature.fadeOut("fast", function() {
+        next_feature.fadeIn();
+        current_feature = next_feature;
+        
+        return;
+
+    
+      });
+    }
+            video = next_feature.find('video').get(0);
+        video.pause();
+        video.currentTime = 0;
+    return false;
+
+  }
+  
+  $(function() {
+    current_feature = $('#features-'+feature_name);
+    
+    $('.feature-list a').each(function () {
+      show_id = $(this).attr('href');
+      $(this).bind('click', show_id, show_feature);
+      /*$(show_id).css('position', 'absolute');
+      $(show_id).children('.feature-video').css('position','absolute');
+      $(show_id).children('.feature-video').css('left','0px');
+      $(show_id).children('.feature-video').css('top','0px');
+      $(show_id).children('.feature-info').css('position','absolute');
+      $(show_id).children('.feature-info').css('left','320px');
+      $(show_id).children('.feature-info').css('top','0px');*/
+      if (('#features-'+feature_name) != show_id) {
+        $(show_id).css('display', 'none');
+      }
+      
+    });
+  });
+</script>
+
+<div class="feature-list">
+  <ul>
+    <li><a id="show-feature-contact" href="#features-contact">Contact search</a></li>
+    <li><a id="show-feature-maps" href="#features-maps">Maps</a></li>
+    <li><a id="show-feature-z3950" href="#features-z3950">Library search</a></li>
+    <li><a id="show-feature-podcasts" href="#features-podcasts">Podcasts</a></li>
+    <li><a id="show-feature-search" href="#features-search">Search</a></li>
+    <li><a id="show-feature-other" href="#features-other">Other features</a></li>
+  </ul>
+</div>
+
+<div id="feature-descriptions">
+  <div class="feature-description" id="features-contact">
+    <div class="feature-info">
+      <h3>Contact search</h3>
+    
+      <p>Search the University e-mail and telephone directories from your
+         phone.</p>
+    </div>
+  
+    <div class="feature-video">
+      <video width="320" height="480" controls="controls" poster="{{ MEDIA_URL}}png/poster.png">
+        <source src="{{ MEDIA_URL }}ogv/features/contact.ogv" type="video/ogg; codecs=&quot;theora, vorbis&quot;" />
+      
+        <div class="no-video">
+          This video requires a browser with support for open video:
+          <ul>
+            <li><a href="http://www.mozilla.com/firefox/">Firefox</a> 3.5 or greater</li>
+            <li><a href="http://www.apple.com/safari/">Safari</a> 3.1 or greater</li>
+          </ul>
+          or the <a href="http://www.adobe.com/go/getflashplayer">Adobe Flash Player</a>.
+          Alternatively, you may use the video download links to the right.
+        </div>
+      </video>
+    </div>
+  </div>
+
+  <div class="feature-description" id="features-maps">
+    <div class="feature-info">
+      <h3>Maps</h3>
+    
+      <p>We have maps!</p>
+    </div>
+  
+    <div class="feature-video">
+      <video width="320" height="480" controls="controls" poster="{{ MEDIA_URL}}png/poster.png">
+        <source src="{{ MEDIA_URL }}ogv/features/contact.ogv" type="video/ogg; codecs=&quot;theora, vorbis&quot;" />
+      
+        <div class="no-video">
+          This video requires a browser with support for open video:
+          <ul>
+            <li><a href="http://www.mozilla.com/firefox/">Firefox</a> 3.5 or greater</li>
+            <li><a href="http://www.apple.com/safari/">Safari</a> 3.1 or greater</li>
+          </ul>
+          or the <a href="http://www.adobe.com/go/getflashplayer">Adobe Flash Player</a>.
+          Alternatively, you may use the video download links to the right.
+        </div>
+      </video>
+    </div>
+  </div>
+
+  <div class="feature-description" id="features-z3950">
+    <div class="feature-info">
+      <h3>Library search</h3>
+    
+      <p>Search the University's libraries.</p>
+    </div>
+  
+    <div class="feature-video">
+      <video width="320" height="480" controls="controls" poster="{{ MEDIA_URL}}png/poster.png">
+        <source src="{{ MEDIA_URL }}ogv/features/nonexistant.ogv" type="video/ogg; codecs=&quot;theora, vorbis&quot;" />
+      
+        <div class="no-video">
+          This video requires a browser with support for open video:
+          <ul>
+            <li><a href="http://www.mozilla.com/firefox/">Firefox</a> 3.5 or greater</li>
+            <li><a href="http://www.apple.com/safari/">Safari</a> 3.1 or greater</li>
+          </ul>
+          or the <a href="http://www.adobe.com/go/getflashplayer">Adobe Flash Player</a>.
+          Alternatively, you may use the video download links to the right.
+        </div>
+      </video>
+    </div>
+  </div>
+
+  <div class="feature-description" id="features-podcasts">
+    <div class="feature-info">
+      <h3>Podcasts</h3>
+    
+      <p>There are podcasts.</p>
+    </div>
+  
+    <div class="feature-video">
+      <video width="320" height="480" controls="controls" poster="{{ MEDIA_URL}}png/poster.png">
+        <source src="{{ MEDIA_URL }}ogv/features/contact.ogv" type="video/ogg; codecs=&quot;theora, vorbis&quot;" />
+      
+        <div class="no-video">
+          This video requires a browser with support for open video:
+          <ul>
+            <li><a href="http://www.mozilla.com/firefox/">Firefox</a> 3.5 or greater</li>
+            <li><a href="http://www.apple.com/safari/">Safari</a> 3.1 or greater</li>
+          </ul>
+          or the <a href="http://www.adobe.com/go/getflashplayer">Adobe Flash Player</a>.
+          Alternatively, you may use the video download links to the right.
+        </div>
+      </video>
+    </div>
+  </div>
+
+  <div class="feature-description" id="features-search">
+    <div class="feature-info">
+      <h3>Search</h3>
+    
+      <p>Search is heavily integrated into Mobile Oxford.</p>
+    </div>
+  
+    <div class="feature-video">
+      <video width="320" height="480" controls="controls" poster="{{ MEDIA_URL}}png/poster.png">
+        <source src="{{ MEDIA_URL }}ogv/features/search.ogv" type="video/ogg; codecs=&quot;theora, vorbis&quot;" />
+      
+        <div class="no-video">
+          This video requires a browser with support for open video:
+          <ul>
+            <li><a href="http://www.mozilla.com/firefox/">Firefox</a> 3.5 or greater</li>
+            <li><a href="http://www.apple.com/safari/">Safari</a> 3.1 or greater</li>
+          </ul>
+          or the <a href="http://www.adobe.com/go/getflashplayer">Adobe Flash Player</a>.
+          Alternatively, you may use the video download links to the right.
+        </div>
+      </video>
+    </div>
+  </div>
+
+  <div class="feature-description" id="features-other">
+    <div class="feature-info">
+      <h3>Other features</h3>
+    
+      <p>Foo</p>
+    </div>
+  
+    <div class="feature-video">
+      <video width="320" height="480" controls="controls" poster="{{ MEDIA_URL}}png/poster.png">
+        <source src="{{ MEDIA_URL }}ogv/features/contact.ogv" type="video/ogg; codecs=&quot;theora, vorbis&quot;" />
+      
+        <div class="no-video">
+          This video requires a browser with support for open video:
+          <ul>
+            <li><a href="http://www.mozilla.com/firefox/">Firefox</a> 3.5 or greater</li>
+            <li><a href="http://www.apple.com/safari/">Safari</a> 3.1 or greater</li>
+          </ul>
+          or the <a href="http://www.adobe.com/go/getflashplayer">Adobe Flash Player</a>.
+          Alternatively, you may use the video download links to the right.
+        </div>
+      </video>
+    </div>
+  </div>
+</div>
+  

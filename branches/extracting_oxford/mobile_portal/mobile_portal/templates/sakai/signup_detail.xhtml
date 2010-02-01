@@ -1,0 +1,101 @@
+{% extends "sakai/base.xhtml" %}{% load sakai %}{% load portal_misc %}
+
+{% block content %}
+
+<div class="section">
+    <h2>{{ event.title }}</h2>
+<div class="bubble"><div class="article pad-10">
+<dl>
+  <dt>Description</dt>
+  {# CLENSE ME! #}
+  <dd>{{ event.description }}</dd>
+  <dt>Organiser</dt>
+  <dd>{{ event.organizerName }}</dd>
+  <dt>Location</dt>
+  <dd>{{ event.location }}</dd>
+  <dt>Date/Time</dt>
+  <dd>{% ifequal event.start|date:"dMY" event.end|date:"dMY" %}
+      {# Display Term Week + Name, Date + Time start -> end #}
+        {{ event.startTime|from_sakai_timestamp|oxdate:"%(week)s%(ordinal)s Week %(term_long)s Term" }}, {{ event.startTime|from_sakai_timestamp|date:"d M Y" }} 
+        {{ event.startTime|from_sakai_timestamp|date:"g:iA"|lower }} - {{ event.endTime|from_sakai_timestamp|date:"g:iA"|lower }}
+      {% else %}
+      {# Display startTime + startDate - endTime + endDate #}
+        {{ event.startTime|from_sakai_timestamp|date:"g:iA, d M Y"|lower }} - {{ event.endTime|from_sakai_timestamp|date:"g:iA, d M Y"|lower }}
+      {% endifequal %}
+  </dd>
+      
+  <dt>Status</dt>
+{% if event.startToSignUp and not event.passedDeadline %}
+  <dd>Open to sign up until {{ event.signupDeadline|from_sakai_timestamp|date:"d M Y, g:iA"|lower }}</dd>
+{% else %}
+  {% if event.passedDeadline and not event.meetingExpired %}
+  <dd>Sign up deadline has passed</dd>
+  {% else %}
+    {% if event.meetingExpired %}
+  <dd>This meeting has already happened!</dd>
+    {% else %}
+  <dd>Sign up will open at {{ event.signupBegins|from_sakai_timestamp|date:"d M Y, g:iA"|lower }}</dd>
+    {% endif %}
+  {% endif %}
+{% endif %}
+</dl>
+
+</div></div>
+
+
+<ul>
+{% for ts in event.signupTimeSlotItems %}
+<li>
+    {{ ts.startTime|from_sakai_timestamp|date:"g:iA"|lower }} - {{ ts.endTime|from_sakai_timestamp|date:"g:iA"|lower }}
+    <br />
+    <small>Max Slots:{{ ts.maxNoOfAttendees }}</small>
+      
+{% if ts.displayAttendees %}
+        <ul>
+  {% for attendee in ts.attendees %}
+          <li>{{ attendee.displayName }}</li>
+  {% endfor %}
+        </ul>
+{% else %}
+  {% if ts.signedUp %}
+    {% if ts.attendees|length_is:"1" %}
+        You 
+    {% else %}
+        You and {{ ts.attendees|length|add:"-1" }} other{{ ts.attendees|length|add:"-1"|pluralize }}
+    {% endif %}
+  {% else %}
+    {% if ts.attendees|length_is:"0" %}
+        No one yet
+    {% else %}
+        {{ ts.attendees|length }} attendee{{ ts.attendees|length|pluralize }}
+    {% endif %}
+  {% endif %}
+{% endif %}
+      {% if ts.signedUp %}Signed up{% else %}{% if ts.onWaitList %}On waiting list{% endif %}{% endif %}
+        <form method="post" action=".">
+          <input type="hidden" name="timeslot_id" value="{{ ts.id }}"/>
+{% if not event.meetingExpired and not event.passedDeadline and event.startToSignUp and not ts.locked %}
+  {% if ts.signedUp %}
+          <button type="submit" name="action" value="cancelSignup">Cancel</button>
+  {% else %}
+    {% if ts.onWaitList %}
+          <button type="submit" name="action" value="removeWaitList">Leave waiting list</button>
+    {% else %}
+      {% if ts.available %}
+        {% if signedUp %}
+          <button type="submit" name="action" value="addToWaitList">Move here</button>
+        {% else %}
+          <button type="submit" name="action" value="signup">Sign up</button>
+        {% endif %}
+      {% else %}      
+          <button type="submit" name="action" value="addToWaitList">Join waiting list</button>
+      {% endif %}
+    {% endif %}
+  {% endif %}
+{% endif %}
+        </form>
+</li>
+{% endfor %}
+</ul>
+</div>
+{% endblock %}

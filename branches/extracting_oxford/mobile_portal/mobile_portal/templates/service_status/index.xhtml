@@ -1,0 +1,41 @@
+{% extends "service_status/base.xhtml" %}
+
+{% block content %}
+
+{% if announce.items %}
+
+<div class="section">
+  <h2>Service announcements</h2>
+  
+  <ul>
+{% for item in announce.items %}
+    <li>
+      <h3>{{ item.title }}</h3>
+      {{ item.description }}<br/>
+      <small>{{ item.date }}</small>
+    </li>
+{% endfor %}
+  </ul>
+</div>
+
+{% endif %}
+
+{% for group_name, services in all_services %}
+<div class="section">
+    <h2>{{ group_name }}</h2>
+
+  <ul class="service-status">
+{% for service in services %}
+    <li class="service-status service-status-{{ service.status }}{% if forloop.first %} round-top{% endif %}{% if forloop.last %} round-bottom{% endif %}">
+      <span class="service-name">{{ service.name }}</span>
+      <span class="service-status">{{ service.status|capfirst }}</span>
+{% if service.detail %}
+      <span class="service-detail">{{ service.detail }}</span>
+{% endif %}
+    </li>
+{% endfor %}
+  </ul>
+</div>
+{% endfor %}
+
+{% endblock %}

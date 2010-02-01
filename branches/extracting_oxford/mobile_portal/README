@@ -1,0 +1,115 @@
+Installation
+============
+
+Depenencies
+-----------
+
+Install the following packages:
+ * python-psycopg2
+ * python-beautifulsoup
+ * python-simplejson
+ * python-ldap
+ * python-rdflib
+ * python-imaging
+ * python-cairo
+ * python-textile
+ * python-tz
+ * libsasl2-modules-ldap
+ * libapache2-webauth
+ * python-oauth (?)
+ * python-levenshtein
+ * postgis
+ * python-gdal
+ * proj
+ * libgeos-3.0.0
+ * binutils
+ * libgdal1-1.5.0
+ * postgresql-8.3
+ * postgresql-8.3-postgis
+ * postgresql-server-dev-8.3
+ * python-setuptools
+ * python-xml
+
+Now install Django 1.1 and the oauth module for 1.0a using easy_install:
+
+ $ easy_install "Django==1.1"
+ $ easy_install "oauth==1.0.1"
+ $ easy_install pywurfl
+
+
+Apache configuration
+--------------------
+
+Create symlinks from /etc/apache2/mods-enabled/ssl.(conf|load) to
+/etc/apache2/mods-available/ssl.(conf|load) .
+
+
+Database
+--------
+
+Follow the instructions at
+http://geodjango.org/docs/install.html#creating-a-spatial-database-template-for-postgis
+to create a spatially enabled database named mobile_portal. The easy way on
+Debian/Ubuntu is to run the create_template_postgis.sh script in this
+directory as a DB superuser (e.g. as postgres) and then use:
+
+ $ createdb -T template_postgis mobile_portal
+
+As a superuser, create the mobile_portal user:
+
+ $ createuser mobile_portal -P
+ Enter password for new role: 
+ Enter it again: 
+ Shall the new role be a superuser? (y/n) n
+ Shall the new role be allowed to create databases? (y/n) n
+ Shall the new role be allowed to create more new roles? (y/n) n
+
+Make sure the password is the one given in settings.py
+
+Now edit pg_hba.conf to allow passworded logins from the new user by adding the
+following line somewhere near the top. Order is important, so it needs to go
+above any more general access directives.
+
+ local mobile_portal mobile_portal md5
+
+Log in to the server and allow the user access to the database:
+
+ $ psql mobile_portal
+ Welcome to psql 8.3.7, the PostgreSQL interactive terminal.
+
+ Type:  \copyright for distribution terms
+        \h for help with SQL commands
+        \? for help with psql commands
+        \g or terminate with semicolon to execute query
+        \q to quit
+
+ mobile_portal=# grant all on database mobile_portal to mobile_portal;
+ GRANT
+ mobile_portal=# ^D
+
+Either send SIGHUP or restart the server to reload pg_hba.conf
+
+Change directory to mobile_portal/mobile_portal and use manage.py to initialise the database:
+
+ $ cd /Erewhon/mobile_portal/mobile_portal
+ $ python manage.py syncdb
+
+It should ask you to create a new superuser. Say yes and set one up.
+
+The information for a user is kept in two models, auth.User and core.Profile,
+with a foreign key link from the latter to the former. These are stored in the
+database as tables auth_user and core_profile. Django does not create an entry
+in the core_profile table for your superuser, which will make the site fall
+over when it can't be found. Use psql to insert a row into core_profile for the
+user.
+
+The site also requires a cache directory, currently /var/cache/mobile_portal .
+Create this directory and give user www-data all permissions to do things to
+it.
+
+
+WebAuth
+-------
+
+Kerberos and LDAP
+-----------------

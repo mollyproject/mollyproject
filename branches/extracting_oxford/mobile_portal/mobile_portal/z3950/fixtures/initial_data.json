@@ -1,0 +1,11 @@
+[
+    {
+        "pk": "18",
+        "model": "core.FrontPageLink",
+        "fields": {
+            "slug": "z3950",
+            "title": "Library search",
+            "urlconf_name": "z3950_index"
+        }
+    }
+]

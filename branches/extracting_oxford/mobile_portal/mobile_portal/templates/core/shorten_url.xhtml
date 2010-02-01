@@ -1,0 +1,12 @@
+{% extends "core/base.xhtml" %}
+
+{% block content %}
+
+<div class="section">
+  <h2>Your shortened URL is:</h2>
+  <div class="note"><div class="bubble pad-10">
+    <a href="{{ shortened_url.get_absolute_url }}">http://m.ox.ac.uk{{ shortened_url.get_absolute_url }}</a>
+  </div></div>
+</div>
+
+{% endblock %}
