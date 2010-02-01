@@ -24,8 +24,6 @@
         list-style: none;
         margin:15px 0;
         padding:0;
-        position:relative;
-        left:-10px;
       }
       
       div.navigation li {
@@ -175,6 +173,36 @@
     <div class="container" id="container">
         {{ content|safe }}
     </div>
+    <div class="footer">
+  <div class="container">
+  <p>Developed by the OUCS Erewhon Project, through the JISC-funded Institutional Innovation programme.</p>
+  <div class="logos">
+  <a href="http://jisc.ac.uk/">
+    <img src="{{ MEDIA_URL }}png/jisc-logo.png" width="100" height="52" alt="JISC" style="position:relative; top:7px;" />
+  </a>
+  <a href="http://erewhon.oucs.ox.ac.uk/">
+    <img src="{{ MEDIA_URL }}png/erewhon-logo.png" width="128" height="68" alt="JISC" style="position:relative; top:0px;" />
+  </a>
+  <a href="http://www.oucs.ox.ac.uk/">
+    <img src="{{ MEDIA_URL }}png/oucs-logo.png" width="254" height="63" alt="OUCS" style="position:relative; top:9px;" />
+  </a>
+  </div>
+  <p>With thanks to the following for providing data:</p>
+  <ul>
+    <li><a href="http://www.oxontime.com">ACIS - OxonTime</a></li>
+    <li><a href="http://backstage.bbc.co.uk/">BBC</a></li>
+	<li><a href="http://dft.gov.uk">Department for Transport</a></li>
+    <li><a href="http://www.earth.ox.ac.uk/">Earth Sciences Department</a></li>
+	<li><a href="http://www.admin.ox.ac.uk/schools/">Examination Schools</a></li>
+    <li><a href="http://wiki.openstreetmap.org/">OpenStreetMap</a></li>
+    <li><a href="http://oii.ox.ac.uk/">Oxford Internet Institute</a></li>
+    <li><a href="http://www.oxfordshire.gov.uk">Oxfordshire County Council</a></li>
+    <li><a href="http://www.ouls.ox.ac.uk/">Oxford University Library Services</a></li>
+    <li><a href="http://podcasts.ox.ac.uk/">University of Oxford Podcasts</a></li>
+  </ul>
+
+  <p>Contact us at <a href="mailto:mobileoxford@oucs.ox.ac.uk">mobileoxford@oucs.ox.ac.uk</a> should you have any problems, suggestions, or comments.</p>
+</div></div>
 {% endblock %}
   </body>
 </html>
