@@ -37,7 +37,7 @@ urlpatterns = patterns('mobile_portal.core.views',
         {'title':'About', 'template':'about'},
         'core_static_about'),
     
-    (r'^exposition/((?P<page>features|accessing|get-involved|blog|help)/)?$',
+    (r'^desktop/((?P<page>features|accessing|get-involved|blog|help)/)?$',
         ExpositionView, {},
         'core_exposition'),
 

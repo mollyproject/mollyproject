@@ -20,6 +20,7 @@ a {
 
 h3 {
 	line-height:0.9;
+	font-size:150%;
 }
 
 div.container {
@@ -91,23 +92,18 @@ div.features, div.preview, div.access, div.data-usage, div.about {
 	list-style:none;
 }
 
-div.about {
+div.about p {
+    margin:0;
+}
+
+div.features, div.preview, div.access, div.data-usage {
+    width:200px;
+    float:left;
+    margin:15px;
 }
 
 div.features h2, div.preview h2, div.access h2, div.data-usage h2 {
     margin-top:0;
-}
-
-div.column-left {
-    float:left;
-    margin-top:15px;
-}
-
-div.column-middle {
-    padding-left:15px;
-    width:220px;
-    float: left;
-    margin-top:15px;
 }
 
 div.access, div.data-usage {
@@ -197,7 +193,7 @@ div.logos {
 
   .feature-list {
     float:right;
-    width:160px;
+    width:115px;
   }
   
   .feature-list ul {
@@ -217,6 +213,8 @@ div.logos {
   .feature-list li a {
     color:#002147;
     border-top:1px solid #002147;
+    text-align:center;
+    font-weight:bold;
   }
   
   .feature-list li:hover {
@@ -255,10 +253,13 @@ div.logos {
   
   .feature-info {
     float:right;
-    width: 269px;
-    height: 417px;
-    padding: 5px 10px 0 10px;
-    -moz-border-radius-bottomright:10px;
+    width: 305px;
+    #height: 412px;
+    padding: 10px;
+    -moz-border-radius:10px;
+    background-color:rgba(255,255,255,0.5);
+    background-color:rgb(255,255,255);
+    margin-left:20px;
     
   }
   
@@ -266,8 +267,27 @@ div.logos {
     margin-top:0;
   }
   
+  .feature-info dt {
+    font-weight:bold;
+  }
+  
+  .feature-info dd {
+    padding-left:20px;
+    margin-left:0;
+  }
+  
+  .feature-info samp {
+    font-style:italic;
+    font-size:100%;
+  }
+  
+  .feature-info ul {
+    padding-left:20px;
+    margin-left:0;
+  }
+  
   #feature-descriptions {
-    width:610px;
+    width:665px;
     height:432px;
     float:left;
     position:relative;
