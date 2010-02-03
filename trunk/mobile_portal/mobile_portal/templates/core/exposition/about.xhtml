@@ -1,4 +1,83 @@
-<div class="about">
+<script type="text/javascript">
+
+$(function() {
+  slideshow_count = $('.slideshow li').length;
+  $('.slideshow ul').css('position', 'relative');
+  current_slide = 0;
+  
+  $('.slideshow li').each(function(i, e) {
+    e = $(e);
+    e.css('position', 'absolute').css('top', '0px');
+    
+    if (i != current_slide) {
+      e.hide();
+    }
+  });
+  
+  setTimeout('nextSlide();', 8000); 
+});
+
+function nextSlide() {
+  next_slide = (current_slide + 1) % slideshow_count;
+  
+  current = $('.slideshow li').slice(current_slide, current_slide+1);
+  next = $('.slideshow li').slice(next_slide, next_slide+1);
+  
+  current.fadeOut(2000);
+  next.fadeIn(2000);
+  
+  current_slide = next_slide;
+  
+  setTimeout('nextSlide();', 10000); 
+}
+  
+
+</script>
+
+
+<div class="container">
+<div class="two-col">
+
+<div class="slideshow">
+  <ul>
+    <li><img src="{{ MEDIA_URL }}png/slideshow/1.png" width="545" height="360" alt="Foo"/></li>
+    <li><img src="{{ MEDIA_URL }}png/slideshow/2.png" width="545" height="360" alt="Bar"/></li>
+    <li><img src="{{ MEDIA_URL }}png/slideshow/0.png" width="545" height="360" alt="Baz"/></li>
+    <li><img src="{{ MEDIA_URL }}png/slideshow/3.png" width="545" height="360" alt="Quux"/></li>
+    <li><img src="{{ MEDIA_URL }}png/slideshow/4.png" width="545" height="360" alt="Spam"/></li>
+    <li><img src="{{ MEDIA_URL }}png/slideshow/5.png" width="545" height="360" alt="Eggs"/></li>
+  </ul>
+</div>
+
+
+</div>
+
+<div class="outer-col">
+<div class="preview">
+  <p>Get Mobile Oxford on<br/>your device at:</p>
+  
+  <p class="domain-link"><a class="preview-link" href="{% url core_index %}?preview=true">m.ox.ac.uk</a></p>
+  
+  <p>or select and scan<br/>a barcode below:</p>
+  
+  <ul>
+    <li><a id="code-qr-link" href="#about-code-qr">QR Code</a></li>
+    <li><a id="code-dm-link" href="#about-code-dm">DataMatrix Code</a></li>
+    <li><a id="code-ms-link" href="#about-code-ms">Microsoft Tag</a></li>
+  </ul>
+  
+  <hr/>
+  
+  <p class="preview-link">
+    <a class="preview-link" href="{% url core_index %}?preview=true">Preview the site<br/>on your computer</a>
+  </p>
+</div>
+</div>
+<div style="clear:both;"> </div>
+</div>
+
+<div class="two-col">   
+<div class="about" style="display:block; clear:both; margin-top:15px;">
   <p>
     <strong>
       <em>Mobile Oxford</em> is a new service run for students and staff at the
@@ -10,49 +89,27 @@
     institution, <em>Mobile Oxford</em> is a central point to act as your
     guide in both the city and the University.
   </p>
-</div>    
-
-<div class="preview">
-  <h2>Preview</h2>
-
-  <p><a id="preview-link" href="{% url core_index %}?preview=true">Preview</a>
-     the site using the browser on your desktop or laptop.</p>
-     
-  <!--<p>
-    <form method="post" action="{% url core_index %}">
-      <input type="hidden" name="no_desktop_about" value="true"/>
-      <input type="submit" value="Skip this about page in future."/>
-    </form>
-  </p>-->
+</div>
 </div>
 
-<div class="access">
-  <h2>Accessing the site</h2>
-  <ul>
-    <li>Open your phone's web browser and head to: <a href="http://m.ox.ac.uk/">m.ox.ac.uk</a></li>
-	<li>Point your phone's barcode scanner at:</li>
-    <li id="access-qrcode">
-        <img src="{{ MEDIA_URL }}png/barcodes/qrcode.png" alt="QR Barcode for m.ox.ac.uk" height="189" width="189"/>
-		QR Code
-    </li>
-	<li id="access-datamatrix">
-		<img src="{{ MEDIA_URL }}png/barcodes/datamatrix.png" alt="DataMatrix Barcode for m.ox.ac.uk" height="189" width="189"/>
-		Datamatrix Code
-	</li>
-    <li>
+<div class="outer-col">
+
+
       <a href="http://www.oucs.ox.ac.uk/network/wireless/">
         Instructions for setting up wireless access from your mobile device
       </a>
-    </li>
-  </ul>
+
 </div>
 
+<div class="outer-col">
 <div class="data-usage">
   <h2>Data usage</h2>
   <p>While this service is provided free of charge, your mobile operator
      may charge for the data you transfer. Please check that using this
      site does not incur any unexpected charges before accessing it.</p>
 </div>
+</div>
+<div class="centre-col">
 
 <div class="data-usage">
   <h2>Have feedback?</h2>
@@ -64,6 +121,8 @@
      included, get in touch and we'll see what we can do.</p>
 </div>
 
+</div>
+<div class="outer-col">
 
 <div class="access">
 	<h2>Find us on</h2>
@@ -72,4 +131,5 @@
 		<li><a href="http://www.facebook.com/pages/Mobile-Oxford/133576996628" title="Facebook - Mobile Oxford">Facebook</a></li>
 		<li><a href="http://twitter.com/mobileox" title="Twitter - Mobile Oxford">Twitter</a></li>
 	</ul>
+</div>
 </div>
