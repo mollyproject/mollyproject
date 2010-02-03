@@ -14,7 +14,9 @@ $(function() {
     }
   });
   
-  setTimeout('nextSlide();', 8000); 
+  $('.lightbox').lightBox({fixedNavigation:false});
+  
+  //setTimeout('nextSlide();', 8000); 
 });
 
 function nextSlide() {
@@ -60,10 +62,10 @@ function nextSlide() {
   
   <p>or select and scan<br/>a barcode below:</p>
   
-  <ul>
-    <li><a id="code-qr-link" href="#about-code-qr">QR Code</a></li>
-    <li><a id="code-dm-link" href="#about-code-dm">DataMatrix Code</a></li>
-    <li><a id="code-ms-link" href="#about-code-ms">Microsoft Tag</a></li>
+  <ul class="icon-list">
+    <li><a class="lightbox" id="code-qr-link" href="{{ MEDIA_URL }}png/barcodes/qrcode.png">QR Code</a></li>
+    <li><a class="lightbox" id="code-dm-link" href="{{ MEDIA_URL }}png/barcodes/datamatrix.png">DataMatrix Code</a></li>
+    <li><a class="lightbox" id="code-ms-link" href="{{ MEDIA_URL }}png/barcodes/mstag.png">Microsoft Tag</a></li>
   </ul>
   
   <hr/>
@@ -75,6 +77,8 @@ function nextSlide() {
 </div>
 <div style="clear:both;"> </div>
 </div>
+
+<div class="container">
 
 <div class="two-col">   
 <div class="about" style="display:block; clear:both; margin-top:15px;">
@@ -93,27 +97,32 @@ function nextSlide() {
 </div>
 
 <div class="outer-col">
+  <div class="about">
 
-
-      <a href="http://www.oucs.ox.ac.uk/network/wireless/">
+      <a id="wireless-setup" href="http://www.oucs.ox.ac.uk/network/wireless/">
         Instructions for setting up wireless access from your mobile device
       </a>
+  </div>
 
 </div>
 
+</div>
+
+<div class="container">
+
 <div class="outer-col">
-<div class="data-usage">
-  <h2>Data usage</h2>
-  <p>While this service is provided free of charge, your mobile operator
+<div class="about">
+  <h3>Data costs</h3>
+	<p>While this service is provided free of charge, your mobile operator
      may charge for the data you transfer. Please check that using this
      site does not incur any unexpected charges before accessing it.</p>
 </div>
 </div>
 <div class="centre-col">
 
-<div class="data-usage">
-  <h2>Have feedback?</h2>
-  <p><em>Mobile Oxford</em> is a rapidly developing service, and we'd
+<div class="about">
+  <h3>Get involved</h3>
+	<p><em>Mobile Oxford</em> is a rapidly developing service, and we'd
      like to know what you think. If you have any comments, suggestions
      or feature requests you can e-mail us at
      <a href="mailto:mobileoxford@oucs.ox.ac.uk">mobileoxford@oucs.ox.ac.uk</a>.
@@ -124,12 +133,13 @@ function nextSlide() {
 </div>
 <div class="outer-col">
 
-<div class="access">
-	<h2>Find us on</h2>
-	<ul>
-		<li><a href="http://m.ox.ac.uk/blog" title="Blog - Mobile Oxford">Our Blog</a></li>
-		<li><a href="http://www.facebook.com/pages/Mobile-Oxford/133576996628" title="Facebook - Mobile Oxford">Facebook</a></li>
-		<li><a href="http://twitter.com/mobileox" title="Twitter - Mobile Oxford">Twitter</a></li>
-	</ul>
+<div class="about">
+    <h3>Talk to us</h3>
+	<ul class="icon-list">
+    <li><a id="social-facebook" href="http://www.facebook.com/mobileoxford">Facebook</a></li>
+    <li><a id="social-twitter" href="http://twitter.com/mobileox">Twitter</a></li>
+    <li><a id="social-identica" href="http://identi.ca/mobileox">identi.ca</a></li>
+  </ul>
+</div>
 </div>
 </div>

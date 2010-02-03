@@ -82,9 +82,10 @@ div#content {
 
 div.features, div.preview, div.access, div.data-usage, div.about {
     background-color:#ffffff;
-    border-radius:6px;
-    -moz-border-radius:6px;
-    -webkit-border-radius:6px;
+    border-radius:10px;
+    -moz-border-radius:10px;
+    -webkit-border-radius:10px;
+    -khtml-border-radius:10px;
 
     padding:15px;
 	
@@ -191,8 +192,10 @@ div.logos {
     list-style:none;
     margin:0;
     padding-left:0;
+    border-radius:10px;
     -moz-border-radius:10px;
     -webkit-border-radius:10px;
+    -khtml-border-radius:10px;
   }
   
   .feature-list li {
@@ -247,7 +250,10 @@ div.logos {
     width: 305px;
     #height: 412px;
     padding: 10px;
+    border-radius:10px;
     -moz-border-radius:10px;
+    -webkit-border-radius:10px;
+    -khtml-border-radius:10px;
     background-color:rgba(255,255,255,0.5);
     background-color:rgb(255,255,255);
     margin-left:20px;
@@ -284,10 +290,6 @@ div.logos {
     position:relative;
     overflow:hidden;
   }
-  
-  video {
-    -moz-border-radius:15px;
-  }
 
 
 
@@ -318,7 +320,10 @@ div.slideshow {
    background-color:#ffffff;
    margin-top:15px;
    margin-right:15px;
-  -moz-border-radius:10px;
+    border-radius:11px;
+    -moz-border-radius:11px;
+    -webkit-border-radius:11px;
+    -khtml-border-radius:11px;
 }
 
 div.slideshow ul {
@@ -327,10 +332,6 @@ div.slideshow ul {
   margin:0;
 }
 
-div.slideshow img {
-  -moz-border-radius:10px;
-  
-}
 
 /* Preview */
 
@@ -354,19 +355,19 @@ div.preview a:visited {
   color:#0000ff;
 }
 
-div.preview ul {
-  font-size:12pt;
-  list-style:none;
-  margin:5px 0 5px 20px;  
-  padding:0;
-}
-
 div.preview hr {
   margin:5px 0 15px 0;
   padding:0;
 }
 
-div.preview li a {
+ul.icon-list {
+  font-size:11pt;
+  list-style:none;
+  margin:5px 0 5px 22px;  
+  padding:0;
+}
+
+ul.icon-list li a {
   display:block;
   padding:10px 10px 10px 40px;
   background-position:center left;
@@ -385,6 +386,26 @@ a#code-ms-link {
   background-image:url('../png/barcodes/mstag-small.png');
 }
 
+a#social-facebook {
+  background-image:url('../png/barcodes/facebook.png');
+}
+
+a#social-twitter {
+  background-image:url('../png/barcodes/twitter.png');
+}
+
+a#social-identica {
+  background-image:url('../png/barcodes/identica.png');
+}
+
+a#wireless-setup {
+  background-image:url('../png/desktop/eduroam.png');
+  background-position:center left;
+  background-repeat:no-repeat;
+  display:block;
+  padding-left:95px;
+}
+
 p.preview-link a {
   background-image:url('../png/desktop/monitor.png');
   background-position:center left;
@@ -392,5 +413,14 @@ p.preview-link a {
   padding:0px 10px 0px 40px;
   margin-left:15px;
   display:block;
+}
+
+div.about h3 {
+  text-align:center;
+  margin:0;
+}
+
+div.about ul.icon-list {
+  margin-bottom:0;
 }
   
