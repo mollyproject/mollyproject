@@ -1,7 +1,7 @@
 from django.conf.urls.defaults import *
 from views import (
     IndexView, PodcastDetailView, CategoryDetailView, TopDownloadsView,
-    RedirectOldLinksView
+    RedirectOldLinksView, ITunesURedirectView
 )
 
 urlpatterns = patterns('mobile_portal.podcasts.views',
@@ -20,6 +20,10 @@ urlpatterns = patterns('mobile_portal.podcasts.views',
         TopDownloadsView, {},
         'podcasts_top_downloads'),
 
+    (r'^itunesu_redirect/$',
+        ITunesURedirectView, {},
+        'podcasts_itunesu_redirect'),
+
     (r'^(?P<code>[a-z]+)/((((?P<id>\d+)|(?P<medium>audio|video))/)?)$',
         RedirectOldLinksView, {},
         'podcasts_redirects'),
@@ -28,8 +32,5 @@ urlpatterns = patterns('mobile_portal.podcasts.views',
         PodcastDetailView, {},
         'podcasts_podcast'),
 
-    (r'^itunesu_redirect/$',
-        'itunesu_redirect', {},
-        'podcasts_itunesu_redirect'),
 )
 

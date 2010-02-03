@@ -148,23 +148,25 @@ class TopDownloadsView(PodcastDetailView):
     def handle_GET(cls, request, context):
         return super(TopDownloadsView, cls).handle_GET(request, context)
 
-
-def itunesu_redirect(request):
-    use_itunesu = request.POST.get('use_itunesu') == 'yes'
-    remember = 'remember' in request.POST
+class ITunesURedirectView(BaseView):
+    breadcrumb = NullBreadcrumb
     
-    if remember:
-        request.preferences['podcasts']['use_itunesu'][request.device.devid] = use_itunesu
-    
-    if request.method == 'POST' and 'no_redirect' in request.POST:
-        return HttpResponse('', mimetype="text/plain")
-    elif request.method == 'POST' and not use_itunesu:
+    def handle_POST(cls, request, context):
+        use_itunesu = request.POST.get('use_itunesu') == 'yes'
+        remember = 'remember' in request.POST
+        
         if remember:
-            return HttpResponseRedirect(reverse('podcasts_index'))
+            request.preferences['podcasts']['use_itunesu'][request.device.devid] = use_itunesu
+        
+        if request.method == 'POST' and 'no_redirect' in request.POST:
+            return HttpResponse('', mimetype="text/plain")
+        elif request.method == 'POST' and not use_itunesu:
+            if remember:
+                return HttpResponseRedirect(reverse('podcasts_index'))
+            else:
+                return HttpResponseRedirect(reverse('podcasts_index') + '?show_itunesu_link=false')
         else:
-            return HttpResponseRedirect(reverse('podcasts_index') + '?show_itunesu_link=false')
-    else:
-        return HttpResponseRedirect("http://deimos.apple.com/WebObjects/Core.woa/Browse/ox-ac-uk-public")
+            return HttpResponseRedirect("http://deimos.apple.com/WebObjects/Core.woa/Browse/ox-ac-uk-public")
         
 class RedirectOldLinksView(BaseView):
     breadcrumb = NullBreadcrumb
