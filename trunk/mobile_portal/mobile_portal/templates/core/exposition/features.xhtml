@@ -5,6 +5,7 @@
   expected_page_name = hash[0];
   feature_name = (hash.length == 2) ? hash[1] : "contact";
   var current_feature = null;
+  var cf = null;
 
   
   function show_feature(e) {
@@ -19,10 +20,12 @@
 
     
       });
+      
+      cf.parent().removeClass('selected');
+      $(this).parent().addClass('selected');
+      cf = $(this);
+      
     }
-            video = next_feature.find('video').get(0);
-        video.pause();
-        video.currentTime = 0;
     return false;
 
   }
@@ -43,6 +46,7 @@
       if (('#features-'+feature_name) != show_id) {
         $(show_id).css('display', 'none');
       }
+      cf = $('#show-feature-'+feature_name);
       
     });
   });
