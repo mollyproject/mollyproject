@@ -176,17 +176,17 @@ div.logos {
 
 
 a#show-feature-contact span {
-  background-image:url('../png/index-icons/contact-bc.png'); }
+  background-image:url('../png/index-icons/contact-30px.png'); }
 a#show-feature-maps span {
-  background-image:url('../png/index-icons/maps-bc.png'); }
+  background-image:url('../png/index-icons/maps-30px.png'); }
 a#show-feature-z3950 span {
-  background-image:url('../png/index-icons/z3950-bc.png'); }
+  background-image:url('../png/index-icons/z3950-30px.png'); }
 a#show-feature-podcasts span {
-  background-image:url('../png/index-icons/podcasts-bc.png'); }
+  background-image:url('../png/index-icons/podcasts-30px.png'); }
 a#show-feature-search span {
-  background-image:url('../png/index-icons/search-bc.png'); }
+  background-image:url('../png/index-icons/search-30px.png'); }
 a#show-feature-other span {
-  background-image:url('../png/index-icons/other-bc.png'); }
+  background-image:url('../png/index-icons/other-30px.png'); }
 
   .feature-list {
     float:left;
@@ -194,9 +194,10 @@ a#show-feature-other span {
   }
   
   .feature-list ul {
+    background: white;
     list-style:none;
     margin:0;
-    padding-left:0;
+    padding:5px;
     border-radius:10px;
     -moz-border-radius:10px;
     -webkit-border-radius:10px;
@@ -218,7 +219,7 @@ a#show-feature-other span {
   .feature-list span {
     background-repeat:no-repeat;
     background-position:center left;
-    padding-left:30px;
+    padding-left:35px;
     display:block;
     min-height:40px;
     vertical-align:middle;
