@@ -79,61 +79,8 @@
         display: none;
       }
     </style>
-    <script type="text/javascript">
-      pages = ["about", "features", "accessing", "get-involved", "blog", "help"];
-      page = window.location.hash.substring(1, {{ page|length|add:"1" }});
-      if (page != "{{ page }}") {
-        url = "{% url core_exposition %}";
-        for (i in pages) {
-          page = pages[i];
-          if (window.location.hash.substring(1, page.length+1) != page)
-            continue;
-          if (page != "about")
-            url += page + "/";
-          window.location = url + window.location.hash;
-        }
-      }
-          
-      function preview() {
-          var popup = window.open(
-              '?preview=true',
-              'popwin',
-              'left=20,top=20,innerwidth=330,innerheight=480,toolbar=1,menubar=0,location=0,status=1,resizable=1,scrollbars=yes'
-          );
-          popup.window.location.href = "{% url core_index %}" + "?preview=true";
-      }
-      
-      $(function() {
-        $('#preview-link').bind('click', function(event) {
-          preview();
-          return false;
-        });
-          
-        $('.navigation a').each(function() {
-          e = $(this);
-          e.bind('click', function() {
-            $('#container').html('');
-            $('#spinner').show();
-            url = $(this).attr('href');
-            e = $(this);
-            $.ajax({
-              url: url,
-              data: 'ajax=true',
-              success: function(data) {
-            	$('#spinner').hide();
-                $('#container').html(data);
-                window.location.hash = '#'+e.attr('id').substring(5);
-              },
-            });
-            $('.navigation li').removeClass('selected');
-            e.parent().addClass('selected');
-            e.blur();
-            return false;
-            
-          });
-        });
-      });
-                  
+    <script type="text/javascript" src="{{ MEDIA_URL }}js/desktop_about.js">
+              
           
     </script>
 {% endblock %}

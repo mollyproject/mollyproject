@@ -1,53 +1,20 @@
-<script type="text/javascript">
-
-$(function() {
-  slideshow_count = $('.slideshow li').length;
-  $('.slideshow ul').css('position', 'relative');
-  current_slide = 0;
-  
-  $('.slideshow li').each(function(i, e) {
-    e = $(e);
-    e.css('position', 'absolute').css('top', '0px');
-    
-    if (i != current_slide) {
-      e.hide();
-    }
-  });
-  
-  $('.lightbox').lightBox({fixedNavigation:false});
-  
-  //setTimeout('nextSlide();', 8000); 
-});
-
-function nextSlide() {
-  next_slide = (current_slide + 1) % slideshow_count;
-  
-  current = $('.slideshow li').slice(current_slide, current_slide+1);
-  next = $('.slideshow li').slice(next_slide, next_slide+1);
-  
-  current.fadeOut(2000);
-  next.fadeIn(2000);
-  
-  current_slide = next_slide;
-  
-  setTimeout('nextSlide();', 10000); 
-}
-  
-
-</script>
-
-
 <div class="container">
 <div class="two-col">
 
 <div class="slideshow">
   <ul>
-    <li><img src="{{ MEDIA_URL }}png/slideshow/0.jpg" width="545" height="360" alt="Foo"/></li>
-    <li><img src="{{ MEDIA_URL }}png/slideshow/2.png" width="545" height="360" alt="Bar"/></li>
-    <li><img src="{{ MEDIA_URL }}png/slideshow/0.jpg" width="545" height="360" alt="Baz"/></li>
-    <li><img src="{{ MEDIA_URL }}png/slideshow/3.png" width="545" height="360" alt="Quux"/></li>
-    <li><img src="{{ MEDIA_URL }}png/slideshow/4.png" width="545" height="360" alt="Spam"/></li>
-    <li><img src="{{ MEDIA_URL }}png/slideshow/5.png" width="545" height="360" alt="Eggs"/></li>
+    <li>
+      <img src="{{ MEDIA_URL }}png/slideshow/1.jpg" width="545" height="360" alt="Foo"/>
+      <div class="slideshow-caption">
+        The city and University. In your pocket.
+      </div>
+    </li>
+    <li>
+      <img src="{{ MEDIA_URL }}png/slideshow/6.jpg" width="545" height="360" alt="Foo"/>
+      <div class="slideshow-caption">
+        Stay in the warm until your bus arrives.
+      </div>
+    </li>
   </ul>
 </div>
 
@@ -105,6 +72,7 @@ function nextSlide() {
   </div>
 
 </div>
+<div style="clear:both;"> </div>
 
 </div>
 
@@ -112,7 +80,7 @@ function nextSlide() {
 
 <div class="outer-col">
 <div class="about">
-  <h3>Data costs</h3>
+  <h3 style="margin-bottom:10px;">Data costs</h3>
 	<p>While this service is provided free of charge, your mobile operator
      may charge for the data you transfer. Please check that using this
      site does not incur any unexpected charges before accessing it.</p>
@@ -121,7 +89,7 @@ function nextSlide() {
 <div class="centre-col">
 
 <div class="about">
-  <h3>Get involved</h3>
+  <h3 style="margin-bottom:10px;">Get involved</h3>
 	<p><em>Mobile Oxford</em> is a rapidly developing service, and we'd
      like to know what you think. If you have any comments, suggestions
      or feature requests you can e-mail us at

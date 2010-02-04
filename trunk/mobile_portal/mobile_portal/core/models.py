@@ -217,6 +217,11 @@ class ExternalImageSized(models.Model):
         os.unlink(self.get_filename())
         super(ExternalImageSized, self).delete()
 
+class BlogArticle(models.Model):
+    updated = models.DateTimeField()
+    html = models.TextField()
+    guid = models.TextField()
+
 class UserMessage(models.Model):
     session_key = models.TextField()
     message = models.TextField()

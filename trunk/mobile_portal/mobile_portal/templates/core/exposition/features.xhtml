@@ -5,6 +5,7 @@
   expected_page_name = hash[0];
   feature_name = (hash.length == 2) ? hash[1] : "contact";
   var current_feature = null;
+
   
   function show_feature(e) {
     next_feature = $(e.data);
@@ -49,12 +50,12 @@
 
 <div class="feature-list">
   <ul>
-    <li><a id="show-feature-contact" href="#features-contact">Contact search</a></li>
-    <li><a id="show-feature-maps" href="#features-maps">Maps</a></li>
-    <li><a id="show-feature-z3950" href="#features-z3950">Library search</a></li>
-    <li><a id="show-feature-podcasts" href="#features-podcasts">Podcasts</a></li>
-    <li><a id="show-feature-search" href="#features-search">Search</a></li>
-    <li><a id="show-feature-other" href="#features-other">Other features</a></li>
+    <li><a id="show-feature-contact" href="#features-contact"><span>Contact search</span></a></li>
+    <li><a id="show-feature-maps" href="#features-maps"><span>Maps</span></a></li>
+    <li><a id="show-feature-z3950" href="#features-z3950"><span>Library search</span></a></li>
+    <li><a id="show-feature-podcasts" href="#features-podcasts"><span>Podcasts</span></a></li>
+    <li><a id="show-feature-search" href="#features-search"><span>Search</span></a></li>
+    <li><a id="show-feature-other" href="#features-other"><span>Other features</span></a></li>
   </ul>
 </div>
 
@@ -71,19 +72,7 @@
     </div>
   
     <div class="feature-video">
-      <video width="320" height="432" controls="controls" poster="{{ MEDIA_URL}}png/poster.png">
-        <source src="{{ MEDIA_URL }}ogv/features/contact.ogv" type="video/ogg; codecs=&quot;theora, vorbis&quot;" />
-      
-        <div class="no-video">
-          This video requires a browser with support for open video:
-          <ul>
-            <li><a href="http://www.mozilla.com/firefox/">Firefox</a> 3.5 or greater</li>
-            <li><a href="http://www.apple.com/safari/">Safari</a> 3.1 or greater</li>
-          </ul>
-          or the <a href="http://www.adobe.com/go/getflashplayer">Adobe Flash Player</a>.
-          Alternatively, you may use the video download links to the right.
-        </div>
-      </video>
+      <img src="{{ MEDIA_URL }}slideshow/contact/0.crop.png" alt="Contact search"/>
     </div>
   </div>
 
@@ -110,19 +99,7 @@
     </div>
   
     <div class="feature-video">
-      <video width="320" height="432" controls="controls" poster="{{ MEDIA_URL}}png/poster.png">
-        <source src="{{ MEDIA_URL }}ogv/features/contact.ogv" type="video/ogg; codecs=&quot;theora, vorbis&quot;" />
-      
-        <div class="no-video">
-          This video requires a browser with support for open video:
-          <ul>
-            <li><a href="http://www.mozilla.com/firefox/">Firefox</a> 3.5 or greater</li>
-            <li><a href="http://www.apple.com/safari/">Safari</a> 3.1 or greater</li>
-          </ul>
-          or the <a href="http://www.adobe.com/go/getflashplayer">Adobe Flash Player</a>.
-          Alternatively, you may use the video download links to the right.
-        </div>
-      </video>
+      <img src="{{ MEDIA_URL }}slideshow/maps/0.crop.png" alt="Maps"/>
     </div>
   </div>
 
@@ -139,19 +116,7 @@
     </div>
   
     <div class="feature-video">
-      <video width="320" height="480" controls="controls" poster="{{ MEDIA_URL}}png/poster.png">
-        <source src="{{ MEDIA_URL }}ogv/features/nonexistant.ogv" type="video/ogg; codecs=&quot;theora, vorbis&quot;" />
-      
-        <div class="no-video">
-          This video requires a browser with support for open video:
-          <ul>
-            <li><a href="http://www.mozilla.com/firefox/">Firefox</a> 3.5 or greater</li>
-            <li><a href="http://www.apple.com/safari/">Safari</a> 3.1 or greater</li>
-          </ul>
-          or the <a href="http://www.adobe.com/go/getflashplayer">Adobe Flash Player</a>.
-          Alternatively, you may use the video download links to the right.
-        </div>
-      </video>
+      <img src="{{ MEDIA_URL }}slideshow/z3950/0.crop.png" alt="Library search"/>
     </div>
   </div>
 
@@ -166,19 +131,7 @@
     </div>
   
     <div class="feature-video">
-      <video width="320" height="432" controls="controls" poster="{{ MEDIA_URL}}png/poster.png">
-        <source src="{{ MEDIA_URL }}ogv/features/contact.ogv" type="video/ogg; codecs=&quot;theora, vorbis&quot;" />
-      
-        <div class="no-video">
-          This video requires a browser with support for open video:
-          <ul>
-            <li><a href="http://www.mozilla.com/firefox/">Firefox</a> 3.5 or greater</li>
-            <li><a href="http://www.apple.com/safari/">Safari</a> 3.1 or greater</li>
-          </ul>
-          or the <a href="http://www.adobe.com/go/getflashplayer">Adobe Flash Player</a>.
-          Alternatively, you may use the video download links to the right.
-        </div>
-      </video>
+      <img src="{{ MEDIA_URL }}slideshow/podcasts/0.crop.png" alt="Podcasts"/>
     </div>
   </div>
 
@@ -205,19 +158,7 @@
     </div>
   
     <div class="feature-video">
-      <video width="320" height="432" controls="controls" poster="{{ MEDIA_URL}}png/poster.png">
-        <source src="{{ MEDIA_URL }}ogv/features/search.ogv" type="video/ogg; codecs=&quot;theora, vorbis&quot;" />
-      
-        <div class="no-video">
-          This video requires a browser with support for open video:
-          <ul>
-            <li><a href="http://www.mozilla.com/firefox/">Firefox</a> 3.5 or greater</li>
-            <li><a href="http://www.apple.com/safari/">Safari</a> 3.1 or greater</li>
-          </ul>
-          or the <a href="http://www.adobe.com/go/getflashplayer">Adobe Flash Player</a>.
-          Alternatively, you may use the video download links to the right.
-        </div>
-      </video>
+      <img src="{{ MEDIA_URL }}slideshow/search/0.crop.png" alt="Contact search"/>
     </div>
   </div>
 
@@ -250,20 +191,11 @@
     </div>
   
     <div class="feature-video">
-      <video width="320" height="432" controls="controls" poster="{{ MEDIA_URL}}png/poster.png">
-        <source src="{{ MEDIA_URL }}ogv/features/contact.ogv" type="video/ogg; codecs=&quot;theora, vorbis&quot;" />
-      
-        <div class="no-video">
-          This video requires a browser with support for open video:
-          <ul>
-            <li><a href="http://www.mozilla.com/firefox/">Firefox</a> 3.5 or greater</li>
-            <li><a href="http://www.apple.com/safari/">Safari</a> 3.1 or greater</li>
-          </ul>
-          or the <a href="http://www.adobe.com/go/getflashplayer">Adobe Flash Player</a>.
-          Alternatively, you may use the video download links to the right.
-        </div>
-      </video>
+      <img src="{{ MEDIA_URL }}slideshow/other/0.crop.png" alt="Contact search"/>
     </div>
   </div>
+  
 </div>
+
+  <div style="clear:both;"> </div>
   

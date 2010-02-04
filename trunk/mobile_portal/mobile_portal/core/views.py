@@ -20,7 +20,7 @@ from mobile_portal.osm.utils import fit_to_map
 from mobile_portal.wurfl import device_parents
 from mobile_portal.googlesearch.forms import GoogleSearchForm
 
-from models import FrontPageLink, ExternalImageSized, LocationShare, UserMessage, ShortenedURL
+from models import FrontPageLink, ExternalImageSized, LocationShare, UserMessage, ShortenedURL, BlogArticle
 from forms import LocationShareForm, LocationShareAddForm, FeedbackForm, UserMessageFormSet, LocationUpdateForm
 
 from context_processors import device_specific_media
@@ -302,7 +302,15 @@ class ExpositionView(BaseView):
     def handle_GET(cls, request, context, page):
         page = page or 'about'
         template = loader.get_template('core/exposition/%s.xhtml' % page)
-        content = template.render(RequestContext(request))
+        
+        if page == 'blog':
+            inner_context = {
+                'articles': BlogArticle.objects.all(),
+            }
+        else:
+            inner_context = {}
+        
+        content = template.render(RequestContext(request, inner_context))
         
         if request.GET.get('ajax') == 'true':
             return HttpResponse(content)
