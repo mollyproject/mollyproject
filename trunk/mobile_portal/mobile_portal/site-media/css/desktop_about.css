@@ -37,7 +37,7 @@ div.header {
 }
 
 div.header {
-	margin-bottom:20px;
+	margin-bottom:5px;
     
 }
 
@@ -154,9 +154,11 @@ div.features li {
 
 div.footer {
     clear:both;
-    padding-top:30px;
+    margin-top:30px;
+    padding-top:20px;
     padding-bottom:15px;
     text-align:center;
+    background: #ffffff url(../png/desktop/footer-background.png) repeat-x scroll center top
 }
 
 div.footer img {

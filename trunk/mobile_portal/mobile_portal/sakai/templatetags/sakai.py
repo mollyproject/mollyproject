@@ -8,5 +8,6 @@ register = template.Library()
 def from_sakai_timestamp(value):
     return datetime.fromtimestamp(value/1000)
 
-def time_delta(value):
-    return (value['end'] - value['start']).seconds/60
+@register.filter    
+def places_left(value):
+    return (value["maxNoOfAttendees"]-len(value["attendees"]))
