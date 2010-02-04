@@ -18,7 +18,7 @@ import pytz, simplejson, urllib
 
 from mobile_portal.googlesearch.forms import GoogleSearchForm
 
-from models import FrontPageLink, ExternalImageSized, LocationShare, UserMessage
+from models import FrontPageLink, ExternalImageSized, LocationShare, UserMessage, BlogArticle
 from forms import LocationShareForm, LocationShareAddForm, FeedbackForm, UserMessageFormSet, LocationUpdateForm
 from utils import find_or_create_user_by_email
 from ldap_queries import get_person_units
@@ -42,7 +42,7 @@ class IndexView(BaseView):
             and not request.GET.get('preview') == 'true'
             and not internal_referer
             and not settings.DEBUG):
-            return HttpResponseRedirect(reverse('core_desktop_about'))
+            return HttpResponseRedirect(reverse('core_exposition'))
 
         fpls = dict((fpl.slug, fpl) for fpl in FrontPageLink.objects.all())
         fpls_prefs = sorted(request.preferences['front_page_links'].items(), key=lambda (slug,(order, display)): order)
@@ -544,16 +544,35 @@ class StaticDetailView(BaseView):
         })
         return mobile_render(request, context, 'core/static_detail')
 
-class DesktopAboutView(BaseView):
-    def get_metadata(cls, request):
+class ExpositionView(BaseView):
+    def get_metadata(cls, request, page):
         return {
             'exclude_from_search': True
         }
     
     breadcrumb = NullBreadcrumb
+    cache_page_duration = 60*15
     
-    def handle_GET(cls, request, context):
-        return render_to_response('core/desktop_about.xhtml', {}, context_instance=RequestContext(request))    
+    def handle_GET(cls, request, context, page):
+        page = page or 'about'
+        template = loader.get_template('core/exposition/%s.xhtml' % page)
+        
+        if page == 'blog':
+            inner_context = {
+                'articles': BlogArticle.objects.all(),
+            }
+        else:
+            inner_context = {}
+        
+        content = template.render(RequestContext(request, inner_context))
+        
+        if request.GET.get('ajax') == 'true':
+            return HttpResponse(content)
+        else:
+            return render_to_response('core/exposition/container.xhtml', {
+                'content': content,
+                'page': page,
+            }, context_instance=RequestContext(request))
 
 def handler500(request):
     context = {

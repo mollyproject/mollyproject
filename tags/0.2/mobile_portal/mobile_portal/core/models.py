@@ -222,3 +222,10 @@ class UserMessage(models.Model):
     message = models.TextField()
     read = models.BooleanField(default=False)
     when = models.DateTimeField(auto_now_add=True)
+
+
+class BlogArticle(models.Model):
+    updated = models.DateTimeField()
+    html = models.TextField()
+    guid = models.TextField()
+

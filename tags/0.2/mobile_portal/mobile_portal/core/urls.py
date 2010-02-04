@@ -2,7 +2,7 @@ from django.conf.urls.defaults import *
 from django.conf import settings
 
 from mobile_portal.core.views import (
-    IndexView, LocationUpdateView, DesktopAboutView,
+    IndexView, LocationUpdateView, ExpositionView,
     UserMessageView, AjaxUpdateLocationView,
     ExternalImageView, RunCommandView, FeedbackView,
     StaticDetailView
@@ -13,7 +13,7 @@ urlpatterns = patterns('mobile_portal.core.views',
     (r'^$',
         IndexView, {},
         'core_index'),
-        
+
     (r'^update_location/$',
         LocationUpdateView, {},
         'core_update_location'),
@@ -30,15 +30,15 @@ urlpatterns = patterns('mobile_portal.core.views',
 #    (r'^customise/location_sharing/$',
 #        'location_sharing', {},
 #        'core_location_sharing'),
-    
+
     (r'^about/$',
         StaticDetailView,
         {'title':'About', 'template':'about'},
         'core_static_about'),
-    
-    (r'^desktop_about/$',
-        DesktopAboutView, {},
-        'core_desktop_about'),
+
+    (r'^desktop/((?P<page>features|accessing|get-involved|blog|help)/)?$',
+        ExpositionView, {},
+        'core_exposition'),
 
     (r'^feedback/$',
         FeedbackView, {},

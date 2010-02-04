@@ -1,0 +1,1049 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+
+
+
+
+
+
+
+
+
+
+<head>
+<title>Mobile Oxford</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="generator" content="Planet/2.0 +http://www.planetplanet.org">
+<link rel="stylesheet" href="planet.css" type="text/css">
+<link rel="alternate" href="http://m.ox.ac.uk/atom.xml" title="" type="application/atom+xml">
+</head>
+
+<body>
+<h1>Mobile Oxford</h1>
+
+<div class="daygroup">
+<h2>January 20, 2010</h2>
+
+<div class="channelgroup">
+
+
+
+
+
+
+
+<h3><a href="http://oxforderewhon.wordpress.com" title="Oxford Erewhon Project Blog">Erewhon</a></h3>
+<img class="face" src="images/jdub.png" width="65" height="85" alt="">
+
+
+<div class="entrygroup" id="http://oxforderewhon.wordpress.com/2010/01/20/slides-from-the-erewhon-presentation-for-mobile-oxford-at-the-jisc-inin-ssbr-elluminate-session/" lang="en">
+<h4><a href="http://oxforderewhon.wordpress.com/2010/01/20/slides-from-the-erewhon-presentation-for-mobile-oxford-at-the-jisc-inin-ssbr-elluminate-session/">One of the Erewhon Team</a></h4>
+<div class="entry">
+<div class="content">
+<div class="snap_preview"><br /><div class="posterous_autopost">
+
+
+<!-- No posting client link spam, please. -->
+
+
+</div></div>
+  <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/oxforderewhon.wordpress.com/571/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/oxforderewhon.wordpress.com/571/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godelicious/oxforderewhon.wordpress.com/571/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/delicious/oxforderewhon.wordpress.com/571/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gostumble/oxforderewhon.wordpress.com/571/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/stumble/oxforderewhon.wordpress.com/571/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godigg/oxforderewhon.wordpress.com/571/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/digg/oxforderewhon.wordpress.com/571/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/goreddit/oxforderewhon.wordpress.com/571/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/reddit/oxforderewhon.wordpress.com/571/" /></a> <img alt="" border="0" src="http://stats.wordpress.com/b.gif?host=oxforderewhon.wordpress.com&blog=5185432&post=571&subd=oxforderewhon&ref=&feed=1" /></div>
+
+
+
+
+
+
+
+<p class="date">
+<a href="http://oxforderewhon.wordpress.com/2010/01/20/slides-from-the-erewhon-presentation-for-mobile-oxford-at-the-jisc-inin-ssbr-elluminate-session/">by One of the Erewhon Team at January 20, 2010 05:19 PM</a>
+</p>
+</div>
+</div>
+
+
+</div>
+
+</div>
+<div class="daygroup">
+<h2>January 05, 2010</h2>
+
+<div class="channelgroup">
+
+
+
+
+
+
+
+<h3><a href="http://blogs.oucs.ox.ac.uk/inapickle" title="In a pickle » Erewhon">Alexander Dutton</a></h3>
+<img class="face" src="images/keybuk.png" width="65" height="85" alt="">
+
+
+<div class="entrygroup" id="http://blogs.oucs.ox.ac.uk/inapickle/?p=73" lang="en">
+<h4><a href="http://blogs.oucs.ox.ac.uk/inapickle/2010/01/05/publishing-lecture-lists-as-atom-feeds/">Publishing lecture lists as Atom feeds</a></h4>
+<div class="entry">
+<div class="content">
+<p>It&#8217;s become apparent that lots of IT departments are looking to make lecture lists available as RSS and Atom feeds.</p>
+<p>As such, here&#8217;s a work-in-progress example of a lecture being described in Atom (sans namespaces):</p>
+<pre class="brush: xml;">
+&lt;feed&gt;
+
+  &lt;entry&gt;
+
+    &lt;!-- Title comprises both course and topic for consumers who don't
+         know about the extra namespaced metadata                      --&gt;
+    &lt;title&gt;Computer graphics: Clipping and transformations&lt;/title&gt;
+    &lt;content type=&quot;xhtml&quot;&gt;
+      &lt;div xmlns=&quot;http://www.w3.org/1999/xhtml&quot;&gt;
+        &lt;h1&gt;Clipping and transformations&lt;/h1&gt;
+        &lt;p&gt;Lots of interesting stuff&lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/content&gt;
+    &lt;updated&gt;2005-07-31T12:29:29Z&lt;/updated&gt;
+    &lt;published&gt;2003-12-13T08:29:29-04:00&lt;/published&gt;
+
+    &lt;!-- Here we have the schools that may earn credit by taking the
+         course associated with this lecture. This would enable a
+         comsumer to display all courses someone studying for a
+         particular degree might be interested in.                     --&gt;
+    &lt;oxevent:schools&gt;
+      &lt;oxevent:school key=&quot;XCOM&quot;&gt;Computer Science: Part A&lt;/oxevent:school&gt;
+      &lt;oxevent:school key=&quot;DCOM&quot;&gt;Computer Science: Part B&lt;/oxevent:school&gt;
+    &lt;/oxevent:schools&gt;
+
+    &lt;!-- These form a hierarchy and would let users find more easily
+         the course or lecture that interests them.                    --&gt;
+    &lt;oxevent:unit key=&quot;comlab&quot;&gt;Computing Laboratory&lt;/oxevent:unit&gt;
+    &lt;oxevent:series key=&quot;cg&quot;&gt;Computer graphics&lt;/oxevent:series&gt;
+    &lt;oxevent:instance key=&quot;1&quot;&gt;Clipping and transformations&lt;/oxevent:instanceTitle&gt;
+    &lt;oxevent:format key=&quot;lecture&quot;&gt;lecture&lt;/oxevent:format&gt;
+
+    &lt;ev:startdate&gt;2010-01-18T16:00:00+00:00&lt;/ev:startdate&gt;
+    &lt;ev:enddate&gt;2010-01-18T17:00:00+00:00&lt;/ev:enddate&gt;
+
+    &lt;!-- Address and lat-long can be grabbed from OxPoints. We're
+         looking at importing phone and fax numbers into OxPoints in
+         the near future.                                              --&gt;
+    &lt;geo:lat&gt;51.75491&lt;/geo:lat&gt;&lt;geo:long&gt;-1.26078&lt;/geo:long&gt;
+    &lt;vCard:adr&gt;
+      &lt;vCard:street-address&gt;Oxford Playhouse&lt;/vCard:street-address&gt;
+      &lt;vCard:extended-address&gt;11-12 Beaumont Street&lt;/vCard:extended-address&gt;
+      &lt;vCard:locality&gt;Oxford&lt;/vCard:locality&gt;
+      &lt;vCard:postal-code&gt;OX1 2LW&lt;/vCard:postal-code&gt;
+    &lt;/vCard:adr&gt;
+    &lt;vCard:tel&gt;+44-1865-305205&lt;/vCard:tel&gt;
+    &lt;vCard:fax&gt;+44-1865-793748&lt;/vCard:fax&gt;
+    &lt;oxpoints:where rdf:resource=&quot;http://m.ox.ac.uk/oxpoints/id/12345678&quot;/&gt;
+
+  &lt;/entry&gt;
+
+&lt;/feed&gt;
+</pre>
+<p>The content obviously doesn&#8217;t make sense, but the form is there. It would be good if there was a feed that exposed all events for a department as this would significantly cut down on the number of feeds we&#8217;d need to retrieve. This feed would contain all lectures, seminars, classes and so forth.</p>
+<p>There&#8217;s still a lot to be worked out:</p>
+<ul>
+<li>Speakers could do with being marked up.</li>
+<li>How do we distinguish one-off lectures or those of general interest?</li>
+<li>How do we relate classes and seminars to lectures, or state that a set of classes each present the same material (but have been split apart to reduce numbers)?</li>
+</ul>
+<p>Comments, as always, are both welcome and encouraged.</p></div>
+
+
+
+
+
+
+
+<p class="date">
+<a href="http://blogs.oucs.ox.ac.uk/inapickle/2010/01/05/publishing-lecture-lists-as-atom-feeds/">by Alexander Dutton at January 05, 2010 05:23 PM</a>
+</p>
+</div>
+</div>
+
+
+</div>
+
+</div>
+<div class="daygroup">
+<h2>December 16, 2009</h2>
+
+<div class="channelgroup">
+
+
+
+
+
+
+
+<h3><a href="http://blogs.oucs.ox.ac.uk/inapickle" title="In a pickle » Erewhon">Alexander Dutton</a></h3>
+<img class="face" src="images/keybuk.png" width="65" height="85" alt="">
+
+
+<div class="entrygroup" id="http://blogs.oucs.ox.ac.uk/inapickle/?p=38" lang="en">
+<h4><a href="http://blogs.oucs.ox.ac.uk/inapickle/2009/12/16/adding-event-times-and-location-to-rss-and-atom-feeds/">Adding event times and location to RSS and Atom feeds</a></h4>
+<div class="entry">
+<div class="content">
+<p>Mobile Oxford is currently looking at displaying events feeds from various sources and we&#8217;d like to display the start times, locations and any other bits of metadata we can get our hands on.</p>
+<p>This article will use Atom terminology in preference to that of RSS for consistency&#8217;s sake.</p>
+<h4>Background</h4>
+<p>Most events feeds we&#8217;ve come across don&#8217;t specify these metadata anywhere other than as free text in the item summary or content. This makes it awkward as they can&#8217;t be extracted without either some natural language parsing or a regular expression, the first being difficult and prone to error, the other fairly brittle should something unexpected come up.</p>
+<p>As such, we&#8217;d like to encourage maintainers of events feeds to expose these details in well-known nodes within the structure of the  or  node.</p>
+<p>This document is the result of lots of trawling the web looking for best practice. Most of what&#8217;s here is my inferences from various standards so I apologise if I get things wrong. If you find a better way to do things I&#8217;d be very grateful to hear it!</p>
+<h4>Dates and times</h4>
+<p>In researching this topic I came across two ways to mark up this information, with one more complicated (and thus more expressive) than the other. We&#8217;ll start simple&#8230;</p>
+<h5>The W3C ev namespace</h5>
+<p>Our first example of how best to do it comes from <a href="http://www.oucs.ox.ac.uk/oxitems/">OxITEMS</a>, the University&#8217;s newsfeed system. OxITEMS handles plain newsfeeds, events feeds and podcasts, and allows the content authors to not worry about the vagaries of the standards they need to support.</p>
+<p>Here&#8217;s a condensed excerpt from the <a href="http://rss.oucs.ox.ac.uk/bioch/seminars/rss20.xml">Biochemistry Seminars</a> RSS feed (which, just to confuse you, I&#8217;ve expressed as Atom):</p>
+<pre class="brush: xml;">
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;feed xmlns=&quot;http://www.w3.org/2005/Atom&quot;
+      xmlns:ev=&quot;http://purl.org/rss/1.0/modules/event/&quot;&gt;
+  &lt;!-- Feed metadata snipped --&gt;
+
+  &lt;entry&gt;
+    &lt;!-- Other entry metadata was here --&gt;
+    &lt;ev:startdate&gt;2010-01-18T16:00:00+00:00&lt;/ev:startdate&gt;
+    &lt;ev:enddate&gt;2010-01-18T17:00:00+00:00&lt;/ev:enddate&gt;
+  &lt;/entry&gt;
+&lt;/rss&gt;
+</pre>
+<p>This is using the <code>http://purl.org/rss/1.0/modules/event/</code> namespace, described by the W3C in <a href="http://web.resource.org/rss/1.0/modules/event/" title="RDF Site Summary 1.0 Modules: Event">a draft specification</a>.</p>
+<p>The W3C define the following elements in that namespace: <code>startdate</code>, <code>enddate</code>, <code>location</code>, <code>organizer</code> and <code>type</code>. The first two are expected to be date-times specified as per ISO 8601<sup><a href="http://blogs.oucs.ox.ac.uk/inapickle/category/erewhon/feed/#fn0" id="#ref0">[0]</a></sup> (e.g. &#8220;2009-12-15T13:07:01Z&#8221;), whereas the range of acceptable values for the latter three is intentionally left undefined. We&#8217;ll explore the use of <code>location</code> later, but for now it is safe to say that in general the latter three aren&#8217;t much use in a semantic context.</p>
+<h5>The xCal namespace</h5>
+<p>One of the problems with the ev namespace &#8211; as admitted in the draft specification linked above &#8211; is that it cannot handle recurrent events. This would get awkward were one to be publishing a feed of lecture series or a theatre feed where any show is shown on multiple nights.<sup><a href="http://blogs.oucs.ox.ac.uk/inapickle/category/erewhon/feed/#fn1" id="#ref1">[1]</a></sup></p>
+<p>The <a href="http://tools.ietf.org/html/draft-royer-calsch-xcal-03">xCal specification</a> presents an &#8216;XMLification&#8217; of iCalender, a functional and widely implemented format for events, todo lists and alarms. The main in using this specification is that we can use recurrence as given by the <code>rdate</code>, <code>rrule</code>, <code>exdate</code> and <code>exrule</code> elements.</p>
+<p>Here&#8217;s a simple example:</p>
+<pre class="brush: xml;">
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;feed xmlns=&quot;http://www.w3.org/2005/Atom&quot;
+      xmlns:xCal=&quot;urn:ietf:params:xml:ns:xcal&quot;&gt;
+  &lt;!-- Feed metadata snipped --&gt;
+  &lt;entry&gt;
+    &lt;!-- Other entry metadata was here --&gt;
+    &lt;xCal:dtstart&gt;2010-01-18T16:00:00+00:00&lt;/xCal:dtstart&gt;
+    &lt;xCal:dtend&gt;2010-01-18T17:00:00+00:00&lt;/xCal:dtend&gt;
+  &lt;/entry&gt;
+&lt;/feed&gt;
+</pre>
+<p>This is much the same as the ev namespace. The fun comes when we start defining recurrent events:</p>
+<pre class="brush: xml;">
+&lt;entry&gt;
+  &lt;!-- Other entry metadata was here --&gt;
+  &lt;xCal:dtstart&gt;2010-01-18T16:00:00+00:00&lt;/xCal:dtstart&gt;
+  &lt;xCal:dtend&gt;2010-01-18T17:00:00+00:00&lt;/xCal:dtend&gt;
+  &lt;xCal:rrule&gt;FREQ=WEEKLY;COUNT=8&lt;/xCal:rrule&gt;
+&lt;/entry&gt;
+</pre>
+<p>Here we have an event that occurs for eight consecutive weeks starting Monday the 18<sup>th</sup> of January.</p>
+<p>Yes; this breaks the concept behind having XML in the first place. However, conversion between xCal and iCalendar should be fairly simple, and there (apparently) exists XSL to convert from xCal to iCalendar.</p>
+<p>As of yet I don&#8217;t know of any sensible way to describe an event that occurs at different times on different days (e.g. &#8220;Every Monday at 2PM, and every Friday at 4PM&#8221;). The easiest route is to use <code>xCal:rdate</code> to specify each occurrence explicitly, but this ignores unbounded recurrence.</p>
+<h4>Locations</h4>
+<p>Locations are probably a bit easier to describe, but there seem to be lots of ways to approach the problem. We&#8217;ll start with the <code>ev</code> and <code>geo</code> namespaces, before looking at the <code>georss</code>, <code>xCal</code> and <code>vCard</code> namespaces. Finally we&#8217;ll look at hooking your feed up to the OxPoints RDF store.</p>
+<h5>The <code>ev</code> and <code>geo</code> namespaces</h5>
+<p>Here&#8217;s how OxITEMS does it:</p>
+<pre class="brush: xml;">
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;feed xmlns=&quot;http://www.w3.org/2005/Atom&quot;
+      xmlns:ev=&quot;http://purl.org/rss/1.0/modules/event/&quot;
+      xmlns:geo=&quot;http://www.w3.org/2003/01/geo/wgs84_pos#&quot;&gt;
+  &lt;!-- Feed metadata snipped --&gt;
+  &lt;entry&gt;
+    &lt;!-- Other entry metadata was here --&gt;
+    &lt;ev:location&gt;OX1 3QU (Main Meeting Room, [...])&lt;/ev:location&gt;
+    &lt;geo:lat&gt;51.759091&lt;/geo:lat&gt;
+    &lt;geo:long&gt;-1.255121&lt;/geo:long&gt;
+&lt;/entry&gt;
+</pre>
+<p>Again, we see the use of the ev namespace. In this case, the information is drawn from <a href="http://www.oucs.ox.ac.uk/oxpoints/index.xml.ID=body.1_div.3">the old OxPoints</a> and provides a structured (if not necessarily friendly) bit of data.<br />
+The geo namespace is <a href="http://www.w3.org/2003/01/geo/wgs84_pos">defined by the W3C</a> and is used here to provide a co-ordinate in <a href="http://en.wikipedia.org/wiki/World_Geodetic_System">WGS84</a>. Being machine-readable, this is extremely useful and can easily be used to plot a marker on a map.</p>
+<p>In addition to the <code>geo</code> namespace, there&#8217;s also the <code>georss</code>, which achieves much the same result:</p>
+<pre class="brush: xml;">
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;feed xmlns=&quot;http://www.w3.org/2005/Atom&quot;
+      xmlns:georss=&quot;http://www.georss.org/georss&quot;&gt;
+  &lt;!-- Feed metadata snipped --&gt;
+  &lt;entry&gt;
+    &lt;!-- Other entry metadata was here --&gt;
+    &lt;georss:where&gt;
+      &lt;gml:Point&gt;
+        &lt;gml:pos&gt;-1.260350 51.760010&lt;/gml:pos&gt;
+      &lt;/gml:Point&gt;
+    &lt;/georss:where&gt;
+  &lt;/entry&gt;
+&lt;/feed&gt;
+</pre>
+<h5>The  <code>xCal</code> namespac</h5>
+<p>It should be pointed out that in isolation neither of  <code>geo</code> or  <code>georss</code>, and  <code>xCal</code>, is sufficient; one is human-readable but not machine-readable, and the converse holds for the other. An example of such a problem may be found in this feed (based on one from <a href="http://www.dailyinfo.co.uk/">Daily Info</a>):</p>
+<pre class="brush: xml;">
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;feed xmlns=&quot;http://www.w3.org/2005/Atom&quot;
+      xmlns:ev=&quot;http://purl.org/rss/1.0/modules/event/&quot;
+      xmlns:xCal=&quot;urn:ietf:params:xml:ns:xcal&quot;
+      xmlns:geo=&quot;http://www.w3.org/2003/01/geo/wgs84_pos#&quot;&gt;
+  &lt;!-- Feed metadata snipped --&gt;
+  &lt;entry&gt;
+    &lt;!-- Other entry metadata was here --&gt;
+    &lt;title&gt;11 Dec 2009 - 17 Dec 2009: Jack and the Beanstalk&lt;/title&gt;
+    &lt;content type=&quot;xhtml&quot;&gt;
+      &lt;div xmlns=&quot;http://www.w3.org/1999/xhtml&quot;&gt;
+        &lt;p&gt;&lt;em&gt;description was here&lt;/em&gt;&lt;/p&gt;
+        &lt;p&gt;
+          &lt;a href=&quot;http://www.dailyinfo.co.uk/reviews/venue/859/Oxford_Playhouse&quot;&gt;
+            Oxford Playhouse
+          &lt;/a&gt;
+          (&lt;a href=&quot;http://www.oxfordplayhouse.com/&quot;&gt;www.oxfordplayhouse.com/&lt;/a&gt;),
+          11-12 Beaumont Street, Oxford OX1 2LW; Tel. 01865 305305; Fax: 01865 793748.&lt;br /&gt;
+        &lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/content&gt;
+    &lt;geo:lat&gt;51.75491&lt;/geo:lat&gt;&lt;geo:long&gt;-1.26078&lt;/geo:long&gt;
+    &lt;xCal:location&gt;&lt;![CDATA[http://www.dailyinfo.co.uk/reviews/venue/859/Oxford_Playhouse]]&gt;&lt;/xCal:location&gt;
+  &lt;/entry&gt;
+&lt;/feed&gt;
+</pre>
+<p>I&#8217;ve left the content in as while it is evident to a user as to which part is the address, the feed parser has no chance of extracting the information. In addition to there being no address, the venue name is also not given. The contents of the <code>xCal:location</code> element cannot be assumed to be dereferencable and is thus not much use. The best we can do is plot a marker on a map without giving the user any sensibly placed clues as to what it is they&#8217;re looking for when they get there.</p>
+<h5>vCards</h5>
+<p>There&#8217;s also a fourth way to do it, using an XMLised version of <a href="http://en.wikipedia.org/wiki/VCard">vCards</a>, <a href="http://www.w3.org/2006/vcard/ns">specified by the W3C</a>. Here&#8217;s an example:</p>
+<pre class="brush: xml;">
+&lt;?xml version='1.0' encoding='UTF-8'?&gt;
+&lt;feed xmlns=&quot;http://www.w3.org/2005/Atom&quot;
+      xmlns:vCard=&quot;http://www.w3.org/2006/vcard/ns#&quot;&gt;
+  &lt;!-- Feed metadata snipped --&gt;
+  &lt;entry&gt;
+    &lt;!-- Other entry metadata was here --&gt;
+    &lt;vCard:adr&gt;
+      &lt;vCard:street-address&gt;Cheese Room, Aardvark College&lt;/vCard:street-address&gt;
+      &lt;vCard:extended-address&gt;Aardvark Street&lt;/vCard:extended-address&gt;
+      &lt;vCard:locality&gt;Oxford&lt;/vCard:locality&gt;
+      &lt;vCard:postal-code&gt;OX1 1AA&lt;/vCard:postal-code&gt;
+    &lt;/vCard:adr&gt;
+  &lt;/entry&gt;
+&lt;/feed&gt;
+</pre>
+<p>This solution has the advantage of attaching a role to each part of the address, allowing the consuming system to display as much or as little of the address as it chooses.</p>
+<h5>OxPoints</h5>
+<p>For feeds specific to the University of Oxford (or at least describe events at University venues) it may be worth referencing OxPoints. OxPoints is an RDF store containing locations of and relationships between entities at the University, and can be <a href="http://www.oucs.ox.ac.uk/oxpoints/index.xml.ID=body.1_div.2">queried in a variety of ways</a>. If you&#8217;d like to add such a link I&#8217;d suggest you use:</p>
+<pre class="brush: xml;">
+&lt;?xml version='1.0' encoding='UTF-8'?&gt;
+&lt;feed xmlns=&quot;http://www.w3.org/2005/Atom&quot;
+      xmlns:rdf=&quot;http://www.w3.org/1999/02/22-rdf-syntax-ns#&quot;
+      xmlns:oxpoints=&quot;http://ns.ox.ac.uk/namespace/oxpoints/2009/02/owl#&quot;&gt;
+  &lt;!-- Feed metadata snipped --&gt;
+  &lt;entry&gt;
+    &lt;!-- Other entry metadata was here --&gt;
+    &lt;oxpoints:where rdf:resource=&quot;http://m.ox.ac.uk/oxpoints/id/12345678&quot;/&gt;
+  &lt;/entry&gt;
+&lt;/feed&gt;
+</pre>
+<h4>Conclusions</h4>
+<p>With so many different ways of conveying the same information it could be tough deciding between them. That said, you don&#8217;t lose anything by implementing as many as is feasible.</p>
+<p>For times use both <code>ev</code> and <code>xCal</code>, and for locations use one or both of <code>geo</code> and <code>georss</code> for latitude-longitudes. For textual locations I&#8217;d advise a comma-delimited list for <code>ev:location</code> and <code>xCal:location</code>, as well as a vCard for those parsers that understand it. Again, if you use University venues, consider referencing OxPoints.</p>
+<p>Here&#8217;s a long-winded example of all of these in use:</p>
+<pre class="brush: xml;">
+&lt;?xml version='1.0' encoding='UTF-8'?&gt;
+&lt;feed xmlns=&quot;http://www.w3.org/2005/Atom&quot;
+      xmlns:rdf=&quot;http://www.w3.org/1999/02/22-rdf-syntax-ns#&quot;
+      xmlns:oxpoints=&quot;http://ns.ox.ac.uk/namespace/oxpoints/2009/02/owl#&quot;
+      xmlns:vCard=&quot;http://www.w3.org/2006/vcard/ns#&quot;
+      xmlns:ev=&quot;http://purl.org/rss/1.0/modules/event/&quot;
+      xmlns:xCal=&quot;urn:ietf:params:xml:ns:xcal&quot;
+      xmlns:geo=&quot;http://www.w3.org/2003/01/geo/wgs84_pos#&quot;&gt;
+  &lt;!-- Feed metadata snipped --&gt;
+  &lt;entry&gt;
+    &lt;!-- Other entry metadata was here --&gt;
+    &lt;ev:startdate&gt;2010-01-18T16:00:00+00:00&lt;/ev:startdate&gt;
+    &lt;ev:enddate&gt;2010-01-18T17:00:00+00:00&lt;/ev:enddate&gt;
+    &lt;xCal:dtstart&gt;2010-01-18T16:00:00+00:00&lt;/xCal:dtstart&gt;
+    &lt;xCal:dtend&gt;2010-01-18T17:00:00+00:00&lt;/xCal:dtend&gt;
+
+    &lt;geo:lat&gt;51.75491&lt;/geo:lat&gt;&lt;geo:long&gt;-1.26078&lt;/geo:long&gt;
+    &lt;vCard:adr&gt;
+      &lt;vCard:street-address&gt;Oxford Playhouse&lt;/vCard:street-address&gt;
+      &lt;vCard:extended-address&gt;11-12 Beaumont Street&lt;/vCard:extended-address&gt;
+      &lt;vCard:locality&gt;Oxford&lt;/vCard:locality&gt;
+      &lt;vCard:postal-code&gt;OX1 2LW&lt;/vCard:postal-code&gt;
+    &lt;/vCard:adr&gt;
+    &lt;vCard:tel&gt;+44-1865-305205&lt;/vCard:tel&gt;
+    &lt;vCard:fax&gt;+44-1865-793748&lt;/vCard:fax&gt;
+    &lt;oxpoints:where rdf:resource=&quot;http://m.ox.ac.uk/oxpoints/id/12345678&quot;/&gt;
+  &lt;/entry&gt;
+&lt;/feed&gt;
+</pre>
+<h4>Footnotes and references</h4>
+<ol>
+<li><a href="http://blogs.oucs.ox.ac.uk/inapickle/category/erewhon/feed/#ref0">^</a> Specifically a subset of ISO 8601 where the century should be specified. See <a href="http://www.w3.org/TR/NOTE-datetime">the W3C&#8217;s note on dates and times</a> for more details. Being a note (as opposed to a recommendation) it is entirely optional as to whether you format your date-times in this manner, but it&#8217;s probably a Good Idea.</li>
+<li><a href="http://blogs.oucs.ox.ac.uk/inapickle/category/erewhon/feed/#ref1">^</a> This leads to the question of whether you have a feed for each lecture series (with an entry per lecture), or one feed containing all series. The former would seem more sensible if you wanted to attach lecture notes to individual lectures. As of yet I haven&#8217;t found a sensible way to associate entries in a series, or to say &#8220;this seminar accompanies that lecture&#8221; or that &#8220;this set of seminars are for Group A, and those for Group B&#8221;. More thinking and investigation needed!</li>
+</ol></div>
+
+
+
+
+
+
+
+<p class="date">
+<a href="http://blogs.oucs.ox.ac.uk/inapickle/2009/12/16/adding-event-times-and-location-to-rss-and-atom-feeds/">by Alexander Dutton at December 16, 2009 11:58 AM</a>
+</p>
+</div>
+</div>
+
+
+</div>
+
+</div>
+<div class="daygroup">
+<h2>December 15, 2009</h2>
+
+<div class="channelgroup">
+
+
+
+
+
+
+
+<h3><a href="http://blogs.oucs.ox.ac.uk/inapickle" title="In a pickle » Erewhon">Alexander Dutton</a></h3>
+<img class="face" src="images/keybuk.png" width="65" height="85" alt="">
+
+
+<div class="entrygroup" id="http://blogs.oucs.ox.ac.uk/inapickle/2009/11/25/django-class-based-views-metaclassing-and-view-validation/" lang="en">
+<h4><a href="http://blogs.oucs.ox.ac.uk/inapickle/2009/12/15/django-class-based-views-metaclassing-and-view-validation/">Django, class-based views, metaclassing, and view validation</a></h4>
+<div class="entry">
+<div class="content">
+<p>As you may or may not be aware, the University&#8217;s mobile portal, <a href="http://m.ox.ac.uk/">Mobile Oxford</a>, is a site built on the <a href="http://www.djangoproject.com/">Django web framework</a>. I plan to explain some of the concepts behind how it works, partly for everyone else&#8217;s insight, and partly to garner some feedback on how we might aim to do things better.</p>
+<p>When an HTTP request is handled by a Django website, it attempts to match the local part of the URL against a series of regular expressions. Upon finding a match it passes an object representing the request as an argument to a callable associated with the regular expression. In Python, most callables you will find are class or instance methods, or functions.  The Django documentation only briefly refers to the fact that one can use callables other than functions.</p>
+<h4>Class-based views and metaclasses</h4>
+<p>We&#8217;re using class-based views, a concept that doesn&#8217;t seem to have much of a presence on the Internet. The usual approach is to define a method <code>__call__(self, request, &hellip;)</code> on a class, an instance of which is then placed in an urlconf. Our approach is the following:</p>
+<ul>
+<li>Have a base view called, oddly enough, BaseView.</li>
+<li>Define a method <code>__new__(cls, request, &hellip;)</code> that despatches to other class methods depending on the HTTP method.</li>
+<li>The <code>__new__</code> method also calls a method to add common context for each of the handlers.</li>
+<li>We use a metaclass to save having to put <code>@classmethod</code> decorators in front of every method.</li>
+<li>We never create instances of the view classes; instead, <code>__new__</code> returns an <code>HttpResponse</code> object and the class itself is place in the urlconf.</li>
+</ul>
+<p>Here&#8217;s the code:</p>
+<pre class="brush: python;">
+from inspect import isfunction
+from django.template import RequestContext
+
+class ViewMetaclass(type):
+     def __new__(cls, name, bases, dict):
+         # Wrap all functions but __new__ in a classmethod before
+         # constructing the class
+         for key, value in dict.items():
+             if isfunction(value) and key != '__new__':
+                 dict[key] = classmethod(value)
+         return type.__new__(cls, name, bases, dict)
+
+class BaseView(object):
+    __metaclass__ = ViewMetaclass
+
+    def method_not_acceptable(cls, request):
+        &quot;&quot;&quot;
+        Returns a simple 405 response.
+        &quot;&quot;&quot;
+
+        response = HttpResponse(
+            'You can't perform a %s request against this resource.' %
+                request.method.upper(),
+            status=405,
+        )
+        return response
+
+        # We could go on defining error status handlers, but there's
+        # little need. These can also be overridden in subclasses if
+        # necessary.
+
+        def initial_context(cls, request, *args, **kwargs):
+            &quot;&quot;&quot;
+            Returns common context for each of the HTTP method
+            handlers. You will probably want to override this in
+            subclasses.
+            &quot;&quot;&quot;
+
+            return {}
+
+        def __new__(cls, request, *args, **kwargs):
+            &quot;&quot;&quot;
+            Takes a request and arguments from the URL despatcher,
+            returning an HttpResponse object.
+            &quot;&quot;&quot;
+
+            method_name = 'handle_%s' % request.method
+            if hasattr(cls, method_name):
+                # Construct the initial context to pass to the HTTP
+                # handler
+                context = RequestContext(request)
+                context.update(cls.initial_context(request,
+                                                   *args, **kwargs))
+
+                # getattr returns a staticmethod , which we pass the
+                # request and initial context
+                handler_method = getattr(cls, method_name)
+                return handler_method(request, context,
+                                      *args, **kwargs)
+            else:
+                # Our view doesn't want to handle this method; return
+                # a 405
+                return cls.method_not_acceptable(request)
+</pre>
+<p>Our actual view code can then look a little something like this (minus<br />
+all the faff with input validation and authentication):</p>
+<pre class="brush: python;">
+class CheeseView(BaseView):
+    def initial_context(cls, request, slug):
+        return {
+            'cheese': get_object_or_404(Cheese, slug=slug)
+        }
+
+    def handle_GET(cls, request, context, slug):
+        return render_to_response('cheese_detail.html', context)
+
+    def handle_DELETE(cls, request, context, slug):
+        context['cheese'].delete()
+        # Return a 204 No Content response to acknowledge the cheese
+        # has gone.
+        return HttpResponse('', status=204)
+
+    def handle_POST(cls, request, context, slug):
+        # Allow a user to change the smelliness of the cheese
+        context['cheese'].smelliness = request.POST['smelliness']
+        context['cheese'].save()
+        return HttpResponse('', status=204)
+</pre>
+<p>For those who aren&#8217;t familiar with metaclasses, I&#8217;ll give a brief description of class creation in Python. First, the class statement executes all the code in the class body, using the newly bound objects (mostly the methods) to populate a dictionary. This dictionary is then passed to the <code>__new__</code> method on the metaclass, along with the name of the class and its base classes. Unless otherwise specified, the metaclass will be type, but the <code>__metaclass__</code> attribute is used to override this. The __new__ method can alter the name, base classes and attribute dictionary as it sees fit. In our case we are wrapping the functions in class method constructors so that they do not become<br />
+instance methods.</p>
+<p>Other things we could do are:</p>
+<ul>
+<li>Override <code>handle_DELETE</code> in a subclass to return a 403 Forbidden if the cheese is important (calling <code>super(cls, cls).handle_DELETE</code> if it isn&#8217;t)</li>
+<li>Despatch to other methods from a handler to keep our code looking modular and tidy</li>
+<li>Subclass <code>__new__</code> to add more parameters to the handlers on subclasses</li>
+</ul>
+<p>As an example of the last point, we have an <code>OAuthView</code> that ensures an access token for a service and adds an <code>urllib2</code> opener to the parameters which contains the necessary credentials to access a remote resource.</p>
+<p>The subclassing view can then simply call <code>opener.open(url)</code> without having to worry about achieving the requisite authorisation.</p>
+<p>Using class-based views allows us to define other methods on the views to return metadata about the resource being requested. As an example, we have a method that constructs the content for the breadcrumb trail, and another that returns the metadata for displaying in search results.</p>
+<p>Achieving such extensibility with function-based views would be nigh on impossible.</p>
+<h4>Now for view validation&#8230;</h4>
+<p>As you may have noticed, all these methods (<code>handle_foo</code>, <code>initial_context</code>) have similar signatures. To make sure they&#8217;re consistent we have a test that looks through all the installed apps looking for classes that subclass <code>BaseView</code>. It then uses <code>inspect.getargspec</code> to compare the signatures. The alternative to this would be to check them in the metaclass, and raise an appropriate error at class creation time.</p>
+<p>Hopefully you find this useful. We&#8217;d be very grateful to hear any suggestions or criticisms that you may have. I certainly don&#8217;t suggest this approach is applicable in every case, but it&#8217;s helped us to adhere as much as possible to the DRY principle.</p></div>
+
+
+
+
+
+
+
+<p class="date">
+<a href="http://blogs.oucs.ox.ac.uk/inapickle/2009/12/15/django-class-based-views-metaclassing-and-view-validation/">by Alexander Dutton at December 15, 2009 09:17 AM</a>
+</p>
+</div>
+</div>
+
+
+</div>
+
+</div>
+<div class="daygroup">
+<h2>October 06, 2009</h2>
+
+<div class="channelgroup">
+
+
+
+
+
+
+
+<h3><a href="http://oxforderewhon.wordpress.com" title="Oxford Erewhon Project Blog">Erewhon</a></h3>
+<img class="face" src="images/jdub.png" width="65" height="85" alt="">
+
+
+<div class="entrygroup" id="http://oxforderewhon.wordpress.com/2009/10/06/erewhon-at-handheld-learning-conference/" lang="en">
+<h4><a href="http://oxforderewhon.wordpress.com/2009/10/06/erewhon-at-handheld-learning-conference/">One of the Erewhon Team</a></h4>
+<div class="entry">
+<div class="content">
+<div class="snap_preview"><br /><p><a href="http://posterous.com/getfile/files.posterous.com/oxforderewhon/uQvDFja37pqxihYqrw1mL0I9Cm76wxfB0nL9IPfqBhWpHfwdNn0Z3PhSdi9y/photo.jpg"><img src="http://posterous.com/getfile/files.posterous.com/oxforderewhon/DP7bF7XeRVD3oJDu93g6b6idmYKtsWMHuqJRwtFrPtekbFkJ7EhsQPxiJWj8/photo.jpg.scaled.500.jpg" width="500" /></a>
+
+
+<!-- No posting client link spam, please. -->
+
+
+  <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/oxforderewhon.wordpress.com/568/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/oxforderewhon.wordpress.com/568/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godelicious/oxforderewhon.wordpress.com/568/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/delicious/oxforderewhon.wordpress.com/568/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gostumble/oxforderewhon.wordpress.com/568/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/stumble/oxforderewhon.wordpress.com/568/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godigg/oxforderewhon.wordpress.com/568/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/digg/oxforderewhon.wordpress.com/568/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/goreddit/oxforderewhon.wordpress.com/568/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/reddit/oxforderewhon.wordpress.com/568/" /></a> <img alt="" border="0" src="http://stats.wordpress.com/b.gif?host=oxforderewhon.wordpress.com&blog=5185432&post=568&subd=oxforderewhon&ref=&feed=1" /></p></div></div>
+
+
+
+
+
+
+
+<p class="date">
+<a href="http://oxforderewhon.wordpress.com/2009/10/06/erewhon-at-handheld-learning-conference/">by One of the Erewhon Team at October 06, 2009 10:51 AM</a>
+</p>
+</div>
+</div>
+
+
+</div>
+
+</div>
+<div class="daygroup">
+<h2>October 02, 2009</h2>
+
+<div class="channelgroup">
+
+
+
+
+
+
+
+<h3><a href="http://oxforderewhon.wordpress.com" title="Oxford Erewhon Project Blog">Erewhon</a></h3>
+<img class="face" src="images/jdub.png" width="65" height="85" alt="">
+
+
+<div class="entrygroup" id="http://oxforderewhon.wordpress.com/2009/10/02/mobile-oxford-erewhon-fote-2009/" lang="en">
+<h4><a href="http://oxforderewhon.wordpress.com/2009/10/02/mobile-oxford-erewhon-fote-2009/">One of the Erewhon Team</a></h4>
+<div class="entry">
+<div class="content">
+<div class="snap_preview"><br /><p>I&#8217;ll be joining Peter Robinson and Carl Marshall (from our sister <a href="http://steeple.posterous.com" target="_blank">http://steeple.posterous.com</a>Steeple podcasting project) at the Future of Technology in Education conference today in London.&nbsp;
+<p></p>
+<div><span>  </span><br />
+<blockquote>
+<div>
+<p>The Future of Technology in Education Conference 2009 (FOTE09) is dedicated to showcasing the hottest technology related trends and challenges impacting the academic sector over the next 1 &#8211; 3 years and builds on the success of our inaugural event in 2008.</p>
+<p><span><strong>Date:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Friday, October 2nd, 2009</strong></span></p>
+<p><span><strong>Venue:&nbsp;&nbsp;&nbsp; Royal Geographic Society, Exhibition Road, London</strong></span></p>
+<p>The 2008 conference completely exceeded our expectations and we were taken back with the great feedback we received for bringing together a diverse mix of speakers to give an insight into the unique technology related challenges currently facing the academic sector.</p>
+</div></blockquote></div></p></div>
+
+<div>via&nbsp;<a href="http://fote-conference.com/" target="_blank">fote-conference.com</a></div>
+
+
+
+<!-- No posting client link spam, please. -->
+
+
+  <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/oxforderewhon.wordpress.com/567/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/oxforderewhon.wordpress.com/567/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godelicious/oxforderewhon.wordpress.com/567/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/delicious/oxforderewhon.wordpress.com/567/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gostumble/oxforderewhon.wordpress.com/567/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/stumble/oxforderewhon.wordpress.com/567/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godigg/oxforderewhon.wordpress.com/567/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/digg/oxforderewhon.wordpress.com/567/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/goreddit/oxforderewhon.wordpress.com/567/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/reddit/oxforderewhon.wordpress.com/567/" /></a> <img alt="" border="0" src="http://stats.wordpress.com/b.gif?host=oxforderewhon.wordpress.com&blog=5185432&post=567&subd=oxforderewhon&ref=&feed=1" /></div>
+
+
+
+
+
+
+
+<p class="date">
+<a href="http://oxforderewhon.wordpress.com/2009/10/02/mobile-oxford-erewhon-fote-2009/">by One of the Erewhon Team at October 02, 2009 08:21 AM</a>
+</p>
+</div>
+</div>
+
+
+</div>
+
+</div>
+<div class="daygroup">
+<h2>September 29, 2009</h2>
+
+<div class="channelgroup">
+
+
+
+
+
+
+
+<h3><a href="http://oxforderewhon.wordpress.com" title="Oxford Erewhon Project Blog">Erewhon</a></h3>
+<img class="face" src="images/jdub.png" width="65" height="85" alt="">
+
+
+<div class="entrygroup" id="http://oxforderewhon.wordpress.com/2009/09/29/ms-using-datamatrix-2d-bar-codes/" lang="en">
+<h4><a href="http://oxforderewhon.wordpress.com/2009/09/29/ms-using-datamatrix-2d-bar-codes/">One of the Erewhon Team</a></h4>
+<div class="entry">
+<div class="content">
+<div class="snap_preview"><br /><p>Alex Dutton and I are on our way to see the guys in Bristol who are <br />part of the JISC funded Rapid Innovation project &#8220;Mobile Campus <br />Assistant&#8221; (link to follow).
+<p></p> En route we noticed that Marks and Spencer have started putting 2D <br />barcides on some of their products to provide bits of information to <br />their customers.
+<p></p> Although there isn&#8217;t all that much useful on there at the moment, I <br />think it has potential to deliver some interesting ideas in the <br />future. I would be quite interested to see what kind of take up M&amp;S <br />have from this.
+<p></p> My personal incling is that there may well be a large response <br />initially as they publish these codes on their products but unless <br />they can deliver some compelling content the trend will die down.
+<p><img src="http://posterous.com/getfile/files.posterous.com/oxforderewhon/BHc566MUP7Nt1Pn1J5Rdx6EtdC9vwzfJg7EXivBfCKG9qQHTyD0T7EpzuOVg/photo.jpg" width="320" /> <a href="http://posterous.com/getfile/files.posterous.com/oxforderewhon/7OHqlyJSMJxb8jIrrJ6cAxLiLemRTxBpN0mlAalTTNDlNDbQsMx7UpmsbttA/photo_2.jpg"><img src="http://posterous.com/getfile/files.posterous.com/oxforderewhon/ICOkJr3kd0QUgGmDsUg9B4ViEroUSobHDaRHYLXkPzEkMAiqDSd2PrXvLewY/photo_2.jpg.scaled.500.jpg" width="500" /></a>
+<div><a href="http://oxforderewhon.posterous.com/mands-using-datamatrix-2d-bar-codes-0">See and download the full gallery on posterous</a></div>
+</p>
+
+
+<!-- No posting client link spam, please. -->
+
+
+  <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/oxforderewhon.wordpress.com/566/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/oxforderewhon.wordpress.com/566/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godelicious/oxforderewhon.wordpress.com/566/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/delicious/oxforderewhon.wordpress.com/566/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gostumble/oxforderewhon.wordpress.com/566/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/stumble/oxforderewhon.wordpress.com/566/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godigg/oxforderewhon.wordpress.com/566/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/digg/oxforderewhon.wordpress.com/566/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/goreddit/oxforderewhon.wordpress.com/566/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/reddit/oxforderewhon.wordpress.com/566/" /></a> <img alt="" border="0" src="http://stats.wordpress.com/b.gif?host=oxforderewhon.wordpress.com&blog=5185432&post=566&subd=oxforderewhon&ref=&feed=1" /></p></div></div>
+
+
+
+
+
+
+
+<p class="date">
+<a href="http://oxforderewhon.wordpress.com/2009/09/29/ms-using-datamatrix-2d-bar-codes/">by One of the Erewhon Team at September 29, 2009 10:50 AM</a>
+</p>
+</div>
+</div>
+
+
+</div>
+
+</div>
+<div class="daygroup">
+<h2>September 25, 2009</h2>
+
+<div class="channelgroup">
+
+
+
+
+
+
+
+<h3><a href="http://oxforderewhon.wordpress.com" title="Oxford Erewhon Project Blog">Erewhon</a></h3>
+<img class="face" src="images/jdub.png" width="65" height="85" alt="">
+
+
+<div class="entrygroup" id="http://oxforderewhon.wordpress.com/2009/09/25/datamatrix-2d-barcode-for-m-ox-ac-uk/" lang="en">
+<h4><a href="http://oxforderewhon.wordpress.com/2009/09/25/datamatrix-2d-barcode-for-m-ox-ac-uk/">One of the Erewhon Team</a></h4>
+<div class="entry">
+<div class="content">
+<div class="snap_preview"><br /><p><img src="http://posterous.com/getfile/files.posterous.com/mobileoxford/oatu90H7rc3jSNC5KoVx99e35fsYHw24zUAD5fVzYW6Lcy2mcIXrtHZSghfE/img-1.png" width="156" />
+<p>Points your Datamatrix readers at this! :) (Link is due to be live on the <br />5th October).</p>
+<p>  <a href="http://posterous.com">Posted via email</a>   from <a href="http://mobileoxford.posterous.com/datamatrix-2d-barcode-for-moxacuk">Mobile Oxford</a>  </p>
+  <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/oxforderewhon.wordpress.com/565/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/oxforderewhon.wordpress.com/565/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godelicious/oxforderewhon.wordpress.com/565/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/delicious/oxforderewhon.wordpress.com/565/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gostumble/oxforderewhon.wordpress.com/565/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/stumble/oxforderewhon.wordpress.com/565/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godigg/oxforderewhon.wordpress.com/565/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/digg/oxforderewhon.wordpress.com/565/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/goreddit/oxforderewhon.wordpress.com/565/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/reddit/oxforderewhon.wordpress.com/565/" /></a> <img alt="" border="0" src="http://stats.wordpress.com/b.gif?host=oxforderewhon.wordpress.com&blog=5185432&post=565&subd=oxforderewhon&ref=&feed=1" /></p></div></div>
+
+
+
+
+
+
+
+<p class="date">
+<a href="http://oxforderewhon.wordpress.com/2009/09/25/datamatrix-2d-barcode-for-m-ox-ac-uk/">by One of the Erewhon Team at September 25, 2009 02:15 PM</a>
+</p>
+</div>
+</div>
+
+
+
+
+<div class="entrygroup" id="http://oxforderewhon.wordpress.com/2009/09/25/talking-at-the-open-university-library-seminar/" lang="en">
+<h4><a href="http://oxforderewhon.wordpress.com/2009/09/25/talking-at-the-open-university-library-seminar/">One of the Erewhon Team</a></h4>
+<div class="entry">
+<div class="content">
+<div class="snap_preview"><br /><p>Yesterday Sebastian and I spoke at the Open University library seminar <br />regarding OxPoints and the upcoming Mobile Oxford (m.ox.ac.uk &#8211; coming <br />soon) website for mobile devices.
+<p></p> Slides below!</p>
+<p><a href="http://posterous.com/getfile/files.posterous.com/oxforderewhon/n866pSt0IWT8LyRMar5K4F5KnOWixahbElclUjRI0vC8Q8SjmlUYMw3E5S9o/IMG_0569.jpg.scaled.1000.jpg"><img src="http://posterous.com/getfile/files.posterous.com/oxforderewhon/4FFIlyW0vgORRZePUFrl3FDmj08i7HTUsNcWTFBuaFWytsW8SNMsHaCXRyoP/IMG_0569.jpg.scaled.500.jpg" width="500" /></a> </p>
+<p>
+<div>
+<div><a href="http://posterous.com/getfile/files.posterous.com/oxforderewhon/V6fLCIcv27c5vN8jFYl0k8jUDPXMCbfhpuz2LojnZNrNQynmGslmLghkvbRO/intro.pdf"><img src="http://posterous.com/images/filetypes/pdf.png" /></a></div>
+<div>Download now or <a href="http://oxforderewhon.posterous.com/talking-at-the-open-university-library-semina">preview on posterous</a></div>
+<p>       <b><a href="http://posterous.com/getfile/files.posterous.com/oxforderewhon/V6fLCIcv27c5vN8jFYl0k8jUDPXMCbfhpuz2LojnZNrNQynmGslmLghkvbRO/intro.pdf">intro.pdf</a></b> <span>(1664 KB)</span>       </p></div>
+</p>
+<p>
+<div>
+<div><a href="http://posterous.com/getfile/files.posterous.com/oxforderewhon/Q6CND5Kjcc9vuZ3ztHk9lPqolX0rVkX99ZAxE3NQHdhjgwjHLFI6XP0fSxqg/geo.pdf"><img src="http://posterous.com/images/filetypes/pdf.png" /></a></div>
+<div>Download now or <a href="http://oxforderewhon.posterous.com/talking-at-the-open-university-library-semina">preview on posterous</a></div>
+<p>       <b><a href="http://posterous.com/getfile/files.posterous.com/oxforderewhon/Q6CND5Kjcc9vuZ3ztHk9lPqolX0rVkX99ZAxE3NQHdhjgwjHLFI6XP0fSxqg/geo.pdf">geo.pdf</a></b> <span>(637 KB)</span>       </p></div>
+</p>
+<p>
+<div>
+<div><a href="http://posterous.com/getfile/files.posterous.com/oxforderewhon/l0n97nK46ms9tsfOFkrL2XIBDMn6aS8LTdBJodlptRrfddAXjlbMcoccXlDO/Erewhon_-_Open_University_Libr.pdf"><img src="http://posterous.com/images/filetypes/pdf.png" /></a></div>
+<div>Download now or <a href="http://oxforderewhon.posterous.com/talking-at-the-open-university-library-semina">preview on posterous</a></div>
+<p>       <b><a href="http://posterous.com/getfile/files.posterous.com/oxforderewhon/l0n97nK46ms9tsfOFkrL2XIBDMn6aS8LTdBJodlptRrfddAXjlbMcoccXlDO/Erewhon_-_Open_University_Libr.pdf">Erewhon &#8211; Open University Library Seminar 24th September.pdf</a></b> <span>(4510 KB)</span>       </p></div>
+</p>
+
+
+<!-- No posting client link spam, please. -->
+
+
+  <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/oxforderewhon.wordpress.com/564/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/oxforderewhon.wordpress.com/564/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godelicious/oxforderewhon.wordpress.com/564/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/delicious/oxforderewhon.wordpress.com/564/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gostumble/oxforderewhon.wordpress.com/564/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/stumble/oxforderewhon.wordpress.com/564/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godigg/oxforderewhon.wordpress.com/564/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/digg/oxforderewhon.wordpress.com/564/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/goreddit/oxforderewhon.wordpress.com/564/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/reddit/oxforderewhon.wordpress.com/564/" /></a> <img alt="" border="0" src="http://stats.wordpress.com/b.gif?host=oxforderewhon.wordpress.com&blog=5185432&post=564&subd=oxforderewhon&ref=&feed=1" /></div></div>
+
+
+
+
+
+
+
+<p class="date">
+<a href="http://oxforderewhon.wordpress.com/2009/09/25/talking-at-the-open-university-library-seminar/">by One of the Erewhon Team at September 25, 2009 02:14 PM</a>
+</p>
+</div>
+</div>
+
+
+</div>
+
+</div>
+<div class="daygroup">
+<h2>September 23, 2009</h2>
+
+<div class="channelgroup">
+
+
+
+
+
+
+
+<h3><a href="http://oxforderewhon.wordpress.com" title="Oxford Erewhon Project Blog">Erewhon</a></h3>
+<img class="face" src="images/jdub.png" width="65" height="85" alt="">
+
+
+<div class="entrygroup" id="http://oxforderewhon.wordpress.com/2009/09/23/qr-2d-barcode-for-m-ox-ac-uk/" lang="en">
+<h4><a href="http://oxforderewhon.wordpress.com/2009/09/23/qr-2d-barcode-for-m-ox-ac-uk/">One of the Erewhon Team</a></h4>
+<div class="entry">
+<div class="content">
+<div class="snap_preview"><br /><p><img src="http://posterous.com/getfile/files.posterous.com/mobileoxford/ljWEZbscXGwqsKXPIfvchXFrL5JdFTr4SgajvBAMMEyhBlEMCdH59dKtYZm8/img.png" width="216" />
+<p>Points your QR Code readers at this! :) (Link is due to be live on the <br />5th October).</p>
+<p>  <a href="http://posterous.com">Posted via email</a>   from <a href="http://mobileoxford.posterous.com/qr-2d-barcode-for-moxacuk">Mobile Oxford</a>  </p>
+  <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/oxforderewhon.wordpress.com/563/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/oxforderewhon.wordpress.com/563/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godelicious/oxforderewhon.wordpress.com/563/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/delicious/oxforderewhon.wordpress.com/563/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gostumble/oxforderewhon.wordpress.com/563/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/stumble/oxforderewhon.wordpress.com/563/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godigg/oxforderewhon.wordpress.com/563/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/digg/oxforderewhon.wordpress.com/563/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/goreddit/oxforderewhon.wordpress.com/563/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/reddit/oxforderewhon.wordpress.com/563/" /></a> <img alt="" border="0" src="http://stats.wordpress.com/b.gif?host=oxforderewhon.wordpress.com&blog=5185432&post=563&subd=oxforderewhon&ref=&feed=1" /></p></div></div>
+
+
+
+
+
+
+
+<p class="date">
+<a href="http://oxforderewhon.wordpress.com/2009/09/23/qr-2d-barcode-for-m-ox-ac-uk/">by One of the Erewhon Team at September 23, 2009 10:52 PM</a>
+</p>
+</div>
+</div>
+
+
+</div>
+
+</div>
+<div class="daygroup">
+<h2>September 07, 2009</h2>
+
+<div class="channelgroup">
+
+
+
+
+
+
+
+<h3><a href="http://oxforderewhon.wordpress.com" title="Oxford Erewhon Project Blog">Erewhon</a></h3>
+<img class="face" src="images/jdub.png" width="65" height="85" alt="">
+
+
+<div class="entrygroup" id="http://oxforderewhon.wordpress.com/2009/09/07/microsofts-sense-cam-via-techcrunch/" lang="en">
+<h4><a href="http://oxforderewhon.wordpress.com/2009/09/07/microsofts-sense-cam-via-techcrunch/">Tim Fernando</a></h4>
+<div class="entry">
+<div class="content">
+<div class="snap_preview"><br /><p><img src="http://posterous.com/getfile/files.posterous.com/oxforderewhon/X9FoGbNvcbYbSJHyp2hWzzT0qFaXTkn2EaDTK7GOLNk3G0gp8Li1TnY0vgy9/sensecam.jpg" width="316" />
+<p>A device that you wear around your neck, photographs, geo-locates, <br />auto-tags and then automatically uploads your life to the cloud? <br />That&#8217;s what Microsoft Research at Cambridge came up with some time ago <br />with the &#8220;Sensecam&#8221;. Techcrunch makes a good point in saying that <br />although the concept of wearing such a device may seem rather horrific <br />to many people today, people of yesteryear would have been <br />uncomfortable making their personal photo albums available for the <br />world to see as we do with places such as Facebook and Flickr. <br />&nbsp;<br />I think the concept is certainly pertinent and now is almost <br />inevitable, as a serious photographer I carry a GPS logger with me <br />whenever I go taking photographs and whenever I travel great distances <br />I like to keep a log of where I went for future reference. I would <br />quite like this information available to my ancestors to come too, so <br />a device like the sense cam would only make recording it easier. <br />&nbsp;<br />Of course recording every minute of your day would certainly involve <br />storing a lot of pointless data, so you would need tools to help sift <br />through the data. One of the features the Sensecam concept <br />incorporated was that of ambient sensors to trigger recording only <br />when significant events happened, e.g. a change in lighting, <br />temperature or movement. <br />&nbsp;<br />[Via <a href="http://www.techcrunch.com/2009/09/06/life-recorders-may-be-this-centurys-wrist-watch/">TechCrunch</a>]</p>
+
+
+<!-- No posting client link spam, please. -->
+
+
+  <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/oxforderewhon.wordpress.com/522/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/oxforderewhon.wordpress.com/522/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godelicious/oxforderewhon.wordpress.com/522/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/delicious/oxforderewhon.wordpress.com/522/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gostumble/oxforderewhon.wordpress.com/522/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/stumble/oxforderewhon.wordpress.com/522/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godigg/oxforderewhon.wordpress.com/522/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/digg/oxforderewhon.wordpress.com/522/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/goreddit/oxforderewhon.wordpress.com/522/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/reddit/oxforderewhon.wordpress.com/522/" /></a> <img alt="" border="0" src="http://stats.wordpress.com/b.gif?host=oxforderewhon.wordpress.com&blog=5185432&post=522&subd=oxforderewhon&ref=&feed=1" /></p></div></div>
+
+
+
+
+
+
+
+<p class="date">
+<a href="http://oxforderewhon.wordpress.com/2009/09/07/microsofts-sense-cam-via-techcrunch/">by Tim Fernando at September 07, 2009 03:44 PM</a>
+</p>
+</div>
+</div>
+
+
+</div>
+
+</div>
+<div class="daygroup">
+<h2>September 04, 2009</h2>
+
+<div class="channelgroup">
+
+
+
+
+
+
+
+<h3><a href="http://oxforderewhon.wordpress.com" title="Oxford Erewhon Project Blog">Erewhon</a></h3>
+<img class="face" src="images/jdub.png" width="65" height="85" alt="">
+
+
+<div class="entrygroup" id="http://oxforderewhon.wordpress.com/?p=520" lang="en">
+<h4><a href="http://oxforderewhon.wordpress.com/2009/09/04/interview-about-the-erewhon-project-at-the-jisc-rapid-innovation-conference/">alexsdutton</a></h4>
+<div class="entry">
+<div class="content">
+<div class="snap_preview"><br /><p>I&#8217;m currently at the Rapid Innovation conference in Manchester, talking about the Erewhon project and forging links with others approaching similar problems.<br />
+Highlights so far include:</p>
+<ul>
+<li>Jasper Tredgold from the University of Bristol was great to talk to about their upcoming Mobile Campus Assistant</li>
+<li>Peter Pratt from the University of Edinburgh talked about Walking Through Time, which uses Google Maps on a mobile device to display historical maps for the local area</li>
+<li>Simon Harper from the University of Manchester represented Structural which, to quote, &#8216;is a user agent extension which can make sense of the implicit structural layout of a web page and adapt it into a format suitable for a mobile device&#8217;</li>
+</ul>
+<p>Other interesting links include:</p>
+<ul>
+<li><a href="http://projects.kmi.open.ac.uk/era/">Enabling Remote Activities</a> &#8211; using Asterisk for VoIP in the field.</li>
+<li><a href="http://incubator.apache.org/wookie/">Wookie</a> &#8211; The Apache-incubated platform for widgets, implementing the W3C spec.</li>
+</ul>
+<p>To round off the post, there&#8217;s an interview for the conference available at <a href="http://blog.iedemonstrator.org/2009/09/04/interview-alexander-dutton-erewhon-project/">IE Demonstrator</a>.</p>
+<p>More analysis and information to follow!</p>
+  <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/oxforderewhon.wordpress.com/520/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/oxforderewhon.wordpress.com/520/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godelicious/oxforderewhon.wordpress.com/520/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/delicious/oxforderewhon.wordpress.com/520/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gostumble/oxforderewhon.wordpress.com/520/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/stumble/oxforderewhon.wordpress.com/520/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godigg/oxforderewhon.wordpress.com/520/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/digg/oxforderewhon.wordpress.com/520/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/goreddit/oxforderewhon.wordpress.com/520/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/reddit/oxforderewhon.wordpress.com/520/" /></a> <img alt="" border="0" src="http://stats.wordpress.com/b.gif?host=oxforderewhon.wordpress.com&blog=5185432&post=520&subd=oxforderewhon&ref=&feed=1" /></div></div>
+
+
+
+
+
+
+
+<p class="date">
+<a href="http://oxforderewhon.wordpress.com/2009/09/04/interview-about-the-erewhon-project-at-the-jisc-rapid-innovation-conference/">by Alex Dutton at September 04, 2009 12:45 PM</a>
+</p>
+</div>
+</div>
+
+
+</div>
+
+</div>
+<div class="daygroup">
+<h2>August 11, 2009</h2>
+
+<div class="channelgroup">
+
+
+
+
+
+
+
+<h3><a href="http://oxforderewhon.wordpress.com" title="Oxford Erewhon Project Blog">Erewhon</a></h3>
+<img class="face" src="images/jdub.png" width="65" height="85" alt="">
+
+
+<div class="entrygroup" id="http://oxforderewhon.wordpress.com/?p=513" lang="en">
+<h4><a href="http://oxforderewhon.wordpress.com/2009/08/11/game-changing-news/">Tim Fernando</a></h4>
+<div class="entry">
+<div class="content">
+<div class="snap_preview"><br /><p>With iPhone, Blackberry, Palm and Android dominating the smartphone headlines. Microsoft and Nokia have been haemorrhaging market share, will an alliance between them be the best way forward?</p>
+<p>A conference call tomorrow [<a title="Engadget - Nokia and Microsoft to ally?" href="http://www.engadget.com/2009/08/11/nokia-and-microsoft-to-announce-an-alliance-tomorrow-what/">via Engadget</a>] suggests so!</p>
+<p>Further rumours suggest that Nokia may be ditching Symbian in favour of something more open source. [<a title="Nokia ditching Symbian?" href="http://uk.techcrunch.com/2009/08/11/nokia-ditching-symbian-for-maemo-german-ft-reports/">via Techcrunch</a>]</p>
+  <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/oxforderewhon.wordpress.com/513/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/oxforderewhon.wordpress.com/513/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godelicious/oxforderewhon.wordpress.com/513/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/delicious/oxforderewhon.wordpress.com/513/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gostumble/oxforderewhon.wordpress.com/513/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/stumble/oxforderewhon.wordpress.com/513/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godigg/oxforderewhon.wordpress.com/513/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/digg/oxforderewhon.wordpress.com/513/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/goreddit/oxforderewhon.wordpress.com/513/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/reddit/oxforderewhon.wordpress.com/513/" /></a> <img alt="" border="0" src="http://stats.wordpress.com/b.gif?host=oxforderewhon.wordpress.com&blog=5185432&post=513&subd=oxforderewhon&ref=&feed=1" /></div></div>
+
+
+
+
+
+
+
+<p class="date">
+<a href="http://oxforderewhon.wordpress.com/2009/08/11/game-changing-news/">by Tim Fernando at August 11, 2009 10:44 PM</a>
+</p>
+</div>
+</div>
+
+
+</div>
+
+</div>
+<div class="daygroup">
+<h2>July 31, 2009</h2>
+
+<div class="channelgroup">
+
+
+
+
+
+
+
+<h3><a href="http://oxforderewhon.wordpress.com" title="Oxford Erewhon Project Blog">Erewhon</a></h3>
+<img class="face" src="images/jdub.png" width="65" height="85" alt="">
+
+
+<div class="entrygroup" id="http://oxforderewhon.wordpress.com/?p=496" lang="en">
+<h4><a href="http://oxforderewhon.wordpress.com/2009/07/31/geolocating-ducks-in-essex/">A brief survey suggested that ducks were largely indifferent to the potential benefits of institutional geolocation services.</a></h4>
+<div class="entry">
+<div class="content">
+<div class="snap_preview"><br /><p>Earlier this week, Sebastian and I gave a workshop about geolocation at <a href="http://iwmw.ukoln.ac.uk/iwmw2009/"><abbr title="Institutional Web Management Workshop">IWMW</abbr> 2009</a>. Despite ongoing struggles with the wireless networking it all went fairly smoothly, and the 12 or so workshop attendees seemed interested and engaged &mdash; and even willing to do the &#8216;audience participation&#8217; section! This was a re-run of what we did in <a href="http://erewhon.oucs.ox.ac.uk/Talks/2008-12-05-workshop/">a local workshop</a>, but with the added advantage that this time the participants came from a range of institutions &mdash; so we were keen to see whether our examples and suggestions were things they could all relate to.</p>
+<p>Happily, it seems we weren&#8217;t being too Oxford-centric, as there was plenty of discussion around our ideas (particularly on the topics of library books and energy usage) and several interesting new suggestions. </p>
+<div id="attachment_498" class="wp-caption aligncenter"><a href="http://oxforderewhon.files.wordpress.com/2009/07/whiteboards.jpg"><img src="http://oxforderewhon.files.wordpress.com/2009/07/whiteboards.jpg?w=300&h=137" alt="Snapshot: whiteboard writeup of the suggestions made by the three groups in our geolocation workshop." title="Snapshot: whiteboard writeup of the suggestions made by the three groups in our geolocation workshop. Suggestions are in blue, potential problems in red." width="300" height="137" class="size-medium wp-image-498" /></a><p class="wp-caption-text">Workshop whiteboard notes</p></div>
+<p>We particularly liked:</p>
+<dl>
+<dt><strong>Analysing PC/wireless provision and usage to help users determine the <em>likelihood</em> of finding a free PC nearby</strong></dt>
+<dd>It&#8217;s easy enough to show the location of currently free PCs, but by the time you&#8217;ve got there, what are the chances of there <em>still</em> being one available? Enhancing existing usage metrics with geodata would help users head for the best &#8216;hotspots&#8217; without wasting time trekking from one bit of campus to another in search of a workstation. However, there was a concern that this might also look like an open invitation to burglars, showing them a map of all the unattended computers on campus!</dd>
+<dt><strong>SMS reminders for courses/meetings with directions tailored to user preferences</strong></dt>
+<dd>Enhance course reminders (already provided by <a href="http://www.txttools.co.uk/">EduTxt</a>) with directions appropriate to the user&#8217;s location, mobility, mode of transport, etc. It&#8217;d be difficult to do this dynamically based on the user&#8217;s location <em>at the time</em>, but possible to allow users to set more general preferences for the sort of reminders/directions they want.</dd></dl></div>
+
+<p>But the firm favourite was one delegate&#8217;s suggestion of <strong>geolocating a duck</strong>: apparently students at York have a pet duck and would love to be able to find its current location and follow its progress! Ducks have generally been less quick to join the smartphone revolution than students, but this problem could be overcome by attaching a <a href="http://www.telemetrysolutions.com/quantum-4000-feather-lite.php">lightweight GPS data-logger</a> to the duck. While of course this service would have clear benefits for the duck-watchers, opinion was divided over the benefit to the duck itself: on the one hand it might be more likely to get fed and looked after in a timely fashion, but on the other hand it might not want the constant attention&#8230; </p>
+<div id="attachment_499" class="wp-caption aligncenter"><a href="http://oxforderewhon.files.wordpress.com/2009/07/ducks.jpg"><img src="http://oxforderewhon.files.wordpress.com/2009/07/ducks.jpg?w=225&h=300" title="A brief survey suggested that ducks were largely indifferent to the potential benefits of institutional geolocation services." alt="Ducks by the lake at Essex University's Colchester campus" width="225" height="300" class="size-medium wp-image-499" /></a><p class="wp-caption-text">Ducks: how can institutional geolocation services benefit them?</p></div>
+<p>See the IWMW2009 website for <a href="http://iwmw.ukoln.ac.uk/iwmw2009/sessions/mcknight/">details of the workshop (including all our slides)</a>. Thanks again to everybody who attended the workshop &#8211; please feel free to comment here with follow-up, further suggestions or discussion!</p>
+  <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/oxforderewhon.wordpress.com/496/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/oxforderewhon.wordpress.com/496/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godelicious/oxforderewhon.wordpress.com/496/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/delicious/oxforderewhon.wordpress.com/496/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gostumble/oxforderewhon.wordpress.com/496/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/stumble/oxforderewhon.wordpress.com/496/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godigg/oxforderewhon.wordpress.com/496/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/digg/oxforderewhon.wordpress.com/496/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/goreddit/oxforderewhon.wordpress.com/496/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/reddit/oxforderewhon.wordpress.com/496/" /></a> <img alt="" border="0" src="http://stats.wordpress.com/b.gif?host=oxforderewhon.wordpress.com&blog=5185432&post=496&subd=oxforderewhon&ref=&feed=1" /></div>
+
+
+
+
+
+
+
+<p class="date">
+<a href="http://oxforderewhon.wordpress.com/2009/07/31/geolocating-ducks-in-essex/">by janetmck at July 31, 2009 04:23 PM</a>
+</p>
+</div>
+</div>
+
+
+</div>
+
+</div>
+
+
+<div class="sidebar">
+<img src="images/logo.png" width="136" height="136" alt="">
+
+<h2>Subscriptions</h2>
+<ul>
+<li>
+<a href="examples/fancy/index.html.tmpl" title="subscribe"><img src="images/feed-icon-10x10.png" alt="(feed)"></a> <a class="message" title="internal server error"></a>
+</li>
+<li>
+<a href="http://blogs.oucs.ox.ac.uk/inapickle/category/erewhon/feed/" title="subscribe"><img src="images/feed-icon-10x10.png" alt="(feed)"></a> <a href="http://blogs.oucs.ox.ac.uk/inapickle" title="In a pickle » Erewhon">Alexander Dutton</a>
+</li>
+<li>
+<a href="http://oxforderewhon.wordpress.com/feed/" title="subscribe"><img src="images/feed-icon-10x10.png" alt="(feed)"></a> <a href="http://oxforderewhon.wordpress.com" title="Oxford Erewhon Project Blog">Erewhon</a>
+</li>
+</ul>
+
+<p>
+<strong>Last updated:</strong><br>
+January 27, 2010 12:12 PM<br>
+<em>All times are UTC.</em><br>
+<br>
+Powered by:<br>
+<a href="http://www.planetplanet.org/"><img src="images/planet.png" width="80" height="15" alt="Planet" border="0"></a>
+</p>
+
+<p>
+<h2>Planetarium:</h2>
+<ul>
+<li><a href="http://www.planetapache.org/">Planet Apache</a></li>
+<li><a href="http://planet.debian.net/">Planet Debian</a></li>
+<li><a href="http://planet.freedesktop.org/">Planet freedesktop.org</a></li>
+<li><a href="http://planet.gnome.org/">Planet GNOME</a></li>
+<li><a href="http://planetsun.org/">Planet Sun</a></li>
+<li><a href="http://fedora.linux.duke.edu/fedorapeople/">Fedora People</a></li>
+<li><a href="http://www.planetplanet.org/">more...</a></li>
+</ul>
+</p>
+</div>
+</body>
+
+</html>

@@ -4,6 +4,13 @@ from django.conf import settings
 from django.contrib import admin
 admin.autodiscover()
 
+def app_moved(old, new):
+    def f(request):
+        return HttpResponsePermanentRedirect(
+            new+request.get_full_path()[len(old):]
+        )
+    return f
+
 urlpatterns = patterns('',
     # Example:
     # (r'^mobile_portal/', include('mobile_portal.foo.urls')),
@@ -28,6 +35,9 @@ urlpatterns = patterns('',
     (r'^osm/', include('mobile_portal.osm.urls')),
     (r'^search/', include('mobile_portal.googlesearch.urls')),
     (r'^oucs-status/', include('mobile_portal.oucs_status.urls')),
+
+
+    (r'^desktop_about/', app_moved('/desktop_about/', '/desktop/')),
 
 
     (r'', include('mobile_portal.core.urls')),
