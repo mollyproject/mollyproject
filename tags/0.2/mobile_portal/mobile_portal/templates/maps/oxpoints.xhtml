@@ -123,5 +123,27 @@
 	{% endif %}
 </div>
 
+{% if entity.metadata.tags.opening_hours or entity.metadata.tags.cost %}
+<div class="section">
+  <h2>Further information</h2>
+  <table class="section-table">
+    <tbody>
+{% if entity.metadata.tags.opening_hours %}
+      <tr>
+        <th>Opening hours:<th>
+        <td>{{ entity.metadata.tags.opening_hours }}</td>
+      </tr>
+{% endif %}
+{% if entity.metadata.tags.cost %}
+      <tr>
+        <th>Visitor admission:<th>
+        <td>{{ entity.metadata.tags.cost|capfirst }}</td>
+      </tr>
+{% endif %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
 
 {% endblock %}

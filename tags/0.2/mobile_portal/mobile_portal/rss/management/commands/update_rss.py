@@ -31,7 +31,12 @@ class Command(NoArgsCommand):
                     
                 if True or item.last_modified < last_modified:
                     item.title = x_item.title
-                    item.description = sanitise_html(x_item.description)
+                    for attr in ('description', 'dc_description', 'summary'):
+                        if attr in x_item:
+                            item.description = x_item[attr]
+                            break
+                    else:
+                        item.description = ''
                     item.link = x_item.link
                     item.last_modified = last_modified
                     item.save()

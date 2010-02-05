@@ -77,7 +77,11 @@ class Entity(models.Model):
 
     @property
     def display_id(self):
-        return getattr(self, self.entity_type.id_field).strip()
+        id = getattr(self, self.entity_type.id_field)
+        if isinstance(id, basestring):
+            return id.strip()
+        else:
+            return id
         
 class PostCode(models.Model):
     post_code = models.CharField(max_length=8)
