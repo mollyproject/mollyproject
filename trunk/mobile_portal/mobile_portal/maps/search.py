@@ -8,7 +8,7 @@ from mobile_portal.oxpoints.models import Entity
 
 class SiteSearch(object):
     POSTCODE_RE = re.compile('OX\d{1,2} ?\d[A-Z]{2}')
-    OUCSCODE_RE = re.compile('[A-Z]{4}')
+    OUCSCODE_RE = re.compile('^[A-Z]{4}[A-Z]*$')
 
     def __new__(cls, query, only_app, request):
         return (
@@ -79,8 +79,11 @@ class SiteSearch(object):
         if not cls.OUCSCODE_RE.match(query.upper()):
             return []
 
-        json = simplejson.load(urllib2.urlopen(
-            'http://m.ox.ac.uk/oxpoints/oucs:%s.json' % query.lower()))
+        try:
+            json = simplejson.load(urllib2.urlopen(
+                'http://m.ox.ac.uk/oxpoints/oucs:%s.json' % query.lower()))
+        except urllib2.HTTPError:
+            return []
 
         results = []
         for result in json:

@@ -12,12 +12,12 @@ class EntityType(models.Model):
     show_in_nearby_list = models.BooleanField()
     show_in_category_list = models.BooleanField()
     note = models.TextField(null=True)
-    
+
     sub_types = models.ManyToManyField('self', blank=True)
-        
+
     def __unicode__(self):
         return self.verbose_name
-        
+
     class Meta:
         ordering = ('verbose_name',)
 
@@ -36,11 +36,11 @@ class Entity(models.Model):
     _metadata = models.TextField(default='null')
 
     absolute_url = models.TextField()
-    
+
     parent = models.ForeignKey('self', null=True)
     is_sublocation = models.BooleanField(default=False)
     is_stack = models.BooleanField(default=False)
-    
+
     def get_metadata(self):
         try:
             return self.__metadata
@@ -50,7 +50,7 @@ class Entity(models.Model):
     def set_metadata(self, metadata):
         self.__metadata = metadata
     metadata = property(get_metadata, set_metadata)
-    
+
     def save(self, *args, **kwargs):
         try:
             self._metadata = simplejson.dumps(self.__metadata)
@@ -59,9 +59,9 @@ class Entity(models.Model):
         if self.entity_type:
             self.absolute_url = self._get_absolute_url()
         return super(Entity, self).save(*args, **kwargs)
-    
+
     objects = models.GeoManager()
-    
+
     class Meta:
         ordering = ('title',)
 
@@ -71,7 +71,7 @@ class Entity(models.Model):
         if not self.absolute_url:
             self.save()
         return self.absolute_url
-        
+
     def __unicode__(self):
         return self.title
 
@@ -81,8 +81,8 @@ class Entity(models.Model):
             return getattr(self, self.entity_type.id_field).strip()
         else:
             return getattr(self, self.entity_type.id_field)
-        
-        
+
+
 class PostCode(models.Model):
     post_code = models.CharField(max_length=8)
     location = models.PointField(srid=4326, null=True)
