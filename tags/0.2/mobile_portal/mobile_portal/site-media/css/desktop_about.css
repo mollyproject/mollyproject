@@ -192,7 +192,7 @@ a#show-feature-other span {
 
   .feature-list {
     float:left;
-    width:145px;
+    width:155px;
   }
   
   .feature-list ul {
@@ -247,7 +247,7 @@ a#show-feature-other span {
   
   .feature-info {
     float:right;
-    width: 275px;
+    width: 265px;
     #height: 412px;
     border-radius:10px;
     -moz-border-radius:10px;
@@ -283,7 +283,7 @@ a#show-feature-other span {
   }
   
   #feature-descriptions {
-    width:605px;
+    width:595px;
     height:432px;
     float:right;
     position:relative;
