@@ -1,6 +1,7 @@
 from django.conf.urls.defaults import *
 from django.conf import settings
 
+from django.http import HttpResponsePermanentRedirect
 from django.contrib import admin
 admin.autodiscover()
 
