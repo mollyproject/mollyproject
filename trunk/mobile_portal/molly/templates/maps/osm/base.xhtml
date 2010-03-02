@@ -1,0 +1,96 @@
+{% extends "maps/base.xhtml" %}
+{% load maps %}{% load osm_tags %}{% load portal_misc %}
+
+{% block breadcrumbs %}
+{{ block.super }}
+	<li><a href="{% url maps_index %}">
+        <img src="{{ MEDIA_URL }}png/index-icons/maps-bc.png" alt="Maps"/>
+    </a></li>
+    <li><a href="{% url maps_nearby_detail entity.entity_type.slug %}">&hellip;</a></li>
+{% endblock %}
+
+{% block pagetitle %}{{ entity.entity_type.verbose_name|capfirst }}{% endblock %}
+{% block title %}m.ox | {{ entity.entity_type.verbose_name|capfirst }}: {{ entity.title }}{% endblock %}
+
+{% block content %}
+
+<div class="section">
+<h2>{{ entity.title }}</h2>
+
+
+{% ifnotequal style_group "dumb" %}
+    <div class="backgrounded-image" style="background-image:url('{% map_url entity.location %}'); height:{{ map_height }}px">
+    {% include "maps/map_elements.xhtml" %}
+    </div>
+{% else %}
+    <img src="{% map_url entity.location %}" alt="Map"><br />
+    {% include "maps/map_elements.xhtml" %}
+{% endifnotequal %}
+
+
+
+{% if entity|osm_tags %}
+<table class="section-table">
+    <tbody>
+{% for k,v in entity|osm_tags %}
+        <tr>
+            <th>{{ k|capfirst }}:</th>
+            <td>{{ v }}</td>
+        </tr>
+{% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+<ul>
+{% if entity.metadata.tags.phone %}
+    <li>
+        <a class="phone" href="{{ entity.metadata.tags.phone|telephone_uri }}">
+            Call <em>{{ entity.title }}</em><br/>
+            <small>{{ entity.metadata.tags.phone|telephone:"nolink" }}</small>
+        </a>
+    </li>
+{% endif %}
+{% if entity.metadata.tags.wikipedia %}
+    <li>
+        <a class="external-mobile" href="{{ entity.metadata.tags.wikipedia|osm_tag_wikipedia_uri|urlencode }}">
+            Wikipedia article
+        </a>
+    </li>
+{% endif %}
+{% if entity.metadata.tags.url %}
+    <li>
+        <a class="external" href="{{ entity.metadata.tags.url|escape }}">
+            Website
+        </a>
+    </li>
+{% endif %}
+    <li class="round-bottom">
+        <a href="{% url maps_entity_nearby_list entity.entity_type.slug,entity.display_id %}" rel="nofollow">Find things near here</a>
+    </li>
+</ul>
+
+</div>
+
+<div class="section">
+<h2>Note</h2>
+
+<div class="note"><div class="bubble pad-10">
+    This information is provided courtesy of
+    <a href="{% url maps_static_openstreetmap %}">OpenStreetMap</a> under a
+    Creative Commons Attribution-ShareAlike 2.0 license.<br/>
+    Oxford University provides this information without warranty.
+</div></div>
+
+<ul>
+  <li class="round-bottom">
+    <a href="{% url maps_entity_update entity.entity_type.slug,entity.display_id %}">
+      Suggest a correction
+    </a>
+  </li>
+</ul>
+
+</div>
+
+
+{% endblock %}

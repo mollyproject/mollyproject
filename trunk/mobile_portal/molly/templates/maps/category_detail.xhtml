@@ -1,0 +1,50 @@
+{% extends "maps/base.xhtml" %}
+{% load portal_misc %}
+
+{% block pagetitle %}{{ entity_types.0.verbose_name_plural|capfirst }}{% endblock %}
+{% block title %}m.ox | {{ entity_types.0.verbose_name_plural|capfirst }}{% endblock %}
+
+{% block content %}
+
+<div class="section">
+  <h2>
+    Found {{ count }}
+    {% ifequal count 1 %}
+      {{ entity_types.0.verbose_name }}
+      {% ifnotequal entity_types|length 1 %}
+        that is also {% for et in entity_types|slice:"1:" %}{% if not forloop.first %}, {% if forloop.last %}and {% endif %}{% endif %}{{ et.article }} {{ et.verbose_name }}{% endfor %}
+      {% endifnotequal %} 
+    {% else %}
+      {{ entity_types.0.verbose_name_plural }}
+      {% ifnotequal entity_types|length 1 %}
+        that are also {% for et in entity_types|slice:"1:" %}{% if not forloop.first %}, {% if forloop.last %}and {% endif %}{% endif %}{{ et.verbose_name_plural }}{% endfor %}
+      {% endifnotequal %} 
+    {% endifequal %}
+  </h2>
+
+{% if found_entity_types %}
+  <div class="note"><div class="bubble pad-10">
+      Limit to:
+{% for et in found_entity_types %}
+{% if entity_types.0.sub_types.all|contains:et %}
+      <a href="{% url maps_category_detail et.slug %}">{{ et.verbose_name_plural }}</a>
+{% else %}
+      <a href="{% url maps_category_list %}{{ et.slug }}{% for oet in entity_types %};{{ oet.slug }}{% endfor %}/">{{ et.verbose_name_plural }}</a>
+{% endif %}{% if not forloop.last %} | {% endif %} 
+{% endfor %}
+    </div>
+  </div>
+{% endif %}
+
+<ul>
+{% for entity in entities %}
+    <li{% if forloop.last %} class="round-bottom"{% endif %}><a href="{{ entity.get_absolute_url }}">
+      {{ entity.title|capfirst }}{% if multiple_entity_types %}<br/>
+      <small>{{ entity.entity_type|capfirst }}</small>{% endif %}
+    </a></li>
+{% endfor %}
+</ul>
+
+</div>
+
+{% endblock %}

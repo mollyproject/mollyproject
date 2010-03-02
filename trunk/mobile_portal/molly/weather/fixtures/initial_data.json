@@ -1,0 +1,11 @@
+[
+    {
+        "pk": "11",
+        "model": "core.FrontPageLink",
+        "fields": {
+            "slug": "weather",
+            "title": "Weather",
+            "urlconf_name": "weather_index"
+        }
+    }
+]

@@ -1,0 +1,15 @@
+{% extends "maps/base.xhtml" %}
+
+{% block title %}m.ox | {{ entity_type.verbose_name_plural|capfirst }} near {% if entity %}{{ entity.type }}{% else %}me{% endif %}{% endblock %}
+
+
+{% block content %}
+
+<div class="section">
+  <h2>{{ entity_type.verbose_name_plural }} near {{ entity.title }}</h2>
+  <div class="note"><div class="bubble pad-10">
+    Unfortunately, we do not have a location for this object, and so cannot tell you what is near it.
+  </div>
+</div>
+
+{% endblock %}
