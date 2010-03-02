@@ -10,9 +10,9 @@ TEMPLATE_DIRS = (
 
 
 APPLICATIONS = [
-    Application('molly.contact', 'contact',
-#        provider = 'molly.contrib.oxford.providers.ScrapingContactProvider',
-        provider = 'molly.contrib.mit.providers.ContactProvider',
+    Application('molly.apps.contact', 'contact',
+        provider = 'molly.contrib.oxford.providers.ScrapingContactProvider',
+#        provider = 'molly.contrib.mit.providers.ContactProvider',
     ),
 
     Application('molly.maps', 'maps',
