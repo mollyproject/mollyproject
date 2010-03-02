@@ -20,8 +20,7 @@ class ContactProvider(object):
     # URL for the contact search API. Speak to sysdev for access.
     _API_URL = 'http://www2.ox.ac.uk/cgi-bin/contactx?%s'
 
-    @classmethod
-    def normalize_query(cls, cleaned_data):
+    def normalize_query(self, cleaned_data):
         # Examples of initial / surname splitting
         # William Bloggs is W, Bloggs
         # Bloggs         is  , Bloggs
@@ -61,8 +60,7 @@ class ContactProvider(object):
 
     handles_pagination = False
 
-    @classmethod
-    def perform_query(cls, surname, initial, medium, exact):
+    def perform_query(self, surname, initial, medium, exact):
 
         query_string = ';'.join('%s=%s' % i for i in (
             ('surname', re.sub(r"[^A-Za-z\-']", '', surname)),
@@ -71,7 +69,7 @@ class ContactProvider(object):
             ('type', medium),
         ))
         response = urllib2.urlopen(
-            cls._API_URL % query_string,
+            self._API_URL % query_string,
         )
         x_people = ET.parse(response)
 
@@ -96,8 +94,7 @@ class ScrapingContactProvider(ContactProvider):
 
     handles_pagination = True
 
-    @classmethod
-    def perform_query(cls, surname, initial, medium, exact, page):
+    def perform_query(self, surname, initial, medium, exact, page):
         query_string = urllib.urlencode({
             'lastname':surname,
             'initial':initial or '',
@@ -106,7 +103,7 @@ class ScrapingContactProvider(ContactProvider):
             'page': page
         })
         response = urllib2.urlopen(
-            cls._API_URL % query_string,
+            self._API_URL % query_string,
         )
         xml = ES.parse(response)
         try:

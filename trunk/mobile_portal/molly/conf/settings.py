@@ -25,10 +25,10 @@ class Application(object):
 
         providers = []
         for provider in app.providers:
-            if isinstance(provider, SimpleConnector):
+            if isinstance(provider, SimpleProvider):
                 providers.append(provider())
             else:
-                providers.append(SimpleConnector(provider)())
+                providers.append(SimpleProvider(provider)())
 
         app.kwargs['providers'] = providers
         app.kwargs['provider'] = providers[-1] if len(providers) else None
@@ -54,11 +54,6 @@ class Authentication(object):
     def __init__(klass, **kwargs):
         pass
 
-class SimpleConnector(object):
-    def __init__(self, **kwargs):
-        for k in kwargs:
-            setattr(self, k, kwargs[k])
-
 class ExtraBase(object):
     def __init__(self, klass, **kwargs):
         self.klass, self.kwargs = klass, kwargs
@@ -73,7 +68,7 @@ def extract_installed_apps(applications):
 def Secret(name):
     pass
 
-class SimpleConnector(object):
+class SimpleProvider(object):
     def __init__(self, klass=None, **kwargs):
         self.klass, self.kwargs = klass, kwargs
 
@@ -82,7 +77,7 @@ class SimpleConnector(object):
             mod_name, cls_name = self.klass.rsplit('.', 1)
             module = import_module(mod_name)
             klass = getattr(module, cls_name)
+            return klass(**self.kwargs)
         else:
-            klass = object
+            return type('SimpleProvider', (object,), self.kwargs)
 
-        return type(klass.__name__, (klass,), self.kwargs)

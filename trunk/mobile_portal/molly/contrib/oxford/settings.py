@@ -1,6 +1,6 @@
 import os.path
 
-from molly.conf.settings import Application, extract_installed_apps, Secret, Authentication, ExtraBase, SimpleConnector
+from molly.conf.settings import Application, extract_installed_apps, Secret, Authentication, ExtraBase, SimpleProvider
 
 from molly.conf.default_settings import *
 
@@ -24,17 +24,20 @@ APPLICATIONS = [
     ),
 
     Application('molly.z3950', 'library',
-        provider = SimpleConnector(
+        provider = SimpleProvider(
             verbose_name = 'Oxford Library Information System',
             host = 'library.ox.ac.uk',
             database = 'MAIN*BIBMAST',
         ),
     ),
 
-    Application('molly.service_status', 'service_status',
+    Application('molly.apps.service_status', 'service_status',
         providers = [
             'molly.contrib.oxford.providers.OUCSStatusProvider',
-            'molly.contrib.oxford.providers.OLISStatusProvider',
+            SimpleProvider('molly.contrib.generic.providers.ServiceStatusProvider',
+                name='Oxford Library Information Services',
+                slug='olis',
+                url='http://www.lib.ox.ac.uk/olis/status/olis-opac.rss')
         ],
     ),
 
@@ -56,10 +59,10 @@ APPLICATIONS = [
 
     Application('molly.podcasts', 'podcasts',
         providers = [
-            SimpleConnector(
+            SimpleProvider(
                 opml = 'http://rss.oucs.ox.ac.uk/metafeeds/podcastingnewsfeeds.opml',
             ),
-            SimpleConnector(
+            SimpleProvider(
                 name = 'Top Downloads',
                 rss = 'http://rss.oucs.ox.ac.uk/oxitems/topdownloads.xml',
             ),
@@ -75,5 +78,6 @@ API_KEYS = {
 }
 
 INSTALLED_APPS += extract_installed_apps(APPLICATIONS)
+print INSTALLED_APPS
 
 ROOT_URLCONF = 'molly.contrib.oxford.urls'

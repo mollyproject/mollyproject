@@ -10,5 +10,6 @@ urlpatterns = patterns('',
     (r'^shorten$', lambda request:None, {}, 'core_shorten_url'),
 
     (r'^contact/', include(applications.contact.urls)),
+    (r'^service-status/', include(applications.service_status.urls)),
 )
 
