@@ -78,6 +78,6 @@ API_KEYS = {
 }
 
 INSTALLED_APPS += extract_installed_apps(APPLICATIONS)
-print INSTALLED_APPS
 
 ROOT_URLCONF = 'molly.contrib.oxford.urls'
+SITE_MEDIA_PATH = os.path.join(os.path.dirname(__file__), 'site-media')

@@ -1,4 +1,5 @@
 from django.conf.urls.defaults import *
+from django.conf import settings
 
 from molly.conf import applications
 
@@ -13,3 +14,8 @@ urlpatterns = patterns('',
     (r'^service-status/', include(applications.service_status.urls)),
 )
 
+if settings.DEBUG:
+    urlpatterns += patterns('',
+        (r'^site-media/(?P<path>.*)$', 'django.views.static.serve',
+            {'document_root': settings.SITE_MEDIA_PATH})
+    )
