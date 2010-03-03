@@ -1,0 +1,9 @@
+Contributed providers
+=====================
+
+Foo
+
+.. toctree::
+   :maxdepth: 1
+
+   oxford/index

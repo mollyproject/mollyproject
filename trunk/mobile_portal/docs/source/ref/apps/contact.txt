@@ -1,0 +1,58 @@
+:mod:`molly.apps.contact` -- Contact search
+===========================================
+
+.. module :: molly.apps.contact
+
+The contact application provides search and pagination of contact-related
+information from any backend.
+
+To use, place the following in your `settings.py`::
+
+    APPLICATIONS = [
+        # ...
+        Application('molly.apps.contact', 'contact',
+            provider = '...'  # path to contact provider backend
+        ),
+        # ...
+    ]
+
+Contact providers
+-----------------
+
+A contact provider must inherit :class:`~molly.apps.contact.providers.ContactProvider` and expose the following interface:
+
+.. class :: molly.apps.contact.providers.ContactProvider
+
+   .. attribute :: handles_pagination
+
+      A boolean specifying whether the contact provider will provide a
+      :class:`~django.core.paginator.Paginator` instance. Useful when an
+      external service determines pagination for the returned results. When
+      this is :const:`True`, an extra :data:`page` argument is passed to
+      :meth:`~molly.apps.contact.providers.ContactProvider.perform_query`.
+
+   .. method :: normalize_query(self, cleaned_data)
+
+      A function
+
+   .. method :: perform_query(self, page=None, **kwargs)
+
+      Another function
+
+Currently implemented providers
+-------------------------------
+
+Though you will probably want to define your own, Molly currently comes with
+three providers for you to study, each retrieving results using a different
+technique.
+
+:class:`molly.contrib.oxford.providers.ContactProvider`
+    This queries a non-public XML web service run by Oxford University
+    Computing Services. As such, it has no functional use for those without
+    access to the web service.
+:class:`molly.contrib.oxford.providers.ScrapingContactProvider`
+    Scrapes details from the University's public contact search page.
+:class:`molly.contrib.mit.providers.LDAPContactProvider`
+    Retrieves results from MIT's public LDAP server.
+
+

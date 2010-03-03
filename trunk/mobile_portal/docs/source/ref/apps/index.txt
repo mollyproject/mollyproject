@@ -1,0 +1,7 @@
+Provided applications
+=====================
+
+.. toctree::
+  :maxdepth: 1
+
+  Contact search <contact>

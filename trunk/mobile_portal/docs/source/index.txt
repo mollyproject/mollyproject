@@ -1,0 +1,46 @@
+.. molly documentation master file, created by
+   sphinx-quickstart on Tue Mar  2 20:57:21 2010.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+.. _index:
+
+The Molly Mobile Portal Framework
+=================================
+
+Molly is an open-source framework for developing mobile portals, aimed
+primarily at universities. It provides device detection and common logic for
+handling a variety of use cases.
+
+Current features include:
+
+.. hlist::
+   :columns: 3
+
+   * :mod:`Contact search <molly.apps.contact>`
+   * :mod:`Maps and points of interest <molly.apps.maps>`
+
+It's built on the `Django web framework <http://www.djangoproject.com/>`_ and
+was originally developed at the `University of Oxford <http://m.ox.ac.uk/>`_;
+it is now in use at :doc:`several other universities <deployments>`.
+
+Documentation overview
+----------------------
+
+Contents:
+
+.. toctree::
+   :maxdepth: 2
+
+   tutorial
+   deployments
+   ref/apps/index
+   ref/contrib/index
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
+

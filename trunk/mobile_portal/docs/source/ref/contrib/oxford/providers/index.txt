@@ -1,0 +1,10 @@
+Providers for the University of Oxford
+======================================
+
+Foo
+
+.. toctree::
+   :maxdepth: 1
+
+   contact
+
