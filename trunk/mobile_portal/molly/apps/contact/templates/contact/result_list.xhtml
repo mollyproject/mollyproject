@@ -1,0 +1,64 @@
+{% extends "contact/base.xhtml" %}{% load portal_misc %}
+
+{% block title %}m.ox | Contact search{% if query %}: {{ query }}{% endif %}{% endblock %}
+
+{% block content %}
+
+{% include "contact/search_form.xhtml" %}
+
+{% if form.is_valid %}
+<div class="section">
+  <h2>Results</h2>
+  {% if message %}
+  <div class="note"><div class="bubble pad-10">
+    {{ message }}
+  </div></div>
+  {% endif %}
+
+  {% if page %}
+  <div class="note"><div class="bubble pad-10">
+    {% if paginator.num_pages|gte:4 %}
+    Your search returned {{ paginator.count }} item{{ paginator.count|pluralize }}. Try adding an initial to get more specific results.
+    {% else %}
+    Your search returned {{ paginator.count }} item{{ paginator.count|pluralize }}.
+    {% endif %}
+  </div></div>
+
+  {% ifnotequal 1 page_count %}
+  <div class="note">
+    Pages:
+    {% for page_number in paginator.page_range %}
+    <a href="?page={{ page_number }}&amp;medium={{ form.cleaned_data.medium }}&amp;query={{ form.cleaned_data.query|urlencode }}" style="padding:0 7px 0 0;">{{ page_number }}</a>
+    {% endfor %}
+  </div>
+  {% endifnotequal %}
+
+  <ul id="people">
+    {% for person in page.object_list %}
+      <li class="contact-person{% if forloop.last %} round-bottom{% endif %}">
+        {% include "contact/result.xhtml" %}
+      </li>
+    {% endfor %}
+  </ul>
+
+  {% ifnotequal 1 page_count %}
+  <div class="note">
+    Pages:
+    {% for page_number in paginator.page_range %}
+    <a href="?page={{ page_number }}&amp;medium={{ form.cleaned_data.medium }}&amp;query={{ form.cleaned_data.query|urlencode }}" style="padding:0 7px 0 0;">{{ page_number }}</a>
+    {% endfor %}
+  </div>
+  {% endifnotequal %}
+
+{% else %}
+  {% if not message %}
+  <div class="note"><div class="bubble pad-10">
+    Your search didn't return any results.
+  </div></div>
+  {% endif %}
+{% endif %}
+</div>
+
+{% endif %}
+
+{% endblock %}
