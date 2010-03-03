@@ -42,9 +42,11 @@ class ResultListView(IndexView):
         provider = cls.conf.provider
 
         form = provider.form(request.GET or None)
-        medium = request.GET.get('medium', provider.medium_choices[0][0])
+        medium = request.GET.get('medium')
+        if not medium in [m[0] for m in provider.medium_choices]:
+            medium = provider.medium_choices[0][0]
 
-        if form.is_valid() and medium in [m[0] for m in provider.medium_choices]:
+        if form.is_valid():
 
             try:
                 page = int(request.GET.get('page', '1'))

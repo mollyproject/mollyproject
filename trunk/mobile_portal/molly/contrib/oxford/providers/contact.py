@@ -3,9 +3,11 @@ import urllib, urllib2, re
 
 from django.core.paginator import Paginator
 
+from molly.apps.contact.providers import BaseContactProvider
+
 import ElementSoup as ES
 
-class ContactProvider(object):
+class ContactProvider(BaseContactProvider):
     """
     Connects to the University's contact search API on www2.ox.
     Note that the use of this service requires talking to sysdev.
@@ -20,7 +22,13 @@ class ContactProvider(object):
     # URL for the contact search API. Speak to sysdev for access.
     _API_URL = 'http://www2.ox.ac.uk/cgi-bin/contactx?%s'
 
-    def normalize_query(self, cleaned_data):
+    handles_pagination = False
+    medium_choices = (
+        ('email', 'e-mail'),
+        ('phone', 'phone'),
+    )
+
+    def normalize_query(self, cleaned_data, medium):
         # Examples of initial / surname splitting
         # William Bloggs is W, Bloggs
         # Bloggs         is  , Bloggs
@@ -49,16 +57,12 @@ class ContactProvider(object):
         else:
             surname, initial = parts[1], parts[0][:1]
 
-        medium = cleaned_data['medium'] or 'email'
-
         return {
             'surname': surname,
             'initial': initial,
             'medium': medium,
             'exact': True,
         }
-
-    handles_pagination = False
 
     def perform_query(self, surname, initial, medium, exact):
 
@@ -76,14 +80,14 @@ class ContactProvider(object):
         people = []
         for x_person in x_people.getroot().findall('person'):
             person = {
-                'name': x_person.find('name').text,
-                'unit': x_person.find('unit' if medium=='email' else 'dept').text,
+                'cn': [x_person.find('name').text],
+                'ou': [x_person.find('unit' if medium=='email' else 'dept').text],
             }
             if medium == 'email':
-                person['email'] = x_person.find('email').text
+                person['mail'] = [x_person.find('email').text]
             else:
                 person['internal'] = x_person.find('phone_from_in').text
-                person['external'] = x_person.find('phone_from_out').text
+                person['telephoneNumber'] = [x_person.find('phone_from_out').text]
             people.append(person)
 
         return people
@@ -116,11 +120,18 @@ class ScrapingContactProvider(ContactProvider):
         for x_person in x_people.getchildren():
             details = {}
             for x_detail in x_person.getchildren():
-                if x_detail.attrib['class'].split('_')[1] == 'phone':
+                key = x_detail.attrib['class'].split('_')[1]
+                value = x_detail[0].text if len(x_detail) else (x_detail.text.strip() or None)
+                if key == 'phone':
                     details[u'internal'] = x_detail[0][1].text
-                    details[u'external'] = x_detail[0][3].text
-                else:
-                    details[x_detail.attrib['class'].split('_')[1]] = x_detail[0].text if len(x_detail) else (x_detail.text.strip() or None)
+                    details[u'telephoneNumber'] = [x_detail[0][3].text]
+                elif key == 'name':
+                    details['cn'] = value
+                elif key in ('unit', 'dept'):
+                    details['ou'] = [value]
+                elif key == 'email':
+                    details['mail'] = [value]
+
             people.append( details )
 
         results_count = int(filter(lambda x:(x.attrib.get('class')=='found'), xml.findall('.//div'))[0][1][0].text)
