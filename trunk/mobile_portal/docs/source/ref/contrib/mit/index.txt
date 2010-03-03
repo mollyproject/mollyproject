@@ -1,0 +1,12 @@
+Massachusetts Institute of Technology
+=====================================
+
+This section of the project was developed without the involvement of MIT,
+instead using their open-sourced `MIT Mobile
+Web <http://mitmobileweb.sourceforge.net/>`_ as a reference to demonstrate how
+Molly might integrate with systems at other universities.
+
+.. toctree::
+   :maxdepth: 1
+
+   providers/index

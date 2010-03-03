@@ -1,5 +1,5 @@
-Contributed providers
-=====================
+Non-essential and institution-specific functionality
+====================================================
 
 Foo
 
@@ -7,3 +7,4 @@ Foo
    :maxdepth: 1
 
    oxford/index
+   mit/index

@@ -1,0 +1,6 @@
+:class:`molly.contrib.mit.providers.LDAPContactProvider` -- LDAP-based contact provider
+=====================================================================================
+
+.. class :: molly.contrib.mit.providers.LDAPContactProvider
+
+Test

@@ -22,7 +22,7 @@ Current features include:
 
 It's built on the `Django web framework <http://www.djangoproject.com/>`_ and
 was originally developed at the `University of Oxford <http://m.ox.ac.uk/>`_;
-it is now in use at :doc:`several other universities <deployments>`.
+and will soon be in use at :doc:`other universities <deployments>`.
 
 Documentation overview
 ----------------------
