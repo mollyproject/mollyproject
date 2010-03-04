@@ -1,27 +1,52 @@
-:mod:`molly.apps.contact` -- Contact search
+:mod:`molly.apps.service_status` -- Service status
 ===========================================
 
-.. module :: molly.apps.contact
+.. module :: molly.apps.service_status
 
-The contact application provides search and pagination of contact-related
-information from any backend.
+The service status application is intended to display whether services are up
+or down (or somewhere in between).
+
+In the most part, such information would be provided by an RSS feed. We
+encourage the use of the `service status RSS module`_, the concepts of which
+are used in the provider interface.
+
+.. _service status RSS module: http://web.resource.org/rss/1.0/modules/servicestatus/
 
 To use, place the following in your :doc:`settings module </topics/settings>`::
 
     APPLICATIONS = [
         # ...
-        Application('molly.apps.contact', 'contact',
+        Application('molly.apps.service_status', 'service_status',
             provider = '...'  # path to contact provider backend
         ),
         # ...
     ]
 
-Contact providers
+If you're using the service status RSS module, you can use the
+:class:`~molly.contrib.generic.providers.ServiceStatusProvider`::
+
+    from molly.conf.settings import Provider
+
+    APPLICATIONS = [
+        # ...
+        Application('molly.apps.service_status', 'service_status',
+            provider = Provider('molly.contrib.generic.providers.ServiceStatusProvider',
+            name='Hogwarts Computing Services',
+            slug='hcs',
+            url='http://status.hogwarts.ac.wizardry/status.rss',
+        ),
+        # ...
+    ]
+
+
+Service status providers
 -----------------
 
-A contact provider must inherit :class:`~molly.apps.contact.providers.BaseContactProvider` and expose the following interface:
+A contact provider must inherit :class:`~molly.apps.service_status.providers.BaseServiceStatusProvider` and expose the following interface:
 
-.. class :: providers.BaseContactProvider
+.. class :: providers.BaseServiceStatusProvider
+
+   .. note :: Everything from here on down needs updating
 
    .. attribute :: handles_pagination
 

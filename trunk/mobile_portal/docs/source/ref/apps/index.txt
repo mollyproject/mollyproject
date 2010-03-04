@@ -2,6 +2,10 @@ Provided applications
 =====================
 
 .. toctree::
-  :maxdepth: 1
+   :hidden:
 
-  Contact search <contact>
+   contact
+   service_status
+
+* :mod:`Contact search <molly.apps.contact>`
+* :mod:`Service status <molly.apps.service_status>`

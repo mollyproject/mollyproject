@@ -3,9 +3,15 @@ Contact providers
 
 .. class :: molly.contrib.oxford.providers.ContactProvider
 
+.. index ::
+   pair: XML web-service; contact provider
+
 Foo
 
 .. class :: molly.contrib.oxford.providers.ScrapingContactProvider
+
+.. index ::
+   pair: screen-scraping; contact provider
 
 This provider performs requests against the `University's contact search
 <http://www.ox.ac.uk/applications/contact_search/>`_, extracting the results
