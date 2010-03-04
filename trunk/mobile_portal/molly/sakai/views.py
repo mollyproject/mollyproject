@@ -210,7 +210,7 @@ class PollIndexView(SakaiView):
             'sakai',
             lazy_parent(IndexView),
             'Polls',
-            lazy_reverse('sakai_signup'),
+            lazy_reverse('sakai_poll'),
         )
 
     def handle_GET(cls, request, context, opener):

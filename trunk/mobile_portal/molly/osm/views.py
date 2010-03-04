@@ -153,3 +153,24 @@ class MetadataView(BaseView):
         osmChange.append('</osmChange>\n')
         return ''.join(osmChange)
         
+class GPXView(BaseView):
+    breadcrumb = NullBreadcrumb
+    
+    def handle_GET(cls, request, context, ptype):
+        out = []
+        out.append('<?xml version="1.0"?>\n')
+        out.append('<gpx version="1.0"')
+        out.append(' creator="Mobile Oxford &lt;http://m.ox.ac.uk/&gt;"')
+        out.append(' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"')
+        out.append(' xmlns="http://www.topografix.com/GPX/1/0"')
+        out.append(' xsi:schemaLocation="http://www.topografix.com/GPX/1/0 http://www.topografix.com/GPX/1/0/gpx.xsd">\n')
+        
+        for entity in Entity.objects.filter(entity_type__slug=ptype):
+          out.append('  <wpt lat="%(lat)f" lon="%(lon)f">\n' % {'lat':entity.location[1], 'lon':entity.location[0]})
+          out.append('    <name>%s</name>\n' % entity.title)
+          out.append('  </wpt>\n')
+        
+        out.append('</gpx>')
+        
+        return HttpResponse(out, mimetype="text/gpx+xml")
+
