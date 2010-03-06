@@ -44,7 +44,7 @@ class IndexView(BaseView):
         
     @BreadcrumbFactory
     def breadcrumb(cls, request, context):
-        return Breadcrumb('z3950', None, 'Library search', lazy_reverse('z3950_index'))
+        return Breadcrumb('z3950', None, 'Library search', lazy_reverse('z3950:index'))
         
     def handle_GET(cls, request, context):
         return mobile_render(request, context, 'z3950/index')
@@ -67,7 +67,7 @@ class SearchDetailView(BaseView):
             'z3950',
             lazy_parent(IndexView),
             'Search results' if x else 'Library search',
-            lazy_reverse('z3950_search'),
+            lazy_reverse('z3950:search'),
         )
         
     class InconsistentQuery(ValueError):
@@ -97,10 +97,10 @@ class SearchDetailView(BaseView):
             return cls.handle_error(request, context, e.msg)
 
         try:
-            results = search.OLISSearch(query)
+            results = search.OLISSearch(query, provider=cls.conf.provider)
         except Exception, e:
             logger.exception("Library query error")
-            return cls.handle_error(request, context, 'An error occurred')
+            return cls.handle_error(request, context, 'An error occurred: %s' % e)
     
         paginator = Paginator(results, 10)
     
@@ -162,15 +162,15 @@ AVAIL_COLORS = ['red', 'amber', 'purple', 'blue', 'green']
 
 class ItemDetailView(BaseView):
     def initial_context(cls, request, control_number):
-        items = search.ControlNumberSearch(control_number)
+        items = search.ControlNumberSearch(control_number, cls.conf.provider)
         if len(items) == 0:
                 raise Http404
 
         display_map = {
             'true':True, 'false':False
-        }.get(request.GET.get('with_map', None), None)
+        }.get(request.GET.get('with_map'))
         if display_map is None:
-            display_map = (not request.preferences['location']['location'] is None)
+            display_map = False and (not request.preferences['location']['location'] is None)
         
         return {
             'zoom': cls.get_zoom(request, None),
@@ -186,7 +186,7 @@ class ItemDetailView(BaseView):
             'z3950',
             lazy_parent(SearchDetailView),
             'Search result',
-            lazy_reverse('z3950_item_detail', args=[control_number]),
+            lazy_reverse('z3950:item_detail', args=[control_number]),
         )
                
     def handle_GET(cls, request, context, control_number):
@@ -314,7 +314,7 @@ class ItemHoldingsView(BaseView):
             'z3950',
             lazy_parent(ItemDetailView, control_number=control_number),
             'Item holdings information',
-            lazy_reverse('z3950_item_holdings_detail', args=[control_number,sublocation]),
+            lazy_reverse('z3950:item_holdings_detail', args=[control_number,sublocation]),
         )
 
     def handle_GET(cls, request, context, control_number, sublocation):

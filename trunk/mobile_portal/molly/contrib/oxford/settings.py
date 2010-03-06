@@ -1,6 +1,6 @@
 import os.path
 
-from molly.conf.settings import Application, extract_installed_apps, Secret, Authentication, ExtraBase, SimpleProvider
+from molly.conf.settings import Application, extract_installed_apps, Secret, Authentication, ExtraBase, SimpleProvider, Batch
 
 from molly.conf.default_settings import *
 
@@ -11,8 +11,15 @@ TEMPLATE_DIRS = (
 
 APPLICATIONS = [
     Application('molly.apps.contact', 'contact',
-        provider = 'molly.contrib.oxford.providers.ScrapingContactProvider',
-#        provider = 'molly.contrib.mit.providers.ContactProvider',
+#        provider = 'molly.contrib.oxford.providers.ScrapingContactProvider',
+        provider = 'molly.contrib.mit.providers.LDAPContactProvider',
+    ),
+
+    Application('molly.apps.weather', 'weather',
+        provider = SimpleProvider('molly.contrib.generic.providers.BBCWeatherProvider',
+            location_id = 25,
+            batch = Batch('pull_weather', minute=range(5, 65, 15)),
+        ),
     ),
 
     Application('molly.maps', 'maps',

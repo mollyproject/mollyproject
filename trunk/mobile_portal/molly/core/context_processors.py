@@ -1,7 +1,6 @@
 from datetime import datetime, timedelta
 from molly.wurfl import device_parents
 
-from molly.weather.models import Weather
 from molly.core.models import UserMessage
 
 DEVICE_SPECIFIC_MEDIA = {
@@ -30,53 +29,53 @@ def device_specific_media(request):
 
     device, browser = request.device, request.browser
     use_javascript = True
-    
+
     # Skyfire
     if browser.devid == 'generic_skyfire':
         style_group = "dumb"
-        
+
     # Apple products
     elif device.brand_name == 'Apple' :
         style_group = "smart"
-        
+
     # Symbian S60 v3 and above (iresspective of browser)
-    elif device.device_os in ('Symbian', 'Symbian OS') and tuple(map(int, device.device_os_version.split('.'))) >= (9, 2) : 
+    elif device.device_os in ('Symbian', 'Symbian OS') and tuple(map(int, device.device_os_version.split('.'))) >= (9, 2) :
         style_group = "smart"
-        
-    # Nokia Maemo 
+
+    # Nokia Maemo
     elif device.brand_name == 'Nokia' and device.device_os == 'Linux Smartphone OS' :
         style_group = "smart"
-        
-    # Blackberries 
+
+    # Blackberries
     elif device.brand_name == 'RIM' :
         style_group = 'smart'
         use_javascript = False
-        
+
     # Android
     elif device.device_os == 'Android' :
         style_group = 'smart'
-        
+
     # Palm Web OS
     elif device.device_os == 'Web OS' :
         style_group = 'smart'
-        
+
     # Opera Mini/Mobile Browsers
     elif browser.brand_name == 'Opera':
         style_group = 'smart'
-        
+
     # Desktop browsers
     elif 'generic_web_browser' in device_parents[browser.devid]:
         style_group = 'smart'
-        
+
     # All Others
     else:
         style_group = "dumb"
         use_javascript = False
-        
+
     return {
         'style_group': style_group,
         'use_javascript': use_javascript,
-    }    
+    }
 
 def geolocation(request):
     """
@@ -84,7 +83,7 @@ def geolocation(request):
     placemark data, and whether we would like to request the device's location
     information.
     """
-    
+
     # Use the epoch in the place of -inf; a time it has been a while since.
     epoch = datetime(1970,1,1, 0, 0, 0)
     

@@ -1,4 +1,6 @@
 from django.utils.importlib import import_module
+from django.conf.urls.defaults import include as urlconf_include
+
 class Application(object):
     registry = {}
 
@@ -46,8 +48,9 @@ class Application(object):
             view.conf = conf
             view.__bases__ = bases + view.__bases__
 
+        print (app.app.split('.')[-1], app.name)
         return type(app.name.capitalize()+'App', (object,), {
-            'urls': (app.urlconf, app.app, app.name),
+            'urls': urlconf_include(app.urlconf, app.app.split('.')[-1], app.name),
         })
 
 class Authentication(object):
@@ -81,3 +84,6 @@ class SimpleProvider(object):
         else:
             return type('SimpleProvider', (object,), self.kwargs)
 
+class Batch(object):
+    def __init__(self, method_name, **times):
+        self.method_name, self.times = method_name, times

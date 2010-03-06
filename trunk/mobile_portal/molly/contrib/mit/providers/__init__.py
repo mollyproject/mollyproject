@@ -1,1 +1,1 @@
-from contact import ContactProvider
+from contact import LDAPContactProvider

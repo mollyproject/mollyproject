@@ -14,7 +14,7 @@
         {% endifequal %}
     </div>
     <div id="index-search">
-	     <form method="get" action="{% url googlesearch_index %}">
+	     <form method="get" action="{% url search:index %}">
 		 <p>
 			{{ search_form.query }}
 		{% ifequal style_group "dumb" %}
@@ -49,11 +49,11 @@
     </div></div>
     
     <ul class="stand-alone">
-            <li class="round-top"><a href="{% url core_static_about %}">About this site</a></li>
+            <li class="round-top"><a href="{% url core:static_about %}">About this site</a></li>
 			{% if has_user_messages %}
-            <li><a href="{% url core_messages %}">Read messages from the developers</a></li>
+            <li><a href="{% url core:messages %}">Read messages from the developers</a></li>
 			{% endif %}
-            <li class="round-bottom"><a href="{% url core_feedback %}?referer={% url core_index %}">Provide feedback</a></li>
+            <li class="round-bottom"><a href="{% url core:feedback %}?referer={% url core:index %}">Provide feedback</a></li>
     </ul>
 
     <div class="center">

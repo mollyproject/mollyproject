@@ -1,17 +1,22 @@
 from django.conf.urls.defaults import *
 from django.conf import settings
+from django.contrib import admin
 
 from molly.conf import applications
 
-applications.contact.urls
+admin.autodiscover()
 
 urlpatterns = patterns('',
-    (r'^$', lambda request:None, {}, 'core_index'),
-    (r'^feedback$', lambda request:None, {}, 'core_feedback'),
-    (r'^shorten$', lambda request:None, {}, 'core_shorten_url'),
+    (r'adm/(.*)', admin.site.root),
 
-    (r'^contact/', include(applications.contact.urls)),
-    (r'^service-status/', include(applications.service_status.urls)),
+    (r'^contact/', applications.contact.urls),
+    (r'^service-status/', applications.service_status.urls),
+    (r'^library/', applications.library.urls),
+
+    (r'^search/', include('molly.googlesearch.urls', 'search', 'search')),
+    (r'^maps/', include('molly.maps.urls', 'maps', 'maps')),
+
+    (r'', include('molly.core.urls', 'core', 'core')),
 )
 
 if settings.DEBUG:

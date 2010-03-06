@@ -1,6 +1,8 @@
 import ldap, ldap.filter
 
-class ContactProvider(object):
+from molly.apps.contact.providers import BaseContactProvider
+
+class LDAPContactProvider(BaseContactProvider):
     """
     Connects to MIT's LDAP server to request contact information.
     """
@@ -14,8 +16,10 @@ class ContactProvider(object):
     _LDAP_URL = 'ldap://ldap.mit.edu:389'
     _BASE_DN = "dc=mit,dc=edu"
 
+    handles_pagination = False
+
     @classmethod
-    def normalize_query(cls, cleaned_data):
+    def normalize_query(cls, cleaned_data, medium):
         # Examples of initial / surname splitting
         # William Bloggs is W, Bloggs
         # Bloggs         is  , Bloggs
@@ -47,8 +51,6 @@ class ContactProvider(object):
             'forename': forename,
         }
 
-    handles_pagination = False
-
     @classmethod
     def first_or_none(cls, result, name):
         try:
@@ -68,15 +70,16 @@ class ContactProvider(object):
         for ldap_result in ldap_results:
             print ldap_result
             results.append({
-                'surname': cls.first_or_none(ldap_result, 'sn'),
-                'forename': cls.first_or_none(ldap_result, 'givenName'),
-                'telephone': cls.first_or_none(ldap_result, 'telephoneNumber'),
-                'room': cls.first_or_none(ldap_result, 'roomNumber'),
-                'title': cls.first_or_none(ldap_result, 'title'),
-                'fax': cls.first_or_none(ldap_result, 'facsimileTelephoneNumber'),
-                'department': cls.first_or_none(ldap_result, 'ou'),
-                'email': cls.first_or_none(ldap_result, 'mail'),
-                'name': cls.first_or_none(ldap_result, 'cn'),
+                'cn': cls.first_or_none(ldap_result, 'cn'),
+
+                'sn': ldap_result[1].get('sn', []),
+                'givenName': ldap_result[1].get('givenName', []),
+                'telephoneNumber': ldap_result[1].get('telephoneNumber', []),
+                'roomNumber': ldap_result[1].get('roomNumber', []),
+                'title': ldap_result[1].get('title', []),
+                'facsimileTelephoneNumber': ldap_result[1].get('facsimileTelephoneNumber', []),
+                'ou': ldap_result[1].get('ou', []),
+                'mail': ldap_result[1].get('mail', []),
             })
 
         return results

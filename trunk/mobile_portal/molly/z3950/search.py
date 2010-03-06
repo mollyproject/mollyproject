@@ -205,13 +205,13 @@ class OLISResult(object):
         return self.title
 
 class OLISSearch(object):
-    def __init__(self, query):
+    def __init__(self, query, provider):
         self.connection = zoom.Connection(
-            getattr(settings, 'Z3950_HOST'),
-            getattr(settings, 'Z3950_PORT', 210),
+            getattr(provider, 'host'),
+            getattr(provider, 'port', 210),
         )
-        self.connection.databaseName = getattr(settings, 'Z3950_DATABASE')
-        self.connection.preferredRecordSyntax = getattr(settings, 'Z3950_SYNTAX', 'USMARC')
+        self.connection.databaseName = getattr(provider, 'database')
+        self.connection.preferredRecordSyntax = getattr(provider, 'syntax', 'USMARC')
         
         self.query = zoom.Query('CCL', query)
         
@@ -232,7 +232,7 @@ class OLISSearch(object):
         return OLISResult(self.results[key])        
         
 class ISBNOrISSNSearch(OLISSearch):
-    def __init__(self, number, number_type=None):
+    def __init__(self, number, provider, number_type=None):
         if not number_type:
             number, number_type = validate_isxn(number)
         if number_type == 'issn':
@@ -240,12 +240,12 @@ class ISBNOrISSNSearch(OLISSearch):
             query = '(1,8)=%s' % number
         else:
             query = 'isbn=%s' % number
-        super(ISBNOrISSNSearch, self).__init__(query)
+        super(ISBNOrISSNSearch, self).__init__(query, provider)
 
 class ControlNumberSearch(OLISSearch):
-    def __init__(self, control_number):
+    def __init__(self, control_number, provider):
         query = '(1,1032)="%s"' % control_number
-        super(ControlNumberSearch, self).__init__(query)
+        super(ControlNumberSearch, self).__init__(query, provider)
 
 def isxn_checksum(s, initial=None):
     if not initial:

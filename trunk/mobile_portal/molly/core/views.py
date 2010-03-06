@@ -30,7 +30,7 @@ class IndexView(BaseView):
 
     @BreadcrumbFactory
     def breadcrumb(cls, request, context):
-        return Breadcrumb('core', None, 'Home', lazy_reverse('core_index'))
+        return Breadcrumb('core', None, 'Home', lazy_reverse('core:index'))
         
     def handle_GET(cls, request, context):
         internal_referer = request.META.get('HTTP_REFERER', '').startswith('http://oucs-alexd:8000/')
@@ -41,7 +41,7 @@ class IndexView(BaseView):
             and not request.GET.get('preview') == 'true'
             and not internal_referer
             and not settings.DEBUG):
-            return HttpResponseRedirect(reverse('core_exposition'))
+            return HttpResponseRedirect(reverse('core:exposition'))
     
         fpls = dict((fpl.slug, fpl) for fpl in FrontPageLink.objects.all())
         fpls_prefs = sorted(request.preferences['front_page_links'].items(), key=lambda (slug,(order, display)): order)
@@ -66,7 +66,7 @@ class IndexView(BaseView):
         if not no_desktop_about is None:
             request.preferences['core']['desktop_about_shown'] = no_desktop_about
             
-        return HttpResponseRedirect(reverse('core_index'))
+        return HttpResponseRedirect(reverse('core:index'))
 
 class LocationUpdateView(BaseView):
     breadcrumb = NullBreadcrumb
@@ -139,7 +139,7 @@ class LocationUpdateView(BaseView):
             if context.get('return_url'):
                 return HttpResponseRedirect(context['return_url'])
             else:
-                return HttpResponseRedirect(reverse('core_index'))
+                return HttpResponseRedirect(reverse('core:index'))
 
 class LocationRequiredView(BaseView):
     def __new__(cls, request, *args, **kwargs):
@@ -165,7 +165,7 @@ if False:
             for i, f in enumerate(forms):
                 f.cleaned_data['order'] = i+1
                 f.save()
-            return HttpResponseRedirect(reverse("core_index"))
+            return HttpResponseRedirect(reverse("index"))
     
         context = {
             'forms': forms,
@@ -244,7 +244,7 @@ class RunCommandView(BaseView):
     
     @BreadcrumbFactory
     def breadcrumb(cls, request, context):
-        return Breadcrumb('core', None, 'Run command', lazy_reverse('core_run_command'))
+        return Breadcrumb('core', None, 'Run command', lazy_reverse('core:run_command'))
         
     def __new__(cls, request, *args, **kwargs):
         if not request.user.is_superuser:
@@ -278,7 +278,7 @@ class StaticDetailView(BaseView):
     def breadcrumb(cls, request, context, title, template):
         return Breadcrumb(
             'core', None, title,
-            lazy_reverse('core_static', args=[template])
+            lazy_reverse('core:static', args=[template])
         )
     
     def handle_GET(cls, request, context, title, template):
@@ -334,7 +334,7 @@ class FeedbackView(BaseView):
     def breadcrumb(cls, request, context):
         return Breadcrumb(
             'core', None, 'Feedback',
-            lazy_reverse('core_feedback')
+            lazy_reverse('feedback')
         )
         
     def initial_context(cls, request):
@@ -365,7 +365,7 @@ class FeedbackView(BaseView):
                 'referer': request.POST.get('referer', ''),
             })
        
-            return HttpResponseRedirect('%s?%s' % (reverse('core_feedback'), qs))
+            return HttpResponseRedirect('%s?%s' % (reverse('core:feedback'), qs))
             
         else:
             return cls.handle_GET(request, context)
@@ -406,7 +406,7 @@ class UserMessageView(BaseView):
     def breadcrumb(cls, request, context):
         return Breadcrumb(
             'core', None, 'View messages from the developers',
-            lazy_reverse('core_messages')
+            lazy_reverse('core:messages')
         )
         
     def initial_context(cls, request):
@@ -436,7 +436,7 @@ class UserMessageView(BaseView):
         if context['formset'].is_valid():
             context['formset'].save()
             
-        return HttpResponseRedirect(reverse('core_messages'))
+        return HttpResponseRedirect(reverse('core:messages'))
 
 class ShortenedURLRedirectView(BaseView):
     breadcrumb = NullBreadcrumb

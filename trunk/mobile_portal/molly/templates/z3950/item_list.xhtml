@@ -44,7 +44,7 @@
 <ul>
 {% for item in page.object_list %}
 <li{% if forloop.last %} class="round-bottom"{% endif %}>
-    <a href="{% url z3950_item_detail item.control_number %}">
+    <a href="{% url z3950:item_detail item.control_number %}">
         {{ item  }}{% if item.author %}
         <br/><small><strong>Author:</strong> {{ item.author }}</small>{% endif %}
         <br/><small><strong>Publisher:</strong> {{ item.publisher }}</small>{% if item.edition %}
