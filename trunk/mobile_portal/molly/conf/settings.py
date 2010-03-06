@@ -11,6 +11,7 @@ class Application(object):
         self.extra_bases = kwargs.pop('extra_bases', ())
         self.urlconf = kwargs.pop('urlconf', app+'.urls')
         self.kwargs = kwargs
+        self.batches = []
 
         self.providers = kwargs.pop('providers', ())
         if 'provider' in kwargs:
@@ -29,6 +30,11 @@ class Application(object):
         for provider in app.providers:
             if isinstance(provider, SimpleProvider):
                 providers.append(provider())
+                for batch in provider.batches:
+                    app.batches.append((
+                        batch.times, getattr(providers[-1], batch.method_name),
+                        batch.args, batch.kwargs
+                    ))
             else:
                 providers.append(SimpleProvider(provider)())
 
@@ -73,6 +79,8 @@ def Secret(name):
 
 class SimpleProvider(object):
     def __init__(self, klass=None, **kwargs):
+        self.batches = tuple(kwargs.pop('batches', ()))
+        self.batches += (kwargs.pop('batch'),) if 'batch' in kwargs else ()
         self.klass, self.kwargs = klass, kwargs
 
     def __call__(self):
@@ -85,5 +93,6 @@ class SimpleProvider(object):
             return type('SimpleProvider', (object,), self.kwargs)
 
 class Batch(object):
-    def __init__(self, method_name, **times):
+    def __init__(self, method_name, args=[], kwargs={}, **times):
         self.method_name, self.times = method_name, times
+        self.args, self.kwargs = args, kwargs

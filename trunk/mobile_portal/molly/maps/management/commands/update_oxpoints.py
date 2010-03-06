@@ -1,7 +1,7 @@
 import rdflib, Queue
 from django.core.management.base import NoArgsCommand
 from django.contrib.gis.geos import Point
-from molly.oxpoints.models import Entity, EntityType
+from molly.maps.models import Entity, EntityType
 
 
 OXPOINTS_NS = 'http://ns.ox.ac.uk/namespace/oxpoints/2009/02/owl#'
