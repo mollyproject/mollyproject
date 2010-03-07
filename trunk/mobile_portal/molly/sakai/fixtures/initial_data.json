@@ -5,7 +5,7 @@
         "fields": {
             "slug": "sakai",
             "title": "WebLearn",
-            "urlconf_name": "sakai_index"
+            "urlconf_name": "sakai:index"
         }
     }
 ]

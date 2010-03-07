@@ -13,6 +13,8 @@ class PreferencesMiddleware(object):
         request.preferences = request.preferences_object.preference_set
 
     def process_response(self, request, response):
+        if response.status_code == 500:
+            return response
         try:
             request.preferences_object.save()
         except AttributeError:

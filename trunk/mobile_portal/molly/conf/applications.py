@@ -1,12 +1,13 @@
 import settings
 
-class Applications(object):
-    def __init__(self):
-        self.applications = {}
-
+class Applications(dict):
     def __getattr__(self, name):
         try:
-            return self.applications[name]
+            return dict.__getitem__(self, name)
         except KeyError:
-            self.applications[name] = settings.Application.get(name)
-            return self.applications[name]
+            self[name] = settings.Application.get(name)
+            return self[name]
+    __getitem__ = __getattr__
+
+    def __iter__(self):
+        return iter(settings.Application.registry)

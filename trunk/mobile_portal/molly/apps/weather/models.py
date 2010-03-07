@@ -75,17 +75,18 @@ SCALE_CHOICES = (
 )
 
 class Weather(models.Model):
-    bbc_id = models.PositiveIntegerField()
+    location_id = models.CharField(max_length=16)
+
     ptype = models.CharField(max_length=1, choices=PTYPE_CHOICES)
-    
+
     name = models.TextField(null=True)
 
     outlook = models.CharField(null=True, max_length=3, choices=OUTLOOK_CHOICES)
-    
+
     published_date = models.DateTimeField(null=True)
     observed_date = models.DateTimeField(null=True)
-    modified_date = models.DateTimeField(auto_now=True)   
-    
+    modified_date = models.DateTimeField(auto_now=True)
+
     temperature = models.IntegerField(null=True)
     wind_direction = models.CharField(null=True, max_length=3)
     wind_speed = models.IntegerField(null=True)
@@ -93,7 +94,7 @@ class Weather(models.Model):
     pressure = models.PositiveIntegerField(null=True)
     pressure_state = models.CharField(null=True, max_length=1, choices=PRESSURE_STATE_CHOICES)
     visibility = models.CharField(null=True, max_length=2, choices=VISIBILITY_CHOICES)
-    
+
     location = models.PointField(srid=4326, null=True)
 
     min_temperature = models.IntegerField(null=True)
@@ -102,13 +103,12 @@ class Weather(models.Model):
     pollution = models.CharField(max_length=1, choices=SCALE_CHOICES, null=True)
     sunset = models.TimeField(null=True)
     sunrise = models.TimeField(null=True)
-    
-        
-    
+
     def icon(self):
         now = datetime.now().time()
         if now > time(7) or now > time(21):
             night = '_night'
         else:
-            night = '' 
+            night = ''
         return OUTLOOK_TO_ICON.get(self.outlook, 'dunno') % {'night':night}
+

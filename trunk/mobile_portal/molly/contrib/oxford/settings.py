@@ -1,8 +1,12 @@
 import os.path
 
-from molly.conf.settings import Application, extract_installed_apps, Secret, Authentication, ExtraBase, SimpleProvider, Batch
+from oauth.oauth import OAuthSignatureMethod_PLAINTEXT
+
+from molly.conf.settings import Application, extract_installed_apps, Authentication, ExtraBase, SimpleProvider, Batch
 
 from molly.conf.default_settings import *
+
+from molly.contrib.oxford.secret_store import secrets as SECRETS
 
 TEMPLATE_DIRS = (
     os.path.join(os.path.dirname(__file__), '..', '..', 'templates'),
@@ -16,6 +20,7 @@ APPLICATIONS = [
     ),
 
     Application('molly.apps.weather', 'weather',
+        location_id = 'bbc/25',
         provider = SimpleProvider('molly.contrib.generic.providers.BBCWeatherProvider',
             location_id = 25,
             batch = Batch('pull_weather', minute=range(5, 65, 15)),
@@ -49,14 +54,14 @@ APPLICATIONS = [
     ),
 
     Application('molly.sakai', 'weblearn',
-        host = 'https://staging.weblearn.ox.ac.uk/',
+        host = 'https://weblearn.ox.ac.uk/',
         service_name = 'WebLearn',
         secure = True,
         extra_bases = (
-            ExtraBase('molly.auth.OAuth',
-                secret = Secret('weblearn'),
-                signature_method = 'plaintext',
-                base_url = 'https://staging.weblearn.ox.ac.uk/oauth-tool/',
+            ExtraBase('molly.auth.oauth.views.OAuthView',
+                secret = SECRETS.weblearn,
+                signature_method = OAuthSignatureMethod_PLAINTEXT(),
+                base_url = 'https://weblearn.ox.ac.uk/oauth-tool/',
                 request_token_url = 'request_token',
                 access_token_url = 'access_token',
                 authorize_url = 'authorize',
@@ -75,13 +80,16 @@ APPLICATIONS = [
             ),
         ],
     ),
+
+    Application('molly.auth', 'auth',
+    ),
 ]
 
 API_KEYS = {
-    'cloudmade': Secret('cloudmade'),
-    'google': Secret('google'),
-    'yahoo': Secret('yahoo'),
-    'fireeagle': Secret('fireeagle'),
+    'cloudmade': SECRETS.cloudmade,
+    'google': SECRETS.google,
+    'yahoo': SECRETS.yahoo,
+    'fireeagle': SECRETS.fireeagle,
 }
 
 INSTALLED_APPS += extract_installed_apps(APPLICATIONS)

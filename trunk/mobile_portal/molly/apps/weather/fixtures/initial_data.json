@@ -5,7 +5,7 @@
         "fields": {
             "slug": "weather",
             "title": "Weather",
-            "urlconf_name": "weather_index"
+            "urlconf_name": "weather:index"
         }
     }
 ]

@@ -8,7 +8,7 @@
 <ul>
 {% for id,event in events.items %}
 
-<li {% if forloop.last %}class="round-bottom"{% endif %}><a href="{% url sakai_signup_event site,id %}">
+<li {% if forloop.last %}class="round-bottom"{% endif %}><a href="{% url sakai:signup_event site,id %}">
 
 {{ event.title }} <small>{{ event.start|oxdate:"%(week)s%(ordinal)s Week %(term_long)s Term" }}</small>
 <br /><small>

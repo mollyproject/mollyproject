@@ -119,7 +119,7 @@
 
         <p>
 {% for ptype in ptypes %}
-          <a href="{% url osm_metadata ptype %}">{{ ptype }}</a>
+          <a href="{% url osm:metadata ptype %}">{{ ptype }}</a>
 {% endfor %}
         </p>
     

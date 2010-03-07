@@ -172,5 +172,5 @@ class GPXView(BaseView):
         
         out.append('</gpx>')
         
-        return HttpResponse(out, mimetype="text/gpx+xml")
+        return HttpResponse(out, mimetype="application/gpx+xml")
 

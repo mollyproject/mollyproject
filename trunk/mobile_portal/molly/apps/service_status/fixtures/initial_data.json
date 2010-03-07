@@ -5,7 +5,7 @@
         "fields": {
             "slug": "service_status",
             "title": "Service Status",
-            "urlconf_name": "service_status_index"
+            "urlconf_name": "service_status:index"
         }
     }
 ]

@@ -5,9 +5,9 @@ from views import IndexView, ClearSessionView
 urlpatterns = patterns('',
     (r'^$',
         IndexView, {},
-        'secure_index'),
+        'index'),
         
     (r'^clear-session/$',
         ClearSessionView, {},
-        'secure_clear_session'),
+        'clear_session'),
 )

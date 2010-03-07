@@ -14,6 +14,8 @@ urlpatterns = patterns('',
     (r'^service-status/', applications.service_status.urls),
     (r'^weather/', applications.weather.urls),
     (r'^library/', applications.library.urls),
+    (r'^weblearn/', applications.weblearn.urls),
+    (r'^auth/', applications.auth.urls),
 
     # These ones still need work
     (r'^search/', include('molly.googlesearch.urls', 'search', 'search')),

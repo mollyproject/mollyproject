@@ -18,7 +18,7 @@
     <tbody>
 {% for poll in poll_set.list %}
       <tr>
-        <td><a href="{% url sakai_poll_detail poll.id %}">{{ poll.text }}</a></td>
+        <td><a href="{% url sakai:poll_detail poll.id %}">{{ poll.text }}</a></td>
         <td>{{ poll.voteOpen|from_sakai_timestamp|date:"d M Y, g:iA" }}</td>
         <td>{{ poll.voteClose|from_sakai_timestamp|date:"d M Y, g:iA" }}</td>
       </tr>

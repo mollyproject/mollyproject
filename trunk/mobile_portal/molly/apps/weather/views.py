@@ -8,19 +8,23 @@ from models import Weather
 
 class IndexView(BaseView):
     def initial_context(cls, request):
+        try:
+            observation = Weather.objects.get(location_id=cls.conf.location_id, ptype='o')
+        except Weather.DoesNotExist:
+            observation = None
         return {
-            'weather': Weather.objects.get(bbc_id=25, ptype='o'),
-            'forecasts': Weather.objects.filter(bbc_id=25, ptype='f', observed_date__gte=datetime.now().date()).order_by('observed_date'),
+            'observation': observation,
+            'forecasts': Weather.objects.filter(location_id=cls.conf.location_id, ptype='f', observed_date__gte=datetime.now().date()).order_by('observed_date'),
         }
-    
+
     @BreadcrumbFactory
     def breadcrumb(cls, request, context):
         return Breadcrumb(
             'weather',
             None,
             'Weather',
-            lazy_reverse('weather_index'),
+            lazy_reverse('weather:index'),
         )
-        
+
     def handle_GET(cls, request, context):
         return mobile_render(request, context, 'weather/index')

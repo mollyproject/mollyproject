@@ -22,6 +22,7 @@ class Application(object):
     @classmethod
     def get(cls, name):
         app = cls.registry[name]
+        app.kwargs['name'] = name
 
         from molly.utils.views import BaseView, SecureView
         views_module = import_module(app.app+'.views')
@@ -68,14 +69,14 @@ class ExtraBase(object):
         self.klass, self.kwargs = klass, kwargs
 
     def __call__(self):
-        module = import_module(self.klass)
-        return type(module.__name__, module, self.kwargs)
+        print self.klass, self.kwargs
+        mod_name, cls_name = self.klass.rsplit('.', 1)
+        module = import_module(mod_name)
+        klass = getattr(module, cls_name)
+        return type(module.__name__, (klass,), self.kwargs)
 
 def extract_installed_apps(applications):
     return tuple(app.app for app in applications)
-
-def Secret(name):
-    pass
 
 class SimpleProvider(object):
     def __init__(self, klass=None, **kwargs):
