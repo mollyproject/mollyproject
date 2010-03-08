@@ -6,7 +6,9 @@ from molly.conf.settings import Application, extract_installed_apps, Authenticat
 
 from molly.conf.default_settings import *
 
-from molly.contrib.oxford.secret_store import secrets as SECRETS
+from mobile_oxford.secret_store import secrets as SECRETS
+
+SECRET_KEY = SECRETS.secret_key
 
 TEMPLATE_DIRS = (
     os.path.join(os.path.dirname(__file__), '..', '..', 'templates'),
@@ -15,8 +17,8 @@ TEMPLATE_DIRS = (
 
 APPLICATIONS = [
     Application('molly.apps.contact', 'contact',
-#        provider = 'molly.contrib.oxford.providers.ScrapingContactProvider',
-        provider = 'molly.contrib.mit.providers.LDAPContactProvider',
+        provider = 'molly.contrib.oxford.providers.ScrapingContactProvider',
+#        provider = 'molly.contrib.mit.providers.LDAPContactProvider',
     ),
 
     Application('molly.apps.weather', 'weather',

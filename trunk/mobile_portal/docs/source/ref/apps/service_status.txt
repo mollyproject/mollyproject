@@ -1,5 +1,5 @@
 :mod:`molly.apps.service_status` -- Service status
-===========================================
+==================================================
 
 .. module :: molly.apps.service_status
 
@@ -40,7 +40,7 @@ If you're using the service status RSS module, you can use the
 
 
 Service status providers
------------------
+------------------------
 
 A contact provider must inherit :class:`~molly.apps.service_status.providers.BaseServiceStatusProvider` and expose the following interface:
 
