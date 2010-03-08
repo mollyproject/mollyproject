@@ -10,9 +10,6 @@ from molly.maps.models import Entity
 
 ITEM_RE = re.compile(r'(?P<heading>\d{1,3}) (..(\$(?P<sub>.)(?P<entry>[^\$]+) )+|(?P<raw>[^\$]+))')
 
-AVAIL_UNAVAILABLE, AVAIL_AVAILABLE, AVAIL_REFERENCE, AVAIL_UNKNOWN, AVAIL_STACK = range(5)
-# red, green, blue, orange, purple
-
 AVAIL_UNAVAILABLE, AVAIL_UNKNOWN, AVAIL_STACK, AVAIL_REFERENCE, AVAIL_AVAILABLE = range(5)
 # red, amber, purple, blue, green
 
@@ -29,6 +26,7 @@ AVAILABILITIES = {
     'Withdrawn': AVAIL_UNAVAILABLE,
     '': AVAIL_UNKNOWN,
 }
+
 def require_json(f):
     def g(self, *args, **kwargs):
         try:
@@ -40,12 +38,12 @@ def require_json(f):
             self._json = None
         return f(self, *args, **kwargs)
     return g
- 
+
 class Library(object):
     LIBRARY_URL = "http://m.ox.ac.uk/oxpoints/hasOLISCode/%s.json"
     def __init__(self, location):
         self.location = tuple(location)
-       
+
     @property
     def oxpoints_id(self):
         def f(self):
@@ -55,7 +53,7 @@ class Library(object):
             return require_json(f)(self)
         except:
             return None
-        
+
     @property
     @require_json
     def oxpoints_entity(self):
@@ -64,12 +62,12 @@ class Library(object):
         except AttributeError:
             self._oxpoints_entity = Entity.objects.get(oxpoints_id=self.oxpoints_id)
             return self._oxpoints_entity
-            
+
     @property
     @require_json
     def oxpoints_location(self):
         return self.oxpoints_entity.location
-    
+
     @require_json
     def __unicode__(self):
         if self.oxpoints_id:
@@ -77,13 +75,13 @@ class Library(object):
         else:
             return " - ".join(self.location)
     __repr__ = __unicode__
-        
+
     def __hash__(self):
         return hash((type(self), self.location))
-        
+
     def __eq__(self, other):
         return self.location == other.location
-        
+
     def availability_display(self):
         return [
             'unavailable', 'unknown', 'stack', 'reference', 'available'
@@ -112,12 +110,12 @@ class OLISResult(object):
             if heading == OLISResult.USM_CONTROL_NUMBER:
                 # We strip the 'UkOxUb' from the front.
                 self.control_number = data[6:]
-            
+
             # We'll use a slice as data may not contain that many characters.
             # LCN 12110145 is an example where this would otherwise fail.    
             if data[2:3] != '$':
                 continue
-            
+
             subfields = data[3:].split(' $')
             subfields = [(s[0], s[1:]) for s in subfields]
 
@@ -156,9 +154,9 @@ class OLISResult(object):
                 shelfmark = "Copy %s" % datum['t'][0]
             else:
                 shelfmark = None
-                
+
             materials_specified = datum['3'][0] if '3' in datum else None
-            
+
             if not library in self.libraries:
                 self.libraries[library] = []
             self.libraries[library].append( {
@@ -168,10 +166,10 @@ class OLISResult(object):
                 'shelfmark': shelfmark,
                 'materials_specified': materials_specified,
             } )
-            
+
         for library in self.libraries:
             library.availability = max(l['availability'] for l in self.libraries[library])
-            
+
 
     def _metadata_property(heading, sep=' '):
         def f(self):
@@ -180,7 +178,7 @@ class OLISResult(object):
             field = self.metadata[heading][0]
             return sep.join(' '.join(field[k]) for k in sorted(field))
         return property(f)
-    
+
     title = _metadata_property(USM_TITLE_STATEMENT)
     publisher = _metadata_property(USM_PUBLICATION)
     author = _metadata_property(USM_AUTHOR)
@@ -212,25 +210,25 @@ class OLISSearch(object):
         )
         self.connection.databaseName = getattr(provider, 'database')
         self.connection.preferredRecordSyntax = getattr(provider, 'syntax', 'USMARC')
-        
+
         self.query = zoom.Query('CCL', query)
-        
+
         self.results = self.connection.search(self.query)
-        
+
     def __iter__(self):
         for r in self.results:
             yield OLISResult(r)
-        
+
     def __len__(self):
-        return len(self.results)        
+        return len(self.results)
 
     def __getitem__(self, key):
         if isinstance(key, slice):
             if key.step:
                 raise NotImplementedError("Stepping not supported")
             return map(OLISResult, self.results.__getslice__(key.start, key.stop))
-        return OLISResult(self.results[key])        
-        
+        return OLISResult(self.results[key])
+
 class ISBNOrISSNSearch(OLISSearch):
     def __init__(self, number, provider, number_type=None):
         if not number_type:
@@ -254,7 +252,7 @@ def isxn_checksum(s, initial=None):
     for d in s:
         cs, initial = (cs + (d*initial)) % 11, initial - 1
     return cs
-        
+
 def validate_isxn(s):
 
     def encode(s):
@@ -270,7 +268,7 @@ def validate_isxn(s):
         return cs
     def ean_checksum(s):
         return sum(d*m for d,m in zip(s, cycle([1,3]))) % 10
-        
+
     print "Foo", s
     s = re.sub('[*#]', 'X', s.replace('-','').strip().upper())
     print "Foo", s
@@ -279,7 +277,7 @@ def validate_isxn(s):
         return None, None
     s = decode(s)
     print "Foo", s
-        
+
     if len(s) == 13:
         if ean_checksum(s) != 0:
             return None, None
@@ -295,14 +293,14 @@ def validate_isxn(s):
         if cs != 0:
             return None, None
         return encode(s), ('issn' if len(s) == 8 else 'isbn')
-        
+
 
 class SiteSearch(object):
     def __new__(cls, query, only_app, request):
         number, number_type = validate_isxn(query)
         if not number_type:
             return [], False, None
-            
+
         results, items = [], ISBNOrISSNSearch(number, number_type)
         for item in items:
             results.append({
@@ -313,8 +311,6 @@ class SiteSearch(object):
                 'additional': '<strong>Library item</strong>, Publisher: %s' % item.publisher,
                 'url': reverse('z3950_item_detail', args=[item.control_number]),
             })
-            
+
         return results, False, None
-                
-            
-                
+

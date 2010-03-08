@@ -1,9 +1,7 @@
 from itertools import chain
-from PyZ3950 import zoom
 import logging
 
-from django.http import Http404, HttpResponseRedirect
-from django.core.urlresolvers import reverse
+from django.http import Http404
 from django.core.paginator import Paginator
 from django.contrib.gis.geos import Point
 

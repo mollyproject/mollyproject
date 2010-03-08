@@ -1,5 +1,5 @@
 from datetime import datetime
-import oauth.oauth as oauth
+from oauth import oauth
 import urllib, urllib2, base64, pytz, simplejson
 from xml.etree import ElementTree as ET
 import xml.utils.iso8601
@@ -11,10 +11,6 @@ from django.conf import settings
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
 from molly.utils.renderers import mobile_render
-
-from molly.secure.views import OAuthView
-
-from .clients import SakaiOAuthClient
 
 def parse_iso_8601(s):
     return datetime.fromtimestamp(xml.utils.iso8601.parse(s)).replace(tzinfo=pytz.utc)

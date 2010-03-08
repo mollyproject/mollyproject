@@ -37,7 +37,7 @@ APPLICATIONS = [
         ],
     ),
 
-    Application('molly.z3950', 'library',
+    Application('molly.apps.z3950', 'library',
         provider = SimpleProvider(
             verbose_name = 'Oxford Library Information System',
             host = 'library.ox.ac.uk',
@@ -55,7 +55,7 @@ APPLICATIONS = [
         ],
     ),
 
-    Application('molly.sakai', 'weblearn',
+    Application('molly.apps.sakai', 'weblearn',
         host = 'https://weblearn.ox.ac.uk/',
         service_name = 'WebLearn',
         secure = True,

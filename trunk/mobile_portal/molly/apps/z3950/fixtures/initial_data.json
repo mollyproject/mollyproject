@@ -5,7 +5,7 @@
         "fields": {
             "slug": "z3950",
             "title": "Library search",
-            "urlconf_name": "z3950_index"
+            "urlconf_name": "z3950:index"
         }
     }
 ]
