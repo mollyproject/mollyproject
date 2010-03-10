@@ -1,0 +1,10 @@
+Non-essential and institution-specific functionality
+====================================================
+
+Foo
+
+.. toctree::
+   :maxdepth: 1
+
+   oxford/index
+   mit/index

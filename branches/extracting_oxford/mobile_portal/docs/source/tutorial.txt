@@ -1,0 +1,15 @@
+Getting started
+===============
+
+The Molly framework is designed so that the least you have to do is choose the
+features you wish to expose, write some connectors, and create a base template.
+
+We'll start with how to acquire and install the code, before moving on to 
+getting the demonstration site working. After that we'll explore some basic
+customisation and deployment issues.
+
+Getting the code
+----------------
+
+Molly is distributed under an :doc:`XYZ license <license>` and can be
+found in `the download area <http://mollyproject.org/download/>`_.

@@ -1,0 +1,15 @@
+Providers for MIT systems
+=========================
+
+.. module :: molly.contrib.mit.providers
+
+.. toctree::
+   :hidden:
+
+   contact
+
+Contact providers:
+------------------
+
+:class:`~molly.contrib.mit.providers.LDAPContactProvider`
+    Pulls data from MIT's public LDAP server.

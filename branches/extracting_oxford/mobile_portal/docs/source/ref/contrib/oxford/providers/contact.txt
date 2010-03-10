@@ -1,0 +1,21 @@
+Contact providers
+=================
+
+.. class :: molly.contrib.oxford.providers.ContactProvider
+
+.. index ::
+   pair: XML web-service; contact provider
+
+Foo
+
+.. class :: molly.contrib.oxford.providers.ScrapingContactProvider
+
+.. index ::
+   pair: screen-scraping; contact provider
+
+This provider performs requests against the `University's contact search
+<http://www.ox.ac.uk/applications/contact_search/>`_, extracting the results
+from the returned HTML.
+
+As results from the main site are already paginated in groups of ten, this
+provider handles its own pagination.
