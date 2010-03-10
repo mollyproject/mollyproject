@@ -1,8 +1,0 @@
-Deployments
-===========
-
-Molly is in use at the `University of Oxford <http://m.ox.ac.uk>`_
-under the name *Mobile Oxford*.
-
-There is currently a JISC-funded project to port it to `Oxford Brookes
-University <http://www.brookes.ac.uk/>`_.

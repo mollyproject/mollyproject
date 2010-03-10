@@ -1,0 +1,30 @@
+{% extends "maps/base.xhtml" %}
+{% load maps %}
+
+{% block title %}OMP | {{ resource.title }}{% endblock %}
+
+{% block content %}
+
+<h1>{{ resource.title }}</h1>
+
+{% if resource.in_images %}
+<img src="{{ resource.in_images.0.url }}" alt="" style="float:right"/>
+{% endif %}
+
+<p>
+{% if resource.homepage %}
+    <a href="{{ resource.homepage.url }}">Web</a>
+{% endif %}
+    <a href="http://maps.google.co.uk/?q={{ resource.google_qs_part|safe }}&amp;z=16">Map</a>
+</p>
+
+<p>Directions:
+{% if location %}
+    <a href="http://maps.google.co.uk/?saddr=Here@{{ location|join:"," }}&amp;daddr={{ resource.google_qs_part }}&amp;dirflg=w">from here</a> |
+{% endif %}
+    <a href="http://maps.google.co.uk/?saddr=Station@51.753468,-1.269795&amp;daddr={{ resource.google_qs_part }}&amp;dirflg=w">from the station</a>
+</p>
+
+{% map resource.location %}
+
+{% endblock %}

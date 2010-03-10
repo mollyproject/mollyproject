@@ -1,0 +1,11 @@
+[
+    {
+        "pk": "5",
+        "model": "core.FrontPageLink",
+        "fields": {
+            "slug": "webcams",
+            "title": "Webcams",
+            "urlconf_name": "webcams_index"
+        }
+    }
+]

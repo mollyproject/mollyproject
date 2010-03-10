@@ -1,0 +1,11 @@
+[
+    {
+        "pk": "9",
+        "model": "core.FrontPageLink",
+        "fields": {
+            "slug": "maps",
+            "title": "Maps",
+            "urlconf_name": "maps_index"
+        }
+    }
+]

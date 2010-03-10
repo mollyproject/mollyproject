@@ -1,0 +1,27 @@
+{% extends "base.xhtml" %}
+
+{% block scripts %}
+{% endblock %}
+
+{% block pagetitle %}Server error{% endblock %}
+{% block title %}m.ox | 500 Server Error{% endblock %}
+
+{% block content %}
+<div class="section">
+	<h2>500 Error</h2>
+	<div class="note"><div class="bubble pad-10">
+  <p>Sorry; something went wrong at our end.</p>
+  <p>We've sent an e-mail to the webmaster, so it should be fixed soon.</p>
+  <p>If you have any further information, questions or feedback, you can e-mail us at
+      <a href="mailto:mobileoxford@oucs.ox.ac.uk">mobileoxford@oucs.ox.ac.uk</a>.
+  </p>
+  <p id="alt-suggest">
+      Alternatively, you can try returning to the home page.
+  </p>
+  <script type="text/javascript">
+      suggest = document.getElementById('alt-suggest');
+      suggest.innerHTML = 'Alternatively, you can try <a href="#" onclick="javascript:history.back(1); return false;">going back</a> or returning to the home page.';
+  </script>
+	</div></div>
+</div>
+{% endblock %}

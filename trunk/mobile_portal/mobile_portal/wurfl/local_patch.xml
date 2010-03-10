@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wurfl_patch>
+	<devices>
+	
+		<device user_agent="Mozilla/5.0 (X11; U; Linux; rv:1.9.1.5) Gecko/20091105 Firefox/3.5b4" fall_back="firefox_3_5" id="firefox_3_5_linux"/>
+		<device user_agent="Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.0.6) Gecko/20060728 Firefox/1.5.0.6" fall_back="firefox_3_5" id="firefox_1_5_win"/>
+		<device user_agent="Mozilla/5.0 (Macintosh; U; Intel Mac OS X; en-US; rv:1.8.1.20) Gecko/20081217 Firefox/2.0.0.20" fall_back="firefox_3_5" id="firefox_2_0_macosx"/>
+
+		<device user_agent="Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; rv:1.9.1.5) Gecko/20091102 Firefox/3.5.5" fall_back="firefox_3_5" id="firefox_3_5_macosx"/>
+		<device user_agent="Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; GTB0.0; .NET CLR 2.0.50727)" fall_back="msie_6" id="msie_6_subua"/>
+		<device user_agent="Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; .NET CLR 1.1.4322; .NET CLR 2.0.50727; .NET CLR 3.0.0450" fall_back="msie_8" id="msie_8_subua"/>
+        <device user_agent="Opera/9.63 (Windows NT 5.1; U) Presto/2.1.1" fall_back="opera_9" id="opera_9_subua"/>
+        <device user_agent="Opera/9.80 (Macintosh; Intel Mac OS X; U; en) Presto/2.2.15 Version/10.10" fall_back="opera_9" id="opera_9_8_macosx"/>
+        <device user_agent="Mozilla/5.0 (Windows; U; Windows NT 5.1) AppleWebKit/532.0 (KHTML, like Gecko) Chrome/3.0.195.32 Safari/532.0" fall_back="google_chrome_2" id="google_chrome_3"/>
+        <device user_agent="Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_2) AppleWebKit/531.9 (KHTML, like Gecko) Version/4.0.3 Safari/531.9" fall_back="safari_530" id="safari_531"/>
+
+	</devices>
+
+</wurfl_patch>

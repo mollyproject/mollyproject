@@ -1,0 +1,137 @@
+{% extends "contact/base.xhtml" %}{% load portal_misc %}
+
+{% block title %}m.ox | Contact search{% if query %}: {{ query }}{% endif %}{% endblock %}
+
+{% block content %}
+<div class="section">
+  <div class="form">	
+  <form method="get" action=".">
+    <h2>
+      <label for="id_query">Search</label>
+    </h2>
+	<p>
+	  <input id="id_query" name="q" value="{{ query }}"/>
+	</p>
+	<p>
+	  <button type="submit" name="method" value="email">E-mail</button>
+	  <button type="submit" name="method" value="phone">Phone</button>
+	</p>
+  </form>
+  </div>
+</div>
+
+{% if query %}
+<div class="section">
+  <h2>Results</h2>
+  {% if message %}
+  <div class="note"><div class="bubble pad-10">
+    {{ message }}
+  </div></div>
+  {% endif %}
+
+  {% if people %}
+	  	
+  <div class="note"><div class="bubble pad-10">
+    {% if paginator.num_pages|gte:4 %}
+    Your search returned {{ paginator.count }} item{{ paginator.count|pluralize }}. Try adding an initial to get more specific results.
+    {% else %}
+    Your search returned {{ paginator.count }} item{{ paginator.count|pluralize }}.
+    {% endif %}
+  </div></div>
+
+  {% ifnotequal 1 page_count %}
+  <div class="note">
+    Pages:
+    {% for page_number in paginator.page_range %}
+    <a href="?page={{ page_number }}&amp;method={{ method }}&amp;q={{ query|urlencode }}" style="padding:0 7px 0 0;">{{ page_number }}</a>
+    {% endfor %}
+  </div>
+  {% endifnotequal %}
+
+  <ul id="people">
+  {% for person in page.object_list %}
+    <li{% if forloop.last %} class="round-bottom"{% endif %}>
+    {% ifequal method "email" %}
+      <a class="email" href="mailto:{{ person.email }}">
+    {% else %}
+      <a class="phone" href="{{ person.external|telephone_uri }}">
+    {% endifequal %}
+        {{ person.name }}
+        <br/>
+        <small>
+          {% if person.unit %}{{ person.unit }}{% else %}<em>Unknown affiliation</em>{% endif %}<br />
+    {% ifequal method "email" %}
+          {{ person.email }}
+    {% else %}
+          {{ person.external }}
+    {% endifequal %}
+        </small>
+      </a>
+    </li>
+  {% endfor %}
+  </ul>
+
+  {% ifnotequal 1 page_count %}
+  <div class="note">
+    Pages:
+    {% for page in paginator.page_range %}
+    <a href="?page={{ page }}&amp;method={{ method }}&amp;q={{ query|urlencode }}" style="padding:0 7px 0 0;">{{ page }}</a>
+    {% endfor %}
+  </div>
+  {% endifnotequal %}
+
+{% else %}
+  {% if not message %}
+  <div class="note"><div class="bubble pad-10">
+    Your search didn't return any results.
+  </div></div>
+  {% endif %}
+{% endif %}
+</div>
+
+{% endif %}
+
+{% if not query %}
+<div class="section">
+  <h2>University contacts</h2>
+  <ul>
+    <li><a class="phone" href="tel:+441865270000">General enquiries<br /><small>01865 (2)70000</small></a></li>
+    <li><a class="phone" href="tel:+441865280000">Switchboard<br /><small>01865 (2)80000</small></a></li>
+    <li class="round-bottom"><a class="phone" href="tel:+441865273200">Computing Services help desk<br /><small>01865 (2)73200</small></a></li>
+  </ul>
+</div>
+
+<div class="section">
+  <h2>Emergency contacts</h2>
+  <ul>
+    <li><a class="phone" href="tel:112">Emergency services<br /><small>112</small></a></li>
+    <li><a class="phone" href="tel:+441865289999">University security <small>(emergency)<br />01865 (2)89999</small></a></li>
+    <li><a class="phone" href="tel:+441865272944">University security <small>(enquiries)<br />01865 (2)72944</small></a></li>
+    <li class="round-bottom"><a class="phone" href="tel:+448458505505">Thames Valley Police <small>(non-emergency)<br />08458 505505</small></a></li>
+  </ul>
+</div>
+
+<div class="section">
+  <h2>Health and welfare</h2>
+  <ul>
+    <li><a class="phone" href="tel:+448454647">NHS Direct<br /><small>0845 46 47</small></a></li>
+    <li><a class="phone" href="tel:+441865270300">University Counselling Service<br /><small>01865 (2)70300</small></a></li>
+    <li><a class="phone" href="tel:+441865270270">Oxford Nightline<br /><small>01865 (2)70270</small></a></li>
+    <li><a class="phone" href="tel:+441865726295">Rape Crisis<br /><small>01865 726295</small></a></li>
+    <li class="round-bottom"><a class="phone" href="tel:+448457909090">Samaritans<br /><small>08457 90 90 90</small></a></li>
+  </ul>
+</div>
+  
+			{% comment %}  
+			{# Update to retrieve College/Department contacts #}
+			<div class="section">
+			<h2>Other contacts</h2>
+			<ul>
+			    <li class="email"><a href="{% url contact_quick %}">College contacts</a></li>
+			    <li><a href="{% url contact_quick %}">Department contacts</a></li>
+			</ul>
+			</div>
+			{% endcomment %}
+{% endif %}
+
+{% endblock %}

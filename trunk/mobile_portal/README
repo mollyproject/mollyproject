@@ -28,13 +28,10 @@ Install the following packages:
  * postgresql-8.3-postgis
  * postgresql-server-dev-8.3
  * python-setuptools
- * python-xml
 
-Now install Django 1.1 and the oauth module for 1.0a using easy_install:
+Now install Django 1.1 using easy_install:
 
  $ easy_install "Django==1.1"
- $ easy_install "oauth==1.0.1"
- $ easy_install pywurfl
 
 
 Apache configuration

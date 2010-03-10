@@ -1,0 +1,49 @@
+body {
+    background:#ffffff;
+    text-align: left;
+}
+
+/* Index Page Specific 
+    - 1 CSS 2.1 Selector
+    - 4 Webkit Only Tags
+    -- Written in order of use on index.html
+*/
+
+h1 {
+    font-size: 0.8em;
+    padding: 0; margin: 0;
+}
+
+h2 { font-size: 0.8em; 
+     padding: 0; margin: 0;
+}
+
+p {
+    padding: 1px;
+}
+
+ol {
+    text-align: left;
+}
+
+ul li {
+    padding: 2px 0;
+}
+div.section {
+    padding: 3px;
+    margin: 3px 0;
+    background-color: #f0f0f0;
+}
+
+
+div#index-header {
+    width:100%;
+ 
+}
+div#index-title {
+
+}
+div#index-search {
+
+}
+

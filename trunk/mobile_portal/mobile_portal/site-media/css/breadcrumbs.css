@@ -1,0 +1,92 @@
+div.header {
+    height:34px;
+    width:100%;
+    background-image:url('../png/header_bg.png');
+    overflow:hidden;
+}
+
+ol.breadcrumbs {
+    list-style:none;
+    padding-left:0;
+    margin:0px;
+    display:block;
+}
+
+ol.breadcrumbs li {
+    display:block;
+    float:left;
+    background-image:url('../png/sep.png');
+    background-position:right;
+    height:30px;
+    padding:2px;
+    padding-left:0;
+    padding-right:16px;
+    line-height:30px;
+    overflow:hidden;
+    
+}
+
+ol.breadcrumbs li a {
+    font-size:12pt;
+    
+    vertical-align:top;
+    color:#ffffff;
+    text-decoration:none;
+}
+
+ol.breadcrumbs img {
+    border:0;
+}
+
+h1 {
+    font-size:12pt;
+    text-align:left;
+    color:#ffffff;
+    margin-top:2px;
+    padding-top:4px;
+    whitespace:no-wrap;
+    height:30px;
+    
+}
+h1 {
+    vertical-align:middle;
+    float:left;
+}
+
+h1.with-icon {
+    background-repeat:no-repeat;
+    background-position:left middle;
+    padding-left:34px;
+}
+
+h1.maps-header {
+    background-image:url('../png/index-icons/maps-bc.png');
+}
+
+h1.contact-header {
+    background-image:url('../png/index-icons/contact-bc.png');
+}
+
+h1.webcams-header {
+    background-image:url('../png/index-icons/webcams-bc.png');
+}
+
+h1.podcasts-header {
+    background-image:url('../png/index-icons/podcasts-bc.png');
+}
+
+h1.results-header {
+    background-image:url('../png/index-icons/results-bc.png');
+}
+
+h1.z3950-header {
+    background-image:url('../png/index-icons/z3950-bc.png');
+}
+
+h1.rss-header {
+    background-image:url('../png/index-icons/rss-bc.png');
+}
+
+h1.weather-header {
+    background-image:url('../png/index-icons/weather-bc.png');
+}
