@@ -1,0 +1,13 @@
+feedparser
+BeautifulSoup
+simplejson
+rdflib
+pycairo
+textile
+pytz
+pyxml
+Django==1.1
+oauth>=1.0.1
+pywurfl
+git+http://github.com/alexdutton/PyZ3950.git
+
