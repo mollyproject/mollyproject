@@ -9,7 +9,7 @@ APPLICATION_CHOICES = (
     ('webcams', 'webcams'),
 )
 
-class GoogleSearchForm(forms.Form):
+class SearchForm(forms.Form):
     query = forms.CharField(label='Search')
     application = forms.ChoiceField(
         label='Filter',

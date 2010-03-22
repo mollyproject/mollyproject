@@ -18,7 +18,9 @@ from molly.utils.breadcrumbs import *
 
 from molly.osm.utils import fit_to_map
 from molly.wurfl import device_parents
-from molly.googlesearch.forms import GoogleSearchForm
+
+# TODO: Remove this into a templatetag
+from molly.apps.search.forms import SearchForm
 
 from models import FrontPageLink, ExternalImageSized, LocationShare, UserMessage, ShortenedURL, BlogArticle
 from forms import LocationShareForm, LocationShareAddForm, FeedbackForm, UserMessageFormSet, LocationUpdateForm
