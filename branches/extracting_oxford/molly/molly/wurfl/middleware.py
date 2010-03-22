@@ -1,12 +1,10 @@
 from django.conf import settings
-from molly.utils import geolocation
 
 from molly.wurfl.wurfl_data import devices
-from molly.wurfl import device_parents
 from pywurfl.algorithms import DeviceNotFound
 from molly.wurfl.vsm import VectorSpaceAlgorithm
 
-class LocationMiddleware(object):
+class WurflMiddleware(object):
     vsa = VectorSpaceAlgorithm(devices)
     
     def process_request(self, request):
@@ -15,7 +13,7 @@ class LocationMiddleware(object):
         try:
             request.browser = devices.select_ua(
                 request.META['HTTP_USER_AGENT'],
-                search=LocationMiddleware.vsa
+                search=WurflMiddleware.vsa
             )
         except (KeyError, DeviceNotFound):
             request.browser = devices.select_id('generic_xhtml')
@@ -24,14 +22,14 @@ class LocationMiddleware(object):
             opera_device = request.META['HTTP_X_OPERAMINI_PHONE']
             request.device = devices.select_ua(
                 opera_device,
-                search=LocationMiddleware.vsa
+                search=WurflMiddleware.vsa
             )
         if 'HTTP_X_SKYFIRE_PHONE' in request.META:
             request.browser = devices.select_id('generic_skyfire')
             skyfire_device = request.META['HTTP_X_SKYFIRE_PHONE']
             request.device = devices.select_ua(
                 skyfire_device,
-                search=LocationMiddleware.vsa
+                search=WurflMiddleware.vsa
             )
             try:
                 request.device.resolution_width, request.device.resolution_height = \
