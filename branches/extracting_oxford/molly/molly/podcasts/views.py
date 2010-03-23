@@ -10,7 +10,6 @@ from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
 
 from molly.wurfl import device_parents
-from molly.googlesearch.forms import GoogleSearchForm
 
 from .models import Podcast, PodcastCategory
 from . import TOP_DOWNLOADS_RSS_URL
@@ -41,7 +40,6 @@ class IndexView(BaseView):
         context.update({
             'categories': PodcastCategory.objects.all(),
             'show_itunesu_link': show_itunesu_link,
-            'search_form': GoogleSearchForm()
         })
         return mobile_render(request, context, 'podcasts/index')
 

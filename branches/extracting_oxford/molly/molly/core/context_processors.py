@@ -111,8 +111,6 @@ def geolocation(request):
 
         # Debug information follows.        
         'session': request.session.items(),
-        'browser': request.browser,
-        'device': request.device,
         'map_width': request.map_width,
         'map_height': request.map_height,
         'meta': dict((a,b) for (a,b) in request.META.items() if a.startswith('HTTP_')),

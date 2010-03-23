@@ -1,5 +1,5 @@
 {% extends "core/base.xhtml" %}
-{% load portal_misc %}{% load maps %}
+{% load portal_misc %}{% load maps %}{% load molly_apps_search %}
 
 {% block title %}Mobile Oxford{% endblock %}
 
@@ -14,6 +14,7 @@
         {% endifequal %}
     </div>
     <div id="index-search">
+        {% search_form %}
 	     <form method="get" action="{% url search:index %}">
 		 <p>
 			{{ search_form.query }}
@@ -33,9 +34,9 @@
     <div class="bubble">
 	<div class="center">
     	<ol class="icon-menu">
-	      {% for link in front_page_links %}
-	          <li id="menu-{{ link.slug }}">
-	              <a accesskey="{{ forloop.counter }}" href="{{ link.url }}">{{ link.title }}</a>
+	      {% for name, title, url in front_page_links %}
+	          <li id="menu-{{ link.name }}">
+	              <a accesskey="{{ forloop.counter }}" href="{{ url }}">{{ title }}</a>
 	          </li>
 	      {% endfor %}
 	    </ol>

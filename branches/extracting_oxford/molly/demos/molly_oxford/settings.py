@@ -71,19 +71,31 @@ MIDDLEWARE_CLASSES = (
     'molly.wurfl.middleware.WurflMiddleware',
 )
 
+TEMPLATE_CONTEXT_PROCESSORS = (
+#    'django.contrib.auth.context_processors.auth',
+#    'django.core.context_processors.debug',
+#    'django.core.context_processors.i18n',
+#    'django.core.context_processors.media',
+#    'django.contrib.messages.context_processors.messages',
+    'molly.wurfl.context_processors.wurfl_device',
+)
+
+
 ROOT_URLCONF = 'molly_oxford.urls'
 
 TEMPLATE_DIRS = (
     os.path.join(project_root, 'templates'),
+    # This is temporary until we move the templates to their rightful places
+    os.path.join(project_root, '..', '..', 'molly', 'templates'),
 )
 
 APPLICATIONS = [
-    Application('molly.apps.contact', 'contact',
+    Application('molly.apps.contact', 'contact', 'Contact search',
 #        provider = 'molly.contrib.oxford.providers.ScrapingContactProvider',
         provider = 'molly.contrib.mit.providers.LDAPContactProvider',
     ),
 
-    Application('molly.apps.weather', 'weather',
+    Application('molly.apps.weather', 'weather', 'Weather',
         location_id = 'bbc/25',
         provider = SimpleProvider('molly.contrib.generic.providers.BBCWeatherProvider',
             location_id = 25,
@@ -91,7 +103,7 @@ APPLICATIONS = [
         ),
     ),
 
-    Application('molly.maps', 'maps',
+    Application('molly.maps', 'maps', 'Places',
         sources = [
             'molly.contrib.oxford.sources.NaptanSource',
             'molly.contrib.oxford.sources.OxpointsSource',
@@ -99,7 +111,7 @@ APPLICATIONS = [
         ],
     ),
 
-    Application('molly.z3950', 'library',
+    Application('molly.z3950', 'library', 'Library search',
         provider = SimpleProvider(
             verbose_name = 'Oxford Library Information System',
             host = 'library.ox.ac.uk',
@@ -107,7 +119,7 @@ APPLICATIONS = [
         ),
     ),
 
-    Application('molly.apps.service_status', 'service_status',
+    Application('molly.apps.service_status', 'service_status', 'Service status',
         providers = [
             'molly.contrib.oxford.providers.OUCSStatusProvider',
             SimpleProvider('molly.contrib.generic.providers.ServiceStatusProvider',
@@ -117,7 +129,7 @@ APPLICATIONS = [
         ],
     ),
 
-    Application('molly.sakai', 'weblearn',
+    Application('molly.sakai', 'weblearn', 'WebLearn',
         host = 'https://weblearn.ox.ac.uk/',
         service_name = 'WebLearn',
         secure = True,
@@ -133,7 +145,7 @@ APPLICATIONS = [
         ),
     ),
 
-    Application('molly.podcasts', 'podcasts',
+    Application('molly.podcasts', 'podcasts', 'Podcasts',
         providers = [
             SimpleProvider(
                 opml = 'http://rss.oucs.ox.ac.uk/metafeeds/podcastingnewsfeeds.opml',
@@ -145,7 +157,10 @@ APPLICATIONS = [
         ],
     ),
 
-    Application('molly.auth', 'auth',
+    Application('molly.apps.search', 'search', 'Search',
+    ),
+
+    Application('molly.auth', 'auth', 'Authentication',
     ),
 ]
 
@@ -163,4 +178,7 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
-)
+    'molly.core',
+) + extract_installed_apps(APPLICATIONS)
+
+print INSTALLED_APPS

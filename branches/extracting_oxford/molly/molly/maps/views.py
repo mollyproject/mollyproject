@@ -23,7 +23,6 @@ from molly.core.views import LocationRequiredView
 from molly.osm.utils import get_generated_map, fit_to_map
 from molly.osm.models import OSMUpdate
 from molly.maps.models import Entity, EntityType, PostCode
-from molly.googlesearch.forms import GoogleSearchForm
 
 from utils import get_entity, is_favourite, make_favourite, get_bearing
 from forms import BusstopSearchForm, UpdateOSMForm
@@ -46,7 +45,7 @@ class IndexView(BaseView):
         )
 
     def handle_GET(cls, request, context):
-        context['search_form'] = GoogleSearchForm()
+        context['search_form'] = SearchForm()
         return mobile_render(request, context, 'maps/index')
 
 class NearbyListView(BaseView):

@@ -19,9 +19,6 @@ from molly.utils.breadcrumbs import *
 from molly.osm.utils import fit_to_map
 from molly.wurfl import device_parents
 
-# TODO: Remove this into a templatetag
-from molly.apps.search.forms import SearchForm
-
 from models import FrontPageLink, ExternalImageSized, LocationShare, UserMessage, ShortenedURL, BlogArticle
 from forms import LocationShareForm, LocationShareAddForm, FeedbackForm, UserMessageFormSet, LocationUpdateForm
 
@@ -35,28 +32,28 @@ class IndexView(BaseView):
         return Breadcrumb('core', None, 'Home', lazy_reverse('core:index'))
         
     def handle_GET(cls, request, context):
-        internal_referer = request.META.get('HTTP_REFERER', '').startswith('http://oucs-alexd:8000/')
-        internal_referer = request.META.get('HTTP_REFERER', '').startswith('http://m.ox.ac.uk/')
+        # Check whether the referer header is from the same host as the server
+        # is responding as
+        try:
+            internal_referer = request.META.get('HTTP_REFERER', '').split('/')[2] == request.META.get('HTTP_HOST')
+        except IndexError:
+            internal_referer = False
     
+        # Redirects if the user is a desktop browser who hasn't been referred
+        # from this site. Also extra checks for preview mode and DEBUG.
         if ("generic_web_browser" in device_parents[request.device.devid]
-            and not request.preferences['core']['desktop_about_shown']
+            and not request.session.get('core:desktop_shown', False)
             and not request.GET.get('preview') == 'true'
             and not internal_referer
             and not settings.DEBUG):
             return HttpResponseRedirect(reverse('core:exposition'))
     
-        fpls = dict((fpl.slug, fpl) for fpl in FrontPageLink.objects.all())
-        fpls_prefs = sorted(request.preferences['front_page_links'].items(), key=lambda (slug,(order, display)): order)
-        front_page_links = [fpls[slug] for (slug,(order, display)) in fpls_prefs if display and slug in fpls]
-    
-        gsf = GoogleSearchForm()
-        gsf.fields['query'].widget.attrs['class'] = 'index-search-box'
-    
+        front_page_links = [(app.name, app.title, reverse('%s:index' % app.name)) for app in settings.APPLICATIONS]
+        
         context = {
             'front_page_links': front_page_links,
-            'search_form': gsf,
             'hide_feedback_link': True,
-            'has_user_messages': UserMessage.objects.filter(session_key = request.session.session_key).count() > 0,
+            #'has_user_messages': UserMessage.objects.filter(session_key = request.session.session_key).count() > 0,
             'ua': request.META.get('HTTP_USER_AGENT', ''),
             'parents': device_parents[request.device.devid]
 

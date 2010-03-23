@@ -48,8 +48,8 @@
   <h2>Browse Points of Interest</h2>
   {% include "core/update_location_embed.xhtml" %}
   <ul>
-    <li><a href="{% url maps_nearby_list %}">Near Me</a></li>
-    <li class="round-bottom"><a href="{% url maps_category_list %}">By Category</a></li>
+    <li><a href="{% url maps:nearby_list %}">Near Me</a></li>
+    <li class="round-bottom"><a href="{% url maps:category_list %}">By Category</a></li>
   </ul>
 </div>
 {# End Points of Interest #}

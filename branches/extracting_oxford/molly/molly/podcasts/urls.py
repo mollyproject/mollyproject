@@ -7,30 +7,30 @@ from views import (
 urlpatterns = patterns('mobile_portal.podcasts.views',
     (r'^$',
         IndexView, {},
-        'podcasts_index'),
+        'index'),
         
     (r'^division:(?P<code>[a-z]+)/$',
         CategoryDetailView, {},
-        'podcasts_category'),
+        'category'),
     (r'^division:(?P<code>[a-z]+)/(?P<medium>audio|video)/$',
         CategoryDetailView, {},
         'podcasts_category_medium'),
 
     (r'^top_downloads/$',
         TopDownloadsView, {},
-        'podcasts_top_downloads'),
+        'top_downloads'),
 
     (r'^itunesu_redirect/$',
         ITunesURedirectView, {},
-        'podcasts_itunesu_redirect'),
+        'itunesu_redirect'),
 
     (r'^(?P<code>[a-z]+)/((((?P<id>\d+)|(?P<medium>audio|video))/)?)$',
         RedirectOldLinksView, {},
-        'podcasts_redirects'),
+        'redirects'),
         
     (r'^(?P<identifier>[a-zA-Z\d_@.\-/]+)/$',
         PodcastDetailView, {},
-        'podcasts_podcast'),
+        'podcast'),
 
 )
 

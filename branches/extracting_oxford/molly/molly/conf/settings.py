@@ -4,7 +4,7 @@ from django.conf.urls.defaults import include as urlconf_include
 class Application(object):
     registry = {}
 
-    def __init__(self, app, name, **kwargs):
+    def __init__(self, app, name, title, **kwargs):
         self.app, self.name = app, name
         self.authentication = kwargs.pop('authentication', None)
         self.secure = kwargs.pop('secure', False)
@@ -12,6 +12,7 @@ class Application(object):
         self.urlconf = kwargs.pop('urlconf', app+'.urls')
         self.kwargs = kwargs
         self.batches = []
+        self.title = title
 
         self.providers = kwargs.pop('providers', ())
         if 'provider' in kwargs:

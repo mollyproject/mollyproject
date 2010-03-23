@@ -38,13 +38,13 @@
 	  <h2>Search elsewhere <small>for<em> {{ search_form.data.query }}</em></small></h2> 
 <h3>Contact search</h3>
 	  <ul>
-	    <li><a href="{% url contact_index %}?q={{ search_form.data.query }}&amp;method=email">E-mail</a></li>
-	    <li><a href="{% url contact_index %}?q={{ search_form.data.query }}&amp;method=phone">Phone</a></li>
+	    <li><a href="{% url contact:index %}?q={{ search_form.data.query }}&amp;method=email">E-mail</a></li>
+	    <li><a href="{% url contact:index %}?q={{ search_form.data.query }}&amp;method=phone">Phone</a></li>
 	 </ul>
 <h3>Library search</h3>
 	 <ul>
-	    <li><a href="{% url z3950_search %}?title={{ search_form.data.query }}">Title</a></li>
-	    <li class="round-bottom"><a href="{% url z3950_search %}?author={{ search_form.data.query }}">Author</a></li>
+	    <li><a href="{% url z3950:search %}?title={{ search_form.data.query }}">Title</a></li>
+	    <li class="round-bottom"><a href="{% url z3950:search %}?author={{ search_form.data.query }}">Author</a></li>
 	  </ul>
 	</div>
 	{# End Search Elsewhere #}
