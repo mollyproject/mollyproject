@@ -1,4 +1,4 @@
-{% extends "maps/base.xhtml" %}{% load portal_misc %}
+{% extends "maps/base.xhtml" %}{% load portal_misc %}{% load molly_apps_search %}
 
 {% block title %}m.ox | Maps{% endblock %}
 
@@ -24,8 +24,9 @@
 
 {# Maps Search #}
 <div class="section">
+    {% search_form %}
 <div class="form">
-  <form method="get" action="{% url googlesearch_index %}">
+  <form method="get" action="{% url search:index %}">
     <h2>Search for Places</h2>
       <div class="note"><div class="bubble pad-10">
         Search for places by name or go straight to a bus stop by entering its 8 digit Oxontime Code or a central stop number (e.g. 'E7').

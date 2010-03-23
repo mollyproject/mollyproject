@@ -41,11 +41,10 @@ class IndexView(BaseView):
             'maps',
             None,
             'Maps',
-            lazy_reverse('maps_index')
+            lazy_reverse('maps:index')
         )
 
     def handle_GET(cls, request, context):
-        context['search_form'] = SearchForm()
         return mobile_render(request, context, 'maps/index')
 
 class NearbyListView(BaseView):
@@ -61,7 +60,7 @@ class NearbyListView(BaseView):
             'maps',
             lazy_parent(IndexView),
             'Things nearby',
-            url = lazy_reverse('maps_nearby_list'),
+            url = lazy_reverse('maps:nearby_list'),
         )
 
 
@@ -70,9 +69,9 @@ class NearbyListView(BaseView):
              return location_required(request)
 
         if entity:
-            return_url = reverse('maps_entity_nearby_list', args=[entity.entity_type.slug, entity.display_id])
+            return_url = reverse('maps:entity_nearby_list', args=[entity.entity_type.slug, entity.display_id])
         else:
-            return_url = reverse('maps_nearby_list')
+            return_url = reverse('maps:nearby_list')
 
         entity_types = EntityType.objects.filter(show_in_nearby_list=True)
         university = [et for et in entity_types if et.source == 'oxpoints']
@@ -134,7 +133,7 @@ class NearbyDetailView(ZoomableView):
         return Breadcrumb('maps',
                           lazy_parent(NearbyListView, entity=entity),
                           title,
-                          lazy_reverse('maps_nearby_detail', args=[ptypes]))
+                          lazy_reverse('maps:nearby_detail', args=[ptypes]))
 
     def get_metadata(cls, request, ptypes, entity=None):
         context = NearbyDetailView.initial_context(request, ptypes, entity)
@@ -260,7 +259,7 @@ class EntityDetailView(ZoomableView):
             'maps',
             lazy_parent(parent_view, ptypes=type_slug),
             context['entity'].title,
-            lazy_reverse('maps_entity', args=[type_slug,id]),
+            lazy_reverse('maps:entity', args=[type_slug,id]),
         )
 
     def handle_GET(cls, request, context, type_slug, id):
@@ -348,7 +347,7 @@ class EntityUpdateView(ZoomableView):
             'maps',
             lazy_parent(EntityDetailView, type_slug=type_slug, id=id),
             'Things nearby',
-            lazy_reverse('maps_entity_update', args=[type_slug,id])
+            lazy_reverse('maps:entity_update', args=[type_slug,id])
         )
 
     def handle_GET(cls, request, context, type_slug, id):
