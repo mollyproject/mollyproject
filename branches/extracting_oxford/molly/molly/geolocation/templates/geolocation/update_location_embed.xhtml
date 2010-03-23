@@ -1,11 +1,11 @@
 {% load maps %}
 
 <div class="note"><div class="bubble pad-10">
-{% if preferences.location.name %}
+{% if geolocation.name %}
 
 <div class="location-container">
   <span class="location-status">
-    Current location: <span class="location">{{ preferences.location.name }}</span>.
+    Current location: <span class="location">{{ geolocation.name }}</span>.
   </span>
   <span class="location-action"> </span>
 </div>

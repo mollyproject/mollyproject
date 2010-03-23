@@ -3,12 +3,12 @@ import math, random, cairo, urllib, os.path, sys, time
 
 from django.conf import settings
 
-from molly.osm.models import OSMTile
+from molly.osm.models import OSMTile, get_marker_dir
 
 def log2(x):
     return math.log(x)/math.log(2)
 
-def get_tile_ref(lat_deg, lon_deg, zoom):
+def get_tile_ref(lon_deg, lat_deg, zoom):
     lat_rad = lat_deg * math.pi / 180.0
     n = 2.0 ** zoom
     xtile = (lon_deg + 180.0) / 360.0 * n
@@ -20,7 +20,7 @@ def get_tile_geo(xtile, ytile, zoom):
   lon_deg = xtile / n * 360.0 - 180.0
   lat_rad = math.atan(math.sinh(math.pi * (1 - 2 * ytile / n)))
   lat_deg = lat_rad * 180.0 / math.pi
-  return(lat_deg, lon_deg)
+  return (lon_deg, lat_deg)
 
 
 def get_tile_url(xtile, ytile, zoom):
@@ -33,9 +33,9 @@ def minmax(i):
         max_ = max(max_, e)
     return min_, max_
 
-def get_map(points, width, height, filename, zoom=None, lat_center=None, lon_center=None):
-    lat_min, lat_max = minmax(p[0] for p in points)
-    lon_min, lon_max = minmax(p[1] for p in points)
+def get_map(points, width, height, filename, zoom=None, lon_center=None, lat_center=None):
+    lon_min, lon_max = minmax(p[0] for p in points)
+    lat_min, lat_max = minmax(p[1] for p in points)
     
     if not zoom:
         size = min(width, height)
@@ -46,16 +46,16 @@ def get_map(points, width, height, filename, zoom=None, lat_center=None, lon_cen
     
     points = [(get_tile_ref(p[0], p[1], zoom), p[2], p[3]) for p in points]
     
-    lat_range, lon_range = lat_min - lat_max, lon_max - lon_min
+    lon_range, lat_range = lon_max - lon_min, lat_min - lat_max
     if not lat_center:
-        lat_center, lon_center = (lat_min + lat_max)/2, (lon_min + lon_max)/2
+        lon_center, lat_center = (lon_min + lon_max)/2, (lat_min + lat_max)/2
     
     tx_min, tx_max = map(int, minmax(p[0][0] for p in points))
     ty_min, ty_max = map(int, minmax(p[0][1] for p in points))
     ty_max, tx_max = ty_max+1, tx_max+1
     
     
-    cx, cy = get_tile_ref(lat_center, lon_center, zoom)
+    cx, cy = get_tile_ref(lon_center, lat_center, zoom)
     oxc = int((cx - tx_min) * 256 - width/2)
     oyc = int((cy - ty_min) * 256 - height/2)
     ox, oy = oxc, oyc-10
@@ -106,12 +106,13 @@ def get_map(points, width, height, filename, zoom=None, lat_center=None, lon_cen
         context.fill()
     
     points.sort(key=lambda p:p[0][1])
+    marker_dir = get_marker_dir()
     for (tx, ty), color, index in points:
         if index is None:
             off, fn = (10, 10), "%s-star.png" % color
         else:
             off, fn = (10, 25), "%s-%d.png" % (color, index)
-        fn = os.path.join(settings.MARKER_DIR, fn)
+        fn = os.path.join(marker_dir, fn)
             
         marker = cairo.ImageSurface.create_from_png(fn)
         

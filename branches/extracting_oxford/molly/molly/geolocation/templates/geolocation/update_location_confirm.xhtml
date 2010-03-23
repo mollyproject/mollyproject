@@ -14,14 +14,14 @@
 <ul>
 {% for placemark in placemarks %}
     <li>
-        <form method="post" action="{% url core_update_location %}" class="submit-location-form">
-            <input type="hidden" name="name" value="{{ placemark.0 }}"/>
-            <input type="hidden" name="latitude" value="{{ placemark.1.0 }}"/>
-            <input type="hidden" name="longitude" value="{{ placemark.1.1 }}"/>
-            <input type="hidden" name="accuracy" value="{{ placemark.2 }}"/>
+        <form method="post" action="{% url geolocation:update %}" class="submit-location-form">
+            <input type="hidden" name="name" value="{{ placemark.name }}"/>
+            <input type="hidden" name="longitude" value="{{ placemark.location.0 }}"/>
+            <input type="hidden" name="latitude" value="{{ placemark.location.1 }}"/>
+            <input type="hidden" name="accuracy" value="{{ placemark.accuracy }}"/>
             <input type="hidden" name="method" value="geocoded"/>
             <input type="hidden" name="return_url" value="{{ return_url|default:"" }}"/>
-            <button class="submit-location-form-button" type="submit" name="index" style="width:100%">{{ forloop.counter }}. {{ placemark.0 }}</button>
+            <button class="submit-location-form-button" type="submit" name="index" style="width:100%">{{ forloop.counter }}. {{ placemark.name }}</button>
         </form>
     </li>
 {% endfor %}

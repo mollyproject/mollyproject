@@ -7,16 +7,17 @@ import hashlib, os, os.path, logging, time
 from datetime import datetime
 from django.conf import settings
 from django.db import IntegrityError
-from models import GeneratedMap
+from models import GeneratedMap, get_generated_map_dir
 from draw import get_map, get_fitted_map
 
 MARKER_COLORS = (
+    # name, fill, border, text
+    ('amber', '#ff7e00', '#824000', '#000000'),
     ('blue', '#0000ff', '#000050', '#ffffff'),
-    ('red', '#ff0000', '#500000', '#ffffff'),
-    ('yellow', '#f0ff00', '#4b5000', '#000000'),
     ('green', '#00ff1e', '#005009', '#000000'),
     ('purple', '#9146b8', '#3c1d4c', '#ffffff'),
-    ('amber', '#ff7e00', '#824000', '#000000'),
+    ('red', '#ff0000', '#500000', '#ffffff'),
+    ('yellow', '#f0ff00', '#4b5000', '#000000'),
 )
 
 MARKER_RANGE = xrange(1, 100)
@@ -56,9 +57,10 @@ def get_or_create_map(f, args):
         metadata = gm.metadata
         logger.debug("Found previously generated map: %s", hash)
     except GeneratedMap.DoesNotExist:
-        if not os.path.exists(settings.GENERATED_MAP_DIR):
-            os.makedirs(settings.GENERATED_MAP_DIR)
-        metadata = f(filename=os.path.join(settings.GENERATED_MAP_DIR, hash), *args)
+        generated_map_dir = get_generated_map_dir()
+        if not os.path.exists(generated_map_dir):
+            os.makedirs(generated_map_dir)
+        metadata = f(filename=os.path.join(generated_map_dir, hash), *args)
         gm = GeneratedMap(
             hash = hash,
             generated = datetime.utcnow(),

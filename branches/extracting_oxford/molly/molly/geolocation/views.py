@@ -1,6 +1,13 @@
+from datetime import datetime
+
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
+
 from molly.utils.views import BaseView
 from molly.utils.renderers import mobile_render
 from molly.utils.breadcrumbs import *
+
+from molly.osm.utils import fit_to_map
 
 from .forms import LocationUpdateForm
 
@@ -32,7 +39,7 @@ class LocationUpdateView(BaseView):
                 placemarks += provider.geocode(form.cleaned_data['name'])
 
             if placemarks:
-                points = [(o[1][0], o[1][1], 'red') for o in placemarks]
+                points = [(o['location'][0], o['location'][1], 'red') for o in placemarks]
                 map_hash, (new_points, zoom) = fit_to_map(
                     None,
                     points = points,
@@ -45,7 +52,7 @@ class LocationUpdateView(BaseView):
                 map_hash, zoom = None, None
             context.update({
                 'placemarks': placemarks,
-                'map_url': reverse('osm_generated_map', args=[map_hash]) if map_hash else None,
+                'map_url': reverse('osm:generated_map', args=[map_hash]) if map_hash else None,
                 'zoom': zoom,
                 'zoom_controls': False,
             })

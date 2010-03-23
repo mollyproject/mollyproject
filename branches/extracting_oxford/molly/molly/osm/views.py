@@ -13,13 +13,24 @@ from molly.maps.models import Entity
 
 from .models import GeneratedMap
 
-def generated_map(request, hash):
-    gm = get_object_or_404(GeneratedMap, hash=hash)
-    response = HttpResponse(open(gm.get_filename(), 'r').read(), mimetype='image/png') 
-    last_updated = pytz.utc.localize(gm.generated)
+class IndexView(BaseView):
+    def handle_GET(cls, request, context, hash):
+        return mobile_render(request, context, 'osm/index')
+
+class GeneratedMapView(BaseView):
+    breadcrumb = NullBreadcrumb
     
-    response['ETag'] = hash
-    return response
+    def handle_GET(cls, request, context, hash):
+        gm = get_object_or_404(GeneratedMap, hash=hash)
+        response = HttpResponse(open(gm.get_filename(), 'r').read(), mimetype='image/png') 
+        last_updated = pytz.utc.localize(gm.generated)
+        
+        response['ETag'] = hash
+        return response
+
+class AboutView(BaseView):
+    def handle_GET(cls, request, context, hash):
+        return mobile_render(request, context, 'osm/about')
 
 class MetadataView(BaseView):
     breadcrumb = NullBreadcrumb

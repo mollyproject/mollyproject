@@ -3,12 +3,13 @@ from django.core.management.base import NoArgsCommand
 from django.conf import settings
 
 from molly.osm.utils import MARKER_COLORS, MARKER_RANGE
+from molly.osm.models import get_marker_dir
 
     
 class Command(NoArgsCommand):
     def handle_noargs(self, **options):
         template = open(os.path.join(os.path.dirname(__file__), 'base.svg')).read()
-        marker_dir = settings.MARKER_DIR
+        marker_dir = get_marker_dir()
         
         if not os.path.exists(marker_dir):
             os.makedirs(marker_dir)

@@ -22,7 +22,6 @@ from molly.wurfl import device_parents
 from models import FrontPageLink, ExternalImageSized, LocationShare, UserMessage, ShortenedURL, BlogArticle
 from forms import LocationShareForm, LocationShareAddForm, FeedbackForm, UserMessageFormSet
 
-from context_processors import device_specific_media
 
 
 class IndexView(BaseView):
@@ -240,7 +239,15 @@ def handler500(request):
     context = {
         'MEDIA_URL': settings.MEDIA_URL,
     }
-    context.update(device_specific_media(request))
+    
+    # This will make things prettier if we can manage it.
+    # No worries if we can't.
+    try:
+        from molly.wurfl.context_processors import device_specific_media
+        context.update(device_specific_media(request))
+    except Exception, e:
+        pass
+        
     response = render_to_response('500.html', context)
     response.status_code = 500
     return response

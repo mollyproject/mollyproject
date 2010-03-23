@@ -63,27 +63,27 @@ class MapNode(template.Node):
             arg = args[0].resolve(context)
             if isinstance(arg, Point):
                 p = arg.transform(4326, clone=True)
-                lat, lng = p.y, p.x
+                lon, lat = p.x, p.y
             elif isinstance(arg, basestring):
-                lng, lat = map(float, arg.split(' '))
+                lon, lat = map(float, arg.split(' '))
             else:
-                lat, lng = map(float, arg)
+                lon, lat = map(float, arg)
         else:
-            lat, lng = [float(a.resolve(context)) for a in args]
+            lon, lat = [float(a.resolve(context)) for a in args]
 
         width, height = context['map_width'], context['map_height']
         
         if False and device_parents[context['device'].devid] & OPENLAYERS_BROWSERS:
-            return self.openlayers_map(context, lat, lng, width, height)
+            return self.openlayers_map(context, lon, lat, width, height)
         else:
-            return self.generated_map(context, lat, lng, width, height)
+            return self.generated_map(context, lon, lat, width, height)
         
         if device_parents[context['device'].devid] & GOOGLE_MAPS_BROWSERS:
-            return self.google_map(context, lat, lng, width, height)
+            return self.google_map(context, lon, lat, width, height)
         else:
-            return self.yahoo_map(context, lat, lng, width, height)
+            return self.yahoo_map(context, lon, lat, width, height)
 
-    def openlayers_map(self, context, lat, lng, width, height):
+    def openlayers_map(self, context, lon, lat, width, height):
         context['openlayers_maps_count'] = context.get('openlayers_maps_count', 0) + 1
         params = {
             'width': width, 'height': height,
@@ -102,27 +102,27 @@ $(document).ready(function() {
 </script>
 """ % params
 
-    def generated_map(self, context, lat, lng, width, height):
+    def generated_map(self, context, lon, lat, width, height):
         hash, metadata = fit_to_map(
-            (lat, lng, 'green'),
+            (lon, lat, 'green'),
             [],
             0,
             context['zoom'],
             width,
             height,
         )
-        url = reverse('osm_generated_map', args=[hash])
+        url = reverse('osm:generated_map', args=[hash])
         
         if self.just_url:
             return url
         else:
             return '<img src="%s" alt="Map"/>' % xml.sax.saxutils.escape(url)
 
-    def google_map(self, context, lat, lng, width, height):
+    def google_map(self, context, lon, lat, width, height):
         context['google_maps_count'] = context.get('google_maps_count', 0) + 1
         params = {
             'width': width, 'height': height,
-            'lat': lat, 'lng': lng,
+            'lon': lon,'lat': lat,
             'id': 'map-%08x' % context['google_maps_count'],
             'maps_include': context.get('maps_included') and '' or GOOGLE_MAPS_INCLUDE,
         }
@@ -147,11 +147,11 @@ $(document).ready(function() {
 </script>
 """ % params
 
-    def yahoo_map(self, context, lat, lng, width, height):
+    def yahoo_map(self, context, lon, lat, width, height):
         params = {
             'appid': settings.YAHOO_API_KEY,
+            'longitude': lon,
             'latitude': lat,
-            'longitude': lng,
             'image_width':300,
             'image_height':200,
             'zoom':3,

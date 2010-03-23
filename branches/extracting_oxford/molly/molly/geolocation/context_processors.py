@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 def geolocation(request):
     """
     Provides location-based information to the template (i.e. lat/long, google
@@ -13,7 +15,7 @@ def geolocation(request):
     # The one minute timeout applies to the more recent of a request and an
     # update.
     
-    location = request.session['geolocation:requested']
+    location = request.session.get('geolocation:location')
     requested = request.session.get('geolocation:requested', epoch)
     updated = request.session.get('geolocation:updated', epoch)
     method = request.session.get('geolocation:method')
@@ -29,6 +31,6 @@ def geolocation(request):
         'geolocation': {
             'location': request.session.get('geolocation:location'),
             'name': request.session.get('geolocation:name'),
-            'accuracy' request.session.get('geolocation:accuracy'),
+            'accuracy': request.session.get('geolocation:accuracy'),
         },
     }

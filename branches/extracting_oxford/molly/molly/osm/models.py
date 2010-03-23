@@ -10,6 +10,15 @@ from django.conf import settings
 
 from molly.maps.models import Entity
 
+def get_generated_map_dir():
+    return getattr(settings, 'GENERATED_MAP_DIR', os.path.join(settings.CACHE_DIR, 'generated_maps'))
+
+def get_marker_dir():
+    return getattr(settings, 'MARKER_DIR', os.path.join(settings.CACHE_DIR, 'markers'))
+
+def get_osm_tile_dir():
+    return getattr(settings, 'OSM_TILE_DIR', os.path.join(settings.CACHE_DIR, 'osm_tiles'))
+
 class GeneratedMap(models.Model):
     hash = models.CharField(max_length=16, unique=True, primary_key=True)
     generated = models.DateTimeField()
@@ -23,9 +32,10 @@ class GeneratedMap(models.Model):
     metadata = property(_get_metadata, _set_metadata)
 
     def get_filename(self):
-        if not os.path.exists(settings.GENERATED_MAP_DIR):
-            os.mkdir(settings.GENERATED_MAP_DIR)
-        return os.path.join(settings.GENERATED_MAP_DIR, self.hash)
+        generated_map_dir = get_generated_map_dir()
+        if not os.path.exists(generated_map_dir):
+            os.mkdir(generated_map_dir)
+        return os.path.join(generated_map_dir, self.hash)
 
     def delete(self, *args, **kwargs):
         try:
@@ -47,9 +57,10 @@ class OSMTile(models.Model):
         unique_together = (('xtile', 'ytile', 'zoom'),)
 
     def get_filename(self):
-        if not os.path.exists(settings.OSM_TILE_DIR):
-            os.mkdir(settings.OSM_TILE_DIR)
-        return os.path.join(settings.OSM_TILE_DIR, "%d-%d-%d.png" % (self.xtile, self.ytile, self.zoom))
+        osm_tile_dir = get_osm_tile_dir()
+        if not os.path.exists(osm_tile_dir):
+            os.mkdir(osm_tile_dir)
+        return os.path.join(osm_tile_dir, "%d-%d-%d.png" % (self.xtile, self.ytile, self.zoom))
 
     @staticmethod
     def get_data(xtile, ytile, zoom):

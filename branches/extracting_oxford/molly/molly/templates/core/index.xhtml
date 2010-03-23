@@ -35,7 +35,7 @@
 	<div class="center">
     	<ol class="icon-menu">
 	      {% for name, title, url in front_page_links %}
-	          <li id="menu-{{ link.name }}">
+	          <li id="menu-{{ name }}">
 	              <a accesskey="{{ forloop.counter }}" href="{{ url }}">{{ title }}</a>
 	          </li>
 	      {% endfor %}
