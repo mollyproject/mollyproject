@@ -18,7 +18,7 @@ from molly.utils.views import BaseView, ZoomableView
 from molly.utils.decorators import location_required
 from molly.utils.breadcrumbs import *
 
-from molly.core.views import LocationRequiredView
+from molly.geolocation.views import LocationRequiredView
 
 from molly.osm.utils import get_generated_map, fit_to_map
 from molly.osm.models import OSMUpdate
@@ -65,7 +65,7 @@ class NearbyListView(BaseView):
 
 
     def handle_GET(cls, request, context, entity=None):
-        if not (entity or request.preferences['location']['location']):
+        if not (entity or request.session['geolocation:location']):
              return location_required(request)
 
         if entity:
