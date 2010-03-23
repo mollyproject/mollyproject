@@ -26,11 +26,11 @@
 <div class="manual-update-location">
 {% if form.cleaned_data.name %}
 
-{% include "core/update_location_confirm.xhtml" %}
+{% include "geolocation/update_location_confirm.xhtml" %}
 
 {% else %}
 
-<form method="get" action="{% url core:update_location %}" class="manual-update-form">
+<form method="get" action="{% url geolocation:update %}" class="manual-update-form">
         <label for="location-name">Set a new location</label>:
         <input name="return_url" type="hidden" value="{{ return_url|default:"" }}"/>
         <input id="location-name" name="name" value="{{ location }}"/>

@@ -18,6 +18,7 @@ urlpatterns = patterns('',
     (r'^podcasts/', applications.podcasts.urls),
     (r'^auth/', applications.auth.urls),
     (r'^search/', applications.search.urls),
+    (r'^geolocation/', applications.geolocation.urls),
 
     # These ones still need work
     (r'^maps/', include('molly.maps.urls', 'maps', 'maps')),

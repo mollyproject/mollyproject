@@ -2,7 +2,7 @@ from django.conf.urls.defaults import *
 from django.conf import settings
 
 from molly.core.views import (
-    IndexView, LocationUpdateView, ExpositionView,
+    IndexView, ExpositionView,
     UserMessageView,
     ExternalImageView, RunCommandView, FeedbackView,
     StaticDetailView,
@@ -15,10 +15,6 @@ urlpatterns = patterns('mobile_portal.core.views',
         IndexView, {},
         'index'),
         
-    (r'^update_location/$',
-        LocationUpdateView, {},
-        'update_location'),
-
     (r'^core/run_command/$',
         RunCommandView, {},
         'run_command'),

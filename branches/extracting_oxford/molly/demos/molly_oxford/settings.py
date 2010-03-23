@@ -160,6 +160,9 @@ APPLICATIONS = [
     Application('molly.apps.search', 'search', 'Search',
     ),
 
+    Application('molly.geolocation', 'geolocation', 'Geolocation',
+    ),
+
     Application('molly.auth', 'auth', 'Authentication',
     ),
 ]

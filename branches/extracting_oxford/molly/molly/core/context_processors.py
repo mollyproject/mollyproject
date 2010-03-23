@@ -77,44 +77,7 @@ def device_specific_media(request):
         'use_javascript': use_javascript,
     }
 
-def geolocation(request):
-    """
-    Provides location-based information to the template (i.e. lat/long, google
-    placemark data, and whether we would like to request the device's location
-    information.
-    """
 
-    # Use the epoch in the place of -inf; a time it has been a while since.
-    epoch = datetime(1970,1,1, 0, 0, 0)
-    
-    # Only request a location if our current location is older than one minute
-    # and the user isn't updating their location manually.
-    # The one minute timeout applies to the more recent of a request and an
-    # update.
-    
-    location = request.preferences['location']
-    requested = location['requested'] or epoch
-    updated = location['updated'] or epoch
-    method = location['method'] or epoch
-    
-    if max(requested, updated) + timedelta(0, 60) < datetime.now() and method in ('html5', 'gears', None):
-        require_location = True
-        location['requested'] = datetime.now()
-    else:
-        require_location = False
-    
-    location = request.session.get('location')
-    placemark = request.session.get('placemark')
-    
-    return {
-        'require_location': require_location,
-
-        # Debug information follows.        
-        'session': request.session.items(),
-        'map_width': request.map_width,
-        'map_height': request.map_height,
-        'meta': dict((a,b) for (a,b) in request.META.items() if a.startswith('HTTP_')),
-    }
 
 def weather(request):
     """
