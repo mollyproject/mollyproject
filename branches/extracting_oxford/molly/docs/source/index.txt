@@ -18,7 +18,12 @@ Current features include:
    :columns: 3
 
    * :mod:`Contact search <molly.apps.contact>`
-   * :mod:`Maps and points of interest <molly.apps.maps>`
+   * :mod:`Places and points of interest <molly.apps.places>`
+   * :mod:`Whole site search <molly.apps.search>`
+   * :mod:`Service status <molly.apps.service_status>`
+   * :mod:`Library search <molly.apps.z3950>`
+   * :mod:`Podcasts <molly.apps.podcasts>`
+   * :mod:`Weather <molly.apps.weather>`
 
 It's built on the `Django web framework <http://www.djangoproject.com/>`_ and
 was originally developed at the `University of Oxford <http://m.ox.ac.uk/>`_;
@@ -31,11 +36,33 @@ Contents:
 
 .. toctree::
    :maxdepth: 2
+   :hidden:
 
    tutorial
+   license
+   cla
    deployments
+   topics/index
    ref/apps/index
    ref/contrib/index
+
+* :doc:`tutorial`
+* Licensing
+
+  * :doc:`license`
+  * :doc:`cla`
+  
+* :doc:`deployments`
+* Implementation topics
+
+  * :doc:`topics/settings`
+  * :doc:`More… <topics/index>`
+
+* Reference documentation
+
+  * :doc:`ref/apps/index`
+  * :doc:`ref/contrib/index`
+   
 
 Indices and tables
 ==================
