@@ -1,0 +1,62 @@
+:mod:`molly.apps.search` -- Site search
+===========================================
+
+.. module :: molly.apps.search
+
+The search application allows the user to enter a query and retrieve results
+from across the site. Results are produced by the application's providers,
+and may determine results in whatever manner they choose.
+
+Search providers may access an index for the entire site, or be
+application-specific. An institution may have a `Google Search Appliance
+<http://www.google.co.uk/enterprise/gsa/>`_ from which results are retrieved,
+or alternatively they may wish searches for ISBNs to go straight to a library
+catalogue page.
+
+To use, place the following in your :doc:`settings module </topics/settings>`::
+
+    APPLICATIONS = [
+        # ...
+        Application('molly.apps.search', 'search',
+            providers = [
+                '...',  # paths to search provider backends
+            ]
+        ),
+        # ...
+    ]
+
+Search results
+--------------
+
+Search results are represented as dictionaries where the following keys have
+particular meanings:
+
+:const:`url` (*required*)
+    The local part of the URL for the page. Will be used as an :attr:`href`.
+:const:`title` (*required*)
+    The page title.
+:const:`application` (*recommended*)
+    The name of the application that handles the URL. May be used to display
+    an icon next to each result.
+:const:`excerpt`
+    The bit of the page relevant to the query. May contain HTML (i.e. should
+    be marked safe in a template).
+:const:`additional`
+    More information about the resource represented at the URL. For example,
+    the :mod:`~molly.apps.places` application returns the type of entity and
+    a distance from the user's location.
+:const:`redirect_if_sole_result`
+    A boolean, default False, which will cause the search page to redirect to
+    the URL if only one result is returned.
+
+You may define any other keys as you see fit. If you believe that there's
+scope for more standardisation, please :doc:`raise a ticket </topics/tickets>`
+or :doc:`start a discussion on the developer list </topics/development>`.
+
+Providers
+---------
+
+Providers should extend the
+:class:`~molly.apps.search.providers.BaseSearchProvider` interface:
+
+.. class :: molly.apps.search.providers.BaseSearchProvider

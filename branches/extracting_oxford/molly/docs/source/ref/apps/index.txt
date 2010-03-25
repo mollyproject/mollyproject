@@ -5,6 +5,7 @@ Provided applications
    :hidden:
 
    contact
+   search
    service_status
 
 * :mod:`Contact search <molly.apps.contact>`
