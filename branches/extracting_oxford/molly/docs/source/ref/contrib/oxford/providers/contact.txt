@@ -6,7 +6,8 @@ Contact providers
 .. index ::
    pair: XML web-service; contact provider
 
-Foo
+This provider makes use of an IP-restricted service and is thus of little use
+beyond providing insight into how to develop a contact provider.
 
 .. class :: molly.contrib.oxford.providers.ScrapingContactProvider
 

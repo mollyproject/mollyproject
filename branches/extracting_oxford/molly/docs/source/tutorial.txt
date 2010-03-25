@@ -11,5 +11,35 @@ customisation and deployment issues.
 Getting the code
 ----------------
 
-Molly is distributed under an :doc:`XYZ license <license>` and can be
-found in `the download area <http://mollyproject.org/download/>`_.
+Molly is distributed under an :doc:`Academic Free License v3.0 <license>` and
+is maintained in a Git repository at SourceForge. Releases 0.1 and 0.2 are
+specific to the University of Oxford, and work on 0.3 is ongoing. Instructions
+for accessing the Git repository can be found on `the project pages
+<https://sourceforge.net/projects/mollyproject/develop>`_.
+
+Current development is taking place in :file:`branches/extracting_oxford/` [#fn1]_ and the
+rest of this tutorials assumes that you are working relative to this directory.
+
+Installing the code
+-------------------
+
+We recommend the use of `pip <http://pip.openplans.org/>`_ and `virtualenv
+<http://virtualenv.openplans.org/>`_ for deployment, though you may install
+Molly into your :file:`site-packages` directly. We'll assume you're using
+:file:`~/mollyenv` as your virtual environment.
+
+To begin, set up your virtual environment:
+
+.. code-block:: bash
+
+   $ cd ~
+   $ easy_install pip virtualenv
+   $ virtualenv --no-site-packages mollyenv
+
+
+
+.. rubric:: Footnotes
+
+.. [#fn1] trunk/ and tags/ currently contain stable versions as used by the
+          University of Oxford. In time more generic code will appear in these
+          locations.

@@ -1,5 +1,5 @@
-:mod:`molly.apps.search` -- Site search
-===========================================
+:mod:`molly.apps.search` -- Whole site search
+=============================================
 
 .. module :: molly.apps.search
 
@@ -60,3 +60,9 @@ Providers should extend the
 :class:`~molly.apps.search.providers.BaseSearchProvider` interface:
 
 .. class :: molly.apps.search.providers.BaseSearchProvider
+
+   .. method :: perform_search(self, cleaned_data)
+
+      This method is provided the  :attr:`cleaned_data` attribute from the
+      form presented to the user. Must return a dictionary which will be
+      passed as :data:`**kwargs` to :meth:`perform_query`.

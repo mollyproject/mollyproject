@@ -21,7 +21,7 @@ Contact providers
 
 A contact provider must inherit :class:`~molly.apps.contact.providers.BaseContactProvider` and expose the following interface:
 
-.. class :: providers.BaseContactProvider
+.. class :: molly.apps.contact.providers.BaseContactProvider
 
    .. attribute :: handles_pagination
 
