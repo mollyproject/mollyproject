@@ -1,0 +1,6 @@
+Implementation topics
+=====================
+
+.. toctree::
+
+   settings
