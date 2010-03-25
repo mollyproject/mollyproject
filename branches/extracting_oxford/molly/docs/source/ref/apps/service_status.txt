@@ -1,5 +1,5 @@
 :mod:`molly.apps.service_status` -- Service status
-===========================================
+==================================================
 
 .. module :: molly.apps.service_status
 
@@ -22,7 +22,8 @@ To use, place the following in your :doc:`settings module </topics/settings>`::
         # ...
     ]
 
-If you're using the service status RSS module, you can use the
+If you're using the `service status RSS module
+<http://web.resource.org/rss/1.0/modules/servicestatus/>`_, you can use the
 :class:`~molly.contrib.generic.providers.ServiceStatusProvider`::
 
     from molly.conf.settings import Provider
@@ -31,9 +32,10 @@ If you're using the service status RSS module, you can use the
         # ...
         Application('molly.apps.service_status', 'service_status',
             provider = Provider('molly.contrib.generic.providers.ServiceStatusProvider',
-            name='Hogwarts Computing Services',
-            slug='hcs',
-            url='http://status.hogwarts.ac.wizardry/status.rss',
+                name = 'Hogwarts Computing Services',
+                slug = 'hcs',
+                url = 'http://status.hogwarts.ac.wizardry/status.rss',
+            ),
         ),
         # ...
     ]
