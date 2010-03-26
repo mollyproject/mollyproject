@@ -15,8 +15,7 @@ class CloudmadeGeolocationProvider(BaseGeolocationProvider):
     search_locality = None
     restrict_to = None
     
-    @classmethod
-    def reverse_geocode(cls, lon, lat):
+    def reverse_geocode(self, lon, lat):
     
         params = {
             'api_key': settings.API_KEYS['cloudmade'],
@@ -24,7 +23,7 @@ class CloudmadeGeolocationProvider(BaseGeolocationProvider):
             'lat': lat,
         }
     
-        data = urllib.urlopen(cls.REVERSE_GEOCODE_URL % params)
+        data = urllib.urlopen(self.REVERSE_GEOCODE_URL % params)
         
         json = simplejson.load(data.replace('&apos;', "'"), 'utf8')
         if not json:
@@ -38,11 +37,10 @@ class CloudmadeGeolocationProvider(BaseGeolocationProvider):
     
         return [placemark]
         
-    @classmethod
-    def geocode(cls, query):
+    def geocode(self, query):
     
-        if cls.search_locality and not (', ' in query or ' near ' in query):
-            query += ', %s' & cls.search_locality
+        if self.search_locality and not (', ' in query or ' near ' in query):
+            query += ', %s' & self.search_locality
             
         query = query.strip()
         if query.split(' ')[0][0].isdigit():
@@ -54,7 +52,7 @@ class CloudmadeGeolocationProvider(BaseGeolocationProvider):
         }
         
         try:
-            request_url = cls.GEOCODE_URL % params
+            request_url = self.GEOCODE_URL % params
             response = urllib.urlopen(request_url)
             if response.code != 200:
                 logger.error("Request to %s returned response code %d" % (request_url, response.code))
@@ -68,8 +66,8 @@ class CloudmadeGeolocationProvider(BaseGeolocationProvider):
             return []
     
         restricted_results = []
-        if cls.restrict_to:
-            centre, distance = cls.restrict_to
+        if self.restrict_to:
+            centre, distance = self.restrict_to
             centre = Point(centre, srid=4326).transform(settings.SRID, clone=True)
         
             for feature in json['features']:
@@ -89,7 +87,7 @@ class CloudmadeGeolocationProvider(BaseGeolocationProvider):
                         'accuracy': accuracy,
                     })
                 except KeyError:
-                    results += cls.reverse_geocode(*centroid)
+                    results += self.reverse_geocode(*centroid)
                     
                 centroid = Point(centroid[1], centroid[0], srid=4326).transform(27700, clone=True)
                 if centroid.distance(centre_of_oxford) < distance:

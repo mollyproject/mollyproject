@@ -11,12 +11,12 @@ class OUCSCodeGeolocationProvider(BaseGeolocationProvider):
     OXPOINTS_OUCSCODE_URL = 'http://oxpoints.oucs.ox.ac.uk/oucs:%s.json'
     OUCSCODE_RE = re.compile(r'^[a-z]+$')
 
-    @classmethod
-    def geocode(cls, query):
+    
+    def geocode(self, query):
         query = query.lower()
-        if cls.OUCSCODE_RE.match(query):
+        if self.OUCSCODE_RE.match(query):
             try:
-                response = urllib.urlopen(cls.OXPOINTS_OUCSCODE_URL % query)
+                response = urllib.urlopen(self.OXPOINTS_OUCSCODE_URL % query)
                 if response.code != 200:
                     logger.error("OUCS code geolocation look-up for '%s' returned code %d." % (query, response.code))
                     return []
