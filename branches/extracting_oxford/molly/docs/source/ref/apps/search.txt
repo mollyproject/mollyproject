@@ -20,7 +20,7 @@ To use, place the following in your :doc:`settings module </topics/settings>`::
         Application('molly.apps.search', 'search',
             providers = [
                 '...',  # paths to search provider backends
-            ]
+            ],
         ),
         # ...
     ]
@@ -28,8 +28,8 @@ To use, place the following in your :doc:`settings module </topics/settings>`::
 Search results
 --------------
 
-Search results are represented as dictionaries where the following keys have
-particular meanings:
+Individual search results are represented as dictionaries where the following
+keys have particular meanings:
 
 :const:`url` (*required*)
     The local part of the URL for the page. Will be used as an :attr:`href`.
@@ -46,23 +46,107 @@ particular meanings:
     the :mod:`~molly.apps.places` application returns the type of entity and
     a distance from the user's location.
 :const:`redirect_if_sole_result`
-    A boolean, default False, which will cause the search page to redirect to
-    the URL if only one result is returned.
+    A boolean, default :const:`False`, which will cause the search page to
+    redirect to the URL if only one result is returned.
+:const:`exclude_from_search`
+    A boolean, default :const:`False`, which will exclude the page from any
+    displayed search results. Can be used to exclude irrelevant results or
+    those not intended for mobile devices.
 
-You may define any other keys as you see fit. If you believe that there's
-scope for more standardisation, please :doc:`raise a ticket </topics/tickets>`
-or :doc:`start a discussion on the developer list </topics/development>`.
+You may define any other keys as you see fit, though these won't be utilised
+in the default templates, requiring you to implement your own. If you believe
+that there's scope for more standardisation, please :doc:`raise a ticket
+</topics/tickets>` or :doc:`start a discussion on the developer list
+</topics/development>`.
 
-Providers
----------
+Search providers
+----------------
 
 Providers should extend the
 :class:`~molly.apps.search.providers.BaseSearchProvider` interface:
 
 .. class :: molly.apps.search.providers.BaseSearchProvider
 
-   .. method :: perform_search(self, cleaned_data)
+   .. method :: perform_search(self, request, query, application=None)
 
-      This method is provided the  :attr:`cleaned_data` attribute from the
-      form presented to the user. Must return a dictionary which will be
-      passed as :data:`**kwargs` to :meth:`perform_query`.
+      Takes a :class:`django.http.HttpRequest` object, a :class:`unicode`
+      query and an application name. This method should be overridden to
+      return a list of results as defined above.
+
+:class:`~molly.apps.search.providers.BaseSearchProvider` also provides the
+following utility methods you may find useful in your implementations:
+
+.. class :: molly.apps.search.providers.BaseSearchProvider
+
+   .. method :: get_metadata(self, request, url)
+   
+      Resolves the given :data:`url` to the view that would handle it and
+      returns the result of calling
+      :meth:`~molly.utils.views.BaseView.get_metadata` on that view, passing
+      it the :data:`request`.
+      
+      May raise :exc:`~django.core.urlresolvers.Resolver404` or
+      :exc:`~django.http.Http404`. All other exceptions will be caught and
+      logged.
+
+The search form
+---------------
+
+Queries are processed through :class:`~molly.apps.search.forms.SearchForm`:
+
+.. class :: molly.apps.search.forms.SearchForm
+
+   .. attribute :: query
+   
+      A :class:`~django.forms.CharField` taking the search query.
+
+Defined views
+-------------
+
+This application defines just one view:
+
+.. class :: molly.apps.search.views.IndexView(request)
+
+   Presents a single-field form to the user, and where a query has been
+   submitted retrieves results from all configured search providers.
+   
+   Results from multiple providers are presented in the order they were
+   configured, i.e. the topmost configured provider's results are given
+   precedence. Where more than one provider returns the same result, metadata
+   are combined (with the location given by its first occurance) and only one
+   result is displayed.
+   
+   This view renders to the :file:`search/index.html` template, passing a
+   :class:`~molly.apps.search.forms.SearchForm` instance as :data:`form` and
+   (where a search has been performed) a list of results as :data:`results`.
+   
+Templates
+---------
+
+:file:`search/base.html`
+
+   Extends :file:`base.html`.
+
+:file:`search/index.html`
+
+   Extends :file:`search/base.html` and renders the search form and results.
+   The template presents results in an ordered list (``<ol>``), including
+   :file:`search/result.html` within a list item element (``<li>``) for each
+   for each result in :data:`results`.
+
+   
+:file:`search/result.html`
+
+   By default, renders ``title``, ``additional`` and ``excerpt`` inside a
+   :samp:`<div class="search-result search-result-{appname}">`.
+   
+Currently implemented providers
+-------------------------------
+
+:class:`molly.providers.apps.search.GSASearchProvider`
+    Pulls results from a Google Search Appliance.
+:class:`molly.providers.apps.search.ApplicationSearchProvider`
+    For each installed application :samp:`{foo}`, calls
+    :samp:`{foo}.search.perform_search` and catenates the returned results.
+
+    

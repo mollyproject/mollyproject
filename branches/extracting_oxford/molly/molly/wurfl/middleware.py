@@ -8,25 +8,25 @@ class WurflMiddleware(object):
     vsa = VectorSpaceAlgorithm(devices)
     
     def process_request(self, request):
-        ua = request.META.get('HTTP_USER_AGENT', '')
+        ua = request.META.get('HTTP_USER_AGENT', '').decode('ascii', 'ignore')
 
         try:
             request.browser = devices.select_ua(
-                request.META['HTTP_USER_AGENT'],
+                ua,
                 search=WurflMiddleware.vsa
             )
         except (KeyError, DeviceNotFound):
             request.browser = devices.select_id('generic_xhtml')
 
         if 'HTTP_X_OPERAMINI_PHONE' in request.META:
-            opera_device = request.META['HTTP_X_OPERAMINI_PHONE']
+            opera_device = request.META['HTTP_X_OPERAMINI_PHONE'].decode('ascii', 'ignore')
             request.device = devices.select_ua(
                 opera_device,
                 search=WurflMiddleware.vsa
             )
         if 'HTTP_X_SKYFIRE_PHONE' in request.META:
             request.browser = devices.select_id('generic_skyfire')
-            skyfire_device = request.META['HTTP_X_SKYFIRE_PHONE']
+            skyfire_device = request.META['HTTP_X_SKYFIRE_PHONE'].decode('ascii', 'ignore')
             request.device = devices.select_ua(
                 skyfire_device,
                 search=WurflMiddleware.vsa

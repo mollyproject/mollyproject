@@ -28,13 +28,13 @@ class GoogleSearchView(BaseView):
         application = context['search_form'].cleaned_data['application'] or None
         query = context['search_form'].cleaned_data['query']
 
-        try:
-            results = []
-            for provider in cls.conf.providers:
-                results += provider.search('m.ox.ac.uk', application, query, request)
-        except OverrideResponse, e:
-            return e.response
-
+        results = []
+        for provider in cls.conf.providers:
+            results += provider.perform_search(request, query, application)
+        
+        # Remove results deemed irrelevant
+        results = [r for r in results if not r.get('exclude_from_search')]
+        
         if len(results) == 1 and results[0].get('redirect_if_sole_result'):
             return HttpResponseRedirect(results[0]['url'])
 

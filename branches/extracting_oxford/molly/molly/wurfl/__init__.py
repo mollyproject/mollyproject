@@ -8,9 +8,11 @@ else:
     def get_parents(device):
         if device == 'root' or device is None:
             return []
+        device = unicode(device)
         try:
             return device_parents[device]
         except KeyError:
+            print device, type(device)
             device_parents[device] = [device] + get_parents(wurfl_data.devices.select_id(device).fall_back)
             return device_parents[device]
 
