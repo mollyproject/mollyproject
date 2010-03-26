@@ -78,15 +78,16 @@ following utility methods you may find useful in your implementations:
 
 .. class :: molly.apps.search.providers.BaseSearchProvider
 
-   .. method :: get_metadata(self, url)
+   .. method :: get_metadata(self, request, url)
    
-      .. note ::
-      
-         Still needs to be implemented.
-
       Resolves the given :data:`url` to the view that would handle it and
       returns the result of calling
-      :meth:`~molly.utils.views.BaseView.get_metadata` on that view.
+      :meth:`~molly.utils.views.BaseView.get_metadata` on that view, passing
+      it the :data:`request`.
+      
+      May raise :exc:`~django.core.urlresolvers.Resolver404` or
+      :exc:`~django.http.Http404`. All other exceptions will be caught and
+      logged.
 
 The search form
 ---------------
