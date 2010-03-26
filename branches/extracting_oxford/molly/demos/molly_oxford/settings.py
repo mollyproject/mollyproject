@@ -160,6 +160,16 @@ APPLICATIONS = [
     ),
 
     Application('molly.apps.search', 'search', 'Search',
+        providers = [
+            SimpleProvider('molly.providers.apps.search.GSASearchProvider',
+                search_url = 'http://googlesearch.oucs.ox.ac.uk/search',
+                domain = 'm.ox.ac.uk',
+                params = {
+                    'client': 'oxford',
+                },
+                title_clean_re = r'm\.ox \| (.*)',
+            ),
+        ],
     ),
     
     Application('molly.osm', 'osm', 'OpenStreetMap',
