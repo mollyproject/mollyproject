@@ -1,0 +1,100 @@
+body {
+  font-family: "Liberation Sans", Arial, sans-serif;
+  margin: 0;
+}
+
+a img {
+  border:0px;
+}
+
+header {
+  background-color: #cfecef;
+}
+
+header h1 {
+  margin:0;
+  font-size:4em;
+}
+
+header aside {
+  font-style:italic;
+}
+
+header, aside, article {
+  padding: 1em;
+  display: block;
+}
+
+header aside {
+  padding: 0;
+}
+
+#aside-links {
+  width: 16em;
+  float: right;
+  background-color: #f6fcfc;
+  margin: 1em;
+}
+
+#aside-links h2 {
+  margin-top: 0;
+}
+
+#aside-links ul {
+  list-style: none;
+  padding: 0;
+}
+
+#aside-links ul a {
+  font-size:11pt;
+}
+
+a {
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+#aside-links footer {
+  text-align:center;
+}
+
+#aside-links footer p {
+  margin-bottom: 0;
+}
+
+article {
+  margin-right:19em;
+}
+  
+article section {
+  background-color:red;
+}
+  
+
+
+#sec-features dl {
+  column-count: 2;
+  -moz-column-count: 2;
+  -moz-column-width: 20em;
+}
+
+#sec-features dt {
+  font-weight: bold;
+}
+
+#sec-features dd {
+  margin-left:1em;
+  margin-bottom:1em;
+}
+
+#sec-features dd p:first-child {
+  margin-top: 0;
+}
+
+strong {
+  color:#434f19;
+  background-color:#f7faef;
+}
