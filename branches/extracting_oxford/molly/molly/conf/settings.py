@@ -59,6 +59,8 @@ class Application(object):
         print (app.app.split('.')[-1], app.name)
         return type(app.name.capitalize()+'App', (object,), {
             'urls': urlconf_include(app.urlconf, app.app.split('.')[-1], app.name),
+            'app_package': app.app,
+            'name': app.name,
         })
 
 class Authentication(object):

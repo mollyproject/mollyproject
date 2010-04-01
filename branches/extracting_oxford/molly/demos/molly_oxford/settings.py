@@ -169,6 +169,7 @@ APPLICATIONS = [
                 },
                 title_clean_re = r'm\.ox \| (.*)',
             ),
+            SimpleProvider('molly.providers.apps.search.ApplicationSearchProvider'),
         ],
     ),
     
