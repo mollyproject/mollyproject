@@ -1,0 +1,3 @@
+<FilesMatch ^rdf$>
+    DefaultType application/rdf+xml
+</FilesMatch>
