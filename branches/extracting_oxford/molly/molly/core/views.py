@@ -18,6 +18,7 @@ from molly.utils.breadcrumbs import *
 
 from molly.osm.utils import fit_to_map
 from molly.wurfl import device_parents
+from molly import conf
 
 from models import FrontPageLink, ExternalImageSized, LocationShare, UserMessage, ShortenedURL, BlogArticle
 from forms import LocationShareForm, LocationShareAddForm, FeedbackForm, UserMessageFormSet
@@ -47,17 +48,23 @@ class IndexView(BaseView):
             and not settings.DEBUG):
             return HttpResponseRedirect(reverse('core:exposition'))
     
-        front_page_links = [(app.name, app.title, reverse('%s:index' % app.name)) for app in settings.APPLICATIONS]
+        applications = [{
+            'application_name': app.application_name,
+            'local_name': app.local_name,
+            'title': app.title,
+            'url': reverse('%s:index' % app.local_name),
+            'display_to_user': app.conf.display_to_user,
+        } for app in conf.applications.values()]
         
         context = {
-            'front_page_links': front_page_links,
+            'applications': applications,
             'hide_feedback_link': True,
             #'has_user_messages': UserMessage.objects.filter(session_key = request.session.session_key).count() > 0,
             'ua': request.META.get('HTTP_USER_AGENT', ''),
             'parents': device_parents[request.device.devid]
 
         }
-        return mobile_render(request, context, 'core/index')
+        return cls.render(request, context, 'core/index')
     
     def handle_POST(cls, request, context):
         no_desktop_about = {'true':True, 'false':False}.get(request.POST.get('no_desktop_about'))

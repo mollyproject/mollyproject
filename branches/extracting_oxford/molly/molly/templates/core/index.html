@@ -34,11 +34,11 @@
     <div class="bubble">
 	<div class="center">
     	<ol class="icon-menu">
-	      {% for name, title, url in front_page_links %}
-	          <li id="menu-{{ name }}">
-	              <a accesskey="{{ forloop.counter }}" href="{{ url }}">{{ title }}</a>
+	      {% for application in applications %}{% if application.display_to_user %}
+	          <li id="menu-{{ application.local_name }}">
+	              <a accesskey="{{ forloop.counter }}" href="{{ application.url }}">{{ application.title }}</a>
 	          </li>
-	      {% endfor %}
+	      {% endif %}{% endfor %}
 	    </ol>
         {# Only necessary if using floating icons #}
         {# <div class="clearhidden"> </div> #}
