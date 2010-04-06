@@ -1,6 +1,11 @@
 from inspect import isfunction
 import traceback, time, simplejson, logging
-from django.http import HttpResponse
+from datetime import datetime
+
+from django.db import models
+from django.http import HttpResponse, HttpResponseNotAllowed
+from django.template import TemplateDoesNotExist, RequestContext
+from django.shortcuts import render_to_response
 
 logger = logging.getLogger('core.requests')
 
@@ -14,12 +19,10 @@ class ViewMetaclass(type):
 class BaseView(object):
     __metaclass__ = ViewMetaclass
     
+    ALLOWABLE_METHODS = ('GET', 'POST', 'DELETE', 'HEAD', 'OPTIONS', 'PUT')
+    
     def method_not_acceptable(cls, request):
-        response = HttpResponse(
-            'You may not perform a %s request against this resource.' % request.method.upper(),
-            status=405,
-        )
-        return response
+        return HttpResponseNotAllowed([m for m in cls.ALLOWABLE_METHODS if hasattr(cls, 'handle_%s' % m)])
         
     def bad_request(cls, request):
         response = HttpResponse(
@@ -64,9 +67,130 @@ class BaseView(object):
             zoom = min(max(10, zoom), 18)
         return zoom
         
-    def json_response(cls, data):
-        return HttpResponse(simplejson.dumps(data), mimetype="application/json")
+    FORMATS = (
+        # NAME, MIMETYPE
+        ('rdf', 'application/rdf+xml'),
+        ('html', 'text/html'),
+        ('json', 'application/json'),
+        ('yaml', 'application/x-yaml'),
+        ('xml', 'application/xml'),
+    )
+    
+    FORMATS_BY_NAME = dict(FORMATS)
+    FORMATS_BY_MIMETYPE = dict((y,x) for (x,y) in FORMATS)
         
+    def render(cls, request, context, template_name):
+        if request.GET.get('format') in cls.FORMATS_BY_NAME:
+            format = request.GET['format']
+        elif request.META.get('HTTP_ACCEPT'):
+            accepts = [a.split(';')[0].strip() for a in request.META['HTTP_ACCEPT'].split(',')]
+            for accept in accepts:
+                if accept in cls.FORMATS_BY_MIMETYPE:
+                    format = cls.FORMATS_BY_MIMETYPE[accept]
+                    try:
+                        return cls.render_to_format(request, context, template_name, format)
+                    except (TemplateDoesNotExist, NotImplementedError):
+                        pass
+            else:
+                response = HttpResponse("""\
+Your Accept header didn't contain any supported media ranges.
+
+Supported ranges are:
+
+ * %s\n""" % '\n * '.join(f for f in cls.FORMATS_BY_NAME), mimetype="text/plain" )
+                response.status_code = 406 # Not Acceptable
+                return response
+        else:
+            format = 'html'
+            
+        try:
+            return cls.render_to_format(request, context, template_name, format)
+        except (TemplateDoesNotExist, NotImplementedError):
+            response = HttpResponse("The desired media type is not supported for this resource.", mimetype="text/plain")
+            response.status_code = 406
+            return response
+    
+    def render_to_format(cls, request, context, template_name, format):
+        render_method = getattr(cls, 'render_%s' % format)
+        return render_method(request, context, template_name)
+
+    def render_json(cls, request, context, template_name):
+        context = cls.simplify_context(context)
+        return HttpResponse(simplejson.dumps(context), mimetype="application/json")
+        
+    def render_html(cls, request, context, template_name):
+        return render_to_response(template_name+'.html',
+                                  context, context_instance=RequestContext(request),
+                                  mimetype='text/html')
+    
+    def render_rdf(cls, request, context, template_name):
+        raise NotImplementedError
+        
+    def render_xml(cls, request, context, template_name):
+        return render_to_response(template_name+'.xml',
+                                  context, context_instance=RequestContext(request),
+                                  mimetype='application/xml')
+
+    def render_yaml(cls, request, context, template_name):
+        try:
+            import yaml
+        except ImportError:
+            raise NotImplementedError
+            
+        context = cls.simplify_context(context)
+        return HttpResponse(yaml.dump(context), mimetype="application/x-yaml")
+
+    def simplify_context(cls, context):
+        if isinstance(context, dict):
+            out = {}
+            for key in context:
+                try:
+                    out[key] = cls.simplify_context(context[key])
+                except NotImplementedError:
+                    pass
+            return out
+        elif isinstance(context, (list, tuple, set, frozenset)):
+            out = []
+            for value in context:
+                try:
+                    out.append(cls.simplify_context(value))
+                except NotImplementedError:
+                    pass
+            if isinstance(context, tuple):
+                return tuple(out)
+            else:
+                return out
+        elif isinstance(context, (basestring, int, float)):
+            return context
+        elif isinstance(context, datetime):
+            return context.isoformat(' ')
+        elif hasattr(type(context), '__bases__') and models.Model in type(context).__bases__:
+            # It's a Model instance
+            if hasattr(context._meta, 'expose_fields'):
+                expose_fields = context._meta.expose_fields
+            else:
+                expose_fields = [f.name for f in context._meta.fields]
+            out = {
+                '_type': '.'.join(context._meta.app_label, context._meta.object_name),
+                '_pk': context.pk,
+            }
+            for field_name in expose_fields:
+                try:
+                    value = getattr(context, field_name)
+                    if hasattr(type(value), '__bases__') and models.Model in type(value).__bases__:
+                        value = {
+                            '_type': '.'.join(value._meta.app_label, value._meta.object_name),
+                            '_pk': value.pk,
+                        }
+                    out[field_name] = cls.simplify_context(value)
+                except NotImplementedError:
+                    pass
+            return out
+        elif hasattr(context, 'simplify'):
+            return context.simplify(cls.simplify_context)
+        else:
+            raise NotImplementedException
+            
 class ZoomableView(BaseView):
     default_zoom = None
     
