@@ -1,6 +1,7 @@
 from inspect import isfunction
 import traceback, time, simplejson, logging
 from datetime import datetime
+from xml.etree import ElementTree as ET
 
 from django.db import models
 from django.http import HttpResponse, HttpResponseNotAllowed
@@ -8,6 +9,8 @@ from django.template import TemplateDoesNotExist, RequestContext
 from django.shortcuts import render_to_response
 
 logger = logging.getLogger('core.requests')
+
+
 
 class ViewMetaclass(type):
     def __new__(cls, name, bases, dict):
@@ -127,9 +130,10 @@ Supported ranges are:
         raise NotImplementedError
         
     def render_xml(cls, request, context, template_name):
-        return render_to_response(template_name+'.xml',
-                                  context, context_instance=RequestContext(request),
-                                  mimetype='application/xml')
+        context = cls.simplify_context(context)
+        
+        return HttpResponse(ET.tostring(cls.serialize_to_xml(context)), mimetype="application/xml")
+        
 
     def render_yaml(cls, request, context, template_name):
         try:
@@ -163,7 +167,7 @@ Supported ranges are:
         elif isinstance(context, (basestring, int, float)):
             return context
         elif isinstance(context, datetime):
-            return context.isoformat(' ')
+            return DateUnicode(context.isoformat(' '))
         elif hasattr(context, 'simplify'):
             return context.simplify(cls.simplify_context)
         elif hasattr(type(context), '__bases__') and models.Model in type(context).__bases__:
@@ -192,6 +196,43 @@ Supported ranges are:
             return out
         else:
             raise NotImplementedException
+    
+    def serialize_to_xml(cls, value):
+        if isinstance(value, bool):
+            node = ET.Element('literal')
+            node.text = 'true' if value else 'false'
+            node.attrib['type'] = 'boolean'
+        elif isinstance(value, (basestring, int, float)):
+            node = ET.Element('literal')
+            node.text = unicode(value)
+            node.attrib['type'] = {DateUnicode: 'datetime', str: 'string', unicode: 'string', int: 'integer', float: 'float'}[type(value)]
+        elif isinstance(value, dict):
+            if '_type' in value:
+                node = ET.Element('object', {'type': value['_type'], 'pk': value.get('_pk', '')})
+            else:
+                node = ET.Element('collection', {'type': 'mapping'})
+            for key in value:
+                v = cls.serialize_to_xml(value[key])
+                subnode = ET.Element('item', {'key':key})
+                subnode.append(v)
+                node.append(subnode)
+        elif isinstance(value, (list, tuple, set, frozenset)):
+            for x,y in ((list, 'list'), (tuple, 'tuple')):
+                if isinstance(value, x):
+                    node = ET.Element('collection', {'type': y})
+                    break
+            else:
+                node = ET.Element('collection', {'type':'set'})
+            for item in value:
+                v = cls.serialize_to_xml(item)
+                subnode = ET.Element('item')
+                subnode.append(v)
+                node.append(subnode)
+        else:
+            return None
+            
+        return node
+                    
             
 class ZoomableView(BaseView):
     default_zoom = None
@@ -209,3 +250,5 @@ class ZoomableView(BaseView):
 
 class SecureView(BaseView):
     pass
+
+class DateUnicode(unicode): pass
