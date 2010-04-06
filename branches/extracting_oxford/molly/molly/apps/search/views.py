@@ -1,7 +1,6 @@
 from django.http import HttpResponseRedirect
 
 from molly.utils.views import BaseView
-from molly.utils.renderers import mobile_render
 from molly.utils.breadcrumbs import *
 
 from forms import SearchForm
@@ -22,7 +21,7 @@ class GoogleSearchView(BaseView):
         if context['search_form'].is_valid():
             return cls.handle_search(request, context)
 
-        return mobile_render(request, context, 'search/index')
+        return cls.render(request, context, 'search/index')
 
     def handle_search(cls, request, context):
         application = context['search_form'].cleaned_data['application'] or None
@@ -42,4 +41,4 @@ class GoogleSearchView(BaseView):
             'results': list(results)[:20],
         })
 
-        return mobile_render(request, context, 'search/index')
+        return cls.render(request, context, 'search/index')
