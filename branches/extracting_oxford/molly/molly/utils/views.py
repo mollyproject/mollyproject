@@ -131,10 +131,8 @@ Supported ranges are:
         
     def render_xml(cls, request, context, template_name):
         context = cls.simplify_context(context)
-        
         return HttpResponse(ET.tostring(cls.serialize_to_xml(context)), mimetype="application/xml")
         
-
     def render_yaml(cls, request, context, template_name):
         try:
             import yaml
