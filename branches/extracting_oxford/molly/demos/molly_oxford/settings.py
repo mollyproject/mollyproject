@@ -93,8 +93,8 @@ TEMPLATE_DIRS = (
 
 APPLICATIONS = [
     Application('molly.apps.contact', 'contact', 'Contact search',
-#        provider = 'molly.contrib.oxford.providers.ScrapingContactProvider',
-        provider = 'molly.contrib.mit.providers.LDAPContactProvider',
+        provider = 'molly.contrib.oxford.providers.ScrapingContactProvider',
+#        provider = 'molly.contrib.mit.providers.LDAPContactProvider',
     ),
 
     Application('molly.apps.weather', 'weather', 'Weather',
@@ -174,6 +174,7 @@ APPLICATIONS = [
     ),
     
     Application('molly.osm', 'osm', 'OpenStreetMap',
+        display_to_user = False,
     ),
 
     Application('molly.geolocation', 'geolocation', 'Geolocation',
@@ -181,10 +182,12 @@ APPLICATIONS = [
             SimpleProvider('molly.contrib.oxford.providers.geolocation.OUCSCodeGeolocationProvider'),
 #            SimpleProvider('molly.contrib.generic.providers.post_code.PostCodeGeolocationProvider'),
             SimpleProvider('molly.contrib.generic.providers.cloudmade.CloudmadeGeolocationProvider'),
-        ]
+        ],
+        display_to_user = False,
     ),
 
     Application('molly.auth', 'auth', 'Authentication',
+        display_to_user = False,
     ),
 ]
 
