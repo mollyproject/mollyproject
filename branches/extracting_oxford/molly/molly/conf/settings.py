@@ -4,29 +4,32 @@ from django.conf.urls.defaults import include as urlconf_include
 class Application(object):
     registry = {}
 
-    def __init__(self, app, name, title, **kwargs):
-        self.app, self.name = app, name
+    def __init__(self, application_name, local_name, title, **kwargs):
+        self.application_name, self.local_name = application_name, local_name
+        self.title = title
+        
         self.authentication = kwargs.pop('authentication', None)
         self.secure = kwargs.pop('secure', False)
         self.extra_bases = kwargs.pop('extra_bases', ())
-        self.urlconf = kwargs.pop('urlconf', app+'.urls')
+        self.urlconf = kwargs.pop('urlconf', application_name+'.urls')
         self.kwargs = kwargs
         self.batches = []
-        self.title = title
+        
+        kwargs['display_to_user'] = kwargs.get('display_to_user', True)
 
         self.providers = kwargs.pop('providers', ())
         if 'provider' in kwargs:
             self.providers += (kwargs.pop('provider'),)
 
-        self.registry[name] = self
+        self.registry[local_name] = self
 
     @classmethod
-    def get(cls, name):
-        app = cls.registry[name]
-        app.kwargs['name'] = name
+    def get(cls, local_name):
+        app = cls.registry[local_name]
+        app.kwargs['local_name'] = local_name
 
         from molly.utils.views import BaseView, SecureView
-        views_module = import_module(app.app+'.views')
+        views_module = import_module(app.application_name+'.views')
 
         providers = []
         for provider in app.providers:
@@ -42,7 +45,7 @@ class Application(object):
 
         app.kwargs['providers'] = providers
         app.kwargs['provider'] = providers[-1] if len(providers) else None
-        conf = type(app.name.capitalize()+'Config', (object,), app.kwargs)
+        conf = type(app.local_name.capitalize()+'Config', (object,), app.kwargs)
 
         bases = tuple(base() for base in app.extra_bases)
         if app.secure:
@@ -56,11 +59,13 @@ class Application(object):
             view.conf = conf
             view.__bases__ = bases + view.__bases__
 
-        print (app.app.split('.')[-1], app.name)
-        return type(app.name.capitalize()+'App', (object,), {
-            'urls': urlconf_include(app.urlconf, app.app.split('.')[-1], app.name),
-            'app_package': app.app,
-            'name': app.name,
+        print (app.application_name.split('.')[-1], app.local_name)
+        return type(app.local_name.capitalize()+'App', (object,), {
+            'urls': urlconf_include(app.urlconf, app.application_name.split('.')[-1], app.local_name),
+            'application_name': app.application_name,
+            'local_name': app.local_name,
+            'title': app.title,
+            'conf': conf,
         })
 
 class Authentication(object):
@@ -79,7 +84,7 @@ class ExtraBase(object):
         return type(module.__name__, (klass,), self.kwargs)
 
 def extract_installed_apps(applications):
-    return tuple(app.app for app in applications)
+    return tuple(app.application_name for app in applications)
 
 class SimpleProvider(object):
     def __init__(self, klass=None, **kwargs):
