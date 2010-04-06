@@ -2,7 +2,6 @@ import simplejson, hashlib, urllib2
 from django.http import HttpResponse
 from django.core.paginator import Paginator
 
-from molly.utils.renderers import mobile_render
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
 

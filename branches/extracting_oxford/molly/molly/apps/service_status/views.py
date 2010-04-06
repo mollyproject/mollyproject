@@ -1,8 +1,5 @@
-import feedparser, random
-
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
-
 
 class IndexView(BaseView):
     """
