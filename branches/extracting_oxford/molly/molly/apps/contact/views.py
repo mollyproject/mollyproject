@@ -25,7 +25,7 @@ class IndexView(BaseView):
         }
 
     def handle_GET(cls, request, context):
-        return mobile_render(request, context, 'contact/index')
+        return cls.render(request, context, 'contact/index')
 
 class ResultListView(IndexView):
 
@@ -70,29 +70,19 @@ class ResultListView(IndexView):
 
             context.update({
                 'page': page,
-                'paginator': paginator,
+                'results': paginator,
                 'medium': medium,
             })
 
-        if 'format' in request.GET and request.GET['format'] == 'json':
-            json = simplejson.dumps(context)
-            response = HttpResponse(
-                json,
-                mimetype='application/json'
-            )
-    #        response['X-JSON'] = json
-            response['ETag'] = hashlib.sha224(json).hexdigest()
-            return response
-        else:
-            context['form'] = form
-            return mobile_render(request, context, 'contact/result_list')
+        context['form'] = form
+        return cls.render(request, context, 'contact/result_list')
 
     def handle_error(cls, request, context, message):
         context.update({
             'message': message,
         })
 
-        return mobile_render(request, context, 'contact/result_list')
+        return cls.render(request, context, 'contact/result_list')
 
 
 class ResultDetailView(BaseView):
@@ -112,4 +102,4 @@ class ResultDetailView(BaseView):
         except BaseContactProvider.NoSuchResult:
             raise Http404
 
-        return mobile_render(request, context, 'context/result_detail')
+        return cls.render(request, context, 'context/result_detail')
