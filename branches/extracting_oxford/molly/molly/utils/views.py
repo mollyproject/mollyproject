@@ -1,5 +1,5 @@
 from inspect import isfunction
-import traceback, time, simplejson, logging
+import simplejson, logging
 from datetime import datetime
 from xml.etree import ElementTree as ET
 
@@ -7,10 +7,9 @@ from django.db import models
 from django.http import HttpResponse, HttpResponseNotAllowed
 from django.template import TemplateDoesNotExist, RequestContext
 from django.shortcuts import render_to_response
+from django.core.paginator import Paginator
 
 logger = logging.getLogger('core.requests')
-
-
 
 class ViewMetaclass(type):
     def __new__(cls, name, bases, dict):
@@ -21,22 +20,22 @@ class ViewMetaclass(type):
 
 class BaseView(object):
     __metaclass__ = ViewMetaclass
-    
+
     ALLOWABLE_METHODS = ('GET', 'POST', 'DELETE', 'HEAD', 'OPTIONS', 'PUT')
-    
+
     def method_not_acceptable(cls, request):
         return HttpResponseNotAllowed([m for m in cls.ALLOWABLE_METHODS if hasattr(cls, 'handle_%s' % m)])
-        
+
     def bad_request(cls, request):
         response = HttpResponse(
             'Your request was malformed.',
             status=400,
         )
         return response
-        
+
     def initial_context(cls, request, *args, **kwargs):
         return {}
-        
+
     def __new__(cls, request, *args, **kwargs):
         method_name = 'handle_%s' % request.method
         if hasattr(cls, method_name):
@@ -46,9 +45,7 @@ class BaseView(object):
             return response
         else:
             return cls.method_not_acceptable(request)
-                
 
-            
     def handle_HEAD(cls, request, *args, **kwargs):
         """
         Provides a default HEAD handler that strips the content from the
@@ -60,7 +57,7 @@ class BaseView(object):
             response = cls.method_not_acceptable(request)
         response.content = ''
         return response
-            
+
     def get_zoom(cls, request, default=16):
         try:
             zoom = int(request.GET['zoom'])
@@ -69,7 +66,7 @@ class BaseView(object):
         else:
             zoom = min(max(10, zoom), 18)
         return zoom
-        
+
     FORMATS = (
         # NAME, MIMETYPE
         ('rdf', 'application/rdf+xml'),
@@ -78,10 +75,10 @@ class BaseView(object):
         ('yaml', 'application/x-yaml'),
         ('xml', 'application/xml'),
     )
-    
+
     FORMATS_BY_NAME = dict(FORMATS)
     FORMATS_BY_MIMETYPE = dict((y,x) for (x,y) in FORMATS)
-        
+
     def render(cls, request, context, template_name):
         if request.GET.get('format') in cls.FORMATS_BY_NAME:
             format = request.GET['format']
@@ -105,14 +102,14 @@ Supported ranges are:
                 return response
         else:
             format = 'html'
-            
+
         try:
             return cls.render_to_format(request, context, template_name, format)
         except (TemplateDoesNotExist, NotImplementedError):
             response = HttpResponse("The desired media type is not supported for this resource.", mimetype="text/plain")
             response.status_code = 406
             return response
-    
+
     def render_to_format(cls, request, context, template_name, format):
         render_method = getattr(cls, 'render_%s' % format)
         return render_method(request, context, template_name)
@@ -120,25 +117,25 @@ Supported ranges are:
     def render_json(cls, request, context, template_name):
         context = cls.simplify_context(context)
         return HttpResponse(simplejson.dumps(context), mimetype="application/json")
-        
+
     def render_html(cls, request, context, template_name):
         return render_to_response(template_name+'.html',
                                   context, context_instance=RequestContext(request),
                                   mimetype='text/html')
-    
+
     def render_rdf(cls, request, context, template_name):
         raise NotImplementedError
-        
+
     def render_xml(cls, request, context, template_name):
         context = cls.simplify_context(context)
         return HttpResponse(ET.tostring(cls.serialize_to_xml(context)), mimetype="application/xml")
-        
+
     def render_yaml(cls, request, context, template_name):
         try:
             import yaml
         except ImportError:
             raise NotImplementedError
-            
+
         context = cls.simplify_context(context)
         return HttpResponse(yaml.safe_dump(context), mimetype="application/x-yaml")
 
@@ -192,11 +189,17 @@ Supported ranges are:
                 except NotImplementedError:
                     pass
             return out
+        elif isinstance(context, Paginator):
+            return cls.simplify_context(context.object_list)
+        elif context is None:
+            return None
         else:
-            raise NotImplementedException
-    
+            raise NotImplementedError
+
     def serialize_to_xml(cls, value):
-        if isinstance(value, bool):
+        if value is None:
+            node = ET.Element('null')
+        elif isinstance(value, bool):
             node = ET.Element('literal')
             node.text = 'true' if value else 'false'
             node.attrib['type'] = 'boolean'
@@ -227,14 +230,14 @@ Supported ranges are:
                 subnode.append(v)
                 node.append(subnode)
         else:
-            return None
-            
+            node = ET.Element('unknown')
+
         return node
-                    
-            
+
+
 class ZoomableView(BaseView):
     default_zoom = None
-    
+
     def initial_context(cls, request, *args, **kwargs):
         try:
             zoom = int(request.GET['zoom'])
