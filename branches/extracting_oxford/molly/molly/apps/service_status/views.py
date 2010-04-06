@@ -2,7 +2,6 @@ import feedparser, random
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
-from molly.utils.renderers import mobile_render
 
 
 class IndexView(BaseView):
@@ -33,5 +32,5 @@ class IndexView(BaseView):
 
         context['services'] = services
 
-        return mobile_render(request, context, 'service_status/index')
+        return cls.render(request, context, 'service_status/index')
 
