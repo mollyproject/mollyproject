@@ -138,7 +138,7 @@ Supported ranges are:
             raise NotImplementedError
             
         context = cls.simplify_context(context)
-        return HttpResponse(yaml.dump(context), mimetype="application/x-yaml")
+        return HttpResponse(yaml.safe_dump(context), mimetype="application/x-yaml")
 
     def simplify_context(cls, context):
         if isinstance(context, dict):
@@ -164,6 +164,8 @@ Supported ranges are:
             return context
         elif isinstance(context, datetime):
             return context.isoformat(' ')
+        elif hasattr(context, 'simplify'):
+            return context.simplify(cls.simplify_context)
         elif hasattr(type(context), '__bases__') and models.Model in type(context).__bases__:
             # It's a Model instance
             if hasattr(context._meta, 'expose_fields'):
@@ -175,6 +177,8 @@ Supported ranges are:
                 '_pk': context.pk,
             }
             for field_name in expose_fields:
+                if field_name in ('password',):
+                    continue
                 try:
                     value = getattr(context, field_name)
                     if hasattr(type(value), '__bases__') and models.Model in type(value).__bases__:
@@ -186,8 +190,6 @@ Supported ranges are:
                 except NotImplementedError:
                     pass
             return out
-        elif hasattr(context, 'simplify'):
-            return context.simplify(cls.simplify_context)
         else:
             raise NotImplementedException
             
