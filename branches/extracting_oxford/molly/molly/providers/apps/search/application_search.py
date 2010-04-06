@@ -7,8 +7,8 @@ from molly.conf import applications
 logger = logging.getLogger('molly.providers.apps.search.application_search')
 
 class ApplicationSearchProvider(BaseSearchProvider):
-    def __init__(self, application_names=None):
-        self.application_names = application_names
+    def __init__(self, local_names=None):
+        self.local_names = local_names
         self.applications = None
         
     def perform_search(self, request, query, application=None):
@@ -35,13 +35,13 @@ class ApplicationSearchProvider(BaseSearchProvider):
         
     def find_applications(self):
         self.applications = {}
-        for app_name in applications:
-            application = applications[app_name]
+        for local_name in applications:
+            application = applications[local_name]
             
-            if self.application_names and not application in self.application_names:
+            if self.local_names and not application in self.local_names:
                 continue
             try:
-                search_module_name = '%s.search' % application.name
+                search_module_name = '%s.search' % application.application_name
                 _temp = __import__(search_module_name,
                                    globals(), locals(),
                                    ['SearchProvider'], -1)
@@ -52,6 +52,6 @@ class ApplicationSearchProvider(BaseSearchProvider):
             else:
                 search_provider = _temp.SearchProvider
 
-            self.applications[application.slug] = search_provider
+            self.applications[application.local_name] = search_provider
             
         
