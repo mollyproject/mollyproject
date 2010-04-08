@@ -43,6 +43,7 @@ class Application(object):
             else:
                 providers.append(SimpleProvider(provider)())
 
+        app.kwargs['application_name'] = app.application_name
         app.kwargs['providers'] = providers
         app.kwargs['provider'] = providers[-1] if len(providers) else None
         conf = type(app.local_name.capitalize()+'Config', (object,), app.kwargs)
@@ -59,7 +60,6 @@ class Application(object):
             view.conf = conf
             view.__bases__ = bases + view.__bases__
 
-        print (app.application_name.split('.')[-1], app.local_name)
         return type(app.local_name.capitalize()+'App', (object,), {
             'urls': urlconf_include(app.urlconf, app.application_name.split('.')[-1], app.local_name),
             'application_name': app.application_name,
@@ -77,7 +77,6 @@ class ExtraBase(object):
         self.klass, self.kwargs = klass, kwargs
 
     def __call__(self):
-        print self.klass, self.kwargs
         mod_name, cls_name = self.klass.rsplit('.', 1)
         module = import_module(mod_name)
         klass = getattr(module, cls_name)
