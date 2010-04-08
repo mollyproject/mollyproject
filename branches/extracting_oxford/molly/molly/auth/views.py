@@ -99,11 +99,11 @@ class IndexView(SecureView):
             'secure',
             None,
             'Authentication preferences',
-            lazy_reverse('secure_index'),
+            lazy_reverse('auth:index'),
         )
         
     def handle_GET(cls, request, context):
-        return mobile_render(request, context, 'secure/index')
+        return cls.render(request, context, 'auth/index')
     
     def handle_POST(cls, request, context):
         form = context['form']
@@ -139,12 +139,12 @@ class ClearSessionView(SecureView):
             'secure',
             static_parent(context['return_url'], 'Back'),
             'Clear session',
-            lazy_reverse('secure_clear_session'),
+            lazy_reverse('auth:clear_session'),
             
         )
             
     def handle_GET(cls, request, context):
-        return mobile_render(request, context, 'secure/clear_session')
+        return cls.render(request, context, 'auth/clear_session')
     def handle_POST(cls, request, context):
         for key in request.secure_session.keys():
             del request.secure_session[key]

@@ -21,7 +21,7 @@ class OAuthView(BaseView):
             request.secure_session['oauth_tokens'] = {}
 
         token_type, request.access_token = \
-            request.secure_session['oauth_tokens'].get(cls.conf.name, (None, None))
+            request.secure_session['oauth_tokens'].get(cls.conf.local_name, (None, None))
 
         request.consumer = oauth.OAuthConsumer(*cls.secret)
         request.client = OAuthClient(
@@ -124,6 +124,5 @@ class OAuthView(BaseView):
             'token_type': token_type,
             'service_name': cls.conf.service_name,
         }
-        return mobile_render(request, context, 'auth/oauth/error')
-
+        return cls.render(request, context, 'auth/oauth/error')
 
