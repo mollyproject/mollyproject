@@ -3,4 +3,6 @@ Implementation topics
 
 .. toctree::
 
+   contributing
    settings
+

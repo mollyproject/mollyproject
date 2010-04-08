@@ -1,4 +1,12 @@
 Contributing to the Molly Project
 =================================
 
+The Molly Project is hosted `on SourceForge <http://sourceforge.net/projects/mollyproject/>`_.
+
+Developer discussion happens on the `molly-devel <https://lists.sourceforge.net/lists/listinfo/mollyproject-devel>`_
+mailing list, and we encourage anyone interested in contributing to join and browse the archives.
+
+Current development is happening in the ``extracting_oxford`` `branch of the repository <http://mollyproject.git.sourceforge.net/git/gitweb.cgi?p=mollyproject/mollyproject;a=tree;f=branches/extracting_oxford;hb=HEAD>`_. The whole repository can be checked out using the following command::
+
+    git clone git://mollyproject.git.sourceforge.net/gitroot/mollyproject/mollyproject
 
