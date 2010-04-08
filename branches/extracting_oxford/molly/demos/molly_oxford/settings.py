@@ -132,7 +132,7 @@ APPLICATIONS = [
         ],
     ),
 
-    Application('molly.sakai', 'weblearn', 'WebLearn',
+    Application('molly.apps.sakai', 'weblearn', 'WebLearn',
         host = 'https://weblearn.ox.ac.uk/',
         service_name = 'WebLearn',
         secure = True,

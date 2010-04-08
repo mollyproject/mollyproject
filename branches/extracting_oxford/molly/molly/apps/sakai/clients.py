@@ -1,5 +1,6 @@
 from django.conf import settings
 import oauth.oauth as oauth
+
 from molly.auth.oauth.clients import OAuthClient as BaseOAuthClient
 
 class SakaiOAuthClient(BaseOAuthClient):
