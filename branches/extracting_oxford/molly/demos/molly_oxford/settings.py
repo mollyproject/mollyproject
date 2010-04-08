@@ -69,6 +69,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'molly.wurfl.middleware.WurflMiddleware',
+    'molly.auth.middleware.SecureSessionMiddleware',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -135,6 +136,12 @@ APPLICATIONS = [
         host = 'https://weblearn.ox.ac.uk/',
         service_name = 'WebLearn',
         secure = True,
+        tools = [
+            ('signup', 'Tutorial sign-ups'),
+            ('poll', 'Polls'),
+            ('direct', 'User information'),
+            ('sites', 'Sites'),
+        ],
         extra_bases = (
             ExtraBase('molly.auth.oauth.views.OAuthView',
                 secret = SECRETS.weblearn,
