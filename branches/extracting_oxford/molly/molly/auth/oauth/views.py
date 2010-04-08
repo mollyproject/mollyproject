@@ -59,7 +59,7 @@ class OAuthView(BaseView):
 
         token = request.client.fetch_request_token(oauth_request)
 
-        request.secure_session['oauth_tokens'][cls.conf.name] = 'request_token', token
+        request.secure_session['oauth_tokens'][cls.conf.local_name] = 'request_token', token
         request.secure_session.modified = True
 
         oauth_request = oauth.OAuthRequest.from_token_and_callback(
@@ -71,16 +71,9 @@ class OAuthView(BaseView):
         return HttpResponseRedirect(oauth_request.to_url())
 
     def access_token(cls, request, *args, **kwargs):
-        token_type, request_token = request.secure_session['oauth_tokens'].get(cls.conf.name, (None, None))
+        token_type, request_token = request.secure_session['oauth_tokens'].get(cls.conf.local_name, (None, None))
         if token_type != 'request_token':
             return HttpResponse('', status=400)
-
-        print {
-            'consumer': request.consumer,
-            'token':request_token,
-            'verifier':request.GET.get('oauth_verifier'),
-            'http_url': request.client.access_token_url,
-        }
 
         oauth_request = oauth.OAuthRequest.from_consumer_and_token(
             request.consumer,
@@ -90,15 +83,13 @@ class OAuthView(BaseView):
         )
 
         oauth_request.sign_request(cls.signature_method, request.consumer, request_token)
-        print oauth_request.to_header()
 
         try:
             access_token = request.client.fetch_access_token(oauth_request)
         except OAuthHTTPError, e:
             return cls.handle_error(request, e, 'request_token', *args, **kwargs)
 
-        print "Happy token", access_token
-        request.secure_session['oauth_tokens'][cls.conf.name] = "access_token", access_token
+        request.secure_session['oauth_tokens'][cls.conf.local_name] = "access_token", access_token
         request.secure_session.modified = True
 
         return HttpResponseRedirect(request.path)
