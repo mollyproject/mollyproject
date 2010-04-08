@@ -180,6 +180,8 @@ APPLICATIONS = [
         ],
     ),
     
+    Application('molly.apps.webcams', 'webcams', 'Webcams'),
+    
     Application('molly.osm', 'osm', 'OpenStreetMap',
         display_to_user = False,
     ),
