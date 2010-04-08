@@ -27,4 +27,4 @@ class IndexView(BaseView):
         )
 
     def handle_GET(cls, request, context):
-        return mobile_render(request, context, 'weather/index')
+        return cls.render(request, context, 'weather/index')
