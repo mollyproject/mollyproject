@@ -1,4 +1,4 @@
-{% extends "webcams/base.xhtml" %}
+{% extends "webcams/base.html" %}
 {% load portal_misc %}
 
 {% block extrahead %}
@@ -10,17 +10,6 @@
 
     <meta http-equiv="refresh" content="60" />
 {% endblock %}
-
-{% block breadcrumbs %}
-{{ block.super }}
-            <li><a href="{% url webcams_index %}">
-                <img src="{{ MEDIA_URL }}png/index-icons/webcams-bc.png" alt="Webcams"/>
-            </a></li>
-{% endblock %}
-
-{% block pagetitle %}View{% endblock %}
-{% block title %}m.ox | Webcam: {{ webcam.title }}{% endblock %}
-
 
 {% block content %}
 

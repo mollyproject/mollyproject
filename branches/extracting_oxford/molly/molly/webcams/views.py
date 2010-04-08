@@ -21,12 +21,12 @@ class IndexView(BaseView):
         
     @BreadcrumbFactory
     def breadcrumb(cls, request, context):
-        return Breadcrumb('webcams', None, 'Webcams', lazy_reverse('webcams_index'))
+        return Breadcrumb('webcams', None, 'Webcams', lazy_reverse('webcams:index'))
         
     def handle_GET(cls, request, context):
         webcams = Webcam.objects.all()
         context['webcams'] = webcams
-        return mobile_render(request, context, 'webcams/index')
+        return cls.render(request, context, 'webcams/index')
     
 class WebcamDetailView(BaseView):
     def get_metadata(cls, request, slug):
@@ -44,7 +44,7 @@ class WebcamDetailView(BaseView):
     @BreadcrumbFactory
     def breadcrumb(cls, request, context, slug):
         return Breadcrumb('webcams', lazy_parent(IndexView),
-                          'Webcam', lazy_reverse('webcams_webcam', args=[slug]))
+                          'Webcam', lazy_reverse('webcams:webcam', args=[slug]))
         
     def handle_GET(cls, request, context, slug):
         try:
@@ -55,4 +55,4 @@ class WebcamDetailView(BaseView):
             eis = None
         
         context['eis'] = eis
-        return mobile_render(request, context, 'webcams/webcam_detail')
+        return cls.render(request, context, 'webcams/webcam_detail')

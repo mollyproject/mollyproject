@@ -1,4 +1,4 @@
-{% extends "webcams/base.xhtml" %}
+{% extends "webcams/base.html" %}
 
 {% block pagetitleclass %}webcams-header with-icon{% endblock %}
 {% block pagetitle %}Webcams{% endblock %}
@@ -12,7 +12,7 @@
 		<ul>
 {% for webcam in webcams %}
 		<li {% if forloop.last %}class="round-bottom"{% endif %}>
-        	<a href="{% url webcams_webcam webcam.slug %}">{{ webcam.title }}</a>
+        	<a href="{% url webcams:webcam webcam.slug %}">{{ webcam.title }}</a>
     	</li>
 {% endfor %}
 		</ul>
