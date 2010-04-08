@@ -1,0 +1,22 @@
+{% extends "sakai/base.html" %}
+
+{% block content %}
+
+
+
+<div class="section">
+  <div class="content pad-10">
+    <dl>
+      <dt>Name:</dt>
+      <dd>{{ user_details.displayName }}</dd>
+      <dt>E-mail address:</dt>
+      <dd>{{ user_details.email }}</dd>
+      <dt>Username:</dt>
+      <dd>{{ user_details.displayId }}</dd>
+    </dl>
+  </div>
+</div>
+      
+{{ user_details }}
+
+{% endblock %}

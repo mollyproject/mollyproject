@@ -1,18 +1,15 @@
 from datetime import datetime
-import oauth.oauth as oauth
-import urllib, urllib2, base64, pytz, simplejson
+import urllib, urllib2, pytz, simplejson
 from xml.etree import ElementTree as ET
 import xml.utils.iso8601
 
-from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.http import HttpResponseRedirect, Http404
 from django.core.urlresolvers import reverse
-from django.conf import settings
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
-from molly.utils.renderers import mobile_render
 
-from .clients import SakaiOAuthClient
+
 
 def parse_iso_8601(s):
     return datetime.fromtimestamp(xml.utils.iso8601.parse(s)).replace(tzinfo=pytz.utc)
@@ -27,9 +24,18 @@ class IndexView(BaseView):
             'WebLearn',
             lazy_reverse('sakai:index'),
         )
+    
+    def initial_context(cls, request):
+        return {
+            'tools': [{
+                'name': tool[0],
+                'title': tool[1],
+                'url': reverse('sakai:%s-index' % tool[0]),
+            } for tool in cls.conf.tools],
+        }
         
     def handle_GET(cls, request, context):
-        return mobile_render(request, context, 'sakai/index')
+        return cls.render(request, context, 'sakai/index')
 
 class SakaiView(BaseView):
     breadcrumb = NullBreadcrumb
@@ -63,7 +69,7 @@ class SignupIndexView(SakaiView):
             'sakai',
             lazy_parent(IndexView),
             'Tutorial sign-ups',
-            lazy_reverse('sakai:signup'),
+            lazy_reverse('sakai:signup-index'),
         )
 
     def handle_GET(cls, request, context):
@@ -71,7 +77,7 @@ class SignupIndexView(SakaiView):
             request.secure_session['sakai_site_titles'] = {}
         for site_id, title in context['sites']:
             request.secure_session['sakai_site_titles'][site_id] = title
-        return mobile_render(request, context, 'sakai/signup_sites')
+        return cls.render(request, context, 'sakai/signup/index')
 
 class SignupSiteView(SakaiView):
     def initial_context(cls, request, site):
@@ -101,11 +107,11 @@ class SignupSiteView(SakaiView):
             'sakai',
             lazy_parent(SignupIndexView),
             context.get('title', 'Tutorial sign-ups'),
-            lazy_reverse('sakai:signup_site', args=[site]),
+            lazy_reverse('sakai:signup-site', args=[site]),
         )
         
     def handle_GET(cls, request, context, site):
-        return mobile_render(request, context, 'sakai/signup_list')
+        return cls.render(request, context, 'sakai/signup/list')
 
 class SignupEventView(SakaiView):
     def initial_context(cls, request, site, event_id):
@@ -130,11 +136,11 @@ class SignupEventView(SakaiView):
             'sakai',
             lazy_parent(SignupSiteView, site),
             context['event']['title'] if 'event' in context else 'Tutorial sign-ups',
-            lazy_reverse('sakai:signup_detail', args=[site, event_id]),
+            lazy_reverse('sakai:signup-detail', args=[site, event_id]),
         )
 
     def handle_GET(cls, request, context, site, event_id):
-        return mobile_render(request, context, 'sakai/signup_detail')
+        return cls.render(request, context, 'sakai/signup/detail')
 
     def handle_POST(cls, request, context, site, event_id):
         try:
@@ -164,7 +170,7 @@ class SiteView(SakaiView):
     def handle_GET(cls, request, context):
         sites = ET.parse(request.opener.open(cls.build_url('direct/site.xml')))
         context['sites'] = [e.find('entityTitle').text for e in sites.getroot()]
-        return mobile_render(request, context, 'sakai/sites')
+        return cls.render(request, context, 'sakai/sites')
         
 class DirectView(SakaiView):
     @BreadcrumbFactory
@@ -173,13 +179,13 @@ class DirectView(SakaiView):
             'sakai',
             lazy_parent(IndexView),
             'User information',
-            lazy_reverse('sakai:direct'),
+            lazy_reverse('sakai:direct-index'),
         )
         
     def handle_GET(cls, request, context):
         context['user_details'] = simplejson.load(
             request.opener.open(cls.build_url('/direct/user/current.json')))
-        return mobile_render(request, context, 'sakai/direct')
+        return cls.render(request, context, 'sakai/direct/index')
         
 class PollIndexView(SakaiView):
     def initial_context(cls, request):
@@ -200,11 +206,11 @@ class PollIndexView(SakaiView):
             'sakai',
             lazy_parent(IndexView),
             'Polls',
-            lazy_reverse('sakai:poll'),
+            lazy_reverse('sakai:poll-index'),
         )
 
     def handle_GET(cls, request, context):
-        return mobile_render(request, context, 'sakai/poll_index')
+        return cls.render(request, context, 'sakai/poll/index')
 
 class PollDetailView(SakaiView):
     def initial_context(cls, request, id):
@@ -232,8 +238,8 @@ class PollDetailView(SakaiView):
             'sakai',
             lazy_parent(PollIndexView, opener),
             "Poll: %s" % context['poll']['text'],
-            lazy_reverse('sakai:poll_detail'),
+            lazy_reverse('sakai:poll-detail'),
         )
         
     def handle_GET(cls, request, context, opener, id):
-        return mobile_render(request, context, 'sakai/poll_detail')
+        return cls.render(request, context, 'sakai/poll/detail')

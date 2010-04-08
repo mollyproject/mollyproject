@@ -1,0 +1,17 @@
+{% extends "sakai/base.html" %}
+
+{% block pagetitle %}Weblearn{% endblock %}
+
+{% block content %}
+<div class="section">
+    <h2>WebLearn</h2>
+    <div class="note"><div class="bubble pad-10">
+     Here you'll see a gradually increasing list of tools you can use from Weblearn.     
+    </div></div>
+<ul>
+{% for tool in tools %}
+  <li><a href="{{ tool.url }}">{{ tool.title }}</a></li>
+{% endfor %}
+</ul>
+</div>
+{% endblock %} 
