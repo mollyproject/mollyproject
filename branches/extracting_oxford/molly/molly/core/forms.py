@@ -2,19 +2,8 @@ from django import forms
 from django.forms.models import modelformset_factory
 from django.forms.util import ErrorList
 
-from models import LocationShare, UserMessage, LOCATION_ACCURACY_CHOICES
-from molly.utils import geolocation
+from models import UserMessage
 
-class LocationShareForm(forms.ModelForm):
-    class Meta:
-        model = LocationShare
-        fields = ('accuracy', 'share_times', 'until')
-        
-class LocationShareAddForm(forms.Form):
-    email = forms.EmailField()
-    limit = forms.FloatField(widget=forms.TextInput(attrs={'size':4}), required=False)
-    accuracy = forms.ChoiceField(choices=LOCATION_ACCURACY_CHOICES)
-    
 class FeedbackForm(forms.Form):
     email = forms.EmailField(label="Your e-mail address (optional)", required=False)
     body = forms.CharField(widget=forms.Textarea(), label="Feedback")

@@ -12,18 +12,14 @@ from django.core.mail import EmailMessage
 from django import forms
 
 from molly.utils.views import BaseView
-from molly.utils.renderers import mobile_render
-from molly.utils import geolocation
 from molly.utils.breadcrumbs import *
 
 from molly.osm.utils import fit_to_map
 from molly.wurfl import device_parents
 from molly import conf
 
-from models import FrontPageLink, ExternalImageSized, LocationShare, UserMessage, ShortenedURL, BlogArticle
-from forms import LocationShareForm, LocationShareAddForm, FeedbackForm, UserMessageFormSet
-
-
+from models import ExternalImageSized, UserMessage, ShortenedURL, BlogArticle
+from forms import FeedbackForm, UserMessageFormSet
 
 class IndexView(BaseView):
 
@@ -59,10 +55,6 @@ class IndexView(BaseView):
         context = {
             'applications': applications,
             'hide_feedback_link': True,
-            #'has_user_messages': UserMessage.objects.filter(session_key = request.session.session_key).count() > 0,
-            'ua': request.META.get('HTTP_USER_AGENT', ''),
-            'parents': device_parents[request.device.devid]
-
         }
         return cls.render(request, context, 'core/index')
     
@@ -72,27 +64,6 @@ class IndexView(BaseView):
             request.preferences['core']['desktop_about_shown'] = no_desktop_about
             
         return HttpResponseRedirect(reverse('core:index'))
-
-
-if False:
-    @require_auth
-    def customise(request):
-        post = request.POST or None
-        links = request.user.get_profile().front_page_links.order_by('order')
-    
-        forms = [FrontPageLinkForm(post, instance=l, prefix="%d"%i) for i,l in enumerate(links)]
-    
-        if all(f.is_valid() for f in forms):
-            forms.sort(key=lambda x:x.cleaned_data['order'])
-            for i, f in enumerate(forms):
-                f.cleaned_data['order'] = i+1
-                f.save()
-            return HttpResponseRedirect(reverse("index"))
-    
-        context = {
-            'forms': forms,
-        }
-        return mobile_render(request, context, 'core/customise')
 
 class ExternalImageView(BaseView):
 
@@ -105,95 +76,6 @@ class ExternalImageView(BaseView):
     
         response['ETag'] = slug
         return response
-
-if False:
-    @require_auth
-    def location_sharing(request):
-        post = request.POST or None
-    
-        location_shares = LocationShare.objects.filter(from_user=request.user).order_by('from_user')
-        location_share_forms = []
-        for i, location_share in enumerate(location_shares):
-            lsf = LocationShareForm(post, instance=location_share, prefix="%d" % i)
-            location_share_forms.append( lsf )
-        location_share_add_form = LocationShareAddForm(post)
-    
-    
-        if post and 'location_share_add' in post:
-            if location_share_add_form.is_valid():
-                try:
-                    user = find_or_create_user_by_email(location_share_add_form.cleaned_data['email'], create_external_user=False)
-                except ValueError:
-                    request.user.message_set.create(message="No user with that e-mail address exists.")
-                else:
-                    if user in [ls.to_user for ls in location_shares]:
-                        request.user.message_set.create(message="You are already sharing your location with that person.")
-                    else:
-                        location_share = LocationShare(
-                            from_user = request.user,
-                            to_user = user,
-                            accuracy = location_share_add_form.cleaned_data['accuracy'],
-                        )
-                        if location_share_add_form.cleaned_data['limit']:
-                            location_share.until = datetime.now() + timedelta(hours=location_share_add_form.cleaned_data['limit'])
-                        location_share.save()
-                        response = HttpResponseRedirect('.')
-                        response.status_code = 303
-                        return response
-            else:
-                request.user.message_set.create(message="Please enter a valid e-mail address.")
-    
-    
-        context = {
-            'location_share_forms': location_share_forms,
-            'location_share_add_form': location_share_add_form,
-        }
-    
-        return mobile_render(request, context, 'core/location_sharing')
-
-class RunCommandView(BaseView):
-
-    commands = {
-        'update_podcasts': ('Update podcasts', []),
-        'update_osm': ('Update OpenStreetMap data', []),
-        'update_oxpoints': ('Update OxPoints data', []),
-        'update_busstops': ('Update bus stop data', []),
-        'update_rss': ('Update RSS feeds', []),
-        'update_weather': ('Update weather feed', []),
-#        'generate_markers': ('Generate map markers', []),
-#        'pull_markers': ('Pull markers from external location', ['location']),
-    }
-    
-    @BreadcrumbFactory
-    def breadcrumb(cls, request, context):
-        return Breadcrumb('core', None, 'Run command', lazy_reverse('core:run_command'))
-        
-    def __new__(cls, request, *args, **kwargs):
-        if not request.user.is_superuser:
-            raise Http404
-        return super(RunCommandView, cls).__new__(request, *args, **kwargs)
-        
-    def initial_context(cls, request):
-        return {
-            'commands': RunCommandView.commands,
-        }
-        
-    def handle_GET(cls, request, context):
-        return mobile_render(request, context, 'core/run_command')
-        
-    def handle_POST(cls, request, context):
-
-        command = request.POST['command']
-
-        if command in commands:
-            arg_names = commands[request.POST['command']][1]
-            args = {}
-            for arg in arg_names:
-                args[arg] = request.POST[arg]
-
-            call_command(command, **args)
-            
-        return HttpResponseRedirect(request.path)
 
 class StaticDetailView(BaseView):
     @BreadcrumbFactory
@@ -210,7 +92,7 @@ class StaticDetailView(BaseView):
             'title': title,
             'content': t.render(Context()),
         })
-        return mobile_render(request, context, 'core/static_detail')
+        return cls.render(request, context, 'core/static_detail')
 
 class ExpositionView(BaseView):
     def get_metadata(cls, request, page):
@@ -277,7 +159,7 @@ class FeedbackView(BaseView):
            'sent': request.GET.get('sent') == 'true',
            'referer': request.GET.get('referer', ''),
         })
-        return mobile_render(request, context, 'core/feedback')
+        return cls.render(request, context, 'core/feedback')
         
     def handle_POST(cls, request, context):
         if context['feedback_form'].is_valid():
@@ -360,7 +242,7 @@ class UserMessageView(BaseView):
 
     def handle_GET(cls, request, context):
         UserMessage.objects.filter(session_key=request.session.session_key).update(read=True)
-        return mobile_render(request, context, 'core/messages')
+        return cls.render(request, context, 'core/messages')
         
     def handle_POST(cls, request, context):
         if context['formset'].is_valid():
@@ -450,4 +332,4 @@ class ShortenURLView(BaseView):
             context['shortened_url'].slug = slug
             context['shortened_url'].save()
 
-        return mobile_render(request, context, 'core/shorten_url')
+        return cls.render(request, context, 'core/shorten_url')

@@ -4,7 +4,7 @@ from django.conf import settings
 from molly.core.views import (
     IndexView, ExpositionView,
     UserMessageView,
-    ExternalImageView, RunCommandView, FeedbackView,
+    ExternalImageView, FeedbackView,
     StaticDetailView,
     ShortenURLView, ShortenedURLRedirectView,
 )
@@ -14,10 +14,6 @@ urlpatterns = patterns('mobile_portal.core.views',
     (r'^$',
         IndexView, {},
         'index'),
-        
-    (r'^core/run_command/$',
-        RunCommandView, {},
-        'run_command'),
 
     (r'^external_images/(?P<slug>[0-9a-f]{8})/$',
         ExternalImageView, {},
