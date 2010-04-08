@@ -4,6 +4,7 @@ from datetime import datetime
 from xml.etree import ElementTree as ET
 
 from django.db import models
+from django.db.models.query import QuerySet
 from django.http import HttpResponse, HttpResponseNotAllowed
 from django.template import TemplateDoesNotExist, RequestContext
 from django.shortcuts import render_to_response
@@ -193,6 +194,8 @@ Supported ranges are:
             return cls.simplify_context(context.object_list)
         elif context is None:
             return None
+        elif isinstance(context, QuerySet):
+            return list(context)
         else:
             raise NotImplementedError
 
