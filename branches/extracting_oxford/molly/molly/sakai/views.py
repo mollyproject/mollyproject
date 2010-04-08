@@ -12,8 +12,6 @@ from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
 from molly.utils.renderers import mobile_render
 
-from molly.secure.views import OAuthView
-
 from .clients import SakaiOAuthClient
 
 def parse_iso_8601(s):

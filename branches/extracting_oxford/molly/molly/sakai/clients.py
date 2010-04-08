@@ -1,8 +1,8 @@
 from django.conf import settings
 import oauth.oauth as oauth
-from molly.secure.clients import SimpleOAuthClient
+from molly.auth.oauth.clients import OAuthClient as BaseOAuthClient
 
-class SakaiOAuthClient(SimpleOAuthClient):
+class SakaiOAuthClient(BaseOAuthClient):
     def __init__(self):
         self.host = settings.SAKAI_HOST
         super(SakaiOAuthClient, self).__init__(
