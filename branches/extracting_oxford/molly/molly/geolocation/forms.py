@@ -1,6 +1,8 @@
 from django import forms
 from django.forms.util import ErrorList
 
+from molly.conf import applications
+
 METHOD_CHOICES = (
     ('html5', 'HTML5'),
     ('gears', 'Google Gears'),
@@ -18,6 +20,10 @@ class LocationUpdateForm(forms.Form):
     method = forms.ChoiceField(required=False, choices=METHOD_CHOICES)
     name = forms.CharField(required=False)
     http_method = forms.CharField()
+    
+    def __init__(self, *args, **kwargs):
+        self.reverse_geocode = kwargs.pop('reverse_geocode')
+        super(LocationUpdateForm, self).__init__(*args, **kwargs)
 
     def clean_latitude(self):
         latitude = self.cleaned_data.get('latitude')
@@ -43,9 +49,12 @@ class LocationUpdateForm(forms.Form):
                 if not self._errors:
                     cleaned_data['location'] = cleaned_data['latitude'], cleaned_data['longitude']
                     if not cleaned_data.get('name'):
-                        cleaned_data['name'] = geolocation.reverse_geocode(
-                            self.cleaned_data['latitude'],
-                            self.cleaned_data['longitude'])[0][0]
+                        try:
+                            cleaned_data['name'] = self.reverse_geocode(
+                                self.cleaned_data['latitude'],
+                                self.cleaned_data['longitude'])[0]['name']
+                        except:
+                            cleaned_data['name'] = None
                         print "LOC NAME", cleaned_data['name']
                     print "FOO NAME"
             elif cleaned_data['method'] in ('denied', 'error'):

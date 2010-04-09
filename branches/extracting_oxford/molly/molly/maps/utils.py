@@ -11,13 +11,16 @@ def entity_ref(entity):
     return (entity.entity_type.slug, entity.display_id)
 
 def is_favourite(request, entity):
-    return entity_ref(entity) in request.preferences['maps']['favourites']
+    return entity_ref(entity) in request.session.get('maps:favourites', ())
     
 def make_favourite(request, entity, value):
+    if not 'maps:favourites' in request.session:
+        request.session['maps:favourites'] = []
     if value and not is_favourite(request, entity):
-        request.preferences['maps']['favourites'].insert(0, entity_ref(entity))
+        request.session['maps:favourites'].insert(0, entity_ref(entity))
     elif not value and is_favourite(request, entity):
-        request.preferences['maps']['favourites'].remove(entity_ref(entity))
+        request.session['maps:favourites'].remove(entity_ref(entity))
+    request.session.modified = True
         
 COMPASS_POINTS = ('N','NE','E','SE','S','SW','W','NW')
 def get_bearing(p1, p2):

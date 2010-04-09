@@ -28,10 +28,7 @@ class IndexView(BaseView):
                           'Podcasts', lazy_reverse('podcasts_index'))
         
     def handle_GET(cls, request, context):
-        if request.GET.get('foo') == 'bar':
-            raise AssertionError('foo')
-            
-        show_itunesu_link = not request.device.devid in request.preferences['podcasts']['use_itunesu']
+        show_itunesu_link = request.session.get('podcasts:use_itunesu') == None
         if 'show_itunesu_link' in request.GET:
             show_itunesu_link = request.GET['show_itunesu_link'] != 'false'
     
@@ -154,7 +151,7 @@ class ITunesURedirectView(BaseView):
         remember = 'remember' in request.POST
         
         if remember:
-            request.preferences['podcasts']['use_itunesu'][request.device.devid] = use_itunesu
+            request.session['podcasts:use_itunesu'] = use_itunesu
         
         if request.method == 'POST' and 'no_redirect' in request.POST:
             return HttpResponse('', mimetype="text/plain")

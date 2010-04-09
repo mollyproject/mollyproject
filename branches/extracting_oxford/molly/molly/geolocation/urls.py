@@ -7,7 +7,7 @@ urlpatterns = patterns('',
         IndexView, {},
         'index'),
 
-    (r'^update_location/$',
+    (r'^update/$',
         LocationUpdateView, {},
         'update'),
 )

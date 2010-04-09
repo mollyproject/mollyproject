@@ -61,7 +61,7 @@ class IndexView(BaseView):
     def handle_POST(cls, request, context):
         no_desktop_about = {'true':True, 'false':False}.get(request.POST.get('no_desktop_about'))
         if not no_desktop_about is None:
-            request.preferences['core']['desktop_about_shown'] = no_desktop_about
+            request.session['core:desktop_about_shown'] = no_desktop_about
             
         return HttpResponseRedirect(reverse('core:index'))
 
@@ -189,8 +189,8 @@ class FeedbackView(BaseView):
             'devid': request.device.devid,
             'ua': urllib.urlencode({'user_agent':request.META['HTTP_USER_AGENT']}),
             'referer': request.POST.get('referer', ''),
-            'lat': request.preferences['location']['location'][0],
-            'lon': request.preferences['location']['location'][1],
+            'lat': request.session.get('geolocation:location', (None, None))[0],
+            'lon': request.session.get('geolocation:location', (None, None))[1],
             'body': form.cleaned_data['body'],
             'session_key': request.session.session_key,
         }

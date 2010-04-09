@@ -65,9 +65,6 @@ class NearbyListView(BaseView):
 
 
     def handle_GET(cls, request, context, entity=None):
-        if not (entity or request.session['geolocation:location']):
-             return location_required(request)
-
         if entity:
             return_url = reverse('maps:entity_nearby_list', args=[entity.entity_type.slug, entity.display_id])
         else:
@@ -97,10 +94,10 @@ class NearbyDetailView(ZoomableView):
             if point:
                 location = point[1], point[0]
         else:
-            if not request.preferences['location']['location']:
+            if not request.session.get('geolocation:location'):
                 location = None
             else:
-                location = request.preferences['location']['location']
+                location = request.session.get('geolocation:location')
                 if location:
                     point = Point(location[1], location[0], srid=4326)
 
@@ -223,7 +220,7 @@ class EntityDetailView(ZoomableView):
 
     def get_metadata(cls, request, type_slug, id):
         entity = get_entity(type_slug, id)
-        user_location = request.preferences['location']['location']
+        user_location = request.session.get('geolocation:location')
         if user_location and entity.location:
             user_location = Point(user_location[1], user_location[0], srid=4326)
             bearing = ', approximately %.3fkm %s' % (
@@ -251,7 +248,7 @@ class EntityDetailView(ZoomableView):
 
     @BreadcrumbFactory
     def breadcrumb(cls, request, context, type_slug, id):
-        if request.preferences['location']['location']:
+        if request.session.get('geolocation:location'):
             parent_view = NearbyDetailView
         else:
             parent_view = CategoryDetailView
@@ -307,10 +304,10 @@ class EntityDetailView(ZoomableView):
         services.sort(key= lambda x: 0 if x[2]=='DUE' else int(x[2].split(' ')[0]))
 
         context['services'] = services
-        context['with_meta_refresh'] = datetime.now() > request.preferences['last_ajaxed'] + timedelta(600)
+        context['with_meta_refresh'] = datetime.now() > request.session.get('core:last_ajaxed', datetime(1970)) + timedelta(600)
 
         if request.GET.get('ajax') == 'true':
-            request.preferences['last_ajaxed'] = datetime.now()
+            request.session['core:last_ajaxed'] = datetime.now()
             context = {
                 'services': context['services'],
                 'time': datetime.now().strftime('%H:%M:%S'),
@@ -400,6 +397,9 @@ class EntityUpdateView(ZoomableView):
 
 
 class NearbyEntityListView(NearbyListView):
+    def is_location_required(cls, request, type_slug, id):
+        return False
+
     def get_metadata(cls, request, type_slug, id):
         entity = get_entity(type_slug, id)
         return super(NearbyEntityListView, cls).get_metadata(request, entity)
@@ -423,6 +423,9 @@ class NearbyEntityListView(NearbyListView):
         return super(NearbyEntityListView, cls).handle_GET(request, context, entity)
 
 class NearbyEntityDetailView(NearbyDetailView):
+    def is_location_required(cls, request, type_slug, id):
+        return False
+
     def initial_context(cls, request, type_slug, id, ptype):
         entity = get_entity(type_slug, id)
         context = super(NearbyEntityDetailView, cls).initial_context(request, ptype, entity)

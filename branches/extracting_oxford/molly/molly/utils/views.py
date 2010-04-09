@@ -86,6 +86,9 @@ class BaseView(object):
         elif request.META.get('HTTP_ACCEPT'):
             accepts = [a.split(';')[0].strip() for a in request.META['HTTP_ACCEPT'].split(',')]
             for accept in accepts:
+                if accept == '*/*' and request.is_ajax():
+                    format = 'json'
+                    break
                 if accept in cls.FORMATS_BY_MIMETYPE:
                     format = cls.FORMATS_BY_MIMETYPE[accept]
                     try:

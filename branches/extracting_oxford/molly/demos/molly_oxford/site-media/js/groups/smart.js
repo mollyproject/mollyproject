@@ -18,7 +18,7 @@
 // EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
 // SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
 // PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
-// OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+// OR BUSINESS INTERRUPTION) HOWEVER CAUgeolocation/update/SED AND ON ANY THEORY OF LIABILITY,
 // WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
 // OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 // ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
@@ -111,7 +111,7 @@ function sendPosition(position, final) {
     if (positionRequestCount == 1)
         $('.location-status').html('Location found; please wait while we put a name to it.');
         
-    jQuery.post(base+'update_location/', {
+    jQuery.post(base+'geolocation/update/', {
         longitude: position.coords.longitude,
         latitude: position.coords.latitude,
         accuracy: position.coords.accuracy,
@@ -121,6 +121,10 @@ function sendPosition(position, final) {
         positionName = data.name;
         $('.location').html(data.name);
         $('.location-status').html('We think you are somewhere near <span class="location">'+data.name+'</span>.');
+        
+        if (window.reload_on_location) {
+            window.location.reload(true);
+        }                
 
     }, 'json');
 }
@@ -131,7 +135,7 @@ function sendPositionError(error) {
             'You did not give permission for the site to know your location. '
           + 'You won\'t be asked again unless you initiate an automatic '
           + 'update using the link below.');
-        jQuery.post(base+'ajax/update_location/', {
+        jQuery.post(base+'geolocation/update/', {
             method: 'denied',
         });
     } else if (error.code == error.POSITION_UNAVAILABLE) {
@@ -143,7 +147,7 @@ function sendPositionError(error) {
         $('.location-status').html(
             'An error occured while determining your location.'
         );
-        jQuery.post(base+'ajax/update_location/', {
+        jQuery.post(base+'geolocation/update/', {
             method: 'error',
         });
     }
@@ -183,8 +187,8 @@ function positionWatcher(position) {
     if (positionRequestCount > 10 || position.coords.accuracy <= 150 || position.coords.accuracy == 18000) {
         positionInterface.clearWatch(positionWatchId);
         positionWatchId = null;
-        $('.location-action').html($(
-            ' <a class="update-location-toggle" href="#">Update</a>').click(toggleUpdateLocation));
+        $('.location-action').html(
+            ' <a class="update-location-toggle" href="#" onclick="javascript:toggleUpdateLocation(); return false;">Update</a>');
     }
     
     sendPosition(position, positionWatchId != null);
@@ -193,7 +197,7 @@ function positionWatcher(position) {
 function requestPosition() {
     $('.update-location').slideUp();
     if (positionWatchId != null)
-        return false; 
+        return; 
         
     location_options = {
             enableHighAccuracy: true,
@@ -211,12 +215,11 @@ function requestPosition() {
     
     if (positionInterface) {
         $('.location-status').html('Please wait while we attempt to determine your location...');
-        $('.location-action').html($(
-            ' <a class="update-location-cancel" href="#">Cancel</a>').click(cancelUpdateLocation));
+        $('.location-action').html(
+            ' <a class="update-location-cancel" href="#" onclick="javascript:cancelUpdateLocation(); return false;">Cancel</a>');
         positionWatchId = positionInterface.watchPosition(positionWatcher, sendPositionError, location_options);
     } else
         $('.location-status').html('We have no means of determining your location automatically.');
-    return false;
 }
 
 function positionMethodAvailable() {
@@ -242,9 +245,9 @@ function cancelUpdateLocation() {
         $('.location-status').html('We think you are somewhere near <span class="location">'+positionName+'</span>.');
     else
         $('.location-status').html('We do not know where you are.');
-    $('.location-action').html($(
-        ' <a class="update-location-toggle" href="#">Update</a>').click(toggleUpdateLocation));
-    return false;
+    $('.location-action').html(
+        ' <a class="update-location-toggle" href="#" onclick="javascript:toggleUpdateLocation(); return false;">Update</a>');
+
 }
 
 function cancelManualUpdateLocation() {
@@ -253,23 +256,23 @@ function cancelManualUpdateLocation() {
         $('.location-status').html('We think you are somewhere near <span class="location">'+positionName+'</span>.');
     else
         $('.location-status').html('We do not know where you are.');
-    $('.location-action').html($(
-        ' <a class="update-location-toggle" href="#">Update</a>').click(toggleUpdateLocation));
+    $('.location-action').html(
+        ' <a class="update-location-toggle" href="#" onclick="javascript:toggleUpdateLocation(); return false;">Update</a>');
 
     $('.update-location').slideUp('normal', function() {
         $('.manual-update-location').replaceWith(manualUpdateLocation);
     });
-    return false;
+        
 }
 
 function manualLocationSubmit(event) {
     $('.manual-update-location-submit').css('display', 'none');
     
-    $('.location-action').html($(
-            ' <a class="update-location-cancel" href="#">Cancel</a>').click(cancelManualUpdateLocation));
+    $('.location-action').html(
+            ' <a class="update-location-cancel" href="#" onclick="javascript:cancelManualUpdateLocation(); return false;">Cancel</a>');
     manualUpdateLocation = $('.manual-update-location').clone(true);
         
-    $.get(base+'update_location/', {
+    $.get(base+'geolocation/update/', {
         method: 'geocoded',
         name: $('#location-name').val(),
         format: 'embed',
@@ -282,22 +285,25 @@ function manualLocationSubmit(event) {
             link = $('<a href="#">'+button.html()+'</a>');
             link.css('color', '#ffffff').bind('click', {form:this}, function(event) {
                 form = $(event.data.form);
-                $.post(base+'update_location/', {
+                $.post(base+'geolocation/update/', {
                     longitude: form.find('[name=longitude]').val(),
                     latitude: form.find('[name=latitude]').val(),
                     accuracy: form.find('[name=accuracy]').val(),
                     name: form.find('[name=name]').val(),
                     method: 'geocoded',
                     format: 'json',
-                }, function() {
+                }, function(data) {
                     positionName = form.find('[name=name]').val();
                     cancelManualUpdateLocation();
+                    if (window.reload_on_location)
+                        window.location.reload(true);
+
                 });
-                return false;
             });
             button.replaceWith(link);
         });
     });
+
     return false;
 }
     
@@ -307,12 +313,12 @@ if (require_location)
 
 $(document).ready(function() {
     $('.update-location').css('display', 'none');
-    $('.location-action').html($(
-        ' <a class="update-location-toggle" href="#">Update</a>').click(toggleUpdateLocation));
+    $('.location-action').html(
+        ' <a class="update-location-toggle" href="#" onclick="javascript:toggleUpdateLocation(); return false;">Update</a>');
       
     if (positionMethodAvailable()) {
-        $('#geolocate-js').html($(
-            '<a href="#">Determine location automaticaly</a>').click(requestPosition));
+        $('#geolocate-js').html(
+            '<a href="#" onclick="javascript:requestPosition(); return false;">Determine location automaticaly</a>');
     }
     
     $('.manual-update-form').bind('submit', manualLocationSubmit);
