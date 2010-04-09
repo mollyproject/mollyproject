@@ -35,7 +35,7 @@ Next, clone the git repository to a temporary directory:
 Install the Molly dependencies and Molly itself:
 
  $ cd ~/mollyenv/mollyproject/branches/extracting_oxford/molly/
- $ pip -E ~/mollyenv/ install `cat requirements/core.txt` --update
+ $ pip -E ~/mollyenv/ install `cat requirements/core.txt` --upgrade
  $ python setup.py install
 
 

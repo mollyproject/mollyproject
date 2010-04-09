@@ -10,7 +10,6 @@ from django.forms.util import ErrorList
 
 from molly.core.models import Profile
 from molly.core.renderers import mobile_render
-from molly.core import ldap_queries
 from molly.core.utils import create_user_from_username, update_user_from_ldap
 
 from utils import require_auth, require_unauth

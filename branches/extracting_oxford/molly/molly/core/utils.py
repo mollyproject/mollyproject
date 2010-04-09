@@ -1,7 +1,5 @@
-import urllib2, re
-from django.contrib.auth.models import User
+import urllib2
 from models import ExternalImage, ExternalImageSized
-from ldap_queries import get_person_data, get_username_by_email
 
 class AnyMethodRequest(urllib2.Request):
     def __init__(self, url, data=None, headers={}, origin_req_host=None, unverifiable=None, method=None):
