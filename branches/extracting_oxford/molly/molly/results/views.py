@@ -5,7 +5,7 @@ from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
 from molly.utils.renderers import mobile_render
 
-logger = logging.getLogger('mobile_portal.results')
+logger = logging.getLogger('molly_oxford.results')
 
 class IndexView(BaseView):
     RSS_FEED = 'http://twitter.com/statuses/user_timeline/46711686.rss'
@@ -20,7 +20,7 @@ class IndexView(BaseView):
     @BreadcrumbFactory
     def breadcrumb(cls, request, context):
         return Breadcrumb('results', None, 'Results releases',
-                          lazy_reverse('results_index'))
+                          lazy_reverse('results:index'))
 
     def handle_GET(cls, request, context):
         try:
@@ -29,6 +29,8 @@ class IndexView(BaseView):
             items = []
             for x_item in x_items:
                 match = IndexView.RESULT_RE.search(x_item.find('title').text)
+                if not match:
+                    continue
                 f = x_item.find('title').text
                 items.append({
                     'pubDate': datetime.date.fromtimestamp(email.utils.mktime_tz(email.utils.parsedate_tz(x_item.find('pubDate').text))),
@@ -40,4 +42,4 @@ class IndexView(BaseView):
             items = []
             
         context['items'] = items
-        return mobile_render(request, context, 'results/index')
+        return cls.render(request, context, 'results/index')
