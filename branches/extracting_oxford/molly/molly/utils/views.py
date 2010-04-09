@@ -1,6 +1,6 @@
 from inspect import isfunction
 import simplejson, logging
-from datetime import datetime
+from datetime import datetime, date
 from xml.etree import ElementTree as ET
 
 from django.db import models
@@ -11,6 +11,8 @@ from django.shortcuts import render_to_response
 from django.core.paginator import Paginator
 
 logger = logging.getLogger('core.requests')
+
+class DateUnicode(unicode): pass
 
 class ViewMetaclass(type):
     def __new__(cls, name, bases, dict):
@@ -165,7 +167,7 @@ Supported ranges are:
                 return out
         elif isinstance(context, (basestring, int, float)):
             return context
-        elif isinstance(context, datetime):
+        elif isinstance(context, (datetime, date)):
             return DateUnicode(context.isoformat(' '))
         elif hasattr(context, 'simplify'):
             return context.simplify(cls.simplify_context)
@@ -202,6 +204,14 @@ Supported ranges are:
         else:
             raise NotImplementedError
 
+    XML_DATATYPES = (
+        (DateUnicode, 'datetime'),
+        (str, 'string'),
+        (unicode, 'string'),
+        (int, 'integer'),
+        (float, 'float'),
+    )
+
     def serialize_to_xml(cls, value):
         if value is None:
             node = ET.Element('null')
@@ -212,7 +222,7 @@ Supported ranges are:
         elif isinstance(value, (basestring, int, float)):
             node = ET.Element('literal')
             node.text = unicode(value)
-            node.attrib['type'] = {DateUnicode: 'datetime', str: 'string', unicode: 'string', int: 'integer', float: 'float'}[type(value)]
+            node.attrib['type'] = [d[1] for d in cls.XML_DATATYPES if isinstance(value, d[0])][0]
         elif isinstance(value, dict):
             if '_type' in value:
                 node = ET.Element('object', {'type': value['_type'], 'pk': value.get('_pk', '')})
@@ -258,4 +268,3 @@ class ZoomableView(BaseView):
 class SecureView(BaseView):
     pass
 
-class DateUnicode(unicode): pass

@@ -1,13 +1,12 @@
 from __future__ import division
 
-from xml.etree import ElementTree as ET
 from itertools import chain
 from datetime import datetime, timedelta
-import urllib, rdflib, urllib2, simplejson, StringIO, copy
-import ElementSoup as ES
+import urllib, urllib2, simplejson, copy
+
+from lxml import etree
 
 from django.contrib.gis.geos import Point
-from django.contrib.gis.measure import D
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.core.urlresolvers import reverse
@@ -47,7 +46,7 @@ class IndexView(BaseView):
     def handle_GET(cls, request, context):
         return mobile_render(request, context, 'maps/index')
 
-class NearbyListView(BaseView):
+class NearbyListView(LocationRequiredView):
     def get_metadata(cls, request, entity=None):
         return {
             'title': 'Find things nearby',
@@ -86,20 +85,21 @@ class NearbyListView(BaseView):
         return mobile_render(request, context, 'maps/nearby_list')
 
 
-class NearbyDetailView(ZoomableView):
+class NearbyDetailView(LocationRequiredView, ZoomableView):
     def initial_context(cls, request, ptypes, entity=None):
         point, location = None, None
         if entity:
             point = entity.location
             if point:
-                location = point[1], point[0]
+                location = point[0], point[1]
         else:
             if not request.session.get('geolocation:location'):
                 location = None
             else:
                 location = request.session.get('geolocation:location')
                 if location:
-                    point = Point(location[1], location[0], srid=4326)
+                    print "loc", location
+                    point = Point(location[0], location[1], srid=4326)
 
         entity_types = tuple(get_object_or_404(EntityType, slug=t) for t in ptypes.split(';'))        
 
@@ -126,7 +126,7 @@ class NearbyDetailView(ZoomableView):
 
     @BreadcrumbFactory
     def breadcrumb(cls, request, context, ptypes, entity=None):
-        title = cls.get_metadata(request, ptypes, entity)['title']
+        title = NearbyDetailView.get_metadata(request, ptypes, entity)['title']
         return Breadcrumb('maps',
                           lazy_parent(NearbyListView, entity=entity),
                           title,
@@ -185,7 +185,7 @@ class NearbyDetailView(ZoomableView):
 
         map_hash, (new_points, zoom) = fit_to_map(
             centre_point = (location[0], location[1], 'green'),
-            points = ((e.location[1], e.location[0], 'red') for e in entities),
+            points = ((e.location[0], e.location[1], 'red') for e in entities),
             min_points = min_points,
             zoom = context['zoom'],
             width = request.map_width,
@@ -239,6 +239,7 @@ class EntityDetailView(ZoomableView):
 
     def initial_context(cls, request, type_slug, id):
         context = super(cls, cls).initial_context(request)
+        print "F"
         entity = get_entity(type_slug, id)
         context.update({
             'entity': entity,
@@ -280,7 +281,7 @@ class EntityDetailView(ZoomableView):
 
     def display_naptan(cls, request, context, entity):
         try:
-            xml = ES.parse(urllib.urlopen(EntityDetailView.OXONTIME_URL % entity.atco_code))
+            xml = etree.parse(urllib.urlopen(EntityDetailView.OXONTIME_URL % entity.atco_code), parser = etree.HTMLParser())
         except (TypeError, IOError):
             rows = []
         else:
@@ -289,6 +290,10 @@ class EntityDetailView(ZoomableView):
                 rows = [cells[i:i+4] for i in range(0, len(cells), 4)]
             except AttributeError:
                 rows = []
+            try:
+                context['pip_info'] = xml.find(".//p[@class='pipdetail']").text
+            except:
+                context['pip_info'] = None
 
         services = {}
         for row in rows:
@@ -304,7 +309,7 @@ class EntityDetailView(ZoomableView):
         services.sort(key= lambda x: 0 if x[2]=='DUE' else int(x[2].split(' ')[0]))
 
         context['services'] = services
-        context['with_meta_refresh'] = datetime.now() > request.session.get('core:last_ajaxed', datetime(1970)) + timedelta(600)
+        context['with_meta_refresh'] = datetime.now() > request.session.get('core:last_ajaxed', datetime(1970, 1, 1)) + timedelta(600)
 
         if request.GET.get('ajax') == 'true':
             request.session['core:last_ajaxed'] = datetime.now()

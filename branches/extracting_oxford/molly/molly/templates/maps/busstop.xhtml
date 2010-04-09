@@ -68,7 +68,11 @@ tr {
 
 {% else %}
 <div class="note"><div class="bubble pad-10">
-        Sorry, there is currently no bus time information for this stop.
+{% if pip_info %}
+    {{ pip_info }}
+{% else %}
+    Sorry, there is currently no bus time information for this stop.
+{% endif %}
 </div></div>
 {% endif %}
 
@@ -86,7 +90,7 @@ tr {
 
 <ul>
     <li class="round-bottom">
-    <a href="{% url maps_entity_nearby_list entity.entity_type.slug,entity.display_id %}" rel="nofollow">Find things near here</a>
+    <a href="{% url maps:entity_nearby_list entity.entity_type.slug,entity.display_id %}" rel="nofollow">Find things near here</a>
     </li>
 </ul>
 

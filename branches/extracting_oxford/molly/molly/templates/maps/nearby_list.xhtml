@@ -1,7 +1,5 @@
 {% extends "maps/base.xhtml" %}
 
-{% block title %}m.ox | Maps - near{% if entity %} {{ entity.title }}{% else %}by{% endif %}{% endblock %}
-
 {% block extrahead %}{{ block.super }}{% if entity %}
 <meta name="robots" content="noindex" />{% endif %}{% endblock %}
 
@@ -11,9 +9,9 @@
   <h2>Public</h2>
 	<ul>
 	{% for entity_type in public %}{% if entity %}
-	    <li{% if forloop.last %} class="round-bottom"{% endif %}><a href="{% url maps_entity_nearby_detail entity.entity_type.slug,entity.display_id,entity_type.slug %}">{{ entity_type.verbose_name_plural|capfirst }}</a></li>
+	    <li{% if forloop.last %} class="round-bottom"{% endif %}><a href="{% url maps:entity_nearby_detail entity.entity_type.slug,entity.display_id,entity_type.slug %}">{{ entity_type.verbose_name_plural|capfirst }}</a></li>
 	{% else %}
-	    <li{% if forloop.last %} class="round-bottom"{% endif %}><a href="{% url maps_nearby_detail entity_type.slug %}">{{ entity_type.verbose_name_plural|capfirst }}</a></li>
+	    <li{% if forloop.last %} class="round-bottom"{% endif %}><a href="{% url maps:nearby_detail entity_type.slug %}">{{ entity_type.verbose_name_plural|capfirst }}</a></li>
 	{% endif %}{% endfor %}
 	</ul>
 </div>
@@ -22,9 +20,9 @@
   <h2>University of Oxford</h2>
 	<ul>
 	{% for entity_type in university %}{% if entity %}
-	    <li{% if forloop.last %} class="round-bottom"{% endif %}><a href="{% url maps_entity_nearby_detail entity.entity_type.slug,entity.display_id,entity_type.slug %}">{{ entity_type.verbose_name_plural|capfirst }}</a></li>
+	    <li{% if forloop.last %} class="round-bottom"{% endif %}><a href="{% url maps:entity_nearby_detail entity.entity_type.slug,entity.display_id,entity_type.slug %}">{{ entity_type.verbose_name_plural|capfirst }}</a></li>
 	{% else %}
-	    <li{% if forloop.last %} class="round-bottom"{% endif %}><a href="{% url maps_nearby_detail entity_type.slug %}">{{ entity_type.verbose_name_plural|capfirst }}</a></li>
+	    <li{% if forloop.last %} class="round-bottom"{% endif %}><a href="{% url maps:nearby_detail entity_type.slug %}">{{ entity_type.verbose_name_plural|capfirst }}</a></li>
 	{% endif %}{% endfor %}
 	</ul>
 </div>

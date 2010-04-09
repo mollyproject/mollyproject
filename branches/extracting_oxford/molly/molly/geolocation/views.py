@@ -100,6 +100,7 @@ class LocationUpdateView(BaseView):
             location = tuple(location)
 
         request.session['geolocation:location'] = location
+        print "setting", location
         request.session['geolocation:updated'] = datetime.now()
         request.session['geolocation:name'] = name
         request.session['geolocation:method'] = method
@@ -110,7 +111,7 @@ class LocationRequiredView(BaseView):
         return True
         
     def __new__(cls, request, *args, **kwargs):
-        if not cls.is_location_required(request, *args, **kwargs) or request.preferences['location']['location']:
+        if not cls.is_location_required(request, *args, **kwargs) or request.session.get('geolocation:location'):
             return super(LocationRequiredView, cls).__new__(cls, request, *args, **kwargs)
         else:
             request.GET = dict(request.GET.items())

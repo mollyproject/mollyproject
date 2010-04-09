@@ -47,7 +47,7 @@ class LocationUpdateForm(forms.Form):
                         self._errors[key] = ErrorList(['method requires that this field must be specified'])
                         
                 if not self._errors:
-                    cleaned_data['location'] = cleaned_data['latitude'], cleaned_data['longitude']
+                    cleaned_data['location'] = cleaned_data['longitude'], cleaned_data['latitude']
                     if not cleaned_data.get('name'):
                         try:
                             cleaned_data['name'] = self.reverse_geocode(

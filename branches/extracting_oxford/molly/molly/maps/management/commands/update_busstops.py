@@ -4,7 +4,7 @@ from django.core.management.base import NoArgsCommand
 
 from xml.etree import ElementTree as ET
 from django.contrib.gis.geos import Point
-from molly.oxpoints.models import Entity, EntityType
+from molly.maps.models import Entity, EntityType
 
 try:
     from cStringIO import StringIO

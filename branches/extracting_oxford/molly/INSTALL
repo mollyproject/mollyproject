@@ -1,23 +1,10 @@
 Installation
 ============
 
-Depenencies
------------
+Molly is intended to be used with virtualenv and pip. However, before dealing
+with the Python side of the installation you'll need to install the following
+Debian packages or their equivalents for your distribution or OS:
 
-Install the following packages:
- * python-psycopg2
- * python-beautifulsoup
- * python-simplejson
- * python-ldap
- * python-rdflib
- * python-imaging
- * python-cairo
- * python-textile
- * python-tz
- * libsasl2-modules-ldap
- * libapache2-webauth
- * python-oauth (?)
- * python-levenshtein
  * postgis
  * python-gdal
  * proj
@@ -27,54 +14,73 @@ Install the following packages:
  * postgresql-8.3
  * postgresql-8.3-postgis
  * postgresql-server-dev-8.3
- * python-setuptools
- * python-xml
+ * python-virtualenv
 
-Now install Django 1.1 and the oauth module for 1.0a using easy_install:
+Unfortunately, pip isn't yet in Debian stable, so you'll need to install it
+using easy_install:
 
- $ easy_install "Django==1.1"
- $ easy_install "oauth==1.0.1"
- $ easy_install pywurfl
+ $ aptitude install python-setuptools
+ $ easy_install pip
+
+Next, set up and activate a virtualenv:
+
+ $ virtualenv --no-site-packages ~/mollyenv
+ $ cd ~/mollyenv
+ $ source bin/activate
+
+Next, clone the git repository to a temporary directory:
+
+ $ git clone git://mollyproject.git.sourceforge.net/gitroot/mollyproject/mollyproject
+
+Install the Molly dependencies and Molly itself:
+
+ $ cd ~/mollyenv/mollyproject/branches/extracting_oxford/molly/
+ $ pip -E ~/mollyenv/ install `cat requirements/core.txt` --update
+ $ python setup.py install
 
 
-Apache configuration
---------------------
 
-Create symlinks from /etc/apache2/mods-enabled/ssl.(conf|load) to
-/etc/apache2/mods-available/ssl.(conf|load) .
 
 
 Database
 --------
 
-Follow the instructions at
-http://geodjango.org/docs/install.html#creating-a-spatial-database-template-for-postgis
-to create a spatially enabled database named mobile_portal. The easy way on
-Debian/Ubuntu is to run the create_template_postgis.sh script in this
-directory as a DB superuser (e.g. as postgres) and then use:
+There are two ways to create the PostGIS template used by a molly installation:
 
- $ createdb -T template_postgis mobile_portal
+ * Run one of the scripts in scripts/ as the postgis user.
+ * Follow the instructions at
+   http://geodjango.org/docs/install.html#creating-a-spatial-database-template-for-postgis
 
-As a superuser, create the mobile_portal user:
+The first one is likely the simpler, but if it fails the latter will provide
+more information to get it working.
 
- $ createuser mobile_portal -P
- Enter password for new role: 
- Enter it again: 
+Once this is done, you should create the molly database as a DB superuser
+(e.g. as postgres) by executing the following:
+
+ $ createdb -T template_postgis molly
+
+As a superuser, create the molly user:
+
+ $ createuser molly -P
+ Enter password for new role:
+ Enter it again:
  Shall the new role be a superuser? (y/n) n
  Shall the new role be allowed to create databases? (y/n) n
  Shall the new role be allowed to create more new roles? (y/n) n
 
 Make sure the password is the one given in settings.py
 
-Now edit pg_hba.conf to allow passworded logins from the new user by adding the
-following line somewhere near the top. Order is important, so it needs to go
-above any more general access directives.
+Now edit pg_hba.conf (usually in /var/lib/pgsql/data) on Fedora systems, and
+/etc/postgresql/8.3/main/ on Debian systems) to allow passworded logins from
+the new user by adding the following line somewhere near the top.
 
- local mobile_portal mobile_portal md5
+ local molly molly md5
+
+Order is important, so it needs to go above any more general access directives.
 
 Log in to the server and allow the user access to the database:
 
- $ psql mobile_portal
+ $ psql molly
  Welcome to psql 8.3.7, the PostgreSQL interactive terminal.
 
  Type:  \copyright for distribution terms
@@ -83,33 +89,21 @@ Log in to the server and allow the user access to the database:
         \g or terminate with semicolon to execute query
         \q to quit
 
- mobile_portal=# grant all on database mobile_portal to mobile_portal;
+ molly=# grant all on database mobile_portal to molly;
  GRANT
- mobile_portal=# ^D
+ molly=# ^D
 
 Either send SIGHUP or restart the server to reload pg_hba.conf
 
-Change directory to mobile_portal/mobile_portal and use manage.py to initialise the database:
+Change directory to your project directory and use manage.py to initialise the
+database:
 
- $ cd /Erewhon/mobile_portal/mobile_portal
+ $ cd /path/to/molly/project/
  $ python manage.py syncdb
 
 It should ask you to create a new superuser. Say yes and set one up.
 
-The information for a user is kept in two models, auth.User and core.Profile,
-with a foreign key link from the latter to the former. These are stored in the
-database as tables auth_user and core_profile. Django does not create an entry
-in the core_profile table for your superuser, which will make the site fall
-over when it can't be found. Use psql to insert a row into core_profile for the
-user.
+The site also requires a cache directory, currently /var/cache/molly .
+Create this directory and give user www-data and/or your developer users/group
+all permissions to do things to it.
 
-The site also requires a cache directory, currently /var/cache/mobile_portal .
-Create this directory and give user www-data all permissions to do things to
-it.
-
-
-WebAuth
--------
-
-Kerberos and LDAP
------------------

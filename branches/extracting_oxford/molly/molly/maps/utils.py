@@ -3,6 +3,9 @@ from django.shortcuts import get_object_or_404
 from molly.maps.models import EntityType, Entity
 
 def get_entity(type_slug, id):
+    print "E", type_slug, id
+    if id is None:
+        raise Exception
     entity_type = get_object_or_404(EntityType, slug=type_slug)
     id_field = str(entity_type.id_field)
     return get_object_or_404(Entity, **{id_field: id, 'entity_type': entity_type})

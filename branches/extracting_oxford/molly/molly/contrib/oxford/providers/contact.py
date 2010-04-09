@@ -1,11 +1,11 @@
 from xml.etree import ElementTree as ET
 import urllib, urllib2, re
+from lxml import etree
 
 from django.core.paginator import Paginator
 
 from molly.apps.contact.providers import BaseContactProvider
 
-import ElementSoup as ES
 
 class ContactProvider(BaseContactProvider):
     """
@@ -40,7 +40,7 @@ class ContactProvider(BaseContactProvider):
         i = 0
 
         while i < len(parts)-1:
-            if parts[i].lower() in _NOBILITY_PARTICLES:
+            if parts[i].lower() in ContactProvider._NOBILITY_PARTICLES:
                 parts[i:i+2] = [' '.join(parts[i:i+2])]
             elif parts[i] == '':
                 parts[i:i+1] = []
@@ -75,7 +75,7 @@ class ContactProvider(BaseContactProvider):
         response = urllib2.urlopen(
             self._API_URL % query_string,
         )
-        x_people = ET.parse(response)
+        x_people = etree.parse(response)
 
         people = []
         for x_person in x_people.getroot().findall('person'):
@@ -109,7 +109,7 @@ class ScrapingContactProvider(ContactProvider):
         response = urllib2.urlopen(
             self._API_URL % query_string,
         )
-        xml = ES.parse(response)
+        xml = etree.parse(response, parser=etree.HTMLParser())
         try:
             x_people = filter(lambda x:(x.attrib.get('class')=='people'), xml.findall('.//ul'))[0]
         except IndexError:
@@ -135,7 +135,7 @@ class ScrapingContactProvider(ContactProvider):
             people.append( details )
 
         results_count = int(filter(lambda x:(x.attrib.get('class')=='found'), xml.findall('.//div'))[0][1][0].text)
-        
+
         people = range(0, (page-1)*10) + people
         people += range(0, results_count-len(people))
         return Paginator(people, 10)
