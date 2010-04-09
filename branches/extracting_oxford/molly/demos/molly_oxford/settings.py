@@ -182,6 +182,8 @@ APPLICATIONS = [
     
     Application('molly.apps.webcams', 'webcams', 'Webcams'),
     
+    Application('molly_oxford.apps.results', 'results', 'Results releases'),
+    
     Application('molly.osm', 'osm', 'OpenStreetMap',
         display_to_user = False,
     ),
