@@ -38,7 +38,18 @@ Install the Molly dependencies and Molly itself:
  $ pip -E ~/mollyenv/ install `cat requirements/core.txt` --upgrade
  $ python setup.py install
 
+Unfortunately, the setup script for pycairo doesn't create a required file.
+Using your favourite editor, create a file
 
+  ~/mollyenv/lib[64]/python-<version>/site-packages/cairo/__init__.py
+
+containing the line "from _cairo import *".
+
+Once you've set up the database as below, you'll be able to run the development
+server as follows:
+
+ $ cd ~/mollyenv/mollyproject/branches/extracting_oxford/molly/demos/molly_oxford
+ $ python manage.py runserver
 
 
 
