@@ -94,8 +94,8 @@ TEMPLATE_DIRS = (
 
 APPLICATIONS = [
     Application('molly.apps.contact', 'contact', 'Contact search',
-        provider = 'molly.contrib.oxford.providers.ScrapingContactProvider',
-#        provider = 'molly.contrib.mit.providers.LDAPContactProvider',
+#        provider = 'molly.contrib.oxford.providers.ScrapingContactProvider',
+        provider = 'molly.contrib.mit.providers.LDAPContactProvider',
     ),
 
     Application('molly.apps.weather', 'weather', 'Weather',
@@ -106,11 +106,15 @@ APPLICATIONS = [
         ),
     ),
 
-    Application('molly.maps', 'maps', 'Places',
-        sources = [
-            'molly.contrib.oxford.sources.NaptanSource',
-            'molly.contrib.oxford.sources.OxpointsSource',
-            'molly.contrib.oxford.sources.OSMSource',
+    Application('molly.maps', 'places', 'Places',
+        providers = [
+            SimpleProvider('molly.providers.apps.maps.NaptanMapsProvider',
+                method='ftp',
+                username=SECRETS.journeyweb[0],
+                password=SECRETS.journeyweb[1],
+                areas=('340',),
+            ),
+            'molly.providers.apps.maps.OxontimeMapsProvider',
         ],
     ),
 
@@ -178,6 +182,7 @@ APPLICATIONS = [
             ),
             SimpleProvider('molly.providers.apps.search.ApplicationSearchProvider'),
         ],
+        display_to_user = False,
     ),
     
     Application('molly.apps.webcams', 'webcams', 'Webcams'),
