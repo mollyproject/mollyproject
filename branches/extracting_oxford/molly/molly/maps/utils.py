@@ -1,28 +1,21 @@
 from math import atan2, degrees
 from django.shortcuts import get_object_or_404
-from molly.maps.models import EntityType, Entity
+from molly.maps.models import EntityType, Entity, Identifier
 
-def get_entity(type_slug, id):
-    print "E", type_slug, id
-    if id is None:
-        raise Exception
-    entity_type = get_object_or_404(EntityType, slug=type_slug)
-    id_field = str(entity_type.id_field)
-    return get_object_or_404(Entity, **{id_field: id, 'entity_type': entity_type})
+def get_entity(scheme, value):
+    return get_object_or_404(Entity, _identifiers__scheme=scheme, _identifiers__value=value)
 
-def entity_ref(entity):
-    return (entity.entity_type.slug, entity.display_id)
 
 def is_favourite(request, entity):
-    return entity_ref(entity) in request.session.get('maps:favourites', ())
+    return entity.pk in request.session.get('maps:favourites', ())
     
 def make_favourite(request, entity, value):
     if not 'maps:favourites' in request.session:
         request.session['maps:favourites'] = []
     if value and not is_favourite(request, entity):
-        request.session['maps:favourites'].insert(0, entity_ref(entity))
+        request.session['maps:favourites'].insert(0, entity.pk)
     elif not value and is_favourite(request, entity):
-        request.session['maps:favourites'].remove(entity_ref(entity))
+        request.session['maps:favourites'].remove(entity.pk)
     request.session.modified = True
         
 COMPASS_POINTS = ('N','NE','E','SE','S','SW','W','NW')
