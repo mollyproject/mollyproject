@@ -39,17 +39,17 @@ urlpatterns = patterns('',
 #        'maps_postcode_detail'),
 
 
-    (r'^(?P<type_slug>[a-z_]+):(?P<id>[\dA-Z]+)/$',
+    (r'^(?P<scheme>[a-z_\-]+):(?P<value>[\da-zA-Z]+)/$',
         EntityDetailView, {},
         'entity'),
-    (r'^(?P<type_slug>[a-z_]+):(?P<id>[\dA-Z]+)/nearby/$',
+    (r'^(?P<scheme>[a-z_\-]+):(?P<value>[\da-zA-Z]+)/nearby/$',
         NearbyEntityListView, {},
         'entity_nearby_list'),
-    (r'^(?P<type_slug>[a-z_]+):(?P<id>[\dA-Z]+)/nearby/(?P<ptype>[^/]+)/$',
+    (r'^(?P<scheme>[a-z_\-]+):(?P<value>[\da-zA-Z]+)/nearby/(?P<ptype>[^/]+)/$',
         NearbyEntityDetailView, {},
         'entity_nearby_detail'),
 
-    (r'^(?P<type_slug>[a-z_]+):(?P<id>[\dA-Z]+)/update/$',
+    (r'^(?P<scheme>[a-z_\-]+):(?P<value>[\da-zA-Z]+)/update/$',
         EntityUpdateView, {},
         'entity_update'),
 

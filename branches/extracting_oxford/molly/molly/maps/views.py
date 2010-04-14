@@ -7,7 +7,7 @@ import urllib, urllib2, simplejson, copy
 from lxml import etree
 
 from django.contrib.gis.geos import Point
-from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.http import Http404, HttpResponse, HttpResponseRedirect, HttpResponsePermanentRedirect
 from django.shortcuts import get_object_or_404
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import capfirst
@@ -21,7 +21,7 @@ from molly.geolocation.views import LocationRequiredView
 
 from molly.osm.utils import get_generated_map, fit_to_map
 from molly.osm.models import OSMUpdate
-from molly.maps.models import Entity, EntityType, PostCode
+from molly.maps.models import Entity, EntityType
 
 from utils import get_entity, is_favourite, make_favourite, get_bearing
 from forms import BusstopSearchForm, UpdateOSMForm
@@ -70,19 +70,15 @@ class NearbyListView(LocationRequiredView):
             return_url = reverse('maps:nearby_list')
 
         entity_types = EntityType.objects.filter(show_in_nearby_list=True)
-        university = [et for et in entity_types if et.source == 'oxpoints']
-        public = [et for et in entity_types if et.source != 'oxpoints']
-
-
+        
         context.update({
-            'university': university,
-            'public': public,
+            'entity_types': entity_types,
             'entity': entity,
             'return_url': return_url,
         })
         if entity and not entity.location:
-            return mobile_render(request, context, 'maps/entity_without_location')
-        return mobile_render(request, context, 'maps/nearby_list')
+            return cls.render(request, context, 'maps/entity_without_location')
+        return cls.render(request, context, 'maps/nearby_list')
 
 
 class NearbyDetailView(LocationRequiredView, ZoomableView):
@@ -197,7 +193,7 @@ class NearbyDetailView(LocationRequiredView, ZoomableView):
         found_entity_types = set()
         for e in chain(*entities):
             e.bearing = get_bearing(point, e.location)
-            found_entity_types.add(e.entity_type)
+            found_entity_types.add(e.primary_type)
         found_entity_types -= set(entity_types)
 
         context.update({
@@ -209,16 +205,15 @@ class NearbyDetailView(LocationRequiredView, ZoomableView):
             'found_entity_types': found_entity_types,
         })
         #raise Exception(context)
-        return mobile_render(request, context, 'maps/nearby_detail')
+        return cls.render(request, context, 'maps/nearby_detail')
 
 
 
 class EntityDetailView(ZoomableView):
     default_zoom = 16
     OXPOINTS_URL = 'http://m.ox.ac.uk/oxpoints/id/%s.json'
-    OXONTIME_URL = 'http://www.oxontime.com/pip/stop.asp?naptan=%s&textonly=1'
-
-    def get_metadata(cls, request, type_slug, id):
+    
+    def get_metadata(cls, request, scheme, value):
         entity = get_entity(type_slug, id)
         user_location = request.session.get('geolocation:location')
         if user_location and entity.location:
@@ -237,97 +232,39 @@ class EntityDetailView(ZoomableView):
             ),
         }
 
-    def initial_context(cls, request, type_slug, id):
+    def initial_context(cls, request, scheme, value):
         context = super(cls, cls).initial_context(request)
-        print "F"
-        entity = get_entity(type_slug, id)
+        entity = get_entity(scheme, value)
         context.update({
             'entity': entity,
-            'entity_types': [entity.entity_type],
+            'entity_types': entity.all_types.all(),
         })
         return context
 
     @BreadcrumbFactory
-    def breadcrumb(cls, request, context, type_slug, id):
+    def breadcrumb(cls, request, context, scheme, value):
         if request.session.get('geolocation:location'):
             parent_view = NearbyDetailView
         else:
             parent_view = CategoryDetailView
+        entity = get_entity(scheme, value)
         return Breadcrumb(
             'maps',
-            lazy_parent(parent_view, ptypes=type_slug),
+            lazy_parent(parent_view, ptypes=entity.primary_type.slug),
             context['entity'].title,
-            lazy_reverse('maps:entity', args=[type_slug,id]),
+            lazy_reverse('maps:entity', args=[scheme,value]),
         )
 
-    def handle_GET(cls, request, context, type_slug, id):
+    def handle_GET(cls, request, context, scheme, value):
         entity = context['entity']
-        entity.is_favourite = is_favourite(request, entity)
-        entity_handler = getattr(cls, 'display_%s' % entity.entity_type.source)
-        return entity_handler(request, context, entity)
+        if entity.absolute_url != request.path:
+            return HttpResponsePermanentRedirect(entity.absolute_url)
+        
+        for provider in reversed(cls.conf.providers):
+            provider.augment_metadata((entity,))
 
-    def display_oxpoints(cls, request, context, entity):
-        try:
-            data = simplejson.load(urllib.urlopen(EntityDetailView.OXPOINTS_URL % entity.oxpoints_id))[0]
-        except urllib2.HTTPError, e:
-            if e.code == 404:
-                raise Http404
-            else:
-                raise
+        return cls.render(request, context, 'maps/entity_detail')
 
-        context['data'] = data
-
-        return mobile_render(request, context, 'maps/oxpoints')
-
-    def display_naptan(cls, request, context, entity):
-        try:
-            xml = etree.parse(urllib.urlopen(EntityDetailView.OXONTIME_URL % entity.atco_code), parser = etree.HTMLParser())
-        except (TypeError, IOError):
-            rows = []
-        else:
-            try:
-                cells = xml.find('.//table').findall('td')
-                rows = [cells[i:i+4] for i in range(0, len(cells), 4)]
-            except AttributeError:
-                rows = []
-            try:
-                context['pip_info'] = xml.find(".//p[@class='pipdetail']").text
-            except:
-                context['pip_info'] = None
-
-        services = {}
-        for row in rows:
-            service, destination, proximity = [row[i].text.encode('utf8').replace('\xc2\xa0', '') for i in range(3)]
-
-            if not service in services:
-                services[service] = (destination, proximity, [])
-            else:
-                services[service][2].append(proximity)
-
-        services = [(s[0], s[1][0], s[1][1], s[1][2]) for s in services.items()]
-        services.sort(key= lambda x: ( ' '*(5-len(x[0]) + (1 if x[0][-1].isalpha() else 0)) + x[0] ))
-        services.sort(key= lambda x: 0 if x[2]=='DUE' else int(x[2].split(' ')[0]))
-
-        context['services'] = services
-        context['with_meta_refresh'] = datetime.now() > request.session.get('core:last_ajaxed', datetime(1970, 1, 1)) + timedelta(600)
-
-        if request.GET.get('ajax') == 'true':
-            request.session['core:last_ajaxed'] = datetime.now()
-            context = {
-                'services': context['services'],
-                'time': datetime.now().strftime('%H:%M:%S'),
-            }
-            return HttpResponse(simplejson.dumps(context), mimetype='application/json')
-        else:
-            context['services_json'] = simplejson.dumps(services)
-            return mobile_render(request, context, 'maps/busstop')
-
-    def display_osm(cls, request, context, entity):
-        return mobile_render(request, context, 'maps/osm/base')
-
-    def display_postcode(cls, request, context, entity):
-        context['entities'] = Entity.objects.filter(post_code=entity.post_code)
-        return mobile_render(request, context, 'maps/postcode')
 
 class EntityUpdateView(ZoomableView):
     default_zoom = 16
