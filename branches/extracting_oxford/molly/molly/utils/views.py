@@ -9,6 +9,7 @@ from django.http import HttpResponse, HttpResponseNotAllowed
 from django.template import TemplateDoesNotExist, RequestContext
 from django.shortcuts import render_to_response
 from django.core.paginator import Paginator
+from django.contrib.gis.geos import Point
 
 logger = logging.getLogger('core.requests')
 
@@ -146,7 +147,10 @@ Supported ranges are:
         return HttpResponse(yaml.safe_dump(context), mimetype="application/x-yaml")
 
     def simplify_context(cls, context):
-        if isinstance(context, dict):
+        print type(context)
+        if hasattr(context, 'simplify_for_render'):
+            return context.simplify_for_render(cls.simplify_context)
+        elif isinstance(context, dict):
             out = {}
             for key in context:
                 try:
@@ -160,6 +164,7 @@ Supported ranges are:
                 try:
                     out.append(cls.simplify_context(value))
                 except NotImplementedError:
+                    print "Problem", type(value)
                     pass
             if isinstance(context, tuple):
                 return tuple(out)
@@ -169,16 +174,14 @@ Supported ranges are:
             return context
         elif isinstance(context, (datetime, date)):
             return DateUnicode(context.isoformat(' '))
-        elif hasattr(context, 'simplify'):
-            return context.simplify(cls.simplify_context)
-        elif hasattr(type(context), '__bases__') and models.Model in type(context).__bases__:
+        elif hasattr(type(context), '__mro__') and models.Model in type(context).__mro__:
             # It's a Model instance
             if hasattr(context._meta, 'expose_fields'):
                 expose_fields = context._meta.expose_fields
             else:
                 expose_fields = [f.name for f in context._meta.fields]
             out = {
-                '_type': '.'.join(context._meta.app_label, context._meta.object_name),
+                '_type': '%s.%s' % (context.__module__[:-7], context._meta.object_name),
                 '_pk': context.pk,
             }
             for field_name in expose_fields:
@@ -188,7 +191,7 @@ Supported ranges are:
                     value = getattr(context, field_name)
                     if hasattr(type(value), '__bases__') and models.Model in type(value).__bases__:
                         value = {
-                            '_type': '.'.join(value._meta.app_label, value._meta.object_name),
+                            '_type': '%s.%s' % (value.__module__[:-7], value._meta.object_name),
                             '_pk': value.pk,
                         }
                     out[field_name] = cls.simplify_context(value)
@@ -200,8 +203,11 @@ Supported ranges are:
         elif context is None:
             return None
         elif isinstance(context, QuerySet):
-            return list(context)
+            return cls.simplify_context(list(context))
+        elif isinstance(context, Point):
+            return cls.simplify_context(list(context))
         else:
+            print "Couldn't simplify", type(context)
             raise NotImplementedError
 
     XML_DATATYPES = (
@@ -225,7 +231,9 @@ Supported ranges are:
             node.attrib['type'] = [d[1] for d in cls.XML_DATATYPES if isinstance(value, d[0])][0]
         elif isinstance(value, dict):
             if '_type' in value:
-                node = ET.Element('object', {'type': value['_type'], 'pk': value.get('_pk', '')})
+                node = ET.Element('object', {'type': value['_type'], 'pk': unicode(value.get('_pk', ''))})
+                del value['_type']
+                del value['_pk']
             else:
                 node = ET.Element('collection', {'type': 'mapping'})
             for key in value:
