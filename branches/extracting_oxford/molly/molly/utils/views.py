@@ -122,7 +122,7 @@ Supported ranges are:
         return render_method(request, context, template_name)
 
     def render_json(cls, request, context, template_name):
-        context = cls.simplify_context(context)
+        context = cls.simplify_value(context)
         return HttpResponse(simplejson.dumps(context), mimetype="application/json")
 
     def render_html(cls, request, context, template_name):
@@ -134,7 +134,7 @@ Supported ranges are:
         raise NotImplementedError
 
     def render_xml(cls, request, context, template_name):
-        context = cls.simplify_context(context)
+        context = cls.simplify_value(context)
         return HttpResponse(ET.tostring(cls.serialize_to_xml(context)), mimetype="application/xml")
 
     def render_yaml(cls, request, context, template_name):
@@ -143,71 +143,48 @@ Supported ranges are:
         except ImportError:
             raise NotImplementedError
 
-        context = cls.simplify_context(context)
+        context = cls.simplify_value(context)
         return HttpResponse(yaml.safe_dump(context), mimetype="application/x-yaml")
 
-    def simplify_context(cls, context):
-        print type(context)
-        if hasattr(context, 'simplify_for_render'):
-            return context.simplify_for_render(cls.simplify_context)
-        elif isinstance(context, dict):
+    def simplify_value(cls, value):
+        if hasattr(value, 'simplify_for_render'):
+            return value.simplify_for_render(cls.simplify_value)
+        elif isinstance(value, dict):
             out = {}
-            for key in context:
+            for key in value:
                 try:
-                    out[key] = cls.simplify_context(context[key])
+                    out[key] = cls.simplify_value(value[key])
                 except NotImplementedError:
                     pass
             return out
-        elif isinstance(context, (list, tuple, set, frozenset)):
+        elif isinstance(value, (list, tuple, set, frozenset)):
             out = []
-            for value in context:
+            for subvalue in value:
                 try:
-                    out.append(cls.simplify_context(value))
+                    out.append(cls.simplify_value(subvalue))
                 except NotImplementedError:
-                    print "Problem", type(value)
+                    print "Problem", type(subvalue)
                     pass
-            if isinstance(context, tuple):
+            if isinstance(value, tuple):
                 return tuple(out)
             else:
                 return out
-        elif isinstance(context, (basestring, int, float)):
-            return context
-        elif isinstance(context, (datetime, date)):
+        elif isinstance(value, (basestring, int, float)):
+            return value
+        elif isinstance(value, (datetime, date)):
             return DateUnicode(context.isoformat(' '))
-        elif hasattr(type(context), '__mro__') and models.Model in type(context).__mro__:
-            # It's a Model instance
-            if hasattr(context._meta, 'expose_fields'):
-                expose_fields = context._meta.expose_fields
-            else:
-                expose_fields = [f.name for f in context._meta.fields]
-            out = {
-                '_type': '%s.%s' % (context.__module__[:-7], context._meta.object_name),
-                '_pk': context.pk,
-            }
-            for field_name in expose_fields:
-                if field_name in ('password',):
-                    continue
-                try:
-                    value = getattr(context, field_name)
-                    if hasattr(type(value), '__bases__') and models.Model in type(value).__bases__:
-                        value = {
-                            '_type': '%s.%s' % (value.__module__[:-7], value._meta.object_name),
-                            '_pk': value.pk,
-                        }
-                    out[field_name] = cls.simplify_context(value)
-                except NotImplementedError:
-                    pass
-            return out
-        elif isinstance(context, Paginator):
-            return cls.simplify_context(context.object_list)
-        elif context is None:
+        elif hasattr(type(value), '__mro__') and models.Model in type(value).__mro__:
+            return cls.simplify_model(value)
+        elif isinstance(value, Paginator):
+            return cls.simplify_value(value.object_list)
+        elif value is None:
             return None
-        elif isinstance(context, QuerySet):
-            return cls.simplify_context(list(context))
-        elif isinstance(context, Point):
-            return cls.simplify_context(list(context))
+        elif isinstance(value, QuerySet):
+            return cls.simplify_value(list(value))
+        elif isinstance(value, Point):
+            return cls.simplify_value(list(value))
         else:
-            print "Couldn't simplify", type(context)
+            print "Couldn't simplify", type(value)
             raise NotImplementedError
 
     XML_DATATYPES = (
@@ -217,6 +194,31 @@ Supported ranges are:
         (int, 'integer'),
         (float, 'float'),
     )
+    
+    def simplify_model(cls, obj, terse=False):
+        # It's a Model instance
+        if hasattr(obj._meta, 'expose_fields'):
+            expose_fields = obj._meta.expose_fields
+        else:
+            expose_fields = [f.name for f in obj._meta.fields]
+        out = {
+            '_type': '%s.%s' % (obj.__module__[:-7], obj._meta.object_name),
+            '_pk': obj.pk,
+        }
+        print "EEE", type(obj), hasattr(obj, 'get_absolute_url') 
+        if hasattr(obj, 'get_absolute_url'):
+            out['_url'] = obj.get_absolute_url()
+        for field_name in expose_fields:
+            if field_name in ('password',):
+                continue
+            try:
+                value = getattr(obj, field_name)
+                if hasattr(type(value), '__bases__') and models.Model in type(value).__bases__:
+                    value = cls.simplify_model(value, terse=True)
+                out[field_name] = cls.simplify_value(value)
+            except NotImplementedError:
+                pass
+        return out
 
     def serialize_to_xml(cls, value):
         if value is None:
@@ -234,6 +236,9 @@ Supported ranges are:
                 node = ET.Element('object', {'type': value['_type'], 'pk': unicode(value.get('_pk', ''))})
                 del value['_type']
                 del value['_pk']
+                if '_url' in value:
+                    node.attrib['url'] = value['_url']
+                    del value['_url']
             else:
                 node = ET.Element('collection', {'type': 'mapping'})
             for key in value:
