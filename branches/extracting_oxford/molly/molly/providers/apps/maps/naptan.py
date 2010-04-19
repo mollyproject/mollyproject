@@ -81,7 +81,9 @@ class NaptanContentHandler(ContentHandler):
             'outside': 'Outside', 'o/s': 'Outside', 'nr': 'Near', 'inside': 'Inside',
         }.get(ind, ind)
         
-        if (ind or '').lower() == 'corner':
+        if meta['stop-type'] == 'RSE':
+            title = cnm
+        elif (ind or '').lower() == 'corner':
             title = "Corner of %s and %s" % (str, lmk)
         elif cnm == str:
             if ind in ('Opposite','Adjacent to','Outside','Near'):
