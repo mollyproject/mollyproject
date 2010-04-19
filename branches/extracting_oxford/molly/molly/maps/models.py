@@ -70,6 +70,8 @@ class Entity(models.Model):
     is_stack = models.BooleanField(default=False)
     
     _identifiers = models.ManyToManyField(Identifier)
+    identifier_scheme = models.CharField(max_length=32)
+    identifier_value = models.CharField(max_length=256)
     
     @property
     def identifiers(self):
@@ -132,8 +134,12 @@ class Entity(models.Model):
     def _get_absolute_url(self, identifiers):
         for scheme in IDENTIFIER_SCHEME_PREFERENCE:
             if scheme in identifiers:
+                self.identifier_scheme, self.identifier_value = scheme, identifiers[scheme]
                 return reverse('maps:entity', args=[scheme, identifiers[scheme]])
         raise AssertionError
+    
+    def get_absolute_url(self):
+        return self.absolute_url
 
     def __unicode__(self):
         return self.title
@@ -150,13 +156,13 @@ class Entity(models.Model):
         return simplify({
             '_type': '%s.%s' % (self.__module__[:-7], self._meta.object_name),
             '_pk': self.pk,
+            '_url': self.get_absolute_url(),
             'location': self.location,
             'parent': self.parent,
             'all_types': list(self.all_types_completion.all()),
             'primary_type': self.primary_type,
             'metadata': self.metadata,
             'title': self.title,
-            'url': self.absolute_url,
             'identifiers': self.identifiers,
         })
             
