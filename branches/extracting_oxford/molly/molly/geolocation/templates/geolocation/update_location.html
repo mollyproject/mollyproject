@@ -1,0 +1,12 @@
+{% extends "geolocation/base.html" %}
+
+{% block extrahead %}{{ block.super }}
+<meta name="robots" content="noindex"/>
+{% endblock %}
+
+{% block content %}
+
+{% include "geolocation/update_location_embed.html" %}
+
+
+{% endblock %}
