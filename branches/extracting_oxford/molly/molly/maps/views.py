@@ -339,29 +339,29 @@ class EntityUpdateView(ZoomableView):
 
 
 class NearbyEntityListView(NearbyListView):
-    def is_location_required(cls, request, type_slug, id):
+    def is_location_required(cls, request, scheme, value):
         return False
 
-    def get_metadata(cls, request, type_slug, id):
-        entity = get_entity(type_slug, id)
+    def get_metadata(cls, request, scheme, value):
+        entity = get_entity(scheme, value)
         return super(NearbyEntityListView, cls).get_metadata(request, entity)
 
-    def initial_context(cls, request, type_slug, id):
+    def initial_context(cls, request, scheme, value):
         return {
-            'entity': get_entity(type_slug, id),
+            'entity': get_entity(scheme, value),
         }
 
     @BreadcrumbFactory
-    def breadcrumb(cls, request, context, type_slug, id):
+    def breadcrumb(cls, request, context, scheme, value):
         return Breadcrumb(
             'maps',
-            lazy_parent(EntityDetailView, type_slug=type_slug, id=id),
+            lazy_parent(EntityDetailView, scheme=scheme, value=value),
             'Things near %s' % context['entity'].title,
-            lazy_reverse('maps_entity_nearby_list', args=[type_slug,id])
+            lazy_reverse('maps_entity_nearby_list', args=[scheme, value])
         )
 
-    def handle_GET(cls, request, context, type_slug, id):
-        entity = get_entity(type_slug, id)
+    def handle_GET(cls, request, context, scheme, value):
+        entity = get_entity(scheme, value)
         return super(NearbyEntityListView, cls).handle_GET(request, context, entity)
 
 class NearbyEntityDetailView(NearbyDetailView):
