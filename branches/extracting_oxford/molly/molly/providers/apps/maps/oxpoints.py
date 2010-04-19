@@ -99,6 +99,8 @@ class OxpointsMapsProvider(BaseMapsProvider):
         data = simplejson.load(urllib.urlopen(self.ALL_OXPOINTS))
         source = self._get_source()
         
+        entities, parents = {}, []
+        
         for datum in data:
             oxpoints_id = datum['uri'].rsplit('/')[-1]
             oxpoints_type = datum['type'].rsplit('#')[-1]
@@ -118,6 +120,15 @@ class OxpointsMapsProvider(BaseMapsProvider):
                 entity.location = Point(datum['geo_long'], datum['geo_lat'], srid=4326)
             else:
                 entity.location = None
+                
+            if 'dct_isPartOf' in datum:
+                parent_id = datum['dct_isPartOf']['uri'].rsplit('/')[-1]
+                if parent_id in entities:
+                    entity.parent = entities[parent_id]
+                else:
+                    parents.append((oxpoints_id, parent_id))
+            else:
+                entity.parent = None
             
             entity.metadata['oxpoints'] = datum
             
@@ -129,7 +140,15 @@ class OxpointsMapsProvider(BaseMapsProvider):
             entity.save(identifiers=identifiers)
             entity.all_types = [self.entity_types[t] for t in self.OXPOINTS_TYPES[oxpoints_type]]
             entity.update_all_types_completion()
+            
+            entities[oxpoints_id] = entity
         
+        for oxpoints_id, parent_id in parents:
+            try:
+                entities[oxpoints_id].parent = entities[parent_id]
+                entities[oxpoints_id].save()
+            except KeyError:
+                pass
 
         
 if __name__ == '__main__':
