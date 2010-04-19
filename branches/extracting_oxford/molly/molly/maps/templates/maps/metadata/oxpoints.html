@@ -1,70 +1,71 @@
 {% if entity.metadata.oxpoints %}{% load maps %}{% load portal_misc %}
 
+{% with entity.metadata.oxpoints as oxp %}
 <div class="section">
-	<h2>{{ entity.metadata.oxpoints.dc_title }}</h2>
+	<h2>{{ oxp.dc_title }}</h2>
 <div class="article"><div class="bubble pad-5">
 	<dl>
-	{% if data.oxp_hasHomepage or data.oxp_hasITHomepage or data.oxp_hasWeblearn or data.oxp_hasLibraryHomepage %}
+	{% if oxp.foaf_homepage or oxp.oxp_hasITHomepage or oxp.oxp_hasWeblearn or oxp.oxp_hasLibraryHomepage %}
 		<dt>Websites</dt>
-		{% if data.oxp_hasHomepage %}
-		    <dd><a href="{{ data.oxp_hasHomepage.uri }}">Homepage</a></dd>
+		{% if oxp.foaf_homepage %}
+		    <dd><a href="{{ oxp.foaf_homepage.uri }}">Homepage</a></dd>
 		{% endif %}
-		{% if data.oxp_hasITHomepage %}
-		    <dd><a href="{{ data.oxp_hasITHomepage.uri }}">IT Homepage</a></dd>
+		{% if oxp.oxp_hasITHomepage %}
+		    <dd><a href="{{ oxp.oxp_hasITHomepage.uri }}">IT Homepage</a></dd>
 		{% endif %}
-		{% if data.oxp_hasWeblearn %}
-		    <dd><a href="{{ data.oxp_hasWeblearn.uri }}">Weblearn</a></dd>
+		{% if oxp.oxp_hasWeblearn %}
+		    <dd><a href="{{ oxp.oxp_hasWeblearn.uri }}">Weblearn</a></dd>
 		{% endif %}
-		{% if data.oxp_hasLibraryHomepage %}
-		    <dd><a href="{{ data.oxp_hasLibraryHomepage.uri }}">Library</a></dd>
+		{% if oxp.oxp_hasLibraryHomepage %}
+		    <dd><a href="{{ oxp.oxp_hasLibraryHomepage.uri }}">Library</a></dd>
 		{% endif %}
 	{% endif %}
 
 
-	{% if data.oxp_occupies %}
+	{% if oxp.oxp_occupies %}
 		<dt>Occupies</dt>
-		{% for place in data.oxp_occupies %}
+		{% for place in oxp.oxp_occupies %}
 		{% with place|load_oxp_json as place_json %}
 		    <dd><a href="{{ place_json|oxp_portal_url }}">{{ place_json.dc_title }}</a></dd>
 		{% endwith %}
 		{% endfor %}
 	{% endif %}
 
-	{% if data.passiveProperties.oxp_occupies %}
+	{% if oxp.passiveProperties.oxp_occupies %}
 		<dt>Occupied by</dt>
-		{% for place in data.passiveProperties.oxp_occupies %}
+		{% for place in oxp.passiveProperties.oxp_occupies %}
 		{% with place|load_oxp_json as place_json %}
 		    <dd><a href="{{ place_json|oxp_portal_url }}">{{ place_json.dc_title }}</a></dd>
 		{% endwith %}
 		{% endfor %}
 	{% endif %}
 
-	{% if data.oxp_subsetOf %}
+	{% if oxp.dct_isPartOf %}
 		<dt>Parent unit</dt>
-		{% with data.oxp_subsetOf|load_oxp_json as place_json %}
+		{% with oxp.dct_isPartOf|load_oxp_json as place_json %}
 		<dd><a href="{{ place_json|oxp_portal_url }}">{{ place_json.dc_title }}</a></dd>
 		{% endwith %}
 	{% endif %}
 
-	{% if data.passiveProperties.oxp_subsetOf %}
+	{% if oxp.passiveProperties.dct_isPartOf %}
 		<dt>Sub-units</dt>
-		{% for place in data.passiveProperties.oxp_subsetOf %}
+		{% for place in oxp.passiveProperties.dct_isPartOf %}
 		{% with place|load_oxp_json as place_json %}
 		    <dd><a href="{{ place_json|oxp_portal_url }}">{{ place_json.dc_title }}</a></dd>
 		{% endwith %}
 		{% endfor %}
 	{% endif %}
 
-	{% if data.oxp_physicallyContainedWithin %}
+	{% if oxp.oxp_physicallyContainedWithin %}
 		<dt>Contained within</dt>
-		{% with data.oxp_physicallyContainedWithin|load_oxp_json as place_json %}
+		{% with oxp.oxp_physicallyContainedWithin|load_oxp_json as place_json %}
 		    <dd><a href="{{ place_json|oxp_portal_url }}">{{ place_json.dc_title }}</a></dd>
 		{% endwith %}
 	{% endif %}
 
-	{% if data.passiveProperties.oxp_physicallyContainedWithin %}
+	{% if oxp.passiveProperties.oxp_physicallyContainedWithin %}
 		<dt>Contains</dt>
-		{% for place in data.passiveProperties.oxp_physicallyContainedWithin %}
+		{% for place in oxp.passiveProperties.oxp_physicallyContainedWithin %}
 		{% with place|load_oxp_json as place_json %}
 		    <dd><a href="{{ place_json|oxp_portal_url }}">{{ place_json.dc_title }}</a></dd>
 		{% endwith %}
@@ -74,16 +75,16 @@
 	</div></div>
 </div>
 
-{% if data.oxp_inImage %}
+{% if oxp.foaf_depiction %}
 <div class="section">
 	<h2>Images</h2>
-	{% for image in data.oxp_inImage %}
+	{% for image in oxp.foaf_depiction %}
 		{% external_image image.uri asdiv %}
 	{% endfor %}
 </div>
 {% endif %}
 
-
+{% endwith %}
 
 
 {% endif %}

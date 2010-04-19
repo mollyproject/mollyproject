@@ -78,7 +78,7 @@
 {% else %}
 <div class="note">
     There isn't anything that close to you.
-    Try <a class="no-icon" href="{% url core_update_location %}?return_url={{ path }}">updating
+    Try <a class="no-icon" href="{% url geolocation:update %}?return_url={{ path }}">updating
     your location</a>{% ifnotequal zoom 10 %} or <a class="no-icon" href="?zoom={{ zoom|add:"-1" }}">widening your search</a>{% endifnotequal %}.</div>
 {% endif %}
 </ul>
