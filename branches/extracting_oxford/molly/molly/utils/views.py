@@ -148,7 +148,7 @@ Supported ranges are:
 
     def simplify_value(cls, value):
         if hasattr(value, 'simplify_for_render'):
-            return value.simplify_for_render(cls.simplify_value)
+            return value.simplify_for_render(cls.simplify_value, cls.simplify_model)
         elif isinstance(value, dict):
             out = {}
             for key in value:
@@ -179,8 +179,8 @@ Supported ranges are:
             return cls.simplify_value(value.object_list)
         elif value is None:
             return None
-        elif isinstance(value, QuerySet):
-            return cls.simplify_value(list(value))
+        elif hasattr(value, '__iter__'):
+            return [cls.simplify_value(item) for item in value]
         elif isinstance(value, Point):
             return cls.simplify_value(list(value))
         else:
@@ -196,6 +196,8 @@ Supported ranges are:
     )
     
     def simplify_model(cls, obj, terse=False):
+        if obj is None:
+            return None
         # It's a Model instance
         if hasattr(obj._meta, 'expose_fields'):
             expose_fields = obj._meta.expose_fields
@@ -208,16 +210,19 @@ Supported ranges are:
         print "EEE", type(obj), hasattr(obj, 'get_absolute_url') 
         if hasattr(obj, 'get_absolute_url'):
             out['_url'] = obj.get_absolute_url()
-        for field_name in expose_fields:
-            if field_name in ('password',):
-                continue
-            try:
-                value = getattr(obj, field_name)
-                if hasattr(type(value), '__bases__') and models.Model in type(value).__bases__:
-                    value = cls.simplify_model(value, terse=True)
-                out[field_name] = cls.simplify_value(value)
-            except NotImplementedError:
-                pass
+        if terse:
+            out['_terse'] = True
+        else:
+            for field_name in expose_fields:
+                if field_name in ('password',):
+                    continue
+                try:
+                    value = getattr(obj, field_name)
+                    if hasattr(type(value), '__bases__') and models.Model in type(value).__bases__:
+                        value = cls.simplify_model(value, terse=True)
+                    out[field_name] = cls.simplify_value(value)
+                except NotImplementedError:
+                    pass
         return out
 
     def serialize_to_xml(cls, value):
@@ -239,6 +244,9 @@ Supported ranges are:
                 if '_url' in value:
                     node.attrib['url'] = value['_url']
                     del value['_url']
+                if value.get('_terse'):
+                    node.attrib['terse'] = 'true'
+                    del value['_terse']
             else:
                 node = ET.Element('collection', {'type': 'mapping'})
             for key in value:

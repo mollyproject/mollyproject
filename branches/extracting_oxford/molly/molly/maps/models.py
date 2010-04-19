@@ -34,10 +34,9 @@ class EntityType(models.Model):
             subtypes_of |= set(subtype_of.subtype_of_completion.all())
 
         if set(self.subtype_of_completion.all()) != subtypes_of:
-            print dir(self)
+            self.subtype_of_completion = subtypes_of
             for et in self.subtypes.all():
-                if et != self:
-                    et.save()
+                et.save()
             for e in self.entities_completion.all():
                 e.save()
         else:
@@ -151,16 +150,15 @@ class Entity(models.Model):
         else:
             return getattr(self, self.entity_type.id_field)
             
-    def simplify_for_render(self, simplify):
-        print "ETs", list(self.all_types_completion.all())
-        return simplify({
+    def simplify_for_render(self, simplify_value, simplify_model):
+        return simplify_value({
             '_type': '%s.%s' % (self.__module__[:-7], self._meta.object_name),
             '_pk': self.pk,
             '_url': self.get_absolute_url(),
             'location': self.location,
-            'parent': self.parent,
-            'all_types': list(self.all_types_completion.all()),
-            'primary_type': self.primary_type,
+            'parent': simplify_model(self.parent, terse=True),
+            'all_types': [simplify_model(t, terse=True) for t in self.all_types_completion.all()],
+            'primary_type': simplify_model(self.primary_type, terse=True),
             'metadata': self.metadata,
             'title': self.title,
             'identifiers': self.identifiers,
