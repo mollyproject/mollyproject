@@ -28,7 +28,7 @@ class OxpointsMapsProvider(BaseMapsProvider):
         'Hall': ('hall',),
     }
     
-    def load_entity_types(self):
+    def _get_entity_types(self):
         """
         Load the entity types into the database, returning a dictionary from
         rdf types (less the namespace) to EntityType objects.
@@ -80,7 +80,7 @@ class OxpointsMapsProvider(BaseMapsProvider):
                 entity_types[slug].subtype_of.add(entity_types[s])
             entity_types[slug].save()
             
-        self.entity_types = entity_types
+        return entity_types
 
     def _get_source(self):
         try:
@@ -94,7 +94,7 @@ class OxpointsMapsProvider(BaseMapsProvider):
         return source
         
     def import_data(self):
-        self.load_entity_types()
+        self.entity_types = self._get_entity_types()
         
         data = simplejson.load(urllib.urlopen(self.ALL_OXPOINTS))
         source = self._get_source()
