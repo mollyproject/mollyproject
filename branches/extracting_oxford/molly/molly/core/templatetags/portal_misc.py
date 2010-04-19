@@ -32,7 +32,7 @@ def this_year(value, arg=None):
     
 @register.filter(name="oxp_id")
 def oxp_id(value):
-    prefix = 'http://m.ox.ac.uk/oxpoints/id/'
+    prefix = 'http://oxpoints.oucs.ox.ac.uk/id/'
     try:
         if value['uri'].startswith(prefix):
             return value['uri'][len(prefix):]
@@ -43,12 +43,13 @@ def oxp_id(value):
 
 @register.filter(name="load_oxp_json")
 def load_oxp_json(value):
+    print value['uri']
     return simplejson.load(urllib.urlopen(value['uri']+'.json'))[0]
     
 @register.filter(name="oxp_portal_url")
 def oxp_portal_url(value):
     try:
-        return Entity.objects.get(oxpoints_id=int(oxp_id(value))).get_absolute_url()
+        return Entity.objects.get(_identifiers__scheme='oxpoints', _identifiers__value=oxp_id(value)).get_absolute_url()
     except Entity.DoesNotExist:
         return ""
     
