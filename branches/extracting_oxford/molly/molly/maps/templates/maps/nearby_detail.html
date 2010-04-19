@@ -1,4 +1,4 @@
-{% extends "maps/base.xhtml" %}{% load portal_misc %}
+{% extends "maps/base.html" %}{% load portal_misc %}
 
 {% block extrahead %}{{ block.super }}{% if entity %}
 <meta name="robots" content="noindex" />{% endif %}{% endblock %}
@@ -49,11 +49,11 @@
 
 {% ifnotequal style_group "dumb" %}
     <div class="backgrounded-image" style="background-image:url('{% url osm:generated_map map_hash %}'); height:{{ map_height }}px">
-    {% include "maps/map_elements.xhtml" %}
+    {% include "maps/map_elements.html" %}
     </div>
 {% else %}
     <img src="{% url osm:generated_map map_hash %}" alt="Map"><br />
-    {% include "maps/map_elements.xhtml" %}
+    {% include "maps/map_elements.html" %}
 {% endifnotequal %}
 
 

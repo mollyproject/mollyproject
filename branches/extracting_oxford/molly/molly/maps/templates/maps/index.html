@@ -1,4 +1,4 @@
-{% extends "maps/base.xhtml" %}{% load portal_misc %}{% load molly_apps_search %}
+{% extends "maps/base.html" %}{% load portal_misc %}{% load molly_apps_search %}
 
 {% block title %}m.ox | Maps{% endblock %}
 
@@ -47,7 +47,7 @@
 {# Points of Interest #}
 <div class="section">
   <h2>Browse Points of Interest</h2>
-  {% include "geolocation/update_location_embed.xhtml" %}
+  {% include "geolocation/update_location_embed.html" %}
   <ul>
     <li><a href="{% url maps:nearby_list %}">Near Me</a></li>
     <li class="round-bottom"><a href="{% url maps:category_list %}">By Category</a></li>
