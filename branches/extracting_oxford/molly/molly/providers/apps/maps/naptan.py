@@ -155,6 +155,14 @@ class NaptanMapsProvider(BaseMapsProvider):
             'nearby': True, 'category': False,
             'uri-local': 'TrainStation',
         },
+        None: {
+            'slug': 'public-transport-access-node',
+            'article': 'a',
+            'verbose-name': 'public transport access node',
+            'verbose-name-plural': 'public transport access nodes',
+            'nearby': False, 'category': False,
+            'uri-local': 'PublicTransportAccessNode',
+        }
     }
             
             
@@ -228,7 +236,7 @@ class NaptanMapsProvider(BaseMapsProvider):
             except EntityType.DoesNotExist:
                 entity_type = EntityType(slug=et['slug'])
             
-            entity_type.uri = "http://mollyproject.org/schema/maps/%s" % et['uri-local']
+            entity_type.uri = "http://mollyproject.org/schema/maps#%s" % et['uri-local']
             entity_type.article = et['article']
             entity_type.verbose_name = et['verbose-name']
             entity_type.verbose_name_plural = et['verbose-name-plural']
@@ -237,6 +245,11 @@ class NaptanMapsProvider(BaseMapsProvider):
             entity_type.save()
             
             entity_types[stop_type] = entity_type
+        
+        for entity_type in entity_types.values():
+            if entity_type.slug == 'public-transport-access-node':
+                continue
+            entity_type.subtype_of.add(entity_types[None])
         
         return entity_types
 
