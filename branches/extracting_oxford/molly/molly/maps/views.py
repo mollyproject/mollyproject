@@ -561,11 +561,12 @@ class APIView(BaseView):
     Valid parameters are:
 
     * type: Filters by an EntityType slug
-    * source: Filters by data source; one of 'oxpoints','osm','naptan'
+    * source: Filters by data source; a maps provider module name.
     * near: A long,lat pair to order by
     * max_distance: Filters out those more than the specified distance from the point given above.
-    * limit: The number of results to return; defaults to 100; capped at 200
+    * limit: The number of results to return; defaults to 100; capped at 200 (or 1000 if without_metadata specified)
     * offset: The number of results to skip; defaults to 0
+    * without_metadata: If 'true', metadata aren't returned. Raises the limit cap.
 
     It is an error to specify max_distance without near. Entities are ordered
     by name and then DB id; hence the order is deterministic.
@@ -582,7 +583,7 @@ class APIView(BaseView):
 
     * primary_type: The primary type of the entity
     * all_types: A list containing all types of the object
-    * source: The data source for the entity, with the same domain as given above
+    * source: The data source for the entity, with the same range as given above
     * url: The location of this resource on this host
     * name: The title of the entity.
     * location: A two-element list containing longitude and latitude
