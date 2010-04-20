@@ -12,7 +12,7 @@ class OxpointsMapsProvider(BaseMapsProvider):
     OXPOINTS_TYPES = {
         'College': ('college',),
         'Department': ('department',),
-        'Carpark': ('car-park', 'university-entity'),
+        'Carpark': ('university-car-park',),
         'Room': ('room', 'university-entity'),
         'Library': ('library', 'university-entity'),
         'SubLibrary': ('library-collection', 'university-entity'),
@@ -51,6 +51,7 @@ class OxpointsMapsProvider(BaseMapsProvider):
             'faculty':               ('faculty', 'faculties', False, False, ('unit',)),
             'division':              ('division', 'divisions', False, False, ('unit',)),
             'university':            ('University', 'Universities', False, False, ('university-entity',)),
+            'university-car-park':   ('University car park', 'University car parks', False, False, ('car-park', 'university-entity')),
             'wireless-access-point': ('wireless access point', 'wireless access points', False, False, ()),
             'site':                  ('site', 'site', False, False, ()),
             'hall':                  ('PPH', 'PPHs', False, False, ('college-hall',)),
