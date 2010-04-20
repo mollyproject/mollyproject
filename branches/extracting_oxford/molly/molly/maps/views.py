@@ -193,7 +193,7 @@ class NearbyDetailView(LocationRequiredView, ZoomableView):
             e.bearing = get_bearing(point, e.location)
             found_entity_types |= set(e.all_types.all())
         found_entity_types -= set(entity_types)
-        print found_entity_types
+
 
         context.update({
             'entities': entities,
@@ -421,13 +421,12 @@ class CategoryDetailView(BaseView):
 
         entities = Entity.objects.filter(is_sublocation=False)
         for entity_type in entity_types:
-            entities = entities.filter(all_types=entity_type)
+            entities = entities.filter(all_types_completion=entity_type)
         entities = entities.order_by('title')
 
         found_entity_types = set()
         for e in entities:
-            for et in e.all_types_completion.all():
-                found_entity_types.add(et)
+            found_entity_types |= set(e.all_types.all())
         found_entity_types -= set(entity_types)
 
         return {
