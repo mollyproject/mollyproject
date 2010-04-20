@@ -117,8 +117,8 @@ class Entity(models.Model):
         all_types = set()
         for t in self.all_types.all():
             all_types |= set(t.subtype_of_completion.all())
-            if set(self.all_types_completion.all()) != all_types:
-                self.all_types_completion = all_types
+        if set(self.all_types_completion.all()) != all_types:
+            self.all_types_completion = all_types
                 
     def delete(self, *args, **kwargs):
         for identifier in self.identifiers.all():
