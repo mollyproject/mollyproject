@@ -93,7 +93,6 @@ class NearbyDetailView(LocationRequiredView, ZoomableView):
             else:
                 location = request.session.get('geolocation:location')
                 if location:
-                    print "loc", location
                     point = Point(location[0], location[1], srid=4326)
 
         entity_types = tuple(get_object_or_404(EntityType, slug=t) for t in ptypes.split(';'))        
@@ -102,7 +101,7 @@ class NearbyDetailView(LocationRequiredView, ZoomableView):
             entities = Entity.objects.filter(location__isnull = False, is_sublocation = False)
             if ptypes:
                 for et in entity_types:
-                    entities = entities.filter(all_types=et)
+                    entities = entities.filter(all_types_completion=et)
             else:
                 entity_types = []
             entities = entities.distance(point).order_by('distance')[:99]
@@ -192,8 +191,9 @@ class NearbyDetailView(LocationRequiredView, ZoomableView):
         found_entity_types = set()
         for e in chain(*entities):
             e.bearing = get_bearing(point, e.location)
-            found_entity_types.add(e.primary_type)
+            found_entity_types |= set(e.all_types.all())
         found_entity_types -= set(entity_types)
+        print found_entity_types
 
         context.update({
             'entities': entities,
