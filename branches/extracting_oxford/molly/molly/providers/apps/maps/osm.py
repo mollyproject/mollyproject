@@ -96,7 +96,7 @@ class OSMHandler(handler.ContentHandler):
                 entity = Entity(source=self.source)
                 created = False
                 
-            if not 'osm' in entity.metadata or entity.metadata['osm'].get('attrs', {}).get('timestamp', '') < self.attrs['timestamp']:
+            if True or not 'osm' in entity.metadata or entity.metadata['osm'].get('attrs', {}).get('timestamp', '') < self.attrs['timestamp']:
             
                 if created:
                     self.create_count += 1
