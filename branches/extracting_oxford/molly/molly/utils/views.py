@@ -126,6 +126,8 @@ Supported ranges are:
         return HttpResponse(simplejson.dumps(context), mimetype="application/json")
 
     def render_html(cls, request, context, template_name):
+        if template_name is None:
+            raise TemplateDoesNotExist
         return render_to_response(template_name+'.html',
                                   context, context_instance=RequestContext(request),
                                   mimetype='text/html')
