@@ -580,7 +580,7 @@ class APIView(BaseView):
 
     Entities are JSON objects with the following attributes:
 
-    * type: The primary type of the entity
+    * primary_type: The primary type of the entity
     * all_types: A list containing all types of the object
     * source: The data source for the entity, with the same domain as given above
     * url: The location of this resource on this host
@@ -594,18 +594,19 @@ class APIView(BaseView):
     def handle_GET(cls, request, context):
         entities = Entity.objects.order_by('title', 'id')
         error = False
+        without_metadata = request.GET.get('without_metadata') == 'true'
 
         limit, offset = request.GET.get('limit', 100), request.GET.get('offset', 0)
         try:
             limit, offset = int(limit), int(offset)
         except (ValueError, TypeError):
             limit, offset = 100, 0
-        limit, offset = min(limit, 200), max(offset, 0)
+        limit, offset = min(limit, 1000 if without_metadata else 200), max(offset, 0)
 
         if 'type' in request.GET:
-            entities = entities.filter(all_types__slug = request.GET['type'])
+            entities = entities.filter(all_types_completion__slug = request.GET['type'])
         if 'source' in request.GET:
-            entities = entities.filter(entity_type__source = request.GET['source'])
+            entities = entities.filter(source__module_name = request.GET['source'])
 
         if 'near' in request.GET:
             try:
@@ -646,14 +647,16 @@ class APIView(BaseView):
         out = []
         for entity in entities:
             out.append({
-                'type': entity.entity_type.slug,
-                'all_types': [et.slug for et in entity.all_types.all()],
-                'source': entity.entity_type.source,
+                'primary_type': entity.primary_type.slug,
+                'all_types': [et.slug for et in entity.all_types_completion.all()],
+                'source': entity.source.module_name,
                 'name': entity.title,
-                'location': tuple(entity.location),
-                'metadata': entity.metadata,
+                'location': tuple(entity.location) if entity.location else None,
                 'url': entity.get_absolute_url(),
             })
+            if not without_metadata:
+                out[-1]['metadata'] = entity.metadata
+                
             if 'near' in request.GET:
                 out[-1]['distance'] = entity.distance
 
@@ -666,5 +669,5 @@ class APIView(BaseView):
             'returned': len(out),
         }
 
-        return HttpResponse(simplejson.dumps(out), mimetype='application/json')
+        return cls.render(request, out, None)
 
