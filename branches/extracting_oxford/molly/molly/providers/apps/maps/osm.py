@@ -90,9 +90,9 @@ class OSMHandler(handler.ContentHandler):
                 return
 
             try:
-                entity = Entity.objects.get(source=self.source, _identifier__scheme='osm', _identifier__value=self.id)
+                entity = Entity.objects.get(source=self.source, _identifiers__scheme='osm', _identifiers__value=self.id)
                 created = True
-            except:
+            except Entity.DoesNotExist:
                 entity = Entity(source=self.source)
                 created = False
                 
@@ -145,6 +145,7 @@ class OSMHandler(handler.ContentHandler):
                 entity.save(identifiers={'osm': self.id})
 
                 entity.all_types = [self.entity_types[et] for et in types]
+                entity.update_all_types_completion()
                 
             else:
                 self.unchanged_count += 1
@@ -238,34 +239,35 @@ class OSMMapsProvider(BaseMapsProvider):
     
     def _get_entity_types(self):
         ENTITY_TYPES = {
-            'atm':              ('an', 'ATM',                      'ATMs',                      True,  False, ()),
-            'bank':             ('a',  'bank',                     'banks',                     True,  True,  ()),
-            'bar':              ('a',  'bar',                      'bar',                       True,  True,  ()),
-            'bicycle-parking':  ('a',  'bicycle rack',             'bicycle racks',             True,  False, ()),
-            'cafe':             ('a',  'café',                     'cafés',                     False, False, ('food',)),
-            'cathedral':        ('a',  'cathedral',                'cathedrals',                False, False, ('place-of-worship',)),
-            'chapel':           ('a',  'chapel',                   'chapels',                   False, False, ('place-of-worship',)),
-            'church':           ('a',  'church',                   'churches',                  False, False, ('place-of-worship',)),
-            'cinema':           ('a',  'cinema',                   'cinemas',                   True,  True,  ()),
-            'doctors':          ('a',  "doctor's surgery",         "doctors' surgeries",        False, False, ('medical',)),
-            'fast-food':        ('a',  'fast food outlet',         'fast food outlets',         False, False, ('food',)),
-            'food':             ('a',  'place to eat',             'places to eat',             True,  True,  ()),
-            'hospital':         ('a',  'hospital',                 'hospitals',                 False, False, ('medical',)),
-            'ice-cream':        ('an', 'ice cream café',           'ice cream cafés',           False, False, ('cafe','food',)),
-            'library':          ('a',  'public library',           'public libraries',          True,  True,  ()),
-            'mandir':           ('a',  'mandir',                   'mandirs',                   False, False, ('place-of-worship',)),
-            'medical':          ('a',  'place relating to health', 'places relating to health', True,  True,  ()),
-            'mosque':           ('a',  'mosque',                   'mosques',                   False, False, ('place-of-worship',)),
-            'car-park':         ('a',  'car park',                 'car parks',                 True,  False, ()),
-            'pharmacy':         ('a',  'pharmacy',                 'pharmacies',                False, False, ('medical',)),
-            'place-of-worship': ('a',  'place of worship',         'places of worship',         False, False, ()),
-            'post-box':         ('a',  'post box',                 'post boxes',                True,  False, ()),
-            'post-office':      ('a',  'post office',              'post offices',              True,  False, ()),
-            'pub':              ('a',  'pub',                      'pubs',                      True,  True,  ()),
-            'recycling':        ('a',  'recycling facility',       'recycling facilities',      True,  False, ()),
-            'restaurant':       ('a',  'restaurant',               'restaurants',               False, False, ('food',)),
-            'synagogue':        ('a',  'synagogue',                'synagogues',                False, False, ('place-of-worship',)),
-            'theatre':          ('a',  'theatre',                  'theatres',                  True,  True,  ()),
+            'atm':                 ('an', 'ATM',                      'ATMs',                      True,  False, ()),
+            'bank':                ('a',  'bank',                     'banks',                     True,  True,  ()),
+            'bar':                 ('a',  'bar',                      'bars',                       True,  True,  ()),
+            'bicycle-parking':     ('a',  'bicycle rack',             'bicycle racks',             True,  False, ()),
+            'cafe':                ('a',  'café',                     'cafés',                     False, False, ('food',)),
+            'cathedral':           ('a',  'cathedral',                'cathedrals',                False, False, ('place-of-worship',)),
+            'chapel':              ('a',  'chapel',                   'chapels',                   False, False, ('place-of-worship',)),
+            'church':              ('a',  'church',                   'churches',                  False, False, ('place-of-worship',)),
+            'cinema':              ('a',  'cinema',                   'cinemas',                   True,  True,  ()),
+            'dispensing-pharmacy': ('a',  'dispensing pharmacy',      'dispensing pharmacies',     False, False, ('pharmacy',)),
+            'doctors':             ('a',  "doctor's surgery",         "doctors' surgeries",        False, False, ('medical',)),
+            'fast-food':           ('a',  'fast food outlet',         'fast food outlets',         False, False, ('food',)),
+            'food':                ('a',  'place to eat',             'places to eat',             True,  True,  ()),
+            'hospital':            ('a',  'hospital',                 'hospitals',                 False, False, ('medical',)),
+            'ice-cream':           ('an', 'ice cream café',           'ice cream cafés',           False, False, ('cafe','food',)),
+            'library':             ('a',  'public library',           'public libraries',          True,  True,  ()),
+            'mandir':              ('a',  'mandir',                   'mandirs',                   False, False, ('place-of-worship',)),
+            'medical':             ('a',  'place relating to health', 'places relating to health', True,  True,  ()),
+            'mosque':              ('a',  'mosque',                   'mosques',                   False, False, ('place-of-worship',)),
+            'car-park':            ('a',  'car park',                 'car parks',                 True,  False, ()),
+            'pharmacy':            ('a',  'pharmacy',                 'pharmacies',                False, False, ('medical',)),
+            'place-of-worship':    ('a',  'place of worship',         'places of worship',         False, False, ()),
+            'post-box':            ('a',  'post box',                 'post boxes',                True,  False, ()),
+            'post-office':         ('a',  'post office',              'post offices',              True,  False, ()),
+            'pub':                 ('a',  'pub',                      'pubs',                      True,  True,  ()),
+            'recycling':           ('a',  'recycling facility',       'recycling facilities',      True,  False, ()),
+            'restaurant':          ('a',  'restaurant',               'restaurants',               False, False, ('food',)),
+            'synagogue':           ('a',  'synagogue',                'synagogues',                False, False, ('place-of-worship',)),
+            'theatre':             ('a',  'theatre',                  'theatres',                  True,  True,  ()),
         }
         
         entity_types = {}
@@ -316,7 +318,9 @@ class OSMMapsProvider(BaseMapsProvider):
         ('amenity=hospital', 'hospital'),
         ('amenity=library', 'library'),
         ('amenity=parking', 'car-park'),
-        ('amenity=pharmacy', 'pharmacy'),
+        ('amenity=pharmacy', [
+            ('dispensing=yes', 'dispensing-pharmacy'),
+        ], 'pharmacy'),
         ('amenity=post_box', 'post-box'),
         ('amenity=post_office', 'post-office'),
         ('amenity=pub', 'pub'),
