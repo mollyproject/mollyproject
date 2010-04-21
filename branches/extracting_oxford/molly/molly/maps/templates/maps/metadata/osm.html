@@ -1,0 +1,65 @@
+{% load osm_tags %}{% load portal_misc %}
+
+{% if entity.metadata.osm.tags %}
+
+{% if entity|osm_tags %}
+<table class="section-table">
+    <tbody>
+{% for k,v in entity|osm_tags %}
+        <tr>
+            <th>{{ k|capfirst }}:</th>
+            <td>{{ v }}</td>
+        </tr>
+{% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+<ul>
+{% if entity.metadata.osm.tags.phone %}
+    <li>
+        <a class="phone" href="{{ entity.metadata.osm.tags.phone|telephone_uri }}">
+            Call <em>{{ entity.title }}</em><br/>
+            <small>{{ entity.metadata.tags.phone|telephone:"nolink" }}</small>
+        </a>
+    </li>
+{% endif %}
+{% if entity.metadata.osm.tags.wikipedia %}
+    <li>
+        <a class="external-mobile" href="{{ entity.metadata.osm.tags.wikipedia|osm_tag_wikipedia_uri|urlencode }}">
+            Wikipedia article
+        </a>
+    </li>
+{% endif %}
+{% if entity.metadata.osm.tags.url %}
+    <li>
+        <a class="external" href="{{ entity.metadata.osm.tags.url|escape }}">
+            Website
+        </a>
+    </li>
+{% endif %}
+</ul>
+
+</div>
+
+<div class="section">
+<h2>Note</h2>
+
+<div class="note"><div class="bubble pad-10">
+    This information is provided courtesy of
+    <a href="{% url maps:static_openstreetmap %}">OpenStreetMap</a> under a
+    Creative Commons Attribution-ShareAlike 2.0 license.<br/>
+    Oxford University provides this information without warranty.
+</div></div>
+
+<ul>
+  <li class="round-bottom">
+    <a href="{% url maps:entity_update entity.identifier_scheme entity.identifier_value %}">
+      Suggest a correction
+    </a>
+  </li>
+</ul>
+
+</div>
+
+{% endif %}
