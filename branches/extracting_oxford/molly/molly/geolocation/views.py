@@ -92,7 +92,7 @@ class LocationUpdateView(BaseView):
             else:
                 return HttpResponseRedirect(reverse('core:index'))
         else:
-            super(LocationUpdateView, self).render_html(request, context, template_name)
+            return super(LocationUpdateView, cls).render_html(request, context, template_name)
 
     def set_location(cls, request, name, location, accuracy, method):
         if isinstance(location, list):
