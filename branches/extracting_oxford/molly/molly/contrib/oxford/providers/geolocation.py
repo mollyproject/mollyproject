@@ -34,3 +34,4 @@ class OUCSCodeGeolocationProvider(BaseGeolocationProvider):
             except Exception, e:
                 logger.exception("OUCS code geolocation look-up for '%s' not in expected format." % query)
                 return []
+        return []
