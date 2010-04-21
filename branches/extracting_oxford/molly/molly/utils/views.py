@@ -82,16 +82,19 @@ class BaseView(object):
 
     FORMATS_BY_NAME = dict(FORMATS)
     FORMATS_BY_MIMETYPE = dict((y,x) for (x,y) in FORMATS)
+    FORMATS_BY_MIMETYPE.update({
+        'application/xhtml+xml': 'html',
+        '*/*': 'html',
+    })
 
     def render(cls, request, context, template_name):
         if request.GET.get('format') in cls.FORMATS_BY_NAME:
             format = request.GET['format']
+        elif request.is_ajax():
+            format = 'json'
         elif request.META.get('HTTP_ACCEPT'):
             accepts = [a.split(';')[0].strip() for a in request.META['HTTP_ACCEPT'].split(',')]
             for accept in accepts:
-                if accept == '*/*' and request.is_ajax():
-                    format = 'json'
-                    break
                 if accept in cls.FORMATS_BY_MIMETYPE:
                     format = cls.FORMATS_BY_MIMETYPE[accept]
                     try:
