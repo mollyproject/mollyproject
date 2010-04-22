@@ -1,0 +1,38 @@
+{% if entity.metadata.real_time_information %}
+
+  {% if entity.metadata.real_time_information.services %}
+<div class="pad-5">
+<table>
+    <thead style="display:none;">
+        <tr>
+            <th>Service</th>
+            <th>Destination</th>
+            <th>Expected</th>
+        </tr>
+    </thead>
+    <tbody id="bus_times">
+    {% for service in entity.metadata.real_time_information.services %}
+        <tr>
+            <td rowspan="2" style="font-size:200%; text-align:center;">{{ service.service }}</td>
+            <td>{{ service.destination }}</td>
+            <td>{{ service.next }}</td>
+        </tr>
+        <tr class="notopborder">
+            <td colspan="2"><small>Next: {% if service.following %}{{ service.following|join:", " }}{% else %}<em>No further info</em>{% endif %}</small></td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+
+  {% else %}
+<div class="note"><div class="bubble pad-10">
+    {% if entity.metadata.real_time_information.pip_info %}
+      {{ entity.metadata.real_time_information.pip_info }}
+    {% else %}
+      Sorry, there is currently no bus time information for this stop.
+    {% endif %}
+</div></div>
+  {% endif %}
+
+{% endif %}

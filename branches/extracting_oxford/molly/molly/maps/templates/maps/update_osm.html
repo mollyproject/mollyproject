@@ -1,4 +1,4 @@
-{% extends "maps/base.xhtml" %}
+{% extends "maps/base.html" %}
 {% load maps %}{% load portal_misc %}
 
 {% block title %}m.ox | Update {{ entity.title }}{% endblock %}
@@ -52,11 +52,11 @@
   
   {% ifnotequal style_group "dumb" %}
     <div class="backgrounded-image" style="background-image:url('{% map_url entity.location %}'); height:{{ map_height }}px">
-    {% include "maps/map_elements.xhtml" %}
+    {% include "maps/map_elements.html" %}
     </div>
   {% else %}
       <img src="{% map_url entity.location %}" alt="Map"><br />
-      {% include "maps/map_elements.xhtml" %}
+      {% include "maps/map_elements.html" %}
   {% endifnotequal %}
   
 

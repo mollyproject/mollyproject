@@ -1,8 +1,6 @@
 from __future__ import division
 import math, random, cairo, urllib, os.path, sys, time
 
-from django.conf import settings
-
 from molly.osm.models import OSMTile, get_marker_dir
 
 def log2(x):

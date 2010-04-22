@@ -1,4 +1,4 @@
-{% extends "maps/base.xhtml" %}
+{% extends "maps/base.html" %}
 {% load portal_misc %}
 
 {% block pagetitle %}{{ entity_types.0.verbose_name_plural|capfirst }}{% endblock %}
@@ -22,27 +22,29 @@
     {% endifequal %}
   </h2>
 
-{% if found_entity_types %}
-  <div class="note"><div class="bubble pad-10">
+{% if not found_entity_types|length_is:0 and not found_entity_types|length_is:1 %}
+  <div class="note">
+    <div class="bubble pad-10">
       Limit to:
 {% for et in found_entity_types %}
-{% if entity_types.0.sub_types.all|contains:et %}
-      <a href="{% url maps_category_detail et.slug %}">{{ et.verbose_name_plural }}</a>
-{% else %}
-      <a href="{% url maps_category_list %}{{ et.slug }}{% for oet in entity_types %};{{ oet.slug }}{% endfor %}/">{{ et.verbose_name_plural }}</a>
-{% endif %}{% if not forloop.last %} | {% endif %} 
+  {% if entity %}
+    <a href="{% url maps:entity_category_list entity.identifier_scheme entity.identifier_value %}{{ et.slug }}{% for oet in entity_types %}{% if not et.subtype_of.all|contains:oet %};{{ oet.slug }}{% endif %}{% endfor %}/">{{ et.verbose_name_plural }}</a>
+  {% else %}
+    <a href="{% url maps:category_list %}{{ et.slug }}{% for oet in entity_types %}{% if not et.subtype_of_completion.all|contains:oet %};{{ oet.slug }}{% endif %}{% endfor %}/">{{ et.verbose_name_plural }}</a>
+  {% endif %}
+{% if not forloop.last %} | {% endif %} 
 {% endfor %}
     </div>
   </div>
 {% endif %}
 
 <ul>
-{% for entity in entities %}
+{% for entity in entities %}{% if entity.title %}
     <li{% if forloop.last %} class="round-bottom"{% endif %}><a href="{{ entity.get_absolute_url }}">
       {{ entity.title|capfirst }}{% if multiple_entity_types %}<br/>
-      <small>{{ entity.entity_type|capfirst }}</small>{% endif %}
+      <small>{{ entity.primary_type.verbose_name|capfirst }}</small>{% endif %}
     </a></li>
-{% endfor %}
+{% endif %}{% endfor %}
 </ul>
 
 </div>

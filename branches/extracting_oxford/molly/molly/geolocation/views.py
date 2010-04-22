@@ -4,7 +4,6 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 
 from molly.utils.views import BaseView
-from molly.utils.renderers import mobile_render
 from molly.utils.breadcrumbs import *
 
 from molly.osm.utils import fit_to_map
@@ -15,7 +14,7 @@ class IndexView(BaseView):
     breadcrumb = NullBreadcrumb
 
     def handle_GET(cls, request, context):
-        return mobile_render(request, context, 'geolocation/index')    
+        return cls.render(request, context, 'geolocation/index')
 
 class LocationUpdateView(BaseView):
     breadcrumb = NullBreadcrumb
@@ -29,10 +28,10 @@ class LocationUpdateView(BaseView):
             'return_url': request.REQUEST.get('return_url', ''),
             'requiring_url': hasattr(request, 'requiring_url'),
         }
-        
+
     def handle_GET(cls, request, context):
         form = context['form']
-        
+
         if form.is_valid():
             placemarks = []
             for provider in cls.conf.providers:
@@ -59,7 +58,7 @@ class LocationUpdateView(BaseView):
             })
 #        else:
 #            context['placemarks'] = []
-            
+
         if context['format'] == 'json':
             del context['form']
             del context['format']
@@ -67,25 +66,25 @@ class LocationUpdateView(BaseView):
             return cls.json_response(context)
         elif context['format'] == 'embed':
             if form.is_valid():
-                return mobile_render(request, context, 'geolocation/update_location_confirm')
+                return cls.render(request, context, 'geolocation/update_location_confirm')
             else:
-                return mobile_render(request, context, 'geolocation/update_location_embed')
+                return cls.render(request, context, 'geolocation/update_location_embed')
         else:
-            return mobile_render(request, context, 'geolocation/update_location')
-            
-        
+            return cls.render(request, context, 'geolocation/update_location')
+
+
     def handle_POST(cls, request, context):
         form = context['form']
-        
+
         if form.is_valid():
             cls.set_location(request,
                              form.cleaned_data['name'],
                              form.cleaned_data['location'],
                              form.cleaned_data['accuracy'],
                              form.cleaned_data['method'])
-        
+
         return cls.render(request, context, None)
-        
+
     def render_html(cls, request, context, template_name):
         if request.method == 'POST':
             if context.get('return_url'):
@@ -93,8 +92,8 @@ class LocationUpdateView(BaseView):
             else:
                 return HttpResponseRedirect(reverse('core:index'))
         else:
-            super(LocationUpdateView, self).render_html(request, context, template_name)
-                
+            return super(LocationUpdateView, cls).render_html(request, context, template_name)
+
     def set_location(cls, request, name, location, accuracy, method):
         if isinstance(location, list):
             location = tuple(location)
@@ -109,7 +108,7 @@ class LocationUpdateView(BaseView):
 class LocationRequiredView(BaseView):
     def is_location_required(cls, request, *args, **kwargs):
         return True
-        
+
     def __new__(cls, request, *args, **kwargs):
         if not cls.is_location_required(request, *args, **kwargs) or request.session.get('geolocation:location'):
             return super(LocationRequiredView, cls).__new__(cls, request, *args, **kwargs)

@@ -1,5 +1,6 @@
 from __future__ import division
-import random, urllib, os, StringIO, PIL
+import random, urllib, os, StringIO
+from PIL import Image
 from os.path import exists, join
 import simplejson
 from datetime import datetime, timedelta
@@ -25,7 +26,10 @@ class ExternalImage(models.Model):
     def save(self, force_insert=False, force_update=False):
         self.last_updated = datetime.utcnow()
         super(ExternalImage, self).save(force_insert=False, force_update=False)
-    
+
+def get_external_image_dir():
+    return getattr(settings, 'EXTERNAL_IMAGE_DIR', os.path.join(settings.CACHE_DIR, 'external_images'))
+
 class ExternalImageSized(models.Model):
     external_image = models.ForeignKey(ExternalImage)
     width = models.PositiveIntegerField()
@@ -33,19 +37,20 @@ class ExternalImageSized(models.Model):
     slug = models.SlugField()
 
     def get_filename(self):
+        external_image_dir = get_external_image_dir()
         if not self.slug:
             while not self.slug or ExternalImageSized.objects.filter(slug=self.slug).count():
                 self.slug = "%08x" % random.randint(0, 16**8-1)
-        if not os.path.exists(settings.EXTERNAL_IMAGE_DIR):
-            os.makedirs(settings.EXTERNAL_IMAGE_DIR)
-        return os.path.join(settings.EXTERNAL_IMAGE_DIR, self.slug)
+        if not os.path.exists(external_image_dir):
+            os.makedirs(external_image_dir)
+        return os.path.join(external_image_dir, self.slug)
 
     def get_absolute_url(self):
-        return reverse('external_image', args=[self.slug])    
+        return reverse('core:external_image', args=[self.slug])    
 
     def save(self, force_insert=False, force_update=False):
         if not self.id:
-            im = PIL.Image.open(StringIO.StringIO(urllib.urlopen(self.external_image.url).read()))
+            im = Image.open(StringIO.StringIO(urllib.urlopen(self.external_image.url).read()))
             
             size = im.size
             ratio = size[1] / size[0]
@@ -53,7 +58,7 @@ class ExternalImageSized(models.Model):
             if self.width >= size[0]:
                 resized = im
             else:
-                resized = im.resize((self.width, int(round(self.width*ratio))), PIL.Image.ANTIALIAS)
+                resized = im.resize((self.width, int(round(self.width*ratio))), Image.ANTIALIAS)
             self.width, self.height = resized.size
 
             try:            

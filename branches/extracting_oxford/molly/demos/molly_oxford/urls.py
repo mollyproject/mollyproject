@@ -21,9 +21,9 @@ urlpatterns = patterns('',
     (r'^auth/', applications.auth.urls),
     (r'^search/', applications.search.urls),
     (r'^geolocation/', applications.geolocation.urls),
+    (r'^places/', applications.places.urls),
 
     # These ones still need work
-    (r'^maps/', include('molly.maps.urls', 'maps', 'maps')),
     (r'^osm/', include('molly.osm.urls', 'osm', 'osm')),
 
     (r'', include('molly.core.urls', 'core', 'core')),

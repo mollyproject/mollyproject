@@ -1,4 +1,4 @@
-{% extends "maps/base.xhtml" %}{% load portal_misc %}
+{% extends "maps/base.html" %}{% load portal_misc %}
 
 {% block extrahead %}{{ block.super }}{% if entity %}
 <meta name="robots" content="noindex" />{% endif %}{% endblock %}
@@ -26,16 +26,17 @@
 {% endif %}
   </h2>
 
-{% if found_entity_types %}
+{% if not found_entity_types|length_is:0 and not found_entity_types|length_is:1 %}
   <div class="note">
     <div class="bubble pad-10">
       Limit to:
 {% for et in found_entity_types %}
-{% if entity_types and entity_types.0.sub_types.all|contains:et %}
-      <a href="{% url maps_nearby_detail et.slug %}">{{ et.verbose_name_plural }}</a>
-{% else %}
-      <a href="{% url maps_nearby_list %}{{ et.slug }}{% for oet in entity_types %};{{ oet.slug }}{% endfor %}/">{{ et.verbose_name_plural }}</a>
-{% endif %}{% if not forloop.last %} | {% endif %} 
+  {% if entity %}
+    <a href="{% url maps:entity_nearby_list entity.identifier_scheme entity.identifier_value %}{{ et.slug }}{% for oet in entity_types %}{% if not et.subtype_of.all|contains:oet %};{{ oet.slug }}{% endif %}{% endfor %}/">{{ et.verbose_name_plural }}</a>
+  {% else %}
+    <a href="{% url maps:nearby_list %}{{ et.slug }}{% for oet in entity_types %}{% if not et.subtype_of_completion.all|contains:oet %};{{ oet.slug }}{% endif %}{% endfor %}/">{{ et.verbose_name_plural }}</a>
+  {% endif %}
+{% if not forloop.last %} | {% endif %} 
 {% endfor %}
     </div>
   </div>
@@ -49,11 +50,11 @@
 
 {% ifnotequal style_group "dumb" %}
     <div class="backgrounded-image" style="background-image:url('{% url osm:generated_map map_hash %}'); height:{{ map_height }}px">
-    {% include "maps/map_elements.xhtml" %}
+    {% include "maps/map_elements.html" %}
     </div>
 {% else %}
     <img src="{% url osm:generated_map map_hash %}" alt="Map"><br />
-    {% include "maps/map_elements.xhtml" %}
+    {% include "maps/map_elements.html" %}
 {% endifnotequal %}
 
 
@@ -63,14 +64,14 @@
 {% for entity_group in entities %}
     {% ifequal entity_group|length 1 %}
     {% with entity_group.0 as entity %}
-        <li><a title="{{ entity.title }}" href="{{ entity.get_absolute_url }}">{{ forloop.counter }}. {{ entity.title }}<br /><small>{% if found_entity_types %}{{ entity.entity_type.verbose_name|capfirst }}, {% endif %}{{ entity.distance.km|floatformat:3 }} km {{ entity.bearing }}</small></a></li>
+        <li><a title="{{ entity.title }}" href="{{ entity.get_absolute_url }}">{{ forloop.counter }}. {{ entity.title }}<br /><small>{% if found_entity_types %}{{ entity.primary_type.verbose_name|capfirst }}, {% endif %}{{ entity.distance.km|floatformat:3 }} km {{ entity.bearing }}</small></a></li>
     {% endwith %}
     {% else %}
     {% with entity_group.0 as entity %}
         <li class="non-link-item">{{ forloop.counter }}. <em>{{ entity_group|length }} {{ entity_type.0.verbose_name_plural }}</em> {{ entity.distance.km|floatformat:3 }} km {{ entity.bearing }}</li>
     {% endwith %}
     {% for entity in entity_group %}
-        <li class="subitem{% if forloop.last %} last-subitem{% endif %}"><a href="{{ entity.get_absolute_url }}">{{ entity.title }}{% if found_entity_types %}, <small>{{ entity.entity_type.verbose_name }}</small>{% endif %}</a></li>
+        <li class="subitem{% if forloop.last %} last-subitem{% endif %}"><a href="{{ entity.get_absolute_url }}">{{ entity.title }}{% if found_entity_types %}, <small>{{ entity.primary_type.verbose_name }}</small>{% endif %}</a></li>
     {% endfor %}
     {% endifequal %}
 {% endfor %}
@@ -78,7 +79,7 @@
 {% else %}
 <div class="note">
     There isn't anything that close to you.
-    Try <a class="no-icon" href="{% url core_update_location %}?return_url={{ path }}">updating
+    Try <a class="no-icon" href="{% url geolocation:update %}?return_url={{ path }}">updating
     your location</a>{% ifnotequal zoom 10 %} or <a class="no-icon" href="?zoom={{ zoom|add:"-1" }}">widening your search</a>{% endifnotequal %}.</div>
 {% endif %}
 </ul>
