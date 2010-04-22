@@ -7,7 +7,7 @@ urlpatterns = patterns('',
         IndexView, {},
         'index'),
 
-    (r'^shorten_url/$',
+    (r'^shorten/$',
         ShortenURLView, {},
         'shorten'),
     (r'^(?P<slug>[0-9][0-9A-Za-z]*)/?$',
