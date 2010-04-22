@@ -93,6 +93,9 @@ TEMPLATE_DIRS = (
 )
 
 APPLICATIONS = [
+    Application('molly.apps.home', 'home', 'Home',
+        display_to_user = False,
+    ),
     Application('molly.apps.contact', 'contact', 'Contact search',
 #        provider = 'molly.contrib.oxford.providers.ScrapingContactProvider',
         provider = 'molly.contrib.mit.providers.LDAPContactProvider',
@@ -219,7 +222,6 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
-    'molly.core',
     'molly.osm',
 ) + extract_installed_apps(APPLICATIONS)
 
