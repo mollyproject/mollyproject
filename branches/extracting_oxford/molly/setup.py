@@ -52,10 +52,11 @@ for dirpath, dirnames, filenames in os.walk(molly_dir):
 setup(
     name = 'molly',
     version = '0.3',
-    url = 'http://mollyproject.sourceforge.net/',
+    url = 'http://mollyproject.org/',
     author = 'University of Oxford',
     description ="A framework for building mobile information portals",
     packages = packages,
+    data_files = data_files, 
     classifiers=[
         'Framework :: Django',
         'Development Status :: 4 - Beta',
@@ -65,17 +66,6 @@ setup(
         'Programming Language :: Python',
         'Topic :: Education',
         'Topic :: Internet',
-    ],
-    requires = [
-        'feedparser',
-        'BeautifulSoup',
-        'simplejson',
-        'rdflib',
-        'cairo',
-        'textile',
-        'pytz',
-        'oauth',
-        'pyxml',
     ],
 )
 
