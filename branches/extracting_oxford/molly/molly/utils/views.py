@@ -99,7 +99,7 @@ class BaseView(object):
                     format = cls.FORMATS_BY_MIMETYPE[accept]
                     try:
                         return cls.render_to_format(request, context, template_name, format)
-                    except (TemplateDoesNotExist, NotImplementedError):
+                    except NotImplementedError:
                         pass
             else:
                 response = HttpResponse("""\
@@ -115,7 +115,7 @@ Supported ranges are:
 
         try:
             return cls.render_to_format(request, context, template_name, format)
-        except (TemplateDoesNotExist, NotImplementedError):
+        except NotImplementedError:
             response = HttpResponse("The desired media type is not supported for this resource.", mimetype="text/plain")
             response.status_code = 406
             return response
