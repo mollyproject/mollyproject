@@ -1,12 +1,10 @@
 from django.conf.urls.defaults import *
-from django.conf import settings
 
-from molly.core.views import (
+from views import (
     IndexView, ExpositionView,
     UserMessageView,
     ExternalImageView, FeedbackView,
     StaticDetailView,
-    ShortenURLView, ShortenedURLRedirectView,
 )
 
 urlpatterns = patterns('mobile_portal.core.views',
@@ -41,10 +39,4 @@ urlpatterns = patterns('mobile_portal.core.views',
         UserMessageView, {},
         'messages'),
         
-    (r'^shorten_url/$',
-        ShortenURLView, {},
-        'shorten_url'),
-    (r'^(?P<slug>[0-9][0-9A-Za-z]*)/?$',
-        ShortenedURLRedirectView, {},
-        'shortened_url_redirect'),
 )

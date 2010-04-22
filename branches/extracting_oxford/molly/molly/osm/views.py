@@ -7,7 +7,7 @@ from django.http import HttpResponse
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
 from molly.utils.renderers import mobile_render
-from molly.core.utils import AnyMethodRequest
+from molly.apps.home.utils import AnyMethodRequest
 
 from molly.maps.models import Entity
 

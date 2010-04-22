@@ -3,8 +3,8 @@ from datetime import datetime
 from django import template
 from django.utils.safestring import mark_safe
 
-from molly.core.utils import AnyMethodRequest, resize_external_image
-from molly.core.models import ExternalImage, ExternalImageSized
+from molly.apps.home.utils import AnyMethodRequest, resize_external_image
+from molly.apps.home.models import ExternalImage, ExternalImageSized
 from molly.maps.models import Entity
 from molly.wurfl import device_parents
 from molly.maps.utils import get_entity

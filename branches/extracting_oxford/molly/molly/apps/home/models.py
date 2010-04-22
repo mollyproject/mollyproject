@@ -1,15 +1,10 @@
 from __future__ import division
 import random, urllib, os, StringIO
 from PIL import Image
-from os.path import exists, join
-import simplejson
-from datetime import datetime, timedelta
+from datetime import datetime
 from django.contrib.gis.db import models
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-from molly.maps.models import Entity
-import django.dispatch
 
 class Config(models.Model):
     key = models.SlugField()
@@ -85,10 +80,4 @@ class UserMessage(models.Model):
     message = models.TextField()
     read = models.BooleanField(default=False)
     when = models.DateTimeField(auto_now_add=True)
-    
-class ShortenedURL(models.Model):
-    path = models.TextField()
-    slug = models.TextField(max_length=7)
-    
-    def get_absolute_url(self):
-        return reverse('core_shortened_url_redirect', args=[self.slug])
+
