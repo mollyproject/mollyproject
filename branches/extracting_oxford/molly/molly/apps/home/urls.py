@@ -1,21 +1,15 @@
 from django.conf.urls.defaults import *
 
 from views import (
-    IndexView, ExpositionView,
-    UserMessageView,
-    ExternalImageView, FeedbackView,
-    StaticDetailView,
+    IndexView, ExpositionView, UserMessageView,
+    FeedbackView, StaticDetailView,
 )
 
-urlpatterns = patterns('mobile_portal.core.views',
+urlpatterns = patterns('',
 
     (r'^$',
         IndexView, {},
         'index'),
-
-    (r'^external_images/(?P<slug>[0-9a-f]{8})/$',
-        ExternalImageView, {},
-        'external_image'),
 
 #    (r'^customise/$', 'customise', {}, 'core_customise'),
 #    (r'^customise/location_sharing/$',

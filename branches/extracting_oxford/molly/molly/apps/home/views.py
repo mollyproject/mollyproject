@@ -1,9 +1,8 @@
 # Create your views here.
-import pytz, urllib
+import urllib
 
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
-from django.shortcuts import get_object_or_404, render_to_response
 from django.conf import settings
 from django.template import loader, Context, RequestContext
 from django.core.mail import EmailMessage
@@ -15,7 +14,7 @@ from molly.utils.breadcrumbs import *
 from molly.wurfl import device_parents
 from molly import conf
 
-from models import ExternalImageSized, UserMessage, BlogArticle
+from models import UserMessage, BlogArticle
 from forms import FeedbackForm, UserMessageFormSet
 
 class IndexView(BaseView):
@@ -61,18 +60,6 @@ class IndexView(BaseView):
             request.session['home:desktop_about_shown'] = no_desktop_about
             
         return HttpResponseRedirect(reverse('home:index'))
-
-class ExternalImageView(BaseView):
-
-    breadcrumb = NullBreadcrumb
-
-    def handle_GET(cls, request, context, slug):
-        eis = get_object_or_404(ExternalImageSized, slug=slug)
-        response = HttpResponse(open(eis.get_filename(), 'r').read(), mimetype='image/jpeg')
-        last_updated = pytz.utc.localize(eis.external_image.last_updated)
-    
-        response['ETag'] = slug
-        return response
 
 class StaticDetailView(BaseView):
     @BreadcrumbFactory
