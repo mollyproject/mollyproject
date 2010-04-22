@@ -12,8 +12,6 @@ pywurfl
 psycopg2
 PIL
 lxml
-feedparser
+python-ldap
 ply
-pytz
 git+http://github.com/alexdutton/PyZ3950.git
-
