@@ -68,7 +68,8 @@ class NearbyListView(LocationRequiredView):
         else:
             return_url = reverse('maps:nearby_list')
 
-        entity_types = EntityType.objects.filter(show_in_nearby_list=True)
+        entity_types = dict((e.slug, e) for e in EntityType.objects.all())
+        entity_types = tuple((name, tuple(entity_types[t] for t in types)) for (name, types) in cls.conf.nearby_entity_types)
         
         context.update({
             'entity_types': entity_types,

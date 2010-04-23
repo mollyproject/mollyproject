@@ -5,15 +5,17 @@
 
 {% block content %}
 
+{% for name, types in entity_types %}
 <div class="section">
-  <h2>Places</h2>
+  <h2>{{ name }}</h2>
 	<ul>
-	{% for entity_type in entity_types %}{% if entity %}
+	{% for entity_type in types %}{% if entity %}
 	    <li{% if forloop.last %} class="round-bottom"{% endif %}><a href="{% url maps:entity_nearby_detail entity.identifier_scheme,entity.identifier_value,entity_type.slug %}">{{ entity_type.verbose_name_plural|capfirst }}</a></li>
 	{% else %}
 	    <li{% if forloop.last %} class="round-bottom"{% endif %}><a href="{% url maps:nearby_detail entity_type.slug %}">{{ entity_type.verbose_name_plural|capfirst }}</a></li>
 	{% endif %}{% endfor %}
 	</ul>
 </div>
+{% endfor %}
 
 {% endblock %}

@@ -114,6 +114,20 @@ APPLICATIONS = [
             ),
             'molly.providers.apps.maps.OxontimeMapsProvider',
         ],
+        nearby_entity_types = (
+            ('Transport', (
+                'bicycle-parking', 'bus-stop', 'car-park', 'park-and-ride', 
+                'taxi-rank', 'train-station')),
+            ('Amenities', (
+                'atm', 'bank', 'bench', 'medical', 'post-box', 'post-office',
+                'public-library', 'recycling', 'bar', 'food', 'pub')),
+            ('Leisure', (
+                'cinema', 'theatre', 'museum', 'park', 'swimming-pool',
+                'sports-centre', 'punt-hire')),
+            ('University', (
+                'university-library', 'college-hall', 'faculty-department',
+                'building', 'room')),
+        ),
     ),
 
     Application('molly.z3950', 'library', 'Library search',
