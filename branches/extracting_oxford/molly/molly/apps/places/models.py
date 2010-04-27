@@ -134,7 +134,7 @@ class Entity(models.Model):
         for scheme in IDENTIFIER_SCHEME_PREFERENCE:
             if scheme in identifiers:
                 self.identifier_scheme, self.identifier_value = scheme, identifiers[scheme]
-                return reverse('maps:entity', args=[scheme, identifiers[scheme]])
+                return reverse('places:entity', args=[scheme, identifiers[scheme]])
         raise AssertionError
     
     def get_absolute_url(self):

@@ -2,8 +2,8 @@ import simplejson, urllib
 
 from django.contrib.gis.geos import Point
 
-from molly.maps.providers import BaseMapsProvider
-from molly.maps.models import Entity, EntityType, Source
+from molly.apps.places.providers import BaseMapsProvider
+from molly.apps.places.models import Entity, EntityType, Source
 
 class OxpointsMapsProvider(BaseMapsProvider):
 

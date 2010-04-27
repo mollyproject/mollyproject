@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from django.contrib.gis.geos import Point, LineString, LinearRing
 from django.conf import settings
-from molly.maps.models import Entity, EntityType, Source
-from molly.maps.providers import BaseMapsProvider
+from molly.apps.places.models import Entity, EntityType, Source
+from molly.apps.places.providers import BaseMapsProvider
 from molly.core.models import Config
 from molly.utils.misc import AnyMethodRequest
 from xml.sax import saxutils, handler, make_parser

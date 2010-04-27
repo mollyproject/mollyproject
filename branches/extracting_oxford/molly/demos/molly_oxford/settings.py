@@ -106,7 +106,7 @@ APPLICATIONS = [
         ),
     ),
 
-    Application('molly.maps', 'places', 'Places',
+    Application('molly.apps.places', 'places', 'Places',
         providers = [
             SimpleProvider('molly.providers.apps.maps.NaptanMapsProvider',
                 method='http',

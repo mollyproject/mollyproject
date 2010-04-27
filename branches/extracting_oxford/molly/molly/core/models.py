@@ -8,7 +8,6 @@ from django.contrib.gis.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-from molly.maps.models import Entity
 import django.dispatch
 
 class Config(models.Model):

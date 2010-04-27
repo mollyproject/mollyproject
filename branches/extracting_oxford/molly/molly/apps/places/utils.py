@@ -1,7 +1,8 @@
 from math import atan2, degrees
 from django.shortcuts import get_object_or_404
 from django.contrib.gis.geos import Point
-from molly.maps.models import EntityType, Entity, Identifier
+
+from models import EntityType, Entity, Identifier
 
 def get_entity(scheme, value):
     return get_object_or_404(Entity, _identifiers__scheme=scheme, _identifiers__value=value)
