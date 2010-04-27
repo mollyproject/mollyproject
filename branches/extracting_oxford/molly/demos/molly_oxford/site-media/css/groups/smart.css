@@ -71,17 +71,16 @@ ol.icon-menu li a {
     color: #002147;
 }
 li#menu-contact {background-image:url('../../png/index-icons/contact.png');}
-li#menu-maps {background-image:url('../../png/index-icons/maps.png');}
+li#menu-places {background-image:url('../../png/index-icons/places.png');}
 li#menu-podcasts {background-image:url('../../png/index-icons/podcasts.png');}
 li#menu-webcams {background-image:url('../../png/index-icons/webcams.png');}
 li#menu-news {background-image:url('../../png/index-icons/news.png');}
 li#menu-events {background-image:url('../../png/index-icons/events.png');}
 li#menu-results {background-image:url('../../png/index-icons/results.png');}
-li#menu-z3950 {background-image:url('../../png/index-icons/z3950.png');}
+li#menu-library {background-image:url('../../png/index-icons/library.png');}
 li#menu-weather {background-image:url('../../png/index-icons/weather.png');}
-li#menu-sakai {background-image:url('../../png/index-icons/sakai.png');}
-li#menu-oucs_status {background-image:url('../../png/index-icons/oucs_status.png');}
-li#menu-oucs_status {background-image:url('../../png/index-icons/oucs_status.png');}
+li#menu-weblearn {background-image:url('../../png/index-icons/weblearn.png');}
+li#menu-service_status {background-image:url('../../png/index-icons/service_status.png');}
 /* End Index Page Specific */
 
 
@@ -141,16 +140,16 @@ div#bc-title h1.with-icon {
     background-position: left center;
     padding-left: 34px; /* Moves text to allow background breadcrumb image to coexist */
 }
-div#bc-title h1.maps-header {     background-image:url('../../png/index-icons/maps-bc.png');}
+div#bc-title h1.places-header {     background-image:url('../../png/index-icons/places-bc.png');}
 div#bc-title h1.contact-header {  background-image:url('../../png/index-icons/contact-bc.png');}
 div#bc-title h1.webcams-header {  background-image:url('../../png/index-icons/webcams-bc.png');}
 div#bc-title h1.podcasts-header { background-image:url('../../png/index-icons/podcasts-bc.png');}
 div#bc-title h1.results-header {  background-image:url('../../png/index-icons/results-bc.png');}
-div#bc-title h1.z3950-header {    background-image:url('../../png/index-icons/z3950-bc.png');}
+div#bc-title h1.library-header {    background-image:url('../../png/index-icons/library-bc.png');}
 div#bc-title h1.rss-header {      background-image:url('../../png/index-icons/rss-bc.png');}
 div#bc-title h1.weather-header {  background-image:url('../../png/index-icons/weather-bc.png');}
-div#bc-title h1.oucs_status-header {  background-image:url('../../png/index-icons/oucs_status-bc.png');}
-div#bc-title h1.sakai-header {  background-image:url('../../png/index-icons/sakai-bc.png');}
+div#bc-title h1.service_status-header {  background-image:url('../../png/index-icons/service_status-bc.png');}
+div#bc-title h1.weblearn-header {  background-image:url('../../png/index-icons/weblearn-bc.png');}
 /* End Breadcrumb Trail Styles */
 
 
