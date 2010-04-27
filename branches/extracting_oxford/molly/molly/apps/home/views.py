@@ -22,7 +22,7 @@ class IndexView(BaseView):
     @BreadcrumbFactory
     def breadcrumb(cls, request, context):
         return Breadcrumb('home', None, 'Home', lazy_reverse('home:index'))
-        
+
     def handle_GET(cls, request, context):
         # Check whether the referer header is from the same host as the server
         # is responding as
@@ -30,7 +30,7 @@ class IndexView(BaseView):
             internal_referer = request.META.get('HTTP_REFERER', '').split('/')[2] == request.META.get('HTTP_HOST')
         except IndexError:
             internal_referer = False
-    
+
         # Redirects if the user is a desktop browser who hasn't been referred
         # from this site. Also extra checks for preview mode and DEBUG.
         if ("generic_web_browser" in device_parents[request.device.devid]
@@ -39,7 +39,7 @@ class IndexView(BaseView):
             and not internal_referer
             and not settings.DEBUG):
             return HttpResponseRedirect(reverse('home:exposition'))
-    
+
         applications = [{
             'application_name': app.application_name,
             'local_name': app.local_name,
@@ -47,18 +47,18 @@ class IndexView(BaseView):
             'url': reverse('%s:index' % app.local_name),
             'display_to_user': app.conf.display_to_user,
         } for app in conf.all_apps()]
-        
+
         context = {
             'applications': applications,
             'hide_feedback_link': True,
         }
         return cls.render(request, context, 'core/index')
-    
+
     def handle_POST(cls, request, context):
         no_desktop_about = {'true':True, 'false':False}.get(request.POST.get('no_desktop_about'))
         if not no_desktop_about is None:
             request.session['home:desktop_about_shown'] = no_desktop_about
-            
+
         return HttpResponseRedirect(reverse('home:index'))
 
 class StaticDetailView(BaseView):
@@ -68,10 +68,10 @@ class StaticDetailView(BaseView):
             'home', None, title,
             lazy_reverse('home:static', args=[template])
         )
-    
+
     def handle_GET(cls, request, context, title, template):
         t = loader.get_template('static/%s.xhtml' % template)
-    
+
         context.update({
             'title': title,
             'content': t.render(Context()),
@@ -83,36 +83,36 @@ class ExpositionView(BaseView):
         return {
             'exclude_from_search': True
         }
-    
+
     breadcrumb = NullBreadcrumb
     cache_page_duration = 60*15
-    
+
     def handle_GET(cls, request, context, page):
         page = page or 'about'
         template = loader.get_template('core/exposition/%s.xhtml' % page)
-        
+
         if page == 'blog':
             inner_context = {
                 'articles': BlogArticle.objects.all(),
             }
         else:
             inner_context = {}
-        
+
         content = template.render(RequestContext(request, inner_context))
-        
+
         if request.GET.get('ajax') == 'true':
             return HttpResponse(content)
         else:
             return render_to_response('core/exposition/container.xhtml', {
                 'content': content,
                 'page': page,
-            }, context_instance=RequestContext(request))    
+            }, context_instance=RequestContext(request))
 
 def handler500(request):
     context = {
         'MEDIA_URL': settings.MEDIA_URL,
     }
-    
+
     # This will make things prettier if we can manage it.
     # No worries if we can't.
     try:
@@ -120,7 +120,7 @@ def handler500(request):
         context.update(device_specific_media(request))
     except Exception, e:
         pass
-        
+
     response = render_to_response('500.html', context)
     response.status_code = 500
     return response
@@ -132,19 +132,19 @@ class FeedbackView(BaseView):
             'home', None, 'Feedback',
             lazy_reverse('feedback')
         )
-        
+
     def initial_context(cls, request):
         return {
             'feedback_form': FeedbackForm(request.POST or None)
         }
-        
+
     def handle_GET(cls, request, context):
         context.update({
            'sent': request.GET.get('sent') == 'true',
            'referer': request.GET.get('referer', ''),
         })
         return cls.render(request, context, 'core/feedback')
-        
+
     def handle_POST(cls, request, context):
         if context['feedback_form'].is_valid():
             email = EmailMessage(
@@ -155,17 +155,17 @@ class FeedbackView(BaseView):
                 {'Reply-To': context['feedback_form'].cleaned_data['email']},
             )
             email.send()
-            
+
             qs = urllib.urlencode({
                 'sent':'true',
                 'referer': request.POST.get('referer', ''),
             })
-       
+
             return HttpResponseRedirect('%s?%s' % (reverse('home:feedback'), qs))
-            
+
         else:
             return cls.handle_GET(request, context)
-            
+
     def get_email_body(cls, request, context):
         form = context['feedback_form']
         params = {
@@ -196,7 +196,7 @@ Message
 """ % params
 
         return body
-    
+
 class UserMessageView(BaseView):
     @BreadcrumbFactory
     def breadcrumb(cls, request, context):
@@ -204,7 +204,7 @@ class UserMessageView(BaseView):
             'home', None, 'View messages from the developers',
             lazy_reverse('home:messages')
         )
-        
+
     def initial_context(cls, request):
         try:
             formset = UserMessageFormSet(
@@ -219,7 +219,7 @@ class UserMessageView(BaseView):
                 queryset=UserMessage.objects.filter(
                     session_key=request.session.session_key
                 )
-            )            
+            )
         return {
             'formset': formset,
         }
@@ -227,10 +227,10 @@ class UserMessageView(BaseView):
     def handle_GET(cls, request, context):
         UserMessage.objects.filter(session_key=request.session.session_key).update(read=True)
         return cls.render(request, context, 'core/messages')
-        
+
     def handle_POST(cls, request, context):
         if context['formset'].is_valid():
             context['formset'].save()
-            
+
         return HttpResponseRedirect(reverse('home:messages'))
 
