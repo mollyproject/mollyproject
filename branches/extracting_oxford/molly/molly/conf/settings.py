@@ -2,7 +2,7 @@ from django.utils.importlib import import_module
 from django.conf.urls.defaults import include as urlconf_include
 
 class Application(object):
-    registry = {}
+    
 
     def __init__(self, application_name, local_name, title, **kwargs):
         self.application_name, self.local_name = application_name, local_name
@@ -21,50 +21,46 @@ class Application(object):
         if 'provider' in kwargs:
             self.providers += (kwargs.pop('provider'),)
 
-        self.registry[local_name] = self
-
-    @classmethod
-    def get(cls, local_name):
-        app = cls.registry[local_name]
-        app.kwargs['local_name'] = local_name
-
+    def get(self):
         from molly.utils.views import BaseView, SecureView
-        views_module = import_module(app.application_name+'.views')
+        views_module = import_module(self.application_name+'.views')
 
         providers = []
-        for provider in app.providers:
+        for provider in self.providers:
             if isinstance(provider, SimpleProvider):
                 providers.append(provider())
                 for batch in provider.batches:
-                    app.batches.append((
+                    self.batches.append((
                         batch.times, getattr(providers[-1], batch.method_name),
                         batch.args, batch.kwargs
                     ))
             else:
                 providers.append(SimpleProvider(provider)())
 
-        app.kwargs['application_name'] = app.application_name
-        app.kwargs['providers'] = providers
-        app.kwargs['provider'] = providers[-1] if len(providers) else None
-        conf = type(app.local_name.capitalize()+'Config', (object,), app.kwargs)
+        self.kwargs['application_name'] = self.application_name
+        self.kwargs['providers'] = providers
+        self.kwargs['provider'] = providers[-1] if len(providers) else None
+        conf = type(self.local_name.capitalize()+'Config', (object,), self.kwargs)
 
-        bases = tuple(base() for base in app.extra_bases)
-        if app.secure:
+        bases = tuple(base() for base in self.extra_bases)
+        if self.secure:
             bases = (SecureView,) + bases
 
+        bar = dir(views_module)
         for n in dir(views_module):
             view = getattr(views_module, n)
             if not isinstance(view, type) or not BaseView in view.__bases__:
                 continue
 
             view.conf = conf
+            foo = view.__bases__
             view.__bases__ = bases + view.__bases__
 
-        return type(app.local_name.capitalize()+'App', (object,), {
-            'urls': urlconf_include(app.urlconf, app.application_name.split('.')[-1], app.local_name),
-            'application_name': app.application_name,
-            'local_name': app.local_name,
-            'title': app.title,
+        return type(self.local_name.capitalize()+'App', (object,), {
+            'urls': urlconf_include(self.urlconf, self.application_name.split('.')[-1], self.local_name),
+            'application_name': self.application_name,
+            'local_name': self.local_name,
+            'title': self.title,
             'conf': conf,
         })
 
@@ -80,7 +76,10 @@ class ExtraBase(object):
         mod_name, cls_name = self.klass.rsplit('.', 1)
         module = import_module(mod_name)
         klass = getattr(module, cls_name)
-        return type(module.__name__, (klass,), self.kwargs)
+        print "K", self.klass
+        base = type(cls_name, (klass,), self.kwargs)
+        base.__module__ = mod_name
+        return base
 
 def extract_installed_apps(applications):
     return tuple(app.application_name for app in applications)
