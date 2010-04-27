@@ -2,7 +2,7 @@ import logging
 
 from molly.apps.search.providers import BaseSearchProvider
 
-from molly.conf import applications
+from molly.conf import all_apps
 
 logger = logging.getLogger('molly.providers.apps.search.application_search')
 
@@ -35,8 +35,7 @@ class ApplicationSearchProvider(BaseSearchProvider):
         
     def find_applications(self):
         self.applications = {}
-        for local_name in applications:
-            application = applications[local_name]
+        for application in all_apps():
             
             if self.local_names and not application in self.local_names:
                 continue
