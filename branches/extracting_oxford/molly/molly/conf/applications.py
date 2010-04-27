@@ -2,17 +2,59 @@ from django.conf import settings as django_settings
 
 import settings
 
-class Applications(dict):
-    def __getattr__(self, local_name):
-        try:
-            return dict.__getitem__(self, local_name)
-        except KeyError:
-            self[local_name] = settings.Application.get(local_name)
-            return self[local_name]
+__all__ = [
+    'app_by_local_name',
+    'app_by_application_name',
+    'apps_by_application_name',
+    'all_apps',
+    'applications',
+]
+
+_loaded = False
+_by_local_name = {}
+_by_application_name = {}
+_all = []
+
+def _require_loaded_apps(f):
+    def g(*args, **kwargs):
+        if not _loaded:
+            print "Loading"
+            _load_apps()
+        return f(*args, **kwargs)
+    return g
+
+def _load_apps():
+    global _loaded
+    _loaded = True
+
+    for application in django_settings.APPLICATIONS:
+        app = application.get()
+        _by_local_name[app.local_name] = app
+        if not app.application_name in _by_application_name:
+            _by_application_name[app.application_name] = []
+        _by_application_name[app.application_name].append(app)
+        _all.append(app)
+
+@_require_loaded_apps
+def app_by_local_name(local_name):
+    return _by_local_name[local_name]
+
+@_require_loaded_apps
+def app_by_application_name(application_name):
+    return _by_application_name[application_name][0]
+
+@_require_loaded_apps
+def apps_by_application_name(application_name):
+    return list(_by_application_name[application_name])
+
+@_require_loaded_apps
+def all_apps():
+    return list(_all)
+
+class Applications(object):
+    
+    def __getattr__(self, key):
+        return app_by_local_name(key)
     __getitem__ = __getattr__
 
-    def __iter__(self):
-        return iter([app.local_name for app in django_settings.APPLICATIONS])
-    
-    def values(self):
-        return [self[app] for app in self]
+applications = Applications()
