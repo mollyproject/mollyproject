@@ -1,13 +1,9 @@
 from django import forms
+from molly.conf import applications
 
 APPLICATION_CHOICES = (
     ('', 'Show all'),
-    ('maps', 'maps'),
-    ('podcasts', 'podcasts'),
-    ('news', 'news'),
-    ('events', 'events'),
-    ('webcams', 'webcams'),
-)
+) + tuple((app.local_name, app.title) for app in applications.values())
 
 class SearchForm(forms.Form):
     query = forms.CharField(label='Search')
