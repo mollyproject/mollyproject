@@ -32,7 +32,7 @@ class IndexView(BaseView):
     @BreadcrumbFactory
     def breadcrumb(cls, request, context):
         return Breadcrumb(
-            'maps',
+            'places',
             None,
             'Maps',
             lazy_reverse('maps:index')
@@ -51,7 +51,7 @@ class NearbyListView(LocationRequiredView):
     @BreadcrumbFactory
     def breadcrumb(cls, request, context, entity=None):
         return Breadcrumb(
-            'maps',
+            'places',
             lazy_parent(IndexView),
             'Things nearby',
             url = lazy_reverse('maps:nearby_list'),
@@ -132,7 +132,7 @@ class NearbyDetailView(LocationRequiredView, ZoomableView):
     @BreadcrumbFactory
     def breadcrumb(cls, request, context, ptypes, entity=None):
         title = NearbyDetailView.get_metadata(request, ptypes, entity)['title']
-        return Breadcrumb('maps',
+        return Breadcrumb('places',
                           lazy_parent(NearbyListView, entity=entity),
                           title,
                           lazy_reverse('maps:nearby_detail', args=[ptypes]))
@@ -256,7 +256,7 @@ class EntityDetailView(ZoomableView):
             parent_view = CategoryDetailView
         entity = get_entity(scheme, value)
         return Breadcrumb(
-            'maps',
+            'places',
             lazy_parent(parent_view, ptypes=entity.primary_type.slug),
             context['entity'].title,
             lazy_reverse('maps:entity', args=[scheme,value]),
@@ -290,7 +290,7 @@ class EntityUpdateView(ZoomableView):
     @BreadcrumbFactory
     def breadcrumb(cls, request, context, type_slug, id):
         return Breadcrumb(
-            'maps',
+            'places',
             lazy_parent(EntityDetailView, type_slug=type_slug, id=id),
             'Things nearby',
             lazy_reverse('maps:entity_update', args=[type_slug,id])
@@ -361,7 +361,7 @@ class NearbyEntityListView(NearbyListView):
     @BreadcrumbFactory
     def breadcrumb(cls, request, context, scheme, value):
         return Breadcrumb(
-            'maps',
+            'places',
             lazy_parent(EntityDetailView, scheme=scheme, value=value),
             'Things near %s' % context['entity'].title,
             lazy_reverse('maps:entity_nearby_list', args=[scheme, value])
@@ -385,7 +385,7 @@ class NearbyEntityDetailView(NearbyDetailView):
     def breadcrumb(cls, request, context, scheme, value, ptype):
         entity_type = get_object_or_404(EntityType, slug=ptype)
         return Breadcrumb(
-            'maps',
+            'places',
             lazy_parent(NearbyEntityListView, scheme=scheme, value=value),
             '%s near %s' % (
                 capfirst(entity_type.verbose_name_plural),
@@ -414,7 +414,7 @@ class CategoryListView(BaseView):
     @BreadcrumbFactory
     def breadcrumb(cls, request, context):
         return Breadcrumb(
-            'maps',
+            'places',
             lazy_parent(IndexView),
             'Categories',
             lazy_reverse('maps:category_list'),
@@ -447,7 +447,7 @@ class CategoryDetailView(BaseView):
     @BreadcrumbFactory
     def breadcrumb(cls, request, context, ptypes):
         return Breadcrumb(
-            'maps',
+            'places',
             lazy_parent(CategoryListView),
             capfirst(context['entity_types'][0].verbose_name_plural),
             lazy_reverse('maps:category_detail', args=[ptypes]),
@@ -465,7 +465,7 @@ class BusstopSearchView(BaseView):
     @BreadcrumbFactory
     def breadcrumb(cls, request, context):
         return Breadcrumb(
-            'maps',
+            'places',
             lazy_parent(IndexView),
             'Search bus stops',
             lazy_reverse('maps:busstop_search'),
@@ -505,7 +505,7 @@ class PostCodeDetailView(NearbyDetailView):
     @BreadcrumbFactory
     def breadcrumb(cls, request, context, post_code, ptypes=None):
         return Breadcrumb(
-            'maps',
+            'places',
             lazy_parent(IndexView),
             'Things near %s' % cls.add_space(post_code),
             lazy_reverse('maps:postcode_detail', args=[post_code, ptypes]),
