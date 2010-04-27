@@ -1,5 +1,6 @@
 from math import atan2, degrees
 from django.shortcuts import get_object_or_404
+from django.contrib.gis.geos import Point
 from molly.maps.models import EntityType, Entity, Identifier
 
 def get_entity(scheme, value):
@@ -22,3 +23,14 @@ COMPASS_POINTS = ('N','NE','E','SE','S','SW','W','NW')
 def get_bearing(p1, p2):
     lat_diff, lon_diff = p2[0] - p1[0], p2[1] - p1[1]
     return COMPASS_POINTS[int(((90 - degrees(atan2(lon_diff, lat_diff))+22.5) % 360) // 45)]
+
+def get_point(request, entity):
+    if entity and entity.location:
+        point = entity.location
+    elif entity and not entity.location:
+        point = None
+    elif request.session.get('geolocation:location'):
+        point = Point(request.session.get('geolocation:location'), srid=4326)
+    else:
+        point = None
+    return point
