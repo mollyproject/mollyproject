@@ -5,7 +5,6 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.template import loader, Context, RequestContext
-from django.core.mail import EmailMessage
 from django import forms
 
 from molly.utils.views import BaseView
@@ -15,7 +14,7 @@ from molly.wurfl import device_parents
 from molly import conf
 
 from models import UserMessage, BlogArticle
-from forms import FeedbackForm, UserMessageFormSet
+from forms import UserMessageFormSet
 
 class IndexView(BaseView):
 
@@ -124,78 +123,6 @@ def handler500(request):
     response = render_to_response('500.html', context)
     response.status_code = 500
     return response
-
-class FeedbackView(BaseView):
-    @BreadcrumbFactory
-    def breadcrumb(cls, request, context):
-        return Breadcrumb(
-            'home', None, 'Feedback',
-            lazy_reverse('feedback')
-        )
-
-    def initial_context(cls, request):
-        return {
-            'feedback_form': FeedbackForm(request.POST or None)
-        }
-
-    def handle_GET(cls, request, context):
-        context.update({
-           'sent': request.GET.get('sent') == 'true',
-           'referer': request.GET.get('referer', ''),
-        })
-        return cls.render(request, context, 'core/feedback')
-
-    def handle_POST(cls, request, context):
-        if context['feedback_form'].is_valid():
-            email = EmailMessage(
-                'm.ox | Comment',
-                cls.get_email_body(request, context), None,
-                ('%s <%s>' % admin for admin in settings.ADMINS),
-                [], None, [],
-                {'Reply-To': context['feedback_form'].cleaned_data['email']},
-            )
-            email.send()
-
-            qs = urllib.urlencode({
-                'sent':'true',
-                'referer': request.POST.get('referer', ''),
-            })
-
-            return HttpResponseRedirect('%s?%s' % (reverse('home:feedback'), qs))
-
-        else:
-            return cls.handle_GET(request, context)
-
-    def get_email_body(cls, request, context):
-        form = context['feedback_form']
-        params = {
-            'email': form.cleaned_data['email'],
-            'devid': request.device.devid,
-            'ua': urllib.urlencode({'user_agent':request.META['HTTP_USER_AGENT']}),
-            'referer': request.POST.get('referer', ''),
-            'lat': request.session.get('geolocation:location', (None, None))[0],
-            'lon': request.session.get('geolocation:location', (None, None))[1],
-            'body': form.cleaned_data['body'],
-            'session_key': request.session.session_key,
-        }
-        body = """\
-Meta
-====
-
-E-mail:      %(email)s
-Device:      http://www.wurflpro.com/device/results?user_agent=&identifier=%(devid)s
-User-agent:  http://www.wurflpro.com/device/results?%(ua)s
-Referer:     %(referer)s
-Location:    http://www.google.co.uk/search?q=%(lat)f,%(lon)f
-Session key: %(session_key)s
-
-Message
-=======
-
-%(body)s
-""" % params
-
-        return body
 
 class UserMessageView(BaseView):
     @BreadcrumbFactory

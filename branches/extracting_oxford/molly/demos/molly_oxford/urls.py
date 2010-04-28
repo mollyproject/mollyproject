@@ -23,6 +23,7 @@ urlpatterns = patterns('',
     (r'^geolocation/', applications.geolocation.urls),
     (r'^places/', applications.places.urls),
     (r'^url-shortener/', applications.url_shortener.urls),
+    (r'^feedback/', applications.feedback.urls),
     (r'', applications.home.urls),
 
     # These ones still need work

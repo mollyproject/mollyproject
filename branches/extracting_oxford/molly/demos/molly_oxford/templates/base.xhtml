@@ -95,7 +95,7 @@
 {% if not hide_feedback_link %}
     <div class="bubble pad-10">
 {% block bottom_links %}    
-        <a href="{% url home:feedback %}?referer={{ full_path|urlencode }}">Provide feedback for this page.</a><br />
+        <a href="{% url feedback:index %}?referer={{ full_path|urlencode }}">Provide feedback for this page.</a><br />
 		<a href="http://chart.apis.google.com/chart?cht=qr&amp;chs={{ device.max_image_width }}x{{ device.max_image_width }}&amp;chl=http://m.ox.ac.uk{{ full_path|urlencode }}">2D Barcode for this page</a><br/>
 		<a rel="nofollow" href="{% url url_shortener:shorten %}?path={{ full_path|urlencode }}">Get short link for this page</a>
 {% endblock %}

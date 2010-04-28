@@ -210,6 +210,10 @@ APPLICATIONS = [
     Application('molly.apps.url_shortener', 'url_shortener', 'URL Shortener',
         display_to_user = False,
     ),
+    
+    Application('molly.apps.feedback', 'feedback', 'Feedback',
+        display_to_user = False,
+    ),
 ]
 
 API_KEYS = {

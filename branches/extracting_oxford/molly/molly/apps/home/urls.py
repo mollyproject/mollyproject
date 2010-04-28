@@ -2,7 +2,7 @@ from django.conf.urls.defaults import *
 
 from views import (
     IndexView, ExpositionView, UserMessageView,
-    FeedbackView, StaticDetailView,
+    StaticDetailView,
 )
 
 urlpatterns = patterns('',
@@ -24,10 +24,6 @@ urlpatterns = patterns('',
     (r'^desktop/((?P<page>features|accessing|get-involved|blog|help)/)?$',
         ExpositionView, {},
         'exposition'),
-
-    (r'^feedback/$',
-        FeedbackView, {},
-        'feedback'),
 
     (r'^messages/$',
         UserMessageView, {},
