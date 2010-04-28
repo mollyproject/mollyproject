@@ -3,6 +3,7 @@ from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.template import loader, Context, RequestContext
 from django import forms
+from django.shortcuts import render_to_response
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
@@ -48,7 +49,7 @@ class IndexView(BaseView):
             'applications': applications,
             'hide_feedback_link': True,
         }
-        return cls.render(request, context, 'core/index')
+        return cls.render(request, context, 'home/index')
 
     def handle_POST(cls, request, context):
         no_desktop_about = {'true':True, 'false':False}.get(request.POST.get('no_desktop_about'))
@@ -72,7 +73,7 @@ class StaticDetailView(BaseView):
             'title': title,
             'content': t.render(Context()),
         })
-        return cls.render(request, context, 'core/static_detail')
+        return cls.render(request, context, 'home/static_detail')
 
 class ExpositionView(BaseView):
     def get_metadata(cls, request, page):
@@ -85,7 +86,7 @@ class ExpositionView(BaseView):
 
     def handle_GET(cls, request, context, page):
         page = page or 'about'
-        template = loader.get_template('core/exposition/%s.xhtml' % page)
+        template = loader.get_template('home/exposition/%s.html' % page)
 
         if page == 'blog':
             inner_context = {
@@ -99,7 +100,7 @@ class ExpositionView(BaseView):
         if request.GET.get('ajax') == 'true':
             return HttpResponse(content)
         else:
-            return render_to_response('core/exposition/container.xhtml', {
+            return render_to_response('home/exposition/container.html', {
                 'content': content,
                 'page': page,
             }, context_instance=RequestContext(request))
@@ -150,7 +151,7 @@ class UserMessageView(BaseView):
 
     def handle_GET(cls, request, context):
         UserMessage.objects.filter(session_key=request.session.session_key).update(read=True)
-        return cls.render(request, context, 'core/messages')
+        return cls.render(request, context, 'home/messages')
 
     def handle_POST(cls, request, context):
         if context['formset'].is_valid():

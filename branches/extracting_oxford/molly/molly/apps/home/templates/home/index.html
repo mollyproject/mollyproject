@@ -1,4 +1,4 @@
-{% extends "core/base.xhtml" %}
+{% extends "home/base.html" %}
 {% load portal_misc %}{% load maps %}{% load molly_apps_search %}
 
 {% block title %}Mobile Oxford{% endblock %}
@@ -54,7 +54,7 @@
 			{% if has_user_messages %}
             <li><a href="{% url home:messages %}">Read messages from the developers</a></li>
 			{% endif %}
-            <li class="round-bottom"><a href="{% url home:feedback %}?referer={% url home:index %}">Provide feedback</a></li>
+            <li class="round-bottom"><a href="{% url feedback:index %}?referer={% url home:index %}">Provide feedback</a></li>
     </ul>
 
     <div class="center">
