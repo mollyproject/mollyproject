@@ -1,6 +1,3 @@
-# Create your views here.
-import urllib
-
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.conf import settings
