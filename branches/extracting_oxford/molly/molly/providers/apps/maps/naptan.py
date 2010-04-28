@@ -175,10 +175,10 @@ class NaptanMapsProvider(BaseMapsProvider):
         self._username, self._password = username, password
         self._method, self._areas = method, areas
         
+    def import_data(self):
         self._source = self._get_source()
         self._entity_types = self._get_entity_types()
         
-    def import_data(self):
         if self._method == 'http':
             self._import_from_http()
         elif self._method == 'ftp':
