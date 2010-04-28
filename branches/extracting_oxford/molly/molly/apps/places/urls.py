@@ -1,6 +1,6 @@
 from django.conf.urls.defaults import *
 
-from molly.core.views import StaticDetailView
+from molly.apps.home.views import StaticDetailView
 
 from views import (
     IndexView,

@@ -3,13 +3,12 @@
 from xml.sax.saxutils import escape
 
 from django.shortcuts import get_object_or_404
-from django.http import HttpResponse, Http404
+from django.http import Http404
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
-from molly.utils.renderers import mobile_render
 
-from molly.core.utils import resize_external_image
+from molly.apps.external_media.utils import resize_external_image
 from models import Webcam, WEBCAM_WIDTHS
 
 class IndexView(BaseView):

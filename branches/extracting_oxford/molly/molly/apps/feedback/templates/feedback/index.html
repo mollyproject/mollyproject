@@ -1,8 +1,4 @@
-{% extends "core/base.xhtml" %}
-
-{% block pagetitle %}Feedback{% endblock %}
-{% block title %}m.ox | Feedback{% endblock %}
-
+{% extends "feedback/base.html" %}
 
 {% block content %}
 
@@ -13,7 +9,7 @@
 	{% if referer %}
 	  <p>You may wish to go <a href="{{ referer }}">back from whence you came</a>.</p>
 	{% else %}
-	  <p>You may wish to go <a href="{% url core_index %}">back to the beginning</a>.</p>
+	  <p>You may wish to go <a href="{% url home:index %}">back to the beginning</a>.</p>
 	{% endif %}
 	</div></div>
 	</div>

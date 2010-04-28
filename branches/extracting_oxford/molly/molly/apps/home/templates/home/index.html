@@ -1,4 +1,4 @@
-{% extends "core/base.xhtml" %}
+{% extends "home/base.html" %}
 {% load portal_misc %}{% load maps %}{% load molly_apps_search %}
 
 {% block title %}Mobile Oxford{% endblock %}
@@ -50,11 +50,11 @@
     </div></div>
     
     <ul class="stand-alone">
-            <li class="round-top"><a href="{% url core:static_about %}">About this site</a></li>
+            <li class="round-top"><a href="{% url home:static_about %}">About this site</a></li>
 			{% if has_user_messages %}
-            <li><a href="{% url core:messages %}">Read messages from the developers</a></li>
+            <li><a href="{% url home:messages %}">Read messages from the developers</a></li>
 			{% endif %}
-            <li class="round-bottom"><a href="{% url core:feedback %}?referer={% url core:index %}">Provide feedback</a></li>
+            <li class="round-bottom"><a href="{% url feedback:index %}?referer={% url home:index %}">Provide feedback</a></li>
     </ul>
 
     <div class="center">

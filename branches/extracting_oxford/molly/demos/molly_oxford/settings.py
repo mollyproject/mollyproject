@@ -93,6 +93,9 @@ TEMPLATE_DIRS = (
 )
 
 APPLICATIONS = [
+    Application('molly.apps.home', 'home', 'Home',
+        display_to_user = False,
+    ),
     Application('molly.apps.contact', 'contact', 'Contact search',
 #        provider = 'molly.contrib.oxford.providers.ScrapingContactProvider',
         provider = 'molly.contrib.mit.providers.LDAPContactProvider',
@@ -217,6 +220,14 @@ APPLICATIONS = [
     Application('molly.auth', 'auth', 'Authentication',
         display_to_user = False,
     ),
+
+    Application('molly.apps.url_shortener', 'url_shortener', 'URL Shortener',
+        display_to_user = False,
+    ),
+    
+    Application('molly.apps.feedback', 'feedback', 'Feedback',
+        display_to_user = False,
+    ),
 ]
 
 API_KEYS = {
@@ -233,7 +244,6 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
-    'molly.core',
     'molly.osm',
 ) + extract_installed_apps(APPLICATIONS)
 

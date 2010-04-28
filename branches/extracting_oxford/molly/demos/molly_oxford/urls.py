@@ -22,11 +22,13 @@ urlpatterns = patterns('',
     (r'^search/', applications.search.urls),
     (r'^geolocation/', applications.geolocation.urls),
     (r'^places/', applications.places.urls),
+    (r'^url-shortener/', applications.url_shortener.urls),
+    (r'^feedback/', applications.feedback.urls),
+    (r'', applications.home.urls),
 
     # These ones still need work
     (r'^osm/', include('molly.osm.urls', 'osm', 'osm')),
 
-    (r'', include('molly.core.urls', 'core', 'core')),
 )
 
 if settings.DEBUG:
