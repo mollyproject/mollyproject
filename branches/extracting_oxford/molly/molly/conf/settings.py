@@ -14,6 +14,7 @@ class Application(object):
         self.urlconf = kwargs.pop('urlconf', application_name+'.urls')
         self.kwargs = kwargs
         self.batches = []
+        self.app = None
         
         kwargs['display_to_user'] = kwargs.get('display_to_user', True)
 
@@ -22,6 +23,9 @@ class Application(object):
             self.providers += (kwargs.pop('provider'),)
 
     def get(self):
+        if self.app:
+            return self.app
+
         from molly.utils.views import BaseView, SecureView
         views_module = import_module(self.application_name+'.views')
 
@@ -56,13 +60,14 @@ class Application(object):
             foo = view.__bases__
             view.__bases__ = bases + view.__bases__
 
-        return type(self.local_name.capitalize()+'App', (object,), {
+        self.app = type(self.local_name.capitalize()+'App', (object,), {
             'urls': urlconf_include(self.urlconf, self.application_name.split('.')[-1], self.local_name),
             'application_name': self.application_name,
             'local_name': self.local_name,
             'title': self.title,
             'conf': conf,
         })
+        return self.app
 
 class Authentication(object):
     def __init__(klass, **kwargs):
