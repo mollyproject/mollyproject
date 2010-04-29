@@ -49,7 +49,7 @@ class Library(object):
     @property
     def oxpoints_id(self):
         def f(self):
-            return int(self._json['uri'][-8:])
+            return self._json['uri'][-8:]
 
         try:
             return require_json(f)(self)
@@ -62,7 +62,7 @@ class Library(object):
         try:
             return self._oxpoints_entity
         except AttributeError:
-            self._oxpoints_entity = Entity.objects.get(oxpoints_id=self.oxpoints_id)
+            self._oxpoints_entity = Entity.objects.get(_identifiers__scheme='oxpoints', _identifiers__value = self.oxpoints_id)
             return self._oxpoints_entity
             
     @property
