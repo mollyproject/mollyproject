@@ -1,3 +1,7 @@
+from __future__ import with_statement
+
+from threading import Lock
+
 from django.conf import settings as django_settings
 
 import settings
@@ -10,6 +14,7 @@ __all__ = [
     'applications',
 ]
 
+_load_lock = Lock()
 _loaded = False
 _by_local_name = {}
 _by_application_name = {}
@@ -18,22 +23,25 @@ _all = []
 def _require_loaded_apps(f):
     def g(*args, **kwargs):
         if not _loaded:
-            print "Loading"
             _load_apps()
         return f(*args, **kwargs)
     return g
 
 def _load_apps():
-    global _loaded
-    _loaded = True
+    global _loaded, _all
+    with _load_lock:
+        if _loaded:
+            return
+        _loaded = True
 
-    for application in django_settings.APPLICATIONS:
-        app = application.get()
-        _by_local_name[app.local_name] = app
-        if not app.application_name in _by_application_name:
-            _by_application_name[app.application_name] = []
-        _by_application_name[app.application_name].append(app)
-        _all.append(app)
+        for application in django_settings.APPLICATIONS:
+            app = application.get()
+            _by_local_name[app.local_name] = app
+            if not app.application_name in _by_application_name:
+                _by_application_name[app.application_name] = []
+            _by_application_name[app.application_name].append(app)
+            _all.append(app)
+        _all = tuple(_all)
 
 @_require_loaded_apps
 def app_by_local_name(local_name):
@@ -49,10 +57,9 @@ def apps_by_application_name(application_name):
 
 @_require_loaded_apps
 def all_apps():
-    return list(_all)
+    return _all
 
 class Applications(object):
-    
     def __getattr__(self, key):
         return app_by_local_name(key)
     __getitem__ = __getattr__
