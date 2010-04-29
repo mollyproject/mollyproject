@@ -1,4 +1,4 @@
-{% extends "maps/base.html" %}{% load portal_misc %}
+{% extends "places/base.html" %}{% load portal_misc %}
 
 {% block extrahead %}{{ block.super }}{% if entity %}
 <meta name="robots" content="noindex" />{% endif %}{% endblock %}
@@ -32,9 +32,9 @@
       Limit to:
 {% for et in found_entity_types %}
   {% if entity %}
-    <a href="{% url maps:entity_nearby_list entity.identifier_scheme entity.identifier_value %}{{ et.slug }}{% for oet in entity_types %}{% if not et.subtype_of.all|contains:oet %};{{ oet.slug }}{% endif %}{% endfor %}/">{{ et.verbose_name_plural }}</a>
+    <a href="{% url places:entity_nearby_list entity.identifier_scheme entity.identifier_value %}{{ et.slug }}{% for oet in entity_types %}{% if not et.subtype_of.all|contains:oet %};{{ oet.slug }}{% endif %}{% endfor %}/">{{ et.verbose_name_plural }}</a>
   {% else %}
-    <a href="{% url maps:nearby_list %}{{ et.slug }}{% for oet in entity_types %}{% if not et.subtype_of_completion.all|contains:oet %};{{ oet.slug }}{% endif %}{% endfor %}/">{{ et.verbose_name_plural }}</a>
+    <a href="{% url places:nearby_list %}{{ et.slug }}{% for oet in entity_types %}{% if not et.subtype_of_completion.all|contains:oet %};{{ oet.slug }}{% endif %}{% endfor %}/">{{ et.verbose_name_plural }}</a>
   {% endif %}
 {% if not forloop.last %} | {% endif %} 
 {% endfor %}
@@ -50,11 +50,11 @@
 
 {% ifnotequal style_group "dumb" %}
     <div class="backgrounded-image" style="background-image:url('{% url osm:generated_map map_hash %}'); height:{{ map_height }}px">
-    {% include "maps/map_elements.html" %}
+    {% include "places/map_elements.html" %}
     </div>
 {% else %}
     <img src="{% url osm:generated_map map_hash %}" alt="Map"><br />
-    {% include "maps/map_elements.html" %}
+    {% include "places/map_elements.html" %}
 {% endifnotequal %}
 
 

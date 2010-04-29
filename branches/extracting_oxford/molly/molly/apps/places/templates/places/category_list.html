@@ -1,0 +1,14 @@
+{% extends "places/base.html" %}
+
+{% block content %}
+
+<div class="section">
+  <h2>Places</h2>
+	<ul>
+	{% for entity_type in entity_types %}
+	    <li{% if forloop.last %} class="round-bottom"{% endif %}><a href="{% url places:category_detail entity_type.slug %}">{{ entity_type.verbose_name_plural|capfirst }}</a></li>
+	{% endfor %}
+	</ul>
+</div>
+
+{% endblock %}

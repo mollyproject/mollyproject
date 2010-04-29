@@ -4,8 +4,8 @@ from xml.sax import ContentHandler, make_parser
 
 from django.contrib.gis.geos import Point
 
-from molly.maps.providers import BaseMapsProvider
-from molly.maps.models import EntityType, Entity, Identifier, Source
+from molly.apps.places.providers import BaseMapsProvider
+from molly.apps.places.models import EntityType, Entity, Identifier, Source
 
 class NaptanContentHandler(ContentHandler):
 

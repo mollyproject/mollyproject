@@ -9,7 +9,7 @@ from molly.utils.breadcrumbs import *
 from molly.utils.renderers import mobile_render
 from molly.utils.misc import AnyMethodRequest
 
-from molly.maps.models import Entity
+from molly.apps.places.models import Entity
 
 from .models import GeneratedMap
 
