@@ -59,6 +59,7 @@ Database
 There are two ways to create the PostGIS template used by a molly installation:
 
  * Run one of the scripts in scripts/ as the postgis user.
+OR
  * Follow the instructions at
    http://geodjango.org/docs/install.html#creating-a-spatial-database-template-for-postgis
 
@@ -72,6 +73,9 @@ Once this is done, you should create the molly database as a DB superuser
 
 As a superuser, create the molly user:
 
+
+(Make sure the password is the one given in settings.py in the demos folder)
+
  $ createuser molly -P
  Enter password for new role:
  Enter it again:
@@ -79,7 +83,6 @@ As a superuser, create the molly user:
  Shall the new role be allowed to create databases? (y/n) n
  Shall the new role be allowed to create more new roles? (y/n) n
 
-Make sure the password is the one given in settings.py
 
 Now edit pg_hba.conf (usually in /var/lib/pgsql/data) on Fedora systems, and
 /etc/postgresql/8.3/main/ on Debian systems) to allow passworded logins from
@@ -89,7 +92,7 @@ the new user by adding the following line somewhere near the top.
 
 Order is important, so it needs to go above any more general access directives.
 
-Log in to the server and allow the user access to the database:
+Log in to the server as postgres and allow the user access to the database:
 
  $ psql molly
  Welcome to psql 8.3.7, the PostgreSQL interactive terminal.
@@ -100,7 +103,7 @@ Log in to the server and allow the user access to the database:
         \g or terminate with semicolon to execute query
         \q to quit
 
- molly=# grant all on database mobile_portal to molly;
+ molly=# grant all on database molly to molly;
  GRANT
  molly=# ^D
 
