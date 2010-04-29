@@ -1,10 +1,11 @@
 from datetime import datetime
 
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
+from molly.utils.http import HttpResponseSeeOther
 
 from molly.osm.utils import fit_to_map
 
@@ -14,7 +15,7 @@ class IndexView(BaseView):
     breadcrumb = NullBreadcrumb
 
     def handle_GET(cls, request, context):
-        return cls.render(request, context, 'geolocation/index')
+        raise Http404
 
 class LocationUpdateView(BaseView):
     breadcrumb = NullBreadcrumb
@@ -97,13 +98,49 @@ class LocationUpdateView(BaseView):
     def set_location(cls, request, name, location, accuracy, method):
         if isinstance(location, list):
             location = tuple(location)
+        
+        last_updated = request.session.get('geolocation:updated', datetime(1970, 1, 1))
+        try:
+            last_location = Point(request.session['geolocation:location'], srid=4326)
+            distance_moved = last_location.distance(Point(location), srid=4326).m
+        except KeyError:
+            distance_moved = float('inf')
+            
+        if method in ('other', 'manual', 'geocoded') or \
+           not 'geolocation:location' in request.session or \
+           (last_updated > datetime.utcnow() - 3600 and distance_moved > 250):
+            cls.add_to_history(request, name, location, accuracy, method)
 
         request.session['geolocation:location'] = location
-        print "setting", location
-        request.session['geolocation:updated'] = datetime.now()
+        request.session['geolocation:updated'] = datetime.utcnow()
         request.session['geolocation:name'] = name
         request.session['geolocation:method'] = method
         request.session['geolocation:accuracy'] = accuracy
+    
+    def add_to_history(cls, request, name, location, accuracy, method):
+        if not 'geolocation:history' in request.session:
+            request.session['geolocation:history'] = []
+        request.session['geolocation:history'].insert(0, {
+            'location': location,
+            'updated': datetime.utcnow(),
+            'name': name,
+            'method': method,
+            'accuracy': accuracy,
+        })
+
+        # Chop off the last element if the history is now larger than the
+        # maximum allowed length.        
+        history_size = getattr(cls.conf, 'history_size', 5)
+        request.session['geolocation:history'][history_size:] = []
+        
+        request.session.modified = True
+        
+class ClearHistoryView(BaseView):
+    def handle_POST(cls, request, context):
+        for key in request.session:
+            if key.startswith('geolocation:'):
+                del request.session[key]
+        return HttpResponseSeeOther(request.GET.get('redirect_to', reverse('home:index')))
 
 class LocationRequiredView(BaseView):
     def is_location_required(cls, request, *args, **kwargs):
