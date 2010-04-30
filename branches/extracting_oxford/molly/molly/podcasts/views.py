@@ -5,7 +5,6 @@ from django.http import HttpResponseRedirect, HttpResponsePermanentRedirect, Htt
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 
-from molly.utils.renderers import mobile_render
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
 
@@ -25,7 +24,7 @@ class IndexView(BaseView):
     @BreadcrumbFactory
     def breadcrumb(cls, request, context):
         return Breadcrumb('podcasts', None,
-                          'Podcasts', lazy_reverse('podcasts_index'))
+                          'Podcasts', lazy_reverse('podcasts:index'))
         
     def handle_GET(cls, request, context):
         show_itunesu_link = request.session.get('podcasts:use_itunesu') == None
@@ -38,7 +37,7 @@ class IndexView(BaseView):
             'categories': PodcastCategory.objects.all(),
             'show_itunesu_link': show_itunesu_link,
         })
-        return mobile_render(request, context, 'podcasts/index')
+        return cls.render(request, context, 'podcasts/index')
 
 class CategoryDetailView(BaseView):
     def get_metadata(cls, request, code, medium=None):
@@ -66,16 +65,16 @@ class CategoryDetailView(BaseView):
     @BreadcrumbFactory
     def breadcrumb(cls, request, context, code, medium=None):
         if medium:
-            url = lazy_reverse('podcasts_category_medium', args=[code,medium])
+            url = lazy_reverse('podcasts:category_medium', args=[code,medium])
         else:
-            url = lazy_reverse('podcasts_category', args=[code])
+            url = lazy_reverse('podcasts:category', args=[code])
         
         return Breadcrumb('podcasts', lazy_parent(IndexView),
                           context['category'].name,
                           url)
         
     def handle_GET(cls, request, context, code, medium=None):
-        return mobile_render(request, context, 'podcasts/category_detail')
+        return cls.render(request, context, 'podcasts/category_detail')
 
 class PodcastDetailView(BaseView):
     class RespondThus(Exception):
@@ -119,7 +118,7 @@ class PodcastDetailView(BaseView):
         context.update({
             'items': items,
         })
-        return mobile_render(request, context, 'podcasts/podcast_detail')
+        return cls.render(request, context, 'podcasts/podcast_detail')
 
 class TopDownloadsView(PodcastDetailView):
     def get_metadata(cls, request):

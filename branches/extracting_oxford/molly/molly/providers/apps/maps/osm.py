@@ -17,13 +17,13 @@ def node_id(id):
     return "N%d" % int(id)
 def way_id(id):
     return "W%d" % int(id)
-        
+
 class OSMHandler(handler.ContentHandler):
     def __init__(self, source, entity_types, find_types):
         self.source = source
         self.entity_types = entity_types
         self.find_types = find_types
-        
+
     def startDocument(self):
         self.ids = set()
         self.tags = {}
@@ -34,41 +34,41 @@ class OSMHandler(handler.ContentHandler):
         self.ignore_count = 0
 
         self.node_locations = {}
-        
+
     def startElement(self, name, attrs):
         if name == 'node':
             lat, lon = float(attrs['lat']), float(attrs['lon'])
-            
+
             self.valid = (51.5 < lat < 52.1 and -1.6 < lon < -1.0)
             if not self.valid:
                 return
-                
+
             id = node_id(attrs['id'])
-            
+
             self.node_location = lat, lon
             self.attrs = attrs
             self.id = id
             self.ids.add(id)
             self.tags = {}
-            
+
             self.node_locations[id] = lat, lon
-            
+
         elif name == 'tag' and self.valid:
             self.tags[attrs['k']] = attrs['v']
-            
+
         elif name == 'way':
             self.nodes = []
             self.tags = {}
             self.valid = True
-            
+
             id = way_id(attrs['id'])
-            
+
             self.id = id
             self.ids.add(id)
-            
+
         elif name == 'nd':
             self.nodes.append( node_id(attrs['ref']) )
-            
+
     def endElement(self, name):
         if name in ('node','way') and self.valid:
             try:
@@ -76,12 +76,12 @@ class OSMHandler(handler.ContentHandler):
             except ValueError:
                 self.ignore_count += 1
                 return
-            
+
             # Ignore ways that lay partly outside our bounding box
             if name == 'way' and not all(id in self.node_locations for id in self.nodes):
                 return
 
-            # We already have these from OxPoints, so leave them alone.            
+            # We already have these from OxPoints, so leave them alone.
             if self.tags.get('amenity') == 'library' and self.tags.get('operator') == 'University of Oxford':
                 return
 
@@ -95,14 +95,14 @@ class OSMHandler(handler.ContentHandler):
             except Entity.DoesNotExist:
                 entity = Entity(source=self.source)
                 created = False
-                
+
             if True or not 'osm' in entity.metadata or entity.metadata['osm'].get('attrs', {}).get('timestamp', '') < self.attrs['timestamp']:
-            
+
                 if created:
                     self.create_count += 1
                 else:
                     self.modify_count += 1
-                    
+
                 if name == 'node':
                     entity.location = Point(self.node_location[1], self.node_location[0], srid=4326)
                     entity.geometry = entity.location
@@ -117,7 +117,7 @@ class OSMHandler(handler.ContentHandler):
                     entity.location = Point( (min_[1]+max_[1])/2 , (min_[0]+max_[0])/2 , srid=4326)
                 else:
                     raise AssertionError("There should be no other types of entity we're to deal with.")
-                    
+
                 if name == 'way':
                     print "Way", entity.geometry
 
@@ -141,21 +141,21 @@ class OSMHandler(handler.ContentHandler):
                     entity.post_code = self.tags['addr:postcode'].replace(' ', '')
                 else:
                     entity.post_code = ""
-                   
+
                 entity.save(identifiers={'osm': self.id})
 
                 entity.all_types = [self.entity_types[et] for et in types]
                 entity.update_all_types_completion()
-                
+
             else:
                 self.unchanged_count += 1
-    
+
     def endDocument(self):
         for entity in Entity.objects.filter(source=self.source):
             if not entity.identifiers['osm'] in self.ids:
                 entity.delete()
                 self.delete_count += 1
-                
+
         entities = Entity.objects.filter(source=self.source)
         inferred_names = {}
         for entity in entities:
@@ -165,34 +165,33 @@ class OSMHandler(handler.ContentHandler):
             if not inferred_name in inferred_names:
                 inferred_names[inferred_name] = set()
             inferred_names[inferred_name].add(entity)
-            
+
         for inferred_name, entities in inferred_names.items():
             if len(entities) > 1:
                 for entity in entities:
                     entity.title = "%s, %s" % (inferred_name, entity.metadata['osm']['tags'].get('addr:street'))
                     continue
-                    
+
                     try:
                         entity.title = "%s, %s" % (inferred_name, reverse_geocode(entity.location[1], entity.location[0])[0][0])
                         entity.save()
                     except:
                         print "Couldn't geocode for %s" % inferred_name
                         pass
-            
+
         print "Complete"
         print "  Created:   %6d" % self.create_count
         print "  Modified:  %6d" % self.modify_count
         print "  Deleted:   %6d" % self.delete_count
         print "  Unchanged: %6d" % self.unchanged_count
         print "  Ignored:   %6d" % self.ignore_count
-        
 
 def get_osm_etag():
     try:
         return Config.objects.get(key='osm_extract_etag').value
     except Config.DoesNotExist:
         return None
-        
+
 def set_osm_etag(etag):
     config, created = Config.objects.get_or_create(key='osm_extract_etag')
     config.value = etag
@@ -204,39 +203,37 @@ class OSMMapsProvider(BaseMapsProvider):
 
     SHELL_CMD = "wget -O- %s --quiet | bunzip2" % ENGLAND_OSM_BZ2_URL
 #    SHELL_CMD = "cat /home/alex/gpsmid/england.osm.bz2 | bunzip2"
-    
+
     def import_data(self):
         old_etag = get_osm_etag()
-        
+
         request = AnyMethodRequest(self.ENGLAND_OSM_BZ2_URL, method='HEAD')
         response = urllib2.urlopen(request)
         new_etag = response.headers['ETag'][1:-1]
-        
+
         if False and new_etag == old_etag:
             print 'OSM data not updated. Not updating.'
             return
-            
+
         p = popen2.popen2(self.SHELL_CMD)
-        
+
         parser = make_parser()
         parser.setContentHandler(OSMHandler(self._get_source(), self._get_entity_types(), self._find_types))
         parser.parse(p[0])
-        
-        set_osm_etag(new_etag)
 
-        
+        set_osm_etag(new_etag)
 
     def _get_source(self):
         try:
             source = Source.objects.get(module_name="molly.providers.apps.maps.osm")
         except Source.DoesNotExist:
             source = Source(module_name="molly.providers.apps.maps.osm")
-        
+
         source.name = "OpenStreetMap"
         source.save()
-        
+
         return source
-    
+
     def _get_entity_types(self):
         ENTITY_TYPES = {
             'atm':                 ('an', 'ATM',                      'ATMs',                      True,  False, ()),
@@ -250,6 +247,7 @@ class OSMMapsProvider(BaseMapsProvider):
             'chapel':              ('a',  'chapel',                   'chapels',                   False, False, ('place-of-worship',)),
             'church':              ('a',  'church',                   'churches',                  False, False, ('place-of-worship',)),
             'cinema':              ('a',  'cinema',                   'cinemas',                   True,  True,  ()),
+            'cycle-shop':          ('a',  'cycle shop',               'cycle shops',               False, False, ('shop',)),
             'dispensing-pharmacy': ('a',  'dispensing pharmacy',      'dispensing pharmacies',     False, False, ('pharmacy',)),
             'doctors':             ('a',  "doctor's surgery",         "doctors' surgeries",        False, False, ('medical',)),
             'fast-food':           ('a',  'fast food outlet',         'fast food outlets',         False, False, ('food',)),
@@ -274,14 +272,15 @@ class OSMMapsProvider(BaseMapsProvider):
             'punt-hire':           ('a',  'place to hire punts',      'places to hire punts',      False, False, ()),
             'recycling':           ('a',  'recycling facility',       'recycling facilities',      True,  False, ()),
             'restaurant':          ('a',  'restaurant',               'restaurants',               False, False, ('food',)),
+            'shop':                ('a',  'shop',                     'shops',                     False, False, ()),
             'sport':               ('a',  'place relating to sport',  'places relating to sport',  False, False, ()),
-            'sports-centre':       ('a',  'sports centre',            'sports centres',             False, False, ('sport',)),
+            'sports-centre':       ('a',  'sports centre',            'sports centres',            False, False, ('sport',)),
             'swimming-pool':       ('a',  'swimming pool',            'swimming pools',            False, False, ('sport',)),
             'synagogue':           ('a',  'synagogue',                'synagogues',                False, False, ('place-of-worship',)),
             'taxi-rank':           ('a',  'taxi rank',                'taxi ranks',                False, False, ()),
             'theatre':             ('a',  'theatre',                  'theatres',                  True,  True,  ()),
         }
-        
+
         entity_types = {}
         new_entity_types = set()
         for slug, (article, verbose_name, verbose_name_plural, nearby, category, subtype_of) in ENTITY_TYPES.items():
@@ -299,13 +298,13 @@ class OSMMapsProvider(BaseMapsProvider):
                 entity_type.save()
                 new_entity_types.add(slug)
             entity_types[slug] = entity_type
-        
+
         for slug in new_entity_types:
             subtype_of = ENTITY_TYPES[slug][5]
             for s in subtype_of:
                 entity_types[slug].subtype_of.add(entity_types[s])
             entity_types[slug].save()
-            
+
         return entity_types
 
     OSM_TYPES = [
@@ -352,8 +351,9 @@ class OSMMapsProvider(BaseMapsProvider):
         ('leisure=ice_rink', 'ice-rink'),
         ('sport=swimming', 'swimming-pool'),
         ('leisure=swimming_pool', 'swimming-pool'),
+        ('shop=bicycle', 'cycle-shop'),
     ]
-    
+
     def _find_types(self, tags, type_list=OSM_TYPES):
         found_types = []
         for item in type_list:

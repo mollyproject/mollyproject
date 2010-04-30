@@ -9,10 +9,10 @@
         
 <div class="section">
     <h2>Maps</h2>
-	{% include "geolocation/update_location_embed.xhtml" %}
+	{% include "geolocation/update_location_embed.html" %}
     <ul>
-        <li><a href="{% url maps:category_detail "ulibrary" %}">List of libraries</a></li>
-        <li class="round-bottom"><a href="{% url maps:nearby_detail "ulibrary" %}">Libraries near me</a></li>
+        <li><a href="{% url places:category_detail "ulibrary" %}">List of libraries</a></li>
+        <li class="round-bottom"><a href="{% url places:nearby_detail "ulibrary" %}">Libraries near me</a></li>
     </ul>
 </div>
 

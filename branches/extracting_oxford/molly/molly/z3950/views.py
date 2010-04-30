@@ -44,7 +44,7 @@ class IndexView(BaseView):
         
     @BreadcrumbFactory
     def breadcrumb(cls, request, context):
-        return Breadcrumb('z3950', None, 'Library search', lazy_reverse('z3950:index'))
+        return Breadcrumb(cls.conf.local_name, None, 'Library search', lazy_reverse('z3950:index'))
         
     def handle_GET(cls, request, context):
         return mobile_render(request, context, 'z3950/index')
@@ -64,7 +64,7 @@ class SearchDetailView(BaseView):
     def breadcrumb(cls, request, context):
         x = 'item' in context or context['search_form'].is_valid()
         return Breadcrumb(
-            'z3950',
+            cls.conf.local_name,
             lazy_parent(IndexView),
             'Search results' if x else 'Library search',
             lazy_reverse('z3950:search'),
@@ -183,7 +183,7 @@ class ItemDetailView(BaseView):
     @BreadcrumbFactory
     def breadcrumb(cls, request, context, control_number):
         return Breadcrumb(
-            'z3950',
+            cls.conf.local_name,
             lazy_parent(SearchDetailView),
             'Search result',
             lazy_reverse('z3950:item_detail', args=[control_number]),
@@ -311,7 +311,7 @@ class ItemHoldingsView(BaseView):
     @BreadcrumbFactory
     def breadcrumb(cls, request, context, control_number, sublocation):
         return Breadcrumb(
-            'z3950',
+            cls.conf.local_name,
             lazy_parent(ItemDetailView, control_number=control_number),
             'Item holdings information',
             lazy_reverse('z3950:item_holdings_detail', args=[control_number,sublocation]),

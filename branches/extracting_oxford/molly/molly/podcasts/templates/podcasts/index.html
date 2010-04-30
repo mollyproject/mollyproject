@@ -1,9 +1,5 @@
-{% extends "podcasts/base.xhtml" %}
+{% extends "podcasts/base.html" %}{% load molly_apps_search %}
 {% load portal_misc %}
-
-{% block pagetitleclass %}podcasts-header with-icon{% endblock %}
-{% block pagetitle %}Podcasts{% endblock %}
-{% block title %}m.ox | Podcasts{% endblock %}
 
 {% block content %}
 
@@ -12,7 +8,7 @@
 <p>It looks like you're using an iPod/iPhone!</p>
 <P>Podcasts are also available from the University's iTunes U site, which you can view on your device.</p>
 <p>Please note that this will close Safari.</p>
-<form method="post" action="{% url podcasts_itunesu_redirect %}">
+<form method="post" action="{% url podcasts:itunesu_redirect %}">
 {% comment %}<p><input type="checkbox" name="remember" id="remember"/>
    <label for="remember">
    Remember this preference in future.
@@ -28,7 +24,8 @@
 
 <div class="section">
 <div class="form">
-	<form method="get" action="{% url googlesearch_index %}">
+{% search_form %}
+	<form method="get" action="{% url search:index %}">
 		<h2>Podcasts Search</h2>
   		<p>
 			{{ search_form.query }}
@@ -41,7 +38,7 @@
 </div>
 
 <ul class="stand-alone">
-	<li class="round-bottom round-top"><a href="{% url podcasts_top_downloads %}">Top downloads from iTunes U</a></li>
+	<li class="round-bottom round-top"><a href="{% url podcasts:top_downloads %}">Top downloads from iTunes U</a></li>
 </ul>
 
 
