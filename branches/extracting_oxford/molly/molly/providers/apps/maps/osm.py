@@ -248,6 +248,7 @@ class OSMMapsProvider(BaseMapsProvider):
             'chapel':              ('a',  'chapel',                   'chapels',                   False, False, ('place-of-worship',)),
             'church':              ('a',  'church',                   'churches',                  False, False, ('place-of-worship',)),
             'cinema':              ('a',  'cinema',                   'cinemas',                   True,  True,  ()),
+            'cycle-shop':          ('a',  'cycle shop',               'cycle shops',               False, False, ('shop',)),
             'dispensing-pharmacy': ('a',  'dispensing pharmacy',      'dispensing pharmacies',     False, False, ('pharmacy',)),
             'doctors':             ('a',  "doctor's surgery",         "doctors' surgeries",        False, False, ('medical',)),
             'fast-food':           ('a',  'fast food outlet',         'fast food outlets',         False, False, ('food',)),
@@ -266,6 +267,10 @@ class OSMMapsProvider(BaseMapsProvider):
             'pub':                 ('a',  'pub',                      'pubs',                      True,  True,  ()),
             'recycling':           ('a',  'recycling facility',       'recycling facilities',      True,  False, ()),
             'restaurant':          ('a',  'restaurant',               'restaurants',               False, False, ('food',)),
+            'shop':                ('a',  'shop',                     'shops',                     False, False, ()),
+            'sport':               ('a',  'place relating to sport',  'places relating to sport',  False, False, ()),
+            'sports-centre':       ('a',  'sports centre',            'sports centres',            False, False, ('sport',)),
+            'swimming-pool':       ('a',  'swimming pool',            'swimming pools',            False, False, ('sport',)),
             'synagogue':           ('a',  'synagogue',                'synagogues',                False, False, ('place-of-worship',)),
             'theatre':             ('a',  'theatre',                  'theatres',                  True,  True,  ()),
         }
@@ -329,6 +334,12 @@ class OSMMapsProvider(BaseMapsProvider):
         ('amenity=theatre', 'theatre'),
         ('food=yes', 'food'),
         ('atm=yes', 'atm'),
+        ('leisure=park', 'park'),
+        ('leisure=sports_centre', 'sports-centre'),
+        ('leisure=ice_rink', 'ice-rink'),
+        ('sport=swimming', 'swimming-pool'),
+        ('leisure=swimming_pool', 'swimming-pool'),
+        ('shop=bicycle', 'cycle-shop'),
     ]
     
     def _find_types(self, tags, type_list=OSM_TYPES):
