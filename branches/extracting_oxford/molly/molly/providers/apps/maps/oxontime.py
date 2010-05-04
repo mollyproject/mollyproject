@@ -1,7 +1,7 @@
 import threading, urllib
 from lxml import etree
 
-from molly.maps.providers import BaseMapsProvider
+from molly.apps.places.providers import BaseMapsProvider
 
 class OxontimeMapsProvider(BaseMapsProvider):
     OXONTIME_URL = 'http://www.oxontime.com/pip/stop.asp?naptan=%s&textonly=1'

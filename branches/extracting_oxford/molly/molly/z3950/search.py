@@ -6,7 +6,7 @@ from itertools import cycle
 from django.conf import settings
 from django.core.urlresolvers import reverse
 
-from molly.maps.models import Entity
+from molly.apps.places.models import Entity
 
 ITEM_RE = re.compile(r'(?P<heading>\d{1,3}) (..(\$(?P<sub>.)(?P<entry>[^\$]+) )+|(?P<raw>[^\$]+))')
 

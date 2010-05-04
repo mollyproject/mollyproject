@@ -15,14 +15,13 @@ from django.template.defaultfilters import capfirst
 from molly.utils.views import BaseView, ZoomableView
 from molly.utils.decorators import location_required
 from molly.utils.breadcrumbs import *
-
 from molly.geolocation.views import LocationRequiredView
 
 from molly.osm.utils import get_generated_map, fit_to_map
 from molly.osm.models import OSMUpdate
-from molly.maps.models import Entity, EntityType
 
-from utils import get_entity, is_favourite, make_favourite, get_bearing
+from models import Entity, EntityType
+from utils import get_entity, get_point
 from forms import BusstopSearchForm, UpdateOSMForm
 
 
@@ -36,10 +35,10 @@ class IndexView(BaseView):
     @BreadcrumbFactory
     def breadcrumb(cls, request, context):
         return Breadcrumb(
-            'maps',
+            'places',
             None,
             'Maps',
-            lazy_reverse('maps:index')
+            lazy_reverse('places:index')
         )
 
     def handle_GET(cls, request, context):
@@ -55,18 +54,18 @@ class NearbyListView(LocationRequiredView):
     @BreadcrumbFactory
     def breadcrumb(cls, request, context, entity=None):
         return Breadcrumb(
-            'maps',
+            'places',
             lazy_parent(IndexView),
             'Things nearby',
-            url = lazy_reverse('maps:nearby_list'),
+            url = lazy_reverse('places:nearby_list'),
         )
 
 
     def handle_GET(cls, request, context, entity=None):
         if entity:
-            return_url = reverse('maps:entity_nearby_list', args=[entity.identifier_scheme, entity.identifier_value])
+            return_url = reverse('places:entity_nearby_list', args=[entity.identifier_scheme, entity.identifier_value])
         else:
-            return_url = reverse('maps:nearby_list')
+            return_url = reverse('places:nearby_list')
 
         entity_types = EntityType.objects.filter(show_in_nearby_list=True)
         
@@ -95,7 +94,7 @@ class NearbyDetailView(LocationRequiredView, ZoomableView):
                 if location:
                     point = Point(location[0], location[1], srid=4326)
 
-        entity_types = tuple(get_object_or_404(EntityType, slug=t) for t in ptypes.split(';'))        
+        entity_types = tuple(get_object_or_404(EntityType, slug=t) for t in ptypes.split(';'))
 
         if point:
             entities = Entity.objects.filter(location__isnull = False, is_sublocation = False)
@@ -121,10 +120,10 @@ class NearbyDetailView(LocationRequiredView, ZoomableView):
     @BreadcrumbFactory
     def breadcrumb(cls, request, context, ptypes, entity=None):
         title = NearbyDetailView.get_metadata(request, ptypes, entity)['title']
-        return Breadcrumb('maps',
+        return Breadcrumb('places',
                           lazy_parent(NearbyListView, entity=entity),
                           title,
-                          lazy_reverse('maps:nearby_detail', args=[ptypes]))
+                          lazy_reverse('places:nearby_detail', args=[ptypes]))
 
     def get_metadata(cls, request, ptypes, entity=None):
         context = NearbyDetailView.initial_context(request, ptypes, entity)
@@ -190,7 +189,7 @@ class NearbyDetailView(LocationRequiredView, ZoomableView):
 
         found_entity_types = set()
         for e in chain(*entities):
-            e.bearing = get_bearing(point, e.location)
+            e.bearing = e.get_bearing(point)
             found_entity_types |= set(e.all_types.all())
         found_entity_types -= set(entity_types)
 
@@ -211,24 +210,17 @@ class NearbyDetailView(LocationRequiredView, ZoomableView):
 class EntityDetailView(ZoomableView):
     default_zoom = 16
     OXPOINTS_URL = 'http://m.ox.ac.uk/oxpoints/id/%s.json'
-    
+
     def get_metadata(cls, request, scheme, value):
-        entity = get_entity(type_slug, id)
+        entity = get_entity(scheme, value)
         user_location = request.session.get('geolocation:location')
-        if user_location and entity.location:
-            user_location = Point(user_location[1], user_location[0], srid=4326)
-            bearing = ', approximately %.3fkm %s' % (
-                user_location.transform(27700, clone=True).distance(entity.location.transform(27700, clone=True))/1000,
-                get_bearing(user_location, entity.location),
-            )
-        else:
-            bearing = ''
+        distance, bearing = entity.get_distance_and_bearing_from(user_location)
+        additional = '<strong>%s</strong>' % capfirst(entity.primary_type.verbose_name)
+        if distance:
+            additional += ', approximately %.3fkm %s' % (distance/1000, bearing)
         return {
             'title': entity.title,
-            'additional': '<strong>%s</strong>%s' % (
-                capfirst(entity.entity_type.verbose_name),
-                bearing,
-            ),
+            'additional': additional,
         }
 
     def initial_context(cls, request, scheme, value):
@@ -248,17 +240,17 @@ class EntityDetailView(ZoomableView):
             parent_view = CategoryDetailView
         entity = get_entity(scheme, value)
         return Breadcrumb(
-            'maps',
+            'places',
             lazy_parent(parent_view, ptypes=entity.primary_type.slug),
             context['entity'].title,
-            lazy_reverse('maps:entity', args=[scheme,value]),
+            lazy_reverse('places:entity', args=[scheme,value]),
         )
 
     def handle_GET(cls, request, context, scheme, value):
         entity = context['entity']
         if entity.absolute_url != request.path:
             return HttpResponsePermanentRedirect(entity.absolute_url)
-        
+
         for provider in reversed(cls.conf.providers):
             provider.augment_metadata((entity,))
 
@@ -282,10 +274,10 @@ class EntityUpdateView(ZoomableView):
     @BreadcrumbFactory
     def breadcrumb(cls, request, context, type_slug, id):
         return Breadcrumb(
-            'maps',
+            'places',
             lazy_parent(EntityDetailView, type_slug=type_slug, id=id),
             'Things nearby',
-            lazy_reverse('maps:entity_update', args=[type_slug,id])
+            lazy_reverse('places:entity_update', args=[type_slug,id])
         )
 
     def handle_GET(cls, request, context, type_slug, id):
@@ -331,7 +323,7 @@ class EntityUpdateView(ZoomableView):
             )
             osm_update.save()
 
-            return HttpResponseRedirect(reverse('maps:entity_update', args=[type_slug, id])+'?submitted=true')
+            return HttpResponseRedirect(reverse('places:entity_update', args=[type_slug, id])+'?submitted=true')
         else:
             context['form'] = form
             return cls.render(request, context, 'maps/update_osm')
@@ -353,10 +345,10 @@ class NearbyEntityListView(NearbyListView):
     @BreadcrumbFactory
     def breadcrumb(cls, request, context, scheme, value):
         return Breadcrumb(
-            'maps',
+            'places',
             lazy_parent(EntityDetailView, scheme=scheme, value=value),
             'Things near %s' % context['entity'].title,
-            lazy_reverse('maps:entity_nearby_list', args=[scheme, value])
+            lazy_reverse('places:entity_nearby_list', args=[scheme, value])
         )
 
     def handle_GET(cls, request, context, scheme, value):
@@ -377,13 +369,13 @@ class NearbyEntityDetailView(NearbyDetailView):
     def breadcrumb(cls, request, context, scheme, value, ptype):
         entity_type = get_object_or_404(EntityType, slug=ptype)
         return Breadcrumb(
-            'maps',
+            'places',
             lazy_parent(NearbyEntityListView, scheme=scheme, value=value),
             '%s near %s' % (
                 capfirst(entity_type.verbose_name_plural),
                 context['entity'].title,
             ),
-            lazy_reverse('maps:entity_nearby_detail', args=[scheme, value,ptype])
+            lazy_reverse('places:entity_nearby_detail', args=[scheme, value,ptype])
         )
 
     def get_metadata(cls, request, scheme, value, ptype):
@@ -406,10 +398,10 @@ class CategoryListView(BaseView):
     @BreadcrumbFactory
     def breadcrumb(cls, request, context):
         return Breadcrumb(
-            'maps',
+            'places',
             lazy_parent(IndexView),
             'Categories',
-            lazy_reverse('maps:category_list'),
+            lazy_reverse('places:category_list'),
         )
 
     def handle_GET(cls, request, context):
@@ -439,10 +431,10 @@ class CategoryDetailView(BaseView):
     @BreadcrumbFactory
     def breadcrumb(cls, request, context, ptypes):
         return Breadcrumb(
-            'maps',
+            'places',
             lazy_parent(CategoryListView),
             capfirst(context['entity_types'][0].verbose_name_plural),
-            lazy_reverse('maps:category_detail', args=[ptypes]),
+            lazy_reverse('places:category_detail', args=[ptypes]),
         )
 
     def handle_GET(cls, request, context, ptypes):
@@ -457,10 +449,10 @@ class BusstopSearchView(BaseView):
     @BreadcrumbFactory
     def breadcrumb(cls, request, context):
         return Breadcrumb(
-            'maps',
+            'places',
             lazy_parent(IndexView),
             'Search bus stops',
-            lazy_reverse('maps:busstop_search'),
+            lazy_reverse('places:busstop_search'),
         )
 
     def handle_GET(cls, request, context):
@@ -497,10 +489,10 @@ class PostCodeDetailView(NearbyDetailView):
     @BreadcrumbFactory
     def breadcrumb(cls, request, context, post_code, ptypes=None):
         return Breadcrumb(
-            'maps',
+            'places',
             lazy_parent(IndexView),
             'Things near %s' % cls.add_space(post_code),
-            lazy_reverse('maps:postcode_detail', args=[post_code, ptypes]),
+            lazy_reverse('places:postcode_detail', args=[post_code, ptypes]),
         )
 
     def handle_GET(cls, request, context, post_code, ptypes=None):
@@ -657,7 +649,7 @@ class APIView(BaseView):
             })
             if not without_metadata:
                 out[-1]['metadata'] = entity.metadata
-                
+
             if 'near' in request.GET:
                 out[-1]['distance'] = entity.distance
 

@@ -6,7 +6,7 @@
   <h2>Places</h2>
 	<ul>
 	{% for entity_type in entity_types %}
-	    <li{% if forloop.last %} class="round-bottom"{% endif %}><a href="{% url maps:category_detail entity_type.slug %}">{{ entity_type.verbose_name_plural|capfirst }}</a></li>
+	    <li{% if forloop.last %} class="round-bottom"{% endif %}><a href="{% url places:category_detail entity_type.slug %}">{{ entity_type.verbose_name_plural|capfirst }}</a></li>
 	{% endfor %}
 	</ul>
 </div>

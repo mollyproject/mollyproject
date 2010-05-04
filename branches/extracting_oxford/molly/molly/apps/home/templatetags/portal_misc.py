@@ -3,9 +3,9 @@ from datetime import datetime
 from django import template
 from django.utils.safestring import mark_safe
 
-from molly.maps.models import Entity
+from molly.apps.places.models import Entity
 from molly.wurfl import device_parents
-from molly.maps.utils import get_entity
+from molly.apps.places.utils import get_entity
 from molly.utils.ox_dates import format_today, ox_date_dict
 
 register = template.Library()
@@ -71,7 +71,7 @@ def telephone(value, arg):
         if value.startswith("+44"):
             value = "0" + value[3:]
 
-        for dialing_code in ['01865', '0845']:    
+        for dialing_code in ['01865', '0845']:
             if value.startswith(dialing_code):
                 value = dialing_code + " " + value[len(dialing_code):]
 

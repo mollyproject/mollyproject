@@ -8,7 +8,7 @@ from StringIO import StringIO
 from django.db import models, IntegrityError
 from django.conf import settings
 
-from molly.maps.models import Entity
+from molly.apps.places.models import Entity
 
 def get_generated_map_dir():
     return getattr(settings, 'GENERATED_MAP_DIR', os.path.join(settings.CACHE_DIR, 'generated_maps'))

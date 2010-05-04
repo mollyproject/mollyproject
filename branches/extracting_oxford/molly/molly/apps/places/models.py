@@ -1,6 +1,10 @@
 import simplejson
+
+from math import atan2, degrees
+
 from django.contrib.gis.db import models
 from django.core.urlresolvers import reverse
+from django.contrib.gis.geos import Point
 
 class Source(models.Model):
     module_name = models.CharField(max_length=128)
@@ -8,6 +12,7 @@ class Source(models.Model):
     last_updated = models.DateTimeField(auto_now=True)
     
 IDENTIFIER_SCHEME_PREFERENCE = ('atco', 'oxpoints', 'osm', 'naptan')
+
 
 
 class EntityType(models.Model):
@@ -90,6 +95,22 @@ class Entity(models.Model):
         self.__metadata = metadata
     metadata = property(get_metadata, set_metadata)
 
+    COMPASS_POINTS = ('N','NE','E','SE','S','SW','W','NW')
+    def get_bearing(self, p1):
+        p2 = self.location
+        lat_diff, lon_diff = p2[0] - p1[0], p2[1] - p1[1]
+        return self.COMPASS_POINTS[int(((90 - degrees(atan2(lon_diff, lat_diff))+22.5) % 360) // 45)]
+        
+    def get_distance_and_bearing_from(self, point):
+        if point is None or not self.location:
+            return None, None
+        if not isinstance(point, Point):
+            point = Point(point, srid=4326)
+        return (
+            point.transform(27700, clone=True).distance(self.location.transform(27700, clone=True)),
+            self.get_bearing(point),
+        )
+
     def save(self, *args, **kwargs):
         try:
             self._metadata = simplejson.dumps(self.__metadata)
@@ -121,11 +142,12 @@ class Entity(models.Model):
             self.all_types_completion = all_types
                 
     def delete(self, *args, **kwargs):
-        for identifier in self.identifiers.all():
+        for identifier in self._identifiers.all():
             identifier.delete()
         super(Entity, self).delete()
 
     objects = models.GeoManager()
+
 
     class Meta:
         ordering = ('title',)
@@ -164,4 +186,5 @@ class Entity(models.Model):
             'identifiers': self.identifiers,
         })
             
+
 

@@ -1,0 +1,19 @@
+{% extends "maps/base.html" %}
+
+{% block extrahead %}{{ block.super }}{% if entity %}
+<meta name="robots" content="noindex" />{% endif %}{% endblock %}
+
+{% block content %}
+
+<div class="section">
+  <h2>Places</h2>
+	<ul>
+	{% for entity_type in entity_types %}{% if entity %}
+	    <li{% if forloop.last %} class="round-bottom"{% endif %}><a href="{% url places:entity_nearby_detail entity.identifier_scheme,entity.identifier_value,entity_type.slug %}">{{ entity_type.verbose_name_plural|capfirst }}</a></li>
+	{% else %}
+	    <li{% if forloop.last %} class="round-bottom"{% endif %}><a href="{% url places:nearby_detail entity_type.slug %}">{{ entity_type.verbose_name_plural|capfirst }}</a></li>
+	{% endif %}{% endfor %}
+	</ul>
+</div>
+
+{% endblock %}

@@ -4,4 +4,4 @@
 
 #class PlacesApplication(BaseApplication):
 #    urlconf = urlconf
-    
+

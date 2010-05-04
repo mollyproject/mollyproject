@@ -104,7 +104,9 @@ class SimpleProvider(object):
         else:
             return type('SimpleProvider', (object,), self.kwargs)
 
-class Batch(object):
-    def __init__(self, method_name, args=[], kwargs={}, **times):
-        self.method_name, self.times = method_name, times
-        self.args, self.kwargs = args, kwargs
+def batch(cron_stmt):
+    def g(f):
+        f.is_batch = True
+        f.cron_stmt = cron_stmt
+        return f
+    return g
