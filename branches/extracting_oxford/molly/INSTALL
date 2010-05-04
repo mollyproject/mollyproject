@@ -22,28 +22,29 @@ using easy_install:
  $ aptitude install python-setuptools
  $ easy_install pip
 
-Next, set up and activate a virtualenv:
+Next, set up and activate a virtualenv. This has been automated as
+scripts/install_virtualenv.py. If you want to do this by hand, do the following:
 
- $ virtualenv --no-site-packages ~/mollyenv
- $ cd ~/mollyenv
- $ source bin/activate
+     $ virtualenv --no-site-packages ~/mollyenv
+     $ cd ~/mollyenv
+     $ source bin/activate
 
-Next, clone the git repository to a temporary directory:
+    Next, clone the git repository to a temporary directory:
 
- $ git clone git://mollyproject.git.sourceforge.net/gitroot/mollyproject/mollyproject
+     $ git clone git://mollyproject.git.sourceforge.net/gitroot/mollyproject/mollyproject
 
-Install the Molly dependencies and Molly itself:
+    Install the Molly dependencies and Molly itself:
 
- $ cd ~/mollyenv/mollyproject/branches/extracting_oxford/molly/
- $ pip -E ~/mollyenv/ install `cat requirements/core.txt` --upgrade
- $ python setup.py install
+     $ cd ~/mollyenv/mollyproject/branches/extracting_oxford/molly/
+     $ pip -E ~/mollyenv/ install `cat requirements/core.txt` --upgrade
+     $ python setup.py install
 
-Unfortunately, the setup script for pycairo doesn't create a required file.
-Using your favourite editor, create a file
+    Unfortunately, the setup script for pycairo doesn't create a required file.
+    Using your favourite editor, create a file
 
-  ~/mollyenv/lib[64]/python-<version>/site-packages/cairo/__init__.py
+      ~/mollyenv/lib[64]/python-<version>/site-packages/cairo/__init__.py
 
-containing the line "from _cairo import *".
+    containing the line "from _cairo import *".
 
 Once you've set up the database as below, you'll be able to run the development
 server as follows:
@@ -71,7 +72,7 @@ Once this is done, you should create the molly database as a DB superuser
 
  $ createdb -T template_postgis molly
 
-As a superuser, create the molly user:
+As a DB superuser, create the molly user:
 
 
 (Make sure the password is the one given in settings.py in the demos folder)
