@@ -42,6 +42,7 @@ class Application(object):
                 providers.append(SimpleProvider(provider)())
 
         self.kwargs['application_name'] = self.application_name
+        self.kwargs['local_name'] = self.local_name
         self.kwargs['providers'] = providers
         self.kwargs['provider'] = providers[-1] if len(providers) else None
         conf = type(self.local_name.capitalize()+'Config', (object,), self.kwargs)
@@ -53,11 +54,10 @@ class Application(object):
         bar = dir(views_module)
         for n in dir(views_module):
             view = getattr(views_module, n)
-            if not isinstance(view, type) or not BaseView in view.__bases__:
+            if not isinstance(view, type) or not BaseView in view.__mro__ or view is BaseView or getattr(view, 'abstract', False):
                 continue
 
             view.conf = conf
-            foo = view.__bases__
             view.__bases__ = bases + view.__bases__
 
         self.app = type(self.local_name.capitalize()+'App', (object,), {
@@ -81,7 +81,6 @@ class ExtraBase(object):
         mod_name, cls_name = self.klass.rsplit('.', 1)
         module = import_module(mod_name)
         klass = getattr(module, cls_name)
-        print "K", self.klass
         base = type(cls_name, (klass,), self.kwargs)
         base.__module__ = mod_name
         return base
