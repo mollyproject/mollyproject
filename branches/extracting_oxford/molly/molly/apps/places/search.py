@@ -1,104 +1,69 @@
 import re, simplejson, urllib2
+from itertools import chain
 
 from django.core.urlresolvers import reverse
+from django.db.models import Q
 
-from views import EntityDetailView, PostCodeDetailView, EntityDetailView
-from molly.oxpoints.models import Entity
+from views import NearbyDetailView, EntityDetailView
+from models import Entity, EntityType
 
+class ApplicationSearch(object):
+    def __init__(self, conf):
+        self.conf = conf
 
-class SiteSearch(object):
-    POSTCODE_RE = re.compile('OX\d{1,2} ?\d[A-Z]{2}')
-    OUCSCODE_RE = re.compile('^[A-Z]{4}[A-Z]*$')
+    def perform_search(self, request, query, is_single_app_search):
+        print "SEARCHING"
+        return chain(
+            self.nearby_search(request, query, is_single_app_search),
+            self.entity_search(request, query, is_single_app_search),
+            self.entity_type_search(request, query, is_single_app_search),
+        )
 
-    def __new__(cls, query, only_app, request):
-        return (
-            cls.busstops(query, only_app, request)
-          + cls.postcodes(query, only_app, request)
-          + cls.oucscodes(query, only_app, request)
-        ), False, None
-
-    @classmethod
-    def postcodes(cls, query, only_app, request):
-        if not cls.POSTCODE_RE.match(query.upper()):
+    def nearby_search(self, request, query, is_single_app_search):
+        # TODO: Complete
+        query = query.lower().split(' near ')
+        if len(query) != 2:
             return []
 
-        query = query.upper().replace(' ', '')
+        return []
 
-        try:
-            entity = Entity.objects.get(entity_type__slug='postcode', post_code=query)
-        except Entity.DoesNotExist:
-            return []
-
-        metadata = {
-            'redirect_if_sole_result': True,
-            'url': reverse('maps_entity_nearby_list', args=['postcode',query]),
-            'excerpt': '',
-            'application': 'maps',
-        }
-
-        return [metadata]
-
-    @classmethod
-    def busstops(cls, query, only_app, request):
-        print "Here"
-
-        id = query.strip()
-        if len(id) == 5:
-            id = '693' + id
-        if len(id) == 2:
-            entities = Entity.objects.filter(central_stop_id=id.upper())
-        elif len(id) == 8:
-            entities = Entity.objects.filter(naptan_code=id)
+    def entity_search(self, request, query, is_single_app_search):
+        entities = Entity.objects.all()
+        if hasattr(self.conf, 'search_identifiers'):
+            entities = entities.filter(
+                _identifiers__scheme__in = self.conf.search_identifiers,
+                _identifiers__value__iexact = query,
+            )
         else:
-            entities = []
-
-
-        results = []
-        for entity in entities:
-            metadata = EntityDetailView.get_metadata(
-                request,
-                entity.entity_type.slug,
-                entity.display_id
+            entities = entities.filter(
+                _identifiers__value__iexact = query,
             )
 
+        entities = chain(
+            Entity.objects.filter(title__iexact = query),
+            entities,
+        )
+
+        for entity in entities:
             result = {
-                'redirect_if_sole_result': True,
                 'url': entity.get_absolute_url(),
-                'excerpt': '',
-                'application': 'maps',
+                'application': self.conf.local_name,
+                'redirect_if_sole_result': True,
             }
-            result.update(metadata)
+            result.update(EntityDetailView.get_metadata(request, entity.identifier_scheme, entity.identifier_value))
+            yield result
 
-            results.append(result)
 
-        print "Results", results
-        return results
+    def entity_type_search(self, request, query, is_single_app_search):
+        entity_types = EntityType.objects.filter(
+            Q(verbose_name__iexact = query) | Q(verbose_name_plural__iexact = query)
+        )
 
-    @classmethod
-    def oucscodes(cls, query, only_app, request):
-        if not cls.OUCSCODE_RE.match(query.upper()):
-            return []
-
-        try:
-            json = simplejson.load(urllib2.urlopen(
-                'http://m.ox.ac.uk/oxpoints/oucs:%s.json' % query.lower()))
-        except urllib2.HTTPError:
-            return []
-
-        results = []
-        for result in json:
-            try:
-                entity = Entity.objects.get(oxpoints_id=result['uri'][-8:])
-            except Entity.DoesNotExist:
-                continue
-
-            metadata = EntityDetailView.get_metadata(request, entity.entity_type.slug, entity.display_id)
-
-            metadata.update({
+        for entity_type in entity_types:
+            result = {
+                'url': reverse('places:nearby_detail', args=[entity_type.slug]),
+                'application': self.conf.local_name,
                 'redirect_if_sole_result': True,
-                'url': entity.get_absolute_url(),
-                'application': 'maps',
-            })
-
-            results.append(metadata)
-        return results
+            }
+            result.update(NearbyDetailView.get_metadata(request, entity_type.slug))
+            yield result

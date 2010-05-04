@@ -55,6 +55,12 @@ def app_by_application_name(application_name):
 def apps_by_application_name(application_name):
     return list(_by_application_name[application_name])
 
+def get_app(application_name=None, local_name=None):
+    if local_name:
+        return app_by_local_name(local_name)
+    else:
+        return app_by_application_name(application_name)
+
 @_require_loaded_apps
 def all_apps():
     return _all

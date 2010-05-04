@@ -82,7 +82,7 @@ class OSMHandler(handler.ContentHandler):
             if name == 'way' and not all(id in self.node_locations for id in self.nodes):
                 return
 
-            # We already have these from OxPoints, so leave them alone.            
+            # We already have these from OxPoints, so leave them alone.
             if self.tags.get('amenity') == 'library' and self.tags.get('operator') == 'University of Oxford':
                 return
 
@@ -194,7 +194,7 @@ def get_osm_etag():
         return Config.objects.get(key='osm_extract_etag').value
     except Config.DoesNotExist:
         return None
-        
+
 def set_osm_etag(etag):
     config, created = Config.objects.get_or_create(key='osm_extract_etag')
     config.value = etag
@@ -242,9 +242,11 @@ class OSMMapsProvider(BaseMapsProvider):
         ENTITY_TYPES = {
             'atm':                 ('an', 'ATM',                      'ATMs',                      True,  False, ()),
             'bank':                ('a',  'bank',                     'banks',                     True,  True,  ()),
-            'bar':                 ('a',  'bar',                      'bars',                       True,  True,  ()),
+            'bench':               ('a',  'bench',                    'benches',                   True,  False, ()),
+            'bar':                 ('a',  'bar',                      'bars',                      True,  True,  ()),
             'bicycle-parking':     ('a',  'bicycle rack',             'bicycle racks',             True,  False, ()),
             'cafe':                ('a',  'café',                     'cafés',                     False, False, ('food',)),
+            'car-park':            ('a',  'car park',                 'car parks',                 False, False, ()),
             'cathedral':           ('a',  'cathedral',                'cathedrals',                False, False, ('place-of-worship',)),
             'chapel':              ('a',  'chapel',                   'chapels',                   False, False, ('place-of-worship',)),
             'church':              ('a',  'church',                   'churches',                  False, False, ('place-of-worship',)),
@@ -256,16 +258,22 @@ class OSMMapsProvider(BaseMapsProvider):
             'food':                ('a',  'place to eat',             'places to eat',             True,  True,  ()),
             'hospital':            ('a',  'hospital',                 'hospitals',                 False, False, ('medical',)),
             'ice-cream':           ('an', 'ice cream café',           'ice cream cafés',           False, False, ('cafe','food',)),
-            'library':             ('a',  'public library',           'public libraries',          True,  True,  ()),
+            'ice-rink':            ('an', 'ice rink',                 'ice rinks',                 False, False, ('sport',)),
+            'library':             ('a',  'library',                  'libraries',                 True,  True,  ()),
             'mandir':              ('a',  'mandir',                   'mandirs',                   False, False, ('place-of-worship',)),
             'medical':             ('a',  'place relating to health', 'places relating to health', True,  True,  ()),
             'mosque':              ('a',  'mosque',                   'mosques',                   False, False, ('place-of-worship',)),
+            'museum':              ('a',  'museum',                   'museums',                   False, False, ()),
             'car-park':            ('a',  'car park',                 'car parks',                 True,  False, ()),
+            'park':                ('a',  'park',                     'parks',                     False, False, ()),
+            'park-and-ride':       ('a',  'park and ride',            'park and rides',            False, False, ('car-park',)),
             'pharmacy':            ('a',  'pharmacy',                 'pharmacies',                False, False, ('medical',)),
             'place-of-worship':    ('a',  'place of worship',         'places of worship',         False, False, ()),
             'post-box':            ('a',  'post box',                 'post boxes',                True,  False, ()),
             'post-office':         ('a',  'post office',              'post offices',              True,  False, ()),
             'pub':                 ('a',  'pub',                      'pubs',                      True,  True,  ()),
+            'public-library':      ('a',  'public library',           'public libraries',          True,  True,  ('library',)),
+            'punt-hire':           ('a',  'place to hire punts',      'places to hire punts',      False, False, ()),
             'recycling':           ('a',  'recycling facility',       'recycling facilities',      True,  False, ()),
             'restaurant':          ('a',  'restaurant',               'restaurants',               False, False, ('food',)),
             'shop':                ('a',  'shop',                     'shops',                     False, False, ()),
@@ -273,6 +281,7 @@ class OSMMapsProvider(BaseMapsProvider):
             'sports-centre':       ('a',  'sports centre',            'sports centres',            False, False, ('sport',)),
             'swimming-pool':       ('a',  'swimming pool',            'swimming pools',            False, False, ('sport',)),
             'synagogue':           ('a',  'synagogue',                'synagogues',                False, False, ('place-of-worship',)),
+            'taxi-rank':           ('a',  'taxi rank',                'taxi ranks',                False, False, ()),
             'theatre':             ('a',  'theatre',                  'theatres',                  True,  True,  ()),
         }
 
@@ -317,13 +326,18 @@ class OSMMapsProvider(BaseMapsProvider):
         ('amenity=atm', 'atm'),
         ('amenity=bank', 'bank'),
         ('amenity=bar', 'bar'),
+        ('amenity=bench', 'bench'),
         ('amenity=bicycle_parking', 'bicycle-parking'),
         ('amenity=cinema', 'cinema'),
         ('amenity=doctors', 'doctors'),
         ('amenity=fast_food', 'fast-food'),
         ('amenity=hospital', 'hospital'),
+        ('amenity=punt_hire', 'punt-hire'),
         ('amenity=library', 'library'),
-        ('amenity=parking', 'car-park'),
+        ('amenity=museum', 'museum'),
+        ('amenity=parking', [
+            ('park_ride=bus', 'park-and-ride'),
+        ], 'car-park'),
         ('amenity=pharmacy', [
             ('dispensing=yes', 'dispensing-pharmacy'),
         ], 'pharmacy'),
@@ -333,6 +347,7 @@ class OSMMapsProvider(BaseMapsProvider):
         ('amenity=recycling', 'recycling'),
         ('amenity=restaurant', 'restaurant'),
         ('amenity=theatre', 'theatre'),
+        ('amenity=taxi', 'taxi-rank'),
         ('food=yes', 'food'),
         ('atm=yes', 'atm'),
         ('leisure=park', 'park'),

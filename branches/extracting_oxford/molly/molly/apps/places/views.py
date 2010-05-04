@@ -1,10 +1,7 @@
 from __future__ import division
 
 from itertools import chain
-from datetime import datetime, timedelta
-import urllib, urllib2, simplejson, copy
-
-from lxml import etree
+import simplejson, copy
 
 from django.contrib.gis.geos import Point
 from django.http import Http404, HttpResponse, HttpResponseRedirect, HttpResponsePermanentRedirect
@@ -13,11 +10,10 @@ from django.core.urlresolvers import reverse
 from django.template.defaultfilters import capfirst
 
 from molly.utils.views import BaseView, ZoomableView
-from molly.utils.decorators import location_required
 from molly.utils.breadcrumbs import *
 from molly.geolocation.views import LocationRequiredView
 
-from molly.osm.utils import get_generated_map, fit_to_map
+from molly.osm.utils import fit_to_map
 from molly.osm.models import OSMUpdate
 
 from models import Entity, EntityType
@@ -28,7 +24,7 @@ from forms import BusstopSearchForm, UpdateOSMForm
 class IndexView(BaseView):
     def get_metadata(cls, request):
         return {
-            'title': 'Maps',
+            'title': 'places',
             'additional': 'Find University buildings and units, along with bus stops and local amenities',
         }
 
@@ -37,12 +33,12 @@ class IndexView(BaseView):
         return Breadcrumb(
             'places',
             None,
-            'Maps',
+            'Places',
             lazy_reverse('places:index')
         )
 
     def handle_GET(cls, request, context):
-        return cls.render(request, context, 'maps/index')
+        return cls.render(request, context, 'places/index')
 
 class NearbyListView(LocationRequiredView):
     def get_metadata(cls, request, entity=None):
@@ -62,37 +58,53 @@ class NearbyListView(LocationRequiredView):
 
 
     def handle_GET(cls, request, context, entity=None):
+        point = get_point(request, entity)
+
         if entity:
             return_url = reverse('places:entity_nearby_list', args=[entity.identifier_scheme, entity.identifier_value])
         else:
             return_url = reverse('places:nearby_list')
 
-        entity_types = EntityType.objects.filter(show_in_nearby_list=True)
-        
+        entity_types_map = dict((e.slug, e) for e in EntityType.objects.all())
+        entity_types = tuple((name, tuple(entity_types_map[t] for t in types)) for (name, types) in cls.conf.nearby_entity_types)
+        flat_entity_types = set(chain(*[types for name, types in entity_types]))
+
+        entities = Entity.objects.filter(location__isnull = False, all_types_completion__in = flat_entity_types)
+        entities = entities.distance(point).order_by('distance')
+
+        for et in flat_entity_types:
+            et.max_distance = 0
+            et.entities_found = 0
+
+        for e in entities:
+            for et in e.all_types_completion.all():
+                et = entity_types_map[et.slug]
+                if not et in flat_entity_types:
+                    continue
+                if (e.distance.m ** 0.75) * (et.entities_found + 1) > 500:
+                    flat_entity_types.remove(et)
+                    continue
+                et.max_distance = e.distance
+                et.entities_found += 1
+
+            if len(flat_entity_types) == 0 or e.distance.m > 5000:
+                break
+
+        entity_types = tuple((name, tuple(t for t in types if t.entities_found>0)) for name, types in entity_types)
+
         context.update({
             'entity_types': entity_types,
             'entity': entity,
             'return_url': return_url,
         })
         if entity and not entity.location:
-            return cls.render(request, context, 'maps/entity_without_location')
-        return cls.render(request, context, 'maps/nearby_list')
+            return cls.render(request, context, 'places/entity_without_location')
+        return cls.render(request, context, 'places/nearby_list')
 
 
 class NearbyDetailView(LocationRequiredView, ZoomableView):
     def initial_context(cls, request, ptypes, entity=None):
-        point, location = None, None
-        if entity:
-            point = entity.location
-            if point:
-                location = point[0], point[1]
-        else:
-            if not request.session.get('geolocation:location'):
-                location = None
-            else:
-                location = request.session.get('geolocation:location')
-                if location:
-                    point = Point(location[0], location[1], srid=4326)
+        point = get_point(request, entity)
 
         entity_types = tuple(get_object_or_404(EntityType, slug=t) for t in ptypes.split(';'))
 
@@ -111,7 +123,6 @@ class NearbyDetailView(LocationRequiredView, ZoomableView):
         context.update({
             'entity_types': entity_types,
             'point': point,
-            'location': location,
             'entities': entities,
             'entity': entity,
         })
@@ -157,19 +168,16 @@ class NearbyDetailView(LocationRequiredView, ZoomableView):
         }
 
     def handle_GET(cls, request, context, ptypes, entity=None):
-        if not context.get('location'):
-            return location_required(request)
 
-        entity_types, entities, point, location = (
+        entity_types, entities, point = (
             context['entity_types'], context['entities'],
-            context['point'], context['location'],
+            context['point'],
         )
 
-        if entity and not (point and location):
+        if entity and not point:
             context = {'entity': entity}
-            return cls.render(request, context, 'maps/entity_without_location')
-        elif not (point and location):
-            return location_required(request)
+            raise Exception
+            return cls.render(request, context, 'places/entity_without_location')
 
         if context['zoom'] is None:
             min_points = 5
@@ -177,7 +185,7 @@ class NearbyDetailView(LocationRequiredView, ZoomableView):
             min_points = 0
 
         map_hash, (new_points, zoom) = fit_to_map(
-            centre_point = (location[0], location[1], 'green'),
+            centre_point = (point[0], point[1], 'green'),
             points = ((e.location[0], e.location[1], 'red') for e in entities),
             min_points = min_points,
             zoom = context['zoom'],
@@ -203,7 +211,7 @@ class NearbyDetailView(LocationRequiredView, ZoomableView):
             'found_entity_types': found_entity_types,
         })
         #raise Exception(context)
-        return cls.render(request, context, 'maps/nearby_detail')
+        return cls.render(request, context, 'places/nearby_detail')
 
 
 
@@ -254,7 +262,7 @@ class EntityDetailView(ZoomableView):
         for provider in reversed(cls.conf.providers):
             provider.augment_metadata((entity,))
 
-        return cls.render(request, context, 'maps/entity_detail')
+        return cls.render(request, context, 'places/entity_detail')
 
 
 class EntityUpdateView(ZoomableView):
@@ -286,14 +294,14 @@ class EntityUpdateView(ZoomableView):
             raise Http404
 
         if request.GET.get('submitted') == 'true':
-            return cls.render(request, context, 'maps/update_osm_done')
+            return cls.render(request, context, 'places/update_osm_done')
 
         data = dict((k.replace(':','__'), v) for (k,v) in entity.metadata['tags'].items())
 
         form = UpdateOSMForm(data)
 
         context['form'] = form
-        return cls.render(request, context, 'maps/update_osm')
+        return cls.render(request, context, 'places/update_osm')
 
     def handle_POST(cls, request, context, type_slug, id):
         entity = context['entity'] = get_entity(type_slug, id)
@@ -326,7 +334,7 @@ class EntityUpdateView(ZoomableView):
             return HttpResponseRedirect(reverse('places:entity_update', args=[type_slug, id])+'?submitted=true')
         else:
             context['form'] = form
-            return cls.render(request, context, 'maps/update_osm')
+            return cls.render(request, context, 'places/update_osm')
 
 
 class NearbyEntityListView(NearbyListView):
@@ -405,7 +413,7 @@ class CategoryListView(BaseView):
         )
 
     def handle_GET(cls, request, context):
-        return cls.render(request, context, 'maps/category_list')
+        return cls.render(request, context, 'places/category_list')
 
 class CategoryDetailView(BaseView):
     def initial_context(cls, request, ptypes):
@@ -438,7 +446,7 @@ class CategoryDetailView(BaseView):
         )
 
     def handle_GET(cls, request, context, ptypes):
-        return cls.render(request, context, 'maps/category_detail')
+        return cls.render(request, context, 'places/category_detail')
 
 class BusstopSearchView(BaseView):
     def initial_context(cls, request):
@@ -472,7 +480,7 @@ class BusstopSearchView(BaseView):
 
         context['entities'] = entities
 
-        return cls.render(request, context, 'maps/busstop_search')
+        return cls.render(request, context, 'places/busstop_search')
 
 class PostCodeDetailView(NearbyDetailView):
     def get_metadata(cls, request, post_code, ptypes=None):
@@ -509,7 +517,7 @@ class PostCodeDetailView(NearbyDetailView):
         entities = entities.distance(post_code.location).order_by('distance')[:99]
 
         context['entities'] = entities
-        return cls.render(request, context, 'maps/postcode_detail')
+        return cls.render(request, context, 'places/postcode_detail')
 
     def add_space(cls, post_code):
         return post_code[:-3] + ' ' + post_code[-3:]
@@ -553,7 +561,7 @@ class APIView(BaseView):
     Valid parameters are:
 
     * type: Filters by an EntityType slug
-    * source: Filters by data source; a maps provider module name.
+    * source: Filters by data source; a places provider module name.
     * near: A long,lat pair to order by
     * max_distance: Filters out those more than the specified distance from the point given above.
     * limit: The number of results to return; defaults to 100; capped at 200 (or 1000 if without_metadata specified)

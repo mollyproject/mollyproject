@@ -1,5 +1,6 @@
 from math import atan2, degrees
 from django.shortcuts import get_object_or_404
+from django.contrib.gis.geos import Point
 
 from models import EntityType, Entity, Identifier
 
@@ -34,4 +35,3 @@ def get_point(request, entity):
     else:
         point = None
     return point
-

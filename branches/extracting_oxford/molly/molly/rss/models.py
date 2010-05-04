@@ -4,7 +4,7 @@ from django.contrib.gis.db import models
 from django.core.urlresolvers import reverse
 from xml.etree import ElementTree as ET
 from molly.core.utils import resize_external_image
-from molly.apps.places.models import Entity
+from molly.maps.models import Entity
 
 FEED_TYPE_CHOICES = (
     ('n', 'news'),

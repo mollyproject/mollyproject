@@ -1,29 +1,37 @@
+from datetime import datetime, timedelta
+
+import simplejson
+
 from django.db import models
 
 class RecentManager(models.Manager):
     def get_query_set(self):
-        return super(RecentManager, self).get_query_set().filter(last_updated__gt = datetime.now() - timedelta(14))
-        
-class Placemarks(models.Model):
-    "Cache for Google geocoding requests."
-     
-    _data = models.TextField(default='null')
-    latitude = models.FloatField(null=True)
-    longitude = models.FloatField(null=True)
-    query = models.TextField(blank=True)
-    last_updated = models.DateTimeField(auto_now=True)
+        return super(RecentManager, self).get_query_set().filter(updated__gt = datetime.utcnow() - timedelta(14))
 
+class Geocode(models.Model):
+    lon = models.FloatField(null=True)
+    lat = models.FloatField(null=True)
+    query = models.TextField(null=True)
+
+    _results = models.TextField(default='null')
+    updated = models.DateTimeField()
+    local_name = models.TextField()
+    
     recent = RecentManager()
     objects = models.Manager()
 
-    def get_data(self):
-        if not hasattr(self, 'data_json'):
-            self.data_json = simplejson.loads(self._data)
-        return self.data_json
-    def set_data(self, data):
-        self.data_json = data
-    data = property(get_data, set_data)
-    
-    def save(self, force_insert=False, force_update=False):
-        self._data = simplejson.dumps(self.data)
-        super(Placemarks, self).save()    
+    def _get_results(self):
+        try:
+            return self._cached_results
+        except AttributeError:
+            self._cached_results = simplejson.loads(self._results)
+            return self._cached_results
+    def _set_results(self, value):
+        self._cached_results = value
+    results = property(_get_results, _set_results)
+
+    def save(self, *args, **kwargs):
+        if hasattr(self, '_cached_results'):
+            self._results = simplejson.dumps(self._cached_results)
+        self.updated = datetime.utcnow()
+        super(Geocode, self).save(*args, **kwargs)

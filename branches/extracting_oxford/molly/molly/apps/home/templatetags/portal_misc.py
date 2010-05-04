@@ -71,7 +71,7 @@ def telephone(value, arg):
         if value.startswith("+44"):
             value = "0" + value[3:]
 
-        for dialing_code in ['01865', '0845']:
+        for dialing_code in ['01865', '0845']:    
             if value.startswith(dialing_code):
                 value = dialing_code + " " + value[len(dialing_code):]
 

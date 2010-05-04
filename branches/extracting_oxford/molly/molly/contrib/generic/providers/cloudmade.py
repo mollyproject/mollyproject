@@ -3,6 +3,8 @@ import urllib, logging
 import simplejson
 
 from django.conf import settings
+from django.contrib.gis.gdal.datasource import OGRException
+from django.contrib.gis.geos import Point
 
 from molly.geolocation.providers import BaseGeolocationProvider
 
@@ -24,12 +26,14 @@ class CloudmadeGeolocationProvider(BaseGeolocationProvider):
         }
 
         data = urllib.urlopen(self.REVERSE_GEOCODE_URL % params)
+
+        print self.REVERSE_GEOCODE_URL % params
         json = simplejson.load(data)
         if not json:
             return []
         else:
             return [{
-                'name': json['features'][0]['properties']['name'],
+                'name': json['features'][0]['properties'].get('name'),
                 'location': (lon, lat),
                 'accuracy': 100,
             }]
@@ -85,4 +89,3 @@ class CloudmadeGeolocationProvider(BaseGeolocationProvider):
                 results += self.reverse_geocode(*centroid)
 
         return results
-

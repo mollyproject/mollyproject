@@ -1,4 +1,4 @@
-{% extends "maps/base.html" %}
+{% extends "places/base.html" %}
 {% load maps %}{% load portal_misc %}
 
 {% block title %}m.ox | Update {{ entity.title }}{% endblock %}
@@ -37,7 +37,7 @@
     </p>
     
     <p style="margin-top:0.5em;">
-      You may be interested to read <a href="{% url maps_static_openstreetmap %}">further information about
+      You may be interested to read <a href="{% url places:static_openstreetmap %}">further information about
       OpenStreetMap and other ways in which one may contribute</a>.
     </p>
   </div></div>
@@ -52,11 +52,11 @@
   
   {% ifnotequal style_group "dumb" %}
     <div class="backgrounded-image" style="background-image:url('{% map_url entity.location %}'); height:{{ map_height }}px">
-    {% include "maps/map_elements.html" %}
+    {% include "places/map_elements.html" %}
     </div>
   {% else %}
       <img src="{% map_url entity.location %}" alt="Map"><br />
-      {% include "maps/map_elements.html" %}
+      {% include "places/map_elements.html" %}
   {% endifnotequal %}
   
 

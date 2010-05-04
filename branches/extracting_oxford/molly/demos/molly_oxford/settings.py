@@ -108,7 +108,7 @@ APPLICATIONS = [
         ),
     ),
 
-    Application('molly.maps', 'places', 'Places',
+    Application('molly.apps.places', 'places', 'Places',
         providers = [
             SimpleProvider('molly.providers.apps.maps.NaptanMapsProvider',
                 method='http',
@@ -116,6 +116,21 @@ APPLICATIONS = [
             ),
             'molly.providers.apps.maps.OxontimeMapsProvider',
         ],
+        nearby_entity_types = (
+            ('Transport', (
+                'bicycle-parking', 'bus-stop', 'car-park', 'park-and-ride', 
+                'taxi-rank', 'train-station')),
+            ('Amenities', (
+                'atm', 'bank', 'bench', 'medical', 'post-box', 'post-office',
+                'public-library', 'recycling', 'bar', 'food', 'pub')),
+            ('Leisure', (
+                'cinema', 'theatre', 'museum', 'park', 'swimming-pool',
+                'sports-centre', 'punt-hire')),
+            ('University', (
+                'university-library', 'college-hall', 'faculty-department',
+                'building', 'room')),
+        ),
+
     ),
 
     Application('molly.z3950', 'library', 'Library search',
@@ -197,7 +212,9 @@ APPLICATIONS = [
         providers = [
             SimpleProvider('molly.contrib.oxford.providers.geolocation.OUCSCodeGeolocationProvider'),
 #            SimpleProvider('molly.contrib.generic.providers.post_code.PostCodeGeolocationProvider'),
-            SimpleProvider('molly.contrib.generic.providers.cloudmade.CloudmadeGeolocationProvider'),
+            SimpleProvider('molly.contrib.generic.providers.cloudmade.CloudmadeGeolocationProvider',
+                search_locality = 'Oxford',
+            ),
         ],
         display_to_user = False,
     ),
@@ -233,3 +250,5 @@ INSTALLED_APPS = (
 ) + extract_installed_apps(APPLICATIONS)
 
 CACHE_DIR = '/var/cache/molly'
+
+SRID = 27700
