@@ -79,7 +79,7 @@
 <div class="section">
 	<h2>Images</h2>
 	{% for image in oxp.foaf_depiction %}
-		{% external_image image.uri asdiv %}
+		{ external_image image.uri asdiv }{# FIXME #}
 	{% endfor %}
 </div>
 {% endif %}

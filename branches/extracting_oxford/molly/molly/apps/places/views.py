@@ -11,14 +11,13 @@ from django.template.defaultfilters import capfirst
 
 from molly.utils.views import BaseView, ZoomableView
 from molly.utils.breadcrumbs import *
-
 from molly.geolocation.views import LocationRequiredView
 
 from molly.osm.utils import fit_to_map
 from molly.osm.models import OSMUpdate
 
 from models import Entity, EntityType
-from utils import get_entity, get_bearing, get_point
+from utils import get_entity, get_point
 from forms import BusstopSearchForm, UpdateOSMForm
 
 
@@ -107,7 +106,7 @@ class NearbyDetailView(LocationRequiredView, ZoomableView):
     def initial_context(cls, request, ptypes, entity=None):
         point = get_point(request, entity)
 
-        entity_types = tuple(get_object_or_404(EntityType, slug=t) for t in ptypes.split(';'))        
+        entity_types = tuple(get_object_or_404(EntityType, slug=t) for t in ptypes.split(';'))
 
         if point:
             entities = Entity.objects.filter(location__isnull = False, is_sublocation = False)
@@ -198,7 +197,7 @@ class NearbyDetailView(LocationRequiredView, ZoomableView):
 
         found_entity_types = set()
         for e in chain(*entities):
-            e.bearing = get_bearing(point, e.location)
+            e.bearing = e.get_bearing(point)
             found_entity_types |= set(e.all_types.all())
         found_entity_types -= set(entity_types)
 
@@ -219,24 +218,17 @@ class NearbyDetailView(LocationRequiredView, ZoomableView):
 class EntityDetailView(ZoomableView):
     default_zoom = 16
     OXPOINTS_URL = 'http://m.ox.ac.uk/oxpoints/id/%s.json'
-    
+
     def get_metadata(cls, request, scheme, value):
-        entity = get_entity(type_slug, id)
+        entity = get_entity(scheme, value)
         user_location = request.session.get('geolocation:location')
-        if user_location and entity.location:
-            user_location = Point(user_location[1], user_location[0], srid=4326)
-            bearing = ', approximately %.3fkm %s' % (
-                user_location.transform(27700, clone=True).distance(entity.location.transform(27700, clone=True))/1000,
-                get_bearing(user_location, entity.location),
-            )
-        else:
-            bearing = ''
+        distance, bearing = entity.get_distance_and_bearing_from(user_location)
+        additional = '<strong>%s</strong>' % capfirst(entity.primary_type.verbose_name)
+        if distance:
+            additional += ', approximately %.3fkm %s' % (distance/1000, bearing)
         return {
             'title': entity.title,
-            'additional': '<strong>%s</strong>%s' % (
-                capfirst(entity.entity_type.verbose_name),
-                bearing,
-            ),
+            'additional': additional,
         }
 
     def initial_context(cls, request, scheme, value):
@@ -266,7 +258,7 @@ class EntityDetailView(ZoomableView):
         entity = context['entity']
         if entity.absolute_url != request.path:
             return HttpResponsePermanentRedirect(entity.absolute_url)
-        
+
         for provider in reversed(cls.conf.providers):
             provider.augment_metadata((entity,))
 
@@ -665,7 +657,7 @@ class APIView(BaseView):
             })
             if not without_metadata:
                 out[-1]['metadata'] = entity.metadata
-                
+
             if 'near' in request.GET:
                 out[-1]['distance'] = entity.distance
 

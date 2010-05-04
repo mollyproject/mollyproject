@@ -10,7 +10,7 @@ def get_entity(scheme, value):
 
 def is_favourite(request, entity):
     return entity.pk in request.session.get('maps:favourites', ())
-    
+
 def make_favourite(request, entity, value):
     if not 'maps:favourites' in request.session:
         request.session['maps:favourites'] = []
@@ -19,7 +19,7 @@ def make_favourite(request, entity, value):
     elif not value and is_favourite(request, entity):
         request.session['maps:favourites'].remove(entity.pk)
     request.session.modified = True
-        
+
 COMPASS_POINTS = ('N','NE','E','SE','S','SW','W','NW')
 def get_bearing(p1, p2):
     lat_diff, lon_diff = p2[0] - p1[0], p2[1] - p1[1]
