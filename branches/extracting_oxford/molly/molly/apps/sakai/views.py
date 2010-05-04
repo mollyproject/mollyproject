@@ -39,6 +39,7 @@ class IndexView(BaseView):
 
 class SakaiView(BaseView):
     breadcrumb = NullBreadcrumb
+    abstract = True
 
     def build_url(cls, url):
         return '%s%s' % (cls.conf.host, url)
