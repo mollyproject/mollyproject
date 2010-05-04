@@ -51,9 +51,10 @@ class LocationUpdateForm(forms.Form):
                     if not cleaned_data.get('name'):
                         try:
                             cleaned_data['name'] = self.reverse_geocode(
-                                self.cleaned_data['latitude'],
-                                self.cleaned_data['longitude'])[0]['name']
+                                self.cleaned_data['longitude'],
+                                self.cleaned_data['latitude'])[0]['name']
                         except:
+                            raise
                             cleaned_data['name'] = None
                         print "LOC NAME", cleaned_data['name']
                     print "FOO NAME"

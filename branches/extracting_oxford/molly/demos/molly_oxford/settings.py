@@ -212,7 +212,9 @@ APPLICATIONS = [
         providers = [
             SimpleProvider('molly.contrib.oxford.providers.geolocation.OUCSCodeGeolocationProvider'),
 #            SimpleProvider('molly.contrib.generic.providers.post_code.PostCodeGeolocationProvider'),
-            SimpleProvider('molly.contrib.generic.providers.cloudmade.CloudmadeGeolocationProvider'),
+            SimpleProvider('molly.contrib.generic.providers.cloudmade.CloudmadeGeolocationProvider',
+                search_locality = 'Oxford',
+            ),
         ],
         display_to_user = False,
     ),
@@ -248,3 +250,5 @@ INSTALLED_APPS = (
 ) + extract_installed_apps(APPLICATIONS)
 
 CACHE_DIR = '/var/cache/molly'
+
+SRID = 27700
