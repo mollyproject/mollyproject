@@ -2,7 +2,7 @@
 
 from oauth.oauth import OAuthSignatureMethod_PLAINTEXT
 import os.path
-from molly.conf.settings import Application, extract_installed_apps, Authentication, ExtraBase, SimpleProvider, Batch
+from molly.conf.settings import Application, extract_installed_apps, Authentication, ExtraBase, SimpleProvider
 from secrets import SECRETS
 
 project_root = os.path.normpath(os.path.dirname(__file__))
@@ -97,15 +97,14 @@ APPLICATIONS = [
         display_to_user = False,
     ),
     Application('molly.apps.contact', 'contact', 'Contact search',
-#        provider = 'molly.contrib.oxford.providers.ScrapingContactProvider',
-        provider = 'molly.contrib.mit.providers.LDAPContactProvider',
+        provider = 'molly.contrib.oxford.providers.ScrapingContactProvider',
+#        provider = 'molly.contrib.mit.providers.LDAPContactProvider',
     ),
 
     Application('molly.apps.weather', 'weather', 'Weather',
         location_id = 'bbc/25',
         provider = SimpleProvider('molly.contrib.generic.providers.BBCWeatherProvider',
             location_id = 25,
-            batch = Batch('pull_weather', minute=range(5, 65, 15)),
         ),
     ),
 
