@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
 from django.contrib.gis.geos import Point, LineString, LinearRing
 from django.conf import settings
+
 from molly.apps.places.models import Entity, EntityType, Source
 from molly.apps.places.providers import BaseMapsProvider
 from molly.core.models import Config
 from molly.utils.misc import AnyMethodRequest
+from molly.geolocation.utils import reverse_geocode
+from molly.conf.settings import batch
+
 from xml.sax import saxutils, handler, make_parser
 import urllib2, bz2, subprocess, popen2, sys
 from os import path
@@ -37,21 +41,18 @@ class OSMHandler(handler.ContentHandler):
 
     def startElement(self, name, attrs):
         if name == 'node':
-            lat, lon = float(attrs['lat']), float(attrs['lon'])
-
+            lon, lat = float(attrs['lon']), float(attrs['lat'])
             self.valid = (51.5 < lat < 52.1 and -1.6 < lon < -1.0)
             if not self.valid:
                 return
 
             id = node_id(attrs['id'])
-
-            self.node_location = lat, lon
+            self.node_location = lon, lat
             self.attrs = attrs
             self.id = id
             self.ids.add(id)
             self.tags = {}
-
-            self.node_locations[id] = lat, lon
+            self.node_locations[id] = lon, lat
 
         elif name == 'tag' and self.valid:
             self.tags[attrs['k']] = attrs['v']
@@ -104,31 +105,30 @@ class OSMHandler(handler.ContentHandler):
                     self.modify_count += 1
 
                 if name == 'node':
-                    entity.location = Point(self.node_location[1], self.node_location[0], srid=4326)
+                    entity.location = Point(self.node_location, srid=4326)
                     entity.geometry = entity.location
                 elif name == 'way':
                     print self.nodes[0], self.nodes[-1]
                     cls = LinearRing if self.nodes[0] == self.nodes[-1] else LineString
                     entity.geometry = cls([self.node_locations[n] for n in self.nodes], srid=4326)
                     min_, max_ = (float('inf'), float('inf')), (float('-inf'), float('-inf'))
-                    for lat, lon in [self.node_locations[n] for n in self.nodes]:
-                        min_ = min(min_[0], lat), min(min_[1], lon) 
-                        max_ = max(max_[0], lat), max(max_[1], lon)
-                    entity.location = Point( (min_[1]+max_[1])/2 , (min_[0]+max_[0])/2 , srid=4326)
+                    for lon, lat in [self.node_locations[n] for n in self.nodes]:
+                        min_ = min(min_[0], lon), min(min_[1], lat) 
+                        max_ = max(max_[0], lon), max(max_[1], lat)
+                    entity.location = Point( (min_[0]+max_[0])/2 , (min_[1]+max_[1])/2 , srid=4326)
                 else:
                     raise AssertionError("There should be no other types of entity we're to deal with.")
-
-                if name == 'way':
-                    print "Way", entity.geometry
 
                 try:
                     name = self.tags.get('name') or self.tags['operator']
                 except (KeyError, AssertionError):
                     try:
-                        name = reverse_geocode(*self.node_location)[0][0]
-                        name = "Near %s" % (name)
-                    except:
-                        name = "Near %f, %f" % (self.node_location[0], self.node_location[1])
+                        name = reverse_geocode(*entity.location)[0]['name']
+                        if not name:
+                            raise IndexError
+                        name = u"↝ %s" % name
+                    except IndexError:
+                        name = u"↝ %f, %f" % (self.node_location[1], self.node_location[0])
 
                 entity.title = name
                 entity.metadata['osm'] = {
@@ -156,6 +156,16 @@ class OSMHandler(handler.ContentHandler):
                 entity.delete()
                 self.delete_count += 1
 
+        self.disambiguate_titles()
+
+        print "Complete"
+        print "  Created:   %6d" % self.create_count
+        print "  Modified:  %6d" % self.modify_count
+        print "  Deleted:   %6d" % self.delete_count
+        print "  Unchanged: %6d" % self.unchanged_count
+        print "  Ignored:   %6d" % self.ignore_count
+
+    def disambiguate_titles(self):
         entities = Entity.objects.filter(source=self.source)
         inferred_names = {}
         for entity in entities:
@@ -169,22 +179,15 @@ class OSMHandler(handler.ContentHandler):
         for inferred_name, entities in inferred_names.items():
             if len(entities) > 1:
                 for entity in entities:
-                    entity.title = "%s, %s" % (inferred_name, entity.metadata['osm']['tags'].get('addr:street'))
+                    entity.title = u"%s, %s" % (inferred_name, entity.metadata['osm']['tags'].get('addr:street'))
                     continue
 
                     try:
-                        entity.title = "%s, %s" % (inferred_name, reverse_geocode(entity.location[1], entity.location[0])[0][0])
+                        entity.title = u"%s, %s" % (inferred_name, reverse_geocode(entity.location[1], entity.location[0])[0][0])
                         entity.save()
                     except:
                         print "Couldn't geocode for %s" % inferred_name
                         pass
-
-        print "Complete"
-        print "  Created:   %6d" % self.create_count
-        print "  Modified:  %6d" % self.modify_count
-        print "  Deleted:   %6d" % self.delete_count
-        print "  Unchanged: %6d" % self.unchanged_count
-        print "  Ignored:   %6d" % self.ignore_count
 
 def get_osm_etag():
     try:
@@ -204,6 +207,7 @@ class OSMMapsProvider(BaseMapsProvider):
     SHELL_CMD = "wget -O- %s --quiet | bunzip2" % ENGLAND_OSM_BZ2_URL
 #    SHELL_CMD = "cat /home/alex/gpsmid/england.osm.bz2 | bunzip2"
 
+    @batch('30 10 * * mon')
     def import_data(self):
         old_etag = get_osm_etag()
 
