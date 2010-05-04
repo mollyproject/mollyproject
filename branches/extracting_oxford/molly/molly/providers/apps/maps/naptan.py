@@ -6,6 +6,7 @@ from django.contrib.gis.geos import Point
 
 from molly.apps.places.providers import BaseMapsProvider
 from molly.apps.places.models import EntityType, Entity, Identifier, Source
+from molly.conf.settings import batch
 
 class NaptanContentHandler(ContentHandler):
 
@@ -175,6 +176,7 @@ class NaptanMapsProvider(BaseMapsProvider):
         self._username, self._password = username, password
         self._method, self._areas = method, areas
         
+    @batch('30 10 * * tue')
     def import_data(self):
         self._source = self._get_source()
         self._entity_types = self._get_entity_types()
