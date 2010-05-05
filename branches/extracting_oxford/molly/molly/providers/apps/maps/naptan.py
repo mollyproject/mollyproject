@@ -31,13 +31,13 @@ class NaptanContentHandler(ContentHandler):
         self.name_stack = []
         self.entity_types, self.source = entity_types, source
         self.entities = set()
-        
+
     def startElement(self, name, attrs):
         self.name_stack.append(name)
-        
+
         if name == 'StopPoint':
             self.meta = {}
-    
+
     def endElement(self, name):
         self.name_stack.pop()
 
@@ -50,38 +50,38 @@ class NaptanContentHandler(ContentHandler):
                 entity = self.add_stop(self.meta, entity_type, self.source)
                 if entity:
                     self.entities.add(entity)
-    
+
     def endDocument(self):
         pass
-        
+
     def characters(self, text):
         top = tuple(self.name_stack[3:])
-        
+
         try:
             self.meta[self.meta_names[top]] = text
         except KeyError:
             pass
-            
+
     def add_stop(self, meta, entity_type, source):
         try:
             entity = Entity.objects.get(source=source, _identifiers__scheme='atco', _identifiers__value=meta['atco-code'])
         except Entity.DoesNotExist:
             entity = Entity(source=source)
-            
-            
+
+
         cnm, lmk, ind, str = [meta.get(k) for k in ['common-name', 'landmark', 'indicator', 'street']]
-        
+
         if (cnm or '').endswith(' DEL') or (ind or '').lower == 'not in use':
             return
-        
+
         if lmk and ind and ind.endswith(lmk) and len(ind) > len(lmk):
             ind = ind[:-len(lmk)]
-        
+
         ind = {
             'opp': 'Opposite', 'opposite': 'Opposite', 'adj': 'Adjacent to',
             'outside': 'Outside', 'o/s': 'Outside', 'nr': 'Near', 'inside': 'Inside',
         }.get(ind, ind)
-        
+
         if meta['stop-type'] == 'RSE':
             title = cnm
         elif (ind or '').lower() == 'corner':
@@ -97,9 +97,9 @@ class NaptanContentHandler(ContentHandler):
             title = "%s %s, on %s" % (ind, lmk, str)
         else:
             title = "%s %s, %s" % (ind, lmk, cnm)
-        
+
         print "%60s %50s %30s %30s %30s" % (title, cnm, lmk, ind, str)
-        
+
         entity.title = title
         entity.primary_type = entity_type
 
@@ -108,7 +108,7 @@ class NaptanContentHandler(ContentHandler):
         entity.metadata['naptan'] = meta
         entity.location = Point(float(meta['longitude']), float(meta['latitude']), srid=4326)
         entity.geometry = entity.location
-        
+
         identifiers = {
             'atco': meta['atco-code'],
         }
@@ -117,15 +117,15 @@ class NaptanContentHandler(ContentHandler):
             identifiers['naptan'] = meta['naptan-code']
         if ind and ind.startswith('Stop '):
             identifiers['stop'] = ind[5:]
-        
+
         entity.save(identifiers=identifiers)
         entity.all_types.add(entity_type)
-        
+
         print entity.absolute_url
-        
+
         return entity
 
-        
+
 class NaptanMapsProvider(BaseMapsProvider):
 
     HTTP_URL = "http://www.dft.gov.uk/NaPTAN/snapshot/NaPTANxml.zip"
@@ -165,8 +165,8 @@ class NaptanMapsProvider(BaseMapsProvider):
             'uri-local': 'PublicTransportAccessNode',
         }
     }
-            
-            
+
+
     def __init__(self, method, areas=None, username=None, password=None):
         if not method in ('http', 'ftp',):
             raise ValueError("mode must be either 'http' or 'ftp'")
@@ -175,43 +175,43 @@ class NaptanMapsProvider(BaseMapsProvider):
 
         self._username, self._password = username, password
         self._method, self._areas = method, areas
-        
+
     @batch('30 10 * * tue')
     def import_data(self):
         self._source = self._get_source()
         self._entity_types = self._get_entity_types()
-        
+
         if self._method == 'http':
             self._import_from_http()
         elif self._method == 'ftp':
             self._import_from_ftp()
-        
+
     def _import_from_ftp(self):
         def data_chomper(f):
             def chomp(data):
                 os.write(f, data)
             return chomp
-        
+
         ftp = ftplib.FTP(self.FTP_SERVER,
             self._username,
             self._password,
         )
-        
+
         for area in self._areas:
             f, filename = tempfile.mkstemp()
-            
+
             ftp.cwd("/V2/%s/" % area)
             ftp.retrbinary('RETR NaPTAN%sxml.zip' % area, data_chomper(f))
             os.close(f)
-            
+
             archive = zipfile.ZipFile(filename)
             self._import_from_pipe(archive.open('NaPTAN%d.xml' % int(area)))
             archive.close()
             os.unlink(filename)
 
-        
+
         ftp.quit()
-        
+
     def _import_from_http(self):
         f, filename = tempfile.mkstemp()
         os.close(f)
@@ -225,19 +225,19 @@ class NaptanMapsProvider(BaseMapsProvider):
         parser = make_parser()
         parser.setContentHandler(NaptanContentHandler(self._entity_types, self._source))
         parser.parse(pipe_r)
-        
-        
+
+
     def _get_entity_types(self):
 
         entity_types = {}
         for stop_type in self.entity_type_definitions:
             et = self.entity_type_definitions[stop_type]
-            
+
             try:
                 entity_type = EntityType.objects.get(slug=et['slug'])
             except EntityType.DoesNotExist:
                 entity_type = EntityType(slug=et['slug'])
-            
+
             entity_type.uri = "http://mollyproject.org/schema/maps#%s" % et['uri-local']
             entity_type.article = et['article']
             entity_type.verbose_name = et['verbose-name']
@@ -245,28 +245,28 @@ class NaptanMapsProvider(BaseMapsProvider):
             entity_type.show_in_nearby_list = et['nearby']
             entity_type.show_in_category_list = et['category']
             entity_type.save()
-            
+
             entity_types[stop_type] = entity_type
-        
+
         for entity_type in entity_types.values():
             if entity_type.slug == 'public-transport-access-node':
                 continue
             entity_type.subtype_of.add(entity_types[None])
-        
+
         return entity_types
 
-    
+
     def _get_source(self):
         try:
             source = Source.objects.get(module_name="molly.providers.apps.maps.naptan")
         except Source.DoesNotExist:
             source = Source(module_name="molly.providers.apps.maps.naptan")
-        
+
         source.name = "National Public Transport Access Nodes (NaPTAN) database"
         source.save()
-        
+
         return source
-        
+
 if __name__ == '__main__':
     p = NaptanMapsProvider(method='http', areas=('340',))
     p.import_data()

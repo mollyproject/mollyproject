@@ -70,6 +70,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'molly.wurfl.middleware.WurflMiddleware',
     'molly.auth.middleware.SecureSessionMiddleware',
+#    'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -118,7 +119,7 @@ APPLICATIONS = [
         ],
         nearby_entity_types = (
             ('Transport', (
-                'bicycle-parking', 'bus-stop', 'car-park', 'park-and-ride', 
+                'bicycle-parking', 'bus-stop', 'car-park', 'park-and-ride',
                 'taxi-rank', 'train-station')),
             ('Amenities', (
                 'atm', 'bank', 'bench', 'medical', 'post-box', 'post-office',
@@ -199,11 +200,11 @@ APPLICATIONS = [
         ],
         display_to_user = False,
     ),
-    
+
     Application('molly.apps.webcams', 'webcams', 'Webcams'),
-    
+
     Application('molly_oxford.apps.results', 'results', 'Results releases'),
-    
+
     Application('molly.osm', 'osm', 'OpenStreetMap',
         display_to_user = False,
     ),
@@ -226,10 +227,15 @@ APPLICATIONS = [
     Application('molly.apps.url_shortener', 'url_shortener', 'URL Shortener',
         display_to_user = False,
     ),
-    
+
     Application('molly.apps.feedback', 'feedback', 'Feedback',
         display_to_user = False,
     ),
+
+    Application('molly.apps.external_media', 'external_media', 'External Media',
+        display_to_user = False,
+    ),
+
 ]
 
 API_KEYS = {
@@ -247,8 +253,9 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'molly.osm',
+#    'debug_toolbar',
 ) + extract_installed_apps(APPLICATIONS)
 
 CACHE_DIR = '/var/cache/molly'
 
-SRID = 27700
+# INTERNAL_IPS = ('127.0.0.1',)  # for the debug_toolbar
