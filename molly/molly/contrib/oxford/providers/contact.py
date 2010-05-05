@@ -114,7 +114,7 @@ class ScrapingContactProvider(ContactProvider):
             x_people = filter(lambda x:(x.attrib.get('class')=='people'), xml.findall('.//ul'))[0]
         except IndexError:
             # No people found
-            return [], 0, 0
+            return Paginator([], 10)
 
         people = [] 
         for x_person in x_people.getchildren():
