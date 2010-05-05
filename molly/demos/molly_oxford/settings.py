@@ -257,5 +257,6 @@ INSTALLED_APPS = (
 ) + extract_installed_apps(APPLICATIONS)
 
 CACHE_DIR = '/var/cache/molly'
+SRID = 27700
 
 # INTERNAL_IPS = ('127.0.0.1',)  # for the debug_toolbar
