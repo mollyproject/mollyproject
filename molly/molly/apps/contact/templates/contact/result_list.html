@@ -24,6 +24,7 @@
     {% endif %}
   </div></div>
 
+  {% if results.count %}
   {% ifnotequal 1 page_count %}
   <div class="note">
     Pages:
@@ -49,6 +50,7 @@
     {% endfor %}
   </div>
   {% endifnotequal %}
+  {% endif %}
 
 {% else %}
   {% if not message %}
