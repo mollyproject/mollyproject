@@ -54,11 +54,12 @@ class Application(object):
         bar = dir(views_module)
         for n in dir(views_module):
             view = getattr(views_module, n)
-            if not isinstance(view, type) or not BaseView in view.__mro__ or view is BaseView or getattr(view, 'abstract', False):
+            if not isinstance(view, type) or not BaseView in view.__mro__ or view is BaseView or view.__dict__.get('abstract'):
                 continue
 
             view.conf = conf
             view.__bases__ = bases + view.__bases__
+            print view, view.__bases__
 
         self.app = type(self.local_name.capitalize()+'App', (object,), {
             'urls': urlconf_include(self.urlconf, self.application_name.split('.')[-1], self.local_name),
