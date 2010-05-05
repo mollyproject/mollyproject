@@ -15,6 +15,14 @@ Debian packages or their equivalents for your distribution or OS:
  * postgresql-8.3-postgis
  * postgresql-server-dev-8.3
  * python-virtualenv
+ * python-setuptools
+ * python-dev
+ * libxslt-dev
+ * libldap2-dev
+ * libsasl2-dev
+ * python-cairo
+
+postgis python-gdal proj libgeos-3.0.0 binutils libgdal1-1.5.0 postgresql-8.3 postgresql-8.3-postgis postgresql-server-dev-8.3 python-virtualenv python-setuptools python-dev libxslt-dev libldap2-dev libsasl2-dev python-cairo
 
 Unfortunately, pip isn't yet in Debian stable, so you'll need to install it
 using easy_install:
