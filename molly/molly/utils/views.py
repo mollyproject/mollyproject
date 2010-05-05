@@ -15,20 +15,93 @@ logger = logging.getLogger('core.requests')
 
 class DateUnicode(unicode): pass
 
+def renderer(format, mimetypes=None):
+    """
+    Decorates a view method to say that it renders a particular format and mimetypes.
+
+    Use as:
+        @renderer(format="foo")
+        def render_foo(cls, request, context, template_name): ...
+    or
+        @renderer(format="foo", mimetypes=("application/x-foo",))
+        def render_foo(cls, request, context, template_name): ...
+
+    The former case will inherit mimetypes from the previous renderer for that
+    format in the MRO. Where there isn't one, it will default to the empty
+    tuple.
+    """
+
+    def g(f):
+        f.is_renderer = True
+        f.format = format
+        f.mimetypes = mimetypes
+        return f
+    return g
+
 class ViewMetaclass(type):
     def __new__(cls, name, bases, dict):
+
+        # Pull the renderers from the bases into a couple of new dicts for
+        # this views renderers
+        formats_by_mimetype = {}
+        formats = {}
+        for base in reversed(bases):
+            if hasattr(base, 'FORMATS'):
+                formats.update(base.FORMATS)
+                formats_by_mimetype.update(base.FORMATS_BY_MIMETYPE)
+
         for key, value in dict.items():
+            # Wrap all methods in classmethods so they don't need decorating
+            # individually.
             if isfunction(value) and key != '__new__':
                 dict[key] = classmethod(value)
-        return type.__new__(cls, name, bases, dict)
+
+            # If the method is a renderer we add it to our dicts. We can't add
+            # the functions right now because we want them bound to the class
+            # object that hasn't yet been created. Instead, add the keys (strs)
+            # and we'll replace them with the bound classmethods later.
+            if isfunction(value) and getattr(value, 'is_renderer', False):
+                if value.mimetypes is not None:
+                    mimetypes = value.mimetypes
+                elif value.format in formats:
+                    mimetypes = formats[value.format].mimetypes
+                else:
+                    mimetypes = ()
+                for mimetype in mimetypes:
+                    formats_by_mimetype[mimetype] = key
+                formats[value.format] = key
+
+        dict.update({
+            'FORMATS': formats,
+            'FORMATS_BY_MIMETYPE': formats_by_mimetype,
+        })
+
+        # Create our view.
+        view = type.__new__(cls, name, bases, dict)
+
+        # Replace those that items that have string values with the bound
+        # classmethods we wanted in the first place.
+        for format in view.FORMATS:
+            if isinstance(view.FORMATS[format], basestring):
+                view.FORMATS[format] = getattr(view, view.FORMATS[format])
+        for mimetype in view.FORMATS_BY_MIMETYPE:
+            if isinstance(view.FORMATS_BY_MIMETYPE[mimetype], basestring):
+                view.FORMATS_BY_MIMETYPE[mimetype] = getattr(view, view.FORMATS_BY_MIMETYPE[mimetype])
+
+        return view
 
 class BaseView(object):
     __metaclass__ = ViewMetaclass
 
     ALLOWABLE_METHODS = ('GET', 'POST', 'DELETE', 'HEAD', 'OPTIONS', 'PUT')
 
-    def method_not_acceptable(cls, request):
+    def method_not_allowed(cls, request):
         return HttpResponseNotAllowed([m for m in cls.ALLOWABLE_METHODS if hasattr(cls, 'handle_%s' % m)])
+
+    def not_acceptable(cls, request):
+        response = HttpResponse("The desired media type is not supported for this resource.", mimetype="text/plain")
+        response.status_code = 406
+        return response
 
     def bad_request(cls, request):
         response = HttpResponse(
@@ -48,7 +121,7 @@ class BaseView(object):
             response = getattr(cls, method_name)(request, context, *args, **kwargs)
             return response
         else:
-            return cls.method_not_acceptable(request)
+            return cls.method_not_allowed(request)
 
     def handle_HEAD(cls, request, *args, **kwargs):
         """
@@ -71,27 +144,13 @@ class BaseView(object):
             zoom = min(max(10, zoom), 18)
         return zoom
 
-    FORMATS = (
-        # NAME, MIMETYPE
-        ('rdf', 'application/rdf+xml'),
-        ('html', 'text/html'),
-        ('json', 'application/json'),
-        ('yaml', 'application/x-yaml'),
-        ('xml', 'application/xml'),
-    )
-
-    FORMATS_BY_NAME = dict(FORMATS)
-    FORMATS_BY_MIMETYPE = dict((y,x) for (x,y) in FORMATS)
-    FORMATS_BY_MIMETYPE.update({
-        'application/xhtml+xml': 'html',
-        '*/*': 'html',
-    })
-
     def render(cls, request, context, template_name):
-        if request.GET.get('format') in cls.FORMATS_BY_NAME:
-            format = request.GET['format']
+        if request.GET.get('format') in cls.FORMATS:
+            renderer = cls.FORMATS[request.GET['format']]
+        elif 'format' in request.GET:
+            return cls.not_acceptable(request)
         elif request.is_ajax():
-            format = 'json'
+            renderer = cls.FORMATS['json']
         elif request.META.get('HTTP_ACCEPT'):
             accepts = [a.split(';')[0].strip() for a in request.META['HTTP_ACCEPT'].split(',')]
             for accept in accepts:
@@ -101,9 +160,9 @@ class BaseView(object):
                 if accept == 'application/xml' and ' AppleWebKit/' in request.META.get('HTTP_USER_AGENT', ''):
                     continue
                 if accept in cls.FORMATS_BY_MIMETYPE:
-                    format = cls.FORMATS_BY_MIMETYPE[accept]
+                    renderer = cls.FORMATS_BY_MIMETYPE[accept]
                     try:
-                        return cls.render_to_format(request, context, template_name, format)
+                        return renderer(request, context, template_name)
                     except NotImplementedError:
                         pass
             else:
@@ -112,27 +171,28 @@ Your Accept header didn't contain any supported media ranges.
 
 Supported ranges are:
 
- * %s\n""" % '\n * '.join(f for f in cls.FORMATS_BY_NAME), mimetype="text/plain" )
+ * %s\n""" % '\n * '.join(f for f in cls.FORMATS), mimetype="text/plain" )
                 response.status_code = 406 # Not Acceptable
                 return response
         else:
-            format = 'html'
+            renderer = cls.FORMATS['html']
 
         try:
-            return cls.render_to_format(request, context, template_name, format)
+            return renderer(request, context, template_name)
         except NotImplementedError:
-            response = HttpResponse("The desired media type is not supported for this resource.", mimetype="text/plain")
-            response.status_code = 406
-            return response
+            return cls.not_acceptable(request)
+
 
     def render_to_format(cls, request, context, template_name, format):
-        render_method = getattr(cls, 'render_%s' % format)
+        render_method = cls.FORMATS[format]
         return render_method(request, context, template_name)
 
+    @renderer(format="json", mimetypes=('application/json',))
     def render_json(cls, request, context, template_name):
         context = cls.simplify_value(context)
         return HttpResponse(simplejson.dumps(context), mimetype="application/json")
 
+    @renderer(format="html", mimetypes=('text/html', 'application/xhtml+xml', '*/*'))
     def render_html(cls, request, context, template_name):
         if template_name is None:
             raise TemplateDoesNotExist
@@ -140,13 +200,12 @@ Supported ranges are:
                                   context, context_instance=RequestContext(request),
                                   mimetype='text/html')
 
-    def render_rdf(cls, request, context, template_name):
-        raise NotImplementedError
-
+    @renderer(format="xml", mimetypes=('application/xml', 'text/xml'))
     def render_xml(cls, request, context, template_name):
         context = cls.simplify_value(context)
         return HttpResponse(ET.tostring(cls.serialize_to_xml(context)), mimetype="application/xml")
 
+    @renderer(format="yaml", mimetypes=('application/x-yaml',))
     def render_yaml(cls, request, context, template_name):
         try:
             import yaml
