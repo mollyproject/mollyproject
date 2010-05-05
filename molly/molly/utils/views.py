@@ -195,7 +195,7 @@ Supported ranges are:
     @renderer(format="html", mimetypes=('text/html', 'application/xhtml+xml', '*/*'))
     def render_html(cls, request, context, template_name):
         if template_name is None:
-            raise TemplateDoesNotExist
+            raise NotImplementedError
         return render_to_response(template_name+'.html',
                                   context, context_instance=RequestContext(request),
                                   mimetype='text/html')
