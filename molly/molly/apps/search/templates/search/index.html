@@ -38,8 +38,8 @@
 	  <h2>Search elsewhere <small>for<em> {{ search_form.data.query }}</em></small></h2> 
 <h3>Contact search</h3>
 	  <ul>
-	    <li><a href="{% url contact:index %}?q={{ search_form.data.query }}&amp;method=email">E-mail</a></li>
-	    <li><a href="{% url contact:index %}?q={{ search_form.data.query }}&amp;method=phone">Phone</a></li>
+	    <li><a href="{% url contact:result_list %}?query={{ search_form.data.query }}&amp;method=email">E-mail</a></li>
+	    <li><a href="{% url contact:result_list %}?query={{ search_form.data.query }}&amp;method=phone">Phone</a></li>
 	 </ul>
 <h3>Library search</h3>
 	 <ul>
