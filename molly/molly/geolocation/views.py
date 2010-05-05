@@ -5,7 +5,7 @@ from django.http import HttpResponseRedirect, Http404
 from django.contrib.gis.geos import Point
 from django.conf import settings
 
-from molly.utils.views import BaseView
+from molly.utils.views import BaseView, renderer
 from molly.utils.breadcrumbs import *
 from molly.utils.http import HttpResponseSeeOther
 
@@ -91,6 +91,11 @@ class LocationUpdateView(BaseView):
 
         return cls.render(request, context, None)
 
+    @renderer(format="embed", mimetypes=())
+    def render_embed(cls, request, context, template_name):
+        return cls.render_html(request, context, template_name)
+
+    @renderer(format="html")
     def render_html(cls, request, context, template_name):
         if request.method == 'POST':
             if context.get('return_url'):
