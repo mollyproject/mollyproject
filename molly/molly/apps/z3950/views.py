@@ -1,15 +1,12 @@
 from itertools import chain
-from PyZ3950 import zoom
 import logging
 
-from django.http import Http404, HttpResponseRedirect
-from django.core.urlresolvers import reverse
+from django.http import Http404
 from django.core.paginator import Paginator
 from django.contrib.gis.geos import Point
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
-from molly.utils.renderers import mobile_render
 
 from molly.apps.places.models import Entity
 from molly.osm.utils import fit_to_map
@@ -47,7 +44,7 @@ class IndexView(BaseView):
         return Breadcrumb(cls.conf.local_name, None, 'Library search', lazy_reverse('z3950:index'))
         
     def handle_GET(cls, request, context):
-        return mobile_render(request, context, 'z3950/index')
+        return cls.render(request, context, 'z3950/index')
 
 class SearchDetailView(BaseView):
     def get_metadata(cls, request):
@@ -97,7 +94,7 @@ class SearchDetailView(BaseView):
             return cls.handle_error(request, context, e.msg)
 
         try:
-            results = search.OLISSearch(query, provider=cls.conf.provider)
+            results = search.OLISSearch(query, conf=cls.conf)
         except Exception, e:
             logger.exception("Library query error")
             return cls.handle_error(request, context, 'An error occurred: %s' % e)
@@ -118,14 +115,14 @@ class SearchDetailView(BaseView):
             'paginator': paginator,
             'page': page,
         })
-        return mobile_render(request, context, 'z3950/item_list')
+        return cls.render(request, context, 'z3950/item_list')
     
     def handle_no_search(cls, request, context):
-        return mobile_render(request, context, 'z3950/item_list')
+        return cls.render(request, context, 'z3950/item_list')
         
     def handle_error(cls, request, context, message):
         context['error_message'] = message
-        return mobile_render(request, context, 'z3950/item_list')
+        return cls.render(request, context, 'z3950/item_list')
         
     def construct_query(cls, request, search_form):
         query, removed = [], set()
@@ -270,7 +267,7 @@ class ItemDetailView(BaseView):
             'stacks': stacks
         })
         
-        return mobile_render(request, context, 'z3950/item_detail')
+        return cls.render(request, context, 'z3950/item_detail')
 
 
 
@@ -281,7 +278,7 @@ class ItemDetailView(BaseView):
         
         context['libraries'] = libraries
         
-        return mobile_render(request, context, 'z3950/item_detail')
+        return cls.render(request, context, 'z3950/item_detail')
 
 class ItemHoldingsView(BaseView):
     def initial_context(cls, request, control_number, sublocation):
@@ -318,4 +315,4 @@ class ItemHoldingsView(BaseView):
         )
 
     def handle_GET(cls, request, context, control_number, sublocation):
-        return mobile_render(request, context, 'z3950/item_holdings_detail')
+        return cls.render(request, context, 'z3950/item_holdings_detail')

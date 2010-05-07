@@ -1,12 +1,9 @@
-{% extends "z3950/base.xhtml" %}
-
-{% block pagetitle %}Library Book Search{% endblock %}
-{% block pagetitleclass %}z3950-header with-icon{% endblock %}
+{% extends "z3950/base.html" %}
 
 {% block content %}
 
-{% include "z3950/search_form.xhtml" %}
-        
+{% include "z3950/search_form.html" %}
+
 <div class="section">
     <h2>Maps</h2>
 	{% include "geolocation/update_location_embed.html" %}

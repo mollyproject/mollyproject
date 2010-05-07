@@ -205,13 +205,13 @@ class OLISResult(object):
         return self.title
 
 class OLISSearch(object):
-    def __init__(self, query, provider):
+    def __init__(self, query, conf):
         self.connection = zoom.Connection(
-            getattr(provider, 'host'),
-            getattr(provider, 'port', 210),
+            getattr(conf, 'host'),
+            getattr(conf, 'port', 210),
         )
-        self.connection.databaseName = getattr(provider, 'database')
-        self.connection.preferredRecordSyntax = getattr(provider, 'syntax', 'USMARC')
+        self.connection.databaseName = getattr(conf, 'database')
+        self.connection.preferredRecordSyntax = getattr(conf, 'syntax', 'USMARC')
         
         self.query = zoom.Query('CCL', query)
         

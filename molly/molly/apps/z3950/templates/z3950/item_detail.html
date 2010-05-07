@@ -1,14 +1,4 @@
-{% extends "z3950/base.xhtml" %}
-
-{% block breadcrumbs %}
-{{ block.super }}
-            <li><a href="{% url z3950_index %}">
-                <img src="{{ MEDIA_URL }}png/index-icons/z3950-bc.png" alt="Library"/>
-            </a></li>
-{% endblock %}
-
-{% block pagetitle %}View{% endblock %}
-{% block title %}m.ox | {{ item.title }}{% endblock %}
+{% extends "z3950/base.html" %}
 
 {% block content %}
 
@@ -106,7 +96,7 @@
     {% else %}
         {# Sub item #}
         <li>
-          <a href="{% url z3950_item_holdings_detail control_number,library.location.1 %}">
+          <a href="{% url z3950:item_holdings_detail control_number,library.location.1 %}">
             {{ books|length }} items with availability at most <em>{{ library.availability_display }}</em>
           </a>
     {% endifequal %}

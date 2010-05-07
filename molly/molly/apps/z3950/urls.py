@@ -1,6 +1,6 @@
 from django.conf.urls.defaults import *
 
-from molly.z3950.views import (
+from views import (
     IndexView, SearchDetailView,
     ItemDetailView, ItemHoldingsView,
 )

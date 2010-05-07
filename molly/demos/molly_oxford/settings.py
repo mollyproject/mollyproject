@@ -135,7 +135,7 @@ APPLICATIONS = [
 
     ),
 
-    Application('molly.z3950', 'library', 'Library search',
+    Application('molly.apps.z3950', 'library', 'Library search',
         verbose_name = 'Oxford Library Information System',
         host = 'library.ox.ac.uk',
         database = 'MAIN*BIBMAST',

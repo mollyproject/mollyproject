@@ -1,11 +1,9 @@
-{% extends "z3950/base.xhtml" %}{% load maps %}
-
-{% block title %}m.ox | {{ item.title }}{% endblock %}
+{% extends "z3950/base.html" %}{% load maps %}
 
 {% block content %}
 
 <div class="section">
-    <h2>{{ item.title }}</h2>   
+    <h2>{{ item.title }}</h2>
     <div class="article"><div class="bubble pad-5">
     <table>
 {% if item.author %}
@@ -63,11 +61,11 @@
 {% if library.oxpoints_id and library.oxpoints_location %}
     {% ifnotequal style_group "dumb" %}
     	<div class="backgrounded-image" style="background-image:url('{% map_url library.oxpoints_location %}'); height:{{ map_height }}px">
-            {% include "maps/map_elements.xhtml" %}
+            {% include "maps/map_elements.html" %}
         </div>
     {% else %}
         <img src="{% map_url library.oxpoints_location %}" alt="Map"><br />
-        {% include "maps/map_elements.xhtml" %}
+        {% include "maps/map_elements.html" %}
     {% endifnotequal %}
 {% endif %}
 

@@ -1,11 +1,8 @@
-{% extends "z3950/base.xhtml" %}
-
-{% block pagetitle %}Result list{% endblock %}
-{% block title %}m.ox | {% if page %}Result list{% else %}Search{% endif %}{% endblock %}
+{% extends "z3950/base.html" %}
 
 {% block content %}
 
-{% if search_form %}{% include "z3950/search_form.xhtml" %}{% endif %}
+{% if search_form %}{% include "z3950/search_form.html" %}{% endif %}
 
 {% if error_message %}
 <div class="section">
