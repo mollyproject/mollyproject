@@ -3,8 +3,8 @@ from django.contrib.gis.db import models
 
 from django.core.urlresolvers import reverse
 from xml.etree import ElementTree as ET
-from molly.core.utils import resize_external_image
-from molly.maps.models import Entity
+from molly.apps.external_media.utils import resize_external_image
+from molly.apps.places.models import Entity
 
 FEED_TYPE_CHOICES = (
     ('n', 'news'),
@@ -64,9 +64,9 @@ class Feed(models.Model):
         
     def get_absolute_url(self):
         if self.ptype == 'n':
-            return reverse('news_item_list', args=[self.slug])
+            return reverse('news:item_list', args=[self.slug])
         else:
-            return reverse('events_item_list', args=[self.slug])
+            return reverse('events:item_list', args=[self.slug])
         
     class Meta:
         ordering = ('title',)
@@ -136,9 +136,9 @@ class Item(models.Model):
     
     def get_absolute_url(self):
         if self.ptype == 'n':
-            return reverse('news_item_detail', args=[self.feed.slug, self.id])
+            return reverse('news:item_detail', args=[self.feed.slug, self.id])
         else:
-            return reverse('events_item_detail', args=[self.feed.slug, self.id])
+            return reverse('events:item_detail', args=[self.feed.slug, self.id])
         
         
     def get_description_display(self, device):

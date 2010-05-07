@@ -6,7 +6,6 @@ from django.shortcuts import get_object_or_404
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
-from molly.utils.renderers import mobile_render
 
 from ..models import Feed, Item
 
@@ -20,13 +19,13 @@ class IndexView(BaseView):
     @BreadcrumbFactory
     def breadcrumb(cls, request, context):
         return Breadcrumb(
-            'events', None, 'Events', lazy_reverse('events_index')
+            cls.conf.local_name, None, 'Events', lazy_reverse('events:index')
         )
         
     def handle_GET(cls, request, context):
         feeds = Feed.events.all()
         context['feeds'] = feeds
-        return mobile_render(request, context, 'rss/index')
+        return cls.render(request, context, 'rss/events/index')
 
 class ItemListView(BaseView):
     def get_metadata(cls, request, slug):
@@ -48,14 +47,14 @@ class ItemListView(BaseView):
     @BreadcrumbFactory
     def breadcrumb(cls, request, context, slug):
         return Breadcrumb(
-            'events',
+            cls.conf.local_name,
             lazy_parent(IndexView),
             context['feed'].title,
-            lazy_reverse('events_item_list', args=[slug])
+            lazy_reverse('events:item_list', args=[slug])
         )
         
     def handle_GET(cls, request, context, slug):
-        return mobile_render(request, context, 'rss/event_list')
+        return cls.render(request, context, 'rss/events/item_list')
 
 class ItemDetailView(BaseView):
     def get_metadata(cls, request, slug, id):
@@ -78,14 +77,14 @@ class ItemDetailView(BaseView):
     @BreadcrumbFactory
     def breadcrumb(cls, request, context, slug, id):
         return Breadcrumb(
-            'events',
+            cls.conf.local_name,
             lazy_parent(ItemListView, slug=slug),
             context['item'].title,
-            lazy_reverse('events_item_detail', args=[slug,id])
+            lazy_reverse('events:item_detail', args=[slug,id])
         )
         
     def handle_GET(cls, request, context, slug, id):
         context.update({
             'description': context['item'].get_description_display(request.device)
         })
-        return mobile_render(request, context, 'rss/event_detail')
+        return cls.render(request, context, 'rss/events/item_detail')

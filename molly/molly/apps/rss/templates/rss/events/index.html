@@ -1,0 +1,17 @@
+{% extends "rss/events/base.html" %}
+
+{% block content %}
+
+<div class="section">
+    <h2>Feeds</h2>
+    <ul>
+{% for feed in feeds %}
+        <li {% if forloop.last %}class="round-bottom"{% endif %}>
+            <a href="{{ feed.get_absolute_url }}">{{ feed.title }}</a>
+        </li>
+{% endfor %}
+    </ul>
+</div>
+
+
+{% endblock %}

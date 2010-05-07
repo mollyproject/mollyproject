@@ -5,7 +5,6 @@ from django.shortcuts import get_object_or_404
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
-from molly.utils.renderers import mobile_render
 
 from ..models import Feed, Item
 
@@ -19,13 +18,13 @@ class IndexView(BaseView):
     @BreadcrumbFactory
     def breadcrumb(cls, request, context):
         return Breadcrumb(
-            'news', None, 'News', lazy_reverse('news_index')
+            cls.conf.local_name, None, 'News', lazy_reverse('news:index')
         )
         
     def handle_GET(cls, request, context):
         feeds = Feed.news.all()
         context['feeds'] = feeds
-        return mobile_render(request, context, 'rss/index')
+        return cls.render(request, context, 'rss/news/index')
 
 class ItemListView(BaseView):
     def get_metadata(cls, request, slug):
@@ -40,16 +39,16 @@ class ItemListView(BaseView):
     @BreadcrumbFactory
     def breadcrumb(cls, request, context, slug):
         return Breadcrumb(
-            'news',
+            cls.conf.local_name,
             lazy_parent(IndexView),
             'News feed',
-            lazy_reverse('news_item_list', args=[slug])
+            lazy_reverse('news:item_list', args=[slug])
         )
         
     def handle_GET(cls, request, context, slug):
         feed = get_object_or_404(Feed.news, slug=slug)
         context['feed'] = feed
-        return mobile_render(request, context, 'rss/item_list')
+        return cls.render(request, context, 'rss/news/item_list')
 
 class ItemDetailView(BaseView):
     def get_metadata(cls, request, slug, id):
@@ -64,10 +63,10 @@ class ItemDetailView(BaseView):
     @BreadcrumbFactory
     def breadcrumb(cls, request, context, slug, id):
         return Breadcrumb(
-            'news',
+            cls.conf.local_name,
             lazy_parent(ItemListView, slug=slug),
             'News item',
-            lazy_reverse('news_item_detail', args=[slug,id])
+            lazy_reverse('news:item_detail', args=[slug,id])
         )
         
     def handle_GET(cls, request, context, slug, id):
@@ -76,4 +75,4 @@ class ItemDetailView(BaseView):
             'item': item,
             'description': item.get_description_display(request.device)
         })
-        return mobile_render(request, context, 'rss/item_detail')
+        return cls.render(request, context, 'rss/news/item_detail')
