@@ -4,13 +4,12 @@ from django.conf import settings
 
 from molly.apps.places.models import Entity, EntityType, Source
 from molly.apps.places.providers import BaseMapsProvider
-from molly.core.models import Config
 from molly.utils.misc import AnyMethodRequest
 from molly.geolocation.utils import reverse_geocode
 from molly.conf.settings import batch
 
 from xml.sax import saxutils, handler, make_parser
-import urllib2, bz2, subprocess, popen2, sys
+import urllib2, bz2, subprocess, popen2, sys, random
 from os import path
 
 
@@ -189,17 +188,6 @@ class OSMHandler(handler.ContentHandler):
                         print "Couldn't geocode for %s" % inferred_name
                         pass
 
-def get_osm_etag():
-    try:
-        return Config.objects.get(key='osm_extract_etag').value
-    except Config.DoesNotExist:
-        return None
-
-def set_osm_etag(etag):
-    config, created = Config.objects.get_or_create(key='osm_extract_etag')
-    config.value = etag
-    config.save()
-
 class OSMMapsProvider(BaseMapsProvider):
     ENGLAND_OSM_BZ2_URL = 'http://download.geofabrik.de/osm/europe/great_britain/england.osm.bz2'
     #ENGLAND_OSM_BZ2_URL = 'http://download.geofabrik.de/osm/europe/great_britain/england/shropshire.osm.bz2'
@@ -207,9 +195,11 @@ class OSMMapsProvider(BaseMapsProvider):
     SHELL_CMD = "wget -O- %s --quiet | bunzip2" % ENGLAND_OSM_BZ2_URL
 #    SHELL_CMD = "cat /home/alex/gpsmid/england.osm.bz2 | bunzip2"
 
-    @batch('30 10 * * mon')
-    def import_data(self):
-        old_etag = get_osm_etag()
+    @batch('%d 9 * * mon' % random.randint(0, 59))
+    def import_data(self, metadata):
+        "Imports places data from OpenStreetMap"
+
+        old_etag = metadata.get('etag', '')
 
         request = AnyMethodRequest(self.ENGLAND_OSM_BZ2_URL, method='HEAD')
         response = urllib2.urlopen(request)
@@ -225,7 +215,9 @@ class OSMMapsProvider(BaseMapsProvider):
         parser.setContentHandler(OSMHandler(self._get_source(), self._get_entity_types(), self._find_types))
         parser.parse(p[0])
 
-        set_osm_etag(new_etag)
+        return {
+            'etag': new_etag,
+        }
 
     def _get_source(self):
         try:

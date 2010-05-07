@@ -33,11 +33,6 @@ class Application(object):
         for provider in self.providers:
             if isinstance(provider, SimpleProvider):
                 providers.append(provider())
-                for batch in provider.batches:
-                    self.batches.append((
-                        batch.times, getattr(providers[-1], batch.method_name),
-                        batch.args, batch.kwargs
-                    ))
             else:
                 providers.append(SimpleProvider(provider)())
 
@@ -59,7 +54,6 @@ class Application(object):
 
             view.conf = conf
             view.__bases__ = bases + view.__bases__
-            print view, view.__bases__
 
         self.app = type(self.local_name.capitalize()+'App', (object,), {
             'urls': urlconf_include(self.urlconf, self.application_name.split('.')[-1], self.local_name),
@@ -90,23 +84,21 @@ def extract_installed_apps(applications):
     return tuple(app.application_name for app in applications)
 
 class SimpleProvider(object):
-    def __init__(self, klass=None, **kwargs):
-        self.batches = tuple(kwargs.pop('batches', ()))
-        self.batches += (kwargs.pop('batch'),) if 'batch' in kwargs else ()
+    def __init__(self, klass, **kwargs):
         self.klass, self.kwargs = klass, kwargs
 
     def __call__(self):
-        if self.klass:
-            mod_name, cls_name = self.klass.rsplit('.', 1)
-            module = import_module(mod_name)
-            klass = getattr(module, cls_name)
-            return klass(**self.kwargs)
-        else:
-            return type('SimpleProvider', (object,), self.kwargs)
+        mod_name, cls_name = self.klass.rsplit('.', 1)
+        module = import_module(mod_name)
+        klass = getattr(module, cls_name)
+        provider = klass(**self.kwargs)
+        provider.class_path = self.klass
+        return provider
 
-def batch(cron_stmt):
+def batch(cron_stmt, initial_metadata={}):
     def g(f):
         f.is_batch = True
         f.cron_stmt = cron_stmt
+        f.initial_metadata = initial_metadata
         return f
     return g

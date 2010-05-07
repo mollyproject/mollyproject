@@ -116,6 +116,7 @@ APPLICATIONS = [
                 areas=('340',),
             ),
             'molly.providers.apps.maps.OxontimeMapsProvider',
+            'molly.providers.apps.maps.OSMMapsProvider',
         ],
         nearby_entity_types = (
             ('Transport', (
@@ -135,11 +136,9 @@ APPLICATIONS = [
     ),
 
     Application('molly.z3950', 'library', 'Library search',
-        provider = SimpleProvider(
-            verbose_name = 'Oxford Library Information System',
-            host = 'library.ox.ac.uk',
-            database = 'MAIN*BIBMAST',
-        ),
+        verbose_name = 'Oxford Library Information System',
+        host = 'library.ox.ac.uk',
+        database = 'MAIN*BIBMAST',
     ),
 
     Application('molly.apps.service_status', 'service_status', 'Service status',
@@ -176,13 +175,13 @@ APPLICATIONS = [
 
     Application('molly.podcasts', 'podcasts', 'Podcasts',
         providers = [
-            SimpleProvider(
-                opml = 'http://rss.oucs.ox.ac.uk/metafeeds/podcastingnewsfeeds.opml',
-            ),
-            SimpleProvider(
-                name = 'Top Downloads',
-                rss = 'http://rss.oucs.ox.ac.uk/oxitems/topdownloads.xml',
-            ),
+        #    SimpleProvider(
+        #        opml = 'http://rss.oucs.ox.ac.uk/metafeeds/podcastingnewsfeeds.opml',
+        #    ),
+        #    SimpleProvider(
+        #        name = 'Top Downloads',
+        #        rss = 'http://rss.oucs.ox.ac.uk/oxitems/topdownloads.xml',
+        #    ),
         ],
     ),
 
@@ -253,6 +252,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'molly.osm',
+    'molly.batch_processing',
 #    'debug_toolbar',
 ) + extract_installed_apps(APPLICATIONS)
 
