@@ -173,7 +173,7 @@ class NaptanMapsProvider(BaseMapsProvider):
         self._method, self._areas = method, areas
 
     @batch('%d 10 * * mon' % random.randint(0, 59))
-    def import_data(self, metadata):
+    def import_data(self, metadata, output):
         self._source = self._get_source()
         self._entity_types = self._get_entity_types()
 

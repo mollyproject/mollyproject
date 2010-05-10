@@ -99,7 +99,7 @@ class OxpointsMapsProvider(BaseMapsProvider):
         return source
 
     @batch('%d */4 * * *' % random.randint(0, 59))
-    def import_data(self):
+    def import_data(self, metadata, output):
         "Imports places data from OxPoints"
 
         self.entity_types = self._get_entity_types()
@@ -157,6 +157,8 @@ class OxpointsMapsProvider(BaseMapsProvider):
                 entities[oxpoints_id].save()
             except KeyError:
                 pass
+
+        return metadata
 
 if __name__ == '__main__':
     OxpointsMapsProvider().import_data()
