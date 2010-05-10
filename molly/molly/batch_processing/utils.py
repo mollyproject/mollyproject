@@ -9,7 +9,7 @@ from molly.batch_processing.models import Batch
 def load_batches():
     batch_details = []
     for app in all_apps():
-        for provider in app.conf.providers:
+        for provider in app.providers:
             for method_name in dir(provider):
                 method = getattr(provider, method_name)
                 if not getattr(method, 'is_batch', False):
