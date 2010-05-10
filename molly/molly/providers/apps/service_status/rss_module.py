@@ -2,7 +2,7 @@ from datetime import datetime
 from xml.utils import iso8601
 import feedparser
 
-class ServiceStatusProvider(object):
+class RSSModuleServiceStatusProvider(object):
     def __init__(self, name, slug, url):
         self.name, self.slug, self.url = name, slug, url
 

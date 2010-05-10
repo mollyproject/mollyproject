@@ -147,7 +147,7 @@ APPLICATIONS = [
     Application('molly.apps.service_status', 'service_status', 'Service status',
         providers = [
             'molly.contrib.oxford.providers.OUCSStatusProvider',
-            SimpleProvider('molly.contrib.generic.providers.ServiceStatusProvider',
+            SimpleProvider('molly.providers.apps.service_status.RSSModuleServiceStatusProvider',
                 name='Oxford Library Information Services',
                 slug='olis',
                 url='http://www.lib.ox.ac.uk/olis/status/olis-opac.rss')
