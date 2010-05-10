@@ -2,6 +2,8 @@ import simplejson
 
 from django.db import models
 
+from molly.conf import all_apps, app_by_local_name
+
 class Batch(models.Model):
     title = models.TextField()
     local_name = models.TextField()
@@ -12,6 +14,8 @@ class Batch(models.Model):
 
     _metadata = models.TextField(default='null')
     last_run = models.DateTimeField(null=True, blank=True)
+    pending = models.BooleanField(default=False)
+    currently_running = models.BooleanField(default=False)
 
     def get_metadata(self):
         try:
@@ -29,3 +33,27 @@ class Batch(models.Model):
         except AttributeError:
             pass
         super(Batch, self).save(*args, **kwargs)
+
+    def run(self):
+        if self.currently_running:
+            return
+        
+        self.currently_running = True
+        self.pending = False
+        self.save()
+        
+        try:
+            providers = app_by_local_name(self.local_name).conf.providers
+            for provider in providers:
+                if provider.class_path == self.provider_name:
+                    break
+            else:
+                raise AssertionError
+            
+            method = getattr(provider, self.method_name)
+            
+            self.metadata = method(self.metadata)
+            self.last_run = datetime.utcnow()
+        finally:
+            self.currently_running = False
+            self.save()

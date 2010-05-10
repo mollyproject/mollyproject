@@ -74,7 +74,7 @@ MIDDLEWARE_CLASSES = (
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
-#    'django.contrib.auth.context_processors.auth',
+    'django.core.context_processors.auth',
 #    'django.core.context_processors.debug',
 #    'django.core.context_processors.i18n',
     'django.core.context_processors.media',
@@ -116,6 +116,7 @@ APPLICATIONS = [
                 areas=('340',),
             ),
             'molly.providers.apps.maps.OxontimeMapsProvider',
+            'molly.providers.apps.maps.OxpointsMapsProvider',
             'molly.providers.apps.maps.OSMMapsProvider',
         ],
         nearby_entity_types = (
@@ -253,6 +254,7 @@ SITE_MEDIA_PATH = os.path.join(project_root, 'site-media')
 
 INSTALLED_APPS = (
     'django.contrib.auth',
+    'django.contrib.admin',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',

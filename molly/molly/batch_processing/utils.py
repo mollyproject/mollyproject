@@ -45,19 +45,10 @@ def run_batch(local_name, provider_name, method_name):
         local_name=local_name,
         provider_name=provider_name,
         method_name=method_name)
+        
+    batch.run()
    
-    providers = app_by_local_name(local_name).conf.providers
-    for provider in providers:
-        if provider.class_path == provider_name:
-            break
-    else:
-        raise AssertionError
-    
-    method = getattr(provider, method_name)
-    
-    batch.metadata = method(batch.metadata)
-    batch.last_run = datetime.utcnow()
-    batch.save()
+
     
 def _escape(s):
     return s.replace('\\', '\\\\').replace('"', '\\"')
