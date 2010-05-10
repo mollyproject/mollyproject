@@ -5,11 +5,8 @@ from django.contrib import admin
 
 def run_batch(modeladmin, request, queryset):
     def run(batches):
-        try:
-            for batch in batches:
-                batch.run()
-        except Exception, e:
-            print repr(e)
+        for batch in batches:
+            batch.run()
             
     for batch in queryset:
         if not batch.currently_running:

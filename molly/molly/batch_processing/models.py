@@ -1,4 +1,9 @@
-import simplejson
+import simplejson, traceback, sys
+from datetime import datetime
+try:
+    from cStringIO import StringIO
+except:
+    from StringIO import StringIO
 
 from django.db import models
 
@@ -16,6 +21,7 @@ class Batch(models.Model):
     last_run = models.DateTimeField(null=True, blank=True)
     pending = models.BooleanField(default=False)
     currently_running = models.BooleanField(default=False)
+    log = models.TextField(blank=True)
 
     def get_metadata(self):
         try:
@@ -42,6 +48,7 @@ class Batch(models.Model):
         self.pending = False
         self.save()
         
+        output = StringIO()
         try:
             providers = app_by_local_name(self.local_name).conf.providers
             for provider in providers:
@@ -52,8 +59,16 @@ class Batch(models.Model):
             
             method = getattr(provider, self.method_name)
             
-            self.metadata = method(self.metadata)
-            self.last_run = datetime.utcnow()
+            self.metadata = method(self.metadata, output)
+        except Exception, e:
+            if output.getvalue():
+                print "\n\n"
+            traceback.print_exc(file=output)
         finally:
+            self.log = output.getvalue()
+            self.last_run = datetime.utcnow()
             self.currently_running = False
             self.save()
+
+    def __unicode__(self):
+        return self.title
