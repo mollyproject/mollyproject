@@ -104,7 +104,7 @@ APPLICATIONS = [
 
     Application('molly.apps.weather', 'weather', 'Weather',
         location_id = 'bbc/25',
-        provider = SimpleProvider('molly.contrib.generic.providers.BBCWeatherProvider',
+        provider = SimpleProvider('molly.providers.apps.weather.BBCWeatherProvider',
             location_id = 25,
         ),
     ),
