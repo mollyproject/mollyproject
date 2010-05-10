@@ -1,5 +1,7 @@
-import re, urllib
+import re, urllib, random
 from xml.etree import ElementTree as ET
+
+from molly.conf.settings import batch
 
 class BBCWeatherProvider(object):
     def __init__(self, location_id):
@@ -49,7 +51,10 @@ class BBCWeatherProvider(object):
         r'BBC - Weather Centre - (Latest Observations|Forecast) for (?P<name>.+)'
     )
 
-    def pull_weather(self):
+    @batch('%d-%d/15 * * * *' % (lambda x:(x, x+45))(random.randint(0, 14)))
+    def import_data(self):
+        "Pulls weather data from the BBC"
+
         observations = self.get_observations_data()
         forecasts = self.get_forecast_data()
 
