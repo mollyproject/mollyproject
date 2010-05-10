@@ -1,0 +1,1 @@
+from bbc import BBCWeatherProvider
