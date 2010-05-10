@@ -1,7 +1,14 @@
-import re, urllib, random
+import re, urllib, random, email
+from datetime import datetime, tzinfo, timedelta
 from xml.etree import ElementTree as ET
 
+from django.contrib.gis.geos import Point
+
 from molly.conf.settings import batch
+from molly.apps.weather.models import (
+    Weather, OUTLOOK_CHOICES, VISIBILITY_CHOICES, PRESSURE_STATE_CHOICES,
+    SCALE_CHOICES
+)
 
 class BBCWeatherProvider(object):
     def __init__(self, location_id):
@@ -21,6 +28,14 @@ class BBCWeatherProvider(object):
                 return "%02d%02d" % (time_tz[9]//3600, (time_tz[9]//60) % 60)
 
         return datetime(*(time_tz[:6] + (0, tz())))
+
+    @staticmethod
+    def _find_choice_match(choices, verbose):
+        matches = [a for a,b in choices if (verbose or '').lower() == b]
+        if len(matches) == 1:
+            return matches[0]
+        else:
+            return None
 
     _OBSERVATIONS_URL = 'http://newsrss.bbc.co.uk/weather/forecast/%d/ObservationsRSS.xml'
     _OBSERVATIONS_RE = re.compile(
@@ -52,7 +67,7 @@ class BBCWeatherProvider(object):
     )
 
     @batch('%d-%d/15 * * * *' % (lambda x:(x, x+45))(random.randint(0, 14)))
-    def import_data(self):
+    def import_data(self, metadata, output):
         "Pulls weather data from the BBC"
 
         observations = self.get_observations_data()
@@ -88,11 +103,12 @@ class BBCWeatherProvider(object):
 
             for k, l in LOOKUP:
                 if k in data:
-                    setattr(weather, k, self.find_choice_match(l, data[k]))
+                    setattr(weather, k, self._find_choice_match(l, data[k]))
 
             weather.location = Point(data['location'], srid=4326)
 
             weather.save()
+        return metadata
 
     def get_observations_data(self):
         xml = ET.parse(urllib.urlopen(self._OBSERVATIONS_URL % self.location_id))
@@ -121,7 +137,7 @@ class BBCWeatherProvider(object):
         published_date = xml.find('.//item/pubDate').text
         observed_date = published_date
         observed_date = observed_date[:17] + data['time'] + observed_date[22:]
-        observed_date = rfc_2822_datetime(observed_date)
+        observed_date = self._rfc_2822_datetime(observed_date)
         # If the time is greater than the current time of day, it must have been at
         # least yesterday that this weather was observed
         if published_date[17:22] < data['time']:
@@ -129,7 +145,7 @@ class BBCWeatherProvider(object):
         # Keep going back in time until we find the right day
         while observed_date.strftime('%A') != data['day']:
             observed_date -= timedelta(1)
-        published_date = rfc_2822_datetime(published_date)
+        published_date = self._rfc_2822_datetime(published_date)
 
         data['published_date'] = published_date
         data['observed_date'] = observed_date
@@ -141,20 +157,20 @@ class BBCWeatherProvider(object):
 
         return data
 
-    def get_forecast_data(location_id):
-        xml = ET.parse(urllib.urlopen(self._FORECAST_URL % location_id))
+    def get_forecast_data(self):
+        xml = ET.parse(urllib.urlopen(self._FORECAST_URL % self.location_id))
 
         channel_title = xml.find('.//channel/title').text
         data = self._CHANNEL_TITLE_RE.match(channel_title).groupdict()
         data['forecasts'] = {}
-        data['modified_date'] = rfc_2822_datetime(xml.find('.//pubDate').text)
+        data['modified_date'] = self._rfc_2822_datetime(xml.find('.//pubDate').text)
 
         for item in xml.findall('.//item'):
             desc = self._FORECAST_RE.match(item.find('description').text).groupdict()
             title = self._FORECAST_TITLE_RE.match(item.find('title').text).groupdict()
 
             published_date = item.find('pubDate').text
-            dt = rfc_2822_datetime(published_date)
+            dt = self._rfc_2822_datetime(published_date)
             while dt.strftime('%A') != title['day']:
                 dt += timedelta(1)
 
@@ -164,10 +180,10 @@ class BBCWeatherProvider(object):
             forecast.update(desc)
             forecast.update(title)
 
-            forecast['sunset'] = rfc_2822_datetime(
+            forecast['sunset'] = self._rfc_2822_datetime(
                 published_date[:17] + forecast['sunset'] + ':00' + published_date[25:]
             ).time()
-            forecast['sunrise'] = rfc_2822_datetime(
+            forecast['sunrise'] = self._rfc_2822_datetime(
                 published_date[:17] + forecast['sunrise'] + ':00' + published_date[25:]
             ).time()
 
