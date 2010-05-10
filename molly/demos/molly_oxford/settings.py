@@ -112,7 +112,9 @@ APPLICATIONS = [
     Application('molly.apps.places', 'places', 'Places',
         providers = [
             SimpleProvider('molly.providers.apps.maps.NaptanMapsProvider',
-                method='http',
+                method='ftp',
+                username=SECRETS.journeyweb[0],
+                password=SECRETS.journeyweb[1],
                 areas=('340',),
             ),
             'molly.providers.apps.maps.OxontimeMapsProvider',
