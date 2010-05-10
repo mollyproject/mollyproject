@@ -222,9 +222,9 @@ APPLICATIONS = [
         display_to_user = False,
     ),
 
-    Application('molly.apps.rss.events', 'events', 'Events',
+    Application('molly.apps.feeds.events', 'events', 'Events',
     ),
-    Application('molly.apps.rss.news', 'news', 'News',
+    Application('molly.apps.feeds.news', 'news', 'News',
     ),
 
     Application('molly.auth', 'auth', 'Authentication',
@@ -262,7 +262,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'molly.osm',
     'molly.batch_processing',
-    'molly.apps.rss',
+    'molly.apps.feeds',
 #    'debug_toolbar',
 ) + extract_installed_apps(APPLICATIONS)
 

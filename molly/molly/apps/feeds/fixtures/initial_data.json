@@ -2,42 +2,42 @@
 
     {
         "pk": "1",
-        "model": "rss.Tag",
+        "model": "feeds.Tag",
         "fields": { 
             "value": "theatre"
         }
     },
     {
         "pk": "2",
-        "model": "rss.Tag",
+        "model": "feeds.Tag",
         "fields": { 
             "value": "performance"
         }
     },
     {
         "pk": "3",
-        "model": "rss.Tag",
+        "model": "feeds.Tag",
         "fields": { 
             "value": "concert"
         }
     },
     {
         "pk": "4",
-        "model": "rss.Tag",
+        "model": "feeds.Tag",
         "fields": { 
             "value": "meeting"
         }
     },
     {
         "pk": "5",
-        "model": "rss.Tag",
+        "model": "feeds.Tag",
         "fields": { 
             "value": "gig"
         }
     },
     {
         "pk": "1",
-        "model": "rss.Feed",
+        "model": "feeds.Feed",
         "fields": {
             "title": "Computing Services News",
             "unit": "oucs",
@@ -49,7 +49,7 @@
     },
     {
         "pk": 4,
-        "model": "rss.Feed",
+        "model": "feeds.Feed",
         "fields":
         {
             "rss_url": "http://www.keble.ox.ac.uk/news/RSS",
@@ -62,7 +62,7 @@
     },
     {
         "pk": 5,
-        "model": "rss.Feed",
+        "model": "feeds.Feed",
         "fields": {
             "rss_url": "http://www.lmh.ox.ac.uk/CMSPages/NewsRss.aspx",
             "title": "Lady Margaret Hall news",
@@ -74,7 +74,7 @@
     },
     {
         "pk": 6,
-        "model": "rss.Feed",
+        "model": "feeds.Feed",
         "fields": {
             "rss_url": "http://www.linacre.ox.ac.uk/Linacre/news-and-events/news/RSS",
             "title": "Linacre College",
@@ -86,7 +86,7 @@
     },
     {
         "pk": 7,
-        "model": "rss.Feed",
+        "model": "feeds.Feed",
         "fields": {
             "rss_url": "http://www.google.com/calendar/feeds/it-support%40sant.ox.ac.uk/public/basic?orderby=starttime&sortorder=ascending&futureevents=true&singleevents=true",
             "title": "St. Antony's College Events",
@@ -99,7 +99,7 @@
     },
     {
         "pk": 3,
-        "model": "rss.Feed",
+        "model": "feeds.Feed",
         "fields": {
             "rss_url": "http://www.ox.ac.uk/news_rss.rm",
             "title": "University of Oxford - Media",
@@ -112,7 +112,7 @@
     },
     {
         "pk": 8,
-        "model": "rss.Feed",
+        "model": "feeds.Feed",
         "fields": {
             "rss_url": "http://www.dailyinfo.co.uk/rss/events.php?colname=Theatre",
             "title": "Daily Info - Theatre",
@@ -127,7 +127,7 @@
     },
     {
         "pk": 9,
-        "model": "rss.Feed",
+        "model": "feeds.Feed",
         "fields": {
             "rss_url": "http://www.dailyinfo.co.uk/rss/events.php?colname=Concert",
             "title": "Daily Info - Concert",
@@ -142,7 +142,7 @@
     },
     {
         "pk": 10,
-        "model": "rss.Feed",
+        "model": "feeds.Feed",
         "fields": {
             "rss_url": "http://www.dailyinfo.co.uk/rss/events.php?colname=Meeting",
             "title": "Daily Info - Meeting",
@@ -157,7 +157,7 @@
     },
     {
         "pk": 11,
-        "model": "rss.Feed",
+        "model": "feeds.Feed",
         "fields": {
             "rss_url": "http://www.dailyinfo.co.uk/rss/events.php?colname=Gig",
             "title": "Daily Info - Gigs and comedy",
