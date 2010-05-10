@@ -49,6 +49,7 @@ def app_by_local_name(local_name):
 
 @_require_loaded_apps
 def app_by_application_name(application_name):
+    print _by_application_name
     return _by_application_name[application_name][0]
 
 @_require_loaded_apps
