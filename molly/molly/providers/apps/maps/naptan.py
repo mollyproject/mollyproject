@@ -1,11 +1,11 @@
-import ftplib, threading, os, urllib, zipfile, tempfile
+import ftplib, os, urllib, zipfile, tempfile, random
 
 from xml.sax import ContentHandler, make_parser
 
 from django.contrib.gis.geos import Point
 
 from molly.apps.places.providers import BaseMapsProvider
-from molly.apps.places.models import EntityType, Entity, Identifier, Source
+from molly.apps.places.models import EntityType, Entity, Source
 from molly.conf.settings import batch
 
 class NaptanContentHandler(ContentHandler):
@@ -98,8 +98,6 @@ class NaptanContentHandler(ContentHandler):
         else:
             title = "%s %s, %s" % (ind, lmk, cnm)
 
-        print "%60s %50s %30s %30s %30s" % (title, cnm, lmk, ind, str)
-
         entity.title = title
         entity.primary_type = entity_type
 
@@ -120,8 +118,6 @@ class NaptanContentHandler(ContentHandler):
 
         entity.save(identifiers=identifiers)
         entity.all_types.add(entity_type)
-
-        print entity.absolute_url
 
         return entity
 
@@ -176,8 +172,8 @@ class NaptanMapsProvider(BaseMapsProvider):
         self._username, self._password = username, password
         self._method, self._areas = method, areas
 
-    @batch('30 10 * * tue')
-    def import_data(self):
+    @batch('%d 10 * * mon' % random.randint(0, 59))
+    def import_data(self, metadata, output):
         self._source = self._get_source()
         self._entity_types = self._get_entity_types()
 
@@ -185,6 +181,8 @@ class NaptanMapsProvider(BaseMapsProvider):
             self._import_from_http()
         elif self._method == 'ftp':
             self._import_from_ftp()
+
+        return metadata
 
     def _import_from_ftp(self):
         def data_chomper(f):

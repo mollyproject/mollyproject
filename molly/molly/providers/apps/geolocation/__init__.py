@@ -1,0 +1,1 @@
+from cloudmade import CloudmadeGeolocationProvider

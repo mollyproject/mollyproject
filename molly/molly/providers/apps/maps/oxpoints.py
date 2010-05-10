@@ -1,9 +1,11 @@
-import simplejson, urllib
+import simplejson, urllib, random
 
 from django.contrib.gis.geos import Point
 
 from molly.apps.places.providers import BaseMapsProvider
 from molly.apps.places.models import Entity, EntityType, Source
+
+from molly.conf.settings import batch
 
 class OxpointsMapsProvider(BaseMapsProvider):
 
@@ -27,7 +29,7 @@ class OxpointsMapsProvider(BaseMapsProvider):
         'Site': ('site', 'university-entity'),
         'Hall': ('hall',),
     }
-    
+
     def _get_entity_types(self):
         """
         Load the entity types into the database, returning a dictionary from
@@ -82,7 +84,7 @@ class OxpointsMapsProvider(BaseMapsProvider):
             for s in subtype_of:
                 entity_types[slug].subtype_of.add(entity_types[s])
             entity_types[slug].save()
-            
+
         return entity_types
 
     def _get_source(self):
@@ -90,40 +92,43 @@ class OxpointsMapsProvider(BaseMapsProvider):
             source = Source.objects.get(module_name="molly.providers.apps.maps.oxpoints")
         except Source.DoesNotExist:
             source = Source(module_name="molly.providers.apps.maps.oxpoints")
-        
+
         source.name = "OxPoints"
         source.save()
-        
+
         return source
-        
-    def import_data(self):
+
+    @batch('%d */4 * * *' % random.randint(0, 59))
+    def import_data(self, metadata, output):
+        "Imports places data from OxPoints"
+
         self.entity_types = self._get_entity_types()
-        
+
         data = simplejson.load(urllib.urlopen(self.ALL_OXPOINTS))
         source = self._get_source()
-        
+
         entities, parents = {}, []
-        
+
         for datum in data:
             oxpoints_id = datum['uri'].rsplit('/')[-1]
             oxpoints_type = datum['type'].rsplit('#')[-1]
-            
+
             if not oxpoints_type in self.OXPOINTS_TYPES:
                 continue
-                
+
             try:
                 entity = Entity.objects.get(source=source, _identifiers__scheme='oxpoints', _identifiers__value=oxpoints_id)
             except Entity.DoesNotExist:
                 entity = Entity(source=source)
-                
+
             entity.title = datum.get('oxp_fullyQualifiedTitle', datum.get('dc_title', ''))
             entity.primary_type = self.entity_types[self.OXPOINTS_TYPES[oxpoints_type][0]]
-            
+
             if 'geo_lat' in datum and 'geo_long' in datum:
                 entity.location = Point(datum['geo_long'], datum['geo_lat'], srid=4326)
             else:
                 entity.location = None
-                
+
             if 'dct_isPartOf' in datum:
                 parent_id = datum['dct_isPartOf']['uri'].rsplit('/')[-1]
                 if parent_id in entities:
@@ -132,20 +137,20 @@ class OxpointsMapsProvider(BaseMapsProvider):
                     parents.append((oxpoints_id, parent_id))
             else:
                 entity.parent = None
-            
+
             entity.metadata['oxpoints'] = datum
-            
+
             identifiers = {
                 'oxpoints': oxpoints_id,
                 'uri': datum['uri'],
             }
-            
+
             entity.save(identifiers=identifiers)
             entity.all_types = [self.entity_types[t] for t in self.OXPOINTS_TYPES[oxpoints_type]]
             entity.update_all_types_completion()
-            
+
             entities[oxpoints_id] = entity
-        
+
         for oxpoints_id, parent_id in parents:
             try:
                 entities[oxpoints_id].parent = entities[parent_id]
@@ -153,6 +158,7 @@ class OxpointsMapsProvider(BaseMapsProvider):
             except KeyError:
                 pass
 
-        
+        return metadata
+
 if __name__ == '__main__':
     OxpointsMapsProvider().import_data()

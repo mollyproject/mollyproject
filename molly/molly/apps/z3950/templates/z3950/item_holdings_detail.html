@@ -1,0 +1,82 @@
+{% extends "z3950/base.html" %}{% load maps %}
+
+{% block content %}
+
+<div class="section">
+    <h2>{{ item.title }}</h2>
+    <div class="article"><div class="bubble pad-5">
+    <table>
+{% if item.author %}
+        <tr>
+            <th>Author:</th>
+            <td>{{ item.author }}</td>
+        </tr>
+{% endif %}
+{% if item.publisher %}
+        <tr>
+            <th>Publisher:</th>
+            <td>{{ item.publisher }}</td>
+        </tr>
+{% endif %}
+{% if item.edition %}
+        <tr>
+            <th>Edition:</th>
+            <td>{{ item.edition }}</td>
+        </tr>
+{% endif %}
+{% if item.description %}
+        <tr>
+            <th>Description:</th>
+            <td>{{ item.description }}</td>
+        </tr>
+{% endif %}
+
+{% if item.isbns %}
+{% for isbn in item.isbns %}
+        <tr>
+{% if forloop.first %}
+            <th{% ifnotequal item.isbns|length 1 %} rowspan="{{ item.isbns|length }}"{% endifnotequal %}>ISBN{{ item.isbns|pluralize }}:</th>
+{% endif %}
+            <td>{{ isbn }}</td>
+        </tr>
+{% endfor %}
+{% endif %}
+
+{% if item.issns %}
+{% for issn in item.issns %}
+        <tr>
+{% if forloop.first %}
+            <th{% ifnotequal item.issns|length 1 %} rowspan="{{ item.issns|length }}"{% endifnotequal %}>ISSN{{ item.issns|pluralize }}:</th>
+{% endif %}
+            <td>{{ issn }}</td>
+        </tr>
+{% endfor %}
+{% endif %}
+    </table>
+    </div></div>
+</div>
+
+<div class="section">
+    <h2>{{ library.location|join:" - " }}</h2>
+{% if library.oxpoints_id and library.oxpoints_location %}
+    {% ifnotequal style_group "dumb" %}
+    	<div class="backgrounded-image" style="background-image:url('{% map_url library.oxpoints_location %}'); height:{{ map_height }}px">
+            {% include "maps/map_elements.html" %}
+        </div>
+    {% else %}
+        <img src="{% map_url library.oxpoints_location %}" alt="Map"><br />
+        {% include "maps/map_elements.html" %}
+    {% endifnotequal %}
+{% endif %}
+
+    <ul>
+{% for book in books %}
+    {# non-link-item #}
+    <li>
+      Shelfmark: <em>{{ book.shelfmark }}</em>, availability: <em>{{ book.availability_display }}</em>{% if book.materials_specified %}, issue: <em>{{ book.materials_specified }}</em>{% endif %}
+    </li>
+{% endfor %}
+    </ul>
+</div>
+
+{% endblock %}

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 import os, sys, os.path, subprocess, shutil
 
@@ -13,34 +13,71 @@ def cairo_hack(source_path, deploy_path):
         f.write("from _cairo import *\n")
         f.close()
 
+def cairo_link(source_path, deploy_path):
+    for path in sys.path:
+        path = os.path.join(path, 'cairo')
+        if os.path.exists(path):
+            break
+    else:
+        raise ImportError
+
+    os.link(path, os.path.join(deploy_path,
+                               "lib",
+                               "python%d.%d" % sys.version_info[:2],
+                               "site-packages",
+                               "cairo"))
+
 def copy_demos(source_path, deploy_path):
     # Copy the demos across
     shutil.copytree(
         os.path.join(source_path, 'demos'),
         os.path.join(deploy_path, 'demos'),
     )
-   
+
+def system_cairo_required():
+    try:
+        version = open('/etc/debian_version', 'r').read()
+        major = int(version.split('.')[0])
+        return major <= 5
+    except IOError:
+        return False
+
 
 def main(source_path, deploy_path):
     if os.path.exists(deploy_path):
         print "Cannot deploy to path - already exists"
         return 1
 
+    use_system_cairo = system_cairo_required()
+
     commands = [
         ('Creating', 'virtual environment', ["virtualenv", "--no-site-packages", deploy_path]),
     ]
 
     requirements = [l[:-1] for l in open(os.path.join(source_path, "requirements", "core.txt")) if l[:-1]]
+
+    if use_system_cairo:
+        requirements.remove('pycairo')
+
     for requirement in requirements:
         commands.append(
             ('Installing', requirement,
              ["pip", "install", "-U", "-E", deploy_path, requirement])
         )
 
+    if use_system_cairo:
+        commands += [
+            ('Linking', 'cairo', cairo_link),
+        ]
+    else:
+        commands += [
+            ('Tidying', 'cairo', cairo_hack),
+        ]
+
+
     commands += [
         ('Deploying', 'molly',
          [os.path.join(deploy_path, "bin", "python"), os.path.join(source_path, "setup.py"), "install"]),
-        ('Tidying', 'cairo', cairo_hack),
         ('Copying', 'demos', copy_demos),
     ]
 
@@ -69,7 +106,6 @@ $ source %(activate)s""" % {
             'deploy_path': deploy_path,
             'activate': os.path.join(deploy_path, "bin", "activate"),
         }
-  
 
 
 if __name__ == '__main__':

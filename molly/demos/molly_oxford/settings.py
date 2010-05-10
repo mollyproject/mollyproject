@@ -74,7 +74,7 @@ MIDDLEWARE_CLASSES = (
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
-#    'django.contrib.auth.context_processors.auth',
+    'django.core.context_processors.auth',
 #    'django.core.context_processors.debug',
 #    'django.core.context_processors.i18n',
     'django.core.context_processors.media',
@@ -104,7 +104,7 @@ APPLICATIONS = [
 
     Application('molly.apps.weather', 'weather', 'Weather',
         location_id = 'bbc/25',
-        provider = SimpleProvider('molly.contrib.generic.providers.BBCWeatherProvider',
+        provider = SimpleProvider('molly.providers.apps.weather.BBCWeatherProvider',
             location_id = 25,
         ),
     ),
@@ -112,10 +112,14 @@ APPLICATIONS = [
     Application('molly.apps.places', 'places', 'Places',
         providers = [
             SimpleProvider('molly.providers.apps.maps.NaptanMapsProvider',
-                method='http',
+                method='ftp',
+                username=SECRETS.journeyweb[0],
+                password=SECRETS.journeyweb[1],
                 areas=('340',),
             ),
             'molly.providers.apps.maps.OxontimeMapsProvider',
+            'molly.providers.apps.maps.OxpointsMapsProvider',
+            'molly.providers.apps.maps.OSMMapsProvider',
         ],
         nearby_entity_types = (
             ('Transport', (
@@ -134,18 +138,16 @@ APPLICATIONS = [
 
     ),
 
-    Application('molly.z3950', 'library', 'Library search',
-        provider = SimpleProvider(
-            verbose_name = 'Oxford Library Information System',
-            host = 'library.ox.ac.uk',
-            database = 'MAIN*BIBMAST',
-        ),
+    Application('molly.apps.z3950', 'library', 'Library search',
+        verbose_name = 'Oxford Library Information System',
+        host = 'library.ox.ac.uk',
+        database = 'MAIN*BIBMAST',
     ),
 
     Application('molly.apps.service_status', 'service_status', 'Service status',
         providers = [
             'molly.contrib.oxford.providers.OUCSStatusProvider',
-            SimpleProvider('molly.contrib.generic.providers.ServiceStatusProvider',
+            SimpleProvider('molly.providers.apps.service_status.RSSModuleServiceStatusProvider',
                 name='Oxford Library Information Services',
                 slug='olis',
                 url='http://www.lib.ox.ac.uk/olis/status/olis-opac.rss')
@@ -176,13 +178,13 @@ APPLICATIONS = [
 
     Application('molly.podcasts', 'podcasts', 'Podcasts',
         providers = [
-            SimpleProvider(
-                opml = 'http://rss.oucs.ox.ac.uk/metafeeds/podcastingnewsfeeds.opml',
-            ),
-            SimpleProvider(
-                name = 'Top Downloads',
-                rss = 'http://rss.oucs.ox.ac.uk/oxitems/topdownloads.xml',
-            ),
+        #    SimpleProvider(
+        #        opml = 'http://rss.oucs.ox.ac.uk/metafeeds/podcastingnewsfeeds.opml',
+        #    ),
+        #    SimpleProvider(
+        #        name = 'Top Downloads',
+        #        rss = 'http://rss.oucs.ox.ac.uk/oxitems/topdownloads.xml',
+        #    ),
         ],
     ),
 
@@ -213,11 +215,16 @@ APPLICATIONS = [
         providers = [
             SimpleProvider('molly.contrib.oxford.providers.geolocation.OUCSCodeGeolocationProvider'),
 #            SimpleProvider('molly.contrib.generic.providers.post_code.PostCodeGeolocationProvider'),
-            SimpleProvider('molly.contrib.generic.providers.cloudmade.CloudmadeGeolocationProvider',
+            SimpleProvider('molly.providers.apps.geolocation.CloudmadeGeolocationProvider',
                 search_locality = 'Oxford',
             ),
         ],
         display_to_user = False,
+    ),
+
+    Application('molly.apps.rss.events', 'events', 'Events',
+    ),
+    Application('molly.apps.rss.news', 'news', 'News',
     ),
 
     Application('molly.auth', 'auth', 'Authentication',
@@ -249,10 +256,13 @@ SITE_MEDIA_PATH = os.path.join(project_root, 'site-media')
 
 INSTALLED_APPS = (
     'django.contrib.auth',
+    'django.contrib.admin',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
     'molly.osm',
+    'molly.batch_processing',
+    'molly.apps.rss',
 #    'debug_toolbar',
 ) + extract_installed_apps(APPLICATIONS)
 

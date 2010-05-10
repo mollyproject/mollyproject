@@ -4,13 +4,12 @@ from django.conf import settings
 
 from molly.apps.places.models import Entity, EntityType, Source
 from molly.apps.places.providers import BaseMapsProvider
-from molly.core.models import Config
 from molly.utils.misc import AnyMethodRequest
 from molly.geolocation.utils import reverse_geocode
 from molly.conf.settings import batch
 
 from xml.sax import saxutils, handler, make_parser
-import urllib2, bz2, subprocess, popen2, sys
+import urllib2, bz2, subprocess, popen2, sys, random
 from os import path
 
 
@@ -23,10 +22,11 @@ def way_id(id):
     return "W%d" % int(id)
 
 class OSMHandler(handler.ContentHandler):
-    def __init__(self, source, entity_types, find_types):
+    def __init__(self, source, entity_types, find_types, output):
         self.source = source
         self.entity_types = entity_types
         self.find_types = find_types
+        self.output = output
 
     def startDocument(self):
         self.ids = set()
@@ -108,7 +108,6 @@ class OSMHandler(handler.ContentHandler):
                     entity.location = Point(self.node_location, srid=4326)
                     entity.geometry = entity.location
                 elif name == 'way':
-                    print self.nodes[0], self.nodes[-1]
                     cls = LinearRing if self.nodes[0] == self.nodes[-1] else LineString
                     entity.geometry = cls([self.node_locations[n] for n in self.nodes], srid=4326)
                     min_, max_ = (float('inf'), float('inf')), (float('-inf'), float('-inf'))
@@ -158,12 +157,20 @@ class OSMHandler(handler.ContentHandler):
 
         self.disambiguate_titles()
 
-        print "Complete"
-        print "  Created:   %6d" % self.create_count
-        print "  Modified:  %6d" % self.modify_count
-        print "  Deleted:   %6d" % self.delete_count
-        print "  Unchanged: %6d" % self.unchanged_count
-        print "  Ignored:   %6d" % self.ignore_count
+        self.output.write("""\
+Complete
+  Created:   %6d
+  Modified:  %6d
+  Deleted:   %6d
+  Unchanged: %6d
+  Ignored:   %6d
+""" % (
+            self.create_count,
+            self.modify_count,
+            self.delete_count,
+            self.unchanged_count,
+            self.ignore_count,
+        ))
 
     def disambiguate_titles(self):
         entities = Entity.objects.filter(source=self.source)
@@ -186,19 +193,8 @@ class OSMHandler(handler.ContentHandler):
                         entity.title = u"%s, %s" % (inferred_name, reverse_geocode(entity.location[1], entity.location[0])[0][0])
                         entity.save()
                     except:
-                        print "Couldn't geocode for %s" % inferred_name
+                        self.output.write("Couldn't geocode for %s\n" % inferred_name)
                         pass
-
-def get_osm_etag():
-    try:
-        return Config.objects.get(key='osm_extract_etag').value
-    except Config.DoesNotExist:
-        return None
-
-def set_osm_etag(etag):
-    config, created = Config.objects.get_or_create(key='osm_extract_etag')
-    config.value = etag
-    config.save()
 
 class OSMMapsProvider(BaseMapsProvider):
     ENGLAND_OSM_BZ2_URL = 'http://download.geofabrik.de/osm/europe/great_britain/england.osm.bz2'
@@ -207,25 +203,29 @@ class OSMMapsProvider(BaseMapsProvider):
     SHELL_CMD = "wget -O- %s --quiet | bunzip2" % ENGLAND_OSM_BZ2_URL
 #    SHELL_CMD = "cat /home/alex/gpsmid/england.osm.bz2 | bunzip2"
 
-    @batch('30 10 * * mon')
-    def import_data(self):
-        old_etag = get_osm_etag()
+    @batch('%d 9 * * mon' % random.randint(0, 59))
+    def import_data(self, metadata, output):
+        "Imports places data from OpenStreetMap"
+
+        old_etag = metadata.get('etag', '')
 
         request = AnyMethodRequest(self.ENGLAND_OSM_BZ2_URL, method='HEAD')
         response = urllib2.urlopen(request)
         new_etag = response.headers['ETag'][1:-1]
 
         if False and new_etag == old_etag:
-            print 'OSM data not updated. Not updating.'
+            output.write('OSM data not updated. Not updating.\n')
             return
 
         p = popen2.popen2(self.SHELL_CMD)
 
         parser = make_parser()
-        parser.setContentHandler(OSMHandler(self._get_source(), self._get_entity_types(), self._find_types))
+        parser.setContentHandler(OSMHandler(self._get_source(), self._get_entity_types(), self._find_types, output))
         parser.parse(p[0])
 
-        set_osm_etag(new_etag)
+        return {
+            'etag': new_etag,
+        }
 
     def _get_source(self):
         try:

@@ -1,0 +1,31 @@
+{% extends "z3950/base.html" %}
+
+{% block content %}
+
+{% include "z3950/search_form.html" %}
+
+<div class="section">
+    <h2>Maps</h2>
+	{% include "geolocation/update_location_embed.html" %}
+    <ul>
+        <li><a href="{% url places:category_detail "ulibrary" %}">List of libraries</a></li>
+        <li class="round-bottom"><a href="{% url places:nearby_detail "ulibrary" %}">Libraries near me</a></li>
+    </ul>
+</div>
+
+<div class="section">
+    <h2>Library Services Info</h2>
+    <ul>
+        <li><a class="email" href="mailto:reader.services@ouls.ox.ac.uk">E-mail<br/>
+	        <small>reader.services@ouls.ox.ac.uk</small></a></li>
+        <li><a class="phone" href="tel:+441865277162">Telephone<br/><small>01865 (2)77162</small></a></li>
+    </ul>
+
+    <ul>
+        <li><a class="external" href="http://www.ouls.ox.ac.uk/">OULS <small>(Oxford University Library Services)</small></a></li>
+        <li><a class="external" href="http://solo.ouls.ox.ac.uk/">SOLO <small>(Search Oxford Libraries Online)</small></a></li>
+        <li class="round-bottom"><a class="external" href="http://library.ox.ac.uk/">OLIS <small>(Oxford Library Information System)</small></a></li>
+    </ul>
+</div>
+
+{% endblock %}
