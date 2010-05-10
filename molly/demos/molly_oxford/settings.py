@@ -215,7 +215,7 @@ APPLICATIONS = [
         providers = [
             SimpleProvider('molly.contrib.oxford.providers.geolocation.OUCSCodeGeolocationProvider'),
 #            SimpleProvider('molly.contrib.generic.providers.post_code.PostCodeGeolocationProvider'),
-            SimpleProvider('molly.contrib.generic.providers.cloudmade.CloudmadeGeolocationProvider',
+            SimpleProvider('molly.providers.apps.geolocation.CloudmadeGeolocationProvider',
                 search_locality = 'Oxford',
             ),
         ],
