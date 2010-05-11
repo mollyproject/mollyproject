@@ -16,7 +16,7 @@ def _cached(getargsfunc):
                 return Geocode.recent.get(local_name=app.local_name, **args).results
             except Geocode.DoesNotExist:
                 pass
-            results = f(providers=app.conf.providers, **args)
+            results = f(providers=app.providers, **args)
             
             geocode, _ = Geocode.objects.get_or_create(local_name = app.local_name,
                                                        **args)
