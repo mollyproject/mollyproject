@@ -47,9 +47,9 @@ def run_batch(local_name, provider_name, method_name):
         method_name=method_name)
         
     batch.run()
-   
 
-    
+    return batch.log
+
 def _escape(s):
     return s.replace('\\', '\\\\').replace('"', '\\"')
 
@@ -61,7 +61,7 @@ def create_crontab(filename):
     f.write("# will be overwritten.\n\n")
     f.write('MAILTO=""\n')
     f.write("DJANGO_SETTINGS_MODULE=%s\n\n" % os.environ['DJANGO_SETTINGS_MODULE'])
-    
+
     for batch in Batch.objects.all():
         if not batch.enabled:
             continue
