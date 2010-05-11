@@ -11,15 +11,15 @@
 	<h2>Oxford at {{ weather.observed_date|date:"H:m" }}</h2>
 	<div class="note">
 		<div class="weather-icon">
-	    <img src="{{ MEDIA_URL }}png/weather/{{ weather.icon }}.png" alt="{{ weather.get_outlook_display|capfirst }}"/><br/>
+	    <img src="{{ MEDIA_URL }}png/weather/{{ observation.icon }}.png" alt="{{ observation.get_outlook_display|capfirst }}"/><br/>
 	    </div>
 		<div class="weather-live-info">
 			<ul>
-				<li style="font-size: 36pt;">{{ weather.temperature }}&deg;C</li>
-				<li>{{ weather.wind_speed }}mph {{ weather.wind_direction }}</li>
-				<li>{{ weather.humidity }}% Relative Humidity</li>
-				<li>{{ weather.pressure }} mbar and {{ weather.get_pressure_state_display }}</li>
-				<li>{{ weather.get_visibility_display|capfirst }} Visibility</li>
+				<li style="font-size: 36pt;">{{ observation.temperature }}&deg;C</li>
+				<li>{{ observation.wind_speed }}mph {{ observation.wind_direction }}</li>
+				<li>{{ observation.humidity }}% Relative Humidity</li>
+				<li>{{ observation.pressure }} mbar and {{ observation.get_pressure_state_display }}</li>
+				<li>{{ observation.get_visibility_display|capfirst }} Visibility</li>
 			</ul>
 		</div>
 	</div>
