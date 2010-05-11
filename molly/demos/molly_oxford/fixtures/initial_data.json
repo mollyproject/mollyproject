@@ -1,0 +1,62 @@
+[
+    {
+        "pk": "1",
+        "model": "webcams.Webcam",
+        "fields": {
+            "slug": "duckling-cam",
+            "url": "http://catz-av.stcatz.ox.ac.uk/images/image.jpg",
+            "fetch_period": 1,
+            "title": "St Catz Duckling Cam",
+            "description": "A view of the mallard nest in the SCR garden at St Catherine's College.",
+            "credit": "&copy; St Catherine's College"
+        }
+    },
+    {
+        "pk": "2",
+        "model": "webcams.Webcam",
+        "fields": {
+            "slug": "earth-sciences-one",
+            "url": "http://www.earth.ox.ac.uk/~tmlapse/camera1.jpg",
+            "fetch_period": 1,
+            "title": "Earth Sciences Camera One",
+            "description": "Overlooking the new Earth Sciences building site.",
+            "credit": "&copy; Earth Sciences Department"
+        }
+    },
+    {
+        "pk": "3",
+        "model": "webcams.Webcam",
+        "fields": {
+            "slug": "earth-sciences-two",
+            "url": "http://www.earth.ox.ac.uk/~tmlapse/camera2.jpg",
+            "fetch_period": 1,
+            "title": "Earth Sciences Camera Two",
+            "description": "Overlooking the new Earth Sciences building site.",
+            "credit": "&copy; Earth Sciences Department"
+        }
+    },
+    {
+        "pk": "4",
+        "model": "webcams.Webcam",
+        "fields": {
+            "slug": "banbury-road",
+            "url": "http://erewhon-axis-206.oucs.ox.ac.uk/jpg/image.jpg",
+            "fetch_period": 1,
+            "title": "Banbury Road Webcam",
+            "description": "Looking out of OUCS over Banbury Road",
+            "credit": "&copy; Oxford University Computing Services"
+        }
+    },
+    {
+        "pk": "5",
+        "model": "webcams.Webcam",
+        "fields": {
+            "slug": "oxford-internet-institute",
+            "url": "http://webcam.oii.ox.ac.uk/snapshot/image.jpg",
+            "fetch_period": 1,
+            "title": "Oxford Internet Institute",
+            "description": "Overlooking the junction of St Giles and Beaumont Street.",
+            "credit": "&copy; Oxford Internet Institute"
+        }
+    }
+]

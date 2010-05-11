@@ -274,4 +274,8 @@ INSTALLED_APPS = (
 CACHE_DIR = '/var/cache/molly'
 SRID = 27700
 
+FIXTURE_DIRS = [
+    os.path.join(project_root, 'fixtures'),
+]
+
 # INTERNAL_IPS = ('127.0.0.1',)  # for the debug_toolbar
