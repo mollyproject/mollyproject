@@ -50,7 +50,7 @@ class Batch(models.Model):
         
         output = StringIO()
         try:
-            providers = app_by_local_name(self.local_name).conf.providers
+            providers = app_by_local_name(self.local_name).providers
             for provider in providers:
                 if provider.class_path == self.provider_name:
                     break
