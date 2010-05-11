@@ -1,6 +1,6 @@
 from django.db import models
 from django.core.urlresolvers import reverse
-from molly.podcasts import TOP_DOWNLOADS_RSS_URL
+from molly.apps.podcasts import TOP_DOWNLOADS_RSS_URL
 
 MEDIUM_CHOICES = (
     ('audio', 'audio'),
@@ -9,12 +9,12 @@ MEDIUM_CHOICES = (
 )
 
 class PodcastCategory(models.Model):
-    code = models.TextField()
+    slug = models.SlugField()
     name = models.TextField()
     order = models.IntegerField(null=True)
     
     def get_absolute_url(self):
-        return reverse('podcasts_category', args=[self.code])
+        return reverse('podcasts:category', args=[self.slug])
         
     def __unicode__(self):
         return self.name or ''
@@ -24,20 +24,18 @@ class PodcastCategory(models.Model):
         ordering = ('order','name',)
 
 class Podcast(models.Model):
+    slug = models.SlugField()
     title = models.TextField(null=True)
     description = models.TextField(null=True)
-    identifier = models.TextField(null=True)
     rss_url = models.URLField()
     last_updated = models.DateTimeField(auto_now=True)
     category = models.ForeignKey(PodcastCategory, null=True)
     most_recent_item_date = models.DateTimeField(null=True)
     medium = models.CharField(max_length=8, choices=MEDIUM_CHOICES, null=True)
+    provider = models.TextField()
     
     def get_absolute_url(self):
-        if self.rss_url == TOP_DOWNLOADS_RSS_URL:
-            return reverse('podcasts_top_downloads')
-        else:
-            return reverse('podcasts_podcast', args=[self.identifier])
+        return reverse('podcasts:podcast', args=[self.slug])
         
     def __unicode__(self):
         return self.title or ''

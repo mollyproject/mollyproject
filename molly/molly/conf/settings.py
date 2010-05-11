@@ -2,8 +2,6 @@ from django.utils.importlib import import_module
 from django.conf.urls.defaults import include as urlconf_include
 
 class Application(object):
-    
-
     def __init__(self, application_name, local_name, title, **kwargs):
         self.application_name, self.local_name = application_name, local_name
         self.title = title
