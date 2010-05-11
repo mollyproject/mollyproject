@@ -40,18 +40,18 @@ class IndexView(BaseView):
         return cls.render(request, context, 'podcasts/index')
 
 class CategoryDetailView(BaseView):
-    def get_metadata(cls, request, code, medium=None):
+    def get_metadata(cls, request, category, medium=None):
         if medium:
             raise Http404
             
-        category = get_object_or_404(PodcastCategory, code=code)
+        category = get_object_or_404(PodcastCategory, slug=category)
         return {
             'title': category.name,
             'additional': '<strong>Podcast category</strong>'
         }
         
-    def initial_context(cls, request, code, medium=None):
-        category = get_object_or_404(PodcastCategory, code=code)
+    def initial_context(cls, request, category, medium=None):
+        category = get_object_or_404(PodcastCategory, slug=category)
         podcasts = Podcast.objects.filter(category=category)
         if medium:
             podcasts = podcasts.filter(medium=medium)
@@ -63,17 +63,17 @@ class CategoryDetailView(BaseView):
         }
 
     @BreadcrumbFactory
-    def breadcrumb(cls, request, context, code, medium=None):
+    def breadcrumb(cls, request, context, category, medium=None):
         if medium:
-            url = lazy_reverse('podcasts:category_medium', args=[code,medium])
+            url = lazy_reverse('podcasts:category_medium', args=[category,medium])
         else:
-            url = lazy_reverse('podcasts:category', args=[code])
+            url = lazy_reverse('podcasts:category', args=[category])
         
         return Breadcrumb('podcasts', lazy_parent(IndexView),
                           context['category'].name,
                           url)
         
-    def handle_GET(cls, request, context, code, medium=None):
+    def handle_GET(cls, request, context, category, medium=None):
         return cls.render(request, context, 'podcasts/category_detail')
 
 class PodcastDetailView(BaseView):
@@ -81,9 +81,9 @@ class PodcastDetailView(BaseView):
         def __init__(self, response):
             self.response = response
             
-    def get_metadata(cls, request, identifier=None, podcast=None):
+    def get_metadata(cls, request, slug=None, podcast=None):
         if not podcast:
-            podcast = get_object_or_404(Podcast, identifier=identifier)
+            podcast = get_object_or_404(Podcast, slug=slug)
         
         return {
             'title': podcast.title,
@@ -93,23 +93,27 @@ class PodcastDetailView(BaseView):
             'additional': '<strong>Podcast</strong> %s' % podcast.last_updated.strftime('%d %b %Y')
         }
         
-    def initial_context(cls, request, identifier=None, podcast=None):
+    def initial_context(cls, request, slug=None, podcast=None):
         if not podcast:
-            podcast = get_object_or_404(Podcast, identifier=identifier)
+            podcast = get_object_or_404(Podcast, slug=slug)
         return {
             'podcast': podcast,
             'category': podcast.category,
         }
     
     @BreadcrumbFactory
-    def breadcrumb(cls, request, context, identifier=None, podcast=None):
+    def breadcrumb(cls, request, context, slug=None, podcast=None):
+        if context['podcast'].category:
+            parent = lazy_parent(CategoryDetailView,
+                                 category=context['podcast'].category.slug)
+        else:
+            parent = lazy_parent(IndexView)
         return Breadcrumb('podcasts',
-                          lazy_parent(CategoryDetailView,
-                                      code=context['podcast'].category.code),
+                          parent,
                           context['podcast'].title,
-                          lazy_reverse('podcasts_podcast_detail'))
+                          lazy_reverse('podcasts:podcast'))
         
-    def handle_GET(cls, request, context, identifier=None, podcast=None):
+    def handle_GET(cls, request, context, slug=None, podcast=None):
         if 'response' in context:
             return context['response']        
         
@@ -119,28 +123,6 @@ class PodcastDetailView(BaseView):
             'items': items,
         })
         return cls.render(request, context, 'podcasts/podcast_detail')
-
-class TopDownloadsView(PodcastDetailView):
-    def get_metadata(cls, request):
-        podcast=Podcast.objects.get(rss_url=TOP_DOWNLOADS_RSS_URL)
-        return {
-            'title': podcast.title,
-            'additional': '<strong>Podcast</strong>, last updated: %s' % podcast.last_updated.strftime('%a, %d %b %Y')
-        }
-        
-    def initial_context(cls, request):
-        podcast=Podcast.objects.get(rss_url=TOP_DOWNLOADS_RSS_URL)
-        return super(TopDownloadsView, cls).initial_context(request, podcast=podcast)
-
-    @BreadcrumbFactory
-    def breadcrumb(cls, request, context):
-        return Breadcrumb('podcasts',
-                          lazy_parent(IndexView),
-                          'Top downloads from iTunes U',
-                          lazy_reverse('podcasts_top_downloads'))
-                          
-    def handle_GET(cls, request, context):
-        return super(TopDownloadsView, cls).handle_GET(request, context)
 
 class ITunesURedirectView(BaseView):
     breadcrumb = NullBreadcrumb
@@ -161,24 +143,3 @@ class ITunesURedirectView(BaseView):
                 return HttpResponseRedirect(reverse('podcasts_index') + '?show_itunesu_link=false')
         else:
             return HttpResponseRedirect("http://deimos.apple.com/WebObjects/Core.woa/Browse/ox-ac-uk-public")
-        
-class RedirectOldLinksView(BaseView):
-    breadcrumb = NullBreadcrumb
-    
-    def get_metadata(cls, request, code, id=None, medium=None):
-        if id:
-            podcast = get_object_or_404(Podcast, category__code=code, id=int(id))
-            return PodcastDetailView.get_metadata(request, podcast=podcast)
-        else:
-            return CategoryDetailView.get_metadata(request, code, medium)
-    
-    def handle_GET(cls, request, context, code, id=None, medium=None):
-        category = get_object_or_404(PodcastCategory, code=code)
-        if id:
-            podcast = get_object_or_404(Podcast, category=category, id=int(id))
-            url = reverse('podcasts_podcast', args=[podcast.identifier])
-        elif medium:
-            url = reverse('podcasts_category_medium', args=[category.code,medium])
-        else:
-            url = reverse('podcasts_category', args=[category.code])
-        return HttpResponsePermanentRedirect(url)

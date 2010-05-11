@@ -176,16 +176,17 @@ APPLICATIONS = [
         ),
     ),
 
-    Application('molly.podcasts', 'podcasts', 'Podcasts',
+    Application('molly.apps.podcasts', 'podcasts', 'Podcasts',
         providers = [
-        #    SimpleProvider(
-        #        opml = 'http://rss.oucs.ox.ac.uk/metafeeds/podcastingnewsfeeds.opml',
-        #    ),
-        #    SimpleProvider(
-        #        name = 'Top Downloads',
-        #        rss = 'http://rss.oucs.ox.ac.uk/oxitems/topdownloads.xml',
-        #    ),
-        ],
+            SimpleProvider('molly.providers.apps.podcasts.OPMLPodcastsProvider',
+                url = 'http://rss.oucs.ox.ac.uk/metafeeds/podcastingnewsfeeds.opml',
+            ),
+            SimpleProvider('molly.providers.apps.podcasts.RSSPodcastsProvider',
+                podcasts = [
+                    ('top-downloads', 'http://rss.oucs.ox.ac.uk/oxitems/topdownloads.xml'),
+                ],
+            ),
+        ]
     ),
 
     Application('molly.apps.search', 'search', 'Search',
