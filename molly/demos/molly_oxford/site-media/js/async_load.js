@@ -22,7 +22,7 @@ function to_absolute(url) {
 }
 
 // Callback method that swaps in the asynchronously loaded bits to the page, and fades it in
-function load_callback(data, textStatus, xhr) {
+function async_load_callback(data, textStatus, xhr) {
     jQuery('body').html(data.body);
     jQuery('title').html(data.title);
     jQuery('.content').html(data.content);
@@ -31,24 +31,30 @@ function load_callback(data, textStatus, xhr) {
     jQuery('body').fadeTo('fast', 1);
 }
 
-function ajax_load(url, query, meth) {
+function async_load(url, query, meth) {
     query['format'] = 'fragment';
     console.log("Async loading " + url);
     console.log("    aka " + to_absolute(url));
     console.log("    with " + query);
     console.log("    meth " + meth);
     var settings = {'url': to_absolute(url), 'data': query, 'type': meth, 'dataType': 'json'};
+
     settings['success'] = function(data, textStatus, xhr) {
         var abs_url = to_absolute(url);
         current_url = abs_url;
         console.log("Current URL now " + current_url)
         window.location.hash = current_url;
-        return load_callback(data, textStatus, xhr);
+        return async_load_callback(data, textStatus, xhr);
     };
+    settings['error'] = function(xhr, textStatus, errorThrown) {
+        jQuery('#loading').html("<p>Uh-oh! There was an error loading the page - please try again.</p>");
+        jQuery('#loading').css({'top': '30%', 'text-align': 'center', 'opacity': 1});
+    };
+
     jQuery.ajax(settings);
     jQuery('body').fadeTo('fast', 0.1);
-    jQuery('#loading').css({'position': 'fixed', 'top': '30%', 'left': '50%', 'opacity': '0.8'}).show()
-    jQuery('#loading').fadeIn('fast');
+    jQuery('#loading').css({'position': 'fixed', 'top': '30%', 'left': '50%', 'opacity': 0.1}).show()
+    jQuery('#loading').fadeTo('fast', 1);
     return false;
 }
 
@@ -61,16 +67,15 @@ function capture_outbound()  {
             for (i = 0; i < serial.length; i++) {
                 datamap[serial[i].name] = serial[i].value;
             }
-            return ajax_load(jQuery(this).attr('action'), datamap, jQuery(this).attr('method'));
+            return async_load(jQuery(this).attr('action'), datamap, jQuery(this).attr('method'));
         });
     // Intercept all links with an href
     jQuery('a[href]').click(function(evt) {
-            return ajax_load(jQuery(this).attr('href'), {}, 'GET');
+            return async_load(jQuery(this).attr('href'), {}, 'GET');
         });
 }
 
 jQuery(document).ready(function() {
-    alert("WHEEEEEEEEEEEEE!");
     if (window.location.hash != current_url) {
         console.log("Hash mismatch! " + window.location.hash + " != " + current_url + "! Reloading...");
         ajax_load(window.location.hash.substr(1), {}, "GET");
