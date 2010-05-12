@@ -1,0 +1,2 @@
+class BasePodcastsProvider(object):
+    pass

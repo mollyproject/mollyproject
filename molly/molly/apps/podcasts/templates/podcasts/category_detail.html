@@ -17,9 +17,9 @@
 	<h2>{{ category.name }}</h2>
     <div class="note"><div class="bubble pad-10">
     Show
-    <a href="{% url podcasts_category_medium category.code,"audio" %}">audio</a>
-    <a href="{% url podcasts_category_medium category.code,"video" %}">video</a>
-    <a href="{% url podcasts_category category.code %}">all</a>
+    <a href="{% url podcasts:category_medium category.slug,"audio" %}">audio</a>
+    <a href="{% url podcasts:category_medium category.slug,"video" %}">video</a>
+    <a href="{% url podcasts:category category.slug %}">all</a>
 podcasts.
     </div></div>
 		
