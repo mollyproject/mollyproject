@@ -72,12 +72,12 @@ class MapNode(template.Node):
             lon, lat = [float(a.resolve(context)) for a in args]
 
         width, height = context['map_width'], context['map_height']
-        
+
         if False and device_parents[context['device'].devid] & OPENLAYERS_BROWSERS:
             return self.openlayers_map(context, lon, lat, width, height)
         else:
             return self.generated_map(context, lon, lat, width, height)
-        
+
         if device_parents[context['device'].devid] & GOOGLE_MAPS_BROWSERS:
             return self.google_map(context, lon, lat, width, height)
         else:
@@ -112,7 +112,7 @@ $(document).ready(function() {
             height,
         )
         url = reverse('osm:generated_map', args=[hash])
-        
+
         if self.just_url:
             return url
         else:
