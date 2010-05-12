@@ -1,2 +1,0 @@
-class BaseFeedsProvider(object):
-    pass

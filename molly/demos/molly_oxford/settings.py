@@ -222,11 +222,6 @@ APPLICATIONS = [
         display_to_user = False,
     ),
 
-    Application('molly.apps.feeds', 'feeds', 'Feeds',
-        providers = [
-            SimpleProvider('molly.providers.apps.feeds.RSSFeedsProvider'),
-        ]
-    ),
     Application('molly.apps.feeds.events', 'events', 'Events',
     ),
     Application('molly.apps.feeds.news', 'news', 'News',
@@ -267,6 +262,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'molly.osm',
     'molly.batch_processing',
+    'molly.apps.feeds',
 #    'debug_toolbar',
 ) + extract_installed_apps(APPLICATIONS)
 

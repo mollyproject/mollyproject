@@ -44,7 +44,7 @@
             "rss_url": "http://www.oucs.ox.ac.uk/rss/news.rss",
             "slug": "oucs-news",
             "ptype": "n",
-            "provider": "molly.providers.apps.feeds.RSSFeedsProvider"
+            "importer": "generic_rss"
         }
     },
     {
@@ -57,7 +57,7 @@
             "slug": "keble",
             "unit": "kebl",
             "ptype": "n",
-            "provider": "molly.providers.apps.feeds.RSSFeedsProvider"
+            "importer": "generic_rss"
         }
     },
     {
@@ -69,7 +69,7 @@
             "slug": "lmh",
             "unit": "lmh",
             "ptype": "n",
-            "provider": "molly.providers.apps.feeds.RSSFeedsProvider"
+            "importer": "generic_rss"
         }
     },
     {
@@ -81,7 +81,7 @@
             "slug": "linacre",
             "unit": "linacre",
             "ptype": "n",
-            "provider": "molly.providers.apps.feeds.RSSFeedsProvider"
+            "importer": "generic_rss"
         }
     },
     {
@@ -93,7 +93,7 @@
             "slug": "st-antonys-events",
             "unit": "sant",
             "ptype": "n",
-            "provider": "molly.providers.apps.feeds.RSSFeedsProvider"
+            "importer": "generic_rss"
 
         }
     },
@@ -106,7 +106,7 @@
             "slug": "offices-media",
             "unit": "offices",
             "ptype": "n",
-            "provider": "molly.providers.apps.feeds.RSSFeedsProvider"
+            "importer": "generic_rss"
 
         }
     },
@@ -119,7 +119,7 @@
             "slug": "theatre",
             "unit": "daily-info",
             "ptype": "e",
-            "provider": "daily_info",
+            "importer": "daily_info",
             "tags": [
                 1, 2
             ]
@@ -134,7 +134,7 @@
             "slug": "concert",
             "unit": "daily-info",
             "ptype": "e",
-            "provider": "daily_info",
+            "importer": "daily_info",
             "tags": [
                 2, 3
             ]
@@ -149,7 +149,7 @@
             "slug": "meeting",
             "unit": "daily-info",
             "ptype": "e",
-            "provider": "daily_info",
+            "importer": "daily_info",
             "tags": [
                 4
             ]
@@ -164,7 +164,7 @@
             "slug": "gigs-comedy",
             "unit": "daily-info",
             "ptype": "e",
-            "provider": "daily_info",
+            "importer": "daily_info",
             "tags": [
                 2, 5
             ]
