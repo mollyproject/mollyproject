@@ -43,7 +43,7 @@ def get_map(points, width, height, filename, zoom=None, lon_center=None, lat_cen
             zoom = 16
     
     points = [(get_tile_ref(p[0], p[1], zoom), p[2], p[3]) for p in points]
-    
+
     lon_range, lat_range = lon_max - lon_min, lat_min - lat_max
     if not lat_center:
         lon_center, lat_center = (lon_min + lon_max)/2, (lat_min + lat_max)/2
@@ -57,7 +57,7 @@ def get_map(points, width, height, filename, zoom=None, lon_center=None, lat_cen
     oxc = int((cx - tx_min) * 256 - width/2)
     oyc = int((cy - ty_min) * 256 - height/2)
     ox, oy = oxc, oyc-10
-    
+
     tx_min_ = int(tx_min + ox/256)
     tx_max_ = int(tx_max + (width+ox)/256)
     ty_min_ = int(ty_min + oy/256)
@@ -70,7 +70,7 @@ def get_map(points, width, height, filename, zoom=None, lon_center=None, lat_cen
         height, #(tx_max-tx_min)*256,
     )
     context = cairo.Context(surface)
-    
+
     for tile in tiles:
         offx = (tile['ref'][0] - tx_min) * 256 - ox
         offy = (tile['ref'][1] - ty_min) * 256 - oy
@@ -102,7 +102,7 @@ def get_map(points, width, height, filename, zoom=None, lon_center=None, lat_cen
         )
         
         context.fill()
-    
+
     points.sort(key=lambda p:p[0][1])
     marker_dir = get_marker_dir()
     for (tx, ty), color, index in points:
@@ -111,9 +111,10 @@ def get_map(points, width, height, filename, zoom=None, lon_center=None, lat_cen
         else:
             off, fn = (10, 25), "%s-%d.png" % (color, index)
         fn = os.path.join(marker_dir, fn)
-            
-        marker = cairo.ImageSurface.create_from_png(fn)
-        
+        try:
+            marker = cairo.ImageSurface.create_from_png(fn)
+        except Exception:
+            raise AssertionError, "Got an exception in cairo.ImageSurface.create_from_png! " + repr(locals())
         off = (
             (tx - tx_min) * 256 - off[0] - ox,
             (ty - ty_min) * 256 - off[1] - oy,
@@ -135,7 +136,6 @@ def get_map(points, width, height, filename, zoom=None, lon_center=None, lat_cen
     #context.move_to(width-cwidth-5, height-5)
     #context.show_text(credit)
            
-    
     surface.write_to_png(filename)
     
     return

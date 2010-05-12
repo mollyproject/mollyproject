@@ -3,34 +3,110 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-GB" lang="en-GB" >
 <head>
-	<title>{% block title %}m.ox | {{ breadcrumbs.4 }}{% endblock %}</title>
+    <title>{% block title %}m.ox | {{ breadcrumbs.4 }}{% endblock %}</title>
     <meta name="viewport" content="width=device-width; initial-scale=1; user-scalable=no; maximum-scale=1; minimum-scale=1"/>
     <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
-
 {% if device|device_has_parent:"apple_iphone_ver1" %}
     <link rel="apple-touch-icon" href="{{ MEDIA_URL}}png/apple-touch-icon.png"/>
     <link rel="apple-touch-startup-image" href="{{ MEDIA_URL}}png/apple-touch-startup-image.jpg">
-	<meta name="apple-mobile-web-app-capable" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
 	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
 	<meta name="format-detection" content="telephone=no" />
 {% endif %}
-
 {% if use_javascript %}
-    <script src="{{ MEDIA_URL }}js/jquery-1.3.2.js"  type="text/javascript"> </script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.1/jquery.min.js" type="text/javascript">
+        // Use Google's cache servers for speed?
+    </script>
+    <!-- <script src="{{ MEDIA_URL }}js/jquery-1.4.1.js"  type="text/javascript"> </script> -->
     <script type="text/javascript">
         var require_location = {{ require_location|yesno:"true,false" }};
         var base = "{% url home:index %}";
         var positionName = {% if preferences.location.name %}"{{ preferences.location.name|escapejs }}"{% else %}null{% endif %};
+        var current_url = "";
+
+        function to_absolute(url) {
+            if (url.match(/http\:\/\//)) {
+                console.log("http://"); return url;
+            } else if (url.substr(0, 1) == "/") {
+                console.log("abs"); return base + url.substr(1);
+            } else if (url.indexOf('?') != -1) {
+                console.log("qs");
+                if (current_url.lastIndexOf('?') != -1) {
+                    return current_url.substring(0, current_url.lastIndexOf('?')) + url;
+                }
+                return current_url + url;
+            } else {
+                console.log("rel, with current " + current_url); return current_url + url;
+            }
+        }
+
+        // Callback method that swaps in the asynchronously loaded bits to the page, and fades it in
+        function load_callback(data, textStatus, xhr) {
+            $('body').html(data.body);
+            $('title').html(data.title);
+            $('.content').html(data.content);
+            $('#loading').hide()
+            capture_outbound();
+            $('body').fadeTo('fast', 1);
+        }
+
+        function ajax_load(url, query, meth) {
+            query['format'] = 'fragment';
+            console.log("Async loading " + url);
+            console.log("    aka " + to_absolute(url));
+            console.log("    with " + query);
+            console.log("    meth " + meth);
+            var settings = {'url': to_absolute(url), 'data': query, 'type': meth, 'dataType': 'json'};
+            settings['success'] = function(data, textStatus, xhr) {
+                var abs_url = to_absolute(url);
+                current_url = abs_url;
+                console.log("Current URL now " + current_url)
+                window.location.hash = current_url;
+                return load_callback(data, textStatus, xhr);
+            };
+            $.ajax(settings);
+            $('body').fadeTo('fast', 0.1);
+            $('#loading').css({'position': 'fixed', 'top': '30%', 'left': '50%', 'opacity': '0.8'}).show()
+            $('#loading').fadeIn('fast');
+            return false;
+        }
+
+        function capture_outbound()  {
+            // Intercept all forms
+            $('form').submit(function(evt) {
+                    var serial = $(this).serializeArray();
+                    var datamap = {}
+                    var i = 0;
+                    for (i = 0; i < serial.length; i++) {
+                        datamap[serial[i].name] = serial[i].value;
+                    }
+                    return ajax_load($(this).attr('action'), datamap, $(this).attr('method'));
+                });
+            // Intercept all links with an href
+            $('a[href]').click(function(evt) {
+                    return ajax_load($(this).attr('href'), {}, 'GET');
+                });
+        }
+
+        $(document).ready(function() {
+            if (window.location.hash != current_url) {
+                console.log("Hash mismatch! " + window.location.hash + " != " + current_url + "! Reloading...");
+                ajax_load(window.location.hash.substr(1), {}, "GET");
+            }
+            capture_outbound();
+        });
+
     </script>
     <script src="{{ MEDIA_URL }}js/groups/{{ style_group }}.js"  type="text/javascript"> </script>
 {% endif %}
     <link  rel="stylesheet" href="{{ MEDIA_URL }}css/groups/{{ style_group }}.css" type="text/css" />
 	<link rel="icon" type="image/png" href="{{ MEDIA_URL }}png/favicon.png"/>
-{% block extrahead %}{% endblock %}
+{% block extrahead %}{% endblock extrahead %}
 </head>
 
 <body>
-
+{% block body %}
+<div id="loading" style="display:none;"><img src="{{ MEDIA_URL }}/gif/ajax-loader.gif" /></div>
 
 {% block header %}
 
@@ -49,7 +125,7 @@
           &hellip;
         </a></li>
     {% endif %}{% endif %}
-      </ol> 
+      </ol>
       <div id="bc-title">
         <h1 class="{% if not breadcrumbs.2 %}{{ breadcrumbs.0 }}-header with-icon{% endif %}">
           {{ breadcrumbs.4 }}
@@ -73,13 +149,12 @@
 {% endifnotequal %}
 
 
-{% endblock %}
+{% endblock header %}
 
 
 <div class="content">
 
-
-{% if unread_user_messages %}    
+{% if unread_user_messages %}
     <div class="section" style="padding:10px;">
 		<div class="bubble pad-10">
       	<a href="{% url home:messages %}" style="font-size:1.2em; padding:1em 0.2em; display:block;">
@@ -90,18 +165,19 @@
 {% endif %}
 
 {% block content %}
-{% endblock %}
+{% endblock content %}
 
 {% if not hide_feedback_link %}
     <div class="bubble pad-10">
-{% block bottom_links %}    
+{% block bottom_links %}
         <a href="{% url feedback:index %}?referer={{ full_path|urlencode }}">Provide feedback for this page.</a><br />
 		<a href="http://chart.apis.google.com/chart?cht=qr&amp;chs={{ device.max_image_width }}x{{ device.max_image_width }}&amp;chl=http://m.ox.ac.uk{{ full_path|urlencode }}">2D Barcode for this page</a><br/>
 		<a rel="nofollow" href="{% url url_shortener:shorten %}?path={{ full_path|urlencode }}">Get short link for this page</a>
-{% endblock %}
+{% endblock bottom_links %}
     </div>
 {% endif %}
 
 </div>
+{% endblock body %}
 </body>
 </html>

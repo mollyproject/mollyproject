@@ -15,6 +15,7 @@ logger = logging.getLogger('core.requests')
 
 class DateUnicode(unicode): pass
 
+
 def renderer(format, mimetypes=None):
     """
     Decorates a view method to say that it renders a particular format and mimetypes.
@@ -37,6 +38,8 @@ def renderer(format, mimetypes=None):
         f.mimetypes = mimetypes
         return f
     return g
+
+
 
 class ViewMetaclass(type):
     def __new__(cls, name, bases, dict):
@@ -89,6 +92,8 @@ class ViewMetaclass(type):
                 view.FORMATS_BY_MIMETYPE[mimetype] = getattr(view, view.FORMATS_BY_MIMETYPE[mimetype])
 
         return view
+
+
 
 class BaseView(object):
     __metaclass__ = ViewMetaclass
@@ -149,8 +154,8 @@ class BaseView(object):
             renderer = cls.FORMATS[request.GET['format']]
         elif 'format' in request.GET:
             return cls.not_acceptable(request)
-        elif request.is_ajax():
-            renderer = cls.FORMATS['json']
+        #elif request.is_ajax():
+        #    renderer = cls.FORMATS['json']
         elif request.META.get('HTTP_ACCEPT'):
             accepts = [a.split(';')[0].strip() for a in request.META['HTTP_ACCEPT'].split(',')]
             for accept in accepts:
@@ -215,6 +220,16 @@ Supported ranges are:
         context = cls.simplify_value(context)
         return HttpResponse(yaml.safe_dump(context), mimetype="application/x-yaml")
 
+    @renderer(format="fragment", mimetypes=('text/json', 'application/json'))
+    def render_fragment(cls, request, context, template_name):
+        '''Uses block rendering functions, see end of file.'''
+        if template_name is None:
+            raise NotImplementedError
+        body = render_block_to_string(template_name + '.html', 'body', context, RequestContext(request))
+        title = render_block_to_string(template_name + '.html', 'title', context, RequestContext(request))
+        content = render_block_to_string(template_name + '.html', 'content', context, RequestContext(request))
+        return HttpResponse(simplejson.dumps({'body': body, 'title': title, 'content': content}), mimetype="application/json")
+
     def simplify_value(cls, value):
         if hasattr(value, 'simplify_for_render'):
             return value.simplify_for_render(cls.simplify_value, cls.simplify_model)
@@ -263,7 +278,7 @@ Supported ranges are:
         (int, 'integer'),
         (float, 'float'),
     )
-    
+
     def simplify_model(cls, obj, terse=False):
         if obj is None:
             return None
@@ -276,7 +291,7 @@ Supported ranges are:
             '_type': '%s.%s' % (obj.__module__[:-7], obj._meta.object_name),
             '_pk': obj.pk,
         }
-        print "EEE", type(obj), hasattr(obj, 'get_absolute_url') 
+        print "EEE", type(obj), hasattr(obj, 'get_absolute_url')
         if hasattr(obj, 'get_absolute_url'):
             out['_url'] = obj.get_absolute_url()
         if terse:
@@ -357,4 +372,56 @@ class ZoomableView(BaseView):
 
 class SecureView(BaseView):
     pass
+
+# FIXME:
+#       Block rendering methods, from http://djangosnippets.org/942
+#       Will need tidying up and fitting for the style of annotation we end up with
+#       We need it to render and output multiple blocks in one go, obviously, for
+#       efficiency.
+#       But for the moment, it'll do?
+
+from django.template.loader_tags import BlockNode, ExtendsNode
+from django.template import loader, Context, RequestContext, TextNode
+
+class BlockNotFound(Exception):
+    pass
+
+
+def render_template_block(template, block, context):
+    """
+    Renders a single block from a template. This template should have previously been rendered.
+    """
+    return render_template_block_nodelist(template.nodelist, block, context)
+
+def render_template_block_nodelist(nodelist, block, context):
+    for node in nodelist:
+        if isinstance(node, BlockNode) and node.name == block:
+            return node.render(context)
+        for key in ('nodelist', 'nodelist_true', 'nodelist_false'):
+            if hasattr(node, key):
+                try:
+                    return render_template_block_nodelist(getattr(node, key), block, context)
+                except:
+                    pass
+    for node in nodelist:
+        if isinstance(node, ExtendsNode):
+            try:
+                return render_template_block(node.get_parent(context), block, context)
+            except BlockNotFound:
+                pass
+    raise BlockNotFound
+
+def render_block_to_string(template_name, block, dictionary=None, context_instance=None):
+    """
+    Loads the given template_name and renders the given block with the given dictionary as
+    context. Returns a string.
+    """
+    dictionary = dictionary or {}
+    t = loader.get_template(template_name)
+    if context_instance:
+        context_instance.update(dictionary)
+    else:
+        context_instance = Context(dictionary)
+    t.render(context_instance)
+    return render_template_block(t, block, context_instance)
 

@@ -5,19 +5,17 @@ from django.core.urlresolvers import reverse
 from xml.etree import ElementTree as ET
 from molly.apps.external_media.utils import resize_external_image
 from molly.apps.places.models import Entity
-from django.conf import settings
 
 FEED_TYPE_CHOICES = (
     ('n', 'news'),
     ('e', 'event'),
 )
 
-
-PROVIDER_CHOICES = tuple(
-    (provider().class_path, provider().verbose_name)
-        for app in settings.APPLICATIONS
-        for provider in app.providers
-        if app.application_name == 'molly.apps.feeds'
+IMPORTER_CHOICES = (
+    ('generic_rss', 'Generic RSS'),
+    ('daily_info', 'Daily Info'),
+    ('google_cal', 'Google Calendar'),
+    ('icalendar', 'iCalendar'),
 )
 
 FORMAT_CHOICES = tuple((x, x) for x in (
@@ -46,7 +44,8 @@ class Feed(models.Model):
     last_modified = models.DateTimeField(null=True, blank=True) # this one is in UTC
     
     ptype = models.CharField(max_length=1, choices=FEED_TYPE_CHOICES)
-    provider = models.CharField(max_length=128, choices=PROVIDER_CHOICES)
+    importer = models.CharField(max_length=20, choices=IMPORTER_CHOICES)
+    _importer_params = models.TextField(default='null')
     
     def _set_importer_params(self, value):
         self._importer_params = simplejson.dumps(value)
