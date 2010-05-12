@@ -46,11 +46,11 @@ class ExternalImageSized(models.Model):
         return os.path.join(external_image_dir, self.slug)
 
     def get_absolute_url(self):
-        return reverse('core:external_image', args=[self.slug])
+        return reverse('external_media:image', args=[self.slug])
 
     def save(self, force_insert=False, force_update=False):
         if not self.id:
-            im = Image.open(StringIO.StringIO(urllib.urlopen(self.external_image.url).read()))
+            im = Image.open(StringIO(urllib.urlopen(self.external_image.url).read()))
 
             size = im.size
             ratio = size[1] / size[0]
