@@ -1,0 +1,18 @@
+WSGISocketPrefix /var/run/wsgi
+
+<VirtualHost *:80>
+    Alias /robots.txt %(root)s/static/robots.txt
+    Alias /favicon.ico %(root)s/site-media/ico/favicon.ico
+    Alias /site-media/ %(root)s/site-media/
+
+    SetOutputFilter DEFLATE 
+
+    WSGIDaemonProcess molly user=apache group=apache threads=5
+    WSGIProcessGroup molly
+    WSGIScriptAlias / %(root)s/molly_oxford.wsgi
+
+    <Location />
+        Order allow,deny
+        Allow from all
+    </Location>
+</VirtualHost>
