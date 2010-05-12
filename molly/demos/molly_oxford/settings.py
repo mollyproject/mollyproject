@@ -85,7 +85,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 )
 
 
-ROOT_URLCONF = 'molly_oxford.urls'
+ROOT_URLCONF = 'demos.molly_oxford.urls'
 
 TEMPLATE_DIRS = (
     os.path.join(project_root, 'templates'),
@@ -206,7 +206,7 @@ APPLICATIONS = [
 
     Application('molly.apps.webcams', 'webcams', 'Webcams'),
 
-    Application('molly_oxford.apps.results', 'results', 'Results releases'),
+    Application('demos.molly_oxford.apps.results', 'results', 'Results releases'),
 
     Application('molly.osm', 'osm', 'OpenStreetMap',
         display_to_user = False,
