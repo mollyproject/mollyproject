@@ -23,6 +23,9 @@
         var base = "{% url home:index %}";
         var positionName = {% if preferences.location.name %}"{{ preferences.location.name|escapejs }}"{% else %}null{% endif %};
         var current_url = "";
+        
+        if (!window.console)
+            window.console = { log : function() {} };
 
         function to_absolute(url) {
             if (url.match(/http\:\/\//)) {
