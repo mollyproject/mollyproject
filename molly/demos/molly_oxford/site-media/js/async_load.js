@@ -70,6 +70,7 @@ function capture_outbound()  {
 }
 
 jQuery(document).ready(function() {
+    alert("WHEEEEEEEEEEEEE!");
     if (window.location.hash != current_url) {
         console.log("Hash mismatch! " + window.location.hash + " != " + current_url + "! Reloading...");
         ajax_load(window.location.hash.substr(1), {}, "GET");
