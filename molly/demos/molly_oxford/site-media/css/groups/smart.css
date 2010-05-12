@@ -385,3 +385,19 @@ ul.service-status li.service-status-down { background-image:url('../../png/icons
 span.service-status, span.service-detail { font-size:90%; }
 span.service-detail { font-style:italic; }
 /* End OUCS Status */
+
+table.real-time-information {
+    width: 100%;
+    background: #121C28;
+    color: #FFBF00;
+    border: 2px solid #FFBF00;
+    -webkit-border-radius: 8px;
+    padding: 2px 0;
+}
+
+table.real-time-information tr {
+
+    border-collapse: collapse;
+    border-top: 1px solid #FFBF00;
+}
+

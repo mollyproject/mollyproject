@@ -15,4 +15,9 @@ WSGISocketPrefix /var/run/wsgi
         Order allow,deny
         Allow from all
     </Location>
+    <Location /site-media/>
+        Header set Cache-Control "public"
+        ExpiresActive On
+        ExpiresDefault "access plus 1 day"
+    </Location>
 </VirtualHost>

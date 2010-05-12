@@ -1,18 +1,18 @@
 {% load osm_tags %}{% load portal_misc %}
 
-{% if entity.metadata.osm.tags %}
+{% if entity|osm_tags or entity.metadata.osm.tags.phone or entity.metadata.osm.tags.wikipedia or entity.metadata.osm.tags.url %}
 
+<div class="section">
+  <h2>Information from OpenStreetMap</h2>
 {% if entity|osm_tags %}
-<table class="section-table">
-    <tbody>
+  <div class="article"><div class="bubble pad-5">
+    <dl>
 {% for k,v in entity|osm_tags %}
-        <tr>
-            <th>{{ k|capfirst }}:</th>
-            <td>{{ v }}</td>
-        </tr>
+      <dt>{{ k|capfirst }}:</dt>
+      <dd>{{ v }}</dd>
 {% endfor %}
-    </tbody>
-</table>
+    </dl>
+  </div></div>
 {% endif %}
 
 <ul>
@@ -38,21 +38,6 @@
         </a>
     </li>
 {% endif %}
-</ul>
-
-</div>
-
-<div class="section">
-<h2>Note</h2>
-
-<div class="note"><div class="bubble pad-10">
-    This information is provided courtesy of
-    <a href="{% url places:static_openstreetmap %}">OpenStreetMap</a> under a
-    Creative Commons Attribution-ShareAlike 2.0 license.<br/>
-    Oxford University provides this information without warranty.
-</div></div>
-
-<ul>
   <li class="round-bottom">
     <a href="{% url places:entity_update entity.identifier_scheme entity.identifier_value %}">
       Suggest a correction
