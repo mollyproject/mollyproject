@@ -3,10 +3,9 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-GB" lang="en-GB" >
 <head>
-	<title>{% block title %}m.ox | {{ breadcrumbs.4 }}{% endblock %}</title>
+    <title>{% block title %}m.ox | {{ breadcrumbs.4 }}{% endblock %}</title>
     <meta name="viewport" content="width=device-width; initial-scale=1; user-scalable=no; maximum-scale=1; minimum-scale=1"/>
     <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
-
 {% if device|device_has_parent:"apple_iphone_ver1" %}
     <link rel="apple-touch-icon" href="{{ MEDIA_URL}}png/apple-touch-icon.png"/>
     <link rel="apple-touch-startup-image" href="{{ MEDIA_URL}}png/apple-touch-startup-image.jpg">
@@ -14,7 +13,6 @@
 	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
 	<meta name="format-detection" content="telephone=no" />
 {% endif %}
-
 {% if use_javascript %}
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.1/jquery.min.js" type="text/javascript">
         // Use Google's cache servers for speed?
@@ -47,13 +45,9 @@
             $('body').html(data.body);
             $('title').html(data.title);
             $('.content').html(data.content);
+            $('#loading').hide()
             capture_outbound();
-            $('#loading').hide();
             $('body').fadeTo('fast', 1);
-        }
-
-        function fade_callback() {
-            $('#loading').css({'position': 'fixed', 'top': '30%', 'left': '50%'}).show();
         }
 
         function ajax_load(url, query, meth) {
@@ -67,11 +61,13 @@
                 var abs_url = to_absolute(url);
                 current_url = abs_url;
                 console.log("Current URL now " + current_url)
-                // window.location.hash = abs_url;
+                window.location.hash = current_url;
                 return load_callback(data, textStatus, xhr);
             };
             $.ajax(settings);
-            $('body').fadeTo('slow', 0.1, fade_callback);
+            $('body').fadeTo('fast', 0.1);
+            $('#loading').css({'position': 'fixed', 'top': '30%', 'left': '50%', 'opacity': '0.8'}).show()
+            $('#loading').fadeIn('fast');
             return false;
         }
 
@@ -157,7 +153,6 @@
 
 
 <div class="content">
-
 
 {% if unread_user_messages %}
     <div class="section" style="padding:10px;">
