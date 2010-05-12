@@ -33,10 +33,10 @@ function load_callback(data, textStatus, xhr) {
 
 function ajax_load(url, query, meth) {
     query['format'] = 'fragment';
-    // console.log("Async loading " + url);
-    // console.log("    aka " + to_absolute(url));
-    // console.log("    with " + query);
-    // console.log("    meth " + meth);
+    console.log("Async loading " + url);
+    console.log("    aka " + to_absolute(url));
+    console.log("    with " + query);
+    console.log("    meth " + meth);
     var settings = {'url': to_absolute(url), 'data': query, 'type': meth, 'dataType': 'json'};
     settings['success'] = function(data, textStatus, xhr) {
         var abs_url = to_absolute(url);
