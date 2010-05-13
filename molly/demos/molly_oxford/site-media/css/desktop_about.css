@@ -453,3 +453,64 @@ div.about ul.icon-list {
   margin-bottom:0;
 }
 
+div.navigation {
+  text-align:center;
+  position:absolute;
+  bottom:0;
+}
+
+div.navigation ul {
+  list-style: none;
+  margin:15px 0;
+  padding:0;
+}
+
+div.navigation li {
+  display:inline;
+}
+
+div.navigation a {
+  padding:5px 8px;
+  margin:5px 2px;
+  font-size:12pt;
+  color:#ffffff;
+  text-shadow: #000000 1px 1px 2px;
+}
+
+div.navigation li.selected a {
+  border-bottom:1px solid #ffffff;
+  border-top:1px solid #ffffff;
+}
+
+div.navigation a:hover {
+  color: #002147;
+  text-shadow: none;
+  text-shadow: #ffffff 0px 0px 5px;
+}
+
+div#spinner {
+  display:none;
+  position:relative;
+  top:20px;
+  width:100%;
+  left:auto;
+  right:auto;
+  text-align:center;
+}
+
+div#spinner span {
+  display:block;
+  padding:20px;
+  -moz-border-radius:20px;
+  -webkit-border-radius:20px;
+  -khtml-border-radius:20px;
+  background-color:#ffffff;
+  height:32px;
+  width:32px;
+  margin-left:auto;
+  margin-right:auto;
+}
+
+h2 {
+  display: none;
+}
