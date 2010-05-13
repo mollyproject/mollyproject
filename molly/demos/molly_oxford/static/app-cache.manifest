@@ -3,7 +3,7 @@ CACHE MANIFEST
 
 # CSS
 /site-media/css/base.css
-/site-media/css/smart.css
+/site-media/css/groups/smart.css
 # Javascript
 /site-media/js/jquery-1.4.1.min.js
 /site-media/js/async_load.min.js
