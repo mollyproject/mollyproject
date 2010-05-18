@@ -266,5 +266,5 @@ class NaptanMapsProvider(BaseMapsProvider):
         return source
 
 if __name__ == '__main__':
-    p = NaptanMapsProvider(method='http', areas=('340',))
-    p.import_data()
+    p = NaptanMapsProvider(method='ftp', username='timfernando', password='tamefruit037', areas=('340',))
+    p.import_data(None, None)

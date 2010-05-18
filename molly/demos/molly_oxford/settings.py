@@ -61,7 +61,7 @@ SECRET_KEY = SECRETS.secret_key
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.load_template_source',
     'django.template.loaders.app_directories.load_template_source',
-#     'django.template.loaders.eggs.load_template_source',
+     'django.template.loaders.eggs.load_template_source',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -75,7 +75,7 @@ MIDDLEWARE_CLASSES = (
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.auth',
-#    'django.core.context_processors.debug',
+    'django.core.context_processors.debug',
 #    'django.core.context_processors.i18n',
     'django.core.context_processors.media',
 #    'django.contrib.messages.context_processors.messages',
@@ -100,7 +100,6 @@ APPLICATIONS = [
 
     Application('molly.apps.contact', 'contact', 'Contact search',
         provider = 'molly.contrib.oxford.providers.ScrapingContactProvider',
-#        provider = 'molly.contrib.mit.providers.LDAPContactProvider',
     ),
 
     Application('molly.apps.places', 'places', 'Places',
@@ -269,6 +268,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'molly.osm',
     'molly.batch_processing',
+    'molly.wurfl',
 #    'debug_toolbar',
 ) + extract_installed_apps(APPLICATIONS)
 
@@ -279,4 +279,4 @@ FIXTURE_DIRS = [
     os.path.join(project_root, 'fixtures'),
 ]
 
-# INTERNAL_IPS = ('127.0.0.1',)  # for the debug_toolbar
+INTERNAL_IPS = ('127.0.0.1',)  # for the debug_toolbar
