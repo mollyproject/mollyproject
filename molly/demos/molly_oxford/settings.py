@@ -99,7 +99,6 @@ APPLICATIONS = [
     ),
     Application('molly.apps.contact', 'contact', 'Contact search',
         provider = 'molly.contrib.oxford.providers.ScrapingContactProvider',
-#        provider = 'molly.contrib.mit.providers.LDAPContactProvider',
     ),
 
     Application('molly.apps.weather', 'weather', 'Weather',
@@ -268,6 +267,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'molly.osm',
     'molly.batch_processing',
+    'molly.wurfl',
 #    'debug_toolbar',
 ) + extract_installed_apps(APPLICATIONS)
 
