@@ -247,7 +247,6 @@ Supported ranges are:
                 try:
                     out.append(cls.simplify_value(subvalue))
                 except NotImplementedError:
-                    print "Problem", type(subvalue)
                     pass
             if isinstance(value, tuple):
                 return tuple(out)
@@ -268,7 +267,6 @@ Supported ranges are:
         elif isinstance(value, Point):
             return cls.simplify_value(list(value))
         else:
-            print "Couldn't simplify", type(value)
             raise NotImplementedError
 
     XML_DATATYPES = (
@@ -291,7 +289,6 @@ Supported ranges are:
             '_type': '%s.%s' % (obj.__module__[:-7], obj._meta.object_name),
             '_pk': obj.pk,
         }
-        print "EEE", type(obj), hasattr(obj, 'get_absolute_url')
         if hasattr(obj, 'get_absolute_url'):
             out['_url'] = obj.get_absolute_url()
         if terse:
