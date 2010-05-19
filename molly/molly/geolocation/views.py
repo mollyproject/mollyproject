@@ -1,6 +1,7 @@
+import urllib
 from datetime import datetime, timedelta
 
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import resolve, reverse
 from django.http import HttpResponseRedirect, Http404
 from django.contrib.gis.geos import Point
 from django.conf import settings
@@ -15,13 +16,30 @@ from .forms import LocationUpdateForm
 from .utils import geocode, reverse_geocode
 
 class IndexView(BaseView):
-    breadcrumb = NullBreadcrumb
-
-    def handle_GET(cls, request, context):
-        raise Http404
-
-class LocationUpdateView(BaseView):
-    breadcrumb = NullBreadcrumb
+    @BreadcrumbFactory
+    def breadcrumb(cls, request, context):
+        try:
+            parent_view, args, kwargs = resolve(request.REQUEST['return_url'])
+            parent_data = parent_view.breadcrumb.data(cls, request, context, *args, **kwargs)
+            parent_data = parent_data.parent(cls, request, context)
+            
+            parent = lambda _1, _2, _3: parent_data
+            application = parent_data.application
+        except Exception:
+            application = 'home'
+            parent = lambda _1,_2,_3: type(
+                'BC', (), {
+                    'application': 'home',
+                    'title': 'Back...',
+                    'url':staticmethod(lambda:request.REQUEST.get('return_url', reverse('home:index')))
+                }
+            )
+        return Breadcrumb(
+            application,
+            parent,
+            'Update location',
+            lazy_reverse('geolocation:index'),
+        )
 
     def initial_context(cls, request):
         data = dict(request.REQUEST.items())
@@ -81,16 +99,20 @@ class LocationUpdateView(BaseView):
                              form.cleaned_data['location'],
                              form.cleaned_data['accuracy'],
                              form.cleaned_data['method'])
-        
-            context.update({
+
+        if context.get('return_url'):
+            redirect = context['return_url']
+        else:
+            redirect = None
+            
+        if context['format'] == 'json':
+            return cls.render(request, {
                 'name': form.cleaned_data['name'],
-                'location': form.cleaned_data['location'],
-                'accuracy': form.cleaned_data['accuracy'],
-                'method': form.cleaned_data['method'],
-            })
-
-        return cls.render(request, context, None)
-
+                'redirect': redirect,
+            }, None)
+        else:
+            return HttpResponseRedirect(redirect)
+            
     @renderer(format="embed", mimetypes=())
     def render_embed(cls, request, context, template_name):
         return cls.render_html(request, context, template_name)
@@ -103,7 +125,7 @@ class LocationUpdateView(BaseView):
             else:
                 return HttpResponseRedirect(reverse('core:index'))
         else:
-            return super(LocationUpdateView, cls).render_html(request, context, template_name)
+            return super(IndexView, cls).render_html(request, context, template_name)
 
     def set_location(cls, request, name, location, accuracy, method):
         if isinstance(location, list):
@@ -160,8 +182,8 @@ class LocationRequiredView(BaseView):
         if not cls.is_location_required(request, *args, **kwargs) or request.session.get('geolocation:location'):
             return super(LocationRequiredView, cls).__new__(cls, request, *args, **kwargs)
         else:
-            request.GET = dict(request.GET.items())
-            request.GET['return_url'] = request.path
-            request.requiring_location = True
-            return LocationUpdateView(request)
+            return HttpResponseSeeOther('%s?%s' % (
+                reverse('geolocation:index'),
+                urllib.urlencode({'return_url': request.get_full_path()}),
+            ))
 
