@@ -37,6 +37,11 @@ class IndexView(BaseView):
             lazy_reverse('places:index')
         )
 
+    def initial_context(cls, request):
+        return {
+            'return_url': request.get_full_path(),
+        }
+
     def handle_GET(cls, request, context):
         return cls.render(request, context, 'places/index')
 

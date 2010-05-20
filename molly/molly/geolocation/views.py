@@ -18,11 +18,19 @@ from .utils import geocode, reverse_geocode
 class IndexView(BaseView):
     @BreadcrumbFactory
     def breadcrumb(cls, request, context):
+        if not request.REQUEST.get('return_url'):
+            return Breadcrumb(
+                cls.conf.local_name,
+                None,
+                'Update location',
+                lazy_reverse('geolocation:index'),
+            )
+
         try:
             parent_view, args, kwargs = resolve(request.REQUEST['return_url'])
             parent_data = parent_view.breadcrumb.data(cls, request, context, *args, **kwargs)
             parent_data = parent_data.parent(cls, request, context)
-            
+
             parent = lambda _1, _2, _3: parent_data
             application = parent_data.application
         except Exception:
@@ -102,8 +110,10 @@ class IndexView(BaseView):
 
         if context.get('return_url'):
             redirect = context['return_url']
-        else:
+        elif context['format'] == 'json':
             redirect = None
+        else:
+            redirect = reverse('home:index')
             
         if context['format'] == 'json':
             return cls.render(request, {
