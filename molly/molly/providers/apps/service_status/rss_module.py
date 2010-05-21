@@ -35,9 +35,6 @@ class RSSModuleServiceStatusProvider(object):
                 'averageResponseTime': self.safe_parse(float, service.get('ss_averageresponsetime')),
                 'statusMessage': service.get('ss_statusmessage'),
             })
-            print service
-            print services[-1]
-
             services[-1]['status'] = {0: 'down', 100: 'up', None: {True: 'up', False: 'down', }.get(services[-1]['responding'], 'unknown')}.get(services[-1]['availability'], 'partial')
 
         return services

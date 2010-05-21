@@ -271,14 +271,10 @@ def validate_isxn(s):
     def ean_checksum(s):
         return sum(d*m for d,m in zip(s, cycle([1,3]))) % 10
         
-    print "Foo", s
     s = re.sub('[*#]', 'X', s.replace('-','').strip().upper())
-    print "Foo", s
     if not re.match("97[789]\d{10}|\d{7}(\d{2})?[\dX]$", s):
-        print "EEK"
         return None, None
     s = decode(s)
-    print "Foo", s
         
     if len(s) == 13:
         if ean_checksum(s) != 0:
