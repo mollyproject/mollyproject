@@ -108,7 +108,7 @@ class IndexView(BaseView):
                              form.cleaned_data['accuracy'],
                              form.cleaned_data['method'])
 
-        if context.get('return_url'):
+        if context.get('return_url').startswith('/'):
             redirect = context['return_url']
         elif context['format'] == 'json':
             redirect = None
