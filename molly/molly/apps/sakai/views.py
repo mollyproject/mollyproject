@@ -234,13 +234,13 @@ class PollDetailView(SakaiView):
         }
         
     @BreadcrumbFactory
-    def breadcrumb(cls, request, context, opener, id):
+    def breadcrumb(cls, request, context, id):
         return Breadcrumb(
             cls.conf.local_name,
-            lazy_parent(PollIndexView, opener),
+            lazy_parent(PollIndexView),
             "Poll: %s" % context['poll']['text'],
             lazy_reverse('sakai:poll-detail'),
         )
         
-    def handle_GET(cls, request, context, opener, id):
+    def handle_GET(cls, request, context, id):
         return cls.render(request, context, 'sakai/poll/detail')
