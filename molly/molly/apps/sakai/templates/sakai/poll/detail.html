@@ -10,12 +10,19 @@
     {{ poll.details }}
   </div>
 {% endif %}
-  
+
+<form method="POST" action="">
     <ul>
 {% for option in options %}
-      <li{% if forloop.last %} class="round-bottom"{% endif %}>{{ option.text }}</li>
+      <li{% if forloop.last %} class="round-bottom"{% endif %}>
+          <input type="radio" name="pollOption" value="{{ option.id }}" id="pollOption-{{ option.id }}"/>
+          <label for="pollOption-{{ option.id }}">{{ option.text }}</label>
+      </li>
 {% endfor %}
     </ul>
+    
+    <input type="submit"/>
+</form>
 </div>
       
 

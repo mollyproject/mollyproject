@@ -3,12 +3,12 @@ import urllib, urllib2, pytz, simplejson
 from xml.etree import ElementTree as ET
 import xml.utils.iso8601
 
-from django.http import HttpResponseRedirect, Http404
+from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.core.urlresolvers import reverse
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
-
+from molly.utils.http import HttpResponseSeeOther
 
 
 def parse_iso_8601(s):
@@ -124,8 +124,7 @@ class SignupEventView(SakaiView):
                 raise Http404
             else:
                 raise
-        
-        
+
         return {
             'event': event,
             'signedUp': any(e['signedUp'] for e in event['signupTimeSlotItems']),
@@ -165,7 +164,7 @@ class SignupEventView(SakaiView):
             'complex_shorten': True,
         }
         
-        return HttpResponseRedirect(request.path)
+        return HttpResponseSeeOther(request.path)
 
 class SiteView(SakaiView):
     def handle_GET(cls, request, context):
@@ -244,3 +243,25 @@ class PollDetailView(SakaiView):
         
     def handle_GET(cls, request, context, id):
         return cls.render(request, context, 'sakai/poll/detail')
+
+    def handle_POST(cls, request, context, id):
+        print simplejson.dumps({
+                    'pollId': int(id),
+                    'pollOption': int(request.POST['pollOption']),
+            })
+            
+        try:
+            response = request.opener.open(
+                cls.build_url('direct/poll-vote/new'), 
+                data = simplejson.dumps({
+                    'pollId': int(id),
+                    'pollOption': int(request.POST['pollOption']),
+            }))
+        except urllib2.HTTPError, e:
+            return HttpResponse(e.read(), mimetype="text/html")
+            if e.code == 204:
+                pass
+            else:
+                raise
+        
+        return HttpResponseSeeOther(request.path)
