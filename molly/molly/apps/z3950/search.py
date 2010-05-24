@@ -3,6 +3,8 @@ from datetime import datetime
 from PyZ3950 import zoom
 from itertools import cycle
 
+from PyZ3950.zmarc import MARC, MARC8_to_Unicode
+
 from django.conf import settings
 from django.core.urlresolvers import reverse
 
@@ -73,7 +75,7 @@ class Library(object):
     @require_json
     def __unicode__(self):
         if self.oxpoints_id:
-            return "%s (%d)" % (self.oxpoints_entity.title, self.oxpoints_id)
+            return "%s (%s)" % (self.oxpoints_entity.title, self.oxpoints_id)
         else:
             return " - ".join(self.location)
     __repr__ = __unicode__
@@ -101,7 +103,6 @@ class OLISResult(object):
     USM_LOCATION = 852
 
     def __init__(self, result):
-        self.result = result
         self.str = str(result)
         self.metadata = {OLISResult.USM_LOCATION: []}
 
@@ -112,12 +113,12 @@ class OLISResult(object):
             if heading == OLISResult.USM_CONTROL_NUMBER:
                 # We strip the 'UkOxUb' from the front.
                 self.control_number = data[6:]
-            
+
             # We'll use a slice as data may not contain that many characters.
             # LCN 12110145 is an example where this would otherwise fail.    
             if data[2:3] != '$':
                 continue
-            
+
             subfields = data[3:].split(' $')
             subfields = [(s[0], s[1:]) for s in subfields]
 
@@ -128,8 +129,10 @@ class OLISResult(object):
             for subfield_id, content in subfields:
                 if not subfield_id in m:
                     m[subfield_id] = []
-                m[subfield_id].append(content.decode('iso-8859-1'))
+                m[subfield_id].append(content)
             self.metadata[heading].append(m)
+
+        self.metadata = marc_to_unicode(self.metadata)
 
         self.libraries = {}
 
@@ -156,9 +159,9 @@ class OLISResult(object):
                 shelfmark = "Copy %s" % datum['t'][0]
             else:
                 shelfmark = None
-                
+
             materials_specified = datum['3'][0] if '3' in datum else None
-            
+
             if not library in self.libraries:
                 self.libraries[library] = []
             self.libraries[library].append( {
@@ -168,10 +171,26 @@ class OLISResult(object):
                 'shelfmark': shelfmark,
                 'materials_specified': materials_specified,
             } )
-            
+
         for library in self.libraries:
             library.availability = max(l['availability'] for l in self.libraries[library])
+
+    def simplify_for_render(self, simplify_value, simplify_model):
+        return {
+            '_type': 'z3950.Item',
+            '_pk': self.control_number,
+            'title': self.title,
+            'publisher': self.publisher,
+            'author': self.author,
+            'description': self.description,
+            'edition': self.edition,
+            'copies': self.copies,
+            'holding_libraries': self.holding_libraries,
+            'isbns': simplify_value(self.isbns()),
+            'issns': simplify_value(self.issns()),
+            'holdings': simplify_value(self.libraries),
             
+        }
 
     def _metadata_property(heading, sep=' '):
         def f(self):
@@ -180,7 +199,7 @@ class OLISResult(object):
             field = self.metadata[heading][0]
             return sep.join(' '.join(field[k]) for k in sorted(field))
         return property(f)
-    
+
     title = _metadata_property(USM_TITLE_STATEMENT)
     publisher = _metadata_property(USM_PUBLICATION)
     author = _metadata_property(USM_AUTHOR)
@@ -194,15 +213,34 @@ class OLISResult(object):
             return [a.get('a', ["%s (invalid)" % a.get('z', ['Unknown'])[0]])[0] for a in self.metadata[OLISResult.USM_ISBN]]
         else:
             return []
-    
+
     def issns(self):
         if OLISResult.USM_ISSN in self.metadata:
             return [a['a'][0] for a in self.metadata[OLISResult.USM_ISSN]]
         else:
             return []
-    
+
     def __unicode__(self):
         return self.title
+
+def marc_to_unicode(x):
+    translator = MARC8_to_Unicode()
+    def f(y):
+        if isinstance(y, dict):
+            return dict((k,f(y[k])) for k in y)
+        elif isinstance(y, tuple):
+            return tuple(f(e) for e in y)
+        elif isinstance(y, list):
+            return [f(e) for e in y]
+        elif isinstance(y, str):
+            if any((ord(c) > 127) for c in y):
+                # "The ESC character 0x1B is mapped to the no-break space
+                #  character, unless it is part of a valid ESC sequence"
+                #      -- http://unicode.org/Public/MAPPINGS/ETSI/GSM0338.TXT
+                return translator.translate(y).replace(u'\x1b', u'\xa0')
+            else:
+                return y.decode('ascii').replace(u'\x1b', u'\xa0')
+    return f(x)
 
 class OLISSearch(object):
     def __init__(self, query, conf):
@@ -212,15 +250,15 @@ class OLISSearch(object):
         )
         self.connection.databaseName = getattr(conf, 'database')
         self.connection.preferredRecordSyntax = getattr(conf, 'syntax', 'USMARC')
-        
+
         self.query = zoom.Query('CCL', query)
-        
+
         self.results = self.connection.search(self.query)
-        
+
     def __iter__(self):
         for r in self.results:
             yield OLISResult(r)
-        
+
     def __len__(self):
         return len(self.results)        
 
@@ -230,9 +268,9 @@ class OLISSearch(object):
                 raise NotImplementedError("Stepping not supported")
             return map(OLISResult, self.results.__getslice__(key.start, key.stop))
         return OLISResult(self.results[key])        
-        
+
 class ISBNOrISSNSearch(OLISSearch):
-    def __init__(self, number, provider, number_type=None):
+    def __init__(self, number, conf, number_type=None):
         if not number_type:
             number, number_type = validate_isxn(number)
         if number_type == 'issn':
@@ -240,12 +278,12 @@ class ISBNOrISSNSearch(OLISSearch):
             query = '(1,8)=%s' % number
         else:
             query = 'isbn=%s' % number
-        super(ISBNOrISSNSearch, self).__init__(query, provider)
+        super(ISBNOrISSNSearch, self).__init__(query, conf)
 
 class ControlNumberSearch(OLISSearch):
-    def __init__(self, control_number, provider):
+    def __init__(self, control_number, conf):
         query = '(1,1032)="%s"' % control_number
-        super(ControlNumberSearch, self).__init__(query, provider)
+        super(ControlNumberSearch, self).__init__(query, conf)
 
 def isxn_checksum(s, initial=None):
     if not initial:
@@ -254,7 +292,7 @@ def isxn_checksum(s, initial=None):
     for d in s:
         cs, initial = (cs + (d*initial)) % 11, initial - 1
     return cs
-        
+
 def validate_isxn(s):
 
     def encode(s):
@@ -270,16 +308,12 @@ def validate_isxn(s):
         return cs
     def ean_checksum(s):
         return sum(d*m for d,m in zip(s, cycle([1,3]))) % 10
-        
-    print "Foo", s
+
     s = re.sub('[*#]', 'X', s.replace('-','').strip().upper())
-    print "Foo", s
     if not re.match("97[789]\d{10}|\d{7}(\d{2})?[\dX]$", s):
-        print "EEK"
         return None, None
     s = decode(s)
-    print "Foo", s
-        
+
     if len(s) == 13:
         if ean_checksum(s) != 0:
             return None, None
@@ -295,14 +329,13 @@ def validate_isxn(s):
         if cs != 0:
             return None, None
         return encode(s), ('issn' if len(s) == 8 else 'isbn')
-        
 
 class SiteSearch(object):
     def __new__(cls, query, only_app, request):
         number, number_type = validate_isxn(query)
         if not number_type:
             return [], False, None
-            
+
         results, items = [], ISBNOrISSNSearch(number, number_type)
         for item in items:
             results.append({
@@ -313,8 +346,5 @@ class SiteSearch(object):
                 'additional': '<strong>Library item</strong>, Publisher: %s' % item.publisher,
                 'url': reverse('z3950_item_detail', args=[item.control_number]),
             })
-            
+
         return results, False, None
-                
-            
-                

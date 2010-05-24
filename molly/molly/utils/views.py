@@ -208,7 +208,7 @@ Supported ranges are:
     @renderer(format="xml", mimetypes=('application/xml', 'text/xml'))
     def render_xml(cls, request, context, template_name):
         context = cls.simplify_value(context)
-        return HttpResponse(ET.tostring(cls.serialize_to_xml(context)), mimetype="application/xml")
+        return HttpResponse(ET.tostring(cls.serialize_to_xml(context), encoding='UTF-8'), mimetype="application/xml")
 
     @renderer(format="yaml", mimetypes=('application/x-yaml',))
     def render_yaml(cls, request, context, template_name):
@@ -236,8 +236,9 @@ Supported ranges are:
         elif isinstance(value, dict):
             out = {}
             for key in value:
+                new_key = key if isinstance(key, (basestring, int)) else str(key)
                 try:
-                    out[key] = cls.simplify_value(value[key])
+                    out[new_key] = cls.simplify_value(value[key])
                 except NotImplementedError:
                     pass
             return out
@@ -247,7 +248,6 @@ Supported ranges are:
                 try:
                     out.append(cls.simplify_value(subvalue))
                 except NotImplementedError:
-                    print "Problem", type(subvalue)
                     pass
             if isinstance(value, tuple):
                 return tuple(out)
@@ -256,19 +256,18 @@ Supported ranges are:
         elif isinstance(value, (basestring, int, float)):
             return value
         elif isinstance(value, (datetime, date)):
-            return DateUnicode(context.isoformat(' '))
+            return DateUnicode(value.isoformat(' '))
         elif hasattr(type(value), '__mro__') and models.Model in type(value).__mro__:
             return cls.simplify_model(value)
         elif isinstance(value, Paginator):
             return cls.simplify_value(value.object_list)
         elif value is None:
             return None
-        elif hasattr(value, '__iter__'):
-            return [cls.simplify_value(item) for item in value]
         elif isinstance(value, Point):
             return cls.simplify_value(list(value))
+        elif hasattr(value, '__iter__'):
+            return [cls.simplify_value(item) for item in value]
         else:
-            print "Couldn't simplify", type(value)
             raise NotImplementedError
 
     XML_DATATYPES = (
@@ -291,7 +290,6 @@ Supported ranges are:
             '_type': '%s.%s' % (obj.__module__[:-7], obj._meta.object_name),
             '_pk': obj.pk,
         }
-        print "EEE", type(obj), hasattr(obj, 'get_absolute_url')
         if hasattr(obj, 'get_absolute_url'):
             out['_url'] = obj.get_absolute_url()
         if terse:
