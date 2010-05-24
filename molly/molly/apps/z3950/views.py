@@ -112,7 +112,7 @@ class SearchDetailView(BaseView):
 
         context.update({
             'removed': removed,
-            'paginator': paginator,
+            'results': paginator,
             'page': page,
         })
         return cls.render(request, context, 'z3950/item_list')
@@ -159,7 +159,7 @@ AVAIL_COLORS = ['red', 'amber', 'purple', 'blue', 'green']
 
 class ItemDetailView(BaseView):
     def initial_context(cls, request, control_number):
-        items = search.ControlNumberSearch(control_number, cls.conf.provider)
+        items = search.ControlNumberSearch(control_number, cls.conf)
         if len(items) == 0:
                 raise Http404
 
