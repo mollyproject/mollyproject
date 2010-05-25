@@ -12,7 +12,6 @@ class ApplicationSearch(object):
         self.conf = conf
 
     def perform_search(self, request, query, is_single_app_search):
-        print "SEARCHING"
         return chain(
             self.nearby_search(request, query, is_single_app_search),
             self.entity_search(request, query, is_single_app_search),
