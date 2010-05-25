@@ -42,12 +42,12 @@ def require_json(f):
             self._json = None
         return f(self, *args, **kwargs)
     return g
- 
+
 class Library(object):
     LIBRARY_URL = "http://m.ox.ac.uk/oxpoints/hasOLISCode/%s.json"
     def __init__(self, location):
         self.location = tuple(location)
-       
+
     @property
     def oxpoints_id(self):
         def f(self):
@@ -57,7 +57,7 @@ class Library(object):
             return require_json(f)(self)
         except:
             return None
-        
+
     @property
     @require_json
     def oxpoints_entity(self):
@@ -66,12 +66,12 @@ class Library(object):
         except AttributeError:
             self._oxpoints_entity = Entity.objects.get(_identifiers__scheme='oxpoints', _identifiers__value = self.oxpoints_id)
             return self._oxpoints_entity
-            
+
     @property
     @require_json
     def oxpoints_location(self):
         return self.oxpoints_entity.location
-    
+
     @require_json
     def __unicode__(self):
         if self.oxpoints_id:
@@ -79,13 +79,13 @@ class Library(object):
         else:
             return " - ".join(self.location)
     __repr__ = __unicode__
-        
+
     def __hash__(self):
         return hash((type(self), self.location))
-        
+
     def __eq__(self, other):
         return self.location == other.location
-        
+
     def availability_display(self):
         return [
             'unavailable', 'unknown', 'stack', 'reference', 'available'
@@ -115,7 +115,7 @@ class OLISResult(object):
                 self.control_number = data[6:]
 
             # We'll use a slice as data may not contain that many characters.
-            # LCN 12110145 is an example where this would otherwise fail.    
+            # LCN 12110145 is an example where this would otherwise fail.
             if data[2:3] != '$':
                 continue
 
@@ -189,7 +189,6 @@ class OLISResult(object):
             'isbns': simplify_value(self.isbns()),
             'issns': simplify_value(self.issns()),
             'holdings': simplify_value(self.libraries),
-            
         }
 
     def _metadata_property(heading, sep=' '):
@@ -260,14 +259,14 @@ class OLISSearch(object):
             yield OLISResult(r)
 
     def __len__(self):
-        return len(self.results)        
+        return len(self.results)
 
     def __getitem__(self, key):
         if isinstance(key, slice):
             if key.step:
                 raise NotImplementedError("Stepping not supported")
             return map(OLISResult, self.results.__getslice__(key.start, key.stop))
-        return OLISResult(self.results[key])        
+        return OLISResult(self.results[key])
 
 class ISBNOrISSNSearch(OLISSearch):
     def __init__(self, number, conf, number_type=None):

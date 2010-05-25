@@ -97,15 +97,9 @@ APPLICATIONS = [
     Application('molly.apps.home', 'home', 'Home',
         display_to_user = False,
     ),
+
     Application('molly.apps.contact', 'contact', 'Contact search',
         provider = 'molly.contrib.oxford.providers.ScrapingContactProvider',
-    ),
-
-    Application('molly.apps.weather', 'weather', 'Weather',
-        location_id = 'bbc/25',
-        provider = SimpleProvider('molly.providers.apps.weather.BBCWeatherProvider',
-            location_id = 25,
-        ),
     ),
 
     Application('molly.apps.places', 'places', 'Places',
@@ -143,38 +137,6 @@ APPLICATIONS = [
         database = 'MAIN*BIBMAST',
     ),
 
-    Application('molly.apps.service_status', 'service_status', 'Service status',
-        providers = [
-            'molly.contrib.oxford.providers.OUCSStatusProvider',
-            SimpleProvider('molly.providers.apps.service_status.RSSModuleServiceStatusProvider',
-                name='Oxford Library Information Services',
-                slug='olis',
-                url='http://www.lib.ox.ac.uk/olis/status/olis-opac.rss')
-        ],
-    ),
-
-    Application('molly.apps.sakai', 'weblearn', 'WebLearn',
-        host = 'https://weblearn.ox.ac.uk/',
-        service_name = 'WebLearn',
-        secure = True,
-        tools = [
-            ('signup', 'Tutorial sign-ups'),
-            ('poll', 'Polls'),
-            ('direct', 'User information'),
-            ('sites', 'Sites'),
-        ],
-        extra_bases = (
-            ExtraBase('molly.auth.oauth.views.OAuthView',
-                secret = SECRETS.weblearn,
-                signature_method = OAuthSignatureMethod_PLAINTEXT(),
-                base_url = 'https://weblearn.ox.ac.uk/oauth-tool/',
-                request_token_url = 'request_token',
-                access_token_url = 'access_token',
-                authorize_url = 'authorize',
-            ),
-        ),
-    ),
-
     Application('molly.apps.podcasts', 'podcasts', 'Podcasts',
         providers = [
             SimpleProvider('molly.providers.apps.podcasts.OPMLPodcastsProvider',
@@ -186,6 +148,27 @@ APPLICATIONS = [
                 ],
             ),
         ]
+    ),
+
+    Application('molly.apps.webcams', 'webcams', 'Webcams'),
+
+    Application('demos.molly_oxford.apps.results', 'results', 'Results releases'),
+
+    Application('molly.apps.weather', 'weather', 'Weather',
+        location_id = 'bbc/25',
+        provider = SimpleProvider('molly.providers.apps.weather.BBCWeatherProvider',
+            location_id = 25,
+        ),
+    ),
+
+    Application('molly.apps.service_status', 'service_status', 'Service status',
+        providers = [
+            'molly.contrib.oxford.providers.OUCSStatusProvider',
+            SimpleProvider('molly.providers.apps.service_status.RSSModuleServiceStatusProvider',
+                name='Oxford Library Information Services',
+                slug='olis',
+                url='http://www.lib.ox.ac.uk/olis/status/olis-opac.rss')
+        ],
     ),
 
     Application('molly.apps.search', 'search', 'Search',
@@ -203,9 +186,13 @@ APPLICATIONS = [
         display_to_user = False,
     ),
 
-    Application('molly.apps.webcams', 'webcams', 'Webcams'),
+    Application('molly.apps.feeds', 'feeds', 'Feeds',
+        providers = [
+            SimpleProvider('molly.providers.apps.feeds.RSSFeedsProvider'),
+        ]
+    ),
 
-    Application('demos.molly_oxford.apps.results', 'results', 'Results releases'),
+    Application('molly.apps.feeds.news', 'news', 'News'),
 
     Application('molly.osm', 'osm', 'OpenStreetMap',
         display_to_user = False,
@@ -222,24 +209,6 @@ APPLICATIONS = [
         display_to_user = False,
     ),
 
-    Application('molly.apps.feeds', 'feeds', 'Feeds',
-        providers = [
-            SimpleProvider('molly.providers.apps.feeds.RSSFeedsProvider'),
-        ]
-    ),
-    Application('molly.apps.feeds.events', 'events', 'Events',
-    ),
-    Application('molly.apps.feeds.news', 'news', 'News',
-    ),
-
-    Application('molly.auth', 'auth', 'Authentication',
-        display_to_user = False,
-    ),
-
-    Application('molly.apps.url_shortener', 'url_shortener', 'URL Shortener',
-        display_to_user = False,
-    ),
-
     Application('molly.apps.feedback', 'feedback', 'Feedback',
         display_to_user = False,
     ),
@@ -248,6 +217,38 @@ APPLICATIONS = [
         display_to_user = False,
     ),
 
+#    Application('molly.apps.url_shortener', 'url_shortener', 'URL Shortener',
+#        display_to_user = False,
+#    ),
+
+#    Application('molly.auth', 'auth', 'Authentication',
+#        display_to_user = False,
+#    ),
+
+#    Application('molly.apps.sakai', 'weblearn', 'WebLearn',
+#        host = 'https://weblearn.ox.ac.uk/',
+#        service_name = 'WebLearn',
+#        secure = True,
+#        tools = [
+#            ('signup', 'Tutorial sign-ups'),
+#            ('poll', 'Polls'),
+#            ('direct', 'User information'),
+#            ('sites', 'Sites'),
+#        ],
+#        extra_bases = (
+#            ExtraBase('molly.auth.oauth.views.OAuthView',
+#                secret = SECRETS.weblearn,
+#                signature_method = OAuthSignatureMethod_PLAINTEXT(),
+#                base_url = 'https://weblearn.ox.ac.uk/oauth-tool/',
+#                request_token_url = 'request_token',
+#                access_token_url = 'access_token',
+#                authorize_url = 'authorize',
+#            ),
+#        ),
+#    ),
+
+#    Application('molly.apps.feeds.events', 'events', 'Events',
+#    ),
 ]
 
 API_KEYS = {

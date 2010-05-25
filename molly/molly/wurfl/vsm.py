@@ -67,7 +67,6 @@ class Vector(object):
                         out += u[i][1]*v[j][1]
             except IndexError:
                 return out
-            print "Baa"
         else:
             return Vector(tuple((k,v*other) for (k,v) in self.value))
         

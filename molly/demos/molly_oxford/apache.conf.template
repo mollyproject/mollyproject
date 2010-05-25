@@ -7,12 +7,37 @@ WSGISocketPrefix /var/run/wsgi
 
     SetOutputFilter DEFLATE 
 
+<<<<<<< HEAD
+#    WSGIApplicationGroup %%{GLOBAL}
+#    WSGIDaemonProcess molly user=apache group=apache threads=5
+#    WSGIProcessGroup molly
+#    WSGIScriptAlias / %(root)s/molly_oxford.wsgi
+
+
+    <Location />
+        SetHandler python-program
+        PythonHandler django.core.handlers.modpython
+        SetEnv DJANGO_SETTINGS_MODULE demos.molly_oxford.settings
+        PythonPath "['%(root)s/../../'] + sys.path"
+    </Location>
+
+=======
     WSGIDaemonProcess molly user=apache group=apache threads=5
     WSGIProcessGroup molly
     WSGIScriptAlias / %(root)s/molly_oxford.wsgi
+>>>>>>> master
 
     <Location />
         Order allow,deny
         Allow from all
     </Location>
+<<<<<<< HEAD
+    <Location /site-media/>
+        SetHandler None
+        Header set Cache-Control "public"
+        ExpiresActive On
+        ExpiresDefault "access plus 1 day"
+    </Location>
+=======
+>>>>>>> master
 </VirtualHost>

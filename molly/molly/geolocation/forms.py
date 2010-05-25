@@ -54,10 +54,7 @@ class LocationUpdateForm(forms.Form):
                                 self.cleaned_data['longitude'],
                                 self.cleaned_data['latitude'])[0]['name']
                         except:
-                            raise
                             cleaned_data['name'] = None
-                        print "LOC NAME", cleaned_data['name']
-                    print "FOO NAME"
             elif cleaned_data['method'] in ('denied', 'error'):
                 for key in ('latitude', 'longitude', 'accuracy'):
                     if cleaned_data.get(key) is None:

@@ -71,7 +71,6 @@ class MetadataView(BaseView):
 
     def handle_POST(cls, request, context, ptype):
         data = simplejson.loads(request.raw_post_data)
-        print data
         #return HttpResponse(simplejson.dumps({
         #    'status': 'Debug',
         #    'changes': {},
@@ -95,7 +94,6 @@ class MetadataView(BaseView):
                 'changes': {},
             }))
         changeset = response.read()
-        print 'CS', changeset
         
         osmchange = cls.get_osmchange(data['changes'], changeset)
         
@@ -106,7 +104,6 @@ class MetadataView(BaseView):
         try:
             response = urllib2.urlopen(request)
         except Exception, e:
-            print "error 2"
             return HttpResponse(simplejson.dumps({
                 'status': 'There was an error uploading the diff: %s' % e.read(),
                 'changes': {},

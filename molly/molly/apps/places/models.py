@@ -140,6 +140,16 @@ class Entity(models.Model):
             all_types |= set(t.subtype_of_completion.all())
         if set(self.all_types_completion.all()) != all_types:
             self.all_types_completion = all_types
+            self.metadata['types'] = [t.slug for t in all_types]
+    
+    @property
+    def all_types_slugs(self):
+        try:
+            return self.metadata['types']
+        except:
+            self.metadata['types'] = [t.slug for t in self.all_types_completion.all()]
+            self.save()
+            return self.metadata['types']
                 
     def delete(self, *args, **kwargs):
         for identifier in self._identifiers.all():

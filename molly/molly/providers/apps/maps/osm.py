@@ -97,7 +97,7 @@ class OSMHandler(handler.ContentHandler):
                 entity = Entity(source=self.source)
                 created = False
 
-            if True or not 'osm' in entity.metadata or entity.metadata['osm'].get('attrs', {}).get('timestamp', '') < self.attrs['timestamp']:
+            if not 'osm' in entity.metadata or entity.metadata['osm'].get('attrs', {}).get('timestamp', '') < self.attrs['timestamp']:
 
                 if created:
                     self.create_count += 1
@@ -155,8 +155,6 @@ class OSMHandler(handler.ContentHandler):
                 entity.delete()
                 self.delete_count += 1
 
-        self.disambiguate_titles()
-
         self.output.write("""\
 Complete
   Created:   %6d
@@ -172,29 +170,7 @@ Complete
             self.ignore_count,
         ))
 
-    def disambiguate_titles(self):
-        entities = Entity.objects.filter(source=self.source)
-        inferred_names = {}
-        for entity in entities:
-            inferred_name = entity.metadata['osm']['tags'].get('name') or entity.metadata['osm']['tags'].get('operator')
-            if not inferred_name:
-                continue
-            if not inferred_name in inferred_names:
-                inferred_names[inferred_name] = set()
-            inferred_names[inferred_name].add(entity)
 
-        for inferred_name, entities in inferred_names.items():
-            if len(entities) > 1:
-                for entity in entities:
-                    entity.title = u"%s, %s" % (inferred_name, entity.metadata['osm']['tags'].get('addr:street'))
-                    continue
-
-                    try:
-                        entity.title = u"%s, %s" % (inferred_name, reverse_geocode(entity.location[1], entity.location[0])[0][0])
-                        entity.save()
-                    except:
-                        self.output.write("Couldn't geocode for %s\n" % inferred_name)
-                        pass
 
 class OSMMapsProvider(BaseMapsProvider):
     ENGLAND_OSM_BZ2_URL = 'http://download.geofabrik.de/osm/europe/great_britain/england.osm.bz2'
@@ -222,6 +198,8 @@ class OSMMapsProvider(BaseMapsProvider):
         parser = make_parser()
         parser.setContentHandler(OSMHandler(self._get_source(), self._get_entity_types(), self._find_types, output))
         parser.parse(p[0])
+        
+        self.disambiguate_titles(self._get_source())
 
         return {
             'etag': new_etag,
@@ -374,6 +352,32 @@ class OSMMapsProvider(BaseMapsProvider):
             return found_types
         else:
             raise ValueError
+
+    def disambiguate_titles(self, source):
+        entities = Entity.objects.filter(source=source)
+        inferred_names = {}
+        for entity in entities:
+            inferred_name = entity.metadata['osm']['tags'].get('name') or entity.metadata['osm']['tags'].get('operator')
+            if not inferred_name:
+                continue
+            if not inferred_name in inferred_names:
+                inferred_names[inferred_name] = set()
+            inferred_names[inferred_name].add(entity)
+
+        for inferred_name, entities in inferred_names.items():
+            if len(entities) > 1:
+                for entity in entities:
+                    if entity.metadata['osm']['tags'].get('addr:street'):
+                        entity.title = u"%s, %s" % (inferred_name, entity.metadata['osm']['tags'].get('addr:street'))
+                        continue
+
+                    try:
+                        name = reverse_geocode(entity.location[0], entity.location[1])[0]['name']
+                        if name:
+                            entity.title = u"%s, %s" % (inferred_name, name)
+                            entity.save()
+                    except:
+                        self.output.write("Couldn't geocode for %s\n" % inferred_name)
 
 if __name__ == '__main__':
     provider = OSMMapsProvider()

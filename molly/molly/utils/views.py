@@ -150,9 +150,9 @@ class BaseView(object):
         return zoom
 
     def render(cls, request, context, template_name):
-        if request.GET.get('format') in cls.FORMATS:
-            renderer = cls.FORMATS[request.GET['format']]
-        elif 'format' in request.GET:
+        if request.REQUEST.get('format') in cls.FORMATS:
+            renderer = cls.FORMATS[request.REQUEST['format']]
+        elif 'format' in request.REQUEST:
             return cls.not_acceptable(request)
         #elif request.is_ajax():
         #    renderer = cls.FORMATS['json']

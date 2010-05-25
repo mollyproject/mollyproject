@@ -8,4 +8,4 @@ class Command(NoArgsCommand):
     help = "Runs a batch job"
 
     def handle(self, *args, **options):
-        print run_batch(*args[0:3])
+        run_batch(*args[0:3])

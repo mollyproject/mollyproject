@@ -37,6 +37,11 @@ class IndexView(BaseView):
             lazy_reverse('places:index')
         )
 
+    def initial_context(cls, request):
+        return {
+            'return_url': request.get_full_path(),
+        }
+
     def handle_GET(cls, request, context):
         return cls.render(request, context, 'places/index')
 
@@ -77,8 +82,8 @@ class NearbyListView(LocationRequiredView):
             et.entities_found = 0
 
         for e in entities:
-            for et in e.all_types_completion.all():
-                et = entity_types_map[et.slug]
+            for et in e.all_types_slugs:
+                et = entity_types_map[et]
                 if not et in flat_entity_types:
                     continue
                 if (e.distance.m ** 0.75) * (et.entities_found + 1) > 500:

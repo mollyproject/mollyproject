@@ -14,26 +14,28 @@ urlpatterns = patterns('',
     (r'^service-status/', applications.service_status.urls),
     (r'^weather/', applications.weather.urls),
     (r'^library/', applications.library.urls),
-    (r'^weblearn/', applications.weblearn.urls),
     (r'^podcasts/', applications.podcasts.urls),
     (r'^webcams/', applications.webcams.urls),
     (r'^results/', applications.results.urls),
-    (r'^auth/', applications.auth.urls),
     (r'^search/', applications.search.urls),
     (r'^geolocation/', applications.geolocation.urls),
     (r'^places/', applications.places.urls),
-    (r'^url-shortener/', applications.url_shortener.urls),
     (r'^feedback/', applications.feedback.urls),
-    (r'^events/', applications.events.urls),
     (r'^news/', applications.news.urls),
+    (r'^external-media/', applications.external_media.urls),
     (r'', applications.home.urls),
 
+#    (r'^auth/', applications.auth.urls),
+#    (r'^url-shortener/', applications.url_shortener.urls),
+#    (r'^weblearn/', applications.weblearn.urls),
+#    (r'^events/', applications.events.urls),
+
     # These ones still need work
+
     (r'^osm/', include('molly.osm.urls', 'osm', 'osm')),
 
     # This one shouldn't be shown yet, but the home view chokes if 
     # the namespace isn't known
-    (r'^external-media/', applications.external_media.urls),
 
 )
 
