@@ -27,9 +27,9 @@ class ApplicationSearchProvider(BaseSearchProvider):
             try:
                 results += app.perform_search(request, query, application is not None)
             except Exception, e:
-                raise
                 logger.exception("Application search provider raised exception: %r", e)
-                pass
+        print results
+
         
         print apps
         return results
@@ -50,7 +50,7 @@ class ApplicationSearchProvider(BaseSearchProvider):
             except ImportError:
                 continue
             else:
-                search_provider = _temp.ApplicationSearch(application.conf)
+                search_provider = _temp.ApplicationSearch(application)
 
             self.applications[application.local_name] = search_provider
         print self.applications
