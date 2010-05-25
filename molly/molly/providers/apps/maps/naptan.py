@@ -1,4 +1,6 @@
-import ftplib, os, urllib, zipfile, tempfile, random
+import ftplib, os, urllib, zipfile, tempfile, random, re
+
+from StringIO import StringIO
 
 from xml.sax import ContentHandler, make_parser
 
@@ -113,7 +115,7 @@ class NaptanContentHandler(ContentHandler):
         if 'naptan-code' in meta:
             meta['naptan-code'] = ''.join(map(self.naptan_dial, meta['naptan-code']))
             identifiers['naptan'] = meta['naptan-code']
-        if ind and re.match('Stop [A-Z]\d\d?'):
+        if ind and re.match('Stop [A-Z]\d\d?', ind):
             identifiers['stop'] = ind[5:]
 
         entity.save(identifiers=identifiers)
