@@ -29,7 +29,7 @@
         Previous</a>
 {% endif %}
 
-    Showing results {{ page.start_index }} to {{ page.end_index }} of {{ paginator.object_list|length }}. Page {{ page.number }} of {{ paginator.num_pages }}.
+    Showing results {{ page.start_index }} to {{ page.end_index }} of {{ results.object_list|length }}. Page {{ page.number }} of {{ results.num_pages }}.
 
 {% if page.has_next %}
     <a href="?title={{ search_form.cleaned_data.title|urlencode }}&author={{ search_form.cleaned_data.author|urlencode }}&isbn={{ search_form.cleaned_data.isbn|urlencode }}&page={{ page.next_page_number }}" title="Next page" class="next">
@@ -58,7 +58,7 @@
         Previous</a>
 {% endif %}
 
-    Showing results {{ page.start_index }} to {{ page.end_index }} of {{ paginator.object_list|length }}. Page {{ page.number }} of {{ paginator.num_pages }}.
+    Showing results {{ page.start_index }} to {{ page.end_index }} of {{ results.object_list|length }}. Page {{ page.number }} of {{ results.num_pages }}.
 {% if page.has_next %}
     <a href="?title={{ search_form.cleaned_data.title|urlencode }}&author={{ search_form.cleaned_data.author|urlencode }}&isbn={{ search_form.cleaned_data.isbn|urlencode }}&page={{ page.next_page_number }}" title="Next page" class="next">
         Next
