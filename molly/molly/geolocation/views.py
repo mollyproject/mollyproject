@@ -53,7 +53,7 @@ class IndexView(BaseView):
         data = dict(request.REQUEST.items())
         data['http_method'] = request.method
         return {
-            'form': LocationUpdateForm(data, reverse_geocode = lambda lon, lat:reverse_geocode(lon, lat, cls.conf.local_name)),
+            'form': LocationUpdateForm(data),
             'format': request.REQUEST.get('format'),
             'return_url': request.REQUEST.get('return_url', ''),
             'requiring_url': hasattr(request, 'requiring_url'),

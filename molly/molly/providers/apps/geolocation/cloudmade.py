@@ -80,6 +80,8 @@ class CloudmadeGeolocationProvider(BaseGeolocationProvider):
             centroid = centroid[1], centroid[0]
             accuracy = bounds_a.distance(bounds_b) / 1.414
             try:
+                if feature['properties']['name'] == self.search_locality:
+                    continue
                 results.append({
                     'name': feature['properties']['name'],
                     'location': centroid,

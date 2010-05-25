@@ -3,6 +3,8 @@ from django.forms.util import ErrorList
 
 from molly.conf import applications
 
+from utils import reverse_geocode
+
 METHOD_CHOICES = (
     ('html5', 'HTML5'),
     ('gears', 'Google Gears'),
@@ -21,10 +23,6 @@ class LocationUpdateForm(forms.Form):
     name = forms.CharField(required=False)
     http_method = forms.CharField()
     
-    def __init__(self, *args, **kwargs):
-        self.reverse_geocode = kwargs.pop('reverse_geocode')
-        super(LocationUpdateForm, self).__init__(*args, **kwargs)
-
     def clean_latitude(self):
         latitude = self.cleaned_data.get('latitude')
         if latitude is not None and not (-180 <= latitude < 180):
@@ -50,7 +48,7 @@ class LocationUpdateForm(forms.Form):
                     cleaned_data['location'] = cleaned_data['longitude'], cleaned_data['latitude']
                     if not cleaned_data.get('name'):
                         try:
-                            cleaned_data['name'] = self.reverse_geocode(
+                            cleaned_data['name'] = reverse_geocode(
                                 self.cleaned_data['longitude'],
                                 self.cleaned_data['latitude'])[0]['name']
                         except:
