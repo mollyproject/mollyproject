@@ -16,7 +16,6 @@ def _cached(getargsfunc):
             args = getargsfunc(*args, **kwargs)
             app = get_app('molly.geolocation', args.pop('local_name', None))
             try:
-                raise Geocode.DoesNotExist
                 return Geocode.recent.get(local_name=app.local_name, **args).results
             except Geocode.DoesNotExist:
                 pass
