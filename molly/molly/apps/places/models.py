@@ -11,9 +11,7 @@ class Source(models.Model):
     name = models.CharField(max_length=128)
     last_updated = models.DateTimeField(auto_now=True)
     
-IDENTIFIER_SCHEME_PREFERENCE = ('atco', 'oxpoints', 'osm', 'naptan')
-
-
+IDENTIFIER_SCHEME_PREFERENCE = ('atco', 'oxpoints', 'osm', 'naptan', 'postcode')
 
 class EntityType(models.Model):
     slug = models.SlugField()
