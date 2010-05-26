@@ -291,7 +291,6 @@ function manualLocationSubmit(event) {
                     method: 'geocoded',
                     format: 'json',
                 }, function(data) {
-                    alert(data.name);
                     positionName = form.find('[name=name]').val();
                     cancelManualUpdateLocation();
                     if (data.redirect)
