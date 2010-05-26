@@ -21,7 +21,7 @@ class LocationUpdateForm(forms.Form):
     accuracy = forms.FloatField(required=False)
     method = forms.ChoiceField(required=False, choices=METHOD_CHOICES)
     name = forms.CharField(required=False)
-    http_method = forms.CharField()
+    force = forms.BooleanField(required=False)
     
     def clean_latitude(self):
         latitude = self.cleaned_data.get('latitude')
@@ -38,7 +38,7 @@ class LocationUpdateForm(forms.Form):
     def clean(self):
         cleaned_data = self.cleaned_data
         
-        if cleaned_data['http_method'] == 'POST':
+        if cleaned_data['force']:
             if cleaned_data['method'] in ('html5', 'gears', 'manual', 'geocoded', 'other'):
                 for key in ('latitude', 'longitude', 'accuracy'):
                     if cleaned_data.get(key) is None:

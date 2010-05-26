@@ -117,11 +117,13 @@ function sendPosition(position, final) {
         method: positionMethod,
         format: 'json',
         return_url: $('#return_url').val(),
+        force: 'True',
     }, function(data) {
+        oldPositionName = positionName;
         positionName = data.name;
         $('.location').html(data.name);
         $('.location-status').html('We think you are somewhere near <span class="location">'+data.name+'</span>.');
-        if (data.redirect)
+        if (oldPositionName == null && data.redirect)
             window.location.pathname = data.redirect;
     }, 'json');
 }
@@ -269,12 +271,20 @@ function manualLocationSubmit(event) {
             ' <a class="update-location-cancel" href="#" onclick="javascript:cancelManualUpdateLocation(); return false;">Cancel</a>');
     manualUpdateLocation = $('.manual-update-location').clone(true);
         
-    $.get(base+'geolocation/', {
+    $.post(base+'geolocation/', {
         method: 'geocoded',
         name: $('#location-name').val(),
         format: 'embed',
         return_url: $('#return_url').val(),
-    }, function(data) {
+    }, function(data, textStatus, xhr) {
+        if (xhr.getResponseHeader('X-Embed-Redirect') != null) {
+            if (positionName == null)
+                window.location.pathname = xhr.getResponseHeader('X-Embed-Redirect');
+            positionName = xhr.getResponseHeader('X-Embed-Location-Name');
+            $('.location').html(positionName);
+            cancelManualUpdateLocation();
+            return;
+        }
         
         $('.manual-update-location').html(data);
         $('.submit-location-form').each(function () {
@@ -290,10 +300,13 @@ function manualLocationSubmit(event) {
                     return_url: form.find('[name=return_url]').val(),
                     method: 'geocoded',
                     format: 'json',
+                    force: 'True'
                 }, function(data) {
+                    oldPositionName = positionName;
                     positionName = form.find('[name=name]').val();
+                    $('.location').html(positionName);
                     cancelManualUpdateLocation();
-                    if (data.redirect)
+                    if (oldPositionName == null && data.redirect)
                         window.location.pathname = data.redirect;
                 }, 'json');
                 return false;
