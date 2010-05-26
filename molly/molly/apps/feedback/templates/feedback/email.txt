@@ -11,11 +11,11 @@ Meta
 
 E-mail:      {{ email }}
 Device:      {{ devid }}      
-             {{ http://www.wurflpro.com/device/results?user_agent=&identifier={{ devid|urlencode }}
+             http://www.wurflpro.com/device/results?user_agent=&identifier={{ devid|urlencode }}
 User-agent:  {{ ua }}
-             {{ http://www.wurflpro.com/device/results?user_agent={{ ua|urlencode }}
+             http://www.wurflpro.com/device/results?user_agent={{ ua|urlencode }}
 Referer:     {{ referer }}
-Location:    {% if lat %}http://www.google.co.uk/search?q={{ lat }},{{ lon }}{% else %}None{% endif %}
+Location:    {% if lat %}http://google.co.uk/maps?q={{ lat }},{{ lon }}{% else %}None{% endif %}
 Session key: {{ session_key }}
 
 Message
