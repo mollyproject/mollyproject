@@ -3,7 +3,7 @@ X-Molly-Device-Id: {{ devid }}{% if referer %}
 X-Molly-Referer: {{ referer }}{% endif %}{% if email %}
 X-Molly-Email: {{ email }}
 Reply-To: {{ email }}{% endif %}
-From: molly@example.com
+From: molly@m.ox.ac.uk
 Subject: [Molly] Feedback
 
 Meta
