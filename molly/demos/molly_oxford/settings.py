@@ -85,7 +85,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 )
 
 
-ROOT_URLCONF = 'demos.molly_oxford.urls'
+ROOT_URLCONF = 'molly_oxford.urls'
 
 TEMPLATE_DIRS = (
     os.path.join(project_root, 'templates'),
@@ -109,6 +109,10 @@ APPLICATIONS = [
                 username=SECRETS.journeyweb[0],
                 password=SECRETS.journeyweb[1],
                 areas=('340',),
+            ),
+            SimpleProvider('molly.providers.apps.maps.PostcodesMapsProvider',
+                codepoint_path = '/var/cache/molly/codepo_gb.zip',
+                import_areas = ('OX',),
             ),
             'molly.providers.apps.maps.OxontimeMapsProvider',
             'molly.providers.apps.maps.OxpointsMapsProvider',
@@ -152,7 +156,7 @@ APPLICATIONS = [
 
     Application('molly.apps.webcams', 'webcams', 'Webcams'),
 
-    Application('demos.molly_oxford.apps.results', 'results', 'Results releases'),
+    Application('molly_oxford.apps.results', 'results', 'Results releases'),
 
     Application('molly.apps.weather', 'weather', 'Weather',
         location_id = 'bbc/25',
@@ -173,6 +177,7 @@ APPLICATIONS = [
 
     Application('molly.apps.search', 'search', 'Search',
         providers = [
+            SimpleProvider('molly.providers.apps.search.ApplicationSearchProvider'),
             SimpleProvider('molly.providers.apps.search.GSASearchProvider',
                 search_url = 'http://googlesearch.oucs.ox.ac.uk/search',
                 domain = 'm.ox.ac.uk',
@@ -181,7 +186,6 @@ APPLICATIONS = [
                 },
                 title_clean_re = r'm\.ox \| (.*)',
             ),
-            SimpleProvider('molly.providers.apps.search.ApplicationSearchProvider'),
         ],
         display_to_user = False,
     ),
@@ -199,9 +203,9 @@ APPLICATIONS = [
     ),
 
     Application('molly.geolocation', 'geolocation', 'Geolocation',
+        prefer_results_near = (-1.25821, 51.75216, 5000),
         providers = [
-            SimpleProvider('molly.contrib.oxford.providers.geolocation.OUCSCodeGeolocationProvider'),
-#            SimpleProvider('molly.contrib.generic.providers.post_code.PostCodeGeolocationProvider'),
+            SimpleProvider('molly.providers.apps.geolocation.PlacesGeolocationProvider'),
             SimpleProvider('molly.providers.apps.geolocation.CloudmadeGeolocationProvider',
                 search_locality = 'Oxford',
             ),
