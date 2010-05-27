@@ -21,21 +21,31 @@
 </form></div>
 {% endif %}
 
-
-<div class="section">
-<div class="form">
+{# Podcasts Search #}
 {% search_form %}
-	<form method="get" action="{% url search:index %}">
-		<h2>Podcasts Search</h2>
-  		<p>
-			{{ search_form.query }}
-			<input type="hidden" name="application" value="podcasts">
-			</p><p>
-    		<button type="submit">Go!</button>
-  		</p>
-	</form>
-</div>
-</div>
+<form method="get" action="{% url search:index %}">
+    <!-- Doing the devil's work below: couldn't get a CSS design to work with Blackberry 8900 so using Tables as a last resort. Tim F -->
+<h2 class="invisible">Search Podcasts</h2>    
+<table class="search"><tbody>
+        <tr><td>
+                <label style="display:none;" for="id_query">Search Podcasts Box</label>
+                {{ search_form.query }}
+        </td><td>
+                <input type="hidden" name="application" value="podcasts" title="Search Podcasts" />
+                {% ifequal style_group "dumb" %}
+                    <button type="submit">Go!</button>
+                {% else %}
+                	<input type="image" src="{{ MEDIA_URL }}png/new/buttons/search-button.png" title="Search" />
+                {% endifequal %}
+        </td></tr><tr><td>
+                <p class="help-bubble top">Try searching for a podcast by subject, name or author</p>
+        </td><td></td></tr></tbody>
+</table>
+</form>
+{# End Podcasts Search #}
+
+
+
 
 <ul class="stand-alone">
 	<li class="round-bottom round-top"><a href="{% url podcasts:podcast "top-downloads" %}">Top downloads from iTunes U</a></li>

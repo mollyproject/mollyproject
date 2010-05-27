@@ -4,9 +4,10 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-GB" lang="en-GB" >
 <head>
 	<title>{% block title %}m.ox | {{ breadcrumbs.4 }}{% endblock %}</title>
-    <meta name="viewport" content="width=device-width; initial-scale=1; user-scalable=no; maximum-scale=1; minimum-scale=1"/>
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1"/> 
     <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
-
+    <meta name="format-detection" content="telephone=no" />
+    
 {% if use_javascript %}
     <script type="text/javascript">
         var require_location = {{ require_location|yesno:"true,false" }};
@@ -23,7 +24,6 @@
     <link rel="apple-touch-startup-image" href="{{ MEDIA_URL}}png/apple-touch-startup-image.jpg">
     <meta name="apple-mobile-web-app-capable" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-    <meta name="format-detection" content="telephone=no" />
 {% endif %}
 
 {% if use_javascript %}
