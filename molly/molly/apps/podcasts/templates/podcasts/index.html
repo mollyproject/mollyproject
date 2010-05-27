@@ -4,21 +4,22 @@
 {% block content %}
 
 {% if device|device_has_parent:"apple_iphone_ver1" and show_itunesu_link %}
-<div style="background-color:#002341; margin:1em; padding:0.5em; color:#ffffff; font-size:120%; -webkit-border-radius: 8px; -webkit-box-shadow:0px 0px 7px #FFFFFF" id="itunesu_link_div">
-<p>It looks like you're using an iPod/iPhone!</p>
-<P>Podcasts are also available from the University's iTunes U site, which you can view on your device.</p>
-<p>Please note that this will close Safari.</p>
-<form method="post" action="{% url podcasts:itunesu_redirect %}">
-{% comment %}<p><input type="checkbox" name="remember" id="remember"/>
-   <label for="remember">
-   Remember this preference in future.
-   </label>
-</p>{% endcomment %}
-<p style="text-align:center">
-    <button type="submit" name="use_itunesu" value="yes">Go to iTunes U</button>
-    <button type="submit" name="cancel" id="hide_itunesu_link" value="no">Stay on m.ox</button>
-</p>
-</form></div>
+<div class="help-bubble" id="itunesu_link_div">
+    <p>It looks like you're using an iPod/iPhone! You can also get all the University's podcasts via your iTunes U app, which gives you extra features like downloads for later listening/viewing.</p>
+    
+    <p>Please note that this will close Safari.</p>
+    <form method="post" action="{% url podcasts:itunesu_redirect %}">
+    {% comment %}<p><input type="checkbox" name="remember" id="remember"/>
+       <label for="remember">
+       Remember this preference in future.
+       </label>
+    </p>{% endcomment %}
+    <p style="text-align:center; margin-bottom:0;">
+        <button type="submit" name="use_itunesu" value="yes">Go to iTunes U</button>
+        <button type="submit" name="cancel" id="hide_itunesu_link" value="no">Stay on m.ox</button>
+    </p>
+    </form>
+</div>
 {% endif %}
 
 {# Podcasts Search #}
