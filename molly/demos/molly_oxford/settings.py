@@ -269,7 +269,14 @@ INSTALLED_APPS = (
     'molly.batch_processing',
     'molly.wurfl',
 #    'debug_toolbar',
+    'compress',
 ) + extract_installed_apps(APPLICATIONS)
+
+# Settings for django-compress
+COMPRESS_JS = {}
+COMPRESS_CSS = {}
+COMPRESS_JS_FILTERS = ('compress.filters.csstidy_python.CSSTidyFilter',)
+COMPRESS_CSS_FILTERS = ('compress.filters.jsmin.JSMinFilter',)
 
 CACHE_DIR = '/var/cache/molly'
 SRID = 27700
