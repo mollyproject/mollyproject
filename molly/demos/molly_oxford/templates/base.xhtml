@@ -1,4 +1,6 @@
-{% load portal_misc %}<!DOCTYPE HTML>
+{% load portal_misc %}
+{% load compressed %}
+<!DOCTYPE HTML>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-GB" lang="en-GB" manifest="/static/app-cache.manifest">
 <head>
     <title>{% block title %}m.ox | {{ breadcrumbs.4 }}{% endblock %}</title>
@@ -13,7 +15,6 @@
 {% endif %}
 {% if use_javascript %}
     <!-- <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.1/jquery.min.js" type="text/javascript"> </script> -->
-    <script src="{{ MEDIA_URL }}js/jquery-1.4.1.min.js"  type="text/javascript"> </script>
     <script type="text/javascript">
         var require_location = {{ require_location|yesno:"true,false" }};
         var base = "{% url home:index %}";
@@ -23,10 +24,9 @@
             window.console = { log : function() {} };
         }
     </script>
-    <script src="{{ MEDIA_URL }}js/async_load.min.js" type="text/javascript"> </script>
-    <script src="{{ MEDIA_URL }}js/groups/{{ style_group }}.js"  type="text/javascript"> </script>
+    {% compressed_js 'all' %}
 {% endif %}
-    <link  rel="stylesheet" href="{{ MEDIA_URL }}css/groups/{{ style_group }}.css" type="text/css" />
+    {% compressed_css style_group %}
     <link rel="icon" type="image/png" href="{{ MEDIA_URL }}png/favicon.png"/>
 {% block extrahead %}{% endblock extrahead %}
 </head>
