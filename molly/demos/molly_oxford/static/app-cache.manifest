@@ -1,0 +1,40 @@
+CACHE MANIFEST
+# Version 0.3
+
+# CSS
+/site-media/css/base.css
+/site-media/css/groups/smart.css
+# Javascript
+/site-media/js/jquery-1.4.1.min.js
+/site-media/js/async_load.min.js
+/site-media/js/smart.js
+# Images
+/site-media/gif/ajax-loader.gif
+/site-media/png/new/logos/logo-128x51-TRMargin-5px.png
+/site-media/png/new/buttons/search-button.png
+/site-media/png/oucs-logo-small.png
+/site-media/gif/brandmark.gif
+/site-media/png/icons/list-arrow.png
+/site-media/png/icons/list-phone.png
+/site-media/png/icons/list-email.png
+/site-media/png/logo.png
+/site-media/png/sep.png
+/site-media/png/new/gradients/bc-gradient.png
+/site-media/png/new/gradients/backdrop-iphone.png
+/site-media/png/new/gradients/gradient-50-nrWhite-Transparent.png
+/site-media/png/index-icons/contact.png
+/site-media/png/index-icons/contact-bc.png
+/site-media/png/index-icons/weather.png
+/site-media/png/index-icons/places.png
+/site-media/png/index-icons/library.png
+/site-media/png/index-icons/service_status.png
+/site-media/png/index-icons/weblearn.png
+/site-media/png/index-icons/podcasts.png
+/site-media/png/index-icons/webcams.png
+/site-media/png/index-icons/results.png
+/site-media/png/index-icons/events.png
+/site-media/png/index-icons/news.png
+
+NETWORK:
+# All URLs starting with the following are whitelisted
+http://m.ox.ac.uk/

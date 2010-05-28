@@ -3,14 +3,32 @@ body {
 
     font-family: "Liberation Sans", sans-serif;
     font-size:9pt;
-    
+
     -webkit-text-size-adjust: none;
-    
+
     text-align: left;
-    margin: 0; 
+    margin: 0;
 }
 
-/* Index Page Specific 
+/* Async Loading */
+div#loading-bg {
+    display:none;
+    position:fixed;
+    height:100%;
+    width:100%;
+    padding-top:20%;
+    margin:0 auto;
+    background:#FFFFFF;
+    opacity: 0;
+}
+
+div#loading_img {
+    position: fixed;
+    margin:0 20%;
+    text-align: center;
+}
+
+/* Index Page Specific
     - 1 CSS 2.1 Selector
     - 4 Webkit Only Tags
     -- Written in order of use on index.html
@@ -41,13 +59,13 @@ div#index-search input[type="text"] {
     -webkit-border-bottom-left-radius: 5px;
     -webkit-border-top-right-radius:0;
     -webkit-border-bottom-right-radius:0;
-    
+
     -moz-border-radius-topleft: 5px;
     -moz-border-radius-bottomleft: 0px;
     -moz-border-radius-topright: 0px;
     -moz-border-radius-bottomright: 0px;
 }
-/* icon-menu & menu-x handles the menu icons on the front page 
+/* icon-menu & menu-x handles the menu icons on the front page
     - this section would ideally be rewritten to handle a little more gracefully on varied sizes of screens */
 ol.icon-menu {
     list-style:none;
@@ -82,8 +100,6 @@ li#menu-weather {background-image:url('../../png/index-icons/weather.png');}
 li#menu-weblearn {background-image:url('../../png/index-icons/weblearn.png');}
 li#menu-service_status {background-image:url('../../png/index-icons/service_status.png');}
 /* End Index Page Specific */
-
-
 
 
 /* Breadcrumb Trail Styles */
@@ -176,7 +192,7 @@ ul li a, ol.search-results li a {
     color:#ffffff;
     text-decoration:none;
     display:block;
-    
+
     padding-right: 20px; /* Moves background image (ul li a) away from edge */
     text-align: left;
     background-position: right center;
@@ -364,11 +380,9 @@ div.form textarea#id_body {
 div.form button[type="submit"] {
     min-width: 80px ;
     font-size: 1.3em;
-    min-height: 1.3em; 
+    min-height: 1.3em;
 }
 /* End Forms/Search */
-
-
 
 /* OUCS Status */
 ul.service-status li {
