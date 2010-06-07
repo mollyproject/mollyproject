@@ -33,11 +33,16 @@ urlpatterns = patterns('',
     # These ones still need work
 
     (r'^osm/', include('molly.osm.urls', 'osm', 'osm')),
-
-    # This one shouldn't be shown yet, but the home view chokes if 
-    # the namespace isn't known
-
 )
+
+# Redirecting old URLs
+urlpatterns += patterns('django.views.generic.simple',
+    (r'^maps/busstop:(?P<atco>[A-Z\d]+)/(?P<remain>.*)$', 'redirect_to', {'url': '/places/atco:%(atco)s/%(remain)s'}),
+    (r'^maps/[a-z]\-+:(?P<id>\d{8})/(?P<remain>.*)$', 'redirect_to', {'url': '/places/oxpoints:%(id)s/%(remain)s'}),
+    (r'^maps/[a-z]\-+:(?P<id>[NW]\d{8})/(?P<remain>.*)$', 'redirect_to', {'url': '/places/osm:%(id)s/%(remain)s'}),
+    (r'^maps/(?P<remain>.*)$', 'redirect_to', {'url': '/places/%(remain)s'}),
+)
+
 
 handler500 = 'molly.apps.home.views.handler500'
 
