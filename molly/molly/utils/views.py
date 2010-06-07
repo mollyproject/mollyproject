@@ -14,7 +14,7 @@ from django.contrib.gis.geos import Point
 logger = logging.getLogger('core.requests')
 
 class DateUnicode(unicode): pass
-
+class DateTimeUnicode(unicode): pass
 
 def renderer(format, mimetypes=None):
     """
@@ -255,8 +255,10 @@ Supported ranges are:
                 return out
         elif isinstance(value, (basestring, int, float)):
             return value
-        elif isinstance(value, (datetime, date)):
-            return DateUnicode(value.isoformat(' '))
+        elif isinstance(value, datetime):
+            return DateTimeUnicode(value.isoformat(' '))
+        elif isinstance(value, date):
+            return DateUnicode(value.isoformat())
         elif hasattr(type(value), '__mro__') and models.Model in type(value).__mro__:
             return cls.simplify_model(value)
         elif isinstance(value, Paginator):
@@ -271,7 +273,8 @@ Supported ranges are:
             raise NotImplementedError
 
     XML_DATATYPES = (
-        (DateUnicode, 'datetime'),
+        (DateUnicode, 'date'),
+        (DateTimeUnicode, 'datetime'),
         (str, 'string'),
         (unicode, 'string'),
         (int, 'integer'),
