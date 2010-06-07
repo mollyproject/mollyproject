@@ -1,4 +1,4 @@
-import urllib, logging
+import urllib, urllib2, logging
 
 import simplejson
 
@@ -25,7 +25,7 @@ class CloudmadeGeolocationProvider(BaseGeolocationProvider):
             'lat': lat,
         }
 
-        data = urllib.urlopen(self.REVERSE_GEOCODE_URL % params)
+        data = urllib2.urlopen(self.REVERSE_GEOCODE_URL % params)
 
         print self.REVERSE_GEOCODE_URL % params
         json = simplejson.load(data)
@@ -54,7 +54,7 @@ class CloudmadeGeolocationProvider(BaseGeolocationProvider):
 
         try:
             request_url = self.GEOCODE_URL % params
-            response = urllib.urlopen(request_url)
+            response = urllib2.urlopen(request_url)
             if response.code != 200:
                 logger.error("Request to %s returned response code %d" % (request_url, response.code))
                 return []

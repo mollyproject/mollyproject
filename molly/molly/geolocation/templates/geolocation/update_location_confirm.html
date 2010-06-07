@@ -20,6 +20,7 @@
             <input type="hidden" name="latitude" value="{{ result.location.1 }}"/>
             <input type="hidden" name="accuracy" value="{{ result.accuracy }}"/>
             <input type="hidden" name="method" value="geocoded"/>
+            <input type="hidden" name="force" value="True"/>
             <input type="hidden" name="return_url" value="{{ return_url|default:"" }}"/>
             <button class="submit-location-form-button" type="submit" name="index" style="width:100%">{{ forloop.counter }}. {{ result.name }}</button>
         </form>

@@ -2,7 +2,7 @@ import urllib
 from datetime import datetime, timedelta
 
 from django.core.urlresolvers import resolve, reverse
-from django.http import HttpResponseRedirect, Http404
+from django.http import HttpResponse, HttpResponseRedirect, Http404, HttpResponseBadRequest
 from django.contrib.gis.geos import Point
 from django.conf import settings
 
@@ -51,7 +51,6 @@ class IndexView(BaseView):
 
     def initial_context(cls, request):
         data = dict(request.REQUEST.items())
-        data['http_method'] = request.method
         return {
             'form': LocationUpdateForm(data),
             'format': request.REQUEST.get('format'),
@@ -60,10 +59,24 @@ class IndexView(BaseView):
         }
 
     def handle_GET(cls, request, context):
+        if context['format'] == 'embed':
+            return cls.render(request, context, 'geolocation/update_location_embed')
+        else:
+            return cls.render(request, context, 'geolocation/update_location')
+
+    def handle_POST(cls, request, context):
         form = context['form']
+
+        if form.is_valid() and form.cleaned_data['force']:
+            return cls.handle_set_location(request, context)
 
         if form.is_valid():
             results = geocode(form.cleaned_data['name'], cls.conf.local_name)
+            print len(results)
+
+            if len(results) == 1:
+                form.cleaned_data.update(results[0])
+                return cls.handle_set_location(request, context)
 
             if results:
                 points = [(o['location'][0], o['location'][1], 'red') for o in results]
@@ -84,12 +97,7 @@ class IndexView(BaseView):
                 'zoom_controls': False,
             })
 
-        if context['format'] == 'json':
-            del context['form']
-            del context['format']
-            del context['breadcrumbs']
-            return cls.json_response(context)
-        elif context['format'] == 'embed':
+        if context['format'] == 'embed':
             if form.is_valid():
                 return cls.render(request, context, 'geolocation/update_location_confirm')
             else:
@@ -97,11 +105,11 @@ class IndexView(BaseView):
         else:
             return cls.render(request, context, 'geolocation/update_location')
 
-
-    def handle_POST(cls, request, context):
+    def handle_set_location(cls, request, context):
         form = context['form']
 
         if form.is_valid():
+            print form.cleaned_data
             cls.set_location(request,
                              form.cleaned_data['name'],
                              form.cleaned_data['location'],
@@ -114,33 +122,30 @@ class IndexView(BaseView):
             redirect = None
         else:
             redirect = reverse('home:index')
-            
+
         if context['format'] == 'json':
             return cls.render(request, {
                 'name': form.cleaned_data['name'],
                 'redirect': redirect,
             }, None)
+        elif context['format'] == 'embed':
+            response = HttpResponse('')
+            response['X-Embed-Redirect'] = redirect
+            response['X-Embed-Location-Name'] = form.cleaned_data['name']
+            return response
         else:
-            return HttpResponseRedirect(redirect)
-            
+            return HttpResponseSeeOther(redirect)
+
     @renderer(format="embed", mimetypes=())
     def render_embed(cls, request, context, template_name):
-        return cls.render_html(request, context, template_name)
-
-    @renderer(format="html")
-    def render_html(cls, request, context, template_name):
-        if request.method == 'POST':
-            if context.get('return_url'):
-                return HttpResponseRedirect(context['return_url'])
-            else:
-                return HttpResponseRedirect(reverse('core:index'))
-        else:
-            return super(IndexView, cls).render_html(request, context, template_name)
+        response = cls.render_html(request, context, template_name)
+        response['X-Embed'] = 'True'
+        return response
 
     def set_location(cls, request, name, location, accuracy, method):
         if isinstance(location, list):
             location = tuple(location)
-        
+
         last_updated = request.session.get('geolocation:updated', datetime(1970, 1, 1))
         try:
             last_location = Point(request.session['geolocation:location'], srid=4326)

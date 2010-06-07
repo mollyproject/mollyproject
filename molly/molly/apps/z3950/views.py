@@ -32,17 +32,17 @@ class IndexView(BaseView):
         return {
             'title': 'Library search',
             'additional': "View libraries' contact information and find library items.",
-        } 
+        }
 
     def initial_context(cls, request):
         return {
             'search_form': SearchForm()
         }
-        
+
     @BreadcrumbFactory
     def breadcrumb(cls, request, context):
         return Breadcrumb(cls.conf.local_name, None, 'Library search', lazy_reverse('z3950:index'))
-        
+
     def handle_GET(cls, request, context):
         return cls.render(request, context, 'z3950/index')
 
@@ -51,12 +51,12 @@ class SearchDetailView(BaseView):
         return {
             'show_in_results': False,
         }
-        
+
     def initial_context(cls, request):
         return {
             'search_form': SearchForm(request.GET),
         }
-    
+
     @BreadcrumbFactory
     def breadcrumb(cls, request, context):
         x = 'item' in context or context['search_form'].is_valid()
@@ -66,11 +66,11 @@ class SearchDetailView(BaseView):
             'Search results' if x else 'Library search',
             lazy_reverse('z3950:search'),
         )
-        
+
     class InconsistentQuery(ValueError):
         def __init__(self, msg):
             self.msg = msg
-        
+
     def clean_input(cls, s):
         s = s.replace('"', '').lower()
         removed = frozenset(w for w in s.split(' ') if (w in STOP_WORDS))
@@ -81,10 +81,10 @@ class SearchDetailView(BaseView):
         s = s.replace('*', 'X')
         s = ''.join(c for c in s if (c in '0123456789X'))
         return s
-                        
+
     def handle_GET(cls, request, context):
         search_form = context['search_form']
-        
+
         if not (request.GET and search_form.is_valid()):
             return cls.handle_no_search(request, context)
 
@@ -98,16 +98,16 @@ class SearchDetailView(BaseView):
         except Exception, e:
             logger.exception("Library query error")
             return cls.handle_error(request, context, 'An error occurred: %s' % e)
-    
+
         paginator = Paginator(results, 10)
-    
+
         try:
             page_index = int(request.GET['page'])
         except (ValueError, KeyError):
             page_index = 1
         else:
             page_index = min(max(1, page_index), paginator.num_pages)
-        
+
         page = paginator.page(page_index)
 
         context.update({
@@ -116,14 +116,14 @@ class SearchDetailView(BaseView):
             'page': page,
         })
         return cls.render(request, context, 'z3950/item_list')
-    
+
     def handle_no_search(cls, request, context):
         return cls.render(request, context, 'z3950/item_list')
-        
+
     def handle_error(cls, request, context, message):
         context['error_message'] = message
         return cls.render(request, context, 'z3950/item_list')
-        
+
     def construct_query(cls, request, search_form):
         query, removed = [], set()
         title, author, isbn = '', '', ''
@@ -138,10 +138,10 @@ class SearchDetailView(BaseView):
         if search_form.cleaned_data['isbn']:
             isbn = cls.clean_isbn(search_form.cleaned_data['isbn'])
             query.append('(isbn=%s)' % isbn)
-            
+
         if (title or author) and isbn:
             raise cls.InconsistentQuery("You cannot specify both an ISBN and a title or author.")
-            
+
         if not (title or author or isbn):
             raise cls.InconsistentQuery("You must supply some subset of title or author, and ISBN.")
 
@@ -150,8 +150,8 @@ class SearchDetailView(BaseView):
             'title': title,
             'author': author,
             'isbn': isbn,
-        })        
-        
+        })
+
         return "and".join(query), removed
 
 
@@ -168,7 +168,7 @@ class ItemDetailView(BaseView):
         }.get(request.GET.get('with_map'))
         if display_map is None:
             display_map = False and (not request.session['geolocation:location'] is None)
-        
+
         return {
             'zoom': cls.get_zoom(request, None),
             'item': items[0],
@@ -176,7 +176,7 @@ class ItemDetailView(BaseView):
             'display_map': display_map,
             'complex_shorten': True,
         }
-        
+
     @BreadcrumbFactory
     def breadcrumb(cls, request, context, control_number):
         return Breadcrumb(
@@ -185,14 +185,14 @@ class ItemDetailView(BaseView):
             'Search result',
             lazy_reverse('z3950:item_detail', args=[control_number]),
         )
-               
+
     def handle_GET(cls, request, context, control_number):
         return (cls.handle_with_location if context['display_map'] else cls.handle_without_location)(request, context)
 
     def handle_with_location(cls, request, context):
         points = []
         location = request.session['geolocation:location']
-    
+
         all_libraries = context['item'].libraries.items()
         libraries, stacks = [], []
         for library, items in all_libraries:
@@ -200,31 +200,31 @@ class ItemDetailView(BaseView):
                 stacks.append( (library, items) )
             else:
                 libraries.append( (library, items) )
-    
+
         if libraries:
             entity_ids = set(l.oxpoints_id for l in context['item'].libraries if l.oxpoints_id)
             entities = Entity.objects.filter(oxpoints_id__in = entity_ids)
             if location:
                 point = Point(location[1], location[0], srid=4326)
-                
+
                 with_location = entities.filter(location__isnull=False)
                 without_location = entities.filter(location__isnull=True)
-                
+
                 if with_location.count() == 0:
                     return cls.handle_without_location(request, context)
-                
+
                 entities = chain(
                     with_location.distance(point).order_by('distance'),
                     without_location.order_by('title'),
                 )
-        
+
                 ordering = dict((e.oxpoints_id, i) for i, e in enumerate(entities))
-        
+
                 libraries.sort(key=lambda l:(ordering[l[0].oxpoints_id] if l[0].oxpoints_id else float('inf')))
-        
+
             else:
                 entities.order_by('title')
-        
+
             for library, books in libraries:
                 if not (library.oxpoints_id and library.oxpoints_entity.location):
                     library.has_location = False
@@ -235,8 +235,7 @@ class ItemDetailView(BaseView):
                     library.oxpoints_entity.location[0],
                     color,
                 ) )
-                
-        
+
             map_hash, (new_points, zoom) = fit_to_map(
                 centre_point = (location[0], location[1], 'green') if location else None,
                 points = points,
@@ -245,7 +244,7 @@ class ItemDetailView(BaseView):
                 width = request.map_width,
                 height = request.map_height,
             )
-        
+
             # Yes, this is weird. fit_to_map() groups libraries with the same location
             # so here we add a marker_number to each library to display in the
             # template.
@@ -258,31 +257,28 @@ class ItemDetailView(BaseView):
             # next() ).
             for library in lib_iter:
                 library[0].marker_number = None
-                
+
             context['zoom'] = zoom
             context['map_hash'] = map_hash
-    
+
         context.update({
             'libraries': libraries,
             'stacks': stacks
         })
-        
+
         return cls.render(request, context, 'z3950/item_detail')
 
-
-
-        
     def handle_without_location(cls, request, context):
         libraries = context['item'].libraries.items()
         libraries.sort(key=lambda (l,i):l.location)
-        
+
         context['libraries'] = libraries
-        
+
         return cls.render(request, context, 'z3950/item_detail')
 
 class ItemHoldingsView(BaseView):
     def initial_context(cls, request, control_number, sublocation):
-        items = search.ControlNumberSearch(control_number)
+        items = search.ControlNumberSearch(control_number, cls.conf)
         if len(items) == 0:
              raise Http404
         item = items[0]
@@ -291,7 +287,7 @@ class ItemHoldingsView(BaseView):
             library = [l for l in item.libraries if l.location[1] == sublocation][0]
         except IndexError:
             raise Http404
-            
+
         return {
             'zoom': cls.get_zoom(request),
             'item': item,
@@ -304,7 +300,7 @@ class ItemHoldingsView(BaseView):
         return {
             'show_in_results': False,
         }
-        
+
     @BreadcrumbFactory
     def breadcrumb(cls, request, context, control_number, sublocation):
         return Breadcrumb(

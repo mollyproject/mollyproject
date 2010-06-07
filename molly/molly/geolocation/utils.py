@@ -16,12 +16,19 @@ def _cached(getargsfunc):
             args = getargsfunc(*args, **kwargs)
             app = get_app('molly.geolocation', args.pop('local_name', None))
             try:
-                raise Geocode.DoesNotExist
                 return Geocode.recent.get(local_name=app.local_name, **args).results
             except Geocode.DoesNotExist:
                 pass
             results = f(providers=app.providers, **args)
-            
+
+            i = 0
+            while i < len(results):
+                loc, name = Point(results[i]['location'], srid=4326).transform(settings.SRID, clone=True), results[i]['name']
+                if any((r['name'] == name and Point(r['location'], srid=4326).transform(settings.SRID, clone=True).distance(loc) < 100) for r in results[:i]):
+                    results[i:i+1] = []
+                else:
+                    i += 1
+
             if hasattr(app, 'prefer_results_near'):
                 point = Point(app.prefer_results_near[:2], srid=4326).transform(settings.SRID, clone=True)
                 distance = app.prefer_results_near[2]
