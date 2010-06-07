@@ -167,7 +167,7 @@ class ItemDetailView(BaseView):
             'true':True, 'false':False
         }.get(request.GET.get('with_map'))
         if display_map is None:
-            display_map = False and (not request.session['geolocation:location'] is None)
+            display_map = (not request.session['geolocation:location'] is None)
 
         return {
             'zoom': cls.get_zoom(request, None),
@@ -203,7 +203,7 @@ class ItemDetailView(BaseView):
 
         if libraries:
             entity_ids = set(l.oxpoints_id for l in context['item'].libraries if l.oxpoints_id)
-            entities = Entity.objects.filter(oxpoints_id__in = entity_ids)
+            entities = Entity.objects.filter(_identifiers__scheme='oxpoints', _identifiers__value__in = entity_ids)
             if location:
                 point = Point(location[1], location[0], srid=4326)
 
@@ -218,7 +218,7 @@ class ItemDetailView(BaseView):
                     without_location.order_by('title'),
                 )
 
-                ordering = dict((e.oxpoints_id, i) for i, e in enumerate(entities))
+                ordering = dict((e.identifiers['oxpoints'], i) for i, e in enumerate(entities))
 
                 libraries.sort(key=lambda l:(ordering[l[0].oxpoints_id] if l[0].oxpoints_id else float('inf')))
 
@@ -231,8 +231,8 @@ class ItemDetailView(BaseView):
                     continue
                 color = AVAIL_COLORS[max(b['availability'] for b in books)]
                 points.append( (
-                    library.oxpoints_entity.location[1],
                     library.oxpoints_entity.location[0],
+                    library.oxpoints_entity.location[1],
                     color,
                 ) )
 

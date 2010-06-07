@@ -1,4 +1,4 @@
-import re, urllib, simplejson
+import re, urllib, simplejson, traceback
 from datetime import datetime
 from PyZ3950 import zoom
 from itertools import cycle
@@ -36,15 +36,15 @@ def require_json(f):
         try:
             if not hasattr(self, '_json'):
                 self._json = simplejson.load(urllib.urlopen(
-                    Library.LIBRARY_URL % self.location[-1].replace(' ', '+')
+                    Library.LIBRARY_URL % self.location[-1].replace(' ', '%20')
                 ))[0]
-        except:
+        except Exception, e:
             self._json = None
         return f(self, *args, **kwargs)
     return g
 
 class Library(object):
-    LIBRARY_URL = "http://m.ox.ac.uk/oxpoints/hasOLISCode/%s.json"
+    LIBRARY_URL = "http://oxpoints.oucs.ox.ac.uk/olis:%s.json"
     def __init__(self, location):
         self.location = tuple(location)
 
