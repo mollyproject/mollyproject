@@ -34,8 +34,8 @@ class Application(object):
                 providers.append(SimpleProvider(provider)())
         try:
             import_module(self.urlconf)
-        except ImportError:
-            urls = None
+        except ImportError, e:
+            urls = type('Missing'+self.local_name.capitalize()+'URLConf', (object,), {'__nonzero__':(lambda self: False)})()
         else:
             urls = urlconf_include(self.urlconf, self.application_name.split('.')[-1], self.local_name)
 
