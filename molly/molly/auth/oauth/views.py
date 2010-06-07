@@ -4,6 +4,7 @@ import urlparse
 from oauth import oauth
 
 from django.http import HttpResponseRedirect
+from django.core.urlresolvers import reverse
 
 from molly.utils.views import BaseView
 
@@ -23,6 +24,7 @@ class OAuthView(BaseView):
         token_type, request.access_token = \
             request.secure_session['oauth_tokens'].get(cls.conf.local_name, (None, None))
 
+        print "TOKEN", token_type, request.access_token
         request.consumer = oauth.OAuthConsumer(*cls.secret)
         request.client = OAuthClient(
             cls.base_url+cls.request_token_url,
@@ -106,10 +108,22 @@ class OAuthView(BaseView):
             oauth_problem = d.get('oauth_problem', [None])[0]
 
         if token_type == 'access_token':
-            request.secure_session[cls.access_token_name] = (None, None)
+            request.secure_session['oauth_tokens'][cls.conf.local_name] = (None, None)
+            request.secure_session.modified = True
+            
+        try:
+            breadcrumbs = cls.breadcrumb(request, {'oauth_problem': True}, *args, **kwargs)
+        except Exception, e:
+            breadcrumbs = (
+                cls.conf.local_name,
+                (reverse('%s:index' % cls.conf.local_name), cls.conf.title),
+                (reverse('%s:index' % cls.conf.local_name), cls.conf.title),
+                True,
+                'Authentication error',
+            )
 
         context = {
-            'breadcrumbs': cls.breadcrumb(request, {}, *args, **kwargs),
+            'breadcrumbs': breadcrumbs,
             'error':error,
             'oauth_problem': oauth_problem,
             'token_type': token_type,

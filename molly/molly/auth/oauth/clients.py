@@ -4,12 +4,14 @@ from oauth import oauth
 class OAuthHTTPError(urllib2.HTTPError):
     def __init__(self, e):
         self.exception = e
-        return
-        for name in dir(e):
-            try:
-                setattr(self, name, getattr(e, name))
-            except AttributeError:
-                pass
+    
+    def __getattr__(self, key):
+        return getattr(self.__dict__['exception'], key)
+    def __setattr__(self, key, value):
+        if key == 'exception':
+            super(OAuthHTTPError, self).__setattr__(key, value)
+        else:
+            setattr(self.__dict__['exception'], key, value)
 
 class OAuthOpener(object):
     def __init__(self, opener):

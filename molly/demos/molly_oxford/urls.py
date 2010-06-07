@@ -31,7 +31,7 @@ urlpatterns = patterns('',
     # These ones still need work
     (r'^osm/', include('molly.osm.urls', 'osm', 'osm')),
 
-    # This one shouldn't be shown yet, but the home view chokes if 
+    # This one shouldn't be shown yet, but the home view chokes if
     # the namespace isn't known
     (r'^external-media/', applications.external_media.urls),
 
