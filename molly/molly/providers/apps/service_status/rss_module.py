@@ -20,7 +20,8 @@ class RSSModuleServiceStatusProvider(object):
 
     def get_status(self):
         services_feed = feedparser.parse(self.url)
-
+        lastBuildDate = self.parse_date(services_feed.entries[0].get('ss_lastchecked'))
+        
         services = []
         for service in services_feed.entries:
             services.append({
@@ -36,8 +37,11 @@ class RSSModuleServiceStatusProvider(object):
                 'statusMessage': service.get('ss_statusmessage'),
             })
             services[-1]['status'] = {0: 'down', 100: 'up', None: {True: 'up', False: 'down', }.get(services[-1]['responding'], 'unknown')}.get(services[-1]['availability'], 'partial')
-
-        return services
+            
+        return {
+            'services': services,
+            'lastBuildDate': lastBuildDate,
+        }
 
     def get_announcements(self):
         return []

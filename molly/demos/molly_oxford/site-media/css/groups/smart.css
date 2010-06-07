@@ -42,6 +42,8 @@ div#index-search input[type="text"] {
     border: 2px solid #dddddd;
     -webkit-border-top-left-radius: 5px; -webkit-border-bottom-left-radius: 5px; -webkit-border-top-right-radius:0; -webkit-border-bottom-right-radius:0;
     -moz-border-radius-topleft: 5px; -moz-border-radius-bottomleft: 5px; -moz-border-radius-topright: 0px; -moz-border-radius-bottomright: 0px;
+    background: #fff;
+    border-top-left-radius: 5px; border-bottom-left-radius: 5px; border-top-right-radius:0; border-bottom-right-radius:0;
 }
 /* icon-menu & menu-x handles the menu icons on the front page 
     - this section would ideally be rewritten to handle a little more gracefully on varied sizes of screens */
@@ -105,6 +107,8 @@ ol#bc li {
     line-height:30px;
     overflow:hidden;
     -webkit-border-radius: 13px;
+    -moz-border-radius: 13px;
+    border-radius: 13px;
 }
 ol#bc li a {
     font-size:12pt;
@@ -203,6 +207,7 @@ div.section {
     margin:10px;
     -webkit-border-radius:8px;
     -moz-border-radius: 8px;
+    border-radius: 8px;
 }
 h2 {
     text-align:center;
@@ -226,6 +231,7 @@ div.bubble {
     margin: 10px;
     -webkit-border-radius: 8px;
     -moz-border-radius: 8px;
+    border-radius: 8px;
 }
 
 div.note {
@@ -242,6 +248,8 @@ div.note a{
     -webkit-border-top-right-radius: 8px;
     -moz-border-radius-topleft: 8px;
     -moz-border-radius-topright: 8px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
     border-top: 0;
 }
 .round-bottom {
@@ -249,6 +257,8 @@ div.note a{
     -webkit-border-bottom-right-radius: 8px;
     -moz-border-radius-bottomleft: 8px;
     -moz-border-radius-bottomright: 8px;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
 }
 div.pad-10{padding: 10px;}
 div.pad-5 {padding:5px;}
@@ -387,6 +397,7 @@ table.search * input[type="text"] {
     -webkit-border-top-right-radius:0; -webkit-border-bottom-right-radius:0;
     -moz-border-radius-topleft: 5px; -moz-border-radius-bottomleft: 5px;
     -moz-border-radius-topright: 0px; -moz-border-radius-bottomright: 0px;
+
 }
 
 /* CSS 2.1 selector */
@@ -463,6 +474,9 @@ table.real-time-information {
     color: #FFBF00;
     border: 2px solid #FFBF00;
     -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    border-radius: 8px;
+
     padding: 2px 0;
 }
 
