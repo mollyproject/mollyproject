@@ -7,7 +7,7 @@ from molly.conf import applications
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    (r'adm/(.*)', admin.site.root),
+    (r'^adm/(.*)', admin.site.root),
 
     # These are how we expect all applications to be eventually.
     (r'^contact/', applications.contact.urls),
