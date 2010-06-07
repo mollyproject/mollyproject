@@ -20,14 +20,14 @@ class WurflMiddleware(object):
             opera_device = request.META['HTTP_X_OPERAMINI_PHONE'].decode('ascii', 'ignore')
             request.device = devices.select_ua(
                 opera_device,
-                search=WurflMiddleware.vsa
+                search=vsa
             )
         if 'HTTP_X_SKYFIRE_PHONE' in request.META:
             request.browser = devices.select_id('generic_skyfire')
             skyfire_device = request.META['HTTP_X_SKYFIRE_PHONE'].decode('ascii', 'ignore')
             request.device = devices.select_ua(
                 skyfire_device,
-                search=WurflMiddleware.vsa
+                search=vsa
             )
             try:
                 request.device.resolution_width, request.device.resolution_height = \
