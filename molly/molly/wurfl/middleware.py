@@ -2,18 +2,16 @@ from django.conf import settings
 
 from molly.wurfl.wurfl_data import devices
 from pywurfl.algorithms import DeviceNotFound
-from molly.wurfl.vsm import VectorSpaceAlgorithm
+from molly.wurfl.vsm import vsa
 
 class WurflMiddleware(object):
-    vsa = VectorSpaceAlgorithm(devices)
-    
     def process_request(self, request):
         ua = request.META.get('HTTP_USER_AGENT', '').decode('ascii', 'ignore')
 
         try:
             request.browser = devices.select_ua(
                 ua,
-                search=WurflMiddleware.vsa
+                search=vsa
             )
         except (KeyError, DeviceNotFound):
             request.browser = devices.select_id('generic_xhtml')
@@ -38,8 +36,6 @@ class WurflMiddleware(object):
                 pass
         else:
             request.device = request.browser
-            
+
         request.map_width = min(320, request.device.resolution_width-10)
         request.map_height = min(320, request.device.resolution_height-10)
-        
-

@@ -193,7 +193,8 @@ APPLICATIONS = [
     Application('molly.apps.feeds', 'feeds', 'Feeds',
         providers = [
             SimpleProvider('molly.providers.apps.feeds.RSSFeedsProvider'),
-        ]
+        ],
+        display_to_user = False,
     ),
 
     Application('molly.apps.feeds.news', 'news', 'News'),
@@ -218,6 +219,10 @@ APPLICATIONS = [
     ),
 
     Application('molly.apps.external_media', 'external_media', 'External Media',
+        display_to_user = False,
+    ),
+
+    Application('molly.wurfl', 'device_detection', 'Device detection',
         display_to_user = False,
     ),
 
@@ -272,7 +277,6 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'molly.osm',
     'molly.batch_processing',
-    'molly.wurfl',
 #    'debug_toolbar',
 ) + extract_installed_apps(APPLICATIONS)
 

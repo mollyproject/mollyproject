@@ -23,6 +23,7 @@ urlpatterns = patterns('',
     (r'^feedback/', applications.feedback.urls),
     (r'^news/', applications.news.urls),
     (r'^external-media/', applications.external_media.urls),
+    (r'^device-detection/', applications.device_detection.urls),
     (r'', applications.home.urls),
 
 #    (r'^auth/', applications.auth.urls),
