@@ -1,17 +1,29 @@
 import feedparser
 
+from molly.utils.date_parsing import rfc_2822_datetime
+
 class OUCSStatusProvider(object):
     name = 'Computing Services'
     slug = 'oucs'
 
     _STATUS_URL = 'http://status.ox.ac.uk/verboserss.php'
     _ANNOUNCE_URL = 'http://status.ox.ac.uk/oxitems/generatersstwo2.php?channel_name=oucs/status-announce'
-
+    
+    def parse_date(self, s):
+        try:
+            return rfc_2822_datetime(s)
+        except (TypeError, ValueError):
+            return None
+            
     def get_status(self):
         services_feed = feedparser.parse(self._STATUS_URL)
 
         services = []
+        lastBuildDate = self.parse_date(services_feed.feed.lastbuilddate)
+        
         for service in services_feed.entries:
+
+
             services.append({
                 'source': self.slug,
                 'source_name': self.name,
@@ -27,7 +39,7 @@ class OUCSStatusProvider(object):
 
         services[-1]['responding'] = services[-1]['status'] in ('partial','up')
 
-        return services
+        return { 'services': services , 'lastBuildDate': lastBuildDate }
 
     def get_announcements(self):
         return feedparser.parse(self._ANNOUNCE_URL).entries

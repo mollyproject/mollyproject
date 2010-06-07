@@ -21,12 +21,14 @@ class IndexView(BaseView):
     def handle_GET(cls, request, context):
         services = []
         for provider in cls.conf.providers:
+            status = provider.get_status()
             services.append((
                 provider.slug, provider.name,
-                provider.get_status(),
+                status['lastBuildDate'], status['services'],
                 provider.get_announcements(),
             ))
 
+        
         context['services'] = services
 
         return cls.render(request, context, 'service_status/index')
