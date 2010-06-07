@@ -67,7 +67,7 @@ class StaticDetailView(BaseView):
         )
 
     def handle_GET(cls, request, context, title, template):
-        t = loader.get_template('static/%s.xhtml' % template)
+        t = loader.get_template('static/%s.html' % template)
 
         context.update({
             'title': title,

@@ -90,7 +90,7 @@ ROOT_URLCONF = 'molly_oxford.urls'
 TEMPLATE_DIRS = (
     os.path.join(project_root, 'templates'),
     # This is temporary until we move the templates to their rightful places
-    os.path.join(project_root, '..', '..', 'molly', 'templates'),
+    #os.path.join(project_root, '..', '..', 'molly', 'templates'),
 )
 
 APPLICATIONS = [
