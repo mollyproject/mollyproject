@@ -2,6 +2,7 @@
 
 {% block content %}
 
+
 {# Favourites List (if exists) #}
 {% if preferences.maps.favourites %}
 <div class="section">
@@ -18,26 +19,31 @@
 {# End Favourites List #}
 
 
-{# Maps Search #}
-<div class="section">
-    {% search_form %}
-<div class="form">
-  <form method="get" action="{% url search:index %}">
-    <h2>Search for Places</h2>
-      <div class="note"><div class="bubble pad-10">
-        Search for places by name or go straight to a bus stop by entering its 8 digit Oxontime Code or a central stop number (e.g. 'E7').
-      </div></div>
-      <p>
-        {{ search_form.query }}
-        <input type="hidden" name="application" value="places">
-      </p><p>
-        <button type="submit">Go!</button>
-      </p>
-    </form>
-  </div>
-</div>
-{# End Maps Search #}
 
+{# Places Search #}
+{% search_form %}
+<form method="get" action="{% url search:index %}">
+    <!-- Doing the devil's work below: couldn't get a CSS design to work with Blackberry 8900 so using Tables as a last resort. Tim F -->
+<h2 class="invisible">Search Places</h2>    
+<table class="search"><tbody>
+        <tr><td>
+                <label style="display:none;" for="id_query">Search Places Box</label>
+                {{ search_form.query }}
+        </td><td>
+                <input type="hidden" name="application" value="places" title="Search Places" />
+                {% ifequal style_group "dumb" %}
+                    <button type="submit">Go!</button>
+                {% else %}
+                	<input type="image" src="{{ MEDIA_URL }}png/new/buttons/search-button.png" title="Search" />
+                {% endifequal %}
+        </td></tr>    
+        <tr><td>
+                <p class="help-bubble top">Search by place name, bus stop number e.g. E7 or 69323498 or postcode</p>
+        </td><td></td></tr></tbody>
+</table>
+</form>
+{# End Places Search #}
+  
 
 
 {# Points of Interest #}
