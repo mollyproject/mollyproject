@@ -1,1 +1,0 @@
-from contact import LDAPContactProvider

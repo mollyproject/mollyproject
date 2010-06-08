@@ -99,7 +99,7 @@ APPLICATIONS = [
     ),
 
     Application('molly.apps.contact', 'contact', 'Contact search',
-        provider = 'molly.contrib.oxford.providers.ScrapingContactProvider',
+        provider = 'molly.providers.apps.contact.ScrapingContactProvider',
     ),
 
     Application('molly.apps.places', 'places', 'Places',
@@ -167,7 +167,7 @@ APPLICATIONS = [
 
     Application('molly.apps.service_status', 'service_status', 'Service status',
         providers = [
-            'molly.contrib.oxford.providers.OUCSStatusProvider',
+            'molly.providers.apps.service_status.OUCSStatusProvider',
             SimpleProvider('molly.providers.apps.service_status.RSSModuleServiceStatusProvider',
                 name='Oxford Library Information Services',
                 slug='olis',
