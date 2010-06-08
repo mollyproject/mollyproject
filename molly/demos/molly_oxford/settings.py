@@ -224,6 +224,7 @@ APPLICATIONS = [
 
     Application('molly.wurfl', 'device_detection', 'Device detection',
         display_to_user = False,
+        expose_view = True,
     ),
 
 #    Application('molly.apps.url_shortener', 'url_shortener', 'URL Shortener',

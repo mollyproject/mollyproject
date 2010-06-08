@@ -1,5 +1,7 @@
 from pywurfl.algorithms import DeviceNotFound
 
+from django.http import Http404
+
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import NullBreadcrumb
 
@@ -11,6 +13,8 @@ class IndexView(BaseView):
     breadcrumb = NullBreadcrumb
     
     def handle_GET(cls, request, context):
+        if not getattr(cls.conf, 'expose_view', False):
+            raise Http404
         ua = request.GET.get('ua', request.META.get('HTTP_USER_AGENT', ''))
         ua = ua.decode('ascii', 'ignore')
 
