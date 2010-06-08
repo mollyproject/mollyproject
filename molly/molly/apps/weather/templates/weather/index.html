@@ -8,7 +8,7 @@
 {% block content %}
 
 <div class="section">
-	<h2>Oxford at {{ weather.observed_date|date:"H:m" }}</h2>
+	<h2>Oxford at {{ observation.observed_date|date:"H:m" }}</h2>
 	<div class="note">
 		<div class="weather-icon">
 	    <img src="{{ MEDIA_URL }}png/weather/{{ observation.icon }}.png" alt="{{ observation.get_outlook_display|capfirst }}"/><br/>
