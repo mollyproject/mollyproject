@@ -1,4 +1,43 @@
-.invisible {display:none;}
+/* Results Releases */
+dl#results {
+    font-size: 1.2em;
+
+    margin:10px;
+    padding: 10px;
+    -webkit-border-radius:8px;
+    -moz-border-radius: 8px;
+    border-radius: 8px;    
+    
+    background:#B88C54 url('../../png/new/gradients/gradient-50-nrWhite-Transparent.png') repeat-x;
+    
+    background:-webkit-gradient(linear, left top, right top, from(#B88C54), to(#E0C792));
+    background:-moz-linear-gradient(top, #B88C54, #E0C792);
+    background:linear-gradient(top, #B88C54, #E0C792);
+    
+    -moz-box-shadow: 2px 2px 2px #333; -webkit-box-shadow: 2px 2px 2px #333; box-shadow: 2px 2px 2px #333;
+
+}
+
+dl#results dt {
+    color: #fff;
+    background: #002B4C;
+    background:-webkit-gradient(linear, left top, right top, from(#002B4C), to(rgba(0,145,245,0.2)));
+    
+    padding: 3px;
+    margin: 8px 0;
+	text-shadow: 1px 1px 0px #111;    
+}
+
+dl#results dd {
+    color: #111;
+    margin: 2px 0 2px 20px;
+    border-bottom: 1px solid #E0C792;
+    text-shadow: 1px 1px 1px #999;
+}
+
+dl#results dd.no-border {border: 0;}
+/* Results Releases */
+
 
 body {
     background:#bbc4ce url('../../png/new/gradients/backdrop-iphone.png') repeat-x top;
@@ -11,6 +50,7 @@ body {
     text-align: left;
     margin: 0; 
 }
+
 
 
 /* Index Page Specific 
@@ -45,6 +85,7 @@ div#index-search input[type="text"] {
     background: #fff;
     border-top-left-radius: 5px; border-bottom-left-radius: 5px; border-top-right-radius:0; border-bottom-right-radius:0;
 }
+
 /* icon-menu & menu-x handles the menu icons on the front page 
     - this section would ideally be rewritten to handle a little more gracefully on varied sizes of screens */
 ol.icon-menu {
@@ -80,6 +121,8 @@ li#menu-weather {background-image:url('../../png/index-icons/weather.png');}
 li#menu-weblearn {background-image:url('../../png/index-icons/weblearn.png');}
 li#menu-service_status {background-image:url('../../png/index-icons/service_status.png');}
 /* End Index Page Specific */
+
+
 
 
 
@@ -201,68 +244,7 @@ ul li span {
 
 
 
-/*** Generic ***/
-div.section {
-    background:#B88C54 url('../../png/new/gradients/gradient-50-nrWhite-Transparent.png') repeat-x;
-    margin:10px;
-    -webkit-border-radius:8px;
-    -moz-border-radius: 8px;
-    border-radius: 8px;
-}
-h2 {
-    text-align:center;
-    color:white;
-    padding: 5px 0; margin: 0;
-}
 
-h3 {
-    color:white;
-    padding: 5px 5px; margin: 0;
-    text-align: center;
-}
-
-div.center {
-    text-align:center;
-}
-div.bubble {
-    color:#002147;
-    background-color:#ffffff;
-    padding: 0;
-    margin: 10px;
-    -webkit-border-radius: 8px;
-    -moz-border-radius: 8px;
-    border-radius: 8px;
-}
-
-div.note {
-    text-align:center;
-    padding: 5px;
-    font-size: 12pt;
-}
-div.note a{
-    color: #002B4C;;
-}
-
-.round-top {
-    -webkit-border-top-left-radius: 8px;
-    -webkit-border-top-right-radius: 8px;
-    -moz-border-radius-topleft: 8px;
-    -moz-border-radius-topright: 8px;
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
-    border-top: 0;
-}
-.round-bottom {
-    -webkit-border-bottom-left-radius: 8px;
-    -webkit-border-bottom-right-radius: 8px;
-    -moz-border-radius-bottomleft: 8px;
-    -moz-border-radius-bottomright: 8px;
-    border-bottom-left-radius: 8px;
-    border-bottom-right-radius: 8px;
-}
-div.pad-10{padding: 10px;}
-div.pad-5 {padding:5px;}
-/* End Generic */
 
 
 /* Webcams/Maps Display */
@@ -442,7 +424,6 @@ span.service-detail { font-style:italic; }
     
     background:-webkit-gradient(linear, left top, left bottom, from(#dfdfdf), to(#fff));
     background:-moz-linear-gradient(top, #dfdfdf, #fff);
-    background:-o-linear-gradient(top, #dfdfdf, #fff);
     background:linear-gradient(top, #dfdfdf, #fff);
     
     -moz-box-shadow: 2px 2px 2px #333; -webkit-box-shadow: 2px 2px 2px #333; box-shadow: 2px 2px 2px #333;
@@ -467,7 +448,7 @@ span.service-detail { font-style:italic; }
 /* End Help Bubble */
 
 
-
+/* RTI */
 table.real-time-information {
     width: 100%;
     background: #121C28;
@@ -485,7 +466,11 @@ table.real-time-information tr {
     border-collapse: collapse;
     border-top: 1px solid #FFBF00;
 }
+/* End RTI */
 
+
+
+/* Input Buttons */
 button, input[type="submit"], input[type="reset"] {
     display: inline-block;
         color: #fff;
@@ -499,3 +484,71 @@ button, input[type="submit"], input[type="reset"] {
     	-webkit-border-radius: 5px;
     	-webkit-box-shadow: 0px 0px 2px rgba(0,0,0,0.5);
 }
+/* END Input Buttons */
+
+
+/*** Generic ***/
+
+.invisible {display:none;}
+.center {text-align:center;}
+
+div.section {
+    background:#B88C54 url('../../png/new/gradients/gradient-50-nrWhite-Transparent.png') repeat-x;
+    margin:10px;
+    -webkit-border-radius:8px;
+    -moz-border-radius: 8px;
+    border-radius: 8px;
+    
+    -moz-box-shadow: 2px 2px 2px #333; -webkit-box-shadow: 2px 2px 2px #333; box-shadow: 2px 2px 2px #333;
+}
+h2 {
+    text-align:center;
+    color:white;
+    padding: 5px 0; margin: 0;
+}
+
+h3 {
+    color:white;
+    padding: 5px 5px; margin: 0;
+    text-align: center;
+}
+
+div.bubble {
+    color:#002147;
+    background-color:#ffffff;
+    padding: 0;
+    margin: 10px;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    border-radius: 8px;
+}
+
+div.note {
+    text-align:center;
+    padding: 5px;
+    font-size: 12pt;
+}
+div.note a{
+    color: #002B4C;;
+}
+
+.round-top {
+    -webkit-border-top-left-radius: 8px;
+    -webkit-border-top-right-radius: 8px;
+    -moz-border-radius-topleft: 8px;
+    -moz-border-radius-topright: 8px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    border-top: 0;
+}
+.round-bottom {
+    -webkit-border-bottom-left-radius: 8px;
+    -webkit-border-bottom-right-radius: 8px;
+    -moz-border-radius-bottomleft: 8px;
+    -moz-border-radius-bottomright: 8px;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+div.pad-10{padding: 10px;}
+div.pad-5 {padding:5px;}
+/* End Generic */

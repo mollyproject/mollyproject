@@ -8,7 +8,7 @@
 {% block content %}
 
 <div class="section">
-	<h2>Oxford at {{ observation.observed_date|date:"H:m" }}</h2>
+	<h2>Oxfordshire <small>- RAF Benson at {{ observation.observed_date|date:"H:i" }}</small></h2>
 	<div class="note">
 		<div class="weather-icon">
 	    <img src="{{ MEDIA_URL }}png/weather/{{ observation.icon }}.png" alt="{{ observation.get_outlook_display|capfirst }}"/><br/>
@@ -19,7 +19,7 @@
 				<li>{{ observation.wind_speed }}mph {{ observation.wind_direction }}</li>
 				<li>{{ observation.humidity }}% Relative Humidity</li>
 				<li>{{ observation.pressure }} mbar and {{ observation.get_pressure_state_display }}</li>
-				<li>{{ observation.get_visibility_display|capfirst }} Visibility</li>
+				<li>{{ observation.get_visibility_display|capfirst }} </li>
 			</ul>
 		</div>
 	</div>

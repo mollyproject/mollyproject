@@ -14,14 +14,14 @@ PRESSURE_STATE_CHOICES = (
 )
 
 VISIBILITY_CHOICES = (
-    ('vp', 'very poor'),
-    ('p',  'poor'),
-    ('vg', 'very good'),
-    ('g', 'good'),
+    ('vp', 'very poor visibility'),
+    ('p',  'poor visibility '),
+    ('vg', 'very good visibility'),
+    ('g', 'good visibility'),
     ('df', 'dense fog'),
     ('f', 'fog'),
-    ('e', 'excellent'),
-    ('m', 'moderate'),
+    ('e', 'excellent visibility'),
+    ('m', 'moderate visibility'),
 )
 
 OUTLOOK_CHOICES = (
