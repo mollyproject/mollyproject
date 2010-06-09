@@ -203,6 +203,13 @@ Supported ranges are:
     def render_json(cls, request, context, template_name):
         context = cls.simplify_value(context)
         return HttpResponse(simplejson.dumps(context), mimetype="application/json")
+        
+    @renderer(format="js", mimetypes=('text/javascript','application/javascript',))
+    def render_js(cls, request, context, template_name):
+        callback = request.GET.get('callback', request.GET.get('jsonp', 'callback'))
+        content = simplejson.dumps(cls.simplify_value(context))
+        content = "%s(%s);" % (callback, content)
+        return HttpResponse(content, mimetype="application/javascript")
 
     @renderer(format="html", mimetypes=('text/html', 'application/xhtml+xml', '*/*'))
     def render_html(cls, request, context, template_name):
