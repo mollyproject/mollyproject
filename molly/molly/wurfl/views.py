@@ -31,6 +31,8 @@ class IndexView(BaseView):
             'is_mobile': not 'generic_web_browser' in device_parents[device.devid],
             'brand_name': device.brand_name,
             'model_name': device.model_name,
+            'ua': ua,
+            'matched_ua': device.devua,
         }
 
         if request.GET.get('capabilities') == 'true':
