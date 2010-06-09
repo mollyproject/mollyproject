@@ -5,7 +5,7 @@ from xml.etree import ElementTree as ET
 
 from django.db import models
 from django.db.models.query import QuerySet
-from django.http import HttpResponse, HttpResponseNotAllowed
+from django.http import HttpResponse, HttpResponseNotAllowed, HttpResponseForbidden
 from django.template import TemplateDoesNotExist, RequestContext
 from django.shortcuts import render_to_response
 from django.core.paginator import Paginator
@@ -181,6 +181,13 @@ Supported ranges are:
                 return response
         else:
             renderer = cls.FORMATS['html']
+
+        # Stop external sites from grabbing JSON representations of pages
+        # which contain sensitive user information.
+        offsite_referrer = 'HTTP_REFERER' in request.META and request.META['HTTP_REFERER'].split('/')[2] != request.META.get('HTTP_HOST')
+        if renderer.format != 'html' and context.get('exposes_user_data') and offsite_referrer:
+            return HttpResponseForbidden("This page cannot be requested with an off-site Referrer", mimetype="text/plain")
+        context.pop('exposes_user_data', None)
 
         try:
             return renderer(request, context, template_name)

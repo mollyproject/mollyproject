@@ -101,6 +101,7 @@ class NearbyListView(LocationRequiredView):
             'entity_types': entity_types,
             'entity': entity,
             'return_url': return_url,
+            'exposes_user_data': entity is None, # entity is None => we've searched around the user's location
         })
         if entity and not entity.location:
             return cls.render(request, context, 'places/entity_without_location')
@@ -130,6 +131,7 @@ class NearbyDetailView(LocationRequiredView, ZoomableView):
             'point': point,
             'entities': entities,
             'entity': entity,
+            'exposes_user_data': entity is None, # entity is None => point is the user's location
         })
         return context
 
