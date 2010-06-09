@@ -4,9 +4,8 @@ from datetime import datetime, date
 from xml.etree import ElementTree as ET
 
 from django.db import models
-from django.db.models.query import QuerySet
 from django.http import HttpResponse, HttpResponseNotAllowed, HttpResponseForbidden
-from django.template import TemplateDoesNotExist, RequestContext
+from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.core.paginator import Paginator
 from django.contrib.gis.geos import Point
@@ -186,7 +185,7 @@ Supported ranges are:
         # which contain sensitive user information.
         offsite_referrer = 'HTTP_REFERER' in request.META and request.META['HTTP_REFERER'].split('/')[2] != request.META.get('HTTP_HOST')
         if renderer.format != 'html' and context.get('exposes_user_data') and offsite_referrer:
-            return HttpResponseForbidden("This page cannot be requested with an off-site Referrer", mimetype="text/plain")
+            return HttpResponseForbidden("This page cannot be requested with an off-site Referer", mimetype="text/plain")
         context.pop('exposes_user_data', None)
 
         try:
@@ -203,7 +202,7 @@ Supported ranges are:
     def render_json(cls, request, context, template_name):
         context = cls.simplify_value(context)
         return HttpResponse(simplejson.dumps(context), mimetype="application/json")
-        
+
     @renderer(format="js", mimetypes=('text/javascript','application/javascript',))
     def render_js(cls, request, context, template_name):
         callback = request.GET.get('callback', request.GET.get('jsonp', 'callback'))
