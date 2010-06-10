@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 import urllib, re, email, feedparser, time, random
 
-from molly.apps.feeds.utils import sanitise_html
+from molly.apps.external_media.sanitiser import sanitise_html
 from molly.conf.settings import batch
 
 from molly.apps.feeds.providers import BaseFeedsProvider
@@ -55,7 +55,7 @@ class RSSFeedsProvider(BaseFeedsProvider):
                 
             if True or item.last_modified < last_modified:
                 item.title = x_item.title
-                item.description = sanitise_html(x_item.description)
+                item.description = sanitise_html(x_item.description or '')
                 item.link = x_item.link
                 item.last_modified = last_modified
                 item.save()
