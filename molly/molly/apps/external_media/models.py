@@ -35,6 +35,7 @@ class ExternalImageSized(models.Model):
     width = models.PositiveIntegerField()
     height = models.PositiveIntegerField()
     slug = models.SlugField()
+    content_type = models.TextField()
 
     def get_filename(self):
         external_image_dir = get_external_image_dir()
@@ -50,7 +51,8 @@ class ExternalImageSized(models.Model):
 
     def save(self, force_insert=False, force_update=False):
         if not self.id:
-            im = Image.open(StringIO(urllib.urlopen(self.external_image.url).read()))
+            data = StringIO(urllib.urlopen(self.external_image.url).read())
+            im = Image.open(data)
 
             size = im.size
             ratio = size[1] / size[0]
@@ -58,13 +60,26 @@ class ExternalImageSized(models.Model):
             if self.width >= size[0]:
                 resized = im
             else:
-                resized = im.resize((self.width, int(round(self.width*ratio))), Image.ANTIALIAS)
+                try:
+                    resized = im.resize((self.width, int(round(self.width*ratio))), Image.ANTIALIAS)
+                except IOError, e:
+                    if e.message == "cannot read interlaced PNG files":
+                        # Ain't nothing can be done until you upgrade PIL to 1.1.7
+                        resized = im
+                    else:
+                        raise
             self.width, self.height = resized.size
 
             try:
                 resized.save(self.get_filename(), format='jpeg')
+                self.content_type = 'image/jpeg'
             except IOError:
-                resized.convert('RGB').save(self.get_filename(), format='jpeg')
+                try:
+                    resized.convert('RGB').save(self.get_filename(), format='jpeg')
+                    self.content_type = 'image/jpeg'
+                except IOError:
+                    open(self.get_filename(), 'w').write(data.read())
+                    self.content_type = 'image/png'
 
             self.external_image.width = size[0]
             self.external_image.height = size[1]
