@@ -1,6 +1,18 @@
 from django import forms
 from molly.conf import all_apps
 
+# We can't pick up the list of applications when this module is imported, as
+# that could lead to a circular import dependency.[0] Instead, wait until a
+# SearchForm instance is requested before calling all_apps.
+#
+# Instead, (the outer) SearchForm creates the desired class when an instance
+# is first required and transparently returns the result of calling its
+# constructor.
+#
+# [0] e.g. Another app is being loaded which depends on molly.apps.search.
+#     molly.apps.search.forms then tries to call all_apps, which would attempt
+#     to load the other app again (and fail).
+
 class SearchForm(object):
     def __new__(cls, *args, **kwargs):
         try:
