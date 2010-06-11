@@ -3,6 +3,7 @@
     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
     xmlns:doap="http://usefulinc.com/ns/doap#"
     xmlns:dct="http://purl.org/dc/terms/"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
     xmlns:foaf="http://xmlns.com/foaf/0.1/">
 
     <foaf:Document rdf:about="">
@@ -14,7 +15,9 @@
         <doap:name>Molly</doap:name>
         <doap:homepage rdf:resource="http://mollyproject.org/"/>
         <doap:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2009-07-21</doap:created>
+<!--
         <doap:release>0.3</doap:release>
+-->
 
         <doap:mailing-list rdf:resource="https://lists.sourceforge.net/lists/listinfo/mollyproject-devel"/>
         <doap:mailing-list rdf:resource="https://lists.sourceforge.net/lists/listinfo/mollyproject-users"/>
@@ -23,13 +26,13 @@
         <doap:license rdf:resource="http://www.opensource.org/licenses/afl-3.0.php"/>
         <doap:programming-language>Python</doap:programming-language>
         <doap:language>en</doap:language>
-        <doap:vender rdfs:resource="http://oxpoints.oucs.ox.ac.uk/id/00000000"/>
-        
+        <doap:vendor rdf:resource="http://oxpoints.oucs.ox.ac.uk/id/00000000"/>
+
         <doap:repository>
             <doap:GitRepository>
-                <doap:anon-root rdf:resource="git://asdutton@mollyproject.git.sourceforge.net/gitroot/mollyproject/mollyproject"/>
+                <doap:anon-root rdf:resource="git://mollyproject.git.sourceforge.net/gitroot/mollyproject/mollyproject"/>
                 <doap:browse rdf:resource="http://mollyproject.git.sourceforge.net/git/gitweb-index.cgi"/>
-                <doap:location rdf:resource="ssh://mollyproject.git.sourceforge.net/gitroot/mollyproject/mollyproject">
+                <doap:location rdf:resource="ssh://mollyproject.git.sourceforge.net/gitroot/mollyproject/mollyproject"/>
             </doap:GitRepository>
         </doap:repository>
 
@@ -46,7 +49,6 @@
             </foaf:Person>
         </doap:maintainer>
 
-        <doap:developer rdf:resource="http://alexdutton.co.uk/rdf#id"/>
         <doap:developer>
             <foaf:Person>
                 <rdfs:label>Rami Chowdhury</rdfs:label>
