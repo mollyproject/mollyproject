@@ -167,7 +167,7 @@ class ItemDetailView(BaseView):
             'true':True, 'false':False
         }.get(request.GET.get('with_map'))
         if display_map is None:
-            display_map = (not request.session['geolocation:location'] is None)
+            display_map = (not request.session.get('geolocation:location') is None)
 
         return {
             'zoom': cls.get_zoom(request, None),
@@ -191,7 +191,7 @@ class ItemDetailView(BaseView):
 
     def handle_with_location(cls, request, context):
         points = []
-        location = request.session['geolocation:location']
+        location = request.session.get('geolocation:location')
 
         all_libraries = context['item'].libraries.items()
         libraries, stacks = [], []
