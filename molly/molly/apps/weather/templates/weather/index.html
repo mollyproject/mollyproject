@@ -32,7 +32,7 @@
 {% for forecast in forecasts %}
             <tr>
                 <td style="font-size:12pt">{{ forecast.observed_date|date:"l" }}</td>
-                <td><img src="{{ MEDIA_URL }}png/weather/{{ forecast.icon }}.png" alt="{{ forecast.get_outlook_display|capfirst }}" style="height:2.5em; width:2.5em;"/></td>
+                <td><img src="{{ MEDIA_URL }}png/weather/{{ forecast.icon }}_small.png" alt="{{ forecast.get_outlook_display|capfirst }}" style="height:2.5em; width:2.5em;"/></td>
                 <td style="font-size:12pt">{{ forecast.max_temperature }}&deg;C</td>
                 <td>{{ forecast.min_temperature }}&deg;C</td>
             </tr>

@@ -50,11 +50,13 @@
         <table style="width:100%; text-align:center;">
             <tbody>
                 <tr>
-                    <td>
+                    <td style="width:50%">
       {% oxford_date_today %}
                     </td>
-                    <td>
-      {% weather %}<big>{{ weather.temperature }}&deg;C</big>, {{ weather.get_outlook_display|capfirst }} and {{ weather.get_visibility_display }}
+                    <td style="width:50%;">
+                        
+      {% weather %}<big>Oxford: {{ weather.temperature }}&deg;C</big><img src="{{ MEDIA_URL }}png/weather/{{ weather.icon }}_small.png" alt="{{ weather.get_outlook_display|capfirst }}" height="30" width="30" style="vertical-align:middle;"/>
+      
                     </td>
                 </tr>
                 <tr colspan="2">
