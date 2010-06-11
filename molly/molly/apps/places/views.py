@@ -239,7 +239,7 @@ class EntityDetailView(ZoomableView):
         }
 
     def initial_context(cls, request, scheme, value):
-        context = super(cls, cls).initial_context(request)
+        context = super(EntityDetailView, cls).initial_context(request)
         entity = get_entity(scheme, value)
         context.update({
             'entity': entity,
