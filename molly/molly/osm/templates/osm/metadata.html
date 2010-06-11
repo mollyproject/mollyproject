@@ -60,18 +60,18 @@
       tr.highlighted td.modified {
         background-color:#e0e0ff;
       }
-      
+
     </style>
-    <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.3.2.js"> </script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.4.2.js"> </script>
     <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-json.js"> </script>
     <script type="text/javascript" src="{{ MEDIA_URL }}js/openlayers.js"> </script>
     <script type="text/javascript" src="{{ MEDIA_URL }}js/openlayers-osm.js"> </script>
     <script type="text/javascript">
       entities = {{% for entity, vals in entities %}
-        {{ entity.display_id }}: {
+        {{ entity.identifiers.osm }}: {
           location: [{{ entity.location.0 }}, {{ entity.location.1 }}],
-          version: {{ entity.metadata.attrs.version }},
-          tags: {{% for tag, value in entity.metadata.tags.items %}
+          version: {{ entity.metadata.osm.attrs.version }},
+          tags: {{% for tag, value in entity.metadata.osm.tags.items %}
             "{{ tag|escapejs }}": "{{ value|escapejs }}",{% endfor %}
           },
         },{% endfor %}
@@ -86,7 +86,7 @@
   <body>
     <div id="map-frame">
       <div id="map"> </div>
-      
+
       <div id="tags-div">
         <table id="tags">
           <thead>
@@ -111,20 +111,19 @@
         </table>
       </div>
     </div>
-    
+
     <div id="main-pane">
       <div id="main-content">
         <h1>Metadata view</h1>
-
 
         <p>
 {% for ptype in ptypes %}
           <a href="{% url osm:metadata ptype %}">{{ ptype }}</a>
 {% endfor %}
         </p>
-    
+
         <h2>Update</h2>
-    
+
         <div id="update">
           <dl>
             <dt><label for="username">Username:</label></dt>
@@ -139,7 +138,7 @@
           </p>
           <p id="status"> </p>
         </div>
-    
+
         <h2>Entities</h2>
 
         <table id="entities">
@@ -153,10 +152,10 @@
 
           <tbody>
 {% for entity, vals in entities %}
-            <tr id="row-{{ entity.display_id }}">
-              <th>{{ entity.display_id }}</th>
+            <tr id="row-{{ entity.identifiers.osm }}">
+              <th>{{ entity.identifiers.osm }}</th>
 {% for ptype, val in vals %}
-              <td id="cell-{{ entity.display_id }}-{{ ptype }}">{{ val }}</td>{% endfor %}
+              <td id="cell-{{ entity.identifiers.osm }}-{{ ptype }}">{{ val }}</td>{% endfor %}
             </tr>{% endfor %}
           </tbody>
         </table>

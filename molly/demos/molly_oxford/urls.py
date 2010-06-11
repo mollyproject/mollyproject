@@ -24,6 +24,7 @@ urlpatterns = patterns('',
     (r'^news/', applications.news.urls),
     (r'^external-media/', applications.external_media.urls),
     (r'^device-detection/', applications.device_detection.urls),
+    (r'^osm/', applications.osm.urls),
     (r'', applications.home.urls),
 
 #    (r'^auth/', applications.auth.urls),
@@ -33,7 +34,6 @@ urlpatterns = patterns('',
 
     # These ones still need work
 
-    (r'^osm/', include('molly.osm.urls', 'osm', 'osm')),
 )
 
 # Redirecting old URLs

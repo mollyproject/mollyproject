@@ -277,7 +277,6 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
-    'molly.osm',
     'molly.batch_processing',
 #    'debug_toolbar',
 ) + extract_installed_apps(APPLICATIONS)
