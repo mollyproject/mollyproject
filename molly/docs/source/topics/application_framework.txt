@@ -1,0 +1,194 @@
+The Application framework
+=========================
+
+Molly extends Django by formalising the concept of an application. This is
+acheived by instantiating :class:`~molly.conf.settings.Application` objects
+and adding then to :data:`~settings.APPLICATIONS` in your ``settings`` module.
+
+This document explains how the Application framework works, and should not be
+a necessary part of your reading unless you intend to write a new Molly
+application, or have sufficient levels of curiosity.
+
+If you don't know whether you want to write an application or a provider, the
+following section may be useful. For information on writing providers, see
+:doc:`topics/writing_providers`.
+
+Difference between applications and providers
+---------------------------------------------
+
+Molly is intended to be relatively pluggable, allowing the deploying
+institution to take whatever provided functionality they choose and, if
+necessary, integrate it with their own applications.
+
+This integration can be done at two levels, the application level, or the
+provider level.
+
+An application is a Python package, usually containing ``urls``, ``models``
+and ``views`` modules. An application provides a data model and interface for
+a particular class of information, for example, PC availability or lecture
+timetables.
+
+A provider is usually a single Python class that connects an application to a
+data source. A provider might implement some well-known protocol or file
+format (e.g. RSS for the feeds application), or might connect to a local
+bespoke system.
+
+It is intended that in the majority of cases the implementor should be able to
+take an already-existing application and need only write the provider that
+performs the interaction with other systems.
+
+Overview of the Application framework
+-------------------------------------
+
+An :class:`~molly.conf.settings.Application` object is a wrapper around a
+Python package which hooks in providers and configuration objects for easy
+access by the application. The definition is as follows:
+
+.. class:: molly.conf.settings.Application
+
+   .. method:: __init__(application_name, local_name, title, **kwargs)
+
+      Instantiates an Application object. None of the module or package paths
+      are dereferenced yet. ``kwargs`` are mostly left alone and attached to
+      the `~molly.conf.settings.ApplicationConf` class. Some, defined later,
+      have special meanings.
+
+      :param application_name: a Python package path to the application to be
+          used, e.g. ``'molly.apps.places'``.
+      :type application_name: str
+      :param local_name: a local unique identifier for this instance of the
+          :class:`~molly.conf.settings.Application`. In most cases this will
+          be identical to the last part of ``application_name``. This will be
+          used in almost all cases where an application needs to be referenced.
+      :type local_name: str
+      :param title: A descriptive title for the application instance to be
+          shown to the user.
+      :type title: unicode or str
+
+   .. method:: get()
+
+      Used internally. Creates a configuation object and dereferences all the
+      paths provided to it. Where a ``urls`` module exists it will call
+      :meth:`~molly.conf.settings.Application.add_conf_to_pattern` to walk the
+      urlconf to attach the configuration object to the views.
+
+      The ApplicationConf returned will have attributes reflecting the
+      ``kwargs`` passed to :meth:`~molly.conf.settings.Application.__init__`.
+      The urlconf will be exposed as a ``urls`` attribute.
+
+      :rtype: ApplicationConf subclass
+
+   .. method:: add_conf_to_pattern(pattern, conf, bases)
+
+      Used internally. Maps the ``conf`` and ``bases`` onto the views
+      contained in ``pattern``. This method creates a new view, with ``conf``
+      in the class dictionary and the view and ``bases`` as base classes.
+      Specifically::
+
+         new_callback = type(callback.__name__ + 'WithConf',
+                             (callback,) + bases,
+                             { 'conf': conf })
+
+      This dynamically creates a new class object. For more information, see
+      the second definition of :func:`type`.
+
+      When given a :class:`~django.core.urlresolvers.RegexURLPattern` it will
+      return a new :class:`~django.core.urlresolvers.RegexURLPattern`
+      with its callback replaced as above. When given a
+      :class:`~django.core.urlresolvers.RegexURLResolver` it will descend
+      recursively before returning a new
+      :class:`~django.core.urlresolvers.RegexURLResolver` instance.
+
+      :type pattern: RegexURLResolver or RegexURLPattern instance
+      :type conf: ApplicationConf subclass
+      :type bases: tuple of BaseView subclasses
+      :returns: A copy of the first argument with views replaced as described
+          above.
+      :rtype: RegexURLResolver or RegexURLPattern instance
+
+In the vast majority of cases, you will only need to use the constructor, and
+only in your ``settings`` module.
+
+There are a few keyword arguments with special meanings:
+
+``providers``
+    An iterable of :class:`~molly.conf.settings.SimpleProvider` instances to
+    load providers from.
+``provider``
+    A shorthand for ``providers = [`provider`]``.
+``display_to_user``
+    A :class:`bool` used by :mod:`molly.apps.home` to determine whether a link
+    should be rendered for the application on the home page.
+``extra_bases``
+    An iterable of :class:`~molly.conf.settings.ExtraBase` instances, defining
+    extra base classes to add to all views in the application. With suitably
+    defined extra base classes one can override functionality.
+    Application-level authentication may also be added in this manner.
+``secure``
+    A :class:`bool` which if :const:`True` will add
+    :class:`~molly.auth.views.SecureView` as a base class of all views in the
+    application. :class:`~molly.auth.views.SecureView` forces all requests to
+    be made over HTTPS, and provides a ``secure_session`` attribute on
+    :class:`~django.http.HttpRequest` objects.
+``urlconf``
+    A module path to the ``urls`` module to use for this application. May be
+    useful if an application uses a non-standard naming, or if you want to
+    override the application-provided urlconf. If not provided, defaults to
+    ``application_name + '.urls'``
+
+Here's an example::
+
+    APPLICATIONS = [
+        # ...
+        Application('example.apps.dictionary', 'dictionary', 'Dictionary',
+            provider = SimpleProvider('isihac.providers.apps.dictionary.uxbridge'),
+            max_results = 10,
+        ),
+        # ...
+    ]
+
+Here we want to use a dictionary application with at most ten results from the
+Uxbridge English Dictionary. If we wanted to expose two different dictionaries
+we may wish to do the following::
+
+    APPLICATIONS = [
+        # ...
+        Application('example.apps.dictionary', 'uxbridge_dictionary', 'Uxbridge English Dictionary',
+            provider = SimpleProvider('isihac.providers.apps.dictionary.uxbridge'),
+            max_results = 10,
+        ),
+        Application('example.apps.dictionary', 'oxford_dictionary', 'Oxford English Dictionary',
+            provider = SimpleProvider('oxford.providers.apps.dictionary.oed'),
+            max_results = 20,
+        ),
+        # ...
+    ]
+
+Once hooked into the root urlconf, this would present two links on the home
+page. Alternatively, if the ``example.apps.dictionary`` application supported
+multiple providers, we could do this::
+
+    APPLICATIONS = [
+        # ...
+        Application('example.apps.dictionary', 'dictionary', 'Dictionaries',
+            providers = (
+                SimpleProvider('isihac.providers.apps.dictionary.uxbridge',
+                    slug='uxbridge',
+                    title='Uxbridge English Dictionary'),
+                SimpleProvider('oxford.providers.apps.dictionary.oed',
+                    slug='oed',
+                    title='Oxford English Dictionary'),
+            ),
+            max_results = 10,
+        ),
+        # ...
+    ]
+
+Of course, this assumes that the application knows to pick the ``slug`` and
+``title`` from each of its providers. To determine the interface between
+applications and providers, consult the application's documentation.
+
+Providers
+---------
+
+TODO
