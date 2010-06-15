@@ -191,4 +191,25 @@ applications and providers, consult the application's documentation.
 Providers
 ---------
 
-TODO
+A provider maps an external interface onto the model used by the application.
+
+Most applications provide a ``providers.BaseProvider`` class which specifies
+an interface to be implemented by a provider for that application.
+
+Extra base classes
+------------------
+
+
+
+Batch jobs
+----------
+
+A provider can annotate methods to be included in a crontab using the
+:meth:`molly.conf.settings.batch` decorator::
+
+    @batch('%d 9 * * mon' % random.randint(0, 59))
+    def import_data(self, metadata, output):
+        # do stuff
+        return metadata
+
+For more information, see :doc:`topics/batch_jobs`.
