@@ -1,8 +1,27 @@
 Implementation topics
 =====================
 
+About the project
+-----------------
+
+ * :doc:`contributing`
+
+How-tos
+-------
+
+ * :doc:`writing_an_application`
+
+Background
+----------
+
+ * :doc:`application_framework`
+ * :doc:`class_based_views`
+
 .. toctree::
+   :hidden:
 
    contributing
    settings
    application_framework
+   writing_an_application
+   class_based_views
