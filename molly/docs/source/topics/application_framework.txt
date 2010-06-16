@@ -112,7 +112,7 @@ only in your ``settings`` module.
 There are a few keyword arguments with special meanings:
 
 ``providers``
-    An iterable of :class:`~molly.conf.settings.SimpleProvider` instances to
+    An iterable of :class:`~molly.conf.settings.Provider` instances to
     load providers from.
 ``provider``
     A shorthand for ``providers = [`provider`]``.
@@ -141,7 +141,7 @@ Here's an example::
     APPLICATIONS = [
         # ...
         Application('example.apps.dictionary', 'dictionary', 'Dictionary',
-            provider = SimpleProvider('isihac.providers.apps.dictionary.uxbridge'),
+            provider = Provider('isihac.providers.apps.dictionary.uxbridge'),
             max_results = 10,
         ),
         # ...
@@ -154,11 +154,11 @@ we may wish to do the following::
     APPLICATIONS = [
         # ...
         Application('example.apps.dictionary', 'uxbridge_dictionary', 'Uxbridge English Dictionary',
-            provider = SimpleProvider('isihac.providers.apps.dictionary.uxbridge'),
+            provider = Provider('isihac.providers.apps.dictionary.uxbridge'),
             max_results = 10,
         ),
         Application('example.apps.dictionary', 'oxford_dictionary', 'Oxford English Dictionary',
-            provider = SimpleProvider('oxford.providers.apps.dictionary.oed'),
+            provider = Provider('oxford.providers.apps.dictionary.oed'),
             max_results = 20,
         ),
         # ...
@@ -172,10 +172,10 @@ multiple providers, we could do this::
         # ...
         Application('example.apps.dictionary', 'dictionary', 'Dictionaries',
             providers = (
-                SimpleProvider('isihac.providers.apps.dictionary.uxbridge',
+                Provider('isihac.providers.apps.dictionary.uxbridge',
                     slug='uxbridge',
                     title='Uxbridge English Dictionary'),
-                SimpleProvider('oxford.providers.apps.dictionary.oed',
+                Provider('oxford.providers.apps.dictionary.oed',
                     slug='oed',
                     title='Oxford English Dictionary'),
             ),

@@ -15,6 +15,9 @@ classes to views to mix-in deployment-specific functionality.
 #
 # [0] http://docs.python.org/library/functions.html#type
 
+class ApplicationConf(object):
+    pass
+
 class Application(object):
     def __init__(self, application_name, local_name, title, **kwargs):
         self.application_name, self.local_name = application_name, local_name
@@ -40,10 +43,10 @@ class Application(object):
 
         providers = []
         for provider in self.providers:
-            if isinstance(provider, SimpleProvider):
+            if isinstance(provider, Provider):
                 providers.append(provider())
             else:
-                providers.append(SimpleProvider(provider)())
+                providers.append(Provider(provider)())
 
         self.kwargs.update({
             'application_name': self.application_name,
@@ -52,7 +55,7 @@ class Application(object):
             'providers': providers,
             'provider': providers[-1] if len(providers) else None,
         })
-        self.conf = type(self.local_name.capitalize()+'Conf', (object,), self.kwargs)
+        self.conf = type(self.local_name.capitalize()+'Conf', (ApplicationConf,), self.kwargs)
 
         try:
             urlpatterns = import_module(self.urlconf).urlpatterns
@@ -119,7 +122,7 @@ class Application(object):
                 return
             # Create a new callback with the conf and extra bases
             callback = type(callback.__name__ + 'WithConf',
-                            (callback,) + bases + callback.__bases__,
+                            (callback,) + bases,
                             { 'conf': conf })
             # Transplant this new callback into a new RegexURLPattern, keeping
             # the same regex, default_args and name.
@@ -149,7 +152,7 @@ class ExtraBase(object):
 def extract_installed_apps(applications):
     return tuple(app.application_name for app in applications)
 
-class SimpleProvider(object):
+class Provider(object):
     def __init__(self, klass, **kwargs):
         self.klass, self.kwargs = klass, kwargs
 

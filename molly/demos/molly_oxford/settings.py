@@ -2,7 +2,7 @@
 
 from oauth.oauth import OAuthSignatureMethod_PLAINTEXT
 import os.path
-from molly.conf.settings import Application, extract_installed_apps, Authentication, ExtraBase, SimpleProvider
+from molly.conf.settings import Application, extract_installed_apps, Authentication, ExtraBase, Provider
 from secrets import SECRETS
 
 project_root = os.path.normpath(os.path.dirname(__file__))
@@ -105,13 +105,13 @@ APPLICATIONS = [
 
     Application('molly.apps.places', 'places', 'Places',
         providers = [
-            SimpleProvider('molly.providers.apps.maps.NaptanMapsProvider',
+            Provider('molly.providers.apps.maps.NaptanMapsProvider',
                 method='ftp',
                 username=SECRETS.journeyweb[0],
                 password=SECRETS.journeyweb[1],
                 areas=('340',),
             ),
-            SimpleProvider('molly.providers.apps.maps.PostcodesMapsProvider',
+            Provider('molly.providers.apps.maps.PostcodesMapsProvider',
                 codepoint_path = '/var/cache/molly/codepo_gb.zip',
                 import_areas = ('OX',),
             ),
@@ -144,10 +144,10 @@ APPLICATIONS = [
 
     Application('molly.apps.podcasts', 'podcasts', 'Podcasts',
         providers = [
-            SimpleProvider('molly.providers.apps.podcasts.OPMLPodcastsProvider',
+            Provider('molly.providers.apps.podcasts.OPMLPodcastsProvider',
                 url = 'http://rss.oucs.ox.ac.uk/metafeeds/podcastingnewsfeeds.opml',
             ),
-            SimpleProvider('molly.providers.apps.podcasts.RSSPodcastsProvider',
+            Provider('molly.providers.apps.podcasts.RSSPodcastsProvider',
                 podcasts = [
                     ('top-downloads', 'http://rss.oucs.ox.ac.uk/oxitems/topdownloads.xml'),
                 ],
@@ -161,7 +161,7 @@ APPLICATIONS = [
 
     Application('molly.apps.weather', 'weather', 'Weather',
         location_id = 'bbc/25',
-        provider = SimpleProvider('molly.providers.apps.weather.BBCWeatherProvider',
+        provider = Provider('molly.providers.apps.weather.BBCWeatherProvider',
             location_id = 25,
         ),
     ),
@@ -169,7 +169,7 @@ APPLICATIONS = [
     Application('molly.apps.service_status', 'service_status', 'Service status',
         providers = [
             'molly.providers.apps.service_status.OUCSStatusProvider',
-            SimpleProvider('molly.providers.apps.service_status.RSSModuleServiceStatusProvider',
+            Provider('molly.providers.apps.service_status.RSSModuleServiceStatusProvider',
                 name='Oxford Library Information Services',
                 slug='olis',
                 url='http://www.lib.ox.ac.uk/olis/status/olis-opac.rss')
@@ -178,8 +178,8 @@ APPLICATIONS = [
 
     Application('molly.apps.search', 'search', 'Search',
         providers = [
-            SimpleProvider('molly.providers.apps.search.ApplicationSearchProvider'),
-            SimpleProvider('molly.providers.apps.search.GSASearchProvider',
+            Provider('molly.providers.apps.search.ApplicationSearchProvider'),
+            Provider('molly.providers.apps.search.GSASearchProvider',
                 search_url = 'http://googlesearch.oucs.ox.ac.uk/search',
                 domain = 'm.ox.ac.uk',
                 params = {
@@ -193,7 +193,7 @@ APPLICATIONS = [
 
     Application('molly.apps.feeds', 'feeds', 'Feeds',
         providers = [
-            SimpleProvider('molly.providers.apps.feeds.RSSFeedsProvider'),
+            Provider('molly.providers.apps.feeds.RSSFeedsProvider'),
         ],
         display_to_user = False,
     ),
@@ -207,8 +207,8 @@ APPLICATIONS = [
     Application('molly.geolocation', 'geolocation', 'Geolocation',
         prefer_results_near = (-1.25821, 51.75216, 5000),
         providers = [
-            SimpleProvider('molly.providers.apps.geolocation.PlacesGeolocationProvider'),
-            SimpleProvider('molly.providers.apps.geolocation.CloudmadeGeolocationProvider',
+            Provider('molly.providers.apps.geolocation.PlacesGeolocationProvider'),
+            Provider('molly.providers.apps.geolocation.CloudmadeGeolocationProvider',
                 search_locality = 'Oxford',
             ),
         ],
