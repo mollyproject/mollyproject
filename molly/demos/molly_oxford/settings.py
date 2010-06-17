@@ -2,12 +2,13 @@
 
 from oauth.oauth import OAuthSignatureMethod_PLAINTEXT
 import os.path
-from molly.conf.settings import Application, extract_installed_apps, Authentication, ExtraBase, SimpleProvider
+from molly.conf.settings import Application, extract_installed_apps, Authentication, ExtraBase, Provider
 from secrets import SECRETS
 
 project_root = os.path.normpath(os.path.dirname(__file__))
 
 DEBUG = True
+DEBUG_SECURE = False
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -85,6 +86,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'molly.wurfl.context_processors.wurfl_device',
     'molly.wurfl.context_processors.device_specific_media',
     'molly.geolocation.context_processors.geolocation',
+    'molly.apps.feedback.context_processors.full_path',
 )
 
 
@@ -93,7 +95,7 @@ ROOT_URLCONF = 'molly_oxford.urls'
 TEMPLATE_DIRS = (
     os.path.join(project_root, 'templates'),
     # This is temporary until we move the templates to their rightful places
-    os.path.join(project_root, '..', '..', 'molly', 'templates'),
+    #os.path.join(project_root, '..', '..', 'molly', 'templates'),
 )
 
 APPLICATIONS = [
@@ -102,18 +104,18 @@ APPLICATIONS = [
     ),
 
     Application('molly.apps.contact', 'contact', 'Contact search',
-        provider = 'molly.contrib.oxford.providers.ScrapingContactProvider',
+        provider = 'molly.providers.apps.contact.ScrapingContactProvider',
     ),
 
     Application('molly.apps.places', 'places', 'Places',
         providers = [
-            SimpleProvider('molly.providers.apps.maps.NaptanMapsProvider',
+            Provider('molly.providers.apps.maps.NaptanMapsProvider',
                 method='ftp',
                 username=SECRETS.journeyweb[0],
                 password=SECRETS.journeyweb[1],
                 areas=('340',),
             ),
-            SimpleProvider('molly.providers.apps.maps.PostcodesMapsProvider',
+            Provider('molly.providers.apps.maps.PostcodesMapsProvider',
                 codepoint_path = '/var/cache/molly/codepo_gb.zip',
                 import_areas = ('OX',),
             ),
@@ -146,10 +148,10 @@ APPLICATIONS = [
 
     Application('molly.apps.podcasts', 'podcasts', 'Podcasts',
         providers = [
-            SimpleProvider('molly.providers.apps.podcasts.OPMLPodcastsProvider',
+            Provider('molly.providers.apps.podcasts.OPMLPodcastsProvider',
                 url = 'http://rss.oucs.ox.ac.uk/metafeeds/podcastingnewsfeeds.opml',
             ),
-            SimpleProvider('molly.providers.apps.podcasts.RSSPodcastsProvider',
+            Provider('molly.providers.apps.podcasts.RSSPodcastsProvider',
                 podcasts = [
                     ('top-downloads', 'http://rss.oucs.ox.ac.uk/oxitems/topdownloads.xml'),
                 ],
@@ -163,15 +165,15 @@ APPLICATIONS = [
 
     Application('molly.apps.weather', 'weather', 'Weather',
         location_id = 'bbc/25',
-        provider = SimpleProvider('molly.providers.apps.weather.BBCWeatherProvider',
+        provider = Provider('molly.providers.apps.weather.BBCWeatherProvider',
             location_id = 25,
         ),
     ),
 
     Application('molly.apps.service_status', 'service_status', 'Service status',
         providers = [
-            'molly.contrib.oxford.providers.OUCSStatusProvider',
-            SimpleProvider('molly.providers.apps.service_status.RSSModuleServiceStatusProvider',
+            'molly.providers.apps.service_status.OUCSStatusProvider',
+            Provider('molly.providers.apps.service_status.RSSModuleServiceStatusProvider',
                 name='Oxford Library Information Services',
                 slug='olis',
                 url='http://www.lib.ox.ac.uk/olis/status/olis-opac.rss')
@@ -180,8 +182,8 @@ APPLICATIONS = [
 
     Application('molly.apps.search', 'search', 'Search',
         providers = [
-            SimpleProvider('molly.providers.apps.search.ApplicationSearchProvider'),
-            SimpleProvider('molly.providers.apps.search.GSASearchProvider',
+            Provider('molly.providers.apps.search.ApplicationSearchProvider'),
+            Provider('molly.providers.apps.search.GSASearchProvider',
                 search_url = 'http://googlesearch.oucs.ox.ac.uk/search',
                 domain = 'm.ox.ac.uk',
                 params = {
@@ -195,8 +197,9 @@ APPLICATIONS = [
 
     Application('molly.apps.feeds', 'feeds', 'Feeds',
         providers = [
-            SimpleProvider('molly.providers.apps.feeds.RSSFeedsProvider'),
-        ]
+            Provider('molly.providers.apps.feeds.RSSFeedsProvider'),
+        ],
+        display_to_user = False,
     ),
 
     Application('molly.apps.feeds.news', 'news', 'News'),
@@ -208,8 +211,8 @@ APPLICATIONS = [
     Application('molly.geolocation', 'geolocation', 'Geolocation',
         prefer_results_near = (-1.25821, 51.75216, 5000),
         providers = [
-            SimpleProvider('molly.providers.apps.geolocation.PlacesGeolocationProvider'),
-            SimpleProvider('molly.providers.apps.geolocation.CloudmadeGeolocationProvider',
+            Provider('molly.providers.apps.geolocation.PlacesGeolocationProvider'),
+            Provider('molly.providers.apps.geolocation.CloudmadeGeolocationProvider',
                 search_locality = 'Oxford',
             ),
         ],
@@ -224,35 +227,41 @@ APPLICATIONS = [
         display_to_user = False,
     ),
 
+    Application('molly.wurfl', 'device_detection', 'Device detection',
+        display_to_user = False,
+        expose_view = True,
+    ),
+
 #    Application('molly.apps.url_shortener', 'url_shortener', 'URL Shortener',
 #        display_to_user = False,
 #    ),
 
-#    Application('molly.auth', 'auth', 'Authentication',
-#        display_to_user = False,
-#    ),
+    Application('molly.auth', 'auth', 'Authentication',
+        display_to_user = False,
+        secure = True,
+    ),
 
-#    Application('molly.apps.sakai', 'weblearn', 'WebLearn',
-#        host = 'https://weblearn.ox.ac.uk/',
-#        service_name = 'WebLearn',
-#        secure = True,
-#        tools = [
-#            ('signup', 'Tutorial sign-ups'),
-#            ('poll', 'Polls'),
-#            ('direct', 'User information'),
-#            ('sites', 'Sites'),
-#        ],
-#        extra_bases = (
-#            ExtraBase('molly.auth.oauth.views.OAuthView',
-#                secret = SECRETS.weblearn,
-#                signature_method = OAuthSignatureMethod_PLAINTEXT(),
-#                base_url = 'https://weblearn.ox.ac.uk/oauth-tool/',
-#                request_token_url = 'request_token',
-#                access_token_url = 'access_token',
-#                authorize_url = 'authorize',
-#            ),
-#        ),
-#    ),
+    Application('molly.apps.sakai', 'weblearn', 'WebLearn',
+        host = 'https://weblearn.ox.ac.uk/',
+        service_name = 'WebLearn',
+        secure = True,
+        tools = [
+            ('signup', 'Tutorial sign-ups'),
+            ('poll', 'Polls'),
+            ('direct', 'User information'),
+            ('sites', 'Sites'),
+        ],
+        extra_bases = (
+            ExtraBase('molly.auth.oauth.views.OAuthView',
+                secret = SECRETS.weblearn,
+                signature_method = OAuthSignatureMethod_PLAINTEXT(),
+                base_url = 'https://weblearn.ox.ac.uk/oauth-tool/',
+                request_token_url = 'request_token',
+                access_token_url = 'access_token',
+                authorize_url = 'authorize',
+            ),
+        ),
+    ),
 
 #    Application('molly.apps.feeds.events', 'events', 'Events',
 #    ),
@@ -273,9 +282,8 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
-    'molly.osm',
     'molly.batch_processing',
-    'molly.wurfl',
+    'molly.utils',
 #    'debug_toolbar',
     'compress',
 ) + extract_installed_apps(APPLICATIONS)

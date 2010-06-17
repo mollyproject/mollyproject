@@ -25,7 +25,8 @@ def BreadcrumbFactory(breadcrumb_func):
         else:
             parent = None
         
-        index = resolve(reverse('%s:index' % breadcrumb.application))[0].breadcrumb.data(cls, request, context)
+        index_view = resolve(reverse('%s:index' % breadcrumb.application))[0]
+        index = index_view.breadcrumb.data(index_view, request, context)
         index = index.title, index.url()
         
         parent_is_index = index == parent

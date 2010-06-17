@@ -12,7 +12,7 @@ class SearchFormNode(template.Node):
     """
     Adds a SearchForm instance to the context.
     """
-    
+
     def __init__(self, prefix=None, name="search_form"):
         self.prefix = prefix
         self.name = name
@@ -20,4 +20,3 @@ class SearchFormNode(template.Node):
     def render(self, context):
         context[self.name] = SearchForm(prefix=self.prefix)
         return ''
-    

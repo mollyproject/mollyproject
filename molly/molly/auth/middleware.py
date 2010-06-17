@@ -4,13 +4,13 @@ from django.conf import settings
 from django.utils.cache import patch_vary_headers
 from django.utils.http import cookie_date
 from django.utils.importlib import import_module
-from django.http import HttpResponseRedirect
+from django.http import HttpResponsePermanentRedirect, HttpResponseForbidden
 
 from .views import SecureView
 
 class SecureSessionMiddleware(object):
     def process_request(self, request):
-        if request.is_secure() or settings.DEBUG:
+        if request.is_secure() or settings.DEBUG_SECURE:
             engine = import_module(settings.SESSION_ENGINE)
             secure_session_key = request.COOKIES.get('secure_session_id', None)
             request.secure_session = engine.SessionStore(secure_session_key)
@@ -23,7 +23,7 @@ class SecureSessionMiddleware(object):
             request.secure_session = None
 
     def process_view(self, request, view_func, view_args, view_kwargs):
-        if settings.DEBUG:
+        if settings.DEBUG_SECURE:
             return
             
         secure_request = request.is_secure()
@@ -33,13 +33,19 @@ class SecureSessionMiddleware(object):
         # Likewise, if the secure session isn't marked secure, refuse the request.
         if request.session.get('is_secure'):        
             return HttpResponseForbidden('Invalid session_id', mimetype='text/plain')
-        if request.secure_session and not request.secure_session('is_secure'):
+        if request.secure_session and not request.secure_session.get('is_secure'):
             return HttpResponseForbidden('Invalid secure_session_id', mimetype='text/plain')
 
         if secure_view and not secure_request:
             uri = request.build_absolute_uri().split(':', 1)
             uri = 'https:' + uri[1]
-            return HttpResponseRedirect(
+            return HttpResponsePermanentRedirect(
+                uri
+            )
+        if not secure_view and secure_request:
+            uri = request.build_absolute_uri().split(':', 1)
+            uri = 'http:' + uri[1]
+            return HttpResponsePermanentRedirect(
                 uri
             )
 
@@ -49,7 +55,7 @@ class SecureSessionMiddleware(object):
         save the session every time, save the changes and set a session cookie.
         """
         
-        if not (request.is_secure() or settings.DEBUG):
+        if not (request.is_secure() or settings.DEBUG_SECURE):
             return response
             
         try:
@@ -74,5 +80,5 @@ class SecureSessionMiddleware(object):
                         request.secure_session.session_key, max_age=max_age,
                         expires=expires, domain=settings.SESSION_COOKIE_DOMAIN,
                         path=settings.SESSION_COOKIE_PATH,
-                        secure=not settings.DEBUG)
+                        secure=not settings.DEBUG_SECURE)
         return response

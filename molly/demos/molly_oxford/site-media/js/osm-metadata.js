@@ -17,17 +17,17 @@ function highlightRow(id) {
 
   currentRow = $('#row-'+id);
   currentId = id;
-  
+
   $('#tags-div').css('visibility','visible');
 
   tags_tbody = $('#tags tbody');
   tags_tbody.empty();
-  
+
   tags = [];
   for (var tag in entities[id].new_tags)
     tags.push(tag);
   tags.sort();
-  
+
   for each (var tag in tags) {
     addTag(tags_tbody, tag, entities[id].new_tags[tag]);
   }
@@ -39,9 +39,9 @@ function updateTag(id, key, value) {
     delete entities[id].new_tags[key];
   } else
     entities[id].new_tags[key] = value;
-  
+
   cell = $('#cell-'+id+'-'+key);
-  
+
   cell.text(value || '');
   if (entities[id].tags[key] == entities[id].new_tags[key]) {
     cell.removeClass('modified');
@@ -68,7 +68,7 @@ $(function () {
   var size = new OpenLayers.Size(21,25);
   var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
   var icon = new OpenLayers.Icon('/site-media/openlayers/img/marker-blue.png',size,offset);
-  
+
   $('.tag-key').each(function() {
     star = $('<a href="#">*</a>').bind('click', $(this).text(), function(e) {
       green_icon = '/site-media/openlayers/img/marker-green.png';
@@ -133,7 +133,7 @@ $(function () {
       for (var tag in entities[id].tags)
         if (entities[id].tags[tag] != entities[id].new_tags[tag])
           has_changed = true;
-      
+
       if (!has_changed)
         continue;
 
@@ -170,11 +170,11 @@ $(function () {
       row = $(this);
       key = row.find('.key').val();
       value = row.find('.value').val();
-      
+
       updateTag(currentId, key, value);
     });
   });
-  
+
   $('#new-tag').bind('click', function() {
     tags_tbody = $('#tags tbody');
     addTag(tags_tbody, '', '');
