@@ -12,6 +12,19 @@ from django.contrib.gis.geos import Point
 
 logger = logging.getLogger('core.requests')
 
+from time import clock as time_clock
+import sys
+
+class timing(object):
+    def __new__(cls, f, *args, **kwargs):
+        t1 = time_clock()
+        value = f(*args, **kwargs)
+        t2 = time_clock()
+        frame = sys._getframe()
+        print "TIME %s:%d %2.4f %s" % (__file__, frame.f_lineno, t2-t1, f.__name__)
+        return value
+
+
 class DateUnicode(unicode): pass
 class DateTimeUnicode(unicode): pass
 
@@ -121,8 +134,8 @@ class BaseView(object):
         method_name = 'handle_%s' % request.method
         if hasattr(cls, method_name):
             context = cls.initial_context(request, *args, **kwargs)
-            context['breadcrumbs'] = cls.breadcrumb(request, context, *args, **kwargs)
-            response = getattr(cls, method_name)(request, context, *args, **kwargs)
+            context['breadcrumbs'] = timing(cls.breadcrumb, request, context, *args, **kwargs)
+            response = timing(getattr(cls, method_name), request, context, *args, **kwargs)
             return response
         else:
             return cls.method_not_allowed(request)

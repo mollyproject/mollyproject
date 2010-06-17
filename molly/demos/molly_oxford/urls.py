@@ -27,9 +27,9 @@ urlpatterns = patterns('',
     (r'^osm/', applications.osm.urls),
     (r'', applications.home.urls),
 
-#    (r'^auth/', applications.auth.urls),
+    (r'^auth/', applications.auth.urls),
+    (r'^weblearn/', applications.weblearn.urls),
 #    (r'^url-shortener/', applications.url_shortener.urls),
-#    (r'^weblearn/', applications.weblearn.urls),
 #    (r'^events/', applications.events.urls),
 
     # These ones still need work

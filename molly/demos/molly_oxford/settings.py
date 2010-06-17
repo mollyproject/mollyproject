@@ -8,6 +8,7 @@ from secrets import SECRETS
 project_root = os.path.normpath(os.path.dirname(__file__))
 
 DEBUG = True
+DEBUG_SECURE = False
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -232,31 +233,32 @@ APPLICATIONS = [
 #        display_to_user = False,
 #    ),
 
-#    Application('molly.auth', 'auth', 'Authentication',
-#        display_to_user = False,
-#    ),
+    Application('molly.auth', 'auth', 'Authentication',
+        display_to_user = False,
+        secure = True,
+    ),
 
-#    Application('molly.apps.sakai', 'weblearn', 'WebLearn',
-#        host = 'https://weblearn.ox.ac.uk/',
-#        service_name = 'WebLearn',
-#        secure = True,
-#        tools = [
-#            ('signup', 'Tutorial sign-ups'),
-#            ('poll', 'Polls'),
-#            ('direct', 'User information'),
-#            ('sites', 'Sites'),
-#        ],
-#        extra_bases = (
-#            ExtraBase('molly.auth.oauth.views.OAuthView',
-#                secret = SECRETS.weblearn,
-#                signature_method = OAuthSignatureMethod_PLAINTEXT(),
-#                base_url = 'https://weblearn.ox.ac.uk/oauth-tool/',
-#                request_token_url = 'request_token',
-#                access_token_url = 'access_token',
-#                authorize_url = 'authorize',
-#            ),
-#        ),
-#    ),
+    Application('molly.apps.sakai', 'weblearn', 'WebLearn',
+        host = 'https://weblearn.ox.ac.uk/',
+        service_name = 'WebLearn',
+        secure = True,
+        tools = [
+            ('signup', 'Tutorial sign-ups'),
+            ('poll', 'Polls'),
+            ('direct', 'User information'),
+            ('sites', 'Sites'),
+        ],
+        extra_bases = (
+            ExtraBase('molly.auth.oauth.views.OAuthView',
+                secret = SECRETS.weblearn,
+                signature_method = OAuthSignatureMethod_PLAINTEXT(),
+                base_url = 'https://weblearn.ox.ac.uk/oauth-tool/',
+                request_token_url = 'request_token',
+                access_token_url = 'access_token',
+                authorize_url = 'authorize',
+            ),
+        ),
+    ),
 
 #    Application('molly.apps.feeds.events', 'events', 'Events',
 #    ),
@@ -278,6 +280,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'molly.batch_processing',
+    'molly.utils',
 #    'debug_toolbar',
 ) + extract_installed_apps(APPLICATIONS)
 

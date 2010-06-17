@@ -75,7 +75,7 @@ class Application(object):
             # Load our extra base classes
             bases = tuple(base() for base in self.extra_bases)
             if self.secure:
-                from molly.utils.views import SecureView
+                from molly.auth.views import SecureView
                 bases = (SecureView,) + bases
 
             # Walk the tree of urlpatterns to add the conf and bases
