@@ -30,7 +30,7 @@
 
         <doap:repository>
             <doap:GitRepository>
-                <doap:anon-root rdf:resource="git://mollyproject.git.sourceforge.net/gitroot/mollyproject/mollyproject"/>
+                <doap:anon-root>git://mollyproject.git.sourceforge.net/gitroot/mollyproject/mollyproject</doap:anon-root>
                 <doap:browse rdf:resource="http://mollyproject.git.sourceforge.net/git/gitweb-index.cgi"/>
                 <doap:location rdf:resource="ssh://mollyproject.git.sourceforge.net/gitroot/mollyproject/mollyproject"/>
             </doap:GitRepository>
