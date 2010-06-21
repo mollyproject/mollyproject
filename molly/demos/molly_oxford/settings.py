@@ -7,7 +7,7 @@ from secrets import SECRETS
 
 project_root = os.path.normpath(os.path.dirname(__file__))
 
-DEBUG = True
+DEBUG = False
 DEBUG_SECURE = False
 TEMPLATE_DEBUG = DEBUG
 
@@ -70,7 +70,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'molly.wurfl.middleware.WurflMiddleware',
-    'molly.auth.middleware.SecureSessionMiddleware',
+#    'molly.auth.middleware.SecureSessionMiddleware',
 #    'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
@@ -233,32 +233,32 @@ APPLICATIONS = [
 #        display_to_user = False,
 #    ),
 
-    Application('molly.auth', 'auth', 'Authentication',
-        display_to_user = False,
-        secure = True,
-    ),
+#    Application('molly.auth', 'auth', 'Authentication',
+#        display_to_user = False,
+#        secure = True,
+#    ),
 
-    Application('molly.apps.sakai', 'weblearn', 'WebLearn',
-        host = 'https://weblearn.ox.ac.uk/',
-        service_name = 'WebLearn',
-        secure = True,
-        tools = [
-            ('signup', 'Tutorial sign-ups'),
-            ('poll', 'Polls'),
-            ('direct', 'User information'),
-            ('sites', 'Sites'),
-        ],
-        extra_bases = (
-            ExtraBase('molly.auth.oauth.views.OAuthView',
-                secret = SECRETS.weblearn,
-                signature_method = OAuthSignatureMethod_PLAINTEXT(),
-                base_url = 'https://weblearn.ox.ac.uk/oauth-tool/',
-                request_token_url = 'request_token',
-                access_token_url = 'access_token',
-                authorize_url = 'authorize',
-            ),
-        ),
-    ),
+#    Application('molly.apps.sakai', 'weblearn', 'WebLearn',
+#        host = 'https://weblearn.ox.ac.uk/',
+#        service_name = 'WebLearn',
+#        secure = True,
+#        tools = [
+#            ('signup', 'Tutorial sign-ups'),
+#            ('poll', 'Polls'),
+#            ('direct', 'User information'),
+#            ('sites', 'Sites'),
+#        ],
+#        extra_bases = (
+#            ExtraBase('molly.auth.oauth.views.OAuthView',
+#                secret = SECRETS.weblearn,
+#                signature_method = OAuthSignatureMethod_PLAINTEXT(),
+#                base_url = 'https://weblearn.ox.ac.uk/oauth-tool/',
+#                request_token_url = 'request_token',
+#                access_token_url = 'access_token',
+#                authorize_url = 'authorize',
+#            ),
+#        ),
+#    ),
 
 #    Application('molly.apps.feeds.events', 'events', 'Events',
 #    ),
