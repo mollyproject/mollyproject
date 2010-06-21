@@ -312,18 +312,18 @@ class EntityUpdateView(ZoomableView):
 
     def handle_POST(cls, request, context, scheme, value):
         entity = context['entity'] = get_entity(scheme, value)
-        if entity.entity_type.source != 'osm':
+        if entity.source.module_name != 'molly.providers.apps.maps.osm':
             raise Http404
 
         form = UpdateOSMForm(request.POST)
         if form.is_valid():
-            new_metadata = copy.deepcopy(entity.metadata)
+            new_metadata = copy.deepcopy(entity.metadata['osm'])
             for k in ('name', 'operator', 'phone', 'opening_hours', 'url', 'cuisine', 'food', 'food__hours', 'atm', 'collection_times', 'ref', 'capacity'):
                 tag_name = k.replace('__', ':')
                 if tag_name in new_metadata and not form.cleaned_data[k]:
                     del new_metadata['osm']['tags'][tag_name]
                 elif form.cleaned_data[k]:
-                    new_metadata['osm']['tags'][tag_name] = form.cleaned_data[k]
+                    new_metadata['tags'][tag_name] = form.cleaned_data[k]
 
             new_metadata['attrs']['version'] = str(int(new_metadata['attrs']['version'])+1)
 
@@ -338,7 +338,7 @@ class EntityUpdateView(ZoomableView):
             )
             osm_update.save()
 
-            return HttpResponseRedirect(reverse('places:entity_update', args=[type_slug, id])+'?submitted=true')
+            return HttpResponseRedirect(reverse('places:entity_update', args=[scheme, value])+'?submitted=true')
         else:
             context['form'] = form
             return cls.render(request, context, 'places/update_osm')
