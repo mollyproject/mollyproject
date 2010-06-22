@@ -323,11 +323,14 @@ COMPRESS_CSSTIDY_SETTINGS = {
 # django-compress JS
 COMPRESS_JS = {
     'all': {
-        'source_filenames': ('js/jquery-1.4.2.js', 'js/async_load.js', 'js/groups/smart.js'),
+        'source_filenames': ('js/jquery-1.4.2.js', 'js/groups/smart.js'),
         'output_filename': 'js/all.min.js',
         'extra_context': {},
         },
     }
+if not DEBUG:
+    COMPRESS_JS['all']['source_filenames'] = COMPRESS_JS['all']['source_filenames'] + ('js/async_load.js',)
+
 COMPRESS_JS_FILTERS = ('compress.filters.jsmin.JSMinFilter',)
 # On or off?
 COMPRESS = not DEBUG

@@ -1,4 +1,5 @@
 from datetime import datetime
+
 import urllib, urllib2, pytz, simplejson
 from lxml import etree
 import xml.utils.iso8601
@@ -294,6 +295,7 @@ class EvaluationDetailView(SakaiView):
         context = {
             'evaluation': evaluation,
             'id': id,
+            'url': url,
         }
         print etree.tostring(evaluation)
         for node in evaluation.findall('*'):
@@ -329,4 +331,24 @@ class EvaluationDetailView(SakaiView):
         print context.keys()
 
         return cls.render(request, context, 'sakai/evaluation/detail')
+
+    def handle_POST(cls, request, context, id):
+        response = request.opener.open(context['url'], request.POST)       
+
+        print response.geturl()
+
+        context.update({
+            'body': response.read(),
+        })
+
+        return cls.render(request, context, None)
+
+class EvaluationSummaryView(SakaiView):
+    breadcrumb = NullBreadcrumb
+
+    def handle_GET(cls, request, context, id):
+        url = cls.build_url('direct/eval-evaluation/%s/summary' % id)
+        if 'QUERY_STRING' in request.META:
+            url += '?%s' % request.META['QUERY_STRING']
+        request.opener.open(url)
 
