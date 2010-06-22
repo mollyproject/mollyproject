@@ -250,6 +250,7 @@ APPLICATIONS = [
             ('poll', 'Polls'),
             ('direct', 'User information'),
             ('sites', 'Sites'),
+            ('evaluation', 'Surveys'),
         ],
         extra_bases = (
             ExtraBase('molly.auth.oauth.views.OAuthView',
