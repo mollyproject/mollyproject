@@ -12,6 +12,9 @@
 
 <div class="section">
   <h2>Questions</h2>
+{% if state_message %}
+  <div class="bubble pad-10">{{ state_message|safe }}</div>
+{% endif %}
 <form method="post" action="{% url sakai:evaluation-detail id %}">
 {{ questions|safe }}
 

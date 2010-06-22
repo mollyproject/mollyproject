@@ -294,6 +294,7 @@ class EvaluationIndexView(SakaiView):
 
         return {
             'evaluations': evaluations,
+            'submitted': request.GET.get('submitted') == 'true',
         }
 
     def handle_GET(cls, request, context):
@@ -301,27 +302,20 @@ class EvaluationIndexView(SakaiView):
 
 class EvaluationDetailView(SakaiView):
     def initial_context(cls, request, id):
-        try:
-            url = cls.build_url('direct/eval-evaluation/%s' % id)
-            evaluation = etree.parse(request.opener.open(url), parser = etree.HTMLParser(recover=False))
-        except urllib2.HTTPError, e:
-            print e.getcode()
-            if e.code == 404:
-                raise Http404
-            elif e.code == 403:
-                raise PermissionDenied
-            else:
-                raise
-
+        url = cls.build_url('direct/eval-evaluation/%s' % id)
+        data = request.raw_post_data if request.method == 'POST' else None
+        response = request.urlopen(url, data)
+        evaluation = etree.parse(response, parser = etree.HTMLParser(recover=False))
         evaluation = transform(evaluation, 'sakai/evaluation/detail.xslt', {'id': id})
 
         context = {
             'evaluation': evaluation,
             'id': id,
             'url': url,
+            'response_url': response.geturl(),
         }
         add_children_to_context(evaluation, context)
-
+        print context['state_message']
         return context
 
     @BreadcrumbFactory
@@ -352,13 +346,8 @@ class EvaluationDetailView(SakaiView):
         return cls.render(request, context, 'sakai/evaluation/detail')
 
     def handle_POST(cls, request, context, id):
-        response = request.opener.open(context['url'], request.raw_post_data)
+        print context['response_url']
+        if context['response_url'].startswith(cls.build_url('direct/eval-evaluation/%s/take_eval?' % id)):
+            return cls.handle_GET(request, context, id)
 
-        print response.geturl()
-
-
-        context.update({
-            'body': response.read(),
-        })
-
-        return cls.render(request, context, None)
+        return HttpResponseSeeOther(reverse('sakai:evaluation-index') + '?submitted=true')

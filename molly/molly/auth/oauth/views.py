@@ -1,5 +1,5 @@
 from __future__ import absolute_import
-import urlparse
+import urlparse, urllib2
 
 from oauth import oauth
 
@@ -42,6 +42,18 @@ class OAuthView(BaseView):
             request.consumer,
             request.access_token,
             cls.signature_method)
+
+        def urlopen(*args, **kwargs):
+            try:
+                return request.opener.open(*args, **kwargs)
+            except urllib2.HTTPError, e:
+                if e.code == 404:
+                    raise Http404
+                elif e.code == 403:
+                    raise PermissionDenied
+                else:
+                    raise
+        request.urlopen = urlopen
 
         try:
             return super(OAuthView, cls).__new__(cls, request, *args, **kwargs)
@@ -110,7 +122,7 @@ class OAuthView(BaseView):
         if token_type == 'access_token':
             request.secure_session['oauth_tokens'][cls.conf.local_name] = (None, None)
             request.secure_session.modified = True
-            
+
         try:
             breadcrumbs = cls.breadcrumb(request, {'oauth_problem': True}, *args, **kwargs)
         except Exception, e:
@@ -130,4 +142,3 @@ class OAuthView(BaseView):
             'service_name': cls.conf.service_name,
         }
         return cls.render(request, context, 'auth/oauth/error')
-

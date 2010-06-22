@@ -4,6 +4,11 @@
 
 <div class="section">
   <h2>Current surveys</h2>
+{% if submitted %}
+  <div class="bubble pad-10">
+    Thank you for taking part in the survey; your responses have been safely submitted.
+  </div>
+{% endif %}
   <ul>
 {% for evaluation in evaluations %}
     <li>

@@ -28,7 +28,7 @@
       </state>
 
       <state_message>
-        <xsl:value-of select=".//div[@class='alertMessage']/text()"/>
+        <xsl:value-of select=".//div[@class='messageAlert']/ul/li/span"/>
       </state_message>
 
     </evaluation>
