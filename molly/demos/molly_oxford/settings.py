@@ -261,6 +261,7 @@ APPLICATIONS = [
                 authorize_url = 'authorize',
             ),
         ),
+        enforce_timeouts = False,
     ),
 
 #    Application('molly.apps.feeds.events', 'events', 'Events',

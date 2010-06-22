@@ -1,0 +1,25 @@
+{% extends "sakai/evaluation/base.html" %}
+
+{% block content %}
+
+<div class="section">
+  <h2>Current surveys</h2>
+  <ul>
+{% for evaluation in evaluations %}
+    <li>
+{% if evaluation.id %}
+      <a href="{% url sakai:evaluation-detail evaluation.id %}">
+{% endif %}
+        {{ evaluation.title }}<br/>
+        <small>
+        <em>{{ evaluation.status }}</em><br/>
+        {{ evaluation.site }}, open from {{ evaluation.start }} until {{ evaluation.end }}</small>
+{% if evaluation.id %}
+      </a>
+{% endif %}
+    </li>
+{% endfor %}
+  </ul>
+</div>
+
+{% endblock %}

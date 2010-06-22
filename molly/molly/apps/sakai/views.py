@@ -1,17 +1,18 @@
 from datetime import datetime
 
-import urllib, urllib2, pytz, simplejson
+import urllib, urllib2, pytz, simplejson, urlparse
 from lxml import etree
 import xml.utils.iso8601
 
 from django.http import Http404, HttpResponse, HttpResponseForbidden
 from django.core.urlresolvers import reverse
 from django.template import loader, Context
+from django.core.exceptions import PermissionDenied
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
 from molly.utils.http import HttpResponseSeeOther
-
+from molly.utils.xslt import transform, add_children_to_context
 
 def parse_iso_8601(s):
     return datetime.fromtimestamp(xml.utils.iso8601.parse(s)).replace(tzinfo=pytz.utc)
@@ -147,7 +148,7 @@ class SignupEventView(SakaiView):
     def handle_POST(cls, request, context, site, event_id):
         try:
             response = request.opener.open(
-                cls.build_url('direct/signupEvent/%s/edit' % event_id), 
+                cls.build_url('direct/signupEvent/%s/edit' % event_id),
                 data = urllib.urlencode({
                 'siteId': site,
                 'allocToTSid': request.POST['timeslot_id'],
@@ -158,13 +159,6 @@ class SignupEventView(SakaiView):
                 pass
             else:
                 raise
-
-        print {
-            'siteId': site,
-            'allocToTSid': request.POST['timeslot_id'],
-            'userActionType': request.POST['action'],
-            'complex_shorten': True,
-        }
 
         return HttpResponseSeeOther(request.path)
 
@@ -247,14 +241,9 @@ class PollDetailView(SakaiView):
         return cls.render(request, context, 'sakai/poll/detail')
 
     def handle_POST(cls, request, context, id):
-        print simplejson.dumps({
-                    'pollId': int(id),
-                    'pollOption': int(request.POST['pollOption']),
-            })
-
         try:
             response = request.opener.open(
-                cls.build_url('direct/poll-vote/new'), 
+                cls.build_url('direct/poll-vote/new'),
                 data = simplejson.dumps({
                     'pollId': int(id),
                     'pollOption': int(request.POST['pollOption']),
@@ -269,14 +258,48 @@ class PollDetailView(SakaiView):
         return HttpResponseSeeOther(request.path)
 
 class EvaluationIndexView(SakaiView):
-    breadcrumb = NullBreadcrumb
+    @BreadcrumbFactory
+    def breadcrumb(cls, request, context):
+        return Breadcrumb(
+            cls.conf.local_name,
+            lazy_parent(IndexView),
+            'Surveys',
+            lazy_reverse('sakai:evaluation-index'),
+        )
+
+    def initial_context(cls, request):
+        try:
+            url = cls.build_url('direct/eval-evaluation/1/summary')
+            summary = etree.parse(request.opener.open(url), parser = etree.HTMLParser(recover=False))
+        except urllib2.HTTPError, e:
+            if e.code == 404:
+                raise Http404
+            elif e.code == 403:
+                raise PermissionDenied
+            else:
+                raise
+
+        summary = transform(summary, 'sakai/evaluation/summary.xslt', {'id': id})
+
+        evaluations = []
+        for node in summary.findall('evaluation'):
+            evaluations.append({
+                'title': node.find('title').text,
+                'site': node.find('site').text,
+                'start': node.find('start').text,
+                'end': node.find('end').text,
+                'status': node.find('status').text,
+                'id': urlparse.parse_qs(urlparse.urlparse(node.find('url').text).query)['evaluationId'][0] if node.find('url') is not None else None,
+            })
+
+        return {
+            'evaluations': evaluations,
+        }
 
     def handle_GET(cls, request, context):
-        raise Http404
+        return cls.render(request, context, 'sakai/evaluation/index')
 
 class EvaluationDetailView(SakaiView):
-    breadcrumb = NullBreadcrumb
-
     def initial_context(cls, request, id):
         try:
             url = cls.build_url('direct/eval-evaluation/%s' % id)
@@ -285,33 +308,31 @@ class EvaluationDetailView(SakaiView):
             print e.getcode()
             if e.code == 404:
                 raise Http404
+            elif e.code == 403:
+                raise PermissionDenied
             else:
                 raise
 
-        xslt_doc = loader.get_template('sakai/evaluation/detail.xslt')
-        xslt_doc = etree.XSLT(etree.fromstring(xslt_doc.render(Context({'id':id}))))
-        evaluation = xslt_doc(evaluation)
+        evaluation = transform(evaluation, 'sakai/evaluation/detail.xslt', {'id': id})
 
         context = {
             'evaluation': evaluation,
             'id': id,
             'url': url,
         }
-        print etree.tostring(evaluation)
-        for node in evaluation.findall('*'):
-            context[node.tag] = etree.tostring(node, method="html")[len(node.tag)+2:-len(node.tag)-3]
+        add_children_to_context(evaluation, context)
 
         return context
 
     @BreadcrumbFactory
     def breadcrumb(cls, request, context, id):
         if not 'evaluation' in context:
-            context = EvaluationDetailView.initial_context(request, id)
+            context = cls.initial_context(request, id)
 
         return Breadcrumb(
             cls.conf.local_name,
             None,
-            context['title'],
+            context.get('title', 'Survey'),
             lazy_reverse('sakai:evaluation-detail', args=[id]),
         )
 
@@ -319,7 +340,7 @@ class EvaluationDetailView(SakaiView):
         evaluation = context['evaluation']
 
         if context['state'] == 'forbidden':
-            return HttpResponseForbidden()
+            raise PermissionDenied(context.get('state_message'))
         elif context['state'] == 'closed':
             context = {
                 'state': 'closed',
@@ -328,27 +349,16 @@ class EvaluationDetailView(SakaiView):
             }
             return cls.render(request, context, 'sakai/evaluation/closed')
 
-        print context.keys()
-
         return cls.render(request, context, 'sakai/evaluation/detail')
 
     def handle_POST(cls, request, context, id):
-        response = request.opener.open(context['url'], request.POST)       
+        response = request.opener.open(context['url'], request.raw_post_data)
 
         print response.geturl()
+
 
         context.update({
             'body': response.read(),
         })
 
         return cls.render(request, context, None)
-
-class EvaluationSummaryView(SakaiView):
-    breadcrumb = NullBreadcrumb
-
-    def handle_GET(cls, request, context, id):
-        url = cls.build_url('direct/eval-evaluation/%s/summary' % id)
-        if 'QUERY_STRING' in request.META:
-            url += '?%s' % request.META['QUERY_STRING']
-        request.opener.open(url)
-

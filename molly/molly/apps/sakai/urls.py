@@ -2,7 +2,7 @@ from django.conf.urls.defaults import *
 
 from views import (
     IndexView, SiteView, DirectView,
-    
+
     SignupIndexView, SignupSiteView, SignupEventView,
     PollIndexView, PollDetailView,
     EvaluationIndexView, EvaluationDetailView,
@@ -40,7 +40,7 @@ urlpatterns = patterns('mobile_portal.sakai.views',
     (r'^sites/$',
         SiteView, {},
         'sites-index'),
-        
+
     (r'^direct/$',
         DirectView, {},
         'direct-index'),

@@ -20,22 +20,22 @@ class SecureView(BaseView):
     secure page hasn't been accessed recently. The SecureMidddleware checks
     for this class in a view's MRO in order to enforce an HTTPS connection.
     """
-     
+
     def __new__(cls, request, *args, **kwargs):
         """
         Enforces timeouts for idle sessions.
         """
-        
+
         # If the SecureMiddleware hasn't redirected requests over !HTTPS
         # something has gone wrong. We ignore this for debugging purposes.
-        assert settings.DEBUG or request.is_secure()
-        
+        assert settings.DEBUG_SECURE or request.is_secure()
+
         last_accessed = request.secure_session.get('last_accessed', datetime.now())
         timeout_period = request.secure_session.get('timeout_period', 15)
-        if last_accessed < datetime.now() - timedelta(minutes=timeout_period):
+        if last_accessed < datetime.now() - timedelta(minutes=timeout_period) and getattr(cls.conf, 'enforce_timeouts', True):
             return TimedOutView(request, cls, *args, **kwargs)
         request.secure_session['last_accessed'] = datetime.now()
-        
+
         return super(SecureView, cls).__new__(cls, request, *args, **kwargs)
 
 class TimedOutView(BaseView):

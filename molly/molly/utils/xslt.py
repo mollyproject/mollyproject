@@ -10,3 +10,7 @@ def transform(document, template_name, template_context=None):
     template = etree.XSLT(etree.fromstring(template))
 
     return template(document)
+
+def add_children_to_context(document, context):
+    for node in document.findall('*'):
+        context[node.tag] = etree.tostring(node, method="html")[len(node.tag)+2:-len(node.tag)-3]
