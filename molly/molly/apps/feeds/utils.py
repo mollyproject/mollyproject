@@ -1,8 +1,8 @@
 from StringIO import StringIO
 from xml.sax.saxutils import escape
-import ElementSoup as ES
 from xml.etree.ElementTree import Element
 from xml.etree import ElementTree as ET
+from lxml import etree
 
 VALID_TAGS = set([
     'a', 'abbr', 'address', 'bdo', 'big', 'blockquote', 'br', 'caption', 'cite',
@@ -46,7 +46,7 @@ class HtmlSanitiser(object):
 
     def sanitise_html(self, html):
         html = (u"<html>%s</html>" % html).encode('utf8')
-        html = ES.parse(StringIO(html), encoding='utf8')
+        html = etree.parse(StringIO(html), parser=etree.HTMLParser())
 
         self.sanitise_node(html)
         self.encapsulate_text_nodes(html)

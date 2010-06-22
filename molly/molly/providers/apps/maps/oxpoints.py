@@ -145,6 +145,11 @@ class OxpointsMapsProvider(BaseMapsProvider):
                 'uri': datum['uri'],
             }
 
+            if 'oxp_hasOUCSCode' in datum:
+                identifiers['oucs'] = datum['oxp_hasOUCSCode']
+            if 'oxp_hasOLISCode' in datum:
+                identifiers['olis'] = datum['oxp_hasOLISCode']
+
             entity.save(identifiers=identifiers)
             entity.all_types = [self.entity_types[t] for t in self.OXPOINTS_TYPES[oxpoints_type]]
             entity.update_all_types_completion()

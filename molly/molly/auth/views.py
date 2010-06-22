@@ -7,7 +7,6 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.forms.util import ErrorList
 
 from molly.utils.views import BaseView
-from molly.utils.renderers import mobile_render
 from molly.utils.breadcrumbs import BreadcrumbFactory, Breadcrumb, static_reverse, lazy_reverse, static_parent
 
 from .forms import PreferencesForm
@@ -56,19 +55,20 @@ class TimedOutView(BaseView):
     @BreadcrumbFactory
     def breadcrumb(cls, request, context, view, *args, **kwargs):
         return Breadcrumb(
-            view.app_name,
+            view.conf.local_name,
             None,
             'Session expired',
             static_reverse(request.get_full_path()),
         )
     
     def handle_GET(cls, request, context, view, *args, **kwargs):
-        return mobile_render(request, context, 'secure/timed_out')
+        return cls.render(request, context, 'auth/timed_out')
             
     def handle_POST(cls, request, context, view, *args, **kwargs):
         if 'clear_session' in request.POST:
             for key in request.secure_session.keys():
                 del request.secure_session[key]
+            request.secure_session['is_secure'] = True
             return HttpResponseRedirect('.')
         elif 'reauthenticate' in request.POST and context['has_pin']:
             valid_pin = request.POST.get('pin') == request.secure_session['pin']
@@ -78,7 +78,7 @@ class TimedOutView(BaseView):
                 return HttpResponseRedirect('.')
             else:
                 context['incorrect_pin'] = True
-                return mobile_render(request, context, 'secure/timed_out')
+                return cls.render(request, context, 'auth/timed_out')
         else:
             return HttpResponse('', status=400)
         
@@ -96,7 +96,7 @@ class IndexView(SecureView):
     @BreadcrumbFactory
     def breadcrumb(cls, request, context):
         return Breadcrumb(
-            'secure',
+            cls.conf.local_name,
             None,
             'Authentication preferences',
             lazy_reverse('auth:index'),
@@ -109,11 +109,11 @@ class IndexView(SecureView):
         form = context['form']
         
         if not form.is_valid():
-            return mobile_render(request, context, 'secure/index')
+            return cls.render(request, context, 'auth/index')
             
         if context['has_pin'] and form.cleaned_data['old_pin'] != request.secure_session['pin']:
             form.errors['old_pin'] = ErrorList(['You supplied an incorrect PIN. Please try again.'])
-            return mobile_render(request, context, 'secure/index')
+            return cls.render(request, context, 'auth/index')
 
         request.secure_session['timeout_period'] = form.cleaned_data['timeout_period']
         
@@ -122,7 +122,7 @@ class IndexView(SecureView):
                 request.secure_session['pin'] = form.cleaned_data['new_pin_a']
             else:
                 form.errors['new_pin_b'] = ErrorList(['Your repeated PIN did not match.'])
-                return mobile_render(request, context, 'secure/index')
+                return cls.render(request, context, 'auth/index')
         
         return HttpResponseRedirect('.')
         
@@ -136,7 +136,7 @@ class ClearSessionView(SecureView):
     @BreadcrumbFactory
     def breadcrumb(cls, request, context):
         return Breadcrumb(
-            'secure',
+            cls.conf.local_name,
             static_parent(context['return_url'], 'Back'),
             'Clear session',
             lazy_reverse('auth:clear_session'),
@@ -148,6 +148,7 @@ class ClearSessionView(SecureView):
     def handle_POST(cls, request, context):
         for key in request.secure_session.keys():
             del request.secure_session[key]
+        request.secure_session['is_secure'] = True
         if context['return_url']:
             return HttpResponseRedirect(context['return_url'])
         else:

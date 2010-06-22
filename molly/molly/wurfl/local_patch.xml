@@ -22,6 +22,10 @@
         <!-- Chrome -->
         <device user_agent="Mozilla/5.0 (Windows; U; Windows NT 5.1) AppleWebKit/532.0 (KHTML, like Gecko) Chrome/3.0.195.32 Safari/532.0" fall_back="google_chrome_2" id="google_chrome_3"/>
         <device user_agent="Mozilla/5.0 (X11; U; Linux x86_64; en-US) AppleWebKit/533.4 (KHTML, like Gecko) Chrome/5.0.375.38 Safari/533.4" fall_back="google_chrome_2" id="google_chrome_4"/>
+        
+        <!-- Opera Mobile -->
+        <device user_agent="Opera/9.80 (S60; SymbOS; Opera Mobi/499; U) Presto/2.4.18 Version/10.009" fall_back="opera_mobi_ver4" id="opera_mobi_ver10"/>
+        
 	</devices>
 
 </wurfl_patch>

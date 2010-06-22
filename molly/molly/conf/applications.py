@@ -15,10 +15,8 @@ __all__ = [
 ]
 
 _load_lock = Lock()
-_loaded = False
 _by_local_name = {}
 _by_application_name = {}
-_all = []
 
 def _require_loaded_apps(f):
     def g(*args, **kwargs):
@@ -27,34 +25,37 @@ def _require_loaded_apps(f):
         return f(*args, **kwargs)
     return g
 
-def _load_apps():
-    global _loaded, _all
+def _load_app(filter_func):
     with _load_lock:
-        if _loaded:
-            return
-        _loaded = True
-
         for application in django_settings.APPLICATIONS:
+            if not filter_func(application):
+                continue
             app = application.get()
             _by_local_name[app.local_name] = app
             if not app.application_name in _by_application_name:
                 _by_application_name[app.application_name] = []
             _by_application_name[app.application_name].append(app)
-            _all.append(app)
-        _all = tuple(_all)
 
-@_require_loaded_apps
 def app_by_local_name(local_name):
-    return _by_local_name[local_name]
+    try:
+        return _by_local_name[local_name]
+    except KeyError:
+        _load_app(lambda app: app.local_name == local_name)
+        return _by_local_name[local_name]
 
-@_require_loaded_apps
 def app_by_application_name(application_name):
-    print _by_application_name
-    return _by_application_name[application_name][0]
-
-@_require_loaded_apps
+    try:
+        return _by_application_name[application_name][0]
+    except KeyError:
+        _load_app(lambda app: app.application_name == application_name)
+        return _by_application_name[application_name][0]
+        
 def apps_by_application_name(application_name):
-    return list(_by_application_name[application_name])
+    try:
+        return _by_application_name[application_name]
+    except KeyError:
+        _load_app(lambda app: app.application_name == application_name)
+        return _by_application_name[application_name]
 
 def get_app(application_name=None, local_name=None):
     if local_name:
@@ -62,9 +63,8 @@ def get_app(application_name=None, local_name=None):
     else:
         return app_by_application_name(application_name)
 
-@_require_loaded_apps
 def all_apps():
-    return _all
+    return [app.get() for app in django_settings.APPLICATIONS]
 
 class Applications(object):
     def __getattr__(self, key):

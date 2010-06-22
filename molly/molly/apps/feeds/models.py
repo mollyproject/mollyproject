@@ -1,11 +1,13 @@
 from pytz import utc, timezone
-from django.contrib.gis.db import models
+
+from lxml import etree
 
 from django.core.urlresolvers import reverse
-from xml.etree import ElementTree as ET
+from django.contrib.gis.db import models
+from django.conf import settings
+
 from molly.apps.external_media.utils import resize_external_image
 from molly.apps.places.models import Entity
-from django.conf import settings
 
 FEED_TYPE_CHOICES = (
     ('n', 'news'),
@@ -143,13 +145,13 @@ class Item(models.Model):
         
         
     def get_description_display(self, device):
-        html = ET.fromstring('<html>%s</html>' % self.description)
+        html = etree.fromstring('<div>%s</div>' % self.description, parser=etree.HTMLParser())
         for img in html.findall('.//img'):
             eis = resize_external_image(img.attrib['src'], device.max_image_width-40)
             img.attrib['src'] = eis.get_absolute_url()
             img.attrib['width'] = '%d' % eis.width
             img.attrib['height'] = '%d' % eis.height
-        return ET.tostring(html)[6:-7]
+        return etree.tostring(html.find('.//div'), method="html")[5:-6]
     
     def save(self, *args, **kwargs):
         self.ptype = self.feed.ptype

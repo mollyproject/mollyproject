@@ -1,5 +1,22 @@
 from django.utils.importlib import import_module
 from django.conf.urls.defaults import include as urlconf_include
+from django.core.urlresolvers import RegexURLResolver, RegexURLPattern
+
+"""
+Provides a framework for Molly application objects.
+
+An Application object wraps a Django application, and allows Molly to
+extend an application with configuration information, and add extra base
+classes to views to mix-in deployment-specific functionality.
+"""
+
+# This module does a lot of dynamically creating class objects using the
+# second form of the 'type' function.[0]
+#
+# [0] http://docs.python.org/library/functions.html#type
+
+class ApplicationConf(object):
+    pass
 
 class Application(object):
     def __init__(self, application_name, local_name, title, **kwargs):
@@ -24,20 +41,12 @@ class Application(object):
         if self.conf:
             return self.conf
 
-        from molly.utils.views import BaseView, SecureView
-
         providers = []
         for provider in self.providers:
-            if isinstance(provider, SimpleProvider):
+            if isinstance(provider, Provider):
                 providers.append(provider())
             else:
-                providers.append(SimpleProvider(provider)())
-        try:
-            import_module(self.urlconf)
-        except ImportError:
-            urls = None
-        else:
-            urls = urlconf_include(self.urlconf, self.application_name.split('.')[-1], self.local_name)
+                providers.append(Provider(provider)())
 
         self.kwargs.update({
             'application_name': self.application_name,
@@ -45,30 +54,84 @@ class Application(object):
             'title': self.title,
             'providers': providers,
             'provider': providers[-1] if len(providers) else None,
-            'urls': urls,
-            'display_to_user': self.kwargs['display_to_user'] and (urls is not None),
         })
-        self.conf = type(self.local_name.capitalize()+'Conf', (object,), self.kwargs)
+        self.conf = type(self.local_name.capitalize()+'Conf', (ApplicationConf,), self.kwargs)
 
         try:
-            views_module = import_module(self.application_name+'.views')
-        except ImportError:
-            views_module = None
+            urlpatterns = import_module(self.urlconf).urlpatterns
+        except ImportError, e:
+            if e.message == 'No module named urls':
+                # We'll assume this means the application we're trying to load
+                # doesn't have a urls module, so we'll create a usefully named
+                # object in case someone tries to include it in a urlconf.
+                urls = type('Missing'+self.local_name.capitalize()+'URLConf',
+                            (object,),
+                            { '__nonzero__':(lambda self: False)} )()
+            else:
+                # Otherwise, the ImportError was something else unexpected and
+                # we should give up and tell someone.
+                raise
         else:
+            # Load our extra base classes
             bases = tuple(base() for base in self.extra_bases)
             if self.secure:
+                from molly.auth.views import SecureView
                 bases = (SecureView,) + bases
 
-            bar = dir(views_module)
-            for n in dir(views_module):
-                view = getattr(views_module, n)
-                if not isinstance(view, type) or not BaseView in view.__mro__ or view is BaseView or view.__dict__.get('abstract'):
-                    continue
+            # Walk the tree of urlpatterns to add the conf and bases
+            new_urlpatterns = []
+            for pattern in urlpatterns:
+                new_urlpatterns.append(self.add_conf_to_pattern(pattern, self.conf, bases))
+            urls = urlconf_include(new_urlpatterns, self.application_name.split('.')[-1], self.local_name)
 
-                view.conf = self.conf
-                view.__bases__ = bases + view.__bases__
+        # Add our newly created urls to our conf object.
+        self.conf.urls = urls
+        self.conf.display_to_user = self.kwargs['display_to_user'] and isinstance(urls, tuple)
 
         return self.conf
+
+    def add_conf_to_pattern(self, pattern, conf, bases):
+        """
+        Coalesces an Application's configuration with the views in its urlconf.
+
+        Takes a RegexURLPattern or RegexURLResolver, a conf object and a tuple
+        of extra base classes to inherit from. Returns an object of the same
+        type as its first argument with callbacks replaced with new views using
+        conf and bases.
+        """
+
+        # Don't import at module scope as this module will be imported from a
+        # settings file.
+        from molly.utils.views import BaseView
+
+        if isinstance(pattern, RegexURLResolver):
+            # Recurse through the patterns
+            patterns = []
+            for subpattern in pattern.url_patterns:
+                patterns.append(self.add_conf_to_pattern(subpattern, conf, bases))
+            # Create a new RegexURLResolver with the new patterns
+            return RegexURLResolver(pattern.regex.pattern, # The regex pattern string
+                                    patterns,
+                                    pattern.default_kwargs,
+                                    pattern.app_name,
+                                    pattern.namespace)
+        elif isinstance(pattern, RegexURLPattern):
+            # Get the callback and make sure it derives BaseView
+            callback = pattern.callback
+            if not (isinstance(callback, type) and BaseView in callback.__mro__):
+                return
+            # Create a new callback with the conf and extra bases
+            callback = type(callback.__name__ + 'WithConf',
+                            (callback,) + bases,
+                            { 'conf': conf })
+            # Transplant this new callback into a new RegexURLPattern, keeping
+            # the same regex, default_args and name.
+            return RegexURLPattern(pattern.regex.pattern,
+                                   callback,
+                                   pattern.default_args,
+                                   pattern.name)
+        else:
+            raise TypeError("Expected RegexURLResolver or RegexURLPattern instance, got %r." % type(pattern))
 
 class Authentication(object):
     def __init__(klass, **kwargs):
@@ -89,7 +152,7 @@ class ExtraBase(object):
 def extract_installed_apps(applications):
     return tuple(app.application_name for app in applications)
 
-class SimpleProvider(object):
+class Provider(object):
     def __init__(self, klass, **kwargs):
         self.klass, self.kwargs = klass, kwargs
 

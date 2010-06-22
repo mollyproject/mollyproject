@@ -1,1 +1,2 @@
 from cloudmade import CloudmadeGeolocationProvider
+from places import PlacesGeolocationProvider

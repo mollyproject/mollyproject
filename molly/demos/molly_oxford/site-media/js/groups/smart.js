@@ -110,22 +110,21 @@ var manualUpdateLocation = null;
 function sendPosition(position, final) {
     if (positionRequestCount == 1)
         $('.location-status').html('Location found; please wait while we put a name to it.');
-        
-    jQuery.post(base+'geolocation/update/', {
+    jQuery.post(base+'geolocation/', {
         longitude: position.coords.longitude,
         latitude: position.coords.latitude,
         accuracy: position.coords.accuracy,
         method: positionMethod,
         format: 'json',
+        return_url: $('#return_url').val(),
+        force: 'True',
     }, function(data) {
+        oldPositionName = positionName;
         positionName = data.name;
         $('.location').html(data.name);
         $('.location-status').html('We think you are somewhere near <span class="location">'+data.name+'</span>.');
-        
-        if (window.reload_on_location) {
-            window.location.reload(true);
-        }                
-
+        if (oldPositionName == null && data.redirect)
+            window.location.pathname = data.redirect;
     }, 'json');
 }
 
@@ -135,7 +134,7 @@ function sendPositionError(error) {
             'You did not give permission for the site to know your location. '
           + 'You won\'t be asked again unless you initiate an automatic '
           + 'update using the link below.');
-        jQuery.post(base+'geolocation/update/', {
+        jQuery.post(base+'geolocation/', {
             method: 'denied',
         });
     } else if (error.code == error.POSITION_UNAVAILABLE) {
@@ -147,7 +146,7 @@ function sendPositionError(error) {
         $('.location-status').html(
             'An error occured while determining your location.'
         );
-        jQuery.post(base+'geolocation/update/', {
+        jQuery.post(base+'geolocation/', {
             method: 'error',
         });
     }
@@ -272,12 +271,20 @@ function manualLocationSubmit(event) {
             ' <a class="update-location-cancel" href="#" onclick="javascript:cancelManualUpdateLocation(); return false;">Cancel</a>');
     manualUpdateLocation = $('.manual-update-location').clone(true);
         
-    $.get(base+'geolocation/update/', {
+    $.post(base+'geolocation/', {
         method: 'geocoded',
         name: $('#location-name').val(),
         format: 'embed',
-        return_url: window.location.href,
-    }, function(data) {
+        return_url: $('#return_url').val(),
+    }, function(data, textStatus, xhr) {
+        if (xhr.getResponseHeader('X-Embed-Redirect') != null) {
+            if (positionName == null)
+                window.location.pathname = xhr.getResponseHeader('X-Embed-Redirect');
+            positionName = xhr.getResponseHeader('X-Embed-Location-Name');
+            $('.location').html(positionName);
+            cancelManualUpdateLocation();
+            return;
+        }
         
         $('.manual-update-location').html(data);
         $('.submit-location-form').each(function () {
@@ -285,20 +292,24 @@ function manualLocationSubmit(event) {
             link = $('<a href="#">'+button.html()+'</a>');
             link.css('color', '#ffffff').bind('click', {form:this}, function(event) {
                 form = $(event.data.form);
-                $.post(base+'geolocation/update/', {
+                $.post(base+'geolocation/', {
                     longitude: form.find('[name=longitude]').val(),
                     latitude: form.find('[name=latitude]').val(),
                     accuracy: form.find('[name=accuracy]').val(),
                     name: form.find('[name=name]').val(),
+                    return_url: form.find('[name=return_url]').val(),
                     method: 'geocoded',
                     format: 'json',
+                    force: 'True'
                 }, function(data) {
+                    oldPositionName = positionName;
                     positionName = form.find('[name=name]').val();
+                    $('.location').html(positionName);
                     cancelManualUpdateLocation();
-                    if (window.reload_on_location)
-                        window.location.reload(true);
-
-                });
+                    if (oldPositionName == null && data.redirect)
+                        window.location.pathname = data.redirect;
+                }, 'json');
+                return false;
             });
             button.replaceWith(link);
         });

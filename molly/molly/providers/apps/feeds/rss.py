@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 import urllib, re, email, feedparser, time, random
 
-from molly.apps.feeds.utils import sanitise_html
+from molly.apps.external_media.sanitiser import sanitise_html
 from molly.conf.settings import batch
 
 from molly.apps.feeds.providers import BaseFeedsProvider
@@ -47,15 +47,23 @@ class RSSFeedsProvider(BaseFeedsProvider):
                     item = i
                     break
             else:
-                item = Item(guid=guid, last_modified=datetime(1900,1,1), feed=feed)
+                try:
+                    item = Item.objects.get(guid=guid, feed=feed)
+                except Item.DoesNotExist:
+                    item = Item(guid=guid, last_modified=datetime(1900,1,1), feed=feed)
+                    
                 
             if True or item.last_modified < last_modified:
                 item.title = x_item.title
-                item.description = sanitise_html(x_item.description)
+                item.description = sanitise_html(x_item.description or '')
                 item.link = x_item.link
                 item.last_modified = last_modified
                 item.save()
             
             items.add(item)
+        
+        for item in Item.objects.filter(feed=feed):
+            if item not in items:
+                item.delete()
         
         return items

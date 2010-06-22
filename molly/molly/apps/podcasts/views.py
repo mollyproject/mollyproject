@@ -138,8 +138,8 @@ class ITunesURedirectView(BaseView):
             return HttpResponse('', mimetype="text/plain")
         elif request.method == 'POST' and not use_itunesu:
             if remember:
-                return HttpResponseRedirect(reverse('podcasts_index'))
+                return HttpResponseRedirect(reverse('podcasts:index'))
             else:
-                return HttpResponseRedirect(reverse('podcasts_index') + '?show_itunesu_link=false')
+                return HttpResponseRedirect(reverse('podcasts:index') + '?show_itunesu_link=false')
         else:
             return HttpResponseRedirect("http://deimos.apple.com/WebObjects/Core.woa/Browse/ox-ac-uk-public")

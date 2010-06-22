@@ -58,5 +58,80 @@
             "description": "Overlooking the junction of St Giles and Beaumont Street.",
             "credit": "&copy; Oxford Internet Institute"
         }
+    },
+    {
+        "pk": "1",
+        "model": "feeds.Feed",
+        "fields": {
+            "title": "Computing Services News",
+            "unit": "oucs",
+            "rss_url": "http://www.oucs.ox.ac.uk/rss/news.rss",
+            "slug": "oucs-news",
+            "ptype": "n",
+            "provider": "molly.providers.apps.feeds.RSSFeedsProvider"
+        }
+    },
+    {
+        "pk": 4,
+        "model": "feeds.Feed",
+        "fields":
+        {
+            "rss_url": "http://www.keble.ox.ac.uk/news/RSS",
+            "title": "Keble College news",
+            "slug": "keble",
+            "unit": "kebl",
+            "ptype": "n",
+            "provider": "molly.providers.apps.feeds.RSSFeedsProvider"
+        }
+    },
+    {
+        "pk": 5,
+        "model": "feeds.Feed",
+        "fields": {
+            "rss_url": "http://www.lmh.ox.ac.uk/CMSPages/NewsRss.aspx",
+            "title": "Lady Margaret Hall news",
+            "slug": "lmh",
+            "unit": "lmh",
+            "ptype": "n",
+            "provider": "molly.providers.apps.feeds.RSSFeedsProvider"
+        }
+    },
+    {
+        "pk": 6,
+        "model": "feeds.Feed",
+        "fields": {
+            "rss_url": "http://www.linacre.ox.ac.uk/Linacre/news-and-events/news/RSS",
+            "title": "Linacre College",
+            "slug": "linacre",
+            "unit": "linacre",
+            "ptype": "n",
+            "provider": "molly.providers.apps.feeds.RSSFeedsProvider"
+        }
+    },
+    {
+        "pk": 7,
+        "model": "feeds.Feed",
+        "fields": {
+            "rss_url": "http://www.google.com/calendar/feeds/it-support%40sant.ox.ac.uk/public/basic?orderby=starttime&sortorder=ascending&futureevents=true&singleevents=true",
+            "title": "St. Antony's College Events",
+            "slug": "st-antonys-events",
+            "unit": "sant",
+            "ptype": "n",
+            "provider": "molly.providers.apps.feeds.RSSFeedsProvider"
+
+        }
+    },
+    {
+        "pk": 3,
+        "model": "feeds.Feed",
+        "fields": {
+            "rss_url": "http://www.ox.ac.uk/news_rss.rm",
+            "title": "University of Oxford - Media",
+            "slug": "offices-media",
+            "unit": "offices",
+            "ptype": "n",
+            "provider": "molly.providers.apps.feeds.RSSFeedsProvider"
+
+        }
     }
 ]

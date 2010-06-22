@@ -15,3 +15,4 @@ lxml
 python-ldap
 ply
 git+http://github.com/alexdutton/PyZ3950.git
+django-compress

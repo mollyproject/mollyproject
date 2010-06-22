@@ -76,6 +76,8 @@ for func_name in funcs:
 
 @register.filter(name='osm_tags')
 def osm_tags(entity):
+    if not 'osm' in entity.metadata:
+        return []
     tags = entity.metadata['osm']['tags']
     entity_type = entity.primary_type.slug
     

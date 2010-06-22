@@ -2,11 +2,10 @@ import pytz, simplejson, urllib2, base64
 from xml.etree import ElementTree as ET
 from xml.sax.saxutils import escape
 from django.shortcuts import get_object_or_404
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
-from molly.utils.renderers import mobile_render
 from molly.utils.misc import AnyMethodRequest
 
 from molly.apps.places.models import Entity
@@ -14,27 +13,46 @@ from molly.apps.places.models import Entity
 from .models import GeneratedMap
 
 class IndexView(BaseView):
-    def handle_GET(cls, request, context, hash):
-        return mobile_render(request, context, 'osm/index')
+    @BreadcrumbFactory
+    def breadcrumb(cls, request, context):
+        return Breadcrumb(
+            cls.conf.local_name,
+            None,
+            'OpenStreetMap',
+            lazy_reverse('osm:about'),
+        )
+
+    def handle_GET(cls, request, context):
+        raise Http404
 
 class GeneratedMapView(BaseView):
     breadcrumb = NullBreadcrumb
-    
+
     def handle_GET(cls, request, context, hash):
         gm = get_object_or_404(GeneratedMap, hash=hash)
         response = HttpResponse(open(gm.get_filename(), 'r').read(), mimetype='image/png') 
         last_updated = pytz.utc.localize(gm.generated)
-        
+
         response['ETag'] = hash
         return response
 
 class AboutView(BaseView):
-    def handle_GET(cls, request, context, hash):
-        return mobile_render(request, context, 'osm/about')
+
+    @BreadcrumbFactory
+    def breadcrumb(cls, request, context):
+        return Breadcrumb(
+            cls.conf.local_name,
+            None,
+            'About OpenStreetMap',
+            lazy_reverse('osm:about'),
+        )
+
+    def handle_GET(cls, request, context):
+        return cls.render(request, context, 'osm/about')
 
 class MetadataView(BaseView):
     breadcrumb = NullBreadcrumb
-    
+
     api_url = 'http://api.openstreetmap.org/api/0.6/'
 
     def handle_GET(cls, request, context, ptype):
@@ -65,20 +83,15 @@ class MetadataView(BaseView):
             raise Http404
 
         context['entities'] = []
-        for entity in Entity.objects.filter(entity_type__slug=ptype):
-            context['entities'].append((entity, [(x, entity.metadata['tags'].get(x, '')) for x in tags]))
-        return mobile_render(request, context, 'osm/metadata')
+        for entity in Entity.objects.filter(primary_type__slug=ptype, source__module_name='molly.providers.apps.maps.osm'):
+            context['entities'].append((entity, [(x, entity.metadata['osm']['tags'].get(x, '')) for x in tags]))
+        return cls.render(request, context, 'osm/metadata')
 
     def handle_POST(cls, request, context, ptype):
         data = simplejson.loads(request.raw_post_data)
-        print data
-        #return HttpResponse(simplejson.dumps({
-        #    'status': 'Debug',
-        #    'changes': {},
-        #}));
-        
+
         auth = 'Basic ' + base64.b64encode(':'.join((data['username'], data['password'])))
-        
+
         request_data  = '<osm><changeset>'
         request_data += '  <tag k="created_by" v="Mobile Oxford"/>'
         request_data += '  <tag k="comment" v="%s"/>' % escape(data['comment'])
@@ -95,10 +108,9 @@ class MetadataView(BaseView):
                 'changes': {},
             }))
         changeset = response.read()
-        print 'CS', changeset
-        
+
         osmchange = cls.get_osmchange(data['changes'], changeset)
-        
+
         request = AnyMethodRequest(cls.api_url+'changeset/%s/upload'%changeset,
                                    data=osmchange,
                                    method='POST')
@@ -106,12 +118,11 @@ class MetadataView(BaseView):
         try:
             response = urllib2.urlopen(request)
         except Exception, e:
-            print "error 2"
             return HttpResponse(simplejson.dumps({
                 'status': 'There was an error uploading the diff: %s' % e.read(),
                 'changes': {},
             }))
-                    
+
         diffResult = ET.parse(response)
         updated_entities = {}
         for c in diffResult.getroot():
@@ -119,12 +130,12 @@ class MetadataView(BaseView):
             metadata = data['changes'][id]
             metadata['version'] = c.attrib['new_version']
             updated_entities[id] = metadata
-            
+
             entity = Entity.objects.get(osm_id=id)
             entity.metadata['attrs']['version'] = metadata['version']
-            entity.metadata['tags'] = metadata['tags']
+            entity.metadata['osm']['tags'] = metadata['tags']
             entity.save()
-        
+
         request = AnyMethodRequest(cls.api_url+'changeset/%s/close'%changeset,
                                    method='PUT')
         request.headers['Authorization'] = auth
@@ -135,12 +146,12 @@ class MetadataView(BaseView):
                 'status': 'There was an error closing the changeset: %s' % e.read(),
                 'changes': {},
             }))
-                    
+
         return HttpResponse(simplejson.dumps({
             'status': 'Upload complete: <a href="%schangeset/%s">changeset</a>' % (cls.api_url, changeset),
             'changes': updated_entities,
         }))
-        
+
     def get_osmchange(cls, data, changeset):
         osmChange = ['<osmChange version="0.3" generator="MobileOxford">\n']
         osmChange.append('  <modify version="0.3" generator="MobileOxford">\n')
@@ -163,10 +174,10 @@ class MetadataView(BaseView):
         osmChange.append('  </modify>\n')
         osmChange.append('</osmChange>\n')
         return ''.join(osmChange)
-        
+
 class GPXView(BaseView):
     breadcrumb = NullBreadcrumb
-    
+
     def handle_GET(cls, request, context, ptype):
         out = []
         out.append('<?xml version="1.0"?>\n')
@@ -175,13 +186,13 @@ class GPXView(BaseView):
         out.append(' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"')
         out.append(' xmlns="http://www.topografix.com/GPX/1/0"')
         out.append(' xsi:schemaLocation="http://www.topografix.com/GPX/1/0 http://www.topografix.com/GPX/1/0/gpx.xsd">\n')
-        
-        for entity in Entity.objects.filter(entity_type__slug=ptype):
+
+        for entity in Entity.objects.filter(primary_type__slug=ptype, source__module_name='molly.providers.apps.maps.osm'):
           out.append('  <wpt lat="%(lat)f" lon="%(lon)f">\n' % {'lat':entity.location[1], 'lon':entity.location[0]})
           out.append('    <name>%s</name>\n' % entity.title)
           out.append('  </wpt>\n')
-        
+
         out.append('</gpx>')
-        
+
         return HttpResponse(out, mimetype="application/gpx+xml")
 

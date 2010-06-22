@@ -4,17 +4,29 @@ from datetime import datetime, date
 from xml.etree import ElementTree as ET
 
 from django.db import models
-from django.db.models.query import QuerySet
-from django.http import HttpResponse, HttpResponseNotAllowed
-from django.template import TemplateDoesNotExist, RequestContext
+from django.http import HttpResponse, HttpResponseNotAllowed, HttpResponseForbidden
+from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.core.paginator import Paginator
 from django.contrib.gis.geos import Point
 
 logger = logging.getLogger('core.requests')
 
-class DateUnicode(unicode): pass
+from time import clock as time_clock
+import sys
 
+class timing(object):
+    def __new__(cls, f, *args, **kwargs):
+        t1 = time_clock()
+        value = f(*args, **kwargs)
+        t2 = time_clock()
+        frame = sys._getframe()
+        print "TIME %s:%d %2.4f %s" % (__file__, frame.f_lineno, t2-t1, f.__name__)
+        return value
+
+
+class DateUnicode(unicode): pass
+class DateTimeUnicode(unicode): pass
 
 def renderer(format, mimetypes=None):
     """
@@ -150,9 +162,9 @@ class BaseView(object):
         return zoom
 
     def render(cls, request, context, template_name):
-        if request.GET.get('format') in cls.FORMATS:
-            renderer = cls.FORMATS[request.GET['format']]
-        elif 'format' in request.GET:
+        if request.REQUEST.get('format') in cls.FORMATS:
+            renderer = cls.FORMATS[request.REQUEST['format']]
+        elif 'format' in request.REQUEST:
             return cls.not_acceptable(request)
         #elif request.is_ajax():
         #    renderer = cls.FORMATS['json']
@@ -182,6 +194,13 @@ Supported ranges are:
         else:
             renderer = cls.FORMATS['html']
 
+        # Stop external sites from grabbing JSON representations of pages
+        # which contain sensitive user information.
+        offsite_referrer = 'HTTP_REFERER' in request.META and request.META['HTTP_REFERER'].split('/')[2] != request.META.get('HTTP_HOST')
+        if renderer.format != 'html' and context.get('exposes_user_data') and offsite_referrer:
+            return HttpResponseForbidden("This page cannot be requested with an off-site Referer", mimetype="text/plain")
+        context.pop('exposes_user_data', None)
+
         try:
             return renderer(request, context, template_name)
         except NotImplementedError:
@@ -196,6 +215,13 @@ Supported ranges are:
     def render_json(cls, request, context, template_name):
         context = cls.simplify_value(context)
         return HttpResponse(simplejson.dumps(context), mimetype="application/json")
+
+    @renderer(format="js", mimetypes=('text/javascript','application/javascript',))
+    def render_js(cls, request, context, template_name):
+        callback = request.GET.get('callback', request.GET.get('jsonp', 'callback'))
+        content = simplejson.dumps(cls.simplify_value(context))
+        content = "%s(%s);" % (callback, content)
+        return HttpResponse(content, mimetype="application/javascript")
 
     @renderer(format="html", mimetypes=('text/html', 'application/xhtml+xml', '*/*'))
     def render_html(cls, request, context, template_name):
@@ -220,7 +246,7 @@ Supported ranges are:
         context = cls.simplify_value(context)
         return HttpResponse(yaml.safe_dump(context), mimetype="application/x-yaml")
 
-    @renderer(format="fragment", mimetypes=('text/json', 'application/json'))
+    @renderer(format="fragment")
     def render_fragment(cls, request, context, template_name):
         '''Uses block rendering functions, see end of file.'''
         if template_name is None:
@@ -255,8 +281,10 @@ Supported ranges are:
                 return out
         elif isinstance(value, (basestring, int, float)):
             return value
-        elif isinstance(value, (datetime, date)):
-            return DateUnicode(value.isoformat(' '))
+        elif isinstance(value, datetime):
+            return DateTimeUnicode(value.isoformat(' '))
+        elif isinstance(value, date):
+            return DateUnicode(value.isoformat())
         elif hasattr(type(value), '__mro__') and models.Model in type(value).__mro__:
             return cls.simplify_model(value)
         elif isinstance(value, Paginator):
@@ -271,7 +299,8 @@ Supported ranges are:
             raise NotImplementedError
 
     XML_DATATYPES = (
-        (DateUnicode, 'datetime'),
+        (DateUnicode, 'date'),
+        (DateTimeUnicode, 'datetime'),
         (str, 'string'),
         (unicode, 'string'),
         (int, 'integer'),

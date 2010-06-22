@@ -46,7 +46,7 @@ def run_batch(local_name, provider_name, method_name):
         provider_name=provider_name,
         method_name=method_name)
         
-    batch.run()
+    batch.run(True)
 
     return batch.log
 

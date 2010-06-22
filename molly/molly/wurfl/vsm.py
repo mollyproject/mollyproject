@@ -2,6 +2,7 @@ from math import sqrt
 import time
 
 from pywurfl.algorithms import Algorithm
+from molly.wurfl.wurfl_data import devices
 
 class Vector(object):
     terms = {}
@@ -67,7 +68,6 @@ class Vector(object):
                         out += u[i][1]*v[j][1]
             except IndexError:
                 return out
-            print "Baa"
         else:
             return Vector(tuple((k,v*other) for (k,v) in self.value))
         
@@ -134,20 +134,5 @@ class VectorSpaceAlgorithm(Algorithm):
                 
         self.cache[ua] = current_device
         return current_device
-        
-if __name__ == '__main__':
-    from wurfl_data import devices
-    vsa = VectorSpaceAlgorithm(devices)
-    
-    ua = 'Mozilla/5.0 (X11; U; Linux x86_64; en-GB; rv:1.9.1.5) Gecko/20091105 Fedora/3.5.5-1.fc11 Firefox/3.5b4 (and IE/6.0)'
-    ua = 'Nokia # E71'
-    print time.clock()
-    d = devices.select_ua(
-        ua,
-        search=vsa,
-    )
-    print time.clock()
-    print d.devid
-    print d.devua
-    print ua
-    print len(Vector.terms)
+
+vsa = VectorSpaceAlgorithm(devices)

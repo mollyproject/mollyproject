@@ -1,4 +1,6 @@
-import ftplib, os, urllib, zipfile, tempfile, random
+import ftplib, os, urllib, zipfile, tempfile, random, re
+
+from StringIO import StringIO
 
 from xml.sax import ContentHandler, make_parser
 
@@ -113,7 +115,7 @@ class NaptanContentHandler(ContentHandler):
         if 'naptan-code' in meta:
             meta['naptan-code'] = ''.join(map(self.naptan_dial, meta['naptan-code']))
             identifiers['naptan'] = meta['naptan-code']
-        if ind and ind.startswith('Stop '):
+        if ind and re.match('Stop [A-Z]\d\d?', ind):
             identifiers['stop'] = ind[5:]
 
         entity.save(identifiers=identifiers)
@@ -203,7 +205,11 @@ class NaptanMapsProvider(BaseMapsProvider):
             os.close(f)
 
             archive = zipfile.ZipFile(filename)
-            self._import_from_pipe(archive.open('NaPTAN%d.xml' % int(area)))
+            if hasattr(archive, 'open'):
+                f = archive.open('NaPTAN%d.xml' % int(area))
+            else:
+                f = StringIO(archive.read('NaPTAN%d.xml' % int(area)))
+            self._import_from_pipe(f)
             archive.close()
             os.unlink(filename)
 

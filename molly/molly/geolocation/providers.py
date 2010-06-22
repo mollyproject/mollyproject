@@ -1,9 +1,9 @@
 class BaseGeolocationProvider(object):
 
     
-    def reverse_geocode(cls, lon, lat):
+    def reverse_geocode(self, lon, lat):
         return []
         
     
-    def geocode(cls, query):
+    def geocode(self, query):
         return []

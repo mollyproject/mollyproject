@@ -10,10 +10,12 @@ Meta
 ====
 
 E-mail:      {{ email }}
-Device:      http://www.wurflpro.com/device/results?user_agent=&identifier={{ devid|urlencode }}
-User-agent:  http://www.wurflpro.com/device/results?user_agent={{ ua|urlencode }}
+Device:      {{ devid }}      
+             http://www.wurflpro.com/device/results?user_agent=&identifier={{ devid|urlencode }}
+User-agent:  {{ ua }}
+             http://www.wurflpro.com/device/results?user_agent={{ ua|urlencode }}
 Referer:     {{ referer }}
-Location:    http://www.google.co.uk/search?q={{ lat }},{{ lon }}f
+Location:    {% if lat %}http://google.co.uk/maps?q={{ lat }},{{ lon }}{% else %}None{% endif %}
 Session key: {{ session_key }}
 
 Message

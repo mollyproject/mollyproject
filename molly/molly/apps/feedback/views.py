@@ -53,8 +53,8 @@ class IndexView(BaseView):
             'devid': request.device.devid,
             'ua': request.META['HTTP_USER_AGENT'],
             'referer': request.POST.get('referer', ''),
-            'lat': request.session.get('geolocation:location', (None, None))[0],
-            'lon': request.session.get('geolocation:location', (None, None))[1],
+            'lon': request.session.get('geolocation:location', (None, None))[0],
+            'lat': request.session.get('geolocation:location', (None, None))[1],
             'body': form.cleaned_data['body'],
             'session_key': request.session.session_key,
         })

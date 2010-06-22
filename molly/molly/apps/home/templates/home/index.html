@@ -1,4 +1,5 @@
 {% extends "home/base.html" %}
+{% load molly_apps_weather %}
 {% load portal_misc %}{% load maps %}{% load molly_apps_search %}
 
 {% block title %}Mobile Oxford{% endblock %}
@@ -45,9 +46,25 @@
     </div>
     </div>
     
-    <div class="bubble"><div class="center pad-10">
+    <div class="bubble pad-5">
+        <table style="width:100%; text-align:center;">
+            <tbody>
+                <tr>
+                    <td style="width:50%">
       {% oxford_date_today %}
-    </div></div>
+                    </td>
+                    <td style="width:50%;">
+                        
+      {% weather %}<big>Oxford: {{ weather.temperature }}&deg;C</big><img src="{{ MEDIA_URL }}png/weather/{{ weather.icon }}_small.png" alt="{{ weather.get_outlook_display|capfirst }}" height="30" width="30" style="vertical-align:middle;"/>
+      
+                    </td>
+                </tr>
+                <tr colspan="2">
+
+                </tr>    
+            </tbody>
+        </table>
+    </div>
     
     <ul class="stand-alone">
             <li class="round-top"><a href="{% url home:static_about %}">About this site</a></li>

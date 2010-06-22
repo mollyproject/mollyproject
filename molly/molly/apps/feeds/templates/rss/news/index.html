@@ -1,6 +1,30 @@
-{% extends "rss/news/base.html" %}
+{% extends "rss/news/base.html" %}{% load molly_apps_search %}
 
 {% block content %}
+
+{# News Search #}
+{% search_form %}
+<form method="get" action="{% url search:index %}">
+    <!-- Doing the devil's work below: couldn't get a CSS design to work with Blackberry 8900 so using Tables as a last resort. Tim F -->
+<h2 class="invisible">Search News</h2>    
+<table class="search"><tbody>
+        <tr><td>
+                <label style="display:none;" for="id_query">Search News Box</label>
+                {{ search_form.query }}
+        </td><td>
+                <input type="hidden" name="application" value="news" title="Search News" />
+                {% ifequal style_group "dumb" %}
+                    <button type="submit">Go!</button>
+                {% else %}
+                	<input type="image" src="{{ MEDIA_URL }}png/new/buttons/search-button.png" title="Search" />
+                {% endifequal %}
+        </td></tr><tr><td>
+                <p class="help-bubble top">New! You can now search for particular news articles</p>
+        </td><td></td></tr></tbody>
+</table>
+</form>
+{# End News Search #}
+
 
 <div class="section">
     <h2>Feeds</h2>

@@ -37,7 +37,7 @@ Example usage::
         # ...
         Application('molly.apps.search', 'search', 'Search',
             providers = [
-                SimpleProvider('molly.providers.apps.search.GSASearchProvider',
+                Provider('molly.providers.apps.search.GSASearchProvider',
                     search_url = 'http://gsa.daystrom.ac.ufp/search',
                     domain = 'm.daystrom.ac.ufp',
                     params = {

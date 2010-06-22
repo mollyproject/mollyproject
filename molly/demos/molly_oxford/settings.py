@@ -2,12 +2,13 @@
 
 from oauth.oauth import OAuthSignatureMethod_PLAINTEXT
 import os.path
-from molly.conf.settings import Application, extract_installed_apps, Authentication, ExtraBase, SimpleProvider
+from molly.conf.settings import Application, extract_installed_apps, Authentication, ExtraBase, Provider
 from secrets import SECRETS
 
 project_root = os.path.normpath(os.path.dirname(__file__))
 
 DEBUG = True
+DEBUG_SECURE = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -42,12 +43,15 @@ USE_I18N = True
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = ''
+MEDIA_ROOT = os.path.abspath(os.path.dirname(__file__))
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
 MEDIA_URL = '/site-media/'
+
+# Update MEDIA_ROOT, since they're local directories
+MEDIA_ROOT += MEDIA_URL
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
@@ -82,39 +86,38 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'molly.wurfl.context_processors.wurfl_device',
     'molly.wurfl.context_processors.device_specific_media',
     'molly.geolocation.context_processors.geolocation',
+    'molly.apps.feedback.context_processors.full_path',
 )
 
 
-ROOT_URLCONF = 'demos.molly_oxford.urls'
+ROOT_URLCONF = 'molly_oxford.urls'
 
 TEMPLATE_DIRS = (
     os.path.join(project_root, 'templates'),
     # This is temporary until we move the templates to their rightful places
-    os.path.join(project_root, '..', '..', 'molly', 'templates'),
+    #os.path.join(project_root, '..', '..', 'molly', 'templates'),
 )
 
 APPLICATIONS = [
     Application('molly.apps.home', 'home', 'Home',
         display_to_user = False,
     ),
-    Application('molly.apps.contact', 'contact', 'Contact search',
-        provider = 'molly.contrib.oxford.providers.ScrapingContactProvider',
-    ),
 
-    Application('molly.apps.weather', 'weather', 'Weather',
-        location_id = 'bbc/25',
-        provider = SimpleProvider('molly.providers.apps.weather.BBCWeatherProvider',
-            location_id = 25,
-        ),
+    Application('molly.apps.contact', 'contact', 'Contact search',
+        provider = 'molly.providers.apps.contact.ScrapingContactProvider',
     ),
 
     Application('molly.apps.places', 'places', 'Places',
         providers = [
-            SimpleProvider('molly.providers.apps.maps.NaptanMapsProvider',
+            Provider('molly.providers.apps.maps.NaptanMapsProvider',
                 method='ftp',
                 username=SECRETS.journeyweb[0],
                 password=SECRETS.journeyweb[1],
                 areas=('340',),
+            ),
+            Provider('molly.providers.apps.maps.PostcodesMapsProvider',
+                codepoint_path = '/var/cache/molly/codepo_gb.zip',
+                import_areas = ('OX',),
             ),
             'molly.providers.apps.maps.OxontimeMapsProvider',
             'molly.providers.apps.maps.OxpointsMapsProvider',
@@ -143,44 +146,12 @@ APPLICATIONS = [
         database = 'MAIN*BIBMAST',
     ),
 
-    Application('molly.apps.service_status', 'service_status', 'Service status',
-        providers = [
-            'molly.contrib.oxford.providers.OUCSStatusProvider',
-            SimpleProvider('molly.providers.apps.service_status.RSSModuleServiceStatusProvider',
-                name='Oxford Library Information Services',
-                slug='olis',
-                url='http://www.lib.ox.ac.uk/olis/status/olis-opac.rss')
-        ],
-    ),
-
-    Application('molly.apps.sakai', 'weblearn', 'WebLearn',
-        host = 'https://weblearn.ox.ac.uk/',
-        service_name = 'WebLearn',
-        secure = True,
-        tools = [
-            ('signup', 'Tutorial sign-ups'),
-            ('poll', 'Polls'),
-            ('direct', 'User information'),
-            ('sites', 'Sites'),
-        ],
-        extra_bases = (
-            ExtraBase('molly.auth.oauth.views.OAuthView',
-                secret = SECRETS.weblearn,
-                signature_method = OAuthSignatureMethod_PLAINTEXT(),
-                base_url = 'https://weblearn.ox.ac.uk/oauth-tool/',
-                request_token_url = 'request_token',
-                access_token_url = 'access_token',
-                authorize_url = 'authorize',
-            ),
-        ),
-    ),
-
     Application('molly.apps.podcasts', 'podcasts', 'Podcasts',
         providers = [
-            SimpleProvider('molly.providers.apps.podcasts.OPMLPodcastsProvider',
+            Provider('molly.providers.apps.podcasts.OPMLPodcastsProvider',
                 url = 'http://rss.oucs.ox.ac.uk/metafeeds/podcastingnewsfeeds.opml',
             ),
-            SimpleProvider('molly.providers.apps.podcasts.RSSPodcastsProvider',
+            Provider('molly.providers.apps.podcasts.RSSPodcastsProvider',
                 podcasts = [
                     ('top-downloads', 'http://rss.oucs.ox.ac.uk/oxitems/topdownloads.xml'),
                 ],
@@ -188,9 +159,31 @@ APPLICATIONS = [
         ]
     ),
 
+    Application('molly.apps.webcams', 'webcams', 'Webcams'),
+
+    Application('molly_oxford.apps.results', 'results', 'Results releases'),
+
+    Application('molly.apps.weather', 'weather', 'Weather',
+        location_id = 'bbc/25',
+        provider = Provider('molly.providers.apps.weather.BBCWeatherProvider',
+            location_id = 25,
+        ),
+    ),
+
+    Application('molly.apps.service_status', 'service_status', 'Service status',
+        providers = [
+            'molly.providers.apps.service_status.OUCSStatusProvider',
+            Provider('molly.providers.apps.service_status.RSSModuleServiceStatusProvider',
+                name='Oxford Library Information Services',
+                slug='olis',
+                url='http://www.lib.ox.ac.uk/olis/status/olis-opac.rss')
+        ],
+    ),
+
     Application('molly.apps.search', 'search', 'Search',
         providers = [
-            SimpleProvider('molly.providers.apps.search.GSASearchProvider',
+            Provider('molly.providers.apps.search.ApplicationSearchProvider'),
+            Provider('molly.providers.apps.search.GSASearchProvider',
                 search_url = 'http://googlesearch.oucs.ox.ac.uk/search',
                 domain = 'm.ox.ac.uk',
                 params = {
@@ -198,45 +191,31 @@ APPLICATIONS = [
                 },
                 title_clean_re = r'm\.ox \| (.*)',
             ),
-            SimpleProvider('molly.providers.apps.search.ApplicationSearchProvider'),
-        ],
-        display_to_user = False,
-    ),
-
-    Application('molly.apps.webcams', 'webcams', 'Webcams'),
-
-    Application('demos.molly_oxford.apps.results', 'results', 'Results releases'),
-
-    Application('molly.osm', 'osm', 'OpenStreetMap',
-        display_to_user = False,
-    ),
-
-    Application('molly.geolocation', 'geolocation', 'Geolocation',
-        providers = [
-            SimpleProvider('molly.contrib.oxford.providers.geolocation.OUCSCodeGeolocationProvider'),
-#            SimpleProvider('molly.contrib.generic.providers.post_code.PostCodeGeolocationProvider'),
-            SimpleProvider('molly.providers.apps.geolocation.CloudmadeGeolocationProvider',
-                search_locality = 'Oxford',
-            ),
         ],
         display_to_user = False,
     ),
 
     Application('molly.apps.feeds', 'feeds', 'Feeds',
         providers = [
-            SimpleProvider('molly.providers.apps.feeds.RSSFeedsProvider'),
-        ]
-    ),
-    Application('molly.apps.feeds.events', 'events', 'Events',
-    ),
-    Application('molly.apps.feeds.news', 'news', 'News',
-    ),
-
-    Application('molly.auth', 'auth', 'Authentication',
+            Provider('molly.providers.apps.feeds.RSSFeedsProvider'),
+        ],
         display_to_user = False,
     ),
 
-    Application('molly.apps.url_shortener', 'url_shortener', 'URL Shortener',
+    Application('molly.apps.feeds.news', 'news', 'News'),
+
+    Application('molly.osm', 'osm', 'OpenStreetMap',
+        display_to_user = False,
+    ),
+
+    Application('molly.geolocation', 'geolocation', 'Geolocation',
+        prefer_results_near = (-1.25821, 51.75216, 5000),
+        providers = [
+            Provider('molly.providers.apps.geolocation.PlacesGeolocationProvider'),
+            Provider('molly.providers.apps.geolocation.CloudmadeGeolocationProvider',
+                search_locality = 'Oxford',
+            ),
+        ],
         display_to_user = False,
     ),
 
@@ -248,6 +227,20 @@ APPLICATIONS = [
         display_to_user = False,
     ),
 
+    Application('molly.wurfl', 'device_detection', 'Device detection',
+        display_to_user = False,
+        expose_view = True,
+    ),
+
+#    Application('molly.apps.url_shortener', 'url_shortener', 'URL Shortener',
+#        display_to_user = False,
+#    ),
+
+    Application('molly.auth', 'auth', 'Authentication',
+        display_to_user = False,
+        secure = True,
+    ),
+
     Application('molly.apps.sakai', 'weblearn', 'WebLearn',
         host = 'https://weblearn.ox.ac.uk/',
         service_name = 'WebLearn',
@@ -269,6 +262,9 @@ APPLICATIONS = [
             ),
         ),
     ),
+
+#    Application('molly.apps.feeds.events', 'events', 'Events',
+#    ),
 ]
 
 API_KEYS = {
@@ -286,11 +282,55 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
-    'molly.osm',
     'molly.batch_processing',
-    'molly.wurfl',
+    'molly.utils',
 #    'debug_toolbar',
+    'compress',
 ) + extract_installed_apps(APPLICATIONS)
+
+# Settings for django-compress: CSS
+COMPRESS_CSS = {
+    'smart': {
+        'source_filenames': ('css/groups/smart.css',),
+        'output_filename': 'css/groups/smart.min.css',
+        'extra_context': {},
+        },
+    'dumb': {
+        'source_filenames': ('css/groups/dumb.css',),
+        'output_filename': 'css/groups/dumb.min.css',
+        'extra_context': {},
+        },
+    }
+# CSS filter is custom-written since the provided one mangles it too much
+COMPRESS_CSS_FILTERS = ('molly_compress.CSSFilter',)
+COMPRESS_CSSTIDY_SETTINGS = {
+    'remove_bslash': True, # default True
+    'compress_colors': True, # default True
+    'compress_font-weight': True, # default True
+    'lowercase_s': False, # default False
+    'optimise_shorthands': 0, # default 2, tries to merge bg rules together and makes a hash of things
+    'remove_last_': False, # default False
+    'case_properties': 1, # default 1
+    'sort_properties': False, # default False
+    'sort_selectors': False, # default False
+    'merge_selectors': 0, # default 2, messes things up
+    'discard_invalid_properties': False, # default False
+    'css_level': 'CSS2.1', # default 'CSS2.1'
+    'preserve_css': False, # default False
+    'timestamp': False, # default False
+    'template': 'high_compression', # default 'highest_compression'
+}
+# django-compress JS
+COMPRESS_JS = {
+    'all': {
+        'source_filenames': ('js/jquery-1.4.2.js', 'js/async_load.js', 'js/groups/smart.js'),
+        'output_filename': 'js/all.min.js',
+        'extra_context': {},
+        },
+    }
+COMPRESS_JS_FILTERS = ('compress.filters.jsmin.JSMinFilter',)
+# On or off?
+COMPRESS = not DEBUG
 
 CACHE_DIR = '/var/cache/molly'
 SRID = 27700

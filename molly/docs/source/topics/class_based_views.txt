@@ -1,0 +1,158 @@
+Explaining Molly's class-based views
+====================================
+
+.. note::
+
+   This has been lifted verbatim from `a blog post
+   <http://blogs.oucs.ox.ac.uk/inapickle/2009/12/15/django-class-based-views-metaclassing-and-view-validation/>`_
+   and still needs to be tidied up to fit the documentation.
+
+When an HTTP request is handled by a Django website, it attempts to match the
+local part of the URL against a series of regular expressions. Upon finding a
+match it passes an object representing the request as an argument to a
+callable associated with the regular expression. In Python, most callables you
+will find are class or instance methods, or functions. The Django
+documentation only briefly refers to the fact that one can use callables other
+than functions.
+
+Class-based views and metaclasses
+---------------------------------
+
+We’re using class-based views, a concept that doesn’t seem to have much of a
+presence on the Internet. The usual approach is to define a method
+``__call__(self, request, …)`` on a class, an instance of which is then placed
+in an urlconf. Our approach is the following:
+
+ * Have a base view called, oddly enough, BaseView.
+ * Define a method __new__(cls, request, …) that despatches to other class
+   methods depending on the HTTP method.
+ * The __new__ method also calls a method to add common context for each of
+   the handlers.
+ * We use a metaclass to save having to put @classmethod decorators in front
+   of every method.
+ * We never create instances of the view classes; instead, __new__ returns an
+   HttpResponse object and the class itself is place in the urlconf.
+
+Here's the code::
+
+    from inspect import isfunction
+    from django.template import RequestContext
+
+    class ViewMetaclass(type):
+         def __new__(cls, name, bases, dict):
+             # Wrap all functions but __new__ in a classmethod before
+             # constructing the class
+             for key, value in dict.items():
+                 if isfunction(value) and key != '__new__':
+                     dict[key] = classmethod(value)
+             return type.__new__(cls, name, bases, dict)
+
+    class BaseView(object):
+        __metaclass__ = ViewMetaclass
+
+        def method_not_acceptable(cls, request):
+            """
+            Returns a simple 405 response.
+            """
+
+            response = HttpResponse(
+                'You can't perform a %s request against this resource.' %
+                    request.method.upper(),
+                status=405,
+            )
+            return response
+
+            # We could go on defining error status handlers, but there's
+            # little need. These can also be overridden in subclasses if
+            # necessary.
+
+            def initial_context(cls, request, *args, **kwargs):
+                """
+                Returns common context for each of the HTTP method
+                handlers. You will probably want to override this in
+                subclasses.
+                """
+
+                return {}
+
+            def __new__(cls, request, *args, **kwargs):
+                """
+                Takes a request and arguments from the URL despatcher,
+                returning an HttpResponse object.
+                """
+
+                method_name = 'handle_%s' % request.method
+                if hasattr(cls, method_name):
+                    # Construct the initial context to pass to the HTTP
+                    # handler
+                    context = RequestContext(request)
+                    context.update(cls.initial_context(request,
+                                                       *args, **kwargs))
+
+                    # getattr returns a staticmethod , which we pass the
+                    # request and initial context
+                    handler_method = getattr(cls, method_name)
+                    return handler_method(request, context,
+                                          *args, **kwargs)
+                else:
+                    # Our view doesn't want to handle this method; return
+                    # a 405
+                    return cls.method_not_acceptable(request)
+
+Our actual view code can then look a little something like this (minus
+all the faff with input validation and authentication)::
+
+    class CheeseView(BaseView):
+        def initial_context(cls, request, slug):
+            return {
+                'cheese': get_object_or_404(Cheese, slug=slug)
+            }
+
+        def handle_GET(cls, request, context, slug):
+            return render_to_response('cheese_detail.html', context)
+
+        def handle_DELETE(cls, request, context, slug):
+            context['cheese'].delete()
+            # Return a 204 No Content response to acknowledge the cheese
+            # has gone.
+            return HttpResponse('', status=204)
+
+        def handle_POST(cls, request, context, slug):
+            # Allow a user to change the smelliness of the cheese
+            context['cheese'].smelliness = request.POST['smelliness']
+            context['cheese'].save()
+            return HttpResponse('', status=204)
+
+For those who aren’t familiar with metaclasses, I’ll give a brief description
+of class creation in Python. First, the class statement executes all the code
+in the class body, using the newly bound objects (mostly the methods) to
+populate a dictionary. This dictionary is then passed to the __new__ method on
+the metaclass, along with the name of the class and its base classes. Unless
+otherwise specified, the metaclass will be type, but the __metaclass__
+attribute is used to override this. The __new__ method can alter the name,
+base classes and attribute dictionary as it sees fit. In our case we are
+wrapping the functions in class method constructors so that they do not become
+instance methods.
+
+Other things we could do are:
+
+    * Override handle_DELETE in a subclass to return a 403 Forbidden if the
+      cheese is important (calling super(cls, cls).handle_DELETE if it isn’t)
+    * Despatch to other methods from a handler to keep our code looking
+      modular and tidy
+    * Subclass __new__ to add more parameters to the handlers on subclasses
+
+As an example of the last point, we have an OAuthView that ensures an access
+token for a service and adds an urllib2 opener to the parameters which
+contains the necessary credentials to access a remote resource.
+
+The subclassing view can then simply call opener.open(url) without having to
+worry about achieving the requisite authorisation.
+
+Using class-based views allows us to define other methods on the views to
+return metadata about the resource being requested. As an example, we have a
+method that constructs the content for the breadcrumb trail, and another that
+returns the metadata for displaying in search results.
+
+Achieving such extensibility with function-based views would be nigh on
+impossible.

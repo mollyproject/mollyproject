@@ -30,10 +30,19 @@ class GoogleSearchView(BaseView):
         results = []
         for provider in cls.conf.providers:
             results += provider.perform_search(request, query, application)
-        
+
+        seen_urls, i = set(), 0
+        while i < len(results):
+            url = results[i]['url']
+            if url in seen_urls:
+                results[i:i+1] = []
+            else:
+                seen_urls.add(url)
+                i += 1
+
         # Remove results deemed irrelevant
         results = [r for r in results if not r.get('exclude_from_search')]
-        
+
         if len(results) == 1 and results[0].get('redirect_if_sole_result'):
             return HttpResponseRedirect(results[0]['url'])
 

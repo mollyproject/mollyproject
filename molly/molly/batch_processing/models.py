@@ -1,13 +1,19 @@
 import simplejson, traceback, sys
 from datetime import datetime
-try:
-    from cStringIO import StringIO
-except:
-    from StringIO import StringIO
+from StringIO import StringIO
 
 from django.db import models
 
 from molly.conf import all_apps, app_by_local_name
+
+class TeeStringIO(StringIO):
+    def __init__(self, *args, **kwargs):
+        self.other = kwargs.pop('other')
+        StringIO.__init__(self, *args, **kwargs)
+        
+    def write(self, *args, **kwargs):
+        self.other.write(*args, **kwargs)
+        StringIO.write(self, *args, **kwargs)
 
 class Batch(models.Model):
     title = models.TextField()
@@ -40,16 +46,18 @@ class Batch(models.Model):
             pass
         super(Batch, self).save(*args, **kwargs)
 
-    def run(self):
-        if self.currently_running:
-            return
+    def run(self, tee_to_stdout=False):
+        #if self.currently_running:
+        #    return
         
-        self.currently_running = True
-        self.pending = False
-        self.save()
-        
-        output = StringIO()
         try:
+            output = TeeStringIO(other=sys.stdout) if tee_to_stdout else StringIO()
+            
+            self.currently_running = True
+            self.pending = False
+            self.save()
+            
+            
             providers = app_by_local_name(self.local_name).providers
             for provider in providers:
                 if provider.class_path == self.provider_name:
@@ -61,8 +69,9 @@ class Batch(models.Model):
             
             self.metadata = method(self.metadata, output)
         except Exception, e:
+            traceback.print_exc()
             if output.getvalue():
-                print "\n\n"
+                output.write("\n\n")
             traceback.print_exc(file=output)
         finally:
             self.log = output.getvalue()

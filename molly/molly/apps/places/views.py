@@ -37,6 +37,11 @@ class IndexView(BaseView):
             lazy_reverse('places:index')
         )
 
+    def initial_context(cls, request):
+        return {
+            'return_url': request.get_full_path(),
+        }
+
     def handle_GET(cls, request, context):
         return cls.render(request, context, 'places/index')
 
@@ -77,8 +82,8 @@ class NearbyListView(LocationRequiredView):
             et.entities_found = 0
 
         for e in entities:
-            for et in e.all_types_completion.all():
-                et = entity_types_map[et.slug]
+            for et in e.all_types_slugs:
+                et = entity_types_map[et]
                 if not et in flat_entity_types:
                     continue
                 if (e.distance.m ** 0.75) * (et.entities_found + 1) > 500:
@@ -96,6 +101,7 @@ class NearbyListView(LocationRequiredView):
             'entity_types': entity_types,
             'entity': entity,
             'return_url': return_url,
+            'exposes_user_data': entity is None, # entity is None => we've searched around the user's location
         })
         if entity and not entity.location:
             return cls.render(request, context, 'places/entity_without_location')
@@ -125,6 +131,7 @@ class NearbyDetailView(LocationRequiredView, ZoomableView):
             'point': point,
             'entities': entities,
             'entity': entity,
+            'exposes_user_data': entity is None, # entity is None => point is the user's location
         })
         return context
 
@@ -232,7 +239,7 @@ class EntityDetailView(ZoomableView):
         }
 
     def initial_context(cls, request, scheme, value):
-        context = super(cls, cls).initial_context(request)
+        context = super(EntityDetailView, cls).initial_context(request)
         entity = get_entity(scheme, value)
         context.update({
             'entity': entity,
@@ -268,53 +275,53 @@ class EntityDetailView(ZoomableView):
 class EntityUpdateView(ZoomableView):
     default_zoom = 16
 
-    def get_metadata(cls, request, type_slug, id):
+    def get_metadata(cls, request, scheme, value):
         return {
             'exclude_from_search':True,
         }
 
-    def initial_context(cls, request, type_slug, id):
+    def initial_context(cls, request, scheme, value):
         return dict(
             super(EntityUpdateView, cls).initial_context(request),
-            entity=get_entity(type_slug, id),
+            entity=get_entity(scheme, value),
         )
 
     @BreadcrumbFactory
-    def breadcrumb(cls, request, context, type_slug, id):
+    def breadcrumb(cls, request, context, scheme, value):
         return Breadcrumb(
             'places',
-            lazy_parent(EntityDetailView, type_slug=type_slug, id=id),
-            'Things nearby',
-            lazy_reverse('places:entity_update', args=[type_slug,id])
+            lazy_parent(EntityDetailView, scheme=scheme, value=value),
+            'Update place',
+            lazy_reverse('places:entity_update', args=[scheme, value])
         )
 
-    def handle_GET(cls, request, context, type_slug, id):
+    def handle_GET(cls, request, context, scheme, value):
         entity = context['entity']
-        if entity.entity_type.source != 'osm':
+        if entity.source.module_name != 'molly.providers.apps.maps.osm':
             raise Http404
 
         if request.GET.get('submitted') == 'true':
             return cls.render(request, context, 'places/update_osm_done')
 
-        data = dict((k.replace(':','__'), v) for (k,v) in entity.metadata['tags'].items())
+        data = dict((k.replace(':','__'), v) for (k,v) in entity.metadata['osm']['tags'].items())
 
         form = UpdateOSMForm(data)
 
         context['form'] = form
         return cls.render(request, context, 'places/update_osm')
 
-    def handle_POST(cls, request, context, type_slug, id):
-        entity = context['entity'] = get_entity(type_slug, id)
-        if entity.entity_type.source != 'osm':
+    def handle_POST(cls, request, context, scheme, value):
+        entity = context['entity'] = get_entity(scheme, value)
+        if entity.source.module_name != 'molly.providers.apps.maps.osm':
             raise Http404
 
         form = UpdateOSMForm(request.POST)
         if form.is_valid():
-            new_metadata = copy.deepcopy(entity.metadata)
+            new_metadata = copy.deepcopy(entity.metadata['osm'])
             for k in ('name', 'operator', 'phone', 'opening_hours', 'url', 'cuisine', 'food', 'food__hours', 'atm', 'collection_times', 'ref', 'capacity'):
                 tag_name = k.replace('__', ':')
                 if tag_name in new_metadata and not form.cleaned_data[k]:
-                    del new_metadata['tags'][tag_name]
+                    del new_metadata['osm']['tags'][tag_name]
                 elif form.cleaned_data[k]:
                     new_metadata['tags'][tag_name] = form.cleaned_data[k]
 
@@ -331,7 +338,7 @@ class EntityUpdateView(ZoomableView):
             )
             osm_update.save()
 
-            return HttpResponseRedirect(reverse('places:entity_update', args=[type_slug, id])+'?submitted=true')
+            return HttpResponseRedirect(reverse('places:entity_update', args=[scheme, value])+'?submitted=true')
         else:
             context['form'] = form
             return cls.render(request, context, 'places/update_osm')

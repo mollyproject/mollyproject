@@ -1,5 +1,8 @@
 from functools import wraps
 
+from django.conf import settings
+from django.contrib.gis.geos import Point
+
 from molly.conf import get_app
 
 from models import Geocode
@@ -17,7 +20,24 @@ def _cached(getargsfunc):
             except Geocode.DoesNotExist:
                 pass
             results = f(providers=app.providers, **args)
-            
+
+            i = 0
+            while i < len(results):
+                loc, name = Point(results[i]['location'], srid=4326).transform(settings.SRID, clone=True), results[i]['name']
+                if any((r['name'] == name and Point(r['location'], srid=4326).transform(settings.SRID, clone=True).distance(loc) < 100) for r in results[:i]):
+                    results[i:i+1] = []
+                else:
+                    i += 1
+
+            if hasattr(app, 'prefer_results_near'):
+                point = Point(app.prefer_results_near[:2], srid=4326).transform(settings.SRID, clone=True)
+                distance = app.prefer_results_near[2]
+                filtered_results = [
+                    result for result in results if
+                        Point(result['location'], srid=4326).transform(settings.SRID, clone=True).distance(point) <= distance]
+                if filtered_results:
+                    results = filtered_results
+
             geocode, _ = Geocode.objects.get_or_create(local_name = app.local_name,
                                                        **args)
             geocode.results = results
@@ -31,13 +51,15 @@ def _cached(getargsfunc):
 def geocode(query, providers):
     results = []
     for provider in providers:
-         results += provider.geocode(query)
+        print "PROVIDER", provider
+        results += provider.geocode(query)
     return results
 
 @_cached(lambda lon,lat,local_name=None:{'lon': lon, 'lat':lat, 'local_name':local_name})
 def reverse_geocode(lon, lat, providers):
     results = []
     for provider in providers:
-         results += provider.reverse_geocode(lon, lat)
+        print "PROVIDER", provider
+        results += provider.reverse_geocode(lon, lat)
     return results
     
