@@ -100,8 +100,8 @@ APPLICATIONS = [
         display_to_user = False,
     ),
 
-    Application('molly.apps.contact', 'contact', 'Contact search',
-        provider = 'molly.providers.apps.contact.ScrapingContactProvider',
+    Application('molly.apps.contact', 'contact', 'Staff search',
+        provider = 'brookes.providers.apps.contact.BrookesContactProvider',
     ),
 
     Application('molly.apps.places', 'places', 'Places',
@@ -139,8 +139,9 @@ APPLICATIONS = [
 
     Application('molly.apps.z3950', 'library', 'Library search',
         verbose_name = 'Oxford Library Information System',
-        host = 'library.ox.ac.uk',
-        database = 'MAIN*BIBMAST',
+        host = 'catalogue.brookes.ac.uk',
+        database = 'prod_talis',
+        port = 2121,
     ),
 
     Application('molly.apps.podcasts', 'podcasts', 'Podcasts',
