@@ -172,7 +172,7 @@ APPLICATIONS = [
             Provider('molly.providers.apps.service_status.RSSModuleServiceStatusProvider',
                 name='Oxford Library Information Services',
                 slug='olis',
-                url='http://www.lib.ox.ac.uk/olis/status/olis-opac.rss')
+                url='http://newsrss.bbc.co.uk/rss/newsonline_uk_edition/front_page/rss.xml')
         ],
     ),
 
