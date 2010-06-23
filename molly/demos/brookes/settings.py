@@ -145,16 +145,9 @@ APPLICATIONS = [
     ),
 
     Application('molly.apps.podcasts', 'podcasts', 'Podcasts',
-        providers = [
-            Provider('molly.providers.apps.podcasts.OPMLPodcastsProvider',
-                url = 'http://rss.oucs.ox.ac.uk/metafeeds/podcastingnewsfeeds.opml',
-            ),
-            Provider('molly.providers.apps.podcasts.RSSPodcastsProvider',
-                podcasts = [
-                    ('top-downloads', 'http://rss.oucs.ox.ac.uk/oxitems/topdownloads.xml'),
-                ],
-            ),
-        ]
+        provider = Provider('molly.providers.apps.podcasts.PodcastProducerPodcastsProvider',
+            url = 'http://gwstream.brookes.ac.uk:8171/podcastproducer/catalogs',
+        ),
     ),
 
     Application('molly.apps.webcams', 'webcams', 'Webcams'),

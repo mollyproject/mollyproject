@@ -75,6 +75,8 @@ MIMETYPES = {
     'audio/x-m4b': 'MP4 audio',
     'application/octet-stream': 'unknown',
     'video/mpeg': 'MPEG video',
+    'video/x-m4v': 'MP4 video',
+    'audio/x-m4a': 'MP4 audio',
 }    
 
 class PodcastEnclosure(models.Model):
