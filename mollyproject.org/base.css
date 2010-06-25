@@ -28,12 +28,18 @@ a:hover {text-decoration: underline;}
 	right: 0;
 	font-size: 1.2em;
 }
-#header ul li {
+ul.navigation {
+    font-size: 1em;
+    text-align: left;
+    margin: 1em;
+    margin-top: 0em;
+}
+#header ul li, ul.navigation li {
 	display:inline;
 	padding: 0.5em 1em;
     border-left: 1px solid #ccc;
 }
-#header ul li.first {border: 0;}
+#header ul li:first-child, ul.navigation li:first-child {border: 0;}
 #header p {margin-bottom: 1em;}
 
 #main {margin-top: 2em;}
