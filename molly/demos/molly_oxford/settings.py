@@ -7,7 +7,7 @@ from secrets import SECRETS
 
 project_root = os.path.normpath(os.path.dirname(__file__))
 
-DEBUG = False
+DEBUG = True
 DEBUG_SECURE = False
 TEMPLATE_DEBUG = DEBUG
 
@@ -97,6 +97,10 @@ TEMPLATE_DIRS = (
 
 APPLICATIONS = [
     Application('molly.apps.home', 'home', 'Home',
+        display_to_user = False,
+    ),
+
+    Application('molly.apps.desktop', 'desktop', 'Desktop',
         display_to_user = False,
     ),
 

@@ -25,6 +25,7 @@ urlpatterns = patterns('',
     (r'^external-media/', applications.external_media.urls),
     (r'^device-detection/', applications.device_detection.urls),
     (r'^osm/', applications.osm.urls),
+    (r'^desktop/', applications.desktop.urls),
     (r'', applications.home.urls),
 
 #    (r'^auth/', applications.auth.urls),

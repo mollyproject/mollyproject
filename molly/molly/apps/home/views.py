@@ -34,14 +34,15 @@ class IndexView(BaseView):
             and not request.session.get('home:desktop_shown', False)
             and not request.GET.get('preview') == 'true'
             and not internal_referer
-            and not settings.DEBUG):
-            return HttpResponseRedirect(reverse('home:exposition'))
+            and not settings.DEBUG
+            and conf.has_app('molly.apps.desktop')):
+            return HttpResponseRedirect(reverse('desktop:index'))
 
         applications = [{
             'application_name': app.application_name,
             'local_name': app.local_name,
             'title': app.title,
-            'url': reverse('%s:index' % app.local_name) if app.urls else None,
+            'url': reverse('%s:index' % app.local_name) if app.has_urlconf else None,
             'display_to_user': app.display_to_user,
         } for app in conf.all_apps()]
 
@@ -74,36 +75,6 @@ class StaticDetailView(BaseView):
             'content': t.render(Context()),
         })
         return cls.render(request, context, 'home/static_detail')
-
-class ExpositionView(BaseView):
-    def get_metadata(cls, request, page):
-        return {
-            'exclude_from_search': True
-        }
-
-    breadcrumb = NullBreadcrumb
-    cache_page_duration = 60*15
-
-    def handle_GET(cls, request, context, page):
-        page = page or 'about'
-        template = loader.get_template('home/exposition/%s.html' % page)
-
-        if page == 'blog':
-            inner_context = {
-                'articles': BlogArticle.objects.all(),
-            }
-        else:
-            inner_context = {}
-
-        content = template.render(RequestContext(request, inner_context))
-
-        if request.GET.get('ajax') == 'true':
-            return HttpResponse(content)
-        else:
-            return render_to_response('home/exposition/container.html', {
-                'content': content,
-                'page': page,
-            }, context_instance=RequestContext(request))
 
 def handler500(request):
     context = {
@@ -158,4 +129,3 @@ class UserMessageView(BaseView):
             context['formset'].save()
 
         return HttpResponseRedirect(reverse('home:messages'))
-
