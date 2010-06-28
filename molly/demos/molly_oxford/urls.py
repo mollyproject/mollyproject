@@ -2,9 +2,11 @@ from django.conf.urls.defaults import *
 from django.conf import settings
 from django.contrib import admin
 
-from molly.conf import applications
+from molly.conf import applications, all_apps
 
 admin.autodiscover()
+
+all_apps()
 
 urlpatterns = patterns('',
     (r'^adm/(.*)', admin.site.root),

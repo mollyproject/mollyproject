@@ -92,6 +92,13 @@ class Application(object):
         self.conf.has_urlconf = isinstance(urls, tuple)
         self.conf.display_to_user = self.kwargs['display_to_user'] and isinstance(urls, tuple)
 
+        try:
+            logconfig = import_module(self.application_name + '.logconfig')
+        except ImportError, e:
+            print self.application_name, e
+        else:
+            logconfig.configure_logging(self.conf)
+
         return self.conf
 
     def add_conf_to_pattern(self, pattern, conf, bases):
