@@ -57,11 +57,8 @@
       {% weather %}<big>Oxford: {{ weather.temperature }}&deg;C</big><img width="16" height="16" src="{{ MEDIA_URL }}png/weather/{{ weather.icon }}_small.png" alt="{{ weather.get_outlook_display|capfirst }}" height="30" width="30" style="vertical-align:middle;"/>
 
                     </td>
-                </tr>            </tbody>
-        </table>
-   </div><div class="bubble pad-5">
-                <table style="width:100%; text-align:center;">
-            <tbody>
+                </tr>
+                <tr><td colspan="2"><hr/></td></tr>
                 <tr>
                 {% flag_status %}
                 {% for flag in flag_status %}
@@ -70,7 +67,7 @@
                 </tr>  
                 <tr>
                   <td colspan="2">
-                    Correct as of {{ flag_status.0.updated|timesince }} ago. <a href="{% url home:static_about %}#flag">More information</a>
+                    Correct at {{ flag_status.0.updated|date:"H:m" }} ({{ flag_status.0.updated|timesince }} ago). <a href="{% url home:static_about %}#flag">Disclaimer</a>
                   </td>
                 </tr>  
             </tbody>
