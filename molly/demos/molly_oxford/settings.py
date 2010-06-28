@@ -220,6 +220,10 @@ APPLICATIONS = [
         display_to_user = False,
     ),
 
+    Application('molly_oxford.apps.river_status', 'river_status', 'River status',
+        provider = Provider('molly_oxford.providers.apps.river_status.RiverStatusProvider'),
+    ),
+
     Application('molly.apps.feedback', 'feedback', 'Feedback',
         display_to_user = False,
     ),
