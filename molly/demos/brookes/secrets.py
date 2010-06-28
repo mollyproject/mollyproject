@@ -16,5 +16,5 @@ SECRETS = _Secrets({
     'google': None,
     'yahoo': None,
     'fireeagle': None,
-    'journeyweb': ('timfernando','tamefruit037'),
+    'journeyweb': (None, None),
 })
