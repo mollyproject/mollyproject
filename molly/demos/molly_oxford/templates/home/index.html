@@ -57,13 +57,22 @@
       {% weather %}<big>Oxford: {{ weather.temperature }}&deg;C</big><img width="16" height="16" src="{{ MEDIA_URL }}png/weather/{{ weather.icon }}_small.png" alt="{{ weather.get_outlook_display|capfirst }}" height="30" width="30" style="vertical-align:middle;"/>
 
                     </td>
-                </tr>
+                </tr>            </tbody>
+        </table>
+   </div><div class="bubble pad-5">
+                <table style="width:100%; text-align:center;">
+            <tbody>
                 <tr>
                 {% flag_status %}
                 {% for flag in flag_status %}
                     <td title="{{ flag.get_status_display }}">{{ flag.name }}: <img src="{{ flag.get_icon_url }}" alt="{{ flag.get_status_display }}"/></td>
                 {% endfor %}
-                </tr>    
+                </tr>  
+                <tr>
+                  <td colspan="2">
+                    Correct as of {{ flag_status.0.updated|timesince }} ago. <a href="{% url home:static_about %}#flag">More information</a>
+                  </td>
+                </tr>  
             </tbody>
         </table>
     </div>
