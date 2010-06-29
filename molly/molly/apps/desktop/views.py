@@ -5,6 +5,8 @@ from django.shortcuts import render_to_response
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import NullBreadcrumb
 
+from molly.apps.home.models import BlogArticle
+
 class IndexView(BaseView):
     def get_metadata(cls, request, page):
         return {
