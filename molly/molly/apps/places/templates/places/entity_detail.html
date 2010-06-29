@@ -1,5 +1,8 @@
 {% extends "places/base.html" %}{% load maps %}{% load portal_misc %}
 
+{% block extrahead %}{% if entity.metadata.meta_refresh %}
+<meta http-equiv="refresh" content="{{ entity.metadata.meta_refresh }}" />{% endif %}{% endblock %}
+
 {% block content %}
 
 
