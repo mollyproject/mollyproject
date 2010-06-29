@@ -1,6 +1,6 @@
 from __future__ import division, absolute_import
 from datetime import datetime
-import socket, time, logging, sys, traceback
+import socket, time, logging, sys, traceback, Cookie
 import xml.utils.iso8601
 
 from django.contrib.auth.models import User
@@ -39,12 +39,17 @@ class StatisticsMiddleware(object):
         if hasattr(request, 'device'):
             devid = request.device.devid
         else:
-            devid = '-'
+            devid = None
 
         if hasattr(request, 'session'):
             session_key = request.session.session_key
         else:
-            session_key = None
+            try:
+                session_key = Cookie.BaseCookie(request.META.get('HTTP_COOKIE', ''))['sessionid'].value
+            except:
+                session_key = ''
+
+        requested = getattr(request, 'requested', time.time())
 
         return {
             'session_key': session_key,
@@ -53,8 +58,8 @@ class StatisticsMiddleware(object):
             'ip_address': request.META['REMOTE_ADDR'],
             'referer': request.META.get('HTTP_REFERER'),
             'full_path': request.get_full_path(),
-            'requested': time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(request.requested)) + ('%.6f' % (request.requested % 1))[1:],
-            'response_time': time.time() - request.requested,
+            'requested': time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(requested)) + ('%.6f' % (requested % 1))[1:],
+            'response_time': (time.time() - requested) if hasattr(request, 'requested') else None,
             'local_name': local_name,
             'view_name': view_name,
             'status_code': response.status_code if response else 500,

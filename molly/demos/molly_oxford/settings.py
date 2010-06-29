@@ -66,10 +66,10 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = (
+    'molly.wurfl.middleware.WurflMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'molly.wurfl.middleware.WurflMiddleware',
 #    'molly.auth.middleware.SecureSessionMiddleware',
     'molly.stats.middleware.StatisticsMiddleware',
 #    'debug_toolbar.middleware.DebugToolbarMiddleware',

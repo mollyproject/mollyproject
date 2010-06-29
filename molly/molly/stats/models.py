@@ -6,7 +6,7 @@ class Hit(models.Model):
     session_key = models.CharField(max_length=40)
 
     user_agent = models.TextField(null=True, blank=True)
-    device_id = models.TextField()
+    device_id = models.TextField(null=True, blank=True)
 
     ip_address = models.IPAddressField()
 
@@ -14,7 +14,7 @@ class Hit(models.Model):
     full_path = models.TextField()
 
     requested = models.DateTimeField() # in UTC
-    response_time = models.FloatField() # in seconds
+    response_time = models.FloatField(null=True, blank=True) # in seconds
 
     local_name = models.TextField(null=True, blank=True)
     view_name = models.TextField(null=True, blank=True)
