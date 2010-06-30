@@ -1,4 +1,4 @@
-import random
+import random, re
 
 from django.http import HttpResponsePermanentRedirect, Http404
 from django.core.urlresolvers import resolve, reverse
@@ -12,6 +12,7 @@ from models import ShortenedURL
 class IndexView(BaseView):
     # We'll omit characters that look similar to one another
     AVAILABLE_CHARS = '23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghkmnpqrstuvwxyz'
+    has_alpha_re = re.compile(r'[a-zA-Z]')
 
     def initial_context(cls, request):
         try:
@@ -78,7 +79,9 @@ class IndexView(BaseView):
 
         if created:
             if context['complex_shorten']:
-                slug = '0'+''.join(random.choice(cls.AVAILABLE_CHARS) for i in range(5))
+                slug = None
+                while not (slug and ShortenedURL.objects.filter(slug=slug).count() == 0 and cls.has_alpha_re.search(slug)):
+                    slug = ''.join(random.choice(cls.AVAILABLE_CHARS) for i in range(5))
             else:
                 slug = unicode(context['shortened_url'].id)
             context['shortened_url'].slug = slug
