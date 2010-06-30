@@ -2,6 +2,8 @@ import logging
 
 from .models import Hit
 
+logger = logging.getLogger('molly.stats.db')
+
 class StatisticsHandler(logging.Handler):
     def emit(self, record):
         hit = Hit(
@@ -19,7 +21,12 @@ class StatisticsHandler(logging.Handler):
             redirect_to = record.redirect_to,
             traceback = getattr(record, 'traceback', None),
         )
-        hit.save()
+        try:
+            hit.save()
+        except Exception, e:
+            # Likely there was some sort of database exception, so this really
+            # isn't going to work. We'll log it in case anyone's interested.
+            logger.error("Couldn't save hit", extra={'hit': hit})
 
 def configure_logging(conf):
     if getattr(conf, 'log_to_database', True):
