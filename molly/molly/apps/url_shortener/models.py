@@ -4,6 +4,3 @@ from django.core.urlresolvers import reverse
 class ShortenedURL(models.Model):
     path = models.TextField()
     slug = models.TextField(max_length=7)
-
-    def get_absolute_url(self):
-        return reverse('url_shortener:redirect', args=[self.slug])

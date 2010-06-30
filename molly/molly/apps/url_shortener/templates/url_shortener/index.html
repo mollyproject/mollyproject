@@ -1,0 +1,12 @@
+{% extends "base.xhtml" %}
+
+{% block content %}
+
+<div class="bubble pad-5">
+  <p>The shortened URL for the page{% if page_title %} <strong>{{ page_title }}</strong>{% endif %}  is:</p>
+
+  <p><big><a href="{{ url }}">{{ url }}</a></big></p>
+</div>
+
+{% endblock %}
+

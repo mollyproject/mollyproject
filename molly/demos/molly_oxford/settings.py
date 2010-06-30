@@ -72,6 +72,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
 #    'molly.auth.middleware.SecureSessionMiddleware',
     'molly.stats.middleware.StatisticsMiddleware',
+    'molly.apps.url_shortener.middleware.URLShortenerMiddleware',
 #    'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
@@ -240,9 +241,9 @@ APPLICATIONS = [
 
     Application('molly.stats', 'stats', 'Statistics'),
 
-#    Application('molly.apps.url_shortener', 'url_shortener', 'URL Shortener',
-#        display_to_user = False,
-#    ),
+    Application('molly.apps.url_shortener', 'url_shortener', 'URL Shortener',
+        display_to_user = False,
+    ),
 
 #    Application('molly.auth', 'auth', 'Authentication',
 #        display_to_user = False,

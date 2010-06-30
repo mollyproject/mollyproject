@@ -28,6 +28,7 @@ urlpatterns = patterns('',
     (r'^device-detection/', applications.device_detection.urls),
     (r'^osm/', applications.osm.urls),
     (r'^desktop/', applications.desktop.urls),
+    (r'^url-shortener/', applications.url_shortener.urls),
     (r'', applications.home.urls),
 
 #    (r'^auth/', applications.auth.urls),
