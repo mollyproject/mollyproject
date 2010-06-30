@@ -57,9 +57,7 @@
     {% endif %}{% endif %}
       </ol> 
       <div id="bc-title">
-        <h1 class="{% if not breadcrumbs.2 %}{{ breadcrumbs.0 }}-header with-icon{% endif %}">
-          {{ breadcrumbs.4 }}
-        </h1>
+        <h1 class="{% if not breadcrumbs.2 %}{{ breadcrumbs.0 }}-header with-icon{% endif %}">{{ breadcrumbs.4 }}</h1>
       </div>
     </div>
 {% else %}
@@ -71,9 +69,7 @@
             / <a href="{{ breadcrumbs.2.1 }}" title="{{ breadcrumbs.2.0 }}">&hellip;</a>
        {% endif %}{% endif %}
          <div id="bc-title">
-           <h1>
-             {{ breadcrumbs.4 }}
-           </h1>
+           <h1>{{ breadcrumbs.4 }}</h1>
          </div>
        </div>
 {% endifnotequal %}
