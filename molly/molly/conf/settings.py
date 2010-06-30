@@ -135,6 +135,7 @@ class Application(object):
             callback = type(callback.__name__ + 'WithConf',
                             (callback,) + bases,
                             { 'conf': conf })
+            callback.__module__ = pattern.callback.__module__
             # Transplant this new callback into a new RegexURLPattern, keeping
             # the same regex, default_args and name.
             return RegexURLPattern(pattern.regex.pattern,
