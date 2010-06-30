@@ -24,6 +24,8 @@
     <link rel="apple-touch-startup-image" href="{{ MEDIA_URL}}png/apple-touch-startup-image.jpg">
     <meta name="apple-mobile-web-app-capable" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+{% endif %}{% if device|device_has_parent:"apple_iphone_ver4" or browser.svgt_1_1 %}
+    <link rel="stylesheet" href="{{ MEDIA_URL }}css/svg.css" type="text/css" />
 {% endif %}
 
 {% if use_javascript %}
