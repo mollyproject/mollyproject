@@ -94,12 +94,18 @@
 {% endblock %}
 
 {% if not hide_feedback_link %}
-    <div class="bubble pad-10">
 {% block bottom_links %}
-        <a href="{% url feedback:index %}?referer={{ full_path|urlencode }}">Provide feedback for this page.</a><br />
-		<a href="http://chart.apis.google.com/chart?cht=qr&amp;chs={{ device.max_image_width }}x{{ device.max_image_width }}&amp;chl=http://m.ox.ac.uk{{ full_path|urlencode }}">2D Barcode for this page</a><br/>
+  <div style="width:50%; float:left; margin-top: 15px; margin-bottom:10px;">
+    <a style="margin:0 2px 0 10px; background-color:white; padding:10px; -webkit-border-radius:6px; -moz-border-radius:6px; text-align:center; display:block"
+       href="{% url feedback:index %}?referer={{ full_path|urlencode }}">Provide feedback for this page</a>
+  </div>
+  <div style="width:50%; float:left; margin-top: 15px; margin-bottom:10px;">
+    <a style="margin:0 10px 0 2px; background-color:white; padding:10px; -webkit-border-radius:6px; -moz-border-radius:6px; text-align:center; display:block"
+       href="{% url url_shortener:index %}?path={{ full_path|urlencode }}">2D barcode and shortened link</a>
+  </div>
+  <div style="clear:both"> </div>
+
 {% endblock %}
-    </div>
 {% endif %}
 
 </div>

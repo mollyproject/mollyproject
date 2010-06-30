@@ -2,11 +2,29 @@
 
 {% block content %}
 
-<div class="bubble pad-5">
+<div class="bubble pad-10">
   <p>The shortened URL for the page{% if page_title %} <strong>{{ page_title }}</strong>{% endif %}  is:</p>
 
-  <p><big><a href="{{ url }}">{{ url }}</a></big></p>
+  <p style="text-align:center; font-size:150%"><a href="{{ url }}">{{ url }}</a></p>
+
+  <p>You can also use your phone to scan the following barcode:</p>
+
+  <p style="text-align:center; ">
+    <img class="qr-code" src="http://chart.apis.google.com/chart?cht=qr&amp;chs=200x200&amp;chld=L|1&amp;chl={{ url|urlencode }}" style="width:100%; max-width:200px" />
+  </p>
+
+  <p>You may wish to <a href="{{ path }}">go back whence you came</a>.</p>
+
+{% if use_javascript %}
+    <script type="text/javascript">
+      function resizeQR() {
+        $('.qr-code').css('max-width', ((window.innerHeight < window.innerWidth) ? window.innerHeight : window.innerWidth) - 20);
+      };
+      $(resizeQR); $(window).resize(resizeQR);
+    </script>
+{% endif %}
 </div>
 
 {% endblock %}
 
+{% block url_shorten_link %}{% endblock %}
