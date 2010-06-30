@@ -95,7 +95,7 @@ class Application(object):
         try:
             logconfig = import_module(self.application_name + '.logconfig')
         except ImportError, e:
-            print self.application_name, e
+            pass
         else:
             logconfig.configure_logging(self.conf)
 
