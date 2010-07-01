@@ -5,6 +5,8 @@ import xml.utils.iso8601
 
 from django.contrib.auth.models import User
 from django.conf import settings
+from django.http import Http404
+from django.core.exceptions import PermissionDenied
 
 logger = logging.getLogger('molly.stats.requests')
 
@@ -26,10 +28,16 @@ class StatisticsMiddleware(object):
         return response
 
     def process_exception(self, request, exception):
-        details = self.request_details(request)
-        details['traceback'] = traceback.format_exc()
-
-        logger.error("Uncaught exception", extra=details)
+        if isinstance(exception, Http404):
+            details = self.request_details(request, type('', (), {'status_code':404}))
+            logger.info("Request", extra=details)
+        if isinstance(exception, PermissionDenied):
+            details = self.request_details(request, type('', (), {'status_code':403}))
+            logger.info("Request", extra=details)
+        else:
+            details = self.request_details(request)
+            details['traceback'] = traceback.format_exc()
+            logger.error("Uncaught exception", extra=details)
 
     def request_details(self, request, response=None):
 
