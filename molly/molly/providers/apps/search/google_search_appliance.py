@@ -3,6 +3,8 @@ import urllib, urllib2, logging, re
 import xml.etree
 import xml.parsers.expat
 
+from lxml import etree
+
 from django.http import Http404
 from django.core.urlresolvers import Resolver404, reverse
 
@@ -41,13 +43,13 @@ class GSASearchProvider(BaseSearchProvider):
             return []
 
         try:
-            xml_root = xml.etree.ElementTree.parse(response)
+            xml_root = etree.parse(response)
         except xml.parsers.expat.ExpatError, e:
             logger.exception("Couldn't parse results from Google Search Appliance")
             return []
             
         results = []
-    
+
         for result in xml_root.findall('.//RES/R'):
             # Retrieve the URL and chop off the scheme and host parts, leaving
             # just the local part.
@@ -65,7 +67,7 @@ class GSASearchProvider(BaseSearchProvider):
                 'excerpt': (result.find('S').text or '').replace('<br>', ''),
                 'title': title,
             }
-            
+
             try:
                 metadata.update(self.get_metadata(request, url))
             except (Resolver404, Http404):
