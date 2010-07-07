@@ -26,6 +26,10 @@ class GoogleSearchView(BaseView):
     def handle_search(cls, request, context):
         application = context['search_form'].cleaned_data['application'] or None
         query = context['search_form'].cleaned_data['query']
+        
+        query = cls._perform_query_expansion(query)
+
+        print "Query", query
 
         results = []
         for provider in cls.conf.providers:
@@ -51,3 +55,19 @@ class GoogleSearchView(BaseView):
         })
 
         return cls.render(request, context, 'search/index')
+
+    def _perform_query_expansion(cls, query):
+        try:
+            terms = cls.conf._query_expansion_terms
+        except AttributeError, e:
+            terms = cls.conf._query_expansion_terms = cls._load_query_expansion_terms()
+        
+        query = set(query.split(' '))
+        for term in list(query):
+            query |= terms.get(term, set())
+        
+        return ' '.join(query)
+
+    def _load_query_expansion_terms(cls):
+        return {
+        }
