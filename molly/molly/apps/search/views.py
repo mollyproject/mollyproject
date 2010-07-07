@@ -27,8 +27,6 @@ class GoogleSearchView(BaseView):
         application = context['search_form'].cleaned_data['application'] or None
         query = context['search_form'].cleaned_data['query']
 
-        query = cls._perform_query_expansion(query)
-
         results = []
         for provider in cls.conf.providers:
             results += provider.perform_search(request, query, application)
@@ -53,42 +51,3 @@ class GoogleSearchView(BaseView):
         })
 
         return cls.render(request, context, 'search/index')
-
-    def _perform_query_expansion(cls, query):
-        try:
-            terms = cls.conf._query_expansion_terms
-        except AttributeError, e:
-            terms = cls.conf._query_expansion_terms = cls._load_query_expansion_terms()
-        
-        query = set(query.split(' '))
-        for term in list(query):
-            query |= terms.get(term, set())
-        
-        return ' '.join(((('"%s"' % t) if ' ' in t else t) for t in query))
-
-    def _load_query_expansion_terms(cls):
-        if hasattr(cls.conf, 'query_expansion_file'):
-            f = open(cls.conf.query_expansion_file)
-            terms = {}
-            for line in f.readlines():
-                line = line.replace('\n', '')
-                line = line.split('#')[0].strip()
-                if not line:
-                    continue
-                elif '=' in line or '>' in line:
-                    (term, equivs), op = (line.split('='), '=') if '=' in line else (line.split('>'), '>')
-                    term, equivs = term.strip(), [e.strip() for e in equivs]
-                    terms[term] = terms.get(term, frozenset()) | frozenset(equivs)
-                    if op == '>':
-                        for equiv in equivs:
-                            terms[equiv] = terms.get(term, frozenset()) | frozenset([term])
-                elif line.startswith('{') and line.endswith('}'):
-                    equivs = frozenset([e.strip() for e in line[1:-1].split(',')])
-                    for equiv in equivs:
-                        terms[equiv] = terms.get(equiv, frozenset()) | (equivs - frozenset([equiv]))
-                else:
-                    raise ValueError('Malformed query expansion file')
-
-            return terms
-        else:
-            return {}
