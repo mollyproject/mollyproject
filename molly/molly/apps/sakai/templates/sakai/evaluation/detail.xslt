@@ -31,6 +31,13 @@
         <xsl:value-of select=".//div[@class='messageAlert']/ul/li/span"/>
       </state_message>
 
+      <require_auth>
+        <xsl:choose>
+          <xsl:when test=".//*[@class='loginform']">true</xsl:when>
+          <xsl:otherwise>false</xsl:otherwise>
+        </xsl:choose>
+      </require_auth>
+
     </evaluation>
   </xsl:template>
 

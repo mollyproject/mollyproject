@@ -3,8 +3,9 @@ import urlparse, urllib2
 
 from oauth import oauth
 
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
 from django.core.urlresolvers import reverse
+from django.core.exceptions import PermissionDenied
 
 from molly.utils.views import BaseView
 
@@ -35,9 +36,6 @@ class OAuthView(BaseView):
         if 'oauth_token' in request.GET and token_type == 'request_token':
             return cls.access_token(request, *args, **kwargs)
 
-        if token_type != 'access_token':
-            return cls.authorize(request, *args, **kwargs)
-
         request.opener = request.client.get_opener(
             request.consumer,
             request.access_token,
@@ -58,7 +56,10 @@ class OAuthView(BaseView):
         try:
             return super(OAuthView, cls).__new__(cls, request, *args, **kwargs)
         except OAuthHTTPError, e:
-            return cls.handle_error(request, e.exception, *args, **kwargs)
+            if e.code == 403 and token_type != 'access_token':
+                return cls.authorize(request, *args, **kwargs)
+            else:
+                return cls.handle_error(request, e.exception, *args, **kwargs)
 
     def authorize(cls, request, *args, **kwargs):
 

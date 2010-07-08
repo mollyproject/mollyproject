@@ -1,6 +1,6 @@
 from datetime import datetime
 
-import urllib, urllib2, pytz, simplejson, urlparse
+import urllib, urllib2, pytz, simplejson, urlparse, StringIO
 from lxml import etree
 import xml.utils.iso8601
 
@@ -9,6 +9,7 @@ from django.core.urlresolvers import reverse
 from django.template import loader, Context
 from django.core.exceptions import PermissionDenied
 
+from molly.auth.oauth.clients import OAuthHTTPError
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
 from molly.utils.http import HttpResponseSeeOther
@@ -307,6 +308,11 @@ class EvaluationDetailView(SakaiView):
         response = request.urlopen(url, data)
         evaluation = etree.parse(response, parser = etree.HTMLParser(recover=False))
         evaluation = transform(evaluation, 'sakai/evaluation/detail.xslt', {'id': id})
+
+        # The evaluations tool doesn't give us a non-OK status if we need to authenticate. Instead,
+        # we need to check for the login box (handily picked out by the XSL stylesheet).
+        if evaluation.find('.//require_auth').text == 'true':
+            raise OAuthHTTPError(urllib2.HTTPError(url, 403, 'Authentication required', {}, StringIO.StringIO()))
 
         context = {
             'evaluation': evaluation,
