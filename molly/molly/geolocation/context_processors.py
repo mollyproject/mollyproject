@@ -1,5 +1,7 @@
 from datetime import datetime, timedelta
 
+from molly.conf import app_by_application_name
+
 def geolocation(request):
     """
     Provides location-based information to the template (i.e. lat/long, google
@@ -19,8 +21,10 @@ def geolocation(request):
     requested = request.session.get('geolocation:requested', epoch)
     updated = request.session.get('geolocation:updated', epoch)
     method = request.session.get('geolocation:method')
+
+    period = getattr(app_by_application_name('molly.geolocation'), 'location_request_period', 180)    
     
-    if max(requested, updated) + timedelta(0, 60) < datetime.now() and method in ('html5', 'gears', None):
+    if max(requested, updated) + timedelta(0, period) < datetime.now() and method in ('html5', 'gears', None):
         require_location = True
         request.session['geolocation:requested'] = datetime.now()
     else:

@@ -218,6 +218,7 @@ APPLICATIONS = [
                 search_locality = 'Oxford',
             ),
         ],
+        location_request_period = 900,
         display_to_user = False,
     ),
 
