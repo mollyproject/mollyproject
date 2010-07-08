@@ -57,6 +57,9 @@ class Application(object):
         })
         self.conf = type(self.local_name.capitalize()+'Conf', (ApplicationConf,), self.kwargs)
 
+        for provider in self.conf.providers:
+            provider.conf = self.conf
+
         try:
             urlpatterns = import_module(self.urlconf).urlpatterns
         except ImportError, e:

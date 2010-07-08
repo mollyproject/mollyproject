@@ -1,5 +1,6 @@
 from datetime import datetime
 from xml.utils import iso8601
+from molly.utils.date_parsing import rfc_2822_datetime
 import feedparser
 
 class RSSModuleServiceStatusProvider(object):
@@ -20,7 +21,15 @@ class RSSModuleServiceStatusProvider(object):
 
     def get_status(self):
         services_feed = feedparser.parse(self.url)
-        lastBuildDate = self.parse_date(services_feed.entries[0].get('ss_lastchecked'))
+        
+        try:
+            lastBuildDate = self.parse_date(services_feed.entries[0].get('ss_lastchecked'))
+        except IndexError, e:
+            try:
+                lastBuildDate = rfc_2822_datetime(services_feed.headers['last-modified'])
+            except Exception, e:
+                lastBuildDate = None
+            
         
         services = []
         for service in services_feed.entries:

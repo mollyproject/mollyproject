@@ -188,10 +188,12 @@ APPLICATIONS = [
                 domain = 'm.ox.ac.uk',
                 params = {
                     'client': 'oxford',
+                    'frontend': 'mobile',
                 },
                 title_clean_re = r'm\.ox \| (.*)',
             ),
         ],
+        query_expansion_file = 'query_expansion.txt',
         display_to_user = False,
     ),
 
@@ -216,6 +218,7 @@ APPLICATIONS = [
                 search_locality = 'Oxford',
             ),
         ],
+        location_request_period = 900,
         display_to_user = False,
     ),
 

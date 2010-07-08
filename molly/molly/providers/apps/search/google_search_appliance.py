@@ -3,6 +3,8 @@ import urllib, urllib2, logging, re
 import xml.etree
 import xml.parsers.expat
 
+from lxml import etree
+
 from django.http import Http404
 from django.core.urlresolvers import Resolver404, reverse
 
@@ -19,11 +21,14 @@ class GSASearchProvider(BaseSearchProvider):
         self.title_clean_re = re.compile(title_clean_re) if title_clean_re else None
 
     def perform_search(self, request, query, application=None):
-    
+
         if application:
             domain = self.domain + reverse('%s:index' % application)[:-1]
         else:
-            domain = self.domain 
+            domain = self.domain
+
+        query = self._perform_query_expansion(query)
+        query = ' '.join(('(%s)' % (' OR '.join(((('"%s"' % t) if ' ' in t else t) for t in terms))) for terms in query[:]))
 
         params = dict(self.params)
         params.update({
@@ -41,13 +46,13 @@ class GSASearchProvider(BaseSearchProvider):
             return []
 
         try:
-            xml_root = xml.etree.ElementTree.parse(response)
+            xml_root = etree.parse(response)
         except xml.parsers.expat.ExpatError, e:
             logger.exception("Couldn't parse results from Google Search Appliance")
             return []
-            
+
         results = []
-    
+
         for result in xml_root.findall('.//RES/R'):
             # Retrieve the URL and chop off the scheme and host parts, leaving
             # just the local part.
@@ -59,19 +64,19 @@ class GSASearchProvider(BaseSearchProvider):
                 title = self.title_clean_re.match(title).group(1)
             except AttributeError:
                 pass
-                            
+
             metadata = {
                 'url': url,
                 'excerpt': (result.find('S').text or '').replace('<br>', ''),
                 'title': title,
             }
-            
+
             try:
                 metadata.update(self.get_metadata(request, url))
             except (Resolver404, Http404):
                 continue
-                
+
             results.append(metadata)
-            
+
         return results
         
