@@ -338,7 +338,7 @@ COMPRESS_CSSTIDY_SETTINGS = {
 # django-compress JS
 COMPRESS_JS = {
     'all': {
-        'source_filenames': ('js/jquery-1.4.2.js', 'js/async_load.js', 'js/groups/smart.js'),
+        'source_filenames': ('js/jquery-1.4.2.js', 'js/groups/smart.js'), # 'js/async_load.js', 
         'output_filename': 'js/all.min.js',
         'extra_context': {},
         },

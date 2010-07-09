@@ -452,6 +452,23 @@ class CategoryDetailView(BaseView):
             lazy_reverse('places:category_detail', args=[ptypes]),
         )
 
+    def get_metadata(cls, request, ptypes):
+        context = CategoryDetailView.initial_context(request, ptypes)
+
+        if len(context['entity_types']) > 1:
+            return {
+                'exclude_from_search':True,
+                'title': 'All %s near%s%s' % capfirst(context['entity_types'][0].verbose_name_plural),
+            }
+
+        return {
+            'title': 'All %s near%s%s' % capfirst(context['entity_types'][0].verbose_name_plural),
+            'additional': '<strong>%d %s</strong>' % (
+                len(context['entities']),
+                context['entity_types'][0].verbose_name_plural,
+            ),
+        }
+
     def handle_GET(cls, request, context, ptypes):
         return cls.render(request, context, 'places/category_detail')
 

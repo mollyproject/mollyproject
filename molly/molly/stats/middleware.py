@@ -29,10 +29,10 @@ class StatisticsMiddleware(object):
 
     def process_exception(self, request, exception):
         if isinstance(exception, Http404):
-            details = self.request_details(request, type('', (), {'status_code':404}))
+            details = self.request_details(request, type('', (dict,), {'status_code':404})())
             logger.info("Request", extra=details)
         if isinstance(exception, PermissionDenied):
-            details = self.request_details(request, type('', (), {'status_code':403}))
+            details = self.request_details(request, type('', (dict,), {'status_code':403})())
             logger.info("Request", extra=details)
         else:
             details = self.request_details(request)

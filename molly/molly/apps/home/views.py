@@ -52,6 +52,11 @@ class IndexView(BaseView):
         }
         return cls.render(request, context, 'home/index')
 
+    def get_metadata(cls, request):
+        return {
+            'exclude_from_search': True,
+        }
+
     def handle_POST(cls, request, context):
         no_desktop_about = {'true':True, 'false':False}.get(request.POST.get('no_desktop_about'))
         if not no_desktop_about is None:
