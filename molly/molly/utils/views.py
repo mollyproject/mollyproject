@@ -246,7 +246,7 @@ Supported ranges are:
         context = cls.simplify_value(context)
         return HttpResponse(yaml.safe_dump(context), mimetype="application/x-yaml")
 
-    @renderer(format="fragment", mimetypes=('text/json', 'application/json'))
+    @renderer(format="fragment")
     def render_fragment(cls, request, context, template_name):
         '''Uses block rendering functions, see end of file.'''
         if template_name is None:

@@ -68,6 +68,7 @@ class TimedOutView(BaseView):
         if 'clear_session' in request.POST:
             for key in request.secure_session.keys():
                 del request.secure_session[key]
+            request.secure_session['is_secure'] = True
             return HttpResponseRedirect('.')
         elif 'reauthenticate' in request.POST and context['has_pin']:
             valid_pin = request.POST.get('pin') == request.secure_session['pin']
