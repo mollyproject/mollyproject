@@ -32,6 +32,9 @@
     <li {% if forloop.parentloop.last %}class="round-bottom"{% endif %}>
 <a href="{{ enc.url }}?CAMEFROM=moxacuk">
     <h3>{{ item.title }}</h3>
+    {% if item.license_data %}
+    <img class="podcast-license" src="{{ item.license_data.logo }}" alt="{{ item.license_data }}"/>
+    {% endif %}
     <small>{{ item.description|safe }}<br />
     {% if item.duration %}{{ item.duration }}{% endif %}
     {{ item.published_date|date:"j M Y" }}<br />

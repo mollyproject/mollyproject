@@ -15,6 +15,7 @@ class RSSPodcastsProvider(BasePodcastsProvider):
         ('duration', '{itunes:}duration'),
         ('published_date', 'pubDate'),
         ('description', 'description'),
+        
 #       ('itunesu_code', '{itunesu:}code'),
     )
 
@@ -32,6 +33,11 @@ class RSSPodcastsProvider(BasePodcastsProvider):
             podcast.slug = slug
             self.update_podcast(podcast)
             
+    def determine_license(self, o):
+        license = o.find('{http://purl.org/dc/terms/}license') or \
+                  o.find('{http://backend.userland.com/creativeCommonsRssModule}license')
+        
+        return license.text if license != None else None
         
     def update_podcast(self, podcast):
         def gct(node, name):
@@ -51,6 +57,8 @@ class RSSPodcastsProvider(BasePodcastsProvider):
 
         podcast.title = xml.find('.//channel/title').text
         podcast.description = xml.find('.//channel/description').text
+        
+        podcast.license = self.determine_license(xml.find('.//channel'))
 
         guids = []
         for item in xml.findall('.//channel/item'):
@@ -70,7 +78,9 @@ class RSSPodcastsProvider(BasePodcastsProvider):
                 if getattr(podcast_item, attr) != gct(item, x_attr):
                     setattr(podcast_item, attr, gct(item, x_attr))
                     require_save = True
-            if require_save:
+            license = self.determine_license(item)
+            if require_save or podcast_item.license != license:
+                podcast_item.license = license
                 podcast_item.save()
 
             enc_urls = []
