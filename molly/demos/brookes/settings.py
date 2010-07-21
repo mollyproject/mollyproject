@@ -144,11 +144,21 @@ APPLICATIONS = [
         port = 2121,
     ),
 
-    Application('molly.apps.podcasts', 'podcasts', 'Podcasts',
-        provider = Provider('molly.providers.apps.podcasts.PodcastProducerPodcastsProvider',
-            url = 'http://gwstream.brookes.ac.uk:8171/podcastproducer/catalogs',
-        ),
+
+    Application('molly.apps.podcasts', 'podcasts', 'Brookes Podcasts',
+        providers = [
+            Provider('molly.providers.apps.podcasts.PodcastProducerPodcastsProvider',
+				url = 'http://gwstream.brookes.ac.uk:8171/podcastproducer/catalogs',
+            ),
+            Provider('molly.providers.apps.podcasts.RSSPodcastsProvider',
+                podcasts = [
+                    ('top-downloads', 'http://rss.oucs.ox.ac.uk/oxitems/topdownloads.xml'),
+                ],
+            ),
+        ]
     ),
+
+
 
     Application('molly.apps.webcams', 'webcams', 'Webcams',display_to_user = False),
 
