@@ -35,6 +35,7 @@ class Podcast(models.Model):
     medium = models.CharField(max_length=8, choices=MEDIUM_CHOICES, null=True)
     provider = models.TextField()
     license = models.URLField(null=True)
+    logo = models.URLField(null=True)
     
     def get_absolute_url(self):
         return reverse('podcasts:podcast', args=[self.slug])
