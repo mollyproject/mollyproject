@@ -9,7 +9,7 @@
 
 <div class="section">
 	<h2>Webcams</h2>
-		<ul>
+		<ul class="link-list">
 {% for webcam in webcams %}
 		<li {% if forloop.last %}class="round-bottom"{% endif %}>
         	<a href="{% url webcams:webcam webcam.slug %}">{{ webcam.title }}</a>

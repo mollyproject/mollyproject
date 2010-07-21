@@ -19,7 +19,7 @@
         {% include "places/map_elements.html" %}
     {% endifnotequal %}
     
-	<ul>
+	<ul class="link-list">
 	    <li class="round-bottom"><a href="{% url places:entity_nearby_list entity.identifier_scheme entity.identifier_value %}" rel="nofollow">Find things near here</a></li>
 	</ul>
 	{% else %}

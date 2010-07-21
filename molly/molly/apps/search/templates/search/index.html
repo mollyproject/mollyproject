@@ -37,12 +37,12 @@
 	<div class="section">
 	  <h2>Search elsewhere <small>for<em> {{ search_form.data.query }}</em></small></h2> 
 <h3>Contact search</h3>
-	  <ul>
+	  <ul class="link-list">
 	    <li><a href="{% url contact:result_list %}?query={{ search_form.data.query }}&amp;method=email">E-mail</a></li>
 	    <li><a href="{% url contact:result_list %}?query={{ search_form.data.query }}&amp;method=phone">Phone</a></li>
 	 </ul>
 <h3>Library search</h3>
-	 <ul>
+	 <ul class="link-list">
 	    <li><a href="{% url z3950:search %}?title={{ search_form.data.query }}">Title</a></li>
 	    <li class="round-bottom"><a href="{% url z3950:search %}?author={{ search_form.data.query }}">Author</a></li>
 	  </ul>

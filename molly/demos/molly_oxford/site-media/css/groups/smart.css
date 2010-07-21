@@ -223,22 +223,63 @@ div#bc-title h1.weblearn-header {  background-image:url('../../png/index-icons/w
 
 
 /* Standard List Styles */
-ul, ol.search-results {
+ul.content-list, ul.link-list, ol.search-results {
+    border-left: 1px solid rgba(255, 255, 255, 0.33);
     list-style: none;
     padding: 0; margin: 0;
+    
+    -webkit-border-bottom-left-radius: 8px;
+    -webkit-border-bottom-right-radius: 8px;
+    -moz-border-radius-bottomleft: 8px;
+    -moz-border-radius-bottomright: 8px;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
 }
+
+ul.content-list {
+    background-color:#dfdfdf;
+    color:#222;
+}
+
+ul.content-list a {
+    color: #00f;
+}
+
+ul.content-list h3 {
+    color:#222;
+    text-align:left;
+    font-size:10pt;
+    padding:0;
+    margin-bottom:5px;
+}
+
+ul.content-list li {
+    padding:10px;
+    border-top:1px solid #98a1ac;
+    background:none;
+    color: #222;
+}
+
+ul.link-list, ol.search-results {
+    background-color:#002B4C;
+    color:#ffffff;
+}
+
 ul.stand-alone {
     margin: 10px;
 }
-ul li, ol.search-results li {
+ul.link-list li, ol.search-results li {
     font-size:12pt;
-    color:#ffffff;
     border-top:1px solid #98a1ac;
-    background-color:#002B4C;
     padding: 10px;
     display:block;
 }
-ul li a, ol.search-results li a {
+
+ul.content-list li:first-child, ul.link-list li:first-child, ol.search-results li:first-child {
+    border-top:none;
+}
+
+ul.link-list li a, ol.search-results li a {
     color:#ffffff;
     text-decoration:none;
     display:block;
@@ -318,20 +359,14 @@ div.weather-live-info {
     display:inline-block;
     vertical-align: top;
     width: 150px;
-}
-div.weather-live-info ul {
-    list-style: none;
     padding: 0; margin: 0;
-}
-div.weather-live-info li {
-    background: none;
-    border: none;
-    padding: 0;
-    text-align:left;
+    background-color: transparent;
+    border-left:0;
     font-size:10pt;
     color:#ffffff;
-    display:block;
+    text-align: left;
 }
+
 table.weather-forecast {
     padding: 20px;
     width: 100%;
@@ -419,6 +454,7 @@ table.search * input[type="image"] {
 /* OUCS Status */
 ul.service-status li {
     background: #121C28;
+    color: #ffffff;
     background-position:10px center;
     background-repeat:no-repeat;
     border:none;
@@ -534,6 +570,7 @@ h3 {
     color:white;
     padding: 5px 5px; margin: 0;
     text-align: center;
+    text-shadow:2px 2px 2px #ccc; 
 }
 
 div.bubble {
