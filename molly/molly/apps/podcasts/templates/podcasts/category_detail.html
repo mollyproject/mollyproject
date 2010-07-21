@@ -28,9 +28,11 @@ podcasts.
     <li style="padding:5px; clear:left; background:none;">
       <a href="{{ podcast.get_absolute_url }}" style="">
         <div style="float:left; width:60px; margin-right:5px; text-align:center;">
+          {% if podcast.logo %}
           {% with device|device_has_parent:"apple_iphone_ver4"|yesno:"120,60" as max_width %}
           <img src="{% external_image podcast.logo max_width %}" width="60" height="60" alt="" style="border:0;"/>
           {% endwith %}
+          {% endif %}
           <img src="{{ MEDIA_URL }}png/icons/list-{{ podcast.medium }}.png") style="border:0; margin:2px;" alt="({{ podcast.medium }})">
         </div>
         <div style="padding:0 0 0 60px">

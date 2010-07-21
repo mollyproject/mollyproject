@@ -22,9 +22,11 @@
 
 <div class="section" style="background:none; padding:0;">
   <div class="header" style="background:#dfdfdf; color:#222; padding:5px; background:-moz-linear-gradient(top, #fff, #cfcfcf); background:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#dfdfdf)); -webkit-border-top-right-radius:5px; -webkit-border-top-left-radius:5px; -moz-border-radius-topleft: 5px; -moz-border-radius-topright: 5px; border-top:1px solid rgba(255, 255, 255, 0.33); border-left:1px solid rgba(255, 255, 255, 0.33);">
+    {% if podcast.logo %}
     {% with device|device_has_parent:"apple_iphone_ver4"|yesno:"120,60" as max_width %}
     <img style="border:0; float:left; margin-right:7px; margin-bottom:7px; -moz-box-shadow:1px 1px 2px #222; -webkit-box-shadow:1px 1px 2px #222" src="{% external_image podcast.logo max_width %}" width="60" height="60" alt=""/>
     {% endwith %}
+    {% endif %}
     <h2 style="color:#222; text-shadow:2px 2px 2px #ccc; text-align:left; font-size:11pt; padding-top:3px; ">{{ podcast.title }}</h2>
     
     <div style="font-size:1em; line-height:1.1em;">
