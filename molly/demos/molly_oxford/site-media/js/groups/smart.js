@@ -107,9 +107,9 @@ var manualUpdateLocation = null;
 
 
 
-function sendPosition(position, final) {
+function sendPosition(position, final, statusTarget) {
     if (positionRequestCount == 1)
-        $('.location-status').html('Location found; please wait while we put a name to it.');
+        statusTarget.html('Location found; please wait while we put a name to it.');
     jQuery.post(base+'geolocation/', {
         longitude: position.coords.longitude,
         latitude: position.coords.latitude,
@@ -119,37 +119,39 @@ function sendPosition(position, final) {
         return_url: $('#return_url').val(),
         force: 'True',
     }, function(data) {
-        oldPositionName = positionName;
-        positionName = data.name;
+        oldLocationName = locationName;
+        locationName = data.name;
         $('.location').html(data.name);
-        $('.location-status').html('We think you are somewhere near <span class="location">'+data.name+'</span>.');
-        if (oldPositionName == null && data.redirect)
+        if (oldLocationName == null && data.redirect)
             window.location.pathname = data.redirect;
     }, 'json');
 }
 
-function sendPositionError(error) {
+function sendPositionError(error, statusTarget) {
     if (error.code == error.PERMISSION_DENIED) {
-        $('.location-status').html(
+        statusTarget.html(
             'You did not give permission for the site to know your location. '
-          + 'You won\'t be asked again unless you initiate an automatic '
-          + 'update using the link below.');
+          + 'You won\'t be asked again unless you initiate an '
+          + 'update using the icon to the right.');
         jQuery.post(base+'geolocation/', {
             method: 'denied',
         });
     } else if (error.code == error.POSITION_UNAVAILABLE) {
-        $('.location-status').html(
+        statusTarget.html(
             'We were unable to determine your location at this time. Please '
           + 'try again later, or enter your location manually.'
         );
     } else {
-        $('.location-status').html(
+        statusTarget.html(
             'An error occured while determining your location.'
         );
         jQuery.post(base+'geolocation/', {
             method: 'error',
         });
     }
+    window.setTimeout(function() {
+        p.find('.location').text(locationName);
+    }, 5000);
 }
 
 function getGearsPositionInterface(name) {
@@ -181,45 +183,16 @@ function getGearsPositionInterface(name) {
     }
 }
 
-function positionWatcher(position) {
+function positionWatcher(position, statusTarget) {
     positionRequestCount += 1;
     if (positionRequestCount > 10 || position.coords.accuracy <= 150 || position.coords.accuracy == 18000) {
         positionInterface.clearWatch(positionWatchId);
         positionWatchId = null;
-        $('.location-action').html(
-            ' <a class="update-location-toggle" href="#" onclick="javascript:toggleUpdateLocation(); return false;">Update</a>');
     }
     
-    sendPosition(position, positionWatchId != null);
+    sendPosition(position, positionWatchId != null, statusTarget);
 }
 
-function requestPosition() {
-    $('.update-location').slideUp();
-    if (positionWatchId != null)
-        return; 
-        
-    location_options = {
-            enableHighAccuracy: true,
-            maximumAge: 30000,
-    }
-    if (window.google && google.gears) {
-        positionInterface = getGearsPositionInterface('Oxford Mobile Portal');
-        positionMethod = 'gears';
-    } else if (window.navigator && navigator.geolocation) {
-        positionInterface = navigator.geolocation;
-        positionMethod = 'html5';
-    }
-    
-    positionRequestCount = 0;
-    
-    if (positionInterface) {
-        $('.location-status').html('Please wait while we attempt to determine your location...');
-        $('.location-action').html(
-            ' <a class="update-location-cancel" href="#" onclick="javascript:cancelUpdateLocation(); return false;">Cancel</a>');
-        positionWatchId = positionInterface.watchPosition(positionWatcher, sendPositionError, location_options);
-    } else
-        $('.location-status').html('We have no means of determining your location automatically.');
-}
 
 function positionMethodAvailable() {
     return ((window.navigator && navigator.geolocation) || (window.google && google.gears))
@@ -240,8 +213,8 @@ function toggleUpdateLocation(event) {
 
 function cancelUpdateLocation() {
     positionRequestCount = 11;
-    if (positionName)
-        $('.location-status').html('We think you are somewhere near <span class="location">'+positionName+'</span>.');
+    if (locationName)
+        $('.location-status').html('We think you are somewhere near <span class="location">'+locationName+'</span>.');
     else
         $('.location-status').html('We do not know where you are.');
     $('.location-action').html(
@@ -251,8 +224,8 @@ function cancelUpdateLocation() {
 
 function cancelManualUpdateLocation() {
     positionRequestCount = 11;
-    if (positionName)
-        $('.location-status').html('We think you are somewhere near <span class="location">'+positionName+'</span>.');
+    if (locationName)
+        $('.location-status').html('We think you are somewhere near <span class="location">'+locationName+'</span>.');
     else
         $('.location-status').html('We do not know where you are.');
     $('.location-action').html(
@@ -278,10 +251,10 @@ function manualLocationSubmit(event) {
         return_url: $('#return_url').val(),
     }, function(data, textStatus, xhr) {
         if (xhr.getResponseHeader('X-Embed-Redirect') != null) {
-            if (positionName == null)
+            if (locationName == null)
                 window.location.pathname = xhr.getResponseHeader('X-Embed-Redirect');
-            positionName = xhr.getResponseHeader('X-Embed-Location-Name');
-            $('.location').html(positionName);
+            locationName = xhr.getResponseHeader('X-Embed-Location-Name');
+            $('.location').html(locationName);
             cancelManualUpdateLocation();
             return;
         }
@@ -302,11 +275,11 @@ function manualLocationSubmit(event) {
                     format: 'json',
                     force: 'True'
                 }, function(data) {
-                    oldPositionName = positionName;
-                    positionName = form.find('[name=name]').val();
-                    $('.location').html(positionName);
+                    oldLocationName = locationName;
+                    locationName = form.find('[name=name]').val();
+                    $('.location').html(locationName);
                     cancelManualUpdateLocation();
-                    if (oldPositionName == null && data.redirect)
+                    if (oldLocationName == null && data.redirect)
                         window.location.pathname = data.redirect;
                 }, 'json');
                 return false;

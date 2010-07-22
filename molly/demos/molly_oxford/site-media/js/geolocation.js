@@ -80,6 +80,7 @@ function getGearsPositionInterface(name) {
 }
 
 function positionWatcher(position) {
+    alert(this.statusTarget);
     positionRequestCount += 1;
     if (positionRequestCount > 10 || position.coords.accuracy <= 150 || position.coords.accuracy == 18000) {
         positionInterface.clearWatch(positionWatchId);

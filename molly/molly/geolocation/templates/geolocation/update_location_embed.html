@@ -1,21 +1,128 @@
 {% load maps %}
 
-<div class="note"><div class="bubble pad-10">
-{% if geolocation.name %}
+<script type="text/javascript">
+$.fn.selectAll = function() {
+  return this.each(function() {
+    start = 0; end = this.value.length;
+    if(this.setSelectionRange) {
+      this.focus();
+      this.setSelectionRange(start, end);
+    } else if(this.createTextRange) {
+      var range = this.createTextRange();
+      range.collapse(true);
+      range.moveEnd('character', end);
+      range.moveStart('character', start);
+      range.select();
+    }
+  });
+};
 
-<div class="location-container">
-  <span class="location-status">
-    Current location: <span class="location">{{ geolocation.name }}</span>.
-  </span>
-  <span class="location-action"> </span>
+function positionMethodAvailable() {
+  return ((window.navigator && navigator.geolocation) || (window.google && google.gears))
+}
+
+function wrapWithArg(f, new_arg) {
+  function g(arg) {
+    return f(arg, new_arg);
+  }
+  return g;
+}
+
+function geolocate() {
+    p = $(this).closest('div');
+    l = p.find('.location');
+    if (positionWatchId != null)
+        return; 
+        
+    location_options = {
+            enableHighAccuracy: true,
+            maximumAge: 30000,
+    }
+    if (window.google && google.gears) {
+        positionInterface = getGearsPositionInterface('Mobile Oxford');
+        positionMethod = 'gears';
+    } else if (window.navigator && navigator.geolocation) {
+        positionInterface = navigator.geolocation;
+        positionMethod = 'html5';
+    }
+    
+    l.css('display', 'block');
+    p.find('.location-form').css('display', 'none');
+    if (positionInterface) {
+        l.html('Please wait while we attempt to determine your location...');
+        positionInterface.statusTarget = l;
+        positionWatchId = positionInterface.watchPosition(wrapWithArg(positionWatcher, l), wrapWithArg(sendPositionError, l), location_options);
+    } else
+        l.html('We have no means of determining your location automatically.');
+}
+
+function manualLocation(e) {
+  p = $(this).closest('div');
+  if (p.find('.location').css('display') == 'block')
+    return false;
+  p.find('.location-form').css('display', 'none');
+  p.find('.location').css('display', 'block')
+
+  newLocationName = p.find('.location-name').val() || null;
+  if (locationName != newLocationName) {
+    p.find('.location').html('<i>Updating&hellip;</i>');
+    $.post(base+'geolocation/', {
+      format: 'json',
+      name: newLocationName,
+      take_first: true,
+    }, function(data) {
+      if (data.name) {
+        locationName = data.name;
+        $('.location').text(data.name);
+      } else {
+        p.find('.location').html("<i>We don't know where that is.</i>"); 
+        window.setTimeout(function() {
+          p.find('.location').text(locationName);
+        }, 5000);
+      }
+    });
+  }
+
+
+  return false;
+}
+
+$(function() {
+  $('.location-form').css('display', 'none').submit(manualLocation);
+  $('.location-submit').css('display', 'none');
+  $('.location-name').css('width', '100%');
+
+  $('.position-box').each(function() {
+    var p = $(this);
+    if (positionMethodAvailable()) {
+      p.append($('<span style="position:absolute; right:10px; top:4px; font-size:30px; color:#0000ff; cursor:pointer;">↻</span>').click(geolocate));
+    }
+    p.find('.location').click(function() {
+      $(this).css('display', 'none');
+      p.find('.location-form').css('display', 'block');
+      p.find('.location-name').focus().blur(manualLocation).val(locationName).selectAll();
+    }).css('display', 'block').css('cursor', 'pointer');
+  });
+});
+</script>
+
+<div class="position-box" style="position:relative; background-color:white; -webkit-border-radius:6px; -moz-border-radius:6px; margin:15px 10px 2px; padding:10px 50px">
+<span class="location">{{ geolocation.name|default:"No location set" }} <small>Select to edit</small></span>
+<form method="post" action="{% url geolocation:index %}" class="location-form">
+        <label style="display:none;" for="location-name">Set a new location:</label>
+        <input class="return_url" name="return_url" type="hidden" value="{{ return_url|default:"" }}"/>
+        <input class="location-name" name="name" value="{{ location }}"/>
+        <input name="take_first" type="hidden" value="true"/>
+        <input class="location-submit" type="submit" value="Update"/>
+
+</form>
+
+<div style="position:absolute; left:10px; top:4px;">
+  <img style="font-size:30px; line-height:30px" src="{{ MEDIA_URL }}png/location.png" alt="⬠"/>
+</div>
 </div>
 
-{% else %}
-<div class="location-container">
-  <span class="location-status">We do not yet know where you are.</span>
-  <span class="location-action"> </span>
-</div>
-{% endif %}
+{% comment %}
 
 <div class="update-location">
 
@@ -44,7 +151,6 @@
 
 </div></div></div>
 
-{% comment %}
 <h2>Automatic geolocation</h2>
 <div class="note"><div class="bubble pad-5">
 {% if preferences.location.placemark %}

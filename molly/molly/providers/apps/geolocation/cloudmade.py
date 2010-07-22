@@ -11,7 +11,7 @@ from molly.geolocation.providers import BaseGeolocationProvider
 logger = logging.getLogger('molly.contrib.generic.cloudmade')
 
 class CloudmadeGeolocationProvider(BaseGeolocationProvider):
-    REVERSE_GEOCODE_URL = 'http://geocoding.cloudmade.com/%(api_key)s/geocoding/closest/road/%(lat)f,%(lon)f.js'
+    REVERSE_GEOCODE_URL = 'http://geocoding.cloudmade.com/%(api_key)s/geocoding/closest/%(type)s/%(lat)f,%(lon)f.js'
     GEOCODE_URL = 'http://geocoding.cloudmade.com/%(api_key)s/geocoding/find/%(query)s.js'
 
     def __init__(self, search_locality):
@@ -23,15 +23,24 @@ class CloudmadeGeolocationProvider(BaseGeolocationProvider):
             'api_key': settings.API_KEYS['cloudmade'],
             'lon': lon,
             'lat': lat,
+            'type': 'road',
         }
 
         data = urllib2.urlopen(self.REVERSE_GEOCODE_URL % params)
 
         print self.REVERSE_GEOCODE_URL % params
         json = simplejson.load(data)
+        
         if not json:
             return []
         else:
+            name = json['features'][0]['properties'].get('name')
+            try:
+                params['type'] = 'area'
+                data = simplejson.load(urllib2.urlopen(self.REVERSE_GEOCODE_URL % params))
+                name = '%s, %s' % (name, data['features'][0]['properties']['name'])
+            except Exception:
+                pass
             return [{
                 'name': json['features'][0]['properties'].get('name'),
                 'location': (lon, lat),
@@ -39,7 +48,6 @@ class CloudmadeGeolocationProvider(BaseGeolocationProvider):
             }]
 
     def geocode(self, query):
-
         if self.search_locality and not (', ' in query or ' near ' in query):
             query += ', %s' % self.search_locality
 
@@ -66,8 +74,13 @@ class CloudmadeGeolocationProvider(BaseGeolocationProvider):
         if not json:
             return []
 
+        print "Results!"
+
         results = []
-        for feature in json['features']:
+        
+        features = sorted(json['features'], key=lambda f: len(f['properties'].get('name', 'x'*1000)))        
+        
+        for i, feature in enumerate(features):
             try:
                 # Cloudmade returns a lat-long (and we use long-lats internally)
                 bounds_a, bounds_b = [Point(p[1], p[0], srid=4326).transform(settings.SRID, clone=True) for p in feature['bounds']]
@@ -79,14 +92,34 @@ class CloudmadeGeolocationProvider(BaseGeolocationProvider):
             centroid = tuple(feature['centroid']['coordinates'])
             centroid = centroid[1], centroid[0]
             accuracy = bounds_a.distance(bounds_b) / 1.414
+            
             try:
-                if feature['properties']['name'] == self.search_locality:
+                name = feature['properties']['name']
+                print self.search_locality, name.lower(), query.lower()
+                if name == self.search_locality and name.lower() != query.split(',')[0].lower():
                     continue
+
+                try:
+                    if i > 0:
+                        raise ValueError
+                    params.update({
+                        'type': 'area',
+                        'lat': centroid[1],
+                        'lon': centroid[0],
+                    })
+                    data = simplejson.load(urllib2.urlopen(self.REVERSE_GEOCODE_URL % params))
+                    if name != data['features'][0]['properties']['name']:
+                        name = '%s, %s' % (name, data['features'][0]['properties']['name'])
+                except Exception:
+                    pass
+                    
                 results.append({
-                    'name': feature['properties']['name'],
+                    'name': name,
                     'location': centroid,
                     'accuracy': accuracy,
                 })
+                    
+                
             except KeyError:
                 results += self.reverse_geocode(*centroid)
 

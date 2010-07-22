@@ -74,7 +74,7 @@ class IndexView(BaseView):
             results = geocode(form.cleaned_data['name'], cls.conf.local_name)
             print len(results)
 
-            if len(results) == 1:
+            if len(results) == 1 or (len(results) > 0 and request.POST.get('take_first') == 'true'):
                 form.cleaned_data.update(results[0])
                 return cls.handle_set_location(request, context)
 
@@ -127,6 +127,9 @@ class IndexView(BaseView):
             return cls.render(request, {
                 'name': form.cleaned_data['name'],
                 'redirect': redirect,
+                'accuracy': form.cleaned_data['accuracy'],
+                'longitude': form.cleaned_data['location'][0],
+                'latitude': form.cleaned_data['location'][1],
             }, None)
         elif context['format'] == 'embed':
             response = HttpResponse('')
