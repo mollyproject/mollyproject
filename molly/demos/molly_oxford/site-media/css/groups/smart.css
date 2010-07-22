@@ -9,9 +9,9 @@ dl#results {
     border-radius: 8px;
 
     background:#B88C54 url('../../png/new/gradients/gradient-50-nrWhite-Transparent.png') repeat-x;
-    background:-webkit-gradient(linear, left top, right top, from(#B88C54), to(#E0C792));
-    background:-moz-linear-gradient(top, #B88C54, #E0C792);
-    background:linear-gradient(top, #B88C54, #E0C792);
+    background:-webkit-gradient(linear, left top, right top, from(#dfdfdf), to(#fff));
+    background:-moz-linear-gradient(top, #dfdfdf, #fff);
+    background:linear-gradient(top, #dfdfdf, #fff);
 
     -moz-box-shadow: 2px 2px 2px #333; -webkit-box-shadow: 2px 2px 2px #333; box-shadow: 2px 2px 2px #333;
 
@@ -20,7 +20,7 @@ dl#results {
 dl#results dt {
     color: #fff;
     background: #002B4C;
-    background:-webkit-gradient(linear, left top, right top, from(#002B4C), to(rgba(0,145,245,0.2)));
+    background:-webkit-gradient(linear, left top, right top, from(#002B4C), to(rgba(223,223,223,0.2)));
 
     padding: 3px;
     margin: 8px 0;
@@ -30,8 +30,9 @@ dl#results dt {
 dl#results dd {
     color: #111;
     margin: 2px 0 2px 20px;
-    border-bottom: 1px solid #E0C792;
-    text-shadow: 1px 1px 1px #999;
+    border-bottom: 1px solid #ccc;
+    text-shadow: 1px 1px 1px #ccc;
+    line-height: 1.3em;
 }
 
 dl#results dd.no-border {border: 0;}
