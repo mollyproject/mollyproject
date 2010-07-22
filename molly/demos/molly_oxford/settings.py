@@ -199,7 +199,7 @@ APPLICATIONS = [
                 title_clean_re = r'm\.ox \| (.*)',
             ),
         ],
-        query_expansion_file = 'query_expansion.txt',
+        query_expansion_file = os.path.join(project_root, 'data', 'query_expansion.txt'),
         display_to_user = False,
     ),
 
