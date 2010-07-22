@@ -36,4 +36,4 @@ class _Licenses(object):
         else:
             return None
 
-licenses = _Licenses(os.path.join(os.path.dirname(__file__), 'licenses.n3'))
+licenses = _Licenses(os.path.join(os.path.dirname(__file__), 'source', 'licenses.n3'))
