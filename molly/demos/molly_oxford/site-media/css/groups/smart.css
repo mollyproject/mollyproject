@@ -1,5 +1,7 @@
 /* Results Releases */
 dl#results {
+    
+
     font-size: 1.2em;
 
     margin:10px;
@@ -15,6 +17,7 @@ dl#results {
 
     -moz-box-shadow: 2px 2px 2px #333; -webkit-box-shadow: 2px 2px 2px #333; box-shadow: 2px 2px 2px #333;
 
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 dl#results dt {
