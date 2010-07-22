@@ -32,7 +32,6 @@ class ExternalImageNode(template.Node):
         try:
             width = int(self.max_width.resolve(context))
         except Exception:
-            raise
             width = float('inf')
             
         url, width = self.url.resolve(context), min(width, context['device'].max_image_width)
