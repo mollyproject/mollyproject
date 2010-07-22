@@ -273,7 +273,6 @@ function manualLocationSubmit(event) {
                     return_url: form.find('[name=return_url]').val(),
                     method: 'geocoded',
                     format: 'json',
-                    force: 'True'
                 }, function(data) {
                     oldLocationName = locationName;
                     locationName = form.find('[name=name]').val();

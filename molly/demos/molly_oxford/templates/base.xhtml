@@ -10,7 +10,7 @@
     <script type="text/javascript">
         var require_location = {{ require_location|yesno:"true,false" }};
         var base = "{% url home:index %}";
-        var positionName = {% if geolocation.name %}"{{ geolocation.name|escapejs }}"{% else %}null{% endif %};
+        var locationName = {% if geolocation.name %}"{{ geolocation.name|escapejs }}"{% else %}null{% endif %};
     </script>
 {% endif %}
 

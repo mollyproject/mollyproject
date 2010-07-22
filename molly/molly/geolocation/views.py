@@ -8,12 +8,13 @@ from django.conf import settings
 
 from molly.utils.views import BaseView, renderer
 from molly.utils.breadcrumbs import *
-from molly.utils.http import HttpResponseSeeOther
+from molly.utils.http import HttpResponseSeeOther, update_url
 
 from molly.osm.utils import fit_to_map
 
 from .forms import LocationUpdateForm
 from .utils import geocode, reverse_geocode
+
 
 class IndexView(BaseView):
     @BreadcrumbFactory
@@ -67,49 +68,27 @@ class IndexView(BaseView):
     def handle_POST(cls, request, context):
         form = context['form']
 
-        if form.is_valid() and form.cleaned_data['force']:
-            return cls.handle_set_location(request, context)
-
         if form.is_valid():
-            results = geocode(form.cleaned_data['name'], cls.conf.local_name)
-            print len(results)
-
-            if len(results) == 1 or (len(results) > 0 and request.POST.get('take_first') == 'true'):
-                form.cleaned_data.update(results[0])
-                return cls.handle_set_location(request, context)
-
-            if results:
-                points = [(o['location'][0], o['location'][1], 'red') for o in results]
-                map_hash, (new_points, zoom) = fit_to_map(
-                    None,
-                    points = points,
-                    min_points = len(points),
-                    zoom = None if len(points)>1 else 15,
-                    width = request.map_width,
-                    height = request.map_height,
-                )
-            else:
-                map_hash, zoom = None, None
-            context.update({
-                'results': results,
-                'map_url': reverse('osm:generated_map', args=[map_hash]) if map_hash else None,
-                'zoom': zoom,
-                'zoom_controls': False,
-            })
-
-        if context['format'] == 'embed':
-            if form.is_valid():
-                return cls.render(request, context, 'geolocation/update_location_confirm')
-            else:
-                return cls.render(request, context, 'geolocation/update_location_embed')
+            context['return_url'] = update_url(context['return_url'], {'location_error': None}, None)
+            return cls.handle_set_location(request, context)
         else:
-            return cls.render(request, context, 'geolocation/update_location')
+            if context['format'] == 'json':
+                context = {
+                    'error': form.errors.popitem()[1].pop(),
+                }
+                return cls.render(request, context, None)
+            else:
+                return_url = update_url(
+                    context['return_url'],
+                    {'location_error': form.errors.popitem()[1].pop()},
+                    'location-update',
+                )
+                return HttpResponseSeeOther(return_url)
 
     def handle_set_location(cls, request, context):
         form = context['form']
 
         if form.is_valid():
-            print form.cleaned_data
             cls.set_location(request,
                              form.cleaned_data['name'],
                              form.cleaned_data['location'],
