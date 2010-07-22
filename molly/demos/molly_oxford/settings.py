@@ -300,52 +300,7 @@ INSTALLED_APPS = (
     'molly.batch_processing',
     'molly.utils',
 #    'debug_toolbar',
-    'compress',
 ) + extract_installed_apps(APPLICATIONS)
-
-# Settings for django-compress: CSS
-COMPRESS_CSS = {
-    'smart': {
-        'source_filenames': ('css/groups/smart.css',),
-        'output_filename': 'css/groups/smart.min.css',
-        'extra_context': {},
-        },
-    'dumb': {
-        'source_filenames': ('css/groups/dumb.css',),
-        'output_filename': 'css/groups/dumb.min.css',
-        'extra_context': {},
-        },
-    }
-# CSS filter is custom-written since the provided one mangles it too much
-COMPRESS_CSS_FILTERS = ('molly_compress.CSSFilter',)
-COMPRESS_CSSTIDY_SETTINGS = {
-    'remove_bslash': True, # default True
-    'compress_colors': True, # default True
-    'compress_font-weight': True, # default True
-    'lowercase_s': False, # default False
-    'optimise_shorthands': 0, # default 2, tries to merge bg rules together and makes a hash of things
-    'remove_last_': False, # default False
-    'case_properties': 1, # default 1
-    'sort_properties': False, # default False
-    'sort_selectors': False, # default False
-    'merge_selectors': 0, # default 2, messes things up
-    'discard_invalid_properties': False, # default False
-    'css_level': 'CSS2.1', # default 'CSS2.1'
-    'preserve_css': False, # default False
-    'timestamp': False, # default False
-    'template': 'high_compression', # default 'highest_compression'
-}
-# django-compress JS
-COMPRESS_JS = {
-    'all': {
-        'source_filenames': ('js/jquery-1.4.2.js', 'js/groups/smart.js'), # 'js/async_load.js', 
-        'output_filename': 'js/all.min.js',
-        'extra_context': {},
-        },
-    }
-COMPRESS_JS_FILTERS = ('compress.filters.jsmin.JSMinFilter',)
-# On or off?
-COMPRESS = not DEBUG
 
 CACHE_DIR = '/var/cache/molly'
 SRID = 27700
