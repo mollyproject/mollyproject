@@ -260,6 +260,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'molly.batch_processing',
+    'django.contrib.gis',
     'molly.utils',
 #    'debug_toolbar',
 ) + extract_installed_apps(APPLICATIONS)
