@@ -105,8 +105,6 @@ var positionMethod = null;
 var positionGeo = null;
 var manualUpdateLocation = null;
 
-
-
 function sendPosition(position, final, statusTarget) {
     if (positionRequestCount == 1)
         statusTarget.html('Location found; please wait while we put a name to it.');
@@ -158,7 +156,7 @@ function getGearsPositionInterface(name) {
     if (positionGeo == null)
         positionGeo = google.gears.factory.create('beta.geolocation');
     geo = positionGeo;
-    
+
     function wrapWithPermission(fname) {
         return function(successCallback, errorCallback, options) {
             if (geo.getPermission(name)) {
@@ -173,7 +171,7 @@ function getGearsPositionInterface(name) {
                 });
         };
     }
-    
+
     return {
         getCurrentPosition: wrapWithPermission('getCurrentPosition'),
         watchPosition: wrapWithPermission('watchPosition'),
@@ -189,127 +187,124 @@ function positionWatcher(position, statusTarget) {
         positionInterface.clearWatch(positionWatchId);
         positionWatchId = null;
     }
-    
+
     sendPosition(position, positionWatchId != null, statusTarget);
 }
-
 
 function positionMethodAvailable() {
     return ((window.navigator && navigator.geolocation) || (window.google && google.gears))
 }
 
-function toggleUpdateLocation(event) {
-    updateLocationToggle = $('.update-location-toggle');
-    
-    if (updateLocationToggle.html() == 'Update') {
-        $('.update-location').slideDown();
-        updateLocationToggle.html('Cancel');
-    } else {
-        $('.update-location').slideUp();
-        updateLocationToggle.html('Update');
+$.fn.selectAll = function() {
+  return this.each(function() {
+    start = 0; end = this.value.length;
+    if(this.setSelectionRange) {
+      this.focus();
+      this.setSelectionRange(start, end);
+    } else if(this.createTextRange) {
+      var range = this.createTextRange();
+      range.collapse(true);
+      range.moveEnd('character', end);
+      range.moveStart('character', start);
+      range.select();
     }
-    return false;
+  });
+};
+
+function positionMethodAvailable() {
+  return ((window.navigator && navigator.geolocation) || (window.google && google.gears))
 }
 
-function cancelUpdateLocation() {
-    positionRequestCount = 11;
-    if (locationName)
-        $('.location-status').html('We think you are somewhere near <span class="location">'+locationName+'</span>.');
-    else
-        $('.location-status').html('We do not know where you are.');
-    $('.location-action').html(
-        ' <a class="update-location-toggle" href="#" onclick="javascript:toggleUpdateLocation(); return false;">Update</a>');
-
+function wrapWithArg(f, new_arg) {
+  function g(arg) {
+    return f(arg, new_arg);
+  }
+  return g;
 }
 
-function cancelManualUpdateLocation() {
-    positionRequestCount = 11;
-    if (locationName)
-        $('.location-status').html('We think you are somewhere near <span class="location">'+locationName+'</span>.');
-    else
-        $('.location-status').html('We do not know where you are.');
-    $('.location-action').html(
-        ' <a class="update-location-toggle" href="#" onclick="javascript:toggleUpdateLocation(); return false;">Update</a>');
+function geolocate() {
+    p = $(this).closest('div');
+    l = p.find('.location');
+    if (positionWatchId != null)
+        return;
 
-    $('.update-location').slideUp('normal', function() {
-        $('.manual-update-location').replaceWith(manualUpdateLocation);
-    });
-        
+    location_options = {
+            enableHighAccuracy: true,
+            maximumAge: 30000,
+    }
+    if (window.google && google.gears) {
+        positionInterface = getGearsPositionInterface('Mobile Oxford');
+        positionMethod = 'gears';
+    } else if (window.navigator && navigator.geolocation) {
+        positionInterface = navigator.geolocation;
+        positionMethod = 'html5';
+    }
+
+    l.css('display', 'block');
+    p.find('.location-form').css('display', 'none');
+    if (positionInterface) {
+        l.html('Please wait while we attempt to determine your location&hellip;');
+        positionInterface.statusTarget = l;
+        positionWatchId = positionInterface.watchPosition(wrapWithArg(positionWatcher, l), wrapWithArg(sendPositionError, l), location_options);
+    } else
+        l.html('We have no means of determining your location automatically.');
 }
 
-function manualLocationSubmit(event) {
-    $('.manual-update-location-submit').css('display', 'none');
+function cancelGeolocate() {
+    if (positionWatchId == null)
+        return;
+    positionInterface.clearWatch(positionWatchId);
+    positionWatchId = null;
+    positionInterface = null;
+    $('.location').html((locationName != null) ? locationName : "No location set.");
+}
     
-    $('.location-action').html(
-            ' <a class="update-location-cancel" href="#" onclick="javascript:cancelManualUpdateLocation(); return false;">Cancel</a>');
-    manualUpdateLocation = $('.manual-update-location').clone(true);
-        
+function manualLocation(e) {
+  cancelGeolocate();
+  p = $(this).closest('div');
+  if (p.find('.location').css('display') == 'block')
+    return false;
+  p.find('.location-form').css('display', 'none');
+  p.find('.location').css('display', 'block')
+
+  newLocationName = p.find('.location-name').val() || null;
+  if (locationName != newLocationName) {
+    p.find('.location').html('<i>Updating&hellip;</i>');
     $.post(base+'geolocation/', {
-        method: 'geocoded',
-        name: $('#location-name').val(),
-        format: 'embed',
-        return_url: $('#return_url').val(),
-    }, function(data, textStatus, xhr) {
-        if (xhr.getResponseHeader('X-Embed-Redirect') != null) {
-            if (locationName == null)
-                window.location.pathname = xhr.getResponseHeader('X-Embed-Redirect');
-            locationName = xhr.getResponseHeader('X-Embed-Location-Name');
-            $('.location').html(locationName);
-            cancelManualUpdateLocation();
-            return;
-        }
-        
-        $('.manual-update-location').html(data);
-        $('.submit-location-form').each(function () {
-            button = $(this).find(".submit-location-form-button");
-            link = $('<a href="#">'+button.html()+'</a>');
-            link.css('color', '#ffffff').bind('click', {form:this}, function(event) {
-                form = $(event.data.form);
-                $.post(base+'geolocation/', {
-                    longitude: form.find('[name=longitude]').val(),
-                    latitude: form.find('[name=latitude]').val(),
-                    accuracy: form.find('[name=accuracy]').val(),
-                    name: form.find('[name=name]').val(),
-                    return_url: form.find('[name=return_url]').val(),
-                    method: 'geocoded',
-                    format: 'json',
-                }, function(data) {
-                    oldLocationName = locationName;
-                    locationName = form.find('[name=name]').val();
-                    $('.location').html(locationName);
-                    cancelManualUpdateLocation();
-                    if (oldLocationName == null && data.redirect)
-                        window.location.pathname = data.redirect;
-                }, 'json');
-                return false;
-            });
-            button.replaceWith(link);
-        });
+      format: 'json',
+      name: newLocationName,
+      method: 'geocoded',
+    }, function(data) {
+      if (data.name) {
+        locationName = data.name;
+        $('.location').text(data.name);
+      } else {
+        p.find('.location').html("<i>"+data.error+"</i>"); 
+        window.setTimeout(function() {
+          p.find('.location').text(locationName);
+        }, 5000);
+      }
     });
-
-    return false;
+  }
+  return false;
 }
-    
-if (require_location)
-    jQuery(document).ready(requestPosition);
 
+$(function() {
+  $('.location-form').css('display', 'none').submit(manualLocation);
+  $('.location-submit').css('display', 'none');
+  $('.location-name').css('width', '100%');
 
-$(document).ready(function() {
-    $('.update-location').css('display', 'none');
-    $('.location-action').html(
-        ' <a class="update-location-toggle" href="#" onclick="javascript:toggleUpdateLocation(); return false;">Update</a>');
-      
+  $('.location-box').each(function() {
+    var p = $(this);
     if (positionMethodAvailable()) {
-        $('#geolocate-js').html(
-            '<a href="#" onclick="javascript:requestPosition(); return false;">Determine location automaticaly</a>');
+      p.append($('<span style="position:absolute; right:10px; top:4px; font-size:30px; color:#0000ff; cursor:pointer;">↻</span>').click(geolocate));
     }
-    
-    $('.manual-update-form').bind('submit', manualLocationSubmit);
-    $('.manual-update-form').bind('submit', function(){ return false; });
-    
-    if (require_location && positionMethodAvailable())
-        $('#location_status').html('We do not yet have a location for you; please wait while we attempt to determine one.');
-    else if (positionMethodAvailable())
-        $('#location_status').css('display', 'none');
-   
+    p.find('.location').append(" <small>Select to edit</small>").click(function() {
+      $(this).css('display', 'none');
+      p.find('.location-form').css('display', 'block');
+      p.find('.location-name').focus().blur(manualLocation).val(locationName).selectAll();
+    }).css('display', 'block').css('cursor', 'pointer');
+  });
+  if (locationRequired && positionMethodAvailable())
+    geolocate();
 });
