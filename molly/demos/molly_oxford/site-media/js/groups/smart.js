@@ -106,93 +106,93 @@ var positionGeo = null;
 var manualUpdateLocation = null;
 
 function sendPosition(position, final, statusTarget) {
-    if (positionRequestCount == 1)
-        statusTarget.html('Location found; please wait while we put a name to it.');
-    jQuery.post(base+'geolocation/', {
-        longitude: position.coords.longitude,
-        latitude: position.coords.latitude,
-        accuracy: position.coords.accuracy,
-        method: positionMethod,
-        format: 'json',
-        return_url: $('#return_url').val(),
-        force: 'True',
-    }, function(data) {
-        oldLocationName = locationName;
-        locationName = data.name;
-        $('.location').html(data.name);
-        if (oldLocationName == null && data.redirect)
-            window.location.pathname = data.redirect;
-    }, 'json');
+  if (positionRequestCount == 1)
+    statusTarget.html('Location found; please wait while we put a name to it.');
+  jQuery.post(base+'geolocation/', {
+    longitude: position.coords.longitude,
+    latitude: position.coords.latitude,
+    accuracy: position.coords.accuracy,
+    method: positionMethod,
+    format: 'json',
+    return_url: $('#return_url').val(),
+    force: 'True',
+  }, function(data) {
+    oldLocationName = locationName;
+    locationName = data.name;
+    $('.location').html(data.name);
+    if (oldLocationName == null && data.redirect)
+      window.location.pathname = data.redirect;
+  }, 'json');
 }
 
 function sendPositionError(error, statusTarget) {
-    if (error.code == error.PERMISSION_DENIED) {
-        statusTarget.html(
-            'You did not give permission for the site to know your location. '
-          + 'You won\'t be asked again unless you initiate an '
-          + 'update using the icon to the right.');
-        jQuery.post(base+'geolocation/', {
-            method: 'denied',
-        });
-    } else if (error.code == error.POSITION_UNAVAILABLE) {
-        statusTarget.html(
-            'We were unable to determine your location at this time. Please '
-          + 'try again later, or enter your location manually.'
-        );
-    } else {
-        statusTarget.html(
-            'An error occured while determining your location.'
-        );
-        jQuery.post(base+'geolocation/', {
-            method: 'error',
-        });
-    }
-    window.setTimeout(function() {
-        p.find('.location').text(locationName);
-    }, 5000);
+  if (error.code == error.PERMISSION_DENIED) {
+    statusTarget.html(
+        'You did not give permission for the site to know your location. '
+      + 'You won\'t be asked again unless you initiate an '
+      + 'update using the icon to the right.');
+    jQuery.post(base+'geolocation/', {
+      method: 'denied',
+    });
+  } else if (error.code == error.POSITION_UNAVAILABLE) {
+    statusTarget.html(
+        'We were unable to determine your location at this time. Please '
+      + 'try again later, or enter your location manually.'
+    );
+  } else {
+    statusTarget.html(
+        'An error occured while determining your location.'
+    );
+    jQuery.post(base+'geolocation/', {
+      method: 'error',
+    });
+  }
+  window.setTimeout(function() {
+    p.find('.location').text(locationName);
+  }, 5000);
 }
 
 function getGearsPositionInterface(name) {
-    if (positionGeo == null)
-        positionGeo = google.gears.factory.create('beta.geolocation');
-    geo = positionGeo;
+  if (positionGeo == null)
+    positionGeo = google.gears.factory.create('beta.geolocation');
+  geo = positionGeo;
 
-    function wrapWithPermission(fname) {
-        return function(successCallback, errorCallback, options) {
-            if (geo.getPermission(name)) {
-                if (fname == 'gcp')
-                    return geo.getCurrentPosition(successCallback, errorCallback, options);
-                else
-                    return geo.watchPosition(successCallback, errorCallback, options);
-            } else
-                errorCallback({
-                    PERMISSION_DENIED: geo.PositionEror.PERMISSION_DENIED,
-                    code: geo.PositionError.PERMISSION_DENIED,
-                });
-        };
-    }
+  function wrapWithPermission(fname) {
+    return function(successCallback, errorCallback, options) {
+      if (geo.getPermission(name)) {
+        if (fname == 'gcp')
+          return geo.getCurrentPosition(successCallback, errorCallback, options);
+        else
+          return geo.watchPosition(successCallback, errorCallback, options);
+      } else
+        errorCallback({
+          PERMISSION_DENIED: geo.PositionEror.PERMISSION_DENIED,
+          code: geo.PositionError.PERMISSION_DENIED,
+        });
+    };
+  }
 
-    return {
-        getCurrentPosition: wrapWithPermission('getCurrentPosition'),
-        watchPosition: wrapWithPermission('watchPosition'),
-        clearWatch: function(id) {
-            geo.clearWatch(id);
-        },
-    }
+  return {
+    getCurrentPosition: wrapWithPermission('getCurrentPosition'),
+    watchPosition: wrapWithPermission('watchPosition'),
+    clearWatch: function(id) {
+      geo.clearWatch(id);
+    },
+  }
 }
 
 function positionWatcher(position, statusTarget) {
-    positionRequestCount += 1;
-    if (positionRequestCount > 10 || position.coords.accuracy <= 150 || position.coords.accuracy == 18000) {
-        positionInterface.clearWatch(positionWatchId);
-        positionWatchId = null;
-    }
+  positionRequestCount += 1;
+  if (positionRequestCount > 10 || position.coords.accuracy <= 150 || position.coords.accuracy == 18000) {
+    positionInterface.clearWatch(positionWatchId);
+    positionWatchId = null;
+  }
 
-    sendPosition(position, positionWatchId != null, statusTarget);
+  sendPosition(position, positionWatchId != null, statusTarget);
 }
 
 function positionMethodAvailable() {
-    return ((window.navigator && navigator.geolocation) || (window.google && google.gears))
+  return ((window.navigator && navigator.geolocation) || (window.google && google.gears))
 }
 
 $.fn.selectAll = function() {
@@ -223,40 +223,40 @@ function wrapWithArg(f, new_arg) {
 }
 
 function geolocate() {
-    p = $(this).closest('div');
-    l = p.find('.location');
-    if (positionWatchId != null)
-        return;
+  p = $(this).closest('div');
+  l = p.find('.location');
+  if (positionWatchId != null)
+    return;
 
-    location_options = {
-            enableHighAccuracy: true,
-            maximumAge: 30000,
-    }
-    if (window.google && google.gears) {
-        positionInterface = getGearsPositionInterface('Mobile Oxford');
-        positionMethod = 'gears';
-    } else if (window.navigator && navigator.geolocation) {
-        positionInterface = navigator.geolocation;
-        positionMethod = 'html5';
-    }
+  location_options = {
+    enableHighAccuracy: true,
+    maximumAge: 30000,
+  }
+  if (window.google && google.gears) {
+    positionInterface = getGearsPositionInterface('Mobile Oxford');
+    positionMethod = 'gears';
+  } else if (window.navigator && navigator.geolocation) {
+    positionInterface = navigator.geolocation;
+    positionMethod = 'html5';
+  }
 
-    l.css('display', 'block');
-    p.find('.location-form').css('display', 'none');
-    if (positionInterface) {
-        l.html('Please wait while we attempt to determine your location&hellip;');
-        positionInterface.statusTarget = l;
-        positionWatchId = positionInterface.watchPosition(wrapWithArg(positionWatcher, l), wrapWithArg(sendPositionError, l), location_options);
-    } else
-        l.html('We have no means of determining your location automatically.');
+  l.css('display', 'block');
+  p.find('.location-form').css('display', 'none');
+  if (positionInterface) {
+    l.html('Please wait while we attempt to determine your location&hellip;');
+    positionInterface.statusTarget = l;
+    positionWatchId = positionInterface.watchPosition(wrapWithArg(positionWatcher, l), wrapWithArg(sendPositionError, l), location_options);
+  } else
+    l.html('We have no means of determining your location automatically.');
 }
 
 function cancelGeolocate() {
-    if (positionWatchId == null)
-        return;
-    positionInterface.clearWatch(positionWatchId);
-    positionWatchId = null;
-    positionInterface = null;
-    $('.location').html((locationName != null) ? locationName : "No location set.");
+  if (positionWatchId == null)
+    return;
+  positionInterface.clearWatch(positionWatchId);
+  positionWatchId = null;
+  positionInterface = null;
+  $('.location').html((locationName != null) ? locationName : "No location set.");
 }
     
 function manualLocation(e) {
@@ -308,3 +308,4 @@ $(function() {
   if (locationRequired && positionMethodAvailable())
     geolocate();
 });
+
