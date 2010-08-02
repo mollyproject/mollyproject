@@ -88,6 +88,7 @@
 
 
 
+
 /************************************
  *        The following is          *
  * (C) University of Oxford 2009    *
@@ -105,7 +106,26 @@ var positionMethod = null;
 var positionGeo = null;
 var manualUpdateLocation = null;
 
+function locationFound(n, longitude, latitude, accuracy, method, uploaded) {
+  ev = document.createEvent('Events');
+  ev.initEvent('locationFound', true, true);
+  ev.name = n;
+  ev.longitude = longitude;
+  ev.latitude = latitude;
+  ev.accuracy = accuracy;
+  ev.method = method;
+  ev.uploaded = uploaded;
+  window.dispatchEvent(ev);
+}
+
 function sendPosition(position, final, statusTarget) {
+  locationFound(
+    null,
+    position.coords.longitude,
+    position.coords.latitude,
+    position.coords.accuracy,
+    positionMethod, false
+  );
   if (positionRequestCount == 1)
     statusTarget.html('Location found; please wait while we put a name to it.');
   jQuery.post(base+'geolocation/', {
@@ -119,9 +139,15 @@ function sendPosition(position, final, statusTarget) {
   }, function(data) {
     oldLocationName = locationName;
     locationName = data.name;
-    $('.location').html(data.name);
     if (oldLocationName == null && data.redirect)
       window.location.pathname = data.redirect;
+    locationFound(
+      data.name,
+      position.coords.longitude,
+      position.coords.latitude,
+      position.coords.accuracy,
+      positionMethod, true
+    );
   }, 'json');
 }
 
@@ -277,7 +303,13 @@ function manualLocation(e) {
     }, function(data) {
       if (data.name) {
         locationName = data.name;
-        $('.location').text(data.name);
+        locationFound(
+          data.name,
+          data.longitude,
+          data.latitude,
+          data.accuracy,
+          'geocoded', true
+        );
       } else {
         p.find('.location').html("<i>"+data.error+"</i>"); 
         window.setTimeout(function() {
@@ -307,5 +339,10 @@ $(function() {
   });
   if (locationRequired && positionMethodAvailable())
     geolocate();
+    
+  window.addEventListener("locationFound", function(e) {
+    if (e.name != null)
+      $('.location').text(e.name);
+  }, false);
 });
 

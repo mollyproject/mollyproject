@@ -63,6 +63,9 @@ class IndexView(BaseView):
         if context['format'] == 'embed':
             return cls.render(request, context, 'geolocation/update_location_embed')
         else:
+            if request.session.get('geolocation:location') and context.get('return_url'):
+                print repr(context.get('return_url'))
+                return HttpResponseSeeOther(context.get('return_url'))
             return cls.render(request, context, 'geolocation/update_location')
 
     def handle_POST(cls, request, context):
