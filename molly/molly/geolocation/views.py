@@ -112,6 +112,7 @@ class IndexView(BaseView):
                 'accuracy': form.cleaned_data['accuracy'],
                 'longitude': form.cleaned_data['location'][0],
                 'latitude': form.cleaned_data['location'][1],
+                'history': request.session.get('geolocation:history', ())[1:],
             }, None)
         elif context['format'] == 'embed':
             response = HttpResponse('')
@@ -159,6 +160,8 @@ class IndexView(BaseView):
             'method': method,
             'accuracy': accuracy,
         })
+
+        request.session['geolocation:history'] = [e for i, e in enumerate(request.session['geolocation:history']) if e['name'] != name or i == 0]
 
         # Chop off the last element if the history is now larger than the
         # maximum allowed length.        
