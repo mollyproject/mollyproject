@@ -106,7 +106,7 @@ var positionMethod = null;
 var positionGeo = null;
 var manualUpdateLocation = null;
 
-function locationFound(n, longitude, latitude, accuracy, method, uploaded) {
+function locationFound(n, longitude, latitude, accuracy, method, uploaded, hist) {
   ev = document.createEvent('Events');
   ev.initEvent('locationFound', true, true);
   ev.name = n;
@@ -115,6 +115,7 @@ function locationFound(n, longitude, latitude, accuracy, method, uploaded) {
   ev.accuracy = accuracy;
   ev.method = method;
   ev.uploaded = uploaded;
+  ev.history = hist;
   window.dispatchEvent(ev);
 }
 
@@ -137,16 +138,12 @@ function sendPosition(position, final, statusTarget) {
     return_url: $('#return_url').val(),
     force: 'True',
   }, function(data) {
-    oldLocationName = locationName;
-    locationName = data.name;
-    if (oldLocationName == null && data.redirect)
-      window.location.pathname = data.redirect;
     locationFound(
       data.name,
       position.coords.longitude,
       position.coords.latitude,
       position.coords.accuracy,
-      positionMethod, true
+      positionMethod, true, null, data.history
     );
   }, 'json');
 }
@@ -284,40 +281,18 @@ function cancelGeolocate() {
   positionInterface = null;
   $('.location').html((locationName != null) ? locationName : "No location set.");
 }
-    
+
 function manualLocation(e) {
   cancelGeolocate();
-  p = $(this).closest('div');
+  p = $(this).closest('div.location-box');
   if (p.find('.location').css('display') == 'block')
     return false;
   p.find('.location-form').css('display', 'none');
   p.find('.location').css('display', 'block')
 
   newLocationName = p.find('.location-name').val() || null;
-  if (locationName != newLocationName) {
-    p.find('.location').html('<i>Updating&hellip;</i>');
-    $.post(base+'geolocation/', {
-      format: 'json',
-      name: newLocationName,
-      method: 'geocoded',
-    }, function(data) {
-      if (data.name) {
-        locationName = data.name;
-        locationFound(
-          data.name,
-          data.longitude,
-          data.latitude,
-          data.accuracy,
-          'geocoded', true
-        );
-      } else {
-        p.find('.location').html("<i>"+data.error+"</i>"); 
-        window.setTimeout(function() {
-          p.find('.location').text(locationName);
-        }, 5000);
-      }
-    });
-  }
+  if (locationName != newLocationName)
+    submitLocationUpdateForm(p, 'geocoded', newLocationName);
   return false;
 }
 
@@ -339,10 +314,79 @@ $(function() {
   });
   if (locationRequired && positionMethodAvailable())
     geolocate();
-    
+
+  replaceHistorySubmitButtons();
+
   window.addEventListener("locationFound", function(e) {
-    if (e.name != null)
+    if (e.name != null) {
+      locationName = e.name;
       $('.location').text(e.name);
+    }
+    if (e.history != null) {
+      div = $('#location-history div');
+      ul = $('<ul></ul>');
+      for (h in e.history) {
+          h = e.history[h];
+          li = $('<li>'
+               + '  <form class="location-history-form location-update-form" method="post" action="'+base+'geolocation/">'
+               + '    <input type="hidden" name="method" value="manual"/>'
+               + '    <input type="hidden" name="accuracy" value="'+h.accuracy+'"/>'
+               + '    <input type="hidden" name="longitude" value="'+h.location[0]+'"/>'
+               + '    <input type="hidden" name="latitude" value="'+h.location[1]+'"/>'
+               + '    <input type="hidden" name="return_url" value="'+window.location.pathname+'"/>'
+               + '    <input type="hidden" name="name" value="'+h.name+'"/>'
+               + '    <input type="submit" value="'+h.name+'"/>'
+               + '  </form>'
+               + '</li>');
+          ul.append(li);
+      }
+      div.empty().append(ul);
+      replaceHistorySubmitButtons();
+    }
   }, false);
 });
 
+function replaceHistorySubmitButtons() {
+  $('.location-history-form').each(function() {
+    submit = $(this).find('input[type=submit]');
+    submit.replaceWith($('<a href="#">' + submit.val() + '</a>').click(function(e) { $(this).closest('form').submit(); return false; }));
+  });
+
+  $('.location-update-form').submit(function (e) {
+    submitLocationUpdateForm($(this), 'manual');
+    return false;
+  });
+}
+
+function submitLocationUpdateForm(form, method, name) {
+  loc = form.closest('div.location-box').find('.location');
+  data = {
+    format: 'json',
+    method: method,
+  };
+  if (name != null)
+    data.name = name;
+  else {
+    data.longitude = form.find('input[name=longitude]').val();
+    data.latitude = form.find('input[name=latitude]').val();
+    data.accuracy = form.find('input[name=accuracy]').val();
+    data.name = form.find('input[name=name]').val();
+  }
+  loc.html('<i>Updating&hellip;</i>');
+  $.post(base+'geolocation/', data, function(data) {
+    if (data.name) {
+      locationFound(
+        data.name,
+        data.longitude,
+        data.latitude,
+        data.accuracy,
+        'geocoded', true, data.history
+      );
+    } else {
+      loc.html("<i>"+data.error+"</i>");
+      window.setTimeout(function() {
+        loc.text(locationName);
+      }, 5000);
+    }
+  });
+}
