@@ -138,7 +138,7 @@ class IndexView(BaseView):
             distance_moved = last_location.transform(settings.SRID, clone=True).distance(Point(location, srid=4326).transform(settings.SRID, clone=True))
         except KeyError:
             distance_moved = float('inf')
-            
+
         if method in ('other', 'manual', 'geocoded') or \
            not 'geolocation:location' in request.session or \
            (last_updated > datetime.utcnow() - timedelta(seconds=3600) and distance_moved > 250):
@@ -149,7 +149,7 @@ class IndexView(BaseView):
         request.session['geolocation:name'] = name
         request.session['geolocation:method'] = method
         request.session['geolocation:accuracy'] = accuracy
-    
+
     def add_to_history(cls, request, name, location, accuracy, method):
         if not 'geolocation:history' in request.session:
             request.session['geolocation:history'] = []
@@ -167,9 +167,9 @@ class IndexView(BaseView):
         # maximum allowed length.        
         history_size = getattr(cls.conf, 'history_size', 5)
         request.session['geolocation:history'][history_size:] = []
-        
+
         request.session.modified = True
-        
+
 class ClearHistoryView(BaseView):
     def handle_POST(cls, request, context):
         for key in request.session:
