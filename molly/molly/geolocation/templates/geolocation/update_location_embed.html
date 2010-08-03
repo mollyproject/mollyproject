@@ -13,4 +13,37 @@
 <div style="position:absolute; left:10px; top:4px;">
   <img style="font-size:30px; line-height:30px" src="{{ MEDIA_URL }}png/location.png" alt="⬠"/>
 </div>
+
+<div id="location-history">
+  <h2>Location history</h2>
+  <div>
+{% if geolocation.history %}
+  <ul>
+{% for location in geolocation.history|slice:"1:" %}
+    <li>
+      <form class="location-history-form location-update-form" method="post" action="{% url geolocation:index %}">
+        <input type="hidden" name="method" value="manual"/>
+        <input type="hidden" name="accuracy" value="{{ location.accuracy }}"/>
+        <input type="hidden" name="longitude" value="{{ location.location.0 }}"/>
+        <input type="hidden" name="latitude" value="{{ location.location.1 }}"/>
+        <input type="hidden" name="return_url" value="{{ full_path }}"/>
+        <input type="hidden" name="name" value="{{ location.name }}"/>
+        <input type="submit" value="{{ location.name }}"/>
+      </form>
+    </li>
+{% endfor %}
+  </ul>
+{% else %}
+  <p>No previous locations</p>
+{% endif %}
+  </div>
+  <p>
+    <form class="location-history-form location-clear-form" method="post" action="{% url geolocation:clear %}">
+      <input type="hidden" name="return_url" value="{{ full_path }}"/>
+      <input type="submit" value="Clear location history"/>
+    </form>
+  </p>
+
+</div>
+
 </div>
