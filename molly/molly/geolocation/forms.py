@@ -44,6 +44,7 @@ class LocationUpdateForm(forms.Form):
                 if len(results) > 0:
                     cleaned_data.update(results[0])
                     cleaned_data['longitude'], cleaned_data['latitude'] = cleaned_data['location']
+                    cleaned_data['alternatives'] = results[1:]
                 else:
                     raise forms.ValidationError("Unable to find a location that matches '%s'." % cleaned_data['name'])
 

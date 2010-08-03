@@ -324,27 +324,31 @@ $(function() {
     }
     if (e.history != null) {
       div = $('#location-history div');
-      ul = $('<ul></ul>');
-      for (h in e.history) {
-          h = e.history[h];
-          li = $('<li>'
-               + '  <form class="location-history-form location-update-form" method="post" action="'+base+'geolocation/">'
-               + '    <input type="hidden" name="method" value="manual"/>'
-               + '    <input type="hidden" name="accuracy" value="'+h.accuracy+'"/>'
-               + '    <input type="hidden" name="longitude" value="'+h.location[0]+'"/>'
-               + '    <input type="hidden" name="latitude" value="'+h.location[1]+'"/>'
-               + '    <input type="hidden" name="return_url" value="'+window.location.pathname+'"/>'
-               + '    <input type="hidden" name="name" value="'+h.name+'"/>'
-               + '    <input type="submit" value="'+h.name+'"/>'
-               + '  </form>'
-               + '</li>');
-          ul.append(li);
-      }
-      div.empty().append(ul);
+      div.empty().append(getLocationList(e.history));
       replaceHistorySubmitButtons();
     }
   }, false);
 });
+
+function getLocationList(ls) {
+  ul = $('<ul></ul>');
+  for (l in ls) {
+    l = ls[l];
+    li = $('<li>'
+         + '  <form class="location-history-form location-update-form" method="post" action="'+base+'geolocation/">'
+         + '    <input type="hidden" name="method" value="manual"/>'
+         + '    <input type="hidden" name="accuracy" value="'+l.accuracy+'"/>'
+         + '    <input type="hidden" name="longitude" value="'+l.location[0]+'"/>'
+         + '    <input type="hidden" name="latitude" value="'+l.location[1]+'"/>'
+         + '    <input type="hidden" name="return_url" value="'+window.location.pathname+'"/>'
+         + '    <input type="hidden" name="name" value="'+l.name+'"/>'
+         + '    <input type="submit" value="'+l.name+'"/>'
+         + '  </form>'
+         + '</li>');
+    ul.append(li);
+  }
+  return ul;
+}
 
 function replaceHistorySubmitButtons() {
   $('.location-history-form').each(function() {
@@ -382,6 +386,8 @@ function submitLocationUpdateForm(form, method, name) {
         data.accuracy,
         'geocoded', true, data.history
       );
+      if (name != null && data.alternatives != null)
+        setAlternatives(form.closest('.location-box'), data.alternatives);
     } else {
       loc.html("<i>"+data.error+"</i>");
       window.setTimeout(function() {
@@ -389,4 +395,12 @@ function submitLocationUpdateForm(form, method, name) {
       }, 5000);
     }
   });
+}
+
+function setAlternatives(div, alternatives) {
+  div = div.find('.location-alternatives').empty();
+  if (alternatives.length == 0)
+    return;
+  div.append('<h2>Alternatives</h2>').append(getLocationList(alternatives));
+  replaceHistorySubmitButtons();
 }

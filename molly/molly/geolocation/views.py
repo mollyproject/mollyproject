@@ -113,6 +113,7 @@ class IndexView(BaseView):
                 'longitude': form.cleaned_data['location'][0],
                 'latitude': form.cleaned_data['location'][1],
                 'history': request.session.get('geolocation:history', ())[1:],
+                'alternatives': form.cleaned_data.get('alternatives'),
             }, None)
         elif context['format'] == 'embed':
             response = HttpResponse('')
@@ -181,6 +182,8 @@ class ClearHistoryView(BaseView):
         for key in keys_to_delete:
             del request.session[key]
         return HttpResponseSeeOther(request.POST.get('return_url', reverse('home:index')))
+
+
 
 class LocationRequiredView(BaseView):
     def is_location_required(cls, request, *args, **kwargs):
