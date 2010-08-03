@@ -171,11 +171,16 @@ class IndexView(BaseView):
         request.session.modified = True
 
 class ClearHistoryView(BaseView):
+    breadcrumb = NullBreadcrumb
+
     def handle_POST(cls, request, context):
-        for key in request.session:
+        keys_to_delete = set()
+        for key in request.session._session:
             if key.startswith('geolocation:'):
-                del request.session[key]
-        return HttpResponseSeeOther(request.GET.get('redirect_to', reverse('home:index')))
+                keys_to_delete.add(key)
+        for key in keys_to_delete:
+            del request.session[key]
+        return HttpResponseSeeOther(request.POST.get('return_url', reverse('home:index')))
 
 class LocationRequiredView(BaseView):
     def is_location_required(cls, request, *args, **kwargs):
