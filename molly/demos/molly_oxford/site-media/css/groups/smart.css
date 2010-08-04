@@ -240,6 +240,15 @@ ul.content-list, ul.link-list, ol.search-results {
     border-bottom-right-radius: 8px;
 }
 
+ul.no-round-bottom {
+    -webkit-border-bottom-left-radius: 0px;
+    -webkit-border-bottom-right-radius: 0px;
+    -moz-border-radius-bottomleft: 0px;
+    -moz-border-radius-bottomright: 0px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+
 ul.content-list {
     background-color:#dfdfdf;
     color:#222;

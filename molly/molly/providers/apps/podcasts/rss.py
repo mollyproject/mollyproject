@@ -19,8 +19,9 @@ class RSSPodcastsProvider(BasePodcastsProvider):
 #       ('itunesu_code', '{itunesu:}code'),
     )
 
-    def __init__(self, podcasts):
+    def __init__(self, podcasts, medium=None):
         self.podcasts = podcasts
+        self.medium = medium
     
     @batch('%d * * * *' % random.randint(0, 59))
     def import_data(self, metadata, output):
@@ -29,7 +30,9 @@ class RSSPodcastsProvider(BasePodcastsProvider):
                 provider=self.class_path,
                 rss_url=url,
                 defaults={'slug': slug})
-            
+            if self.medium: 
+                podcast.medium = self.medium
+                
             podcast.slug = slug
             self.update_podcast(podcast)
             
