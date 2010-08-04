@@ -32,6 +32,15 @@
         <input type="hidden" name="name" value="{{ location.name }}"/>
         <input type="submit" value="{{ location.name }}"/>
       </form>
+      <form class="location-history-form" method="post" action="{% url geolocation:favourites %}">
+        <input type="hidden" name="action" value="add"/>
+        <input type="hidden" name="accuracy" value="{{ location.accuracy }}"/>
+        <input type="hidden" name="longitude" value="{{ location.location.0 }}"/>
+        <input type="hidden" name="latitude" value="{{ location.location.1 }}"/>
+        <input type="hidden" name="return_url" value="{{ full_path }}"/>
+        <input type="hidden" name="name" value="{{ location.name }}"/>
+        <input type="submit" value="Add as favourite"/>
+      </form>
     </li>
 {% endfor %}
   </ul>
@@ -39,13 +48,46 @@
   <p>No previous locations</p>
 {% endif %}
   </div>
-  <p>
-    <form class="location-history-form location-clear-form" method="post" action="{% url geolocation:clear %}">
-      <input type="hidden" name="return_url" value="{{ full_path }}"/>
-      <input type="submit" value="Clear location history"/>
-    </form>
-  </p>
 
 </div>
+
+<div id="location-favourites">
+  <h2>Favourite locations</h2>
+  <div>
+{% if geolocation.favourites %}
+  <ul>
+{% for id, location in geolocation.favourites.items %}
+    <li>
+      <form class="location-history-form location-update-form" method="post" action="{% url geolocation:index %}">
+        <input type="hidden" name="method" value="manual"/>
+        <input type="hidden" name="accuracy" value="{{ location.accuracy }}"/>
+        <input type="hidden" name="longitude" value="{{ location.longitude }}"/>
+        <input type="hidden" name="latitude" value="{{ location.latitude }}"/>
+        <input type="hidden" name="return_url" value="{{ full_path }}"/>
+        <input type="hidden" name="name" value="{{ location.name }}"/>
+        <input type="submit" value="{{ location.name }}"/>
+      </form>
+      <form class="location-history-form" method="post" action="{% url geolocation:favourites %}">
+        <input type="hidden" name="action" value="remove"/>
+        <input type="hidden" name="return_url" value="{{ full_path }}"/>
+        <input type="hidden" name="id" value="{{ id }}"/>
+        <input type="submit" value="Remove"/>
+      </form>
+    </li>
+{% endfor %}
+  </ul>
+{% else %}
+  <p>No favourite locations</p>
+{% endif %}
+  </div>
+
+</div>
+
+  <form class="location-history-form location-clear-form" method="post" action="{% url geolocation:clear %}">
+    <p>
+      <input type="hidden" name="return_url" value="{{ full_path }}"/>
+      <input type="submit" value="Clear all location information"/>
+    </p>
+  </form>
 
 </div>

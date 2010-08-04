@@ -13,6 +13,7 @@ METHOD_CHOICES = (
     ('other', 'Other method'),
     ('denied', 'Update denied by user'),
     ('error', 'Error updating location'),
+    ('favourite', 'Manually selected from favourite location list'),
 )
 
 class LocationUpdateForm(forms.Form):
@@ -37,7 +38,7 @@ class LocationUpdateForm(forms.Form):
     def clean(self):
         cleaned_data = self.cleaned_data
 
-        if cleaned_data['method'] in ('html5', 'gears', 'manual', 'geocoded', 'other'):
+        if cleaned_data['method'] in ('html5', 'gears', 'manual', 'geocoded', 'other', 'favourite'):
             print "CD1", cleaned_data
             if cleaned_data['method'] == 'geocoded':
                 results = geocode(cleaned_data['name'])

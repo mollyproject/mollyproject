@@ -344,6 +344,15 @@ function getLocationList(ls) {
          + '    <input type="hidden" name="name" value="'+l.name+'"/>'
          + '    <input type="submit" value="'+l.name+'"/>'
          + '  </form>'
+         + '  <form class="location-history-form" method="post" action="'+base+'geolocation/favourites/">'
+         + '    <input type="hidden" name="action" value="add"/>'
+         + '    <input type="hidden" name="accuracy" value="'+l.accuracy+'"/>'
+         + '    <input type="hidden" name="longitude" value="'+l.location[0]+'"/>'
+         + '    <input type="hidden" name="latitude" value="'+l.location[1]+'"/>'
+         + '    <input type="hidden" name="return_url" value="'+window.location.pathname+'"/>'
+         + '    <input type="hidden" name="name" value="'+l.name+'"/>'
+         + '    <input type="submit" value="Add as favourite"/>'
+         + '  </form>'
          + '</li>');
     ul.append(li);
   }

@@ -44,6 +44,7 @@ def geolocation(request):
             'name': request.session.get('geolocation:name'),
             'accuracy': request.session.get('geolocation:accuracy'),
             'history': request.session.get('geolocation:history'),
+            'favourites': request.session.get('geolocation:favourites'),
         },
         'location_error': request.GET.get('location_error'),
     }
