@@ -1,66 +1,49 @@
-{% load maps %}
-
-<div class="note"><div class="bubble pad-10">
-{% if geolocation.name %}
-
-<div class="location-container">
-  <span class="location-status">
-    Current location: <span class="location">{{ geolocation.name }}</span>.
-  </span>
-  <span class="location-action"> </span>
-</div>
-
-{% else %}
-<div class="location-container">
-  <span class="location-status">We do not yet know where you are.</span>
-  <span class="location-action"> </span>
-</div>
-{% endif %}
-
-<div class="update-location">
-
-{% if not form.cleaned_data.name %}
-<div id="geolocate-js"> </div>
-{% endif %}
-
-<div class="manual-update-location">
-{% if form.cleaned_data.name %}
-
-{% include "geolocation/update_location_confirm.html" %}
-
-{% else %}
-
-<form method="post" action="{% url geolocation:index %}" class="manual-update-form">
-        <label for="location-name">Set a new location</label>:
-        <input id="return_url" name="return_url" type="hidden" value="{{ return_url|default:"" }}"/>
-        <input id="location-name" name="name" value="{{ location }}"/>
-        <input type="submit" value="Update"/><br/>
-        <small>Examples: 'oucs' (a unit code), 'Trinity College' (a college or department), 'Parks Road' (an address), 'OX1 3PG' (a postcode).</small>
+<div class="location-box" id="location-box" style="position:relative; background-color:white; -webkit-border-radius:6px; -moz-border-radius:6px; margin:15px 10px 2px; padding:10px 50px">
+{% if location_error %}<p class="location-error">{{ location_error }}</p>{% endif %}
+<span class="location">{{ geolocation.name|default:"No location set" }}</span>
+<form method="post" action="{% url geolocation:index %}" class="location-form">
+        <label style="display:none;" for="location-name">Set a new location:</label>
+        <input class="return_url" name="return_url" type="hidden" value="{{ return_url|default:"" }}"/>
+        <input class="location-name" name="name" value="{{ location }}"/>
+        <input name="method" type="hidden" value="geocoded"/>
+        <input class="location-submit" type="submit" value="Update"/>
 
 </form>
 
-{% endif %}
+<div style="position:absolute; left:10px; top:4px;">
+  <img style="font-size:30px; line-height:30px" src="{{ MEDIA_URL }}png/location.png" alt="⬠"/>
 </div>
 
-</div></div></div>
+<div id="location-history">
+  <h2>Location history</h2>
+  <div>
+{% if geolocation.history %}
+  <ul>
+{% for location in geolocation.history|slice:"1:" %}
+    <li>
+      <form class="location-history-form location-update-form" method="post" action="{% url geolocation:index %}">
+        <input type="hidden" name="method" value="manual"/>
+        <input type="hidden" name="accuracy" value="{{ location.accuracy }}"/>
+        <input type="hidden" name="longitude" value="{{ location.location.0 }}"/>
+        <input type="hidden" name="latitude" value="{{ location.location.1 }}"/>
+        <input type="hidden" name="return_url" value="{{ full_path }}"/>
+        <input type="hidden" name="name" value="{{ location.name }}"/>
+        <input type="submit" value="{{ location.name }}"/>
+      </form>
+    </li>
+{% endfor %}
+  </ul>
+{% else %}
+  <p>No previous locations</p>
+{% endif %}
+  </div>
+  <p>
+    <form class="location-history-form location-clear-form" method="post" action="{% url geolocation:clear %}">
+      <input type="hidden" name="return_url" value="{{ full_path }}"/>
+      <input type="submit" value="Clear location history"/>
+    </form>
+  </p>
 
-{% comment %}
-<h2>Automatic geolocation</h2>
-<div class="note"><div class="bubble pad-5">
-{% if preferences.location.placemark %}
-        <p id="location_status">We think you are somewhere near <strong class="nobr">{{ preferences.location.placemark.0 }}</strong> ({{ preferences.location.location.0 }} {{ preferences.location.location.1 }}).</p>
-{% else %}
-{% if preferences.location.location %}
-        <p id="location_status">We think you are somewhere near <strong class="nobr">{{ preferences.location.location.0 }} {{ preferences.location.location.1 }}</strong>.</p>
-{% else %}
-        <p id="location_status">Sorry, but we are unable to determine your location automatically.</p>
-{% endif %}
-{% endif %}
-<p id="location_update"> </p>
-        <script type="text/javascript">
-            if (positionMethodAvailable())
-                $('#location_update').append(' <a href="#" onclick="javascript:requestPosition();">Determine automatically<\/a>');
-        </script>
-        </div></div>
 </div>
-{% endcomment %}
+
+</div>

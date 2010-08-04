@@ -8,12 +8,13 @@ from django.conf import settings
 
 from molly.utils.views import BaseView, renderer
 from molly.utils.breadcrumbs import *
-from molly.utils.http import HttpResponseSeeOther
+from molly.utils.http import HttpResponseSeeOther, update_url
 
 from molly.osm.utils import fit_to_map
 
 from .forms import LocationUpdateForm
 from .utils import geocode, reverse_geocode
+
 
 class IndexView(BaseView):
     @BreadcrumbFactory
@@ -62,54 +63,35 @@ class IndexView(BaseView):
         if context['format'] == 'embed':
             return cls.render(request, context, 'geolocation/update_location_embed')
         else:
+            if request.session.get('geolocation:location') and context.get('return_url'):
+                print repr(context.get('return_url'))
+                return HttpResponseSeeOther(context.get('return_url'))
             return cls.render(request, context, 'geolocation/update_location')
 
     def handle_POST(cls, request, context):
         form = context['form']
 
-        if form.is_valid() and form.cleaned_data['force']:
-            return cls.handle_set_location(request, context)
-
         if form.is_valid():
-            results = geocode(form.cleaned_data['name'], cls.conf.local_name)
-            print len(results)
-
-            if len(results) == 1:
-                form.cleaned_data.update(results[0])
-                return cls.handle_set_location(request, context)
-
-            if results:
-                points = [(o['location'][0], o['location'][1], 'red') for o in results]
-                map_hash, (new_points, zoom) = fit_to_map(
-                    None,
-                    points = points,
-                    min_points = len(points),
-                    zoom = None if len(points)>1 else 15,
-                    width = request.map_width,
-                    height = request.map_height,
-                )
-            else:
-                map_hash, zoom = None, None
-            context.update({
-                'results': results,
-                'map_url': reverse('osm:generated_map', args=[map_hash]) if map_hash else None,
-                'zoom': zoom,
-                'zoom_controls': False,
-            })
-
-        if context['format'] == 'embed':
-            if form.is_valid():
-                return cls.render(request, context, 'geolocation/update_location_confirm')
-            else:
-                return cls.render(request, context, 'geolocation/update_location_embed')
+            context['return_url'] = update_url(context['return_url'], {'location_error': None}, None)
+            return cls.handle_set_location(request, context)
         else:
-            return cls.render(request, context, 'geolocation/update_location')
+            if context['format'] == 'json':
+                context = {
+                    'error': form.errors.popitem()[1].pop(),
+                }
+                return cls.render(request, context, None)
+            else:
+                return_url = update_url(
+                    context['return_url'],
+                    {'location_error': form.errors.popitem()[1].pop()},
+                    'location-update',
+                )
+                return HttpResponseSeeOther(return_url)
 
     def handle_set_location(cls, request, context):
         form = context['form']
 
         if form.is_valid():
-            print form.cleaned_data
             cls.set_location(request,
                              form.cleaned_data['name'],
                              form.cleaned_data['location'],
@@ -127,6 +109,10 @@ class IndexView(BaseView):
             return cls.render(request, {
                 'name': form.cleaned_data['name'],
                 'redirect': redirect,
+                'accuracy': form.cleaned_data['accuracy'],
+                'longitude': form.cleaned_data['location'][0],
+                'latitude': form.cleaned_data['location'][1],
+                'history': request.session.get('geolocation:history', ())[1:],
             }, None)
         elif context['format'] == 'embed':
             response = HttpResponse('')
@@ -152,7 +138,7 @@ class IndexView(BaseView):
             distance_moved = last_location.transform(settings.SRID, clone=True).distance(Point(location, srid=4326).transform(settings.SRID, clone=True))
         except KeyError:
             distance_moved = float('inf')
-            
+
         if method in ('other', 'manual', 'geocoded') or \
            not 'geolocation:location' in request.session or \
            (last_updated > datetime.utcnow() - timedelta(seconds=3600) and distance_moved > 250):
@@ -163,7 +149,7 @@ class IndexView(BaseView):
         request.session['geolocation:name'] = name
         request.session['geolocation:method'] = method
         request.session['geolocation:accuracy'] = accuracy
-    
+
     def add_to_history(cls, request, name, location, accuracy, method):
         if not 'geolocation:history' in request.session:
             request.session['geolocation:history'] = []
@@ -175,19 +161,26 @@ class IndexView(BaseView):
             'accuracy': accuracy,
         })
 
+        request.session['geolocation:history'] = [e for i, e in enumerate(request.session['geolocation:history']) if e['name'] != name or i == 0]
+
         # Chop off the last element if the history is now larger than the
         # maximum allowed length.        
         history_size = getattr(cls.conf, 'history_size', 5)
         request.session['geolocation:history'][history_size:] = []
-        
+
         request.session.modified = True
-        
+
 class ClearHistoryView(BaseView):
+    breadcrumb = NullBreadcrumb
+
     def handle_POST(cls, request, context):
-        for key in request.session:
+        keys_to_delete = set()
+        for key in request.session._session:
             if key.startswith('geolocation:'):
-                del request.session[key]
-        return HttpResponseSeeOther(request.GET.get('redirect_to', reverse('home:index')))
+                keys_to_delete.add(key)
+        for key in keys_to_delete:
+            del request.session[key]
+        return HttpResponseSeeOther(request.POST.get('return_url', reverse('home:index')))
 
 class LocationRequiredView(BaseView):
     def is_location_required(cls, request, *args, **kwargs):
