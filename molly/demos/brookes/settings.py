@@ -1,4 +1,4 @@
-# Django settings for Mobile Brookes project.
+## Django settings for Mobile Brookes project.
 
 from oauth.oauth import OAuthSignatureMethod_PLAINTEXT
 import os.path
@@ -13,6 +13,7 @@ TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
+    ('Mobile Oxford','agajwani@brookes.ac.uk'),	
 )
 
 MANAGERS = ADMINS
@@ -203,6 +204,8 @@ APPLICATIONS = [
 
     Application('molly.apps.feeds.news', 'news', 'News'),
 
+#    Application('molly.apps.feeds.news', 'freepc', 'PC Availability'),
+
     Application('molly.osm', 'osm', 'OpenStreetMap',
         display_to_user = False,
     ),
@@ -273,3 +276,6 @@ FIXTURE_DIRS = [
 ]
 
 INTERNAL_IPS = ('127.0.0.1',)  # for the debug_toolbar
+
+EMAIL_HOST = SECRETS.mail_host
+EMAIL_PORT = SECRETS.mail_port
