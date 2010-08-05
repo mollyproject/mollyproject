@@ -6,7 +6,7 @@ from .models import Idea
 class IndexView(BaseView):
     @BreadcrumbFactory
     def breadcrumb(cls, request, context):
-        return Breacrumb(
+        return Breadcrumb(
             cls.conf.local_name,
             None,
             'Feature suggestions',
