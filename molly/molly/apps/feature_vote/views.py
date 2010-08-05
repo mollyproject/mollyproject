@@ -12,7 +12,7 @@ class IndexView(BaseView):
             cls.conf.local_name,
             None,
             'Feature suggestions',
-            lazy_reverse('feature_voting:index'),
+            lazy_reverse('feature_vote:index'),
         )
 
     def initial_context(cls, request):
@@ -21,16 +21,16 @@ class IndexView(BaseView):
         }
 
     def handle_GET(cls, request, context):
-        return cls.render(request, context, 'feature_voting/index')
+        return cls.render(request, context, 'feature_vote/index')
 
-class IdeaDetail(BaseView):
+class IdeaDetailView(BaseView):
     @BreadcrumbFactory
     def breadcrumb(cls, request, context, id):
         return Breadcrumb(
             cls.conf.local_name,
             lazy_parent(IndexView),
             context['idea'].title,
-            lazy_reverse('feature_voting:idea-detail'),
+            lazy_reverse('feature_vote:idea-detail'),
         )
 
     def initial_context(cls, request, id):
@@ -39,4 +39,4 @@ class IdeaDetail(BaseView):
         }
 
     def handle_GET(cls, request, context, id):
-        return cls.render(request, context, 'feature_voting/idea_detail')
+        return cls.render(request, context, 'feature_vote/idea_detail')

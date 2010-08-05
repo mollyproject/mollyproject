@@ -251,6 +251,9 @@ APPLICATIONS = [
         display_to_user = False,
     ),
 
+    Application('molly.apps.feature_vote', 'feature_vote', 'Feature suggestions',
+    ),
+
 #    Application('molly.auth', 'auth', 'Authentication',
 #        display_to_user = False,
 #        secure = True,
