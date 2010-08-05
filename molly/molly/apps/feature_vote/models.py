@@ -16,3 +16,7 @@ class Idea(models.Model):
     class Meta:
         ordering = ('-last_commented', '-created')
 
+    @property
+    def net_votes(self):
+        return self.up_vote - self.down_vote
+
