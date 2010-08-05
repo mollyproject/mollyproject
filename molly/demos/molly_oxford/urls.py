@@ -30,6 +30,9 @@ urlpatterns = patterns('',
     (r'^desktop/', applications.desktop.urls),
     (r'^url-shortener/', applications.url_shortener.urls),
     (r'^feature-suggestions/', applications.feature_vote.urls),
+
+    (r'^comments/', include('django.contrib.comments.urls')),
+
     (r'', applications.home.urls),
 
 #    (r'^auth/', applications.auth.urls),

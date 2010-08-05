@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.urlresolvers import reverse
 
 class Idea(models.Model):
     user_name = models.TextField()
@@ -19,4 +20,7 @@ class Idea(models.Model):
     @property
     def net_votes(self):
         return self.up_vote - self.down_vote
+
+    def get_absolute_url(self):
+        return reverse('feature_vote:idea-detail')
 

@@ -1,4 +1,4 @@
-{% extends "feature_vote/base.html" %}
+{% extends "feature_vote/base.html" %}{% load comments %}
 
 {% block content %}
 
@@ -11,7 +11,7 @@
 
 {% if ideas.count %}
   <ul class="content-list">
-{% for idea in ideas %}
+{% for idea in ideas %}{% get_comment_count for idea as comment_count %}
     <li>
       <div style="float:right">
         <form method="post" action=".">
@@ -23,9 +23,15 @@
           <input type="image" src="{{ MEDIA_URL }}" name="vote_down" value="Vote down"/>
         </form>
       </div>
-      <h3>{{ idea.title }}</h3>
+      <h3><a href="{% url feature_vote:idea-detail idea.id %}">{{ idea.title }}</a></h3>
+        
       <p><small>by {{ idea.user_name }}, added {{ idea.created|timesince }} ago</small></p>
       <p>{{ idea.description|truncatewords:20 }}</p>
+      <p>{{ comment_count }} comment{{ comment_count|pluralize }}.
+        <a href="{% url feature_vote:idea-detail idea.id %}">
+          {% if comment_count %}Read more&hellip;{% else %}Be the first to comment&hellip;{% endif %}
+        </a>
+      </p>
     </li>
 {% endfor %}
   </ul>
