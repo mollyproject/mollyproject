@@ -2,4 +2,50 @@
 
 {% block content %}
 
+<div class="bubble pad-5">
+  <p>Do you have something you'd like to see on Mobile Oxford?</p>
+</div>
+
+<div class="section">
+  <h2>Vote on feature suggestions</h2>
+
+{% if ideas.count %}
+  <ul class="content-list">
+{% for idea in ideas %}
+    <li>
+      <h3>{{ idea.title }}</h3>
+      <p><small>by {{ idea.user_name }}, added {{ idea.created|timesince }} ago</small></p>
+      <p>{{ idea.description|truncatewords:20 }}</p>
+    </li>
+{% endfor %}
+  </ul>
+{% else %}
+  <div class="section-content">
+    <p>There aren't yet any features to vote on.</p>
+  </div>
+{% endif %}
+
+</div>
+
+<div class="section">
+  <h2>Suggest a feature</h2>
+  <div class="section-content">
+    <form method="post" action=".">
+      <table>
+        <tbody>
+          {{ form }}
+        </tbody>
+        <tfoot>
+          <tr>
+            <td></td>
+            <td>
+              <input type="submit" value="Suggest"/>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </form>
+  </div>
+</div>
+
 {% endblock %}

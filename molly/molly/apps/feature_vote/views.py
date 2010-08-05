@@ -1,9 +1,12 @@
 from django.shortcuts import get_object_or_404
+from django.core.urlresolvers import reverse
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
+from molly.utils.http import HttpResponseSeeOther
 
 from .models import Idea
+from .forms import IdeaForm
 
 class IndexView(BaseView):
     @BreadcrumbFactory
@@ -18,10 +21,20 @@ class IndexView(BaseView):
     def initial_context(cls, request):
         return {
             'ideas': Idea.objects.all(),
+            'form': IdeaForm(request.POST or None),
         }
 
     def handle_GET(cls, request, context):
         return cls.render(request, context, 'feature_vote/index')
+
+    def handle_POST(cls, request, context):
+        form = context['form']
+
+        if form.is_valid():
+            form.save()
+            return HttpResponseSeeOther(reverse('feature_vote:index'))
+        else:
+            return cls.handle_GET(request, context)
 
 class IdeaDetailView(BaseView):
     @BreadcrumbFactory

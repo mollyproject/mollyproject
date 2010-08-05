@@ -7,11 +7,11 @@ class Idea(models.Model):
     title = models.TextField()
     description = models.TextField()
 
-    up_vote = models.IntegerField()
-    down_vote = models.IntegerField()
+    up_vote = models.IntegerField(default=0)
+    down_vote = models.IntegerField(default=0)
 
     created = models.DateTimeField(auto_now_add=True)
-    last_commented = models.DateTimeField()
+    last_commented = models.DateTimeField(null=True)
 
     class Meta:
         ordering = ('-last_commented', '-created')
