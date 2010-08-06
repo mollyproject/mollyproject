@@ -5,10 +5,60 @@
 {% block content %}
 <div class="section">
     <h2>Available Tutorials</h2>
-<ul>
-{% for id,event in events.items %}
+{#<ul> #}
 
-<li {% if forloop.last %}class="round-bottom"{% endif %}><a href="{% url sakai:signup-event site,id %}">
+<table style="width:100%; border:1px solid #ccc">
+{% for event in events %}
+<tr>
+    <td style="text-align:center;">
+    {% ifequal event.start|date:"dMY" event.end|date:"dMY" %}
+      {# If start and end time are on the same day #}
+       
+      <big>{{ event.start|date:"j M"}}
+      {# Only show year if start date is not in this year #}
+       {% ifnotequal event.start|date:"Y" now|date:"Y"%}
+         {{ event.start|date:"Y"}}
+       {% endifnotequal %}
+      </big><br />
+      {{ event.start|date:"D"}}<br />
+    
+      {% ifequal event.start|date:"A" event.end|date:"A"  %}
+          {# If start and end times are both am or pm #}
+          <small>{{ event.start|date:"g:i"|lower }}-{{ event.end|date:"g:iA"|lower }}</small>     
+          {% else %}
+          <small>{{ event.start|date:"g:iA"|lower }}-{{ event.end|date:"g:iA"|lower }}</small>
+      {% endifequal %}
+    
+      
+       
+    {% else %}
+      {# Handle the rare occurence that tutorials start and end on different days #}
+        {% ifequal event.start|date:"Y" event.end|date:"Y" %}
+            {% ifequal event.start|date:"Y" now|date:"Y" %}
+            {# Event starts this year and finishes this year %} 
+                {{ event.start|date:"j M" }}, <small>{{ event.start|date:"g:iA"|lower}}</small>-
+                <br />{{ event.end|date:"j M" }}, <small>{{ event.end|date:"g:iA"|lower}}</small>
+            {% else %}
+            {# Event starts in a different year but finishes in that year too #}
+                {{ event.start|date:"j M" }}, <small>{{ event.start|date:"g:iA"|lower}}</small>-
+                <br />{{ event.end|date:"j M Y" }}, <small>{{ event.end|date:"g:iA"|lower}}</small>
+            {% endifequal %}
+        {% else %}
+            {{ event.start|date:"j M y" }}, <small>{{ event.start|date:"g:iA"|lower}}</small>-
+            <br />{{ event.end|date:"j M y" }}, <small>{{ event.end|date:"g:iA"|lower}}</small>
+        {% endifequal %}
+    {% endifequal %}
+    
+    </td>
+    <td>
+        {{ event.title }}
+        <br /> 
+        <small>{{ event.start|oxdate:"%(week)s%(ordinal)s Week %(term_long)s Term" }}</small>
+    </td>
+    <td>Book</td>
+</tr>
+{% comment %}
+<li {% if forloop.last %}class="round-bottom"{% endif %}><a href="{% url sakai:signup-event site,event.id %}">
 
 {{ event.title }} <small>{{ event.start|oxdate:"%(week)s%(ordinal)s Week %(term_long)s Term" }}</small>
 <br /><small>
@@ -28,7 +78,9 @@
       {% endifequal %}
 </small>
 </a></li>
+{% endcomment %}
 {% endfor %}
-</ul>
+</table>
+{#</ul>#}
 </div>
 {% endblock %}

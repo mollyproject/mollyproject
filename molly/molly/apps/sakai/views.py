@@ -1,6 +1,6 @@
 from datetime import datetime
 import urllib, urllib2, pytz, simplejson
-from xml.etree import ElementTree as ET
+from lxml import etree
 import xml.utils.iso8601
 
 from django.http import HttpResponseRedirect, Http404
@@ -83,8 +83,8 @@ class SignupIndexView(SakaiView):
 class SignupSiteView(SakaiView):
     def initial_context(cls, request, site):
         url = cls.build_url('direct/signupEvent/site/%s.xml' % site)
-        events_et = ET.parse(request.opener.open(url)).getroot().findall('signupEvent')
-        events = {}
+        events_et = etree.parse(request.opener.open(url)).getroot().findall('signupEvent')
+        events = []
         for event_et in events_et:
             event = {
                 'start': parse_iso_8601(event_et.find('startTime').attrib['date']),
@@ -94,12 +94,13 @@ class SignupSiteView(SakaiView):
                 'id': event_et.find('id').text,
             }
             if event['end'] >= datetime.utcnow().replace(tzinfo=pytz.utc):
-                events[event['id']] = event
+                events.append(event)     
         return {
             'site': site,
             'events': events,
             'title': cls.get_site_title(request, site),
             'complex_shorten': True,
+            'now': datetime.utcnow(),
         }
 
     @BreadcrumbFactory
