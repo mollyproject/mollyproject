@@ -297,6 +297,7 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
+    'django.contrib.gis',
     'molly.batch_processing',
     'molly.utils',
 #    'debug_toolbar',
