@@ -69,11 +69,13 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = (
+    'molly.wurfl.middleware.WurflMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'molly.wurfl.middleware.WurflMiddleware',
-    'molly.auth.middleware.SecureSessionMiddleware',
+#    'molly.auth.middleware.SecureSessionMiddleware',
+    'molly.stats.middleware.StatisticsMiddleware',
+    'molly.apps.url_shortener.middleware.URLShortenerMiddleware',
 #    'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
@@ -100,6 +102,10 @@ TEMPLATE_DIRS = (
 
 APPLICATIONS = [
     Application('molly.apps.home', 'home', 'Home',
+        display_to_user = False,
+    ),
+
+    Application('molly.apps.desktop', 'desktop', 'Desktop',
         display_to_user = False,
     ),
 
@@ -193,7 +199,7 @@ APPLICATIONS = [
                 title_clean_re = r'm\.ox \| (.*)',
             ),
         ],
-        query_expansion_file = 'query_expansion.txt',
+        query_expansion_file = os.path.join(project_root, 'data', 'query_expansion.txt'),
         display_to_user = False,
     ),
 
@@ -222,6 +228,10 @@ APPLICATIONS = [
         display_to_user = False,
     ),
 
+    Application('molly_oxford.apps.river_status', 'river_status', 'River status',
+        provider = Provider('molly_oxford.providers.apps.river_status.RiverStatusProvider'),
+    ),
+
     Application('molly.apps.feedback', 'feedback', 'Feedback',
         display_to_user = False,
     ),
@@ -235,13 +245,10 @@ APPLICATIONS = [
         expose_view = True,
     ),
 
-#    Application('molly.apps.url_shortener', 'url_shortener', 'URL Shortener',
-#        display_to_user = False,
-#    ),
+    Application('molly.stats', 'stats', 'Statistics'),
 
-    Application('molly.auth', 'auth', 'Authentication',
+    Application('molly.apps.url_shortener', 'url_shortener', 'URL Shortener',
         display_to_user = False,
-        secure = True,
     ),
 
     Application('molly.apps.sakai', 'weblearn', 'WebLearn',
@@ -287,10 +294,10 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
+    'django.contrib.gis',
     'molly.batch_processing',
     'molly.utils',
 #    'debug_toolbar',
-    'compress',
 ) + extract_installed_apps(APPLICATIONS)
 
 # Settings for django-compress: CSS

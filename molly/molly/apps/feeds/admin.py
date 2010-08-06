@@ -6,8 +6,8 @@ class FeedAdmin(admin.ModelAdmin):
     list_filter = ('unit',)
     
 class ItemAdmin(admin.ModelAdmin):
-    #list_display = ('feed', 'title', 'location_name', 'location_point')
-    list_filter = ('feed', )
+    list_display = ('title', 'last_modified', 'feed')
+    list_filter = ('feed', 'last_modified')
 
 admin.site.register(Feed, FeedAdmin)
 admin.site.register(Item, ItemAdmin)

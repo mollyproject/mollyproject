@@ -38,7 +38,7 @@
   </div>
 {% endif %}
 
-<ul>
+<ul class="link-list">
 {% for entity in entities %}{% if entity.title %}
     <li{% if forloop.last %} class="round-bottom"{% endif %}><a href="{{ entity.get_absolute_url }}">
       {{ entity.title|capfirst }}{% if multiple_entity_types %}<br/>

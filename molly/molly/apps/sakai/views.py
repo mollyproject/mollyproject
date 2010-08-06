@@ -88,7 +88,7 @@ class SignupSiteView(SakaiView):
     def initial_context(cls, request, site):
         url = cls.build_url('direct/signupEvent/site/%s.xml' % site)
         events_et = etree.parse(request.opener.open(url)).getroot().findall('signupEvent')
-        events = {}
+        events = []
         for event_et in events_et:
             event = {
                 'start': parse_iso_8601(event_et.find('startTime').attrib['date']),
@@ -98,12 +98,13 @@ class SignupSiteView(SakaiView):
                 'id': event_et.find('id').text,
             }
             if event['end'] >= datetime.utcnow().replace(tzinfo=pytz.utc):
-                events[event['id']] = event
+                events.append(event)     
         return {
             'site': site,
             'events': events,
             'title': cls.get_site_title(request, site),
             'complex_shorten': True,
+            'now': datetime.utcnow(),
         }
 
     @BreadcrumbFactory

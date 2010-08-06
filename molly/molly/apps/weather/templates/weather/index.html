@@ -14,13 +14,11 @@
 	    <img src="{{ MEDIA_URL }}png/weather/{{ observation.icon }}.png" alt="{{ observation.get_outlook_display|capfirst }}"/><br/>
 	    </div>
 		<div class="weather-live-info">
-			<ul>
-				<li style="font-size: 36pt;">{{ observation.temperature }}&deg;C</li>
-				<li>{{ observation.wind_speed }}mph {{ observation.wind_direction }}</li>
-				<li>{{ observation.humidity }}% Relative Humidity</li>
-				<li>{{ observation.pressure }} mbar and {{ observation.get_pressure_state_display }}</li>
-				<li>{{ observation.get_visibility_display|capfirst }} </li>
-			</ul>
+          <span style="font-size: 36pt;">{{ observation.temperature }}&deg;C</span><br/>
+          {{ observation.wind_speed }}mph {{ observation.wind_direction }}<br/>
+          {{ observation.humidity }}% Relative Humidity<br/>
+          {{ observation.pressure }} mbar and {{ observation.get_pressure_state_display }}<br/>
+          {{ observation.get_visibility_display|capfirst }}
 		</div>
 	</div>
 </div>

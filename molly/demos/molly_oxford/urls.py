@@ -2,9 +2,11 @@ from django.conf.urls.defaults import *
 from django.conf import settings
 from django.contrib import admin
 
-from molly.conf import applications
+from molly.conf import applications, all_apps
 
 admin.autodiscover()
+
+all_apps()
 
 urlpatterns = patterns('',
     (r'^adm/(.*)', admin.site.root),
@@ -25,10 +27,12 @@ urlpatterns = patterns('',
     (r'^external-media/', applications.external_media.urls),
     (r'^device-detection/', applications.device_detection.urls),
     (r'^osm/', applications.osm.urls),
+    (r'^desktop/', applications.desktop.urls),
+    (r'^url-shortener/', applications.url_shortener.urls),
     (r'', applications.home.urls),
 
-    (r'^auth/', applications.auth.urls),
-    (r'^weblearn/', applications.weblearn.urls),
+#    (r'^auth/', applications.auth.urls),
+#    (r'^weblearn/', applications.weblearn.urls),
 #    (r'^url-shortener/', applications.url_shortener.urls),
 #    (r'^events/', applications.events.urls),
 

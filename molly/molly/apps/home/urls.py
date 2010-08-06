@@ -1,7 +1,7 @@
 from django.conf.urls.defaults import *
 
-from views import (
-    IndexView, ExpositionView, UserMessageView,
+from .views import (
+    IndexView, UserMessageView,
     StaticDetailView,
 )
 
@@ -20,10 +20,6 @@ urlpatterns = patterns('',
         StaticDetailView,
         {'title':'About', 'template':'about'},
         'static_about'),
-    
-    (r'^desktop/((?P<page>features|accessing|get-involved|blog|help)/)?$',
-        ExpositionView, {},
-        'exposition'),
 
     (r'^messages/$',
         UserMessageView, {},

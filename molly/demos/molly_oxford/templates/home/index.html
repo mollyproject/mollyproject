@@ -1,0 +1,140 @@
+{% extends "home/base.html" %}
+{% load molly_apps_weather %}
+{% load portal_misc %}{% load maps %}{% load molly_apps_search %}{% load oxford_apps_river_status %}
+
+{% block title %}Mobile Oxford{% endblock %}
+
+{% block header %}
+<div id="index-header">
+    <div id="index-title">
+		<!-- <img src="{{ MEDIA_URL }}png/headers/{{ device.resolution_width|header_width }}.png" alt="Mobile Oxford"/> -->
+		{% ifequal style_group "dumb" %}
+		    <img src="{{ MEDIA_URL }}png/new/logos/logo-90x55.jpg" alt="Mobile Oxford">
+		{% else %}
+            <img src="{{ MEDIA_URL }}png/new/logos/logo-128x51-TRMargin-5px.png" alt="Mobile Oxford"/>
+        {% endifequal %}
+    </div>
+    <div id="index-search">
+        {% search_form %}
+	     <form method="get" action="{% url search:index %}">
+		 <p>
+			{{ search_form.query }}
+		{% ifequal style_group "dumb" %}
+		    <input type="button" value="Search" />
+		{% else %}
+			<input type="image" src="{{ MEDIA_URL }}png/new/buttons/search-button.png" title="Search" />
+		{% endifequal %}
+		 </p>
+		 </form>
+	</div>
+</div>
+{% endblock %}
+
+{% block content %}
+    <div class="bubble">
+	<div class="center">
+    	<ol class="icon-menu">
+	      {% for application in applications %}{% if application.display_to_user %}
+	          <li id="menu-{{ application.local_name }}">
+	              <a accesskey="{{ forloop.counter }}" href="{{ application.url }}">{{ application.title }}</a>
+	          </li>
+	      {% endif %}{% endfor %}
+	    </ol>
+        {# Only necessary if using floating icons #}
+        {# <div class="clearhidden"> </div> #}
+    </div>
+    </div>
+
+    <div class="bubble pad-5">
+        <table style="width:100%; text-align:center;">
+            <tbody>
+                <tr>
+                    <td style="width:50%">
+      {% oxford_date_today %}
+                    </td>
+                    <td style="width:50%;">
+
+      {% weather %}<big>Oxford: {{ weather.temperature }}&deg;C</big><img width="16" height="16" src="{{ MEDIA_URL }}png/weather/{{ weather.icon }}_small.png" alt="{{ weather.get_outlook_display|capfirst }}" height="30" width="30" style="vertical-align:middle;"/>
+
+                    </td>
+                </tr>
+                <tr><td colspan="2"><hr/></td></tr>
+                <tr>
+                {% flag_status %}
+                {% for flag in flag_status %}
+                    <td title="{{ flag.get_status_display }}">{{ flag.name }}: <img src="{{ flag.get_icon_url }}" alt="{{ flag.get_status_display }}"/></td>
+                {% endfor %}
+                </tr>  
+                <tr>
+                  <td colspan="2">
+                    Correct at {{ flag_status.0.updated|date:"H:i" }} ({{ flag_status.0.updated|timesince }} ago). <a href="{% url home:static_about %}#flag">Disclaimer</a>
+                  </td>
+                </tr>  
+            </tbody>
+        </table>
+    </div>
+
+    <ul class="stand-alone link-list round-top">
+            <li class="round-top"><a href="{% url home:static_about %}">About this site</a></li>
+			{% if has_user_messages %}
+            <li><a href="{% url home:messages %}">Read messages from the developers</a></li>
+			{% endif %}
+            <li class="round-bottom"><a href="{% url feedback:index %}?referer={% url home:index %}">Provide feedback</a></li>
+    </ul>
+
+    <div class="center">
+        {% ifequal style_group "dumb" %}
+            Produced by Oxford University Computing Services <br /><a href="http://www.oucs.ox.ac.uk">www.oucs.ox.ac.uk</a>
+        {% else %}
+    <div class="content" style="margin:8px;">
+        <img src="{{ MEDIA_URL }}png/oucs-logo-small.png" alt="Oxford University Computing Services"/>
+        <img src="{{ MEDIA_URL }}gif/brandmark.gif" alt="University of Oxford" />
+    </div>
+        {% endifequal %}
+    </div>
+
+{% if user.is_superuser %}
+        <hr/>
+        <div class="section">
+            <h2>Session</h2>
+			<div class="bubble pad-10">
+            <p>{{ session }}</p>
+			</div>
+        </div>
+        <hr/>
+        <div class="section">
+            <h2>Device</h2>
+			<div class="bubble pad-10">
+            <p>{{ device.brand_name }} {{ device.model_name }} ({{ device.devid }})</p>
+            <p>{{ device.devua }}</p>
+            <p>{{ ua }}</p>
+			<p>{{ parents }}</p>
+			</div>
+            <h2>Browser</h2>
+			<div class="bubble pad-10">
+            <p>{{ browser.brand_name }} {{ browser.model_name }} ({{ browser.devid }})</p>
+            <p>{{ browser.devua }}</p>
+			</div>
+        </div>
+        <hr/>
+        <div class="section">
+            <h2>Meta</h2>
+			<div class="bubble pad-10">
+            <dl>
+    {% for a,b in meta.items %}
+                <dt>{{ a }}</dt>
+                <dd>{{ b }}</dd>
+    {% endfor %}
+            </dl>
+		    </div>
+        </div>
+
+        <div class="section">
+            <h2>Preferences</h2>
+			<div class="bubble pad-10">
+            <p>{{ preferences }}</p>
+			</div>
+        </div>        
+{% endif %}
+
+{% endblock %}

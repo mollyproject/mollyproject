@@ -1,5 +1,7 @@
 /* Results Releases */
 dl#results {
+    
+
     font-size: 1.2em;
 
     margin:10px;
@@ -9,18 +11,20 @@ dl#results {
     border-radius: 8px;
 
     background:#B88C54 url('../../png/new/gradients/gradient-50-nrWhite-Transparent.png') repeat-x;
-    background:-webkit-gradient(linear, left top, right top, from(#B88C54), to(#E0C792));
-    background:-moz-linear-gradient(top, #B88C54, #E0C792);
-    background:linear-gradient(top, #B88C54, #E0C792);
+    background:-webkit-gradient(linear, left top, right top, from(#dfdfdf), to(#fff));
+    background:-moz-linear-gradient(top, #dfdfdf, #fff);
+    background:linear-gradient(top, #dfdfdf, #fff);
 
     -moz-box-shadow: 2px 2px 2px #333; -webkit-box-shadow: 2px 2px 2px #333; box-shadow: 2px 2px 2px #333;
 
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 dl#results dt {
     color: #fff;
     background: #002B4C;
-    background:-webkit-gradient(linear, left top, right top, from(#002B4C), to(rgba(0,145,245,0.2)));
+    background:-webkit-gradient(linear, left top, right top, from(#002B4C), to(rgba(223,223,223,0.2)));
+    background:-moz-linear-gradient(left, #002B4C, rgba(223,223,223,0.2));
 
     padding: 3px;
     margin: 8px 0;
@@ -30,8 +34,9 @@ dl#results dt {
 dl#results dd {
     color: #111;
     margin: 2px 0 2px 20px;
-    border-bottom: 1px solid #E0C792;
-    text-shadow: 1px 1px 1px #999;
+    border-bottom: 1px solid #ccc;
+    text-shadow: 1px 1px 1px #ccc;
+    line-height: 1.3em;
 }
 
 dl#results dd.no-border {border: 0;}
@@ -62,7 +67,6 @@ div#loading-bg {
     opacity: 0;
 }
 
-<<<<<<< HEAD
 div#loading_img {
     position: fixed;
     margin:0 20%;
@@ -199,6 +203,7 @@ div#bc-title h1 {
     text-align:left;
     color:#ffffff;
     white-space: nowrap;
+	text-shadow: 1px 1px 0px #111;
 }
 div#bc-title h1.with-icon {
     background-repeat: no-repeat;
@@ -222,22 +227,72 @@ div#bc-title h1.weblearn-header {  background-image:url('../../png/index-icons/w
 
 
 /* Standard List Styles */
-ul, ol.search-results {
+ul.content-list, ul.link-list, ol.search-results {
+    border-left: 1px solid rgba(255, 255, 255, 0.33);
     list-style: none;
     padding: 0; margin: 0;
+    
+    -webkit-border-bottom-left-radius: 8px;
+    -webkit-border-bottom-right-radius: 8px;
+    -moz-border-radius-bottomleft: 8px;
+    -moz-border-radius-bottomright: 8px;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
 }
+
+ul.no-round-bottom {
+    -webkit-border-bottom-left-radius: 0px;
+    -webkit-border-bottom-right-radius: 0px;
+    -moz-border-radius-bottomleft: 0px;
+    -moz-border-radius-bottomright: 0px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+
+ul.content-list {
+    background-color:#dfdfdf;
+    color:#222;
+}
+
+ul.content-list a {
+    color: #00f;
+}
+
+ul.content-list h3 {
+    color:#222;
+    text-align:left;
+    font-size:10pt;
+    padding:0;
+    margin-bottom:5px;
+}
+
+ul.content-list li {
+    padding:10px;
+    border-top:1px solid #98a1ac;
+    background:none;
+    color: #222;
+}
+
+ul.link-list, ol.search-results {
+    background-color:#002B4C;
+    color:#ffffff;
+}
+
 ul.stand-alone {
     margin: 10px;
 }
-ul li, ol.search-results li {
+ul.link-list li, ol.search-results li {
     font-size:12pt;
-    color:#ffffff;
     border-top:1px solid #98a1ac;
-    background-color:#002B4C;
     padding: 10px;
     display:block;
 }
-ul li a, ol.search-results li a {
+
+ul.content-list li:first-child, ul.link-list li:first-child, ol.search-results li:first-child {
+    border-top:none;
+}
+
+ul.link-list li a, ol.search-results li a {
     color:#ffffff;
     text-decoration:none;
     display:block;
@@ -317,20 +372,14 @@ div.weather-live-info {
     display:inline-block;
     vertical-align: top;
     width: 150px;
-}
-div.weather-live-info ul {
-    list-style: none;
     padding: 0; margin: 0;
-}
-div.weather-live-info li {
-    background: none;
-    border: none;
-    padding: 0;
-    text-align:left;
+    background-color: transparent;
+    border-left:0;
     font-size:10pt;
     color:#ffffff;
-    display:block;
+    text-align: left;
 }
+
 table.weather-forecast {
     padding: 20px;
     width: 100%;
@@ -418,6 +467,7 @@ table.search * input[type="image"] {
 /* OUCS Status */
 ul.service-status li {
     background: #121C28;
+    color: #ffffff;
     background-position:10px center;
     background-repeat:no-repeat;
     border:none;
@@ -533,6 +583,7 @@ h3 {
     color:white;
     padding: 5px 5px; margin: 0;
     text-align: center;
+    text-shadow:2px 2px 2px #ccc; 
 }
 
 div.bubble {
