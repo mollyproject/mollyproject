@@ -6,9 +6,9 @@
   <h2>Details</h2>
 
   <div class="section-content">
-    <p><small>by {{ idea.user_name }}, added {{ idea.created|timesince }} ago</small></p>
+    <p><small>by {{ feature.user_name }}, added {{ feature.created|timesince }} ago</small></p>
 
-    <p>{{ idea.description|linebreaksbr }}</p>
+    <p>{{ feature.description|linebreaksbr }}</p>
   </div>
 </div>
 
@@ -16,7 +16,7 @@
   <h2>Comments</h2>
 
   <ul class="content-list">
-{% get_comment_list for idea as comments %}
+{% get_comment_list for feature as comments %}
 {% for comment in comments %}
     <li>
       <h3>posted by {{ comment.user_name }} {{ comment.submit_date|timesince }} ago</h3>
@@ -25,7 +25,7 @@
     </li>
 {% endfor %}
     <li>
-      {% get_comment_form for idea as form %}
+      {% get_comment_form for feature as form %}
       <form method="post" action="{% comment_form_target %}">
         <table>
           <tbody>

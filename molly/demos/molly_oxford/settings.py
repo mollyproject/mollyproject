@@ -12,7 +12,8 @@ DEBUG_SECURE = False
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    # ('Your Name', 'your_email@domain.com'),
+    ('Alexander Dutton', 'alexander.dutton@oucs.ox.ac.uk'),
+    ('Tim Fernando', 'tim.fernando@oucs.ox.ac.uk'),
 )
 
 MANAGERS = ADMINS
@@ -314,3 +315,6 @@ FIXTURE_DIRS = [
 ]
 
 INTERNAL_IPS = ('127.0.0.1',)  # for the debug_toolbar
+
+SERVER_EMAIL = 'molly@m.ox.ac.uk'
+EMAIL_HOST = 'smtp.ox.ac.uk'

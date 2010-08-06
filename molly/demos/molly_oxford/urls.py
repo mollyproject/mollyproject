@@ -9,7 +9,7 @@ admin.autodiscover()
 all_apps()
 
 urlpatterns = patterns('',
-    (r'^adm/(.*)', admin.site.root),
+    (r'^adm/', include(admin.site.urls)),
 
     # These are how we expect all applications to be eventually.
     (r'^contact/', applications.contact.urls),

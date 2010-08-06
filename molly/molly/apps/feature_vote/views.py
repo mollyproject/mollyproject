@@ -7,9 +7,10 @@ from django.http import HttpResponseForbidden
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
 from molly.utils.http import HttpResponseSeeOther
+from molly.utils.email import send_email
 
-from .models import Idea
-from .forms import IdeaForm
+from .models import Feature
+from .forms import FeatureForm
 
 class IndexView(BaseView):
 
@@ -19,6 +20,10 @@ class IndexView(BaseView):
         (-1, 0) : (-1, 0),  ( 0, 0): ( 0, 0),  (+1, 0): ( 0,-1),
         (-1,+1) : (-1,+1),  ( 0,+1): ( 0,+1),  (+1,+1): ( 0, 0),
     }
+    
+    #  ++    -
+    # -      -
+    # -    ++ 
 
     @BreadcrumbFactory
     def breadcrumb(cls, request, context):
@@ -35,9 +40,10 @@ class IndexView(BaseView):
         if not 'feature_vote:votes' in request.session:
             request.session['feature_vote:votes'] = {}
         return {
-            'ideas': Idea.objects.all(),
-            'form': IdeaForm(request.POST or None),
+            'features': Feature.objects.all(),
+            'form': FeatureForm(request.POST or None),
             'csrf' : request.session['feature_vote:csrf'],
+            'submitted': request.GET.get('submitted') == 'true',
         }
 
     def handle_GET(cls, request, context):
@@ -50,41 +56,50 @@ class IndexView(BaseView):
             return HttpResponseForbidden()
 
         if 'vote_up' in request.POST or 'vote_down' in request.POST:
-            idea = get_object_or_404(Idea, id = request.POST.get('id', 0))
-            previous_vote = request.session['feature_vote:votes'].get(idea.id, 0)
+            feature = get_object_or_404(Feature, id = request.POST.get('id', 0))
+            previous_vote = request.session['feature_vote:votes'].get(feature.id, 0)
             vote = 1 if 'vote_up' in request.POST else -1
-            request.session['feature_vote:votes'][idea.id] = vote
+            request.session['feature_vote:votes'][feature.id] = vote
             request.session.modified = True
 
-            idea.down_vote += cls.vote_transitions[(previous_vote, vote)][0]
-            idea.up_vote   += cls.vote_transitions[(previous_vote, vote)][1]
+            feature.down_vote += cls.vote_transitions[(previous_vote, vote)][0]
+            feature.up_vote   += cls.vote_transitions[(previous_vote, vote)][1]
 
-            idea.save()
+            feature.save()
 
             return HttpResponseSeeOther(reverse('feature_vote:index'))
 
         if form.is_valid():
             form.save()
-            return HttpResponseSeeOther(reverse('feature_vote:index'))
+
+            send_email(request, {
+                'name': form.cleaned_data['user_name'],
+                'email': form.cleaned_data['user_email'],
+                'title': form.cleaned_data['title'],
+                'description': form.cleaned_data['description'],
+                'feature': form.instance,
+            }, 'feature_vote/feature_create.eml', cls)
+            
+            return HttpResponseSeeOther(reverse('feature_vote:index') + '?submitted=true')
         else:
             return cls.handle_GET(request, context)
 
 
 
-class IdeaDetailView(BaseView):
+class FeatureDetailView(BaseView):
     @BreadcrumbFactory
     def breadcrumb(cls, request, context, id):
         return Breadcrumb(
             cls.conf.local_name,
             lazy_parent(IndexView),
-            context['idea'].title,
-            lazy_reverse('feature_vote:idea-detail'),
+            context['feature'].title,
+            lazy_reverse('feature_vote:feature-detail'),
         )
 
     def initial_context(cls, request, id):
         return {
-            'idea': get_object_or_404(Idea, id=id),
+            'feature': get_object_or_404(Feature, id=id, is_public=True),
         }
 
     def handle_GET(cls, request, context, id):
-        return cls.render(request, context, 'feature_vote/idea_detail')
+        return cls.render(request, context, 'feature_vote/feature_detail')
