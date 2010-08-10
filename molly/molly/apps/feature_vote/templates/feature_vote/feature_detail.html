@@ -3,11 +3,11 @@
 {% block content %}
 
 <div class="section">
-  {% include "feature_vote/vote.html" %}
-  <h2>Details</h2>
+   <h2>Details</h2>
 
   <div class="section-content">
-    <p><small>Suggested by {{ feature.user_name }}, added {{ feature.created|timesince }} ago</small></p>
+    {% include "feature_vote/vote.html" %}
+ <p style="margin-top:0;"><small>Suggested by {{ feature.user_name }}; added {{ feature.created|timesince }} ago</small></p>
 
     <p>{{ feature.description|linebreaksbr }}</p>
   </div>

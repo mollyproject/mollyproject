@@ -221,6 +221,7 @@ div#bc-title h1.events-header {      background-image:url('../../png/index-icons
 div#bc-title h1.weather-header {  background-image:url('../../png/index-icons/weather-bc.png');}
 div#bc-title h1.service_status-header {  background-image:url('../../png/index-icons/service_status-bc.png');}
 div#bc-title h1.weblearn-header {  background-image:url('../../png/index-icons/weblearn-bc.png');}
+div#bc-title h1.feature_vote-header {  background-image:url('../../png/index-icons/feature_vote-bc.png');}
 /* End Breadcrumb Trail Styles */
 
 
@@ -477,7 +478,17 @@ span.service-status, span.service-detail { font-size:90%; }
 span.service-detail { font-style:italic; }
 /* End OUCS Status */
 
-
+div.section-content {
+    padding:8px;
+    background-color: #DFDFDF;
+    -webkit-border-bottom-left-radius: 8px;
+    -webkit-border-bottom-right-radius: 8px;
+    -moz-border-radius-bottomleft: 8px;
+    -moz-border-radius-bottomright: 8px;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    
+}
 
 /* Help Bubble */
 .help-bubble {
@@ -722,9 +733,9 @@ div.vote-box {
     text-align: center;
     font-weight: bold;
     width:35px;
-    margin:5px;
+    margin:0 0 5px 5px;
 }
 
 div.vote-box span {
     padding:0;
-]
+}
