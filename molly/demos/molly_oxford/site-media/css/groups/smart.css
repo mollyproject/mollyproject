@@ -321,10 +321,6 @@ ul li span {
 /* End Standard List Styles */
 
 
-
-
-
-
 /* Webcams/Maps Display */
 div.backgrounded-image {
     background-repeat:no-repeat;
@@ -659,22 +655,42 @@ div.form-section form > dl dd {
     margin-left:0;
 }
 
-div.form-section form > dl input {
+div.form-section form > dl input, div.form-section form > dl textarea {
     width:100%;
-    height:30px;
+    height:24px;
     border:0;
     padding: 2px 0 2px 2px;
     margin: 0;
-    font-size: 20px;
+    font-size: 16px;
     -webkit-border-radius:5px;
     -moz-border-radius:5px;
     border-radius: 5px;
+    font-family: "Liberation Sans", Arial, sans-serif;
+    border:1px solid #888;
+}
+
+
+div.form-section form > dl textarea {
+    height: 5em;
+}
+
+div.form-section ul.errorlist + input , div.form-section ul.errorlist + textarea {
+    background-color: #f7d9d9;
+    /*border:1px solid red;*/
 }
 
 div.form-section form > dl dt {
     font-size: 1.2em;
     color: #333;
     text-shadow: 1px 1px 1px #aaa;
+    margin-top:4px;
+}
+
+div.form-section form > dl ul.errorlist {
+    list-style:none;
+    padding:4px;
+    margin:0 0 0 0;
+    color:#301010;
 }
 
 div.form-section form > p.help-bubble {
@@ -692,7 +708,7 @@ div.form-section form > p.submit-buttons {
 
 div.form-section form > p.submit-buttons input {
     height: 30px;
-    margin-top: 15px;
+    margin-top: 8px;
     font-size: 1.2em;
     width:100%;
 }

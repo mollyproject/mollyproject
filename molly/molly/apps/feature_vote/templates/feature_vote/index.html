@@ -46,20 +46,20 @@
 <div class="form-section">
   <h2>Suggest a feature</h2>
   <form method="post" action=".">
+    <input type="hidden" name="csrf" value="{{ csrf }}"/>
     <dl>
       <dt>{{ form.user_name.label_tag }}:</dt>
-      <dd>{{ form.user_name }}</dd>
+      <dd>{{ form.user_name.errors }}{{ form.user_name }}</dd>
       <dt>{{ form.user_email.label_tag }}:</dt>
-      <dd>{{ form.user_email }}</dd>
+      <dd>{{ form.user_email.errors }}{{ form.user_email }}</dd>
       <dt>{{ form.title.label_tag }}:</dt>
-      <dd>{{ form.title }}</dd>
+      <dd>{{ form.title.errors }}{{ form.title }}</dd>
       <dt>{{ form.description.label_tag }}:</dt>
-      <dd>{{ form.description }}</dd>
+      <dd>{{ form.description.errors }}{{ form.description }}</dd>
     </dl>
     
     <p class="submit-buttons">
-      <input type="submit" value="Search"/><br />
-      <input type="reset" value="Reset Form"/>
+      <input type="submit" value="Submit"/>
     </p>
     
     <div style="clear:both"></div>
