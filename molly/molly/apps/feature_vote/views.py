@@ -39,8 +39,13 @@ class IndexView(BaseView):
             request.session['feature_vote:csrf'] = ''.join(random.choice('0123456789abcdef') for i in range(8))
         if not 'feature_vote:votes' in request.session:
             request.session['feature_vote:votes'] = {}
+
+        features = list(Feature.objects.filter(is_public=True))
+        for feature in features:
+            feature.vote = request.session['feature_vote:votes'].get(feature.id, 0)
+
         return {
-            'features': Feature.objects.all(),
+            'features': features,
             'form': FeatureForm(request.POST or None),
             'csrf' : request.session['feature_vote:csrf'],
             'submitted': request.GET.get('submitted') == 'true',
@@ -58,7 +63,8 @@ class IndexView(BaseView):
         if 'vote_up' in request.POST or 'vote_down' in request.POST:
             feature = get_object_or_404(Feature, id = request.POST.get('id', 0))
             previous_vote = request.session['feature_vote:votes'].get(feature.id, 0)
-            vote = 1 if 'vote_up' in request.POST else -1
+            vote = previous_vote + (1 if 'vote_up' in request.POST else -1)
+            vote = min(max(-1, vote), 1)
             request.session['feature_vote:votes'][feature.id] = vote
             request.session.modified = True
 
@@ -67,7 +73,10 @@ class IndexView(BaseView):
 
             feature.save()
 
-            return HttpResponseSeeOther(reverse('feature_vote:index'))
+            if request.POST.get('return_url', '').startswith('/'):
+                return HttpResponseSeeOther(request.POST['return_url'])
+            else:
+                return HttpResponseSeeOther(reverse('feature_vote:index'))
 
         if form.is_valid():
             form.save()
@@ -97,8 +106,15 @@ class FeatureDetailView(BaseView):
         )
 
     def initial_context(cls, request, id):
+        if not 'feature_vote:csrf' in request.session:
+            request.session['feature_vote:csrf'] = ''.join(random.choice('0123456789abcdef') for i in range(8))
+        if not 'feature_vote:votes' in request.session:
+            request.session['feature_vote:votes'] = {}
+        feature = get_object_or_404(Feature, id=id, is_public=True)
+        feature.vote = request.session['feature_vote:votes'].get(feature.id, 0)
         return {
-            'feature': get_object_or_404(Feature, id=id, is_public=True),
+            'feature': feature,
+            'csrf' : request.session['feature_vote:csrf'],
         }
 
     def handle_GET(cls, request, context, id):
