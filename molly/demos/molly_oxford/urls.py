@@ -25,10 +25,14 @@ urlpatterns = patterns('',
     (r'^external-media/', applications.external_media.urls),
     (r'^device-detection/', applications.device_detection.urls),
     (r'^osm/', applications.osm.urls),
-    (r'', applications.home.urls),
-
     (r'^auth/', applications.auth.urls),
     (r'^weblearn/', applications.weblearn.urls),
+
+    (r'^reverse/$', 'molly.utils.views.ReverseView', {}, 'reverse'),
+
+
+    (r'', applications.home.urls),
+
 #    (r'^url-shortener/', applications.url_shortener.urls),
 #    (r'^events/', applications.events.urls),
 
