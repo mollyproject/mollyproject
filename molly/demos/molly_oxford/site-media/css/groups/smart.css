@@ -716,3 +716,15 @@ div.form-section form > p.submit-buttons input {
 div.form-section form > p.submit-buttons input:first-child {
     margin-top:0;
 }
+
+
+div.vote-box {
+    text-align: center;
+    font-weight: bold;
+    width:35px;
+    margin:5px;
+}
+
+div.vote-box span {
+    padding:0;
+]

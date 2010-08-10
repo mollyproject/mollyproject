@@ -3,10 +3,11 @@
 {% block content %}
 
 <div class="section">
+  {% include "feature_vote/vote.html" %}
   <h2>Details</h2>
 
   <div class="section-content">
-    <p><small>by {{ feature.user_name }}, added {{ feature.created|timesince }} ago</small></p>
+    <p><small>Suggested by {{ feature.user_name }}, added {{ feature.created|timesince }} ago</small></p>
 
     <p>{{ feature.description|linebreaksbr }}</p>
   </div>
@@ -15,8 +16,10 @@
 <div class="section">
   <h2>Comments</h2>
 
-  <ul class="content-list">
 {% get_comment_list for feature as comments %}
+{% if comments %}
+
+  <ul class="content-list">
 {% for comment in comments %}
     <li>
       <h3>posted by {{ comment.user_name }} {{ comment.submit_date|timesince }} ago</h3>
@@ -24,43 +27,42 @@
       <p>{{ comment.comment|linebreaksbr }}</p>
     </li>
 {% endfor %}
-    <li>
-      {% get_comment_form for feature as form %}
-      <form method="post" action="{% comment_form_target %}">
-        <table>
-          <tbody>
-            <tr>
-              <th>{{ form.name.label }}:</th>
-              <td>{{ form.name }}</td>
-            </tr>
-            <tr>
-              <th>{{ form.email.label }}:</th>
-              <td>{{ form.email }}</td>
-            </tr>
-            <tr>
-              <th>{{ form.comment.label }}:</th>
-              <td>{{ form.comment }}</td>
-            </tr>
-            <tr style="display:none;">
-              <th>{{ form.honeypot.label }}:</th>
-              <td>{{ form.honeypot }}</td>
-            </tr>
-          </tbody>
-          <tfoot>
-            <tr>
-              <td></td>
-              <td>
-                {{ form.content_type }}
-                {{ form.object_pk }}
-                {{ form.timestamp }}
-                {{ form.security_hash }}
-                <input type="submit" value="Submit"/>
-              </td>
-            </tr>
-          </tfoot>
-        </table>
-      </form>
   </ul>
+
+{% else %}
+
+  <div class="section-content">
+    <p>There aren't yet any comments</p>
+  </div>
+{% endif %}
+</div>
+
+
+<div class="form-section">
+  {% get_comment_form for feature as form %}
+  <h2>Add a comment</h2>
+  <form method="post" action="{% comment_form_target %}">
+    {{ form.content_type }}
+    {{ form.object_pk }}
+    {{ form.timestamp }}
+    {{ form.security_hash }}
+    <dl>
+      <dt>{{ form.name.label_tag }}:</dt>
+      <dd>{{ form.name.errors }}{{ form.name }}</dd>
+      <dt>{{ form.email.label_tag }}:</dt>
+      <dd>{{ form.email.errors }}{{ form.email }}</dd>
+      <dt>{{ form.comment.label_tag }}:</dt>
+      <dd>{{ form.comment.errors }}{{ form.comment }}</dd>
+      <dt class="invisible">{{ form.honeypot.label_tag }}:</dt>
+      <dd class="invisible">{{ form.honeypot.errors }}{{ form.honeypot }}</dd>
+    </dl>
+    
+    <p class="submit-buttons">
+      <input type="submit" value="Submit"/>
+    </p>
+
+    <div style="clear:both"></div>
+  </form>
 </div>
 
 {% endblock %}

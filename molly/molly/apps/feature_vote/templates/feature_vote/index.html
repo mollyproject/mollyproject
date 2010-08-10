@@ -9,26 +9,17 @@
 <div class="section">
   <h2>Vote on feature suggestions</h2>
 
-{% if ideas.count %}
+{% if features.count %}
   <ul class="content-list">
-{% for idea in ideas %}{% get_comment_count for idea as comment_count %}
+{% for feature in features %}{% get_comment_count for feature as comment_count %}
     <li>
-      <div style="float:right">
-        <form method="post" action=".">
-          <input type="hidden" name="csrf" value="{{ csrf }}"/>
-          <input type="hidden" name="id" value="{{ idea.id }}"/>
-
-          <input type="image" src="{{ MEDIA_URL }}" name="vote_up" value="Vote up"/>
-          <span class="vote-count">{{ idea.net_votes }}</span>
-          <input type="image" src="{{ MEDIA_URL }}" name="vote_down" value="Vote down"/>
-        </form>
-      </div>
-      <h3><a href="{% url feature_vote:idea-detail idea.id %}">{{ idea.title }}</a></h3>
+      {% include "feature_vote/vote.html" %}
+      <h3><a href="{% url feature_vote:feature-detail feature.id %}">{{ feature.title }}</a></h3>
         
-      <p><small>by {{ idea.user_name }}, added {{ idea.created|timesince }} ago</small></p>
-      <p>{{ idea.description|truncatewords:20 }}</p>
+      <p><small>by {{ feature.user_name }}, added {{ feature.created|timesince }} ago</small></p>
+      <p>{{ feature.description|truncatewords:20 }}</p>
       <p>{{ comment_count }} comment{{ comment_count|pluralize }}.
-        <a href="{% url feature_vote:idea-detail idea.id %}">
+        <a href="{% url feature_vote:feature-detail feature.id %}">
           {% if comment_count %}Read more&hellip;{% else %}Be the first to comment&hellip;{% endif %}
         </a>
       </p>
