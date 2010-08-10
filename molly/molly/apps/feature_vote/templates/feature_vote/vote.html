@@ -1,0 +1,10 @@
+<div class="vote-box" style="float:right">
+  <form method="post" action=".">
+    <input type="hidden" name="csrf" value="{{ csrf }}"/>
+    <input type="hidden" name="id" value="{{ feature.id }}"/>
+    <input type="hidden" name="return_url" value="{{ full_path }}"/>
+    <input type="image" src="{{ MEDIA_URL }}png/vote-up.png" height="10" width="30" name="vote_up" value="Vote up"/>
+    <span class="vote-count">{{ feature.net_votes }}</span>
+    <input type="image" src="{{ MEDIA_URL }}png/vote-down.png" height="10" width="30" name="vote_down" value="Vote down"/>
+  </form>
+</div>
