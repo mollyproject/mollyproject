@@ -43,26 +43,27 @@
 
 </div>
 
-<div class="section">
+<div class="form-section">
   <h2>Suggest a feature</h2>
-  <div class="section-content">
-    <form method="post" action=".">
-      <table>
-        <tbody>
-          {{ form }}
-        </tbody>
-        <tfoot>
-          <tr>
-            <td></td>
-            <td>
-              <input type="hidden" name="csrf" value="{{ csrf }}"/>
-              <input type="submit" value="Suggest"/>
-            </td>
-          </tr>
-        </tfoot>
-      </table>
-    </form>
-  </div>
+  <form method="post" action=".">
+    <dl>
+      <dt>{{ form.user_name.label_tag }}:</dt>
+      <dd>{{ form.user_name }}</dd>
+      <dt>{{ form.user_email.label_tag }}:</dt>
+      <dd>{{ form.user_email }}</dd>
+      <dt>{{ form.title.label_tag }}:</dt>
+      <dd>{{ form.title }}</dd>
+      <dt>{{ form.description.label_tag }}:</dt>
+      <dd>{{ form.description }}</dd>
+    </dl>
+    
+    <p class="submit-buttons">
+      <input type="submit" value="Search"/><br />
+      <input type="reset" value="Reset Form"/>
+    </p>
+    
+    <div style="clear:both"></div>
+  </form>
 </div>
 
 {% endblock %}

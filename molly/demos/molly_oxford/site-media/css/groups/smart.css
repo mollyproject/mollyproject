@@ -645,6 +645,11 @@ div.form-section {
     text-shadow: 1px 1px 1px #ccc;
 }
 
+div.form-section h2 {
+    color:#002147;
+}
+
+
 div.form-section form > dl {
     padding-right:2px;
     margin-top:0;
