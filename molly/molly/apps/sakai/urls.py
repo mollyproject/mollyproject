@@ -30,10 +30,10 @@ urlpatterns = patterns('mobile_portal.sakai.views',
         PollDetailView, {},
         'poll-detail'),
 
-    (r'^evaluation/$',
+    (r'^surveys/$',
         EvaluationIndexView, {},
         'evaluation-index'),
-    (r'^evaluation/(?P<id>\d+)/$',
+    (r'^surveys/(?P<id>\d+)/$',
         EvaluationDetailView, {},
         'evaluation-detail'),
 

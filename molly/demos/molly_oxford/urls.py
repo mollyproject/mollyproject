@@ -31,9 +31,10 @@ urlpatterns = patterns('',
     (r'^url-shortener/', applications.url_shortener.urls),
     (r'', applications.home.urls),
 
-#    (r'^auth/', applications.auth.urls),
-#    (r'^weblearn/', applications.weblearn.urls),
-#    (r'^url-shortener/', applications.url_shortener.urls),
+    (r'^auth/', applications.auth.urls),
+    (r'^weblearn/', applications.weblearn.urls),
+
+    (r'^reverse/$', 'molly.utils.views.ReverseView', {}, 'reverse'),
 #    (r'^events/', applications.events.urls),
 
     # These ones still need work
