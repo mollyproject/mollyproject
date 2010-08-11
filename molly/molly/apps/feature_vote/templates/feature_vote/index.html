@@ -2,14 +2,22 @@
 
 {% block content %}
 
+
 <div class="bubble pad-5">
-  <p>Do you have something you'd like to see on Mobile Oxford?</p>
+{% if submitted %}
+  <p><strong>Thank you for submitting a feature request! It is pending moderation, and should appear shortly.</strong></p>
+{% else %}
+  <p>Do you have something you'd like to see added to Mobile Oxford?</p>
+  
+  <p>You can vote or comment on existing suggestions, or use the <a href="#submit-feature">form at the bottom of the page</a> to add a new suggestion.</p>
+{% endif %}
 </div>
 
 <div class="section">
-  <h2>Recent suggestions</h2>
-
-{% if features.count %}
+  <div class="header">
+  <h2>Current suggestions</h2>
+</div>
+{% if features %}
   <ul class="content-list">
 {% for feature in features %}{% get_comment_count for feature as comment_count %}
     <li>
@@ -34,8 +42,10 @@
 
 </div>
 
-<div class="form-section">
+<div class="form-section" id="submit-feature">
+  <div class="header">
   <h2>Suggest a feature</h2>
+  </div>
   <form method="post" action=".">
     <input type="hidden" name="csrf" value="{{ csrf }}"/>
     <dl>

@@ -3,26 +3,23 @@
 {% block content %}
 
 <div class="section">
-   <h2>Details</h2>
-
-  <div class="section-content">
+  <div class="header">
+    <h2>{{ feature.title }}</h2>
     {% include "feature_vote/vote.html" %}
  <p style="margin-top:0;"><small>Suggested by {{ feature.user_name }}; added {{ feature.created|timesince }} ago</small></p>
 
     <p>{{ feature.description|linebreaksbr }}</p>
   </div>
-</div>
-
-<div class="section">
-  <h2>Comments</h2>
 
 {% get_comment_list for feature as comments %}
 {% if comments %}
 
   <ul class="content-list">
 {% for comment in comments %}
-    <li>
-      <h3>posted by {{ comment.user_name }} {{ comment.submit_date|timesince }} ago</h3>
+    <li{% if comment.user.is_superuser %} class="superuser-comment"{% endif %}>
+      <h3>Posted by {{ comment.user_name }}{% if comment.user.is_superuser %} (Mobile Oxford team member){% endif %}; {{ comment.submit_date|timesince }} ago</h3>
+      
+      
 
       <p>{{ comment.comment|linebreaksbr }}</p>
     </li>
@@ -40,7 +37,9 @@
 
 <div class="form-section">
   {% get_comment_form for feature as form %}
+  <div class="header">
   <h2>Add a comment</h2>
+  </div>
   <form method="post" action="{% comment_form_target %}">
     {{ form.content_type }}
     {{ form.object_pk }}
