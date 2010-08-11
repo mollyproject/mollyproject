@@ -1,56 +1,10 @@
-/* Results Releases */
-dl#results {
-    
-
-    font-size: 1.2em;
-
-    margin:10px;
-    padding: 10px;
-    -webkit-border-radius:8px;
-    -moz-border-radius: 8px;
-    border-radius: 8px;
-
-    background:#B88C54 url('../../png/new/gradients/gradient-50-nrWhite-Transparent.png') repeat-x;
-    background:-webkit-gradient(linear, left top, right top, from(#dfdfdf), to(#fff));
-    background:-moz-linear-gradient(top, #dfdfdf, #fff);
-    background:linear-gradient(top, #dfdfdf, #fff);
-
-    -moz-box-shadow: 2px 2px 2px #333; -webkit-box-shadow: 2px 2px 2px #333; box-shadow: 2px 2px 2px #333;
-
-    border-left: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-dl#results dt {
-    color: #fff;
-    background: #002B4C;
-    background:-webkit-gradient(linear, left top, right top, from(#002B4C), to(rgba(223,223,223,0.2)));
-    background:-moz-linear-gradient(left, #002B4C, rgba(223,223,223,0.2));
-
-    padding: 3px;
-    margin: 8px 0;
-    text-shadow: 1px 1px 0px #111;
-}
-
-dl#results dd {
-    color: #111;
-    margin: 2px 0 2px 20px;
-    border-bottom: 1px solid #ccc;
-    text-shadow: 1px 1px 1px #ccc;
-    line-height: 1.3em;
-}
-
-dl#results dd.no-border {border: 0;}
-/* Results Releases */
 
 
 body {
     background:#bbc4ce url('../../png/new/gradients/backdrop-iphone.png') repeat-x top;
-
     font-family: "Liberation Sans", sans-serif;
     font-size:9pt;
-
     -webkit-text-size-adjust: none;
-
     text-align: left;
     margin: 0;
 }
@@ -72,6 +26,7 @@ div#loading_img {
     margin:0 20%;
     text-align: center;
 }
+/* End Async Loading */
 
 /* Index Page Specific
     - 1 CSS 2.1 Selector
@@ -92,7 +47,8 @@ div#index-search {
     top: 0;
     right:5px;
 }
-/* CSS 2.1 selector */
+
+/* CSS 2.1 */
 div#index-search input[type="text"] {
     float: left;
     /* Total height - 27px inc 2px border + 1px padding: does not correspond with 34px high search button, but displays correctly on iphone */
@@ -100,21 +56,10 @@ div#index-search input[type="text"] {
     width: 125px;
     font-size:1.2em;
     border: 2px solid #dddddd;
-    -webkit-border-top-left-radius: 5px;
-    -webkit-border-bottom-left-radius: 5px;
-    -webkit-border-top-right-radius:0;
-    -webkit-border-bottom-right-radius:0;
-
-    -moz-border-radius-topleft: 5px;
-    -moz-border-radius-bottomleft: 0px;
-    -moz-border-radius-topright: 0px;
-    -moz-border-radius-bottomright: 0px;
-}
-/* icon-menu & menu-x handles the menu icons on the front page
-    -webkit-border-top-left-radius: 5px; -webkit-border-bottom-left-radius: 5px; -webkit-border-top-right-radius:0; -webkit-border-bottom-right-radius:0;
-    -moz-border-radius-topleft: 5px; -moz-border-radius-bottomleft: 5px; -moz-border-radius-topright: 0px; -moz-border-radius-bottomright: 0px;
-    background: #fff;
-    border-top-left-radius: 5px; border-bottom-left-radius: 5px; border-top-right-radius:0; border-bottom-right-radius:0;
+    -webkit-border-top-left-radius: 5px;     -moz-border-radius-topleft: 5px;
+    -webkit-border-bottom-left-radius: 5px;    -moz-border-radius-bottomleft: 0px;
+    -webkit-border-top-right-radius:0;     -moz-border-radius-topright: 0px;
+    -webkit-border-bottom-right-radius:0;     -moz-border-radius-bottomright: 0px;
 }
 
 /* icon-menu & menu-x handles the menu icons on the front page 
@@ -152,6 +97,42 @@ li#menu-weather {background-image:url('../../png/index-icons/weather.png');}
 li#menu-weblearn {background-image:url('../../png/index-icons/weblearn.png');}
 li#menu-service_status {background-image:url('../../png/index-icons/service_status.png');}
 /* End Index Page Specific */
+
+/* Results Releases */
+dl#results {
+    font-size: 1.2em;
+    margin:10px;
+    padding: 10px;
+    border-radius: 8px; -moz-border-radius: 8px; -webkit-border-radius:8px;
+    background:#B88C54 url('../../png/new/gradients/gradient-50-nrWhite-Transparent.png') repeat-x;
+    background:-webkit-gradient(linear, left top, right top, from(#dfdfdf), to(#fff));
+    background:-moz-linear-gradient(top, #dfdfdf, #fff);
+    background:linear-gradient(top, #dfdfdf, #fff);
+    -moz-box-shadow: 2px 2px 2px #333; -webkit-box-shadow: 2px 2px 2px #333; box-shadow: 2px 2px 2px #333;
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+dl#results dt {
+    color: #fff;
+    background: #002B4C;
+    background:-webkit-gradient(linear, left top, right top, from(#002B4C), to(rgba(223,223,223,0.2)));
+    background:-moz-linear-gradient(left, #002B4C, rgba(223,223,223,0.2));
+    padding: 3px;
+    margin: 8px 0;
+    text-shadow: 1px 1px 0px #111;
+}
+
+dl#results dd {
+    color: #111;
+    margin: 2px 0 2px 20px;
+    border-bottom: 1px solid #ccc;
+    text-shadow: 1px 1px 1px #ccc;
+    line-height: 1.3em;
+}
+
+dl#results dd.no-border {border: 0;}
+/* End Results Releases */
+
 
 /* Breadcrumb Trail Styles */
 div#bc-header {
@@ -228,30 +209,20 @@ div#bc-title h1.feature_vote-header {  background-image:url('../../png/index-ico
 
 
 /* Standard List Styles */
+/* Content-List */
 ul.content-list, ul.link-list, ol.search-results {
     border-left: 1px solid rgba(255, 255, 255, 0.33);
     list-style: none;
     padding: 0; margin: 0;
-    
-    
-    -webkit-border-bottom-left-radius: 8px;
-    -webkit-border-bottom-right-radius: 8px;
-    -moz-border-radius-bottomleft: 8px;
-    -moz-border-radius-bottomright: 8px;
-    border-bottom-left-radius: 8px;
-    border-bottom-right-radius: 8px;
+    -webkit-border-bottom-left-radius: 8px; -moz-border-radius-bottomleft: 8px; border-bottom-left-radius: 8px;
+    -webkit-border-bottom-right-radius: 8px;    -moz-border-radius-bottomright: 8px;    border-bottom-right-radius: 8px;
 }
-
 
 ul.content-list {
     background-color:#dfdfdf;
     color:#222;
 }
-
-ul.content-list a {
-    color: #00f;
-}
-
+ul.content-list a {color: #00f;}
 ul.content-list h3 {
     color:#222;
     text-align:left;
@@ -259,21 +230,21 @@ ul.content-list h3 {
     padding:0;
     margin-bottom:5px;
 }
-
 ul.content-list li {
     padding:10px;
     border-top:1px solid #98a1ac;
     background:none;
     color: #222;
 }
+ul.content-list li:first-child, ul.link-list li:first-child, ol.search-results li:first-child {
+    border-top:none;
+}
+/* End Content-List */
 
+/* Link-List */
 ul.link-list, ol.search-results {
     background-color:#002B4C;
     color:#ffffff;
-}
-
-ul.stand-alone {
-    margin: 10px;
 }
 ul.link-list li, ol.search-results li {
     font-size:12pt;
@@ -281,11 +252,6 @@ ul.link-list li, ol.search-results li {
     padding: 10px;
     display:block;
 }
-
-ul.content-list li:first-child, ul.link-list li:first-child, ol.search-results li:first-child {
-    border-top:none;
-}
-
 ul.link-list li a, ol.search-results li a {
     color:#ffffff;
     text-decoration:none;
@@ -297,14 +263,20 @@ ul.link-list li a, ol.search-results li a {
     background-repeat: no-repeat;
     background-image:url('../../png/icons/list-arrow.png'); /* Default background image */
 }
+/* End Link-List */
+
 ul li span {
     background-position: left;
     background-repeat: no-repeat;
     display:block;
     padding-left: 25px;
 }
+ul.stand-alone {
+    margin: 10px;
+}
 
-    /* Background images primarily for list items */
+
+/* Background images primarily for list items */
 .phone {background-image:url('../../png/icons/list-phone.png');}
 .email {background-image:url('../../png/icons/list-email.png');}
 .external {background-image:url('../../png/icons/list-external.png');}
@@ -340,6 +312,7 @@ div.osm-license {
     background-opacity: 0.5;
 }
 /* End Webcams/Maps */
+
 
 /* News Articles */
 div.article {
@@ -410,7 +383,8 @@ div.form textarea#id_body {
     font-size: 1.4em;
     font-size: 1.4em;
 }
-    /* CSS 2.1 */
+
+/* CSS 2.1 */
 div.form button[type="submit"] {
     min-width: 80px ;
     font-size: 1.3em;
@@ -420,7 +394,6 @@ div.form button[type="submit"] {
 
 
 /* New Standard Search Form */
-
 table.search {
     padding: 0 10px;
     width:100%;
@@ -428,7 +401,7 @@ table.search {
 table tbody td {padding: 0; margin: 0;}
 table tbody tr {padding: 0; margin: 0;}
 
-/* CSS 2.1 selector */
+/* CSS 2.1 */
 table.search * input[type="text"] {
     float:left;
     width:100%;
@@ -437,14 +410,14 @@ table.search * input[type="text"] {
     padding: 2px 0 2px 2px;
     margin: 0;
     font-size: 20px;
-    -webkit-border-top-left-radius: 5px; -webkit-border-bottom-left-radius: 5px;
-    -webkit-border-top-right-radius:0; -webkit-border-bottom-right-radius:0;
+    -webkit-border-top-left-radius: 5px; -webkit-border-bottom-left-radius: 5px; 
+    -webkit-border-top-right-radius:0; -webkit-border-bottom-right-radius:0; 
     -moz-border-radius-topleft: 5px; -moz-border-radius-bottomleft: 5px;
     -moz-border-radius-topright: 0px; -moz-border-radius-bottomright: 0px;
-
+	border-top-left-radius: 5px; border-bottom-left-radius: 5px; 
+	border-top-right-radius: 0; border-bottom-right-radius: 0;
 }
-
-/* CSS 2.1 selector */
+/* CSS 2.1 */
 table.search * input[type="image"] {
     position: relative;
     margin:0; padding:0;
@@ -471,17 +444,6 @@ span.service-status, span.service-detail { font-size:90%; }
 span.service-detail { font-style:italic; }
 /* End OUCS Status */
 
-div.section-content {
-    padding:8px;
-    background-color: #DFDFDF;
-    -webkit-border-bottom-left-radius: 8px;
-    -webkit-border-bottom-right-radius: 8px;
-    -moz-border-radius-bottomleft: 8px;
-    -moz-border-radius-bottomright: 8px;
-    border-bottom-left-radius: 8px;
-    border-bottom-right-radius: 8px;
-    
-}
 
 /* Help Bubble */
 .help-bubble {
@@ -491,14 +453,11 @@ div.section-content {
     color:#000;
     background:#dfdfdf;
     width:auto;
-
-    -moz-border-radius:10px; -webkit-border-radius:10px; border-radius:10px;
-
     background:-webkit-gradient(linear, left top, left bottom, from(#dfdfdf), to(#fff));
     background:-moz-linear-gradient(top, #dfdfdf, #fff);
     background:linear-gradient(top, #dfdfdf, #fff);
-
     -moz-box-shadow: 2px 2px 2px #333; -webkit-box-shadow: 2px 2px 2px #333; box-shadow: 2px 2px 2px #333;
+    -moz-border-radius:10px; -webkit-border-radius:10px; border-radius:10px;
 }
 
 .help-bubble:after {
@@ -534,7 +493,6 @@ table.real-time-information {
 }
 
 table.real-time-information tr {
-
     border-collapse: collapse;
     border-top: 1px solid #FFBF00;
 }
@@ -543,6 +501,7 @@ table.real-time-information tr {
 
 
 /* Input Buttons */
+/* CSS 2.1 */
 button, input[type="submit"], input[type="reset"] {
     display: inline-block;
     color: #fff;
@@ -560,19 +519,10 @@ button, input[type="submit"], input[type="reset"] {
 
 
 /*** Generic ***/
-
 .invisible {display:none;}
 .center {text-align:center;}
 
-div.section {
-    background:#B88C54 url('../../png/new/gradients/gradient-50-nrWhite-Transparent.png') repeat-x;
-    margin:10px;
-    -webkit-border-radius:8px;
-    -moz-border-radius: 8px;
-    border-radius: 8px;
 
-    -moz-box-shadow: 2px 2px 2px #333; -webkit-box-shadow: 2px 2px 2px #333; box-shadow: 2px 2px 2px #333;
-}
 h2 {
     text-align:center;
     color:white;
@@ -612,7 +562,6 @@ div.note a{
     -moz-border-radius-topright: 8px;
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
-    border-top: 0;
 }
 .round-bottom {
     -webkit-border-bottom-left-radius: 8px;
@@ -624,11 +573,17 @@ div.note a{
 }
 div.pad-10{padding: 10px;}
 div.pad-5 {padding:5px;}
+
+div.no-round-bottom, ul.no-round-bottom {
+    -webkit-border-bottom-left-radius: 0px;   -moz-border-radius-bottomleft: 0px;     border-bottom-left-radius: 0px;
+    -webkit-border-bottom-right-radius: 0px;  -moz-border-radius-bottomright: 0px;    border-bottom-right-radius: 0px;
+}
+
+div.vote-box span {padding:0;}
 /* End Generic */
 
 
 /* Form sections */
-
 div.form-section {
     margin: 10px;
     padding: 0px;
@@ -676,14 +631,10 @@ div.form-section form > dl input, div.form-section form > dl textarea {
     border:1px solid #888;
 }
 
-
-div.form-section form > dl textarea {
-    height: 5em;
-}
+div.form-section form > dl textarea {height: 5em;}
 
 div.form-section ul.errorlist + input , div.form-section ul.errorlist + textarea {
     background-color: #f7d9d9;
-    /*border:1px solid red;*/
 }
 
 div.form-section form > dl dt {
@@ -703,7 +654,6 @@ div.form-section form > dl ul.errorlist {
 div.form-section form > p.help-bubble {
     margin-right: 138px;
     margin-left:0;
-
 }
 
 div.form-section form > p.submit-buttons {
@@ -723,47 +673,57 @@ div.form-section form > p.submit-buttons input {
 div.form-section form > p.submit-buttons input:first-child {
     margin-top:0;
 }
+/* End form section */
 
-
+/* Feature Vote */
 div.vote-box {
     text-align: center;
     font-weight: bold;
     width:35px;
     margin:0 0 5px 5px;
 }
-
-div.vote-box span {
-    padding:0;
-}
-
 ul.content-list li.superuser-comment {
-    background-color:#bfbfbf;
+	border: 2px solid #465347;
+	border-width: 2px 0 2px 0;
+	background-color:#CFE8D9;
+}
+/* End Feature Vote */
+
+
+/* Section formatting 
+	Layout (11 August 2010) - possibly a little broken
+	
+	div.section
+		div.header
+			followed by one of the following:
+			
+			ul.content-list
+			ul.link-list
+			div.section-content
+			div.form-section
+*/
+
+/* div.section is now 'legacy' - it should be replaced by div.section and one of the above */
+div.section {
+    background:#B88C54 url('../../png/new/gradients/gradient-50-nrWhite-Transparent.png') repeat-x;
+    margin:10px;
+    -webkit-border-radius:8px; -moz-border-radius: 8px; border-radius: 8px;
+    -moz-box-shadow: 2px 2px 2px #333; -webkit-box-shadow: 2px 2px 2px #333; box-shadow: 2px 2px 2px #333;
 }
 
-div.no-round-bottom, ul.no-round-bottom {
-    -webkit-border-bottom-left-radius: 0px;
-    -webkit-border-bottom-right-radius: 0px;
-    -moz-border-radius-bottomleft: 0px;
-    -moz-border-radius-bottomright: 0px;
-    border-bottom-left-radius: 0px;
-    border-bottom-right-radius: 0px;
-}
-
-div.section div.header, div.form-section div.header {
-    background:#dfdfdf;
+div.header {
     color:#222;
     padding:5px;
-    background:-moz-linear-gradient(top, #fff, #cfcfcf);
-    background:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#dfdfdf));
-    -webkit-border-top-right-radius:5px;
-    -webkit-border-top-left-radius:5px;
-    -moz-border-radius-topleft: 5px;
-    -moz-border-radius-topright: 5px;
     border-top:1px solid rgba(255, 255, 255, 0.33);
     border-left:1px solid rgba(255, 255, 255, 0.33);
+	background:#dfdfdf;
+    background:-moz-linear-gradient(top, #fff, #cfcfcf);
+    background:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#dfdfdf));
+    -webkit-border-top-right-radius:5px;-moz-border-radius-topright: 5px; border-top-right-radius: 5px;
+    -webkit-border-top-left-radius:5px; -moz-border-radius-topleft: 5px;  border-top-left-radius: 5px;
 }
 
-div.section div.header h2, div.form-section div.header h2 {
+div.header h2 {
     color: rgb(34, 34, 34);
     text-shadow: 2px 2px 2px rgb(204, 204, 204);
     text-align: left;
@@ -771,6 +731,15 @@ div.section div.header h2, div.form-section div.header h2 {
     padding-top: 3px;
 }
 
-div.section div.header + ul.content-list, div.form-section div.header + form, div.section div.header + div.section-content {
+/* CSS 2.1 */
+div.header + ul.content-list, div.header + form, div.header + div.section-content {
     border-top: 1px solid rgb(152, 161, 172);
 }
+
+div.section-content {
+    padding:8px;
+    background-color: #DFDFDF;
+    -webkit-border-bottom-left-radius: 8px;    -moz-border-radius-bottomleft: 8px;     border-bottom-left-radius: 8px;
+    -webkit-border-bottom-right-radius: 8px;    -moz-border-radius-bottomright: 8px;     border-bottom-right-radius: 8px;
+}
+/* End Section Formatting */
