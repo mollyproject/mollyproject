@@ -12,7 +12,8 @@ DEBUG_SECURE = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    # ('Your Name', 'your_email@domain.com'),
+    ('Alexander Dutton', 'alexander.dutton@oucs.ox.ac.uk'),
+    ('Tim Fernando', 'tim.fernando@oucs.ox.ac.uk'),
 )
 
 MANAGERS = ADMINS
@@ -251,8 +252,13 @@ APPLICATIONS = [
         display_to_user = False,
     ),
 
-    Application('molly.auth', 'auth', 'Auth',
+    Application('molly.apps.feature_vote', 'feature_vote', 'Feature suggestions',
         display_to_user = False,
+    ),
+
+    Application('molly.auth', 'auth', 'Authentication',
+        display_to_user = False,
+        secure = True,
     ),
 
     Application('molly.apps.sakai', 'weblearn', 'WebLearn',
@@ -292,17 +298,18 @@ API_KEYS = {
 
 SITE_MEDIA_PATH = os.path.join(project_root, 'site-media')
 
-INSTALLED_APPS = (
+INSTALLED_APPS = extract_installed_apps(APPLICATIONS) + (
     'django.contrib.auth',
     'django.contrib.admin',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.gis',
+    'django.contrib.comments',
     'molly.batch_processing',
     'molly.utils',
 #    'debug_toolbar',
-) + extract_installed_apps(APPLICATIONS)
+)
 
 # Settings for django-compress: CSS
 COMPRESS_CSS = {
@@ -359,3 +366,6 @@ FIXTURE_DIRS = [
 ]
 
 INTERNAL_IPS = ('127.0.0.1',)  # for the debug_toolbar
+
+SERVER_EMAIL = 'molly@m.ox.ac.uk'
+EMAIL_HOST = 'smtp.ox.ac.uk'

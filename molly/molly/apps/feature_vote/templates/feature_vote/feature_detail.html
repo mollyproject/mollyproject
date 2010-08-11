@@ -1,0 +1,68 @@
+{% extends "feature_vote/base.html" %}{% load comments %}
+
+{% block content %}
+
+<div class="section">
+  <div class="header">
+    <h2>{{ feature.title }}</h2>
+    {% include "feature_vote/vote.html" %}
+ <p style="margin-top:0;"><small>Suggested by {{ feature.user_name }}; added {{ feature.created|timesince }} ago</small></p>
+
+    <p>{{ feature.description|linebreaksbr }}</p>
+  </div>
+
+{% get_comment_list for feature as comments %}
+{% if comments %}
+
+  <ul class="content-list">
+{% for comment in comments %}
+    <li{% if comment.user.is_superuser %} class="superuser-comment"{% endif %}>
+      <h3>Posted by {{ comment.user_name }}{% if comment.user.is_superuser %} (Mobile Oxford team member){% endif %}; {{ comment.submit_date|timesince }} ago</h3>
+      
+      
+
+      <p>{{ comment.comment|linebreaksbr }}</p>
+    </li>
+{% endfor %}
+  </ul>
+
+{% else %}
+
+  <div class="section-content">
+    <p>There aren't yet any comments</p>
+  </div>
+{% endif %}
+</div>
+
+
+<div class="form-section">
+  {% get_comment_form for feature as form %}
+  <div class="header">
+  <h2>Add a comment</h2>
+  </div>
+  <form method="post" action="{% comment_form_target %}">
+    {{ form.content_type }}
+    {{ form.object_pk }}
+    {{ form.timestamp }}
+    {{ form.security_hash }}
+    <dl>
+      <dt>{{ form.name.label_tag }}:</dt>
+      <dd>{{ form.name.errors }}{{ form.name }}</dd>
+      <dt>{{ form.email.label_tag }}:</dt>
+      <dd>{{ form.email.errors }}{{ form.email }}</dd>
+      <dt>{{ form.comment.label_tag }}:</dt>
+      <dd>{{ form.comment.errors }}{{ form.comment }}</dd>
+      <dt class="invisible">{{ form.honeypot.label_tag }}:</dt>
+      <dd class="invisible">{{ form.honeypot.errors }}{{ form.honeypot }}</dd>
+    </dl>
+    
+    <p class="submit-buttons">
+      <input type="submit" value="Submit"/>
+    </p>
+
+    <div style="clear:both"></div>
+  </form>
+</div>
+
+{% endblock %}
+
