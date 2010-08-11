@@ -4,10 +4,13 @@
 
 {% block content %}
 <div class="section">
-    <h2>Sites</h2>
-<ul>
+    <div class="header">
+    <h2>Your Weblearn sites</h2>
+    <p>We're still working on a way of only showing you sites that you have tutorials available to book, bear with us in the mean time!</p>
+    </div>
+<ul class="link-list">
 {% for id, title in sites %}
-    <li {% if forloop.last %}class="round-bottom"{% endif %}>
+    <li class="{% if forloop.last %}round-bottom{% endif %}">
         <a href="{% url sakai:signup-site id %}">{{ title }}</a>
     </li>
 {% endfor %}

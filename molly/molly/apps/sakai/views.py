@@ -18,28 +18,6 @@ from molly.utils.xslt import transform, add_children_to_context
 def parse_iso_8601(s):
     return datetime.fromtimestamp(xml.utils.iso8601.parse(s)).replace(tzinfo=pytz.utc)
 
-class IndexView(BaseView):
-
-    @BreadcrumbFactory
-    def breadcrumb(cls, request, context):
-        return Breadcrumb(
-            cls.conf.local_name,
-            None,
-            'WebLearn',
-            lazy_reverse('sakai:index'),
-        )
-
-    def initial_context(cls, request):
-        return {
-            'tools': [{
-                'name': tool[0],
-                'title': tool[1],
-                'url': reverse('sakai:%s-index' % tool[0]),
-            } for tool in cls.conf.tools],
-        }
-
-    def handle_GET(cls, request, context):
-        return cls.render(request, context, 'sakai/index')
 
 class SakaiView(BaseView):
     breadcrumb = NullBreadcrumb
@@ -56,6 +34,30 @@ class SakaiView(BaseView):
             request.secure_session['sakai_site_titles'][site['id']] = site['title']
         return request.secure_session['sakai_site_titles'].get(id, 'Unknown site(%s)' % id)
 
+class IndexView(SakaiView):
+
+    @BreadcrumbFactory
+    def breadcrumb(cls, request, context):
+        return Breadcrumb(
+            cls.conf.local_name,
+            None,
+            'WebLearn',
+            lazy_reverse('sakai:index'),
+        )
+
+    def initial_context(cls, request): 
+        return {
+            'user_details': simplejson.load(request.opener.open(cls.build_url('/direct/user/current.json'))),
+            'tools': [{
+                'name': tool[0],
+                'title': tool[1],
+                'url': reverse('sakai:%s-index' % tool[0]),
+            } for tool in cls.conf.tools],
+        }
+
+    def handle_GET(cls, request, context):
+        
+        return cls.render(request, context, 'sakai/index')
 
 class SignupIndexView(SakaiView):
     def initial_context(cls, request):
