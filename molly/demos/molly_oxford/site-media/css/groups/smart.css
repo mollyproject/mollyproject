@@ -221,6 +221,7 @@ div#bc-title h1.events-header {      background-image:url('../../png/index-icons
 div#bc-title h1.weather-header {  background-image:url('../../png/index-icons/weather-bc.png');}
 div#bc-title h1.service_status-header {  background-image:url('../../png/index-icons/service_status-bc.png');}
 div#bc-title h1.weblearn-header {  background-image:url('../../png/index-icons/weblearn-bc.png');}
+div#bc-title h1.feature_vote-header {  background-image:url('../../png/index-icons/feature_vote-bc.png');}
 /* End Breadcrumb Trail Styles */
 
 
@@ -232,6 +233,7 @@ ul.content-list, ul.link-list, ol.search-results {
     list-style: none;
     padding: 0; margin: 0;
     
+    
     -webkit-border-bottom-left-radius: 8px;
     -webkit-border-bottom-right-radius: 8px;
     -moz-border-radius-bottomleft: 8px;
@@ -240,14 +242,6 @@ ul.content-list, ul.link-list, ol.search-results {
     border-bottom-right-radius: 8px;
 }
 
-ul.no-round-bottom {
-    -webkit-border-bottom-left-radius: 0px;
-    -webkit-border-bottom-right-radius: 0px;
-    -moz-border-radius-bottomleft: 0px;
-    -moz-border-radius-bottomright: 0px;
-    border-bottom-left-radius: 0px;
-    border-bottom-right-radius: 0px;
-}
 
 ul.content-list {
     background-color:#dfdfdf;
@@ -319,10 +313,6 @@ ul li span {
 .video {background-image:url('../../png/icons/list-video.png');}
     /* End background images for list items */
 /* End Standard List Styles */
-
-
-
-
 
 
 /* Webcams/Maps Display */
@@ -481,7 +471,17 @@ span.service-status, span.service-detail { font-size:90%; }
 span.service-detail { font-style:italic; }
 /* End OUCS Status */
 
-
+div.section-content {
+    padding:8px;
+    background-color: #DFDFDF;
+    -webkit-border-bottom-left-radius: 8px;
+    -webkit-border-bottom-right-radius: 8px;
+    -moz-border-radius-bottomleft: 8px;
+    -moz-border-radius-bottomright: 8px;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    
+}
 
 /* Help Bubble */
 .help-bubble {
@@ -631,7 +631,7 @@ div.pad-5 {padding:5px;}
 
 div.form-section {
     margin: 10px;
-    padding: 8px;
+    padding: 0px;
 
     background: #dfdfdf;
     background:-webkit-gradient(linear, left top, left bottom, from(#eee), to(#dfdfdf));
@@ -645,6 +645,14 @@ div.form-section {
     text-shadow: 1px 1px 1px #ccc;
 }
 
+div.form-section h2 {
+    color:#002147;
+}
+
+div.form-section form {
+    padding: 8px;
+}
+
 div.form-section form > dl {
     padding-right:2px;
     margin-top:0;
@@ -654,22 +662,42 @@ div.form-section form > dl dd {
     margin-left:0;
 }
 
-div.form-section form > dl input {
+div.form-section form > dl input, div.form-section form > dl textarea {
     width:100%;
-    height:30px;
+    height:24px;
     border:0;
     padding: 2px 0 2px 2px;
     margin: 0;
-    font-size: 20px;
+    font-size: 16px;
     -webkit-border-radius:5px;
     -moz-border-radius:5px;
     border-radius: 5px;
+    font-family: "Liberation Sans", Arial, sans-serif;
+    border:1px solid #888;
+}
+
+
+div.form-section form > dl textarea {
+    height: 5em;
+}
+
+div.form-section ul.errorlist + input , div.form-section ul.errorlist + textarea {
+    background-color: #f7d9d9;
+    /*border:1px solid red;*/
 }
 
 div.form-section form > dl dt {
     font-size: 1.2em;
     color: #333;
     text-shadow: 1px 1px 1px #aaa;
+    margin-top:4px;
+}
+
+div.form-section form > dl ul.errorlist {
+    list-style:none;
+    padding:4px;
+    margin:0 0 0 0;
+    color:#301010;
 }
 
 div.form-section form > p.help-bubble {
@@ -687,11 +715,62 @@ div.form-section form > p.submit-buttons {
 
 div.form-section form > p.submit-buttons input {
     height: 30px;
-    margin-top: 15px;
+    margin-top: 8px;
     font-size: 1.2em;
     width:100%;
 }
 
 div.form-section form > p.submit-buttons input:first-child {
     margin-top:0;
+}
+
+
+div.vote-box {
+    text-align: center;
+    font-weight: bold;
+    width:35px;
+    margin:0 0 5px 5px;
+}
+
+div.vote-box span {
+    padding:0;
+}
+
+ul.content-list li.superuser-comment {
+    background-color:#bfbfbf;
+}
+
+div.no-round-bottom, ul.no-round-bottom {
+    -webkit-border-bottom-left-radius: 0px;
+    -webkit-border-bottom-right-radius: 0px;
+    -moz-border-radius-bottomleft: 0px;
+    -moz-border-radius-bottomright: 0px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+
+div.section div.header, div.form-section div.header {
+    background:#dfdfdf;
+    color:#222;
+    padding:5px;
+    background:-moz-linear-gradient(top, #fff, #cfcfcf);
+    background:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#dfdfdf));
+    -webkit-border-top-right-radius:5px;
+    -webkit-border-top-left-radius:5px;
+    -moz-border-radius-topleft: 5px;
+    -moz-border-radius-topright: 5px;
+    border-top:1px solid rgba(255, 255, 255, 0.33);
+    border-left:1px solid rgba(255, 255, 255, 0.33);
+}
+
+div.section div.header h2, div.form-section div.header h2 {
+    color: rgb(34, 34, 34);
+    text-shadow: 2px 2px 2px rgb(204, 204, 204);
+    text-align: left;
+    font-size: 11pt;
+    padding-top: 3px;
+}
+
+div.section div.header + ul.content-list, div.form-section div.header + form, div.section div.header + div.section-content {
+    border-top: 1px solid rgb(152, 161, 172);
 }
