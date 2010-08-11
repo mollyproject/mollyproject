@@ -295,7 +295,7 @@ API_KEYS = {
 
 SITE_MEDIA_PATH = os.path.join(project_root, 'site-media')
 
-INSTALLED_APPS = (
+INSTALLED_APPS = extract_installed_apps(APPLICATIONS) + (
     'django.contrib.auth',
     'django.contrib.admin',
     'django.contrib.contenttypes',
@@ -305,7 +305,7 @@ INSTALLED_APPS = (
     'molly.batch_processing',
     'molly.utils',
 #    'debug_toolbar',
-) + extract_installed_apps(APPLICATIONS)
+)
 
 CACHE_DIR = '/var/cache/molly'
 SRID = 27700
