@@ -61,12 +61,18 @@
    </thead>
    
    <tbody>
-    <tr>
-        
-    </tr>
    
+   {% for ts in event.signupTimeSlotItems %}
+    <tr class="{% if ts.signedUp %}signed-up{%endif%}">
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+   {% endfor %}
    </tbody>
 </table>
+
+{#
 <ul>
 {% for ts in event.signupTimeSlotItems %}
 <li {% if ts.signedUp %} style="background:green;"{% endif %}>
@@ -144,5 +150,7 @@
 </li>
 {% endfor %}
 </ul>
+
+#}
 </div>
 {% endblock %}
