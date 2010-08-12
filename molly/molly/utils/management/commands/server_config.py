@@ -1,4 +1,4 @@
-import os
+import os, sys
 
 from optparse import make_option
 
@@ -47,17 +47,26 @@ class Command(BaseCommand):
 
         use_https = any(app.secure for app in settings.APPLICATIONS)
 
+        sys_path = map(os.path.normpath, [
+            os.path.join(project.__path__[0], '..'),
+        ] + filter(lambda x:x != '', sys.path))
+
+        project_path = os.path.normpath(os.path.join(project.__path__[0], '..'))
+        if project_path not in sys_path:
+            sys_path.insert(0, project_path)
+
+        sys_path = [p for i,p in enumerate(sys_path) if p not in sys_path[:i]]
+
         context = Context({
-            'project_import_root': os.path.normpath(os.path.join(project.__path__[0], '..')),
-            'project_root': project.__path__[0],
-            'django_root': django.__path__[0],
-            'molly_import_root': os.path.normpath(os.path.join(molly.__path__[0], '..')),
+            'project_root': os.path.abspath(project.__path__[0]),
+            'django_root': os.path.abspath(django.__path__[0]),
+            'sys_path': sys_path,
             'use_https': use_https,
             'server_ip': self.get_server_ip(options),
             'django_settings_module': django_settings_module,
             'server_name': options.get('server_name'),
-            'ssl_cert_file': os.path.abspath(options.get('cert', '')),
-            'ssl_cert_key_file': os.path.abspath(options.get('cert_key', '')),
+            'ssl_cert_file': os.path.abspath(options['cert']) if options['cert'] else None,
+            'ssl_cert_key_file': os.path.abspath(options['cert_key']) if options['cert_key'] else None,
         })
 
         print template.render(context)

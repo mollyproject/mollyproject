@@ -176,7 +176,7 @@ class BaseView(object):
                 # WebKit's Accept header is broken. See
                 # http://www.newmediacampaigns.com/page/webkit-team-admits-accept-header-error
                 # and https://bugs.webkit.org/show_bug.cgi?id=27267
-                if accept == 'application/xml' and ' AppleWebKit/' in request.META.get('HTTP_USER_AGENT', ''):
+                if accept in ('application/xml', 'text/xml') and ' AppleWebKit/' in request.META.get('HTTP_USER_AGENT', ''):
                     continue
                 if accept in cls.FORMATS_BY_MIMETYPE:
                     renderer = cls.FORMATS_BY_MIMETYPE[accept]

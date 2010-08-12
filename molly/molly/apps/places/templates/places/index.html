@@ -50,7 +50,7 @@
 <div class="section">
   <h2>Points of Interest</h2>
   {% include "geolocation/update_location_embed.html" %}
-  <ul>
+  <ul class="link-list">
     <li><a href="{% url places:nearby_list %}">Near Me</a></li>
     <li class="round-bottom"><a href="{% url places:category_list %}">By Category</a></li>
   </ul>

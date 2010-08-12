@@ -18,28 +18,6 @@ from molly.utils.xslt import transform, add_children_to_context
 def parse_iso_8601(s):
     return datetime.fromtimestamp(xml.utils.iso8601.parse(s)).replace(tzinfo=pytz.utc)
 
-class IndexView(BaseView):
-
-    @BreadcrumbFactory
-    def breadcrumb(cls, request, context):
-        return Breadcrumb(
-            cls.conf.local_name,
-            None,
-            'WebLearn',
-            lazy_reverse('sakai:index'),
-        )
-
-    def initial_context(cls, request):
-        return {
-            'tools': [{
-                'name': tool[0],
-                'title': tool[1],
-                'url': reverse('sakai:%s-index' % tool[0]),
-            } for tool in cls.conf.tools],
-        }
-
-    def handle_GET(cls, request, context):
-        return cls.render(request, context, 'sakai/index')
 
 class SakaiView(BaseView):
     breadcrumb = NullBreadcrumb
@@ -56,6 +34,30 @@ class SakaiView(BaseView):
             request.secure_session['sakai_site_titles'][site['id']] = site['title']
         return request.secure_session['sakai_site_titles'].get(id, 'Unknown site(%s)' % id)
 
+class IndexView(SakaiView):
+
+    @BreadcrumbFactory
+    def breadcrumb(cls, request, context):
+        return Breadcrumb(
+            cls.conf.local_name,
+            None,
+            'WebLearn',
+            lazy_reverse('sakai:index'),
+        )
+
+    def initial_context(cls, request): 
+        return {
+            'user_details': simplejson.load(request.opener.open(cls.build_url('/direct/user/current.json'))),
+            'tools': [{
+                'name': tool[0],
+                'title': tool[1],
+                'url': reverse('sakai:%s-index' % tool[0]),
+            } for tool in cls.conf.tools],
+        }
+
+    def handle_GET(cls, request, context):
+        
+        return cls.render(request, context, 'sakai/index')
 
 class SignupIndexView(SakaiView):
     def initial_context(cls, request):
@@ -88,7 +90,7 @@ class SignupSiteView(SakaiView):
     def initial_context(cls, request, site):
         url = cls.build_url('direct/signupEvent/site/%s.xml' % site)
         events_et = etree.parse(request.opener.open(url)).getroot().findall('signupEvent')
-        events = {}
+        events = []
         for event_et in events_et:
             event = {
                 'start': parse_iso_8601(event_et.find('startTime').attrib['date']),
@@ -98,12 +100,13 @@ class SignupSiteView(SakaiView):
                 'id': event_et.find('id').text,
             }
             if event['end'] >= datetime.utcnow().replace(tzinfo=pytz.utc):
-                events[event['id']] = event
+                events.append(event)     
         return {
             'site': site,
             'events': events,
             'title': cls.get_site_title(request, site),
             'complex_shorten': True,
+            'now': datetime.utcnow(),
         }
 
     @BreadcrumbFactory

@@ -12,7 +12,8 @@ DEBUG_SECURE = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    # ('Your Name', 'your_email@domain.com'),
+    ('Alexander Dutton', 'alexander.dutton@oucs.ox.ac.uk'),
+    ('Tim Fernando', 'tim.fernando@oucs.ox.ac.uk'),
 )
 
 MANAGERS = ADMINS
@@ -69,11 +70,13 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = (
+    'molly.wurfl.middleware.WurflMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'molly.wurfl.middleware.WurflMiddleware',
     'molly.auth.middleware.SecureSessionMiddleware',
+    'molly.stats.middleware.StatisticsMiddleware',
+    'molly.apps.url_shortener.middleware.URLShortenerMiddleware',
 #    'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
@@ -100,6 +103,10 @@ TEMPLATE_DIRS = (
 
 APPLICATIONS = [
     Application('molly.apps.home', 'home', 'Home',
+        display_to_user = False,
+    ),
+
+    Application('molly.apps.desktop', 'desktop', 'Desktop',
         display_to_user = False,
     ),
 
@@ -193,7 +200,7 @@ APPLICATIONS = [
                 title_clean_re = r'm\.ox \| (.*)',
             ),
         ],
-        query_expansion_file = 'query_expansion.txt',
+        query_expansion_file = os.path.join(project_root, 'data', 'query_expansion.txt'),
         display_to_user = False,
     ),
 
@@ -222,6 +229,10 @@ APPLICATIONS = [
         display_to_user = False,
     ),
 
+    Application('molly_oxford.apps.river_status', 'river_status', 'River status',
+        provider = Provider('molly_oxford.providers.apps.river_status.RiverStatusProvider'),
+    ),
+
     Application('molly.apps.feedback', 'feedback', 'Feedback',
         display_to_user = False,
     ),
@@ -235,9 +246,15 @@ APPLICATIONS = [
         expose_view = True,
     ),
 
-#    Application('molly.apps.url_shortener', 'url_shortener', 'URL Shortener',
-#        display_to_user = False,
-#    ),
+    Application('molly.stats', 'stats', 'Statistics'),
+
+    Application('molly.apps.url_shortener', 'url_shortener', 'URL Shortener',
+        display_to_user = False,
+    ),
+
+    Application('molly.apps.feature_vote', 'feature_vote', 'Feature suggestions',
+        display_to_user = False,
+    ),
 
     Application('molly.auth', 'auth', 'Authentication',
         display_to_user = False,
@@ -281,17 +298,18 @@ API_KEYS = {
 
 SITE_MEDIA_PATH = os.path.join(project_root, 'site-media')
 
-INSTALLED_APPS = (
+INSTALLED_APPS = extract_installed_apps(APPLICATIONS) + (
     'django.contrib.auth',
     'django.contrib.admin',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
+    'django.contrib.gis',
+    'django.contrib.comments',
     'molly.batch_processing',
     'molly.utils',
 #    'debug_toolbar',
-    'compress',
-) + extract_installed_apps(APPLICATIONS)
+)
 
 # Settings for django-compress: CSS
 COMPRESS_CSS = {
@@ -348,3 +366,6 @@ FIXTURE_DIRS = [
 ]
 
 INTERNAL_IPS = ('127.0.0.1',)  # for the debug_toolbar
+
+SERVER_EMAIL = 'molly@m.ox.ac.uk'
+EMAIL_HOST = 'smtp.ox.ac.uk'

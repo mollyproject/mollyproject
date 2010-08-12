@@ -60,3 +60,4 @@ class OxontimeMapsProvider(BaseMapsProvider):
             'services': services,
             'pip_info': pip_info,
         }
+        entity.metadata['meta_refresh'] = 60

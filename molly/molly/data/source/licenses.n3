@@ -1,0 +1,139 @@
+@prefix dc:      <http://purl.org/dc/elements/1.1/> .
+@prefix geo:     <http://www.w3.org/2003/01/geo/wgs84_pos#> .
+@prefix foaf:    <http://xmlns.com/foaf/0.1/> .
+@prefix vann:    <http://purl.org/vocab/vann/> .
+@prefix vs:      <http://www.w3.org/2003/06/sw-vocab-status/ns#> .
+@prefix cs:      <http://purl.org/vocab/changeset/schema#> .
+@prefix sioc:    <http://rdfs.org/sioc/ns#> .
+@prefix v:       <http://www.w3.org/2006/vcard/ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix dcat:    <http://vocab.deri.ie/dcat#> .
+@prefix dctype:  <http://purl.org/dc/dcmitype/> .
+@prefix dct:     <http://purl.org/dc/terms/> .
+@prefix event:   <http://purl.org/NET/c4dm/event.owl#> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix aiiso:   <http://purl.org/vocab/aiiso/schema#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
+@prefix cc:      <http://web.resource.org/cc/> .
+@prefix exif:    <http://www.w3.org/2003/12/exif/ns> .
+
+<http://www.opendatacommons.org/licenses/pddl/1.0/>
+      a       dctype:LicenseDocument ;
+      dct:title "Public Domain Dedication and License v1.0" ;
+      dct:description "A license to copy, distribute, use, create derivative works from, modify, transform, and build upon the data, with no restrictions imposed on your use of the PDDL licensed data." .
+
+
+<http://creativecommons.org/publicdomain/zero/1.0/>
+      a       dctype:LicenseDocument ;
+      dct:title "CC0 1.0 Universal" ;
+      dct:description """The person who associated a work with this document has dedicated the work to the Commons by waiving all of his or her rights to the work worldwide under copyright law and all related or neighboring legal rights he or she had in the work, to the extent allowable by law.
+
+Works under CC0 do not require attribution. When citing the work, you should not imply endorsement by the author.""" ;
+      foaf:logo <http://i.creativecommons.org/l/publicdomain/80x15.png> .
+
+<http://creativecommons.org/licenses/by/1.0/>
+      a       dctype:LicenseDocument ;
+      dct:title "Creative Commons Attribution 1.0 Generic" .
+
+<http://creativecommons.org/licenses/by/2.0/>
+      a       dctype:LicenseDocument ;
+      dct:title "Creative Commons Attribution 2.0 Generic" .
+
+<http://creativecommons.org/licenses/by/2.5/>
+      a       dctype:LicenseDocument ;
+      dct:title "Creative Commons Attribution 2.5 Generic" .
+
+<http://creativecommons.org/licenses/by/3.0/>
+      a       dctype:LicenseDocument ;
+      dct:title "Creative Commons Attribution 3.0 Unported" ;
+      dct:description "This license lets others distribute, remix, tweak, and build upon the licensed work, even commercially, as long as they credit the author for the original creation." ;
+      foaf:logo <http://i.creativecommons.org/l/by/3.0/80x15.png> .
+
+<http://creativecommons.org/licenses/by-sa/3.0/>
+      a       dctype:LicenseDocument ;
+      dct:title "Creative Commons Attribution-ShareAlike 3.0 Unported" ;
+      foaf:logo <http://i.creativecommons.org/l/by-sa/3.0/80x15.png> .
+
+<http://creativecommons.org/licenses/by-nd/3.0/>
+      a       dctype:LicenseDocument ;
+      dct:title "Creative Commons Attribution-NoDerivs 3.0 Unported" ;
+      foaf:logo <http://i.creativecommons.org/l/by-nd/3.0/80x15.png> .
+
+<http://creativecommons.org/licenses/by-nc/3.0/>
+      a       dctype:LicenseDocument ;
+      dct:title "Creative Commons Attribution-NonCommercial 3.0 Unported" ;
+      foaf:logo <http://i.creativecommons.org/l/by-nc/3.0/80x15.png> .
+
+<http://creativecommons.org/licenses/by-nc-sa/2.0/>
+      a       dctype:LicenseDocument ;
+      dct:title "Creative Commons Attribution-NonCommercial-ShareAlike 2.0 Generic" ;
+      foaf:logo <http://i.creativecommons.org/l/by-nc-sa/2.0/80x15.png> .
+
+<http://creativecommons.org/licenses/by-nc-sa/2.0/uk/>
+      a       dctype:LicenseDocument ;
+      dct:title "Creative Commons Attribution-NonCommercial-ShareAlike 2.0 UK: England & Wales" ;
+      foaf:logo <http://i.creativecommons.org/l/by-nc-sa/2.0/80x15.png> .
+
+<http://creativecommons.org/licenses/by-nc-sa/3.0/>
+      a       dctype:LicenseDocument ;
+      dct:title "Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported" ;
+      foaf:logo <http://i.creativecommons.org/l/by-nc-sa/3.0/80x15.png> .
+
+<http://creativecommons.org/licenses/by-nc-nd/3.0/>
+      a       dctype:LicenseDocument ;
+      dct:title "Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported" ;
+      foaf:logo <http://i.creativecommons.org/l/by-nc-nd/3.0/80x15.png> .
+
+
+<http://www.affero.org/oagpl.html>
+      a       dctype:LicenseDocument ;
+      dct:title "Affero General Public Licence version 1" .
+
+
+<http://www.gnu.org/licenses/gpl-1.0.html>
+      a       dctype:LicenseDocument ;
+      dct:title "GNU General Public License, version 1.0" .
+
+<http://www.gnu.org/licenses/gpl-2.0.html>
+      a       dctype:LicenseDocument ;
+      dct:title "GNU General Public License, version 2.0" .
+
+<http://www.gnu.org/licenses/gpl-3.0.html>
+      a       dctype:LicenseDocument ;
+      dct:title "GNU General Public License, version 3.0" .
+
+<http://www.gnu.org/licenses/lgpl-2.0.html>
+      a       dctype:LicenseDocument ;
+      dct:title "GNU Library General Public License v2.0" .
+
+<http://www.gnu.org/licenses/lgpl-2.1.html>
+      a       dctype:LicenseDocument ;
+      dct:title "GNU Lesser General Public License v2.1" .
+
+<http://www.gnu.org/licenses/lgpl-3.0.html>
+      a       dctype:LicenseDocument ;
+      dct:title "GNU Lesser General Public License v3.0" .
+
+<http://www.gnu.org/licenses/agpl-3.0.html>
+      a       dctype:LicenseDocument ;
+      dct:title "GNU Affero General Public License" .
+
+<http://www.gnu.org/licenses/fdl-1.1.html>
+      a       dctype:LicenseDocument ;
+      dct:title "GNU Free Documentation License, version 1.1" .
+
+<http://www.gnu.org/licenses/fdl-1.2.html>
+      a       dctype:LicenseDocument ;
+      dct:title "GNU Free Documentation License, version 1.2" .
+
+<http://www.gnu.org/licenses/fdl-1.3.html>
+      a       dctype:LicenseDocument ;
+      dct:title "GNU Free Documentation License, version 1.3" .
+
+
+<http://www.opensource.org/licenses/afl-3.0.php>
+      a       dctype:LicenseDocument ;
+      dct:title "Academic Free License 3.0" .
+
