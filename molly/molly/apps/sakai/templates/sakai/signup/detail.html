@@ -1,5 +1,9 @@
 {% extends "sakai/base.html" %}{% load sakai %}{% load portal_misc %}
 
+{% block extrahead %}
+
+{% endblock %}
+
 {% block content %}
 
 <div class="section">
@@ -26,6 +30,7 @@
         {{ event.startTime|from_sakai_timestamp|date:"g:iA, d M Y"|lower }} - {{ event.endTime|from_sakai_timestamp|date:"g:iA, d M Y"|lower }}
       {% endifequal %}
   </dd>
+
       
   <dt>Status</dt>
 {% if event.startToSignUp and not event.passedDeadline %}
@@ -46,10 +51,25 @@
 {# End Metadata about the tutorial slots #}
 
 
+<table>
+    <thead>
+    <tr>
+        <th></th>
+        <th></th>
+        <th></th>
+   </tr>
+   </thead>
+   
+   <tbody>
+    <tr>
+        
+    </tr>
+   
+   </tbody>
+</table>
 <ul>
 {% for ts in event.signupTimeSlotItems %}
-<li {% if forloop.last %}class="round-bottom"{% endif %}{% if ts.signedUp %} style="background:green;"{% endif %}>
-    
+<li {% if ts.signedUp %} style="background:green;"{% endif %}>
     {# Time Range -- needs multi date possibility #}
     {{ ts.startTime|from_sakai_timestamp|date:"g:iA"|lower }} - {{ ts.endTime|from_sakai_timestamp|date:"g:iA"|lower }}
     <br />

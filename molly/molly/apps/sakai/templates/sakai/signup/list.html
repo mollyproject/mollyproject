@@ -3,11 +3,10 @@
 {% block extrahead %}
 <style type="text/css">
 
-.header {
-    border-bottom: 1px solid #888;
-}
+.header {border-bottom: 1px solid #888;}
+
 table {
-    background: #dfdfdf;
+    background: #eee;
     border-spacing:0;
     width: 100%;
     border-bottom-left-radius: 5px;
@@ -15,33 +14,53 @@ table {
     text-shadow: 0px 1px 1px #fff;
 }
 
+table tr.new-week td {
+    background: #DEE6FF;
+    background: 
+    -webkit-gradient(linear, left top, left bottom, from(#A7BAC7), to(#DEE6FF));
+    background:
+    -moz-linear-gradient(center top, #A7BAC7, #DEE6FF);
+    padding: 5px 5px 5px 7px; 
+    border: 0;
+    font-size: 1.1em;
+}
+
 table tr td {
     border-bottom: 1px solid #888;
     border-top: 1px solid #fff;
-    
-}
-
-table tr td:last-child {
-    color: #fff;
-    background:#002147 url('{{ MEDIA_URL }}png/icons/list-arrow.png') no-repeat;
-    background-position: right center;
-
+    padding: 7px 0;
+    background: -webkit-gradient(linear, left top, left bottom, from(#f3f3f3), to(#eee))
 }
 
 table tr td:last-child a {
     color: #fff;
     text-decoration:none;
     display: block;
-}
-
-table tr td.tutorial-date {
-    /*color: #fff;
-    background: #79504A;*/
+    height: 2em;
+    line-height: 2em;
+    vertical-align: middle; 
+    text-shadow: 0 -1px 1px #000;
 }
 
 table tr:last-child td:first-child {border-bottom-left-radius: 5px;}
 table tr:last-child td:last-child {border-bottom-right-radius: 5px;}
 
+div.button {
+    background:#002147 url('{{ MEDIA_URL }}png/icons/list-arrow.png') no-repeat;
+    background-position: right center;
+    
+    margin: 0 5px 0 auto;
+    min-width: 70px;
+    max-width: 100px;
+    padding: 3px;
+ 
+    box-shadow: 3px 3px 4px #999;-webkit-box-shadow: 3px 3px 4px #999;-moz-box-shadow: 3px 3px 4px #999;
+    border-radius: 3px; -webkit-border-radius: 3px; -moz-border-radius: 3px; 
+    
+    border-color: #ccc;
+    border: 1px solid rgba(255,255,255,0.3);
+    border-width: 1px 0 0 1px; 
+}
 </style>
 
 {% endblock %}
@@ -56,10 +75,18 @@ table tr:last-child td:last-child {border-bottom-right-radius: 5px;}
     </div>
 {#<ul> #}
 
+{% regroup events by start|date:"W" as weeks %}
 <table>
 {% for event in events %}
-<tr>
-    <td class="center tutorial-date">
+
+{% ifchanged event.start|oxdate:"%(week)s%(ordinal)s%(term_long)s" %}
+<tr class="new-week"><td colspan='3'>
+{{ event.start|oxdate:"%(week)s%(ordinal)s Week %(term_long)s Term" }}
+</td></tr>
+<tr> <td class="center tutorial-date ">
+{% else %}
+<tr><td class="center tutorial-date">
+{% endifchanged %}
     {% ifequal event.start|date:"dMY" event.end|date:"dMY" %}
       {# 1. If start and end time are on the same day #}  
       
@@ -103,19 +130,17 @@ table tr:last-child td:last-child {border-bottom-right-radius: 5px;}
     </td>
     <td>
         {{ event.title }}
-        <br /> 
-        <small>{{ event.start|oxdate:"%(week)s%(ordinal)s Week %(term_long)s Term" }}</small>
     </td>
-    <td class="center"><a href="{% url sakai:signup-event site,event.id %}">Book</a></td>
-    
-</tr>
+    <td><div class="button"><a href="{% url sakai:signup-event site,event.id %}">Book</a></div></td>
+  </tr> {% endfor %}
 
 
-
-
-{% endfor %}
 </table>
 {#</ul>#}
 </div>
 {% endblock %}
 
+
+
+{# 
+ #}
