@@ -1,6 +1,11 @@
 from __future__ import absolute_import
 import urlparse, urllib2
 
+if not hasattr(urlparse, 'parse_qs'):
+    import cgi
+    urlparse.parse_qs = cgi.parse_qs
+    del cgi
+
 from oauth import oauth
 
 from django.http import HttpResponseRedirect, Http404
