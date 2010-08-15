@@ -58,6 +58,11 @@ class OAuthView(BaseView):
                     raise
         request.urlopen = urlopen
 
+        # If we aren't authenticated but the view requires it then try
+        # to obtain a valid oauth token immediately.
+        if token_type != 'access_token' and getattr(cls, 'force_auth', False):
+            return cls.authorize(request, *args, **kwargs)
+
         try:
             return super(OAuthView, cls).__new__(cls, request, *args, **kwargs)
         except OAuthHTTPError, e:

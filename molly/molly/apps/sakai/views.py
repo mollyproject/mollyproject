@@ -60,6 +60,8 @@ class IndexView(SakaiView):
         return cls.render(request, context, 'sakai/index')
 
 class SignupIndexView(SakaiView):
+    force_auth = True
+
     def initial_context(cls, request):
         sites = etree.parse(request.opener.open(cls.build_url('direct/site.xml')))
         return {
@@ -167,6 +169,8 @@ class SignupEventView(SakaiView):
         return HttpResponseSeeOther(request.path)
 
 class SiteView(SakaiView):
+    force_auth = True
+
     def handle_GET(cls, request, context):
         sites = etree.parse(request.opener.open(cls.build_url('direct/site.xml')))
         context['sites'] = [e.find('entityTitle').text for e in sites.getroot()]
@@ -188,6 +192,8 @@ class DirectView(SakaiView):
         return cls.render(request, context, 'sakai/direct/index')
 
 class PollIndexView(SakaiView):
+    force_auth = True
+
     def initial_context(cls, request):
         json = simplejson.load(request.opener.open(cls.build_url('direct/poll.json')))
         polls = []
@@ -262,6 +268,8 @@ class PollDetailView(SakaiView):
         return HttpResponseSeeOther(request.path)
 
 class EvaluationIndexView(SakaiView):
+    force_auth = True
+
     @BreadcrumbFactory
     def breadcrumb(cls, request, context):
         return Breadcrumb(
