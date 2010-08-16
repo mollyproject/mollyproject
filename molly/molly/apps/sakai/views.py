@@ -6,9 +6,9 @@ import xml.utils.iso8601
 
 from django.http import Http404, HttpResponse, HttpResponseForbidden
 from django.core.urlresolvers import reverse
-from django.template import loader, Context
 from django.core.exceptions import PermissionDenied
 
+from molly.auth.models import UserIdentifier
 from molly.auth.oauth.clients import OAuthHTTPError
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
@@ -33,6 +33,18 @@ class SakaiView(BaseView):
         for site in json['site_collection']:
             request.secure_session['sakai_site_titles'][site['id']] = site['title']
         return request.secure_session['sakai_site_titles'].get(id, 'Unknown site(%s)' % id)
+
+    def add_user_identifiers(cls, request):
+        user_details = simplejson.load(request.urlopen(cls.build_url('direct/user/current.json')))
+        for target, identifier in cls.conf.identifiers:
+            value = user_details
+            for i in identifier:
+                if not i in value:
+                    break
+                value = value[i]
+            else:
+                UserIdentifier.set(request.user, target, value)
+
 
 class IndexView(SakaiView):
 

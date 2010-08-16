@@ -14,6 +14,8 @@ from django.core.exceptions import PermissionDenied
 
 from molly.utils.views import BaseView
 
+from molly.auth.utils import unify_users
+from molly.auth.models import ExternalServiceToken
 from molly.auth.oauth.clients import OAuthClient, OAuthHTTPError
 
 class OAuthView(BaseView):
@@ -24,49 +26,25 @@ class OAuthView(BaseView):
     """
 
     def __new__(cls, request, *args, **kwargs):
-        if not 'oauth_tokens' in request.secure_session:
-            request.secure_session['oauth_tokens'] = {}
 
-        token_type, request.access_token = \
-            request.secure_session['oauth_tokens'].get(cls.conf.local_name, (None, None))
+        token_type, access_token = ExternalServiceToken.get(request.user, cls.conf.local_name, (None, None))
 
-        print "TOKEN", token_type, request.access_token
-        request.consumer = oauth.OAuthConsumer(*cls.secret)
-        request.client = OAuthClient(
-            cls.base_url+cls.request_token_url,
-            cls.base_url+cls.access_token_url,
-            cls.base_url+cls.authorize_url,
-        )
+        cls.add_consumer_to_request(request)
 
-        if 'oauth_token' in request.GET and token_type == 'request_token':
+        if 'oauth_token' in request.GET and token_type == 'request':
             return cls.access_token(request, *args, **kwargs)
 
-        request.opener = request.client.get_opener(
-            request.consumer,
-            request.access_token,
-            cls.signature_method)
-
-        def urlopen(*args, **kwargs):
-            try:
-                return request.opener.open(*args, **kwargs)
-            except urllib2.HTTPError, e:
-                if e.code == 404:
-                    raise Http404
-                elif e.code == 403:
-                    raise PermissionDenied
-                else:
-                    raise
-        request.urlopen = urlopen
+        cls.add_opener_to_request(request, access_token)
 
         # If we aren't authenticated but the view requires it then try
         # to obtain a valid oauth token immediately.
-        if token_type != 'access_token' and getattr(cls, 'force_auth', False):
+        if token_type != 'access' and getattr(cls, 'force_auth', False):
             return cls.authorize(request, *args, **kwargs)
 
         try:
             return super(OAuthView, cls).__new__(cls, request, *args, **kwargs)
         except OAuthHTTPError, e:
-            if e.code == 403 and token_type != 'access_token':
+            if e.code == 403 and token_type != 'access':
                 return cls.authorize(request, *args, **kwargs)
             else:
                 return cls.handle_error(request, e.exception, *args, **kwargs)
@@ -84,8 +62,7 @@ class OAuthView(BaseView):
 
         token = request.client.fetch_request_token(oauth_request)
 
-        request.secure_session['oauth_tokens'][cls.conf.local_name] = 'request_token', token
-        request.secure_session.modified = True
+        ExternalServiceToken.set(request.user, cls.conf.local_name, ('request', token))
 
         oauth_request = oauth.OAuthRequest.from_token_and_callback(
             token=token,
@@ -96,8 +73,8 @@ class OAuthView(BaseView):
         return HttpResponseRedirect(oauth_request.to_url())
 
     def access_token(cls, request, *args, **kwargs):
-        token_type, request_token = request.secure_session['oauth_tokens'].get(cls.conf.local_name, (None, None))
-        if token_type != 'request_token':
+        token_type, request_token = ExternalServiceToken.get(request.user, cls.conf.local_name, (None, None))
+        if token_type != 'request':
             return HttpResponse('', status=400)
 
         oauth_request = oauth.OAuthRequest.from_consumer_and_token(
@@ -114,8 +91,11 @@ class OAuthView(BaseView):
         except OAuthHTTPError, e:
             return cls.handle_error(request, e, 'request_token', *args, **kwargs)
 
-        request.secure_session['oauth_tokens'][cls.conf.local_name] = "access_token", access_token
-        request.secure_session.modified = True
+        ExternalServiceToken.set(request.user, cls.conf.local_name, ('access', access_token))
+
+        cls.add_opener_to_request(request, access_token)
+        cls.add_user_identifiers(request)
+        unify_users(request)
 
         return HttpResponseRedirect(request.path)
 
@@ -131,8 +111,7 @@ class OAuthView(BaseView):
             oauth_problem = d.get('oauth_problem', [None])[0]
 
         if token_type == 'access_token':
-            request.secure_session['oauth_tokens'][cls.conf.local_name] = (None, None)
-            request.secure_session.modified = True
+            ExternalServiceToken.remove(request.user, cls.conf.local_name)
 
         try:
             breadcrumbs = cls.breadcrumb(request, {'oauth_problem': True}, *args, **kwargs)
@@ -153,3 +132,35 @@ class OAuthView(BaseView):
             'service_name': cls.conf.service_name,
         }
         return cls.render(request, context, 'auth/oauth/error')
+
+    def add_consumer_to_request(cls, request):
+
+        request.consumer = oauth.OAuthConsumer(*cls.secret)
+
+        request.client = OAuthClient(
+            cls.base_url+cls.request_token_url,
+            cls.base_url+cls.access_token_url,
+            cls.base_url+cls.authorize_url,
+        )
+
+    def add_opener_to_request(cls, request, access_token):
+        request.opener = request.client.get_opener(
+            request.consumer,
+            access_token,
+            cls.signature_method)
+
+        def urlopen(*args, **kwargs):
+            try:
+                return request.opener.open(*args, **kwargs)
+            except urllib2.HTTPError, e:
+                if e.code == 404:
+                    raise Http404
+                elif e.code == 403:
+                    raise PermissionDenied
+                else:
+                    raise
+        request.urlopen = urlopen
+
+    def add_user_identifiers(request):
+        pass
+

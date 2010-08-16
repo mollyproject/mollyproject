@@ -259,6 +259,7 @@ APPLICATIONS = [
     Application('molly.auth', 'auth', 'Authentication',
         display_to_user = False,
         secure = True,
+        unify_identifiers = ('oxford:sso', 'oxford:oss', 'weblearn:id', 'oxford_ldap'),
     ),
 
     Application('molly.apps.sakai', 'weblearn', 'WebLearn',
@@ -283,6 +284,13 @@ APPLICATIONS = [
             ),
         ),
         enforce_timeouts = False,
+        identifiers = (
+            ('oxford:sso', ('props', 'aid',)),
+            ('weblearn:id', ('id',)),
+            ('oxford:oss', ('props', 'oakOSSID',)),
+            ('oxford:ldap', ('props', 'udp.dn',)),
+            ('weblearn:email', ('email',)),
+        ),
     ),
 
 #    Application('molly.apps.feeds.events', 'events', 'Events',
