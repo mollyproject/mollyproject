@@ -139,7 +139,7 @@ class SignupEventView(SakaiView):
     def initial_context(cls, request, site, event_id):
         try:
             url = cls.build_url('direct/signupEvent/%s.json?siteId=%s' % (event_id, site))
-            event = simplejson.load(request.opener.open(url))
+            event = simplejson.load(request.urlopen(url))
         except urllib2.HTTPError, e:
             if e.code == 404:
                 raise Http404
