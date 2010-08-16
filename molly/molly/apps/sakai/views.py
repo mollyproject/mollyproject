@@ -36,6 +36,7 @@ class SakaiView(BaseView):
 
     def add_user_identifiers(cls, request):
         user_details = simplejson.load(request.urlopen(cls.build_url('direct/user/current.json')))
+
         for target, identifier in cls.conf.identifiers:
             value = user_details
             for i in identifier:
