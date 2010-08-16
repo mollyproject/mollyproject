@@ -28,6 +28,55 @@
 </div>
 
 <div class="section">
+  <h2>Bound devices</h2>
+  {{ user_sessions.management_form }}
+  <table class="table-section">
+    <thead>
+      <tr>
+        <th>Device name</th>
+        <th>Last used</th>
+        <th>Remove</th>
+      </tr>
+    </thead>
+    <tbody>
+{% for form in user_sessions.forms %}
+      <tr>
+        <td>{{ form.id }}{{ form.instance.device_name }}</td>
+{% ifequal session_key form.instance.secure_session_key %}
+        <td>This device</td>
+        <td></td>
+{% else %}
+        <td>{{ form.instance.last_used|timesince }} ago</td>
+        <td>{{ form.DELETE }}</td>
+{% endifequal %}
+      </tr>
+{% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="section">
+  <h2>Authenticated services</h2>
+  {{ external_service_tokens.management_form }}
+  <table class="table-section">
+    <thead>
+      <tr>
+        <th>Service name</th>
+        <th>Remove</th>
+      </tr>
+    </thead>
+    <tbody>
+{% for form in external_service_tokens.forms %}
+      <tr>
+        <td>{{ form.id }}{{ form.instance.service_name }}</td>
+        <td>{{ form.DELETE }}</td>
+      </tr>
+{% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="section">
   <h2>Time-out period</h2>
   <div class="note"><div class="bubble pad-10">
     You may vary the length of the period of allowed inactivity before your
