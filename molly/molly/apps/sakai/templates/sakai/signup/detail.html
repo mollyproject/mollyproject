@@ -1,4 +1,4 @@
-{% extends "sakai/base.html" %}{% load sakai %}{% load portal_misc %}
+{% extends "sakai/base.html" %}{% load sakai %}{% load portal_misc %}{% load molly_utils %}
 
 {% block extrahead %}
 
@@ -15,7 +15,7 @@
 <dl>
   <dt>Description</dt>
   {# CLENSE ME! #}
-  <dd>{{ event.description }}</dd>
+  <dd>{{ event.description|sanitize_html }}</dd>
   <dt>Organiser</dt>
   <dd>{{ event.organizerName }}</dd>
   <dt>Location</dt>
