@@ -7,21 +7,18 @@ dl#results {
     -webkit-border-radius:8px;
     -moz-border-radius: 8px;
     border-radius: 8px;    
+    background:#8B8178 url('../../png/new/gradients/gradient-50-nrWhite-Transparent.png') repeat-x;
+    background:-webkit-gradient(linear, left top, right top, from(#8B8178), to(#a59d95));
+    background:-moz-linear-gradient(top, #8B8178, #a59d95);
+    background:linear-gradient(top, #8B8178, #a59d95);
     
-    background:#B88C54 url('../../png/new/gradients/gradient-50-nrWhite-Transparent.png') repeat-x;
-    
-    background:-webkit-gradient(linear, left top, right top, from(#B88C54), to(#E0C792));
-    background:-moz-linear-gradient(top, #B88C54, #E0C792);
-    background:linear-gradient(top, #B88C54, #E0C792);
-    
-    -moz-box-shadow: 2px 2px 2px #333; -webkit-box-shadow: 2px 2px 2px #333; box-shadow: 2px 2px 2px #333;
-
+    -moz-box-shadow: 2px 2px 2px #363534; -webkit-box-shadow: 2px 2px 2px #363534; box-shadow: 2px 2px 2px #363534;
 }
 
 dl#results dt {
     color: #fff;
-    background: #002B4C;
-    background:-webkit-gradient(linear, left top, right top, from(#002B4C), to(rgba(0,145,245,0.2)));
+    background: #363534;
+    background:-webkit-gradient(linear, left top, right top, from(#363534), to(rgba(102,92,83,0.2)));
     
     padding: 3px;
     margin: 8px 0;
@@ -31,7 +28,7 @@ dl#results dt {
 dl#results dd {
     color: #111;
     margin: 2px 0 2px 20px;
-    border-bottom: 1px solid #E0C792;
+    border-bottom: 1px solid #a59d95;
     text-shadow: 1px 1px 1px #999;
 }
 
@@ -40,7 +37,7 @@ dl#results dd.no-border {border: 0;}
 
 
 body {
-    background:#bbc4ce url('../../png/new/gradients/backdrop-iphone.png') repeat-x top;
+    background:#665b52 url('../../png/new/gradients/backdrop-iphone.png') repeat-x top;
 
     font-family: "Liberation Sans", sans-serif;
     font-size:9pt;
@@ -79,7 +76,7 @@ div#index-search input[type="text"] {
     height: 24px;
     width: 125px;
     font-size:1.2em;
-    border: 2px solid #dddddd;
+    border: 2px solid #D5D2CA;
     -webkit-border-top-left-radius: 5px; -webkit-border-bottom-left-radius: 5px; -webkit-border-top-right-radius:0; -webkit-border-bottom-right-radius:0;
     -moz-border-radius-topleft: 5px; -moz-border-radius-bottomleft: 5px; -moz-border-radius-topright: 0px; -moz-border-radius-bottomright: 0px;
     background: #fff;
@@ -209,8 +206,8 @@ ul.stand-alone {
 ul li, ol.search-results li {
     font-size:12pt;
     color:#ffffff;
-    border-top:1px solid #98a1ac;
-    background-color:#002B4C;
+    border-top:1px solid #625950;
+    background-color:#a59d95;
     padding: 10px;
     display:block;
 }
@@ -241,10 +238,6 @@ ul li span {
 .video {background-image:url('../../png/icons/list-video.png');}
     /* End background images for list items */
 /* End Standard List Styles */
-
-
-
-
 
 
 /* Webcams/Maps Display */
@@ -426,7 +419,7 @@ span.service-detail { font-style:italic; }
     background:-moz-linear-gradient(top, #dfdfdf, #fff);
     background:linear-gradient(top, #dfdfdf, #fff);
     
-    -moz-box-shadow: 2px 2px 2px #333; -webkit-box-shadow: 2px 2px 2px #333; box-shadow: 2px 2px 2px #333;
+    -moz-box-shadow: 2px 2px 2px #363534; -webkit-box-shadow: 2px 2px 2px #363534; box-shadow: 2px 2px 2px #363534;
 }
 
 .help-bubble:after {
@@ -493,13 +486,13 @@ button, input[type="submit"], input[type="reset"] {
 .center {text-align:center;}
 
 div.section {
-    background:#B88C54 url('../../png/new/gradients/gradient-50-nrWhite-Transparent.png') repeat-x;
+    background:#8B8178 url('../../png/new/gradients/gradient-50-nrWhite-Transparent.png') repeat-x;
     margin:10px;
     -webkit-border-radius:8px;
     -moz-border-radius: 8px;
     border-radius: 8px;
     
-    -moz-box-shadow: 2px 2px 2px #333; -webkit-box-shadow: 2px 2px 2px #333; box-shadow: 2px 2px 2px #333;
+    -moz-box-shadow: 2px 2px 2px #363534; -webkit-box-shadow: 2px 2px 2px #363534; box-shadow: 2px 2px 2px #363534;
 }
 h2 {
     text-align:center;
@@ -529,7 +522,7 @@ div.note {
     font-size: 12pt;
 }
 div.note a{
-    color: #002B4C;;
+    color: #363534;;
 }
 
 .round-top {
