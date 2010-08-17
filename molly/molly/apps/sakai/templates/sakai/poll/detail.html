@@ -16,7 +16,7 @@
 {% for option in options %}
       <li{% if forloop.last %} class="round-bottom"{% endif %}>
           <input type="radio" name="pollOption" value="{{ option.id }}" id="pollOption-{{ option.id }}"/>
-          <label for="pollOption-{{ option.id }}">{{ option.text }}</label>
+          <label for="pollOption-{{ option.id }}">{{ option.text|sanitize_html }}</label>
       </li>
 {% endfor %}
     </ul>
