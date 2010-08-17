@@ -43,10 +43,10 @@ table {
   <dd>{% ifequal event.start|date:"dMY" event.end|date:"dMY" %}
       {# Display Term Week + Name, Date + Time start -> end #}
         {{ event.startTime|from_sakai_timestamp|oxdate:"%(week)s%(ordinal)s Week %(term_long)s Term" }}, {{ event.startTime|from_sakai_timestamp|date:"d M Y" }} 
-        {{ event.startTime|from_sakai_timestamp|date:"g:iA"|lower }} - {{ event.endTime|from_sakai_timestamp|date:"g:iA"|lower }}
+        {{ event.startTime|from_sakai_timestamp|date:"g:iA" }} - {{ event.endTime|from_sakai_timestamp|date:"g:iA" }}
       {% else %}
       {# Display startTime + startDate - endTime + endDate #}
-        {{ event.startTime|from_sakai_timestamp|date:"g:iA, d M Y"|lower }} - {{ event.endTime|from_sakai_timestamp|date:"g:iA, d M Y"|lower }}
+        {{ event.startTime|from_sakai_timestamp|date:"g:iA, d M Y" }} - {{ event.endTime|from_sakai_timestamp|date:"g:iA, d M Y" }}
       {% endifequal %}
   </dd>
 
@@ -61,7 +61,7 @@ table {
     {% if event.meetingExpired %}
   <dd>This meeting has already happened!</dd>
     {% else %}
-  <dd>Sign up will open at {{ event.signupBegins|from_sakai_timestamp|date:"d M Y, g:iA"|lower }}</dd>
+  <dd>Sign up will open on {{ event.signupBegins|from_sakai_timestamp|date:"d M Y \a\t g:iA" }}</dd>
     {% endif %}
   {% endif %}
 {% endif %}
@@ -91,7 +91,6 @@ table {
    </tbody>
 </table>
 
-{#
 <ul>
 {% for ts in event.signupTimeSlotItems %}
 <li {% if ts.signedUp %} style="background:green;"{% endif %}>
@@ -170,6 +169,5 @@ table {
 {% endfor %}
 </ul>
 
-#}
 </div>
 {% endblock %}

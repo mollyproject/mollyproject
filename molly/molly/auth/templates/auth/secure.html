@@ -3,6 +3,6 @@
 {% block bottom_links %}{{ block.super }}<br/>
   <a href="{% url auth:index %}">Security preferences</a><br/>
   <a href="{% url auth:clear_session %}?return_url={{ full_path }}">Clear secure session</a><br/>
-  Account accessible from {{ user.usersession_set.all.count }} device{{ user.usersession_set.all.count|pluralize }}.
+  Account accessible from {{ user.usersession_set.all.count }} device{{ user.usersession_set.all.count|pluralize }}. <a href="{% url auth:index %}">Change</a>
 {% endblock %}
     

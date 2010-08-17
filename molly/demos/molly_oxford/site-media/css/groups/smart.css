@@ -602,20 +602,20 @@ div.form-section h2 {
     color:#002147;
 }
 
-div.form-section form {
-    padding: 8px;
+div.form-section dl {
+    padding-top:4px;
 }
 
-div.form-section form > dl {
-    padding-right:2px;
-    margin-top:0;
-}
-
-div.form-section form > dl dd {
+div.form-section dl dt, div.form-section dl dd {
+    padding:0 8px;
     margin-left:0;
 }
 
-div.form-section form > dl input, div.form-section form > dl textarea {
+div.form-section dl dd {
+    padding-bottom: 8px;
+}
+
+div.form-section dl input[type=text], div.form-section dl textarea {
     width:100%;
     height:24px;
     border:0;
@@ -629,46 +629,48 @@ div.form-section form > dl input, div.form-section form > dl textarea {
     border:1px solid #888;
 }
 
-div.form-section form > dl textarea {height: 5em;}
+div.form-section dl textarea {height: 5em;}
 
 div.form-section ul.errorlist + input , div.form-section ul.errorlist + textarea {
     background-color: #f7d9d9;
 }
 
-div.form-section form > dl dt {
+div.form-section dl dt {
     font-size: 1.2em;
     color: #333;
     text-shadow: 1px 1px 1px #aaa;
     margin-top:4px;
 }
 
-div.form-section form > dl ul.errorlist {
+div.form-section dl ul.errorlist {
     list-style:none;
     padding:4px;
     margin:0 0 0 0;
     color:#301010;
 }
 
-div.form-section form > p.help-bubble {
+div.form-section p.help-bubble {
     margin-right: 138px;
-    margin-left:0;
+    margin-left:8px;
 }
 
-div.form-section form > p.submit-buttons {
+div.form-section p.submit-buttons {
     display:block;
     float:right;
     width:120px;
     margin:0;
+    padding:8px;
+    padding-top:0;
 }
 
-div.form-section form > p.submit-buttons input {
+div.form-section p.submit-buttons input {
     height: 30px;
     margin-top: 8px;
     font-size: 1.2em;
     width:100%;
 }
 
-div.form-section form > p.submit-buttons input:first-child {
+div.form-section p.submit-buttons input:first-child {
     margin-top:0;
 }
 /* End form section */
@@ -741,3 +743,36 @@ div.section-content {
     -webkit-border-bottom-right-radius: 8px;    -moz-border-radius-bottomright: 8px;     border-bottom-right-radius: 8px;
 }
 /* End Section Formatting */
+
+
+/* Sakai bits */
+
+span.sakai-compulsory-question {
+    font-weight: bold;
+    color: #ff0000;
+}
+
+div.form-section dt.sakai-validation-error {
+    font-style: italic;
+    background-color:#400000;
+    color:#ffffff;
+    text-shadow: none;
+    padding:3px 8px;
+    margin-bottom: 8px;
+}
+
+div.form-section dl dd ul {
+    list-style: none;
+    padding-left:0;
+}
+
+div.sakai-error-message {
+    margin:8px;
+    background-color:#ffffff;
+    padding:8px;
+    border:2px solid red;
+    color: red;
+    -moz-border-radius:8px;
+    -webkit-border-radius:8px;
+    border-radius:8px;
+}

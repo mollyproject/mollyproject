@@ -40,7 +40,7 @@ class SakaiView(BaseView):
         for target, identifier in cls.conf.identifiers:
             value = user_details
             for i in identifier:
-                if not i in value:
+                if not i in (value or ()):
                     break
                 value = value[i]
             else:
@@ -331,7 +331,11 @@ class EvaluationDetailView(SakaiView):
         data = request.raw_post_data if request.method == 'POST' else None
         response = request.urlopen(url, data)
         evaluation = etree.parse(response, parser = etree.HTMLParser(recover=False))
+
+        print etree.tostring(evaluation)
         evaluation = transform(evaluation, 'sakai/evaluation/detail.xslt', {'id': id})
+        
+        print etree.tostring(evaluation)
 
         # The evaluations tool doesn't give us a non-OK status if we need to authenticate. Instead,
         # we need to check for the login box (handily picked out by the XSL stylesheet).
@@ -355,7 +359,7 @@ class EvaluationDetailView(SakaiView):
 
         return Breadcrumb(
             cls.conf.local_name,
-            None,
+            lazy_parent(EvaluationIndexView),
             context.get('title', 'Survey'),
             lazy_reverse('sakai:evaluation-detail', args=[id]),
         )
