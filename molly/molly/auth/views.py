@@ -9,7 +9,7 @@ from django.forms.util import ErrorList
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import BreadcrumbFactory, Breadcrumb, static_reverse, lazy_reverse, static_parent
 
-from .forms import PreferencesForm
+from .forms import PreferencesForm, UserSessionFormSet, ExternalServiceTokenFormSet
 
 
 class SecureView(BaseView):
@@ -91,6 +91,9 @@ class IndexView(SecureView):
                 'timeout_period': request.secure_session.get('timeout_period', 15),
             }),
             'has_pin': 'pin' in request.secure_session,
+            'session_key': request.secure_session.session_key,
+            'user_sessions': UserSessionFormSet(request, request.POST or None),
+            'external_service_tokens': ExternalServiceTokenFormSet(request, request.POST or None),
         }
         
     @BreadcrumbFactory
@@ -106,15 +109,17 @@ class IndexView(SecureView):
         return cls.render(request, context, 'auth/index')
     
     def handle_POST(cls, request, context):
-        form = context['form']
+        forms = context['form'], context['user_sessions'], context['external_service_tokens']
         
-        if not form.is_valid():
+        if not all(form.is_valid() for form in forms):
+            print [form.errors for form in forms]
             return cls.render(request, context, 'auth/index')
             
         if context['has_pin'] and form.cleaned_data['old_pin'] != request.secure_session['pin']:
             form.errors['old_pin'] = ErrorList(['You supplied an incorrect PIN. Please try again.'])
             return cls.render(request, context, 'auth/index')
 
+        form = context['form']
         request.secure_session['timeout_period'] = form.cleaned_data['timeout_period']
         
         if form.cleaned_data['new_pin_a']:
@@ -123,6 +128,10 @@ class IndexView(SecureView):
             else:
                 form.errors['new_pin_b'] = ErrorList(['Your repeated PIN did not match.'])
                 return cls.render(request, context, 'auth/index')
+
+        for form in forms:
+            if hasattr(form, 'save'):
+                form.save()
         
         return HttpResponseRedirect('.')
         

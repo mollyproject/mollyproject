@@ -1,4 +1,4 @@
-{% extends "sakai/base.html" %}{% load sakai %}
+{% extends "sakai/base.html" %}{% load sakai %}{% load molly_utils %}
 
 {% block content %}
 
@@ -7,7 +7,7 @@
 
 {% if poll.details %}  
   <div class="content pad-10">
-    {{ poll.details }}
+    {{ poll.details|sanitize_html }}
   </div>
 {% endif %}
 
