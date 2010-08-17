@@ -6,7 +6,6 @@
 .header {border-bottom: 1px solid #888;}
 
 table {
-    background: #eee;
     border-spacing:0;
     width: 100%;
     border-bottom-left-radius: 5px;
@@ -90,16 +89,19 @@ div.button {
     {% ifequal event.start|date:"dMY" event.end|date:"dMY" %}
       {# 1. If start and end time are on the same day #}  
       
+      <big>{{ event.start|date:"D"}}</big>
+      <br />
+       <small>
       {# Date - Month #}
-      <big>{{ event.start|date:"j M"}}
+      {{ event.start|date:"j M"}}
       {# Only show year if start date is not in this year #}
        {% ifnotequal event.start|date:"Y" now|date:"Y"%}
          {{ event.start|date:"Y"}}
        {% endifnotequal %}
-      </big><br />
+      <br />
       
       {# Day - Time #}
-      <small>{{ event.start|date:"D"}}
+     
       {% ifequal event.start|date:"A" event.end|date:"A"  %}
           {# If start and end times are both am or pm #}
           {{ event.start|date:"g:i"|lower }}-{{ event.end|date:"g:iA"|lower }}     

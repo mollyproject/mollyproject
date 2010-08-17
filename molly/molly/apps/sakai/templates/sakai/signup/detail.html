@@ -1,7 +1,26 @@
 {% extends "sakai/base.html" %}{% load sakai %}{% load portal_misc %}
 
 {% block extrahead %}
+<style type="text/css">
 
+table {
+    background: #eee;
+    border-spacing:0;
+    width: 100%;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    text-shadow: 0px 1px 1px #fff;
+}
+
+.signed-up {
+    background: #defff5;
+    background: 
+    -webkit-gradient(linear, left top, left bottom, from(#a7c7bd), to(#defff5));
+    background:
+    -moz-linear-gradient(center top, #a7c7bd, #defff5);
+}
+
+</style>
 {% endblock %}
 
 {% block content %}
