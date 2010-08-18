@@ -2,7 +2,6 @@
 
 {% block extrahead %}
 <style type="text/css">
-<!-- Specific to this page -->
 .signed-up td{
     background: #e5f0e1;
     background: 
@@ -26,6 +25,15 @@
     background:
     -moz-linear-gradient(center top, #eff0e1, #eff0d6);
 }
+
+.on-waiting-list td {
+    background: #D1FFDA;
+    background: 
+    -webkit-gradient(linear, left top, left bottom, from(#eff0e1), to(#eff0d6));
+    background:
+    -moz-linear-gradient(center top, #eff0e1, #eff0d6);
+}
+
 </style>
 
 
@@ -97,14 +105,9 @@ div.button {
 <div class="section">
     <div class="header">
     <h2>{{ event.title }}</h2>
-{# Metadata about the tutorial slots #} 
-</div>
-{# End Metadata about the tutorial slots #}
+{# Metadata about the tutorial slots #}
 
-
-<table>
-    <tbody>
-    <tr class="new-week"><td colspan="3">
+{# Time and Date #} 
     {% ifequal event.start|date:"dMY" event.end|date:"dMY" %}
       {# Display Term Week + Name, Date + Time start -> end #}
         {{ event.startTime|from_sakai_timestamp|oxdate:"%(week)s%(ordinal)s Week %(term_long)s Term" }}, {{ event.startTime|from_sakai_timestamp|date:"d M Y" }} 
@@ -113,9 +116,17 @@ div.button {
       {# Display startTime + startDate - endTime + endDate #}
         {{ event.startTime|from_sakai_timestamp|date:"g:iA, d M Y" }} - {{ event.endTime|from_sakai_timestamp|date:"g:iA, d M Y" }}
       {% endifequal %}
-    <br />  
+    <br />
+{# Location #}      
      {{ event.location }} 
-    </td></tr>
+
+
+</div>
+{# End Metadata about the tutorial slots #}
+
+
+<table>
+    <tbody>
     <tr><td colspan="3">
     <dl>
   <dt>Description</dt>
@@ -238,13 +249,6 @@ div.button {
    </tbody>
 </table>
 
-<ul>
-{% for ts in event.signupTimeSlotItems %}
-<li {% if ts.signedUp %} style="background:green;"{% endif %}>
-
-</li>
-{% endfor %}
-</ul>
 
 </div>
 {% endblock %}

@@ -18,8 +18,10 @@ def signup_status(ts, event):
         return 'signed-up'
     elif not places_left(ts):
         if event["allowWaitList"]:
-            
-            return 'waiting-list'
+            if ts["onWaitList"]:
+                return 'on-waiting-list'
+            else:
+                return 'waiting-list'
         else:
             return 'full'
     else:
@@ -27,4 +29,4 @@ def signup_status(ts, event):
 
 @register.filter
 def signup_status_human(value):
-    return {'signed-up': 'Signed Up', 'waiting-list': 'Waiting List', 'full': 'Full', 'available': 'Available'}[value]
+    return {'signed-up': 'Signed Up', 'on-waiting-list': 'On Waiting List', 'waiting-list': 'Waiting List Available', 'full': 'Full', 'available': 'Available'}[value]
