@@ -113,6 +113,7 @@ class SignupSiteView(SakaiView):
                 'location': event_et.find('location').text,
                 'title': event_et.find('title').text,
                 'id': event_et.find('id').text,
+                'permission': dict((p.tag, p.text=='true') for p in event_et.findall('permission/*'))
             }
             if event['end'] >= datetime.utcnow().replace(tzinfo=pytz.utc):
                 events.append(event)     
