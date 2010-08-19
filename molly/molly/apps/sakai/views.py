@@ -139,15 +139,20 @@ class SignupSiteView(SakaiView):
 
 class SignupEventView(SakaiView):
     def initial_context(cls, request, site, event_id):
-        try:
-            url = cls.build_url('direct/signupEvent/%s.json?siteId=%s' % (event_id, site))
-            event = simplejson.load(request.urlopen(url))
-        except urllib2.HTTPError, e:
-            if e.code == 404:
-                raise Http404
-            else:
-                raise
+        # This request does absolutely nothing, except force some cache to be
+        # reset, making sure the data we receive subsequently is up-to-date.
+        # This should be reported as a bug in Sakai.
+        request.opener.open(
+            cls.build_url('direct/signupEvent/%s/edit' % event_id),
+            data = urllib.urlencode({
+            'siteId': site,
+            'allocToTSid': '0',
+            'userActionType': 'invalidAction',
+        }))
 
+        url = cls.build_url('direct/signupEvent/%s.json?siteId=%s' % (event_id, site))
+        event = simplejson.load(request.urlopen(url))
+    
         return {
             'event': event,
             'signedUp': any(e['signedUp'] for e in event['signupTimeSlotItems']),
