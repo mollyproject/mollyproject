@@ -120,21 +120,12 @@ div.button {
 {# Location #}      
      {{ event.location }} 
 
-
-</div>
-{# End Metadata about the tutorial slots #}
-
-
-<table>
-    <tbody>
-    <tr><td colspan="3">
     <dl>
   <dt>Description</dt>
   {# CLENSE ME! #}
   <dd>{{ event.description|sanitize_html }}</dd>
   <dt>Organiser</dt>
   <dd>{{ event.organizerName }}</dd>
-  <dt>Location</dt>
   <dd></dd>
 
       
@@ -153,9 +144,12 @@ div.button {
   {% endif %}
 {% endif %}
 </dl>
-    </td></tr>
-    
-    
+</div>
+{# End Metadata about the tutorial slots #}
+
+
+<table>
+    <tbody>
 {# Loop through the individual slots #}    
    {% for ts in event.signupTimeSlotItems %}
     <tr class="{{ ts|signup_status:event }}">
