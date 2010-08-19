@@ -99,7 +99,7 @@ class OAuthView(BaseView):
 
         return HttpResponseRedirect(request.path)
 
-    def handle_error(cls, request, exception, token_type='access_token', *args, **kwargs):
+    def handle_error(cls, request, exception, token_type='access', *args, **kwargs):
         body = exception.read()
         try:
             d = urlparse.parse_qs(body)
@@ -110,7 +110,7 @@ class OAuthView(BaseView):
             error = 'oauth_problem'
             oauth_problem = d.get('oauth_problem', [None])[0]
 
-        if token_type == 'access_token':
+        if token_type == 'access':
             ExternalServiceToken.remove(request.user, cls.conf.local_name)
 
         try:
