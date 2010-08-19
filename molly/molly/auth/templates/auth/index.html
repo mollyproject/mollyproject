@@ -3,8 +3,68 @@
 {% block content %}
 
 <form method="post" action=".">
+  {{ user_sessions.management_form }}
+  {{ external_service_tokens.management_form }}
 
 <div class="section">
+  <div class="header">
+    <h2>Bound devices</h2>
+    <p>These devices are currently set up with access to the authenticated services listed below. You may remove access from devices you no longer need.</p>
+  </div>
+  <div class="section-content">
+    <table style="width:100%">
+      <thead>
+        <tr>
+          <th>Device name</th>
+          <th>Last used</th>
+          <th>Remove</th>
+        </tr>
+      </thead>
+      <tbody>
+{% for form in user_sessions.forms %}
+        <tr>
+          <td>{{ form.id }}{{ form.instance.device_name }}</td>
+{% ifequal session_key form.instance.secure_session_key %}
+          <td>This device</td>
+          <td></td>
+{% else %}
+          <td>{{ form.instance.last_used|timesince }} ago</td>
+          <td>{{ form.DELETE }}</td>
+{% endifequal %}
+        </tr>
+{% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="section">
+  <div class="header">
+    <h2>Authenticated services</h2>
+    <p>You may currently access the following authenticated services using this device and those listed above.</p>
+  </div>
+  <div class="section-content">
+    <table style="width:100%">
+      <thead>
+        <tr>
+          <th>Service name</th>
+          <th>Remove</th>
+        </tr>
+      </thead>
+      <tbody>
+{% for form in external_service_tokens.forms %}
+        <tr>
+          <td>{{ form.id }}
+            <a href="{{ form.instance.service_url }}">{{ form.instance.service_name }}</a></td>
+          <td>{{ form.DELETE }}</td>
+        </tr>
+{% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="section invisible">
   <h2>PIN</h2>
   <div class="note"><div class="bubble pad-10">
     Setting a PIN allows you to recover expired secured sessions. It must
@@ -27,56 +87,8 @@
   </div>
 </div>
 
-<div class="section">
-  <h2>Bound devices</h2>
-  {{ user_sessions.management_form }}
-  <table class="table-section">
-    <thead>
-      <tr>
-        <th>Device name</th>
-        <th>Last used</th>
-        <th>Remove</th>
-      </tr>
-    </thead>
-    <tbody>
-{% for form in user_sessions.forms %}
-      <tr>
-        <td>{{ form.id }}{{ form.instance.device_name }}</td>
-{% ifequal session_key form.instance.secure_session_key %}
-        <td>This device</td>
-        <td></td>
-{% else %}
-        <td>{{ form.instance.last_used|timesince }} ago</td>
-        <td>{{ form.DELETE }}</td>
-{% endifequal %}
-      </tr>
-{% endfor %}
-    </tbody>
-  </table>
-</div>
 
-<div class="section">
-  <h2>Authenticated services</h2>
-  {{ external_service_tokens.management_form }}
-  <table class="table-section">
-    <thead>
-      <tr>
-        <th>Service name</th>
-        <th>Remove</th>
-      </tr>
-    </thead>
-    <tbody>
-{% for form in external_service_tokens.forms %}
-      <tr>
-        <td>{{ form.id }}{{ form.instance.service_name }}</td>
-        <td>{{ form.DELETE }}</td>
-      </tr>
-{% endfor %}
-    </tbody>
-  </table>
-</div>
-
-<div class="section">
+<div class="section invisible">
   <h2>Time-out period</h2>
   <div class="note"><div class="bubble pad-10">
     You may vary the length of the period of allowed inactivity before your
@@ -94,7 +106,7 @@
 </div>
 
 {% if has_pin %}
-<div class="section">
+<div class="section invisible">
   <h2>Time-out period</h2>
   <div class="note"><div class="bubble pad-10">
     Please enter your current PIN in order to make these changes.
@@ -112,7 +124,9 @@
 
 {% endif %}
 
-<input type="submit" value="Submit"/>
+<p style="text-align:center">
+  <input type="submit" value="Submit"/>
+</p>
 </form>
 
 {% endblock %}

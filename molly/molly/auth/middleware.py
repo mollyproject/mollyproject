@@ -16,12 +16,13 @@ class SecureSessionMiddleware(object):
             engine = import_module(settings.SESSION_ENGINE)
             secure_session_key = request.COOKIES.get('secure_session_id', None)
             request.secure_session = engine.SessionStore(secure_session_key)
-            secure_session_key = request.secure_session.session_key
             
             # If this is a new session, mark it as being secure so we can
             # refuse requests where session keys have been swapped about.
             if secure_session_key is None:
                 request.secure_session['is_secure'] = True
+
+            secure_session_key = request.secure_session.session_key
 
             try:
                 user_session = UserSession.objects.get(secure_session_key=secure_session_key)
