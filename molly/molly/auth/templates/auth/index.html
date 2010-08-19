@@ -54,7 +54,8 @@
       <tbody>
 {% for form in external_service_tokens.forms %}
         <tr>
-          <td>{{ form.id }}{{ form.instance.service_name }}</td>
+          <td>{{ form.id }}
+            <a href="{{ form.instance.service_url }}">{{ form.instance.service_name }}</a></td>
           <td>{{ form.DELETE }}</td>
         </tr>
 {% endfor %}

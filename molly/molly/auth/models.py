@@ -4,6 +4,7 @@ except ImportError:
     import pickle
 
 from django.db import models
+from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 
 from molly.conf import app_by_local_name
@@ -49,11 +50,11 @@ class ExternalServiceToken(models.Model):
 
     @property
     def service_name(self):
-        try:
-            return app_by_local_name(self.namespace).title
-        except Exception, e:
-            print self.namespace, type(e), e
-            raise
+        return app_by_local_name(self.namespace).title
+
+    @property
+    def service_url(self):
+        return reverse(self.namespace + ':index')
 
     @classmethod
     def get(cls, user, namespace, default=None):

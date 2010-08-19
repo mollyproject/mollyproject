@@ -10,7 +10,7 @@ from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import BreadcrumbFactory, Breadcrumb, static_reverse, lazy_reverse, static_parent
 
 from .forms import PreferencesForm, UserSessionFormSet, ExternalServiceTokenFormSet
-
+from .models import UserSession
 
 class SecureView(BaseView):
     """
@@ -148,16 +148,14 @@ class ClearSessionView(SecureView):
             cls.conf.local_name,
             static_parent(context['return_url'], 'Back'),
             'Clear session',
-            lazy_reverse('auth:clear_session'),
+            lazy_reverse('auth:clear-session'),
             
         )
             
     def handle_GET(cls, request, context):
         return cls.render(request, context, 'auth/clear_session')
     def handle_POST(cls, request, context):
-        for key in request.secure_session.keys():
-            del request.secure_session[key]
-        request.secure_session['is_secure'] = True
+        UserSession.objects.filter(secure_session_key = request.secure_session.session_key).delete()
         if context['return_url']:
             return HttpResponseRedirect(context['return_url'])
         else:

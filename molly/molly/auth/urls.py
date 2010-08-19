@@ -9,5 +9,5 @@ urlpatterns = patterns('',
         
     (r'^clear-session/$',
         ClearSessionView, {},
-        'clear_session'),
+        'clear-session'),
 )
