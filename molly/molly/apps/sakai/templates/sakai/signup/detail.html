@@ -1,27 +1,114 @@
 {% extends "sakai/base.html" %}{% load sakai %}{% load portal_misc %}{% load molly_utils %}
 
 {% block extrahead %}
+<style type="text/css">
+.signed-up td{
+    background: #e5f0e1;
+    background: 
+    -webkit-gradient(linear, left top, left bottom, from(#e5f0e1), to(#ddf0d6));
+    background:
+    -moz-linear-gradient(center top, #e5f0e1, #ddf0d6);
+}
 
+.full td {
+    background: #FFD9D6;
+    background: 
+    -webkit-gradient(linear, left top, left bottom, from(#f0e7e1), to(#f0e1d6));
+    background:
+    -moz-linear-gradient(center top, #f0e7e1, #f0e1d6);
+}
+
+.waiting-list td {
+    background: #D1FFDA;
+    background: 
+    -webkit-gradient(linear, left top, left bottom, from(#eff0e1), to(#eff0d6));
+    background:
+    -moz-linear-gradient(center top, #eff0e1, #eff0d6);
+}
+
+.on-waiting-list td {
+    background: #D1FFDA;
+    background: 
+    -webkit-gradient(linear, left top, left bottom, from(#eff0e1), to(#eff0d6));
+    background:
+    -moz-linear-gradient(center top, #eff0e1, #eff0d6);
+}
+
+</style>
+
+
+
+<style type="text/css">
+
+.header {border-bottom: 1px solid #888;}
+
+table {
+    border-spacing:0;
+    width: 100%;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    text-shadow: 0px 1px 1px #fff;
+}
+
+table tr.new-week td {
+    background: #DEE6FF;
+    background: 
+    -webkit-gradient(linear, left top, left bottom, from(#A7BAC7), to(#DEE6FF));
+    background:
+    -moz-linear-gradient(center top, #A7BAC7, #DEE6FF);
+    padding: 5px 5px 5px 7px; 
+    border: 0;
+    font-size: 1.1em;
+}
+
+table tr td {
+    border-bottom: 1px solid #888;
+    border-top: 1px solid #fff;
+    padding: 7px 3px;
+    background: -webkit-gradient(linear, left top, left bottom, from(#f3f3f3), to(#eee))
+}
+
+table tr td:last-child a {
+    color: #fff;
+    text-decoration:none;
+    display: block;
+    height: 2em;
+    line-height: 2em;
+    vertical-align: middle; 
+    text-shadow: 0 -1px 1px #000;
+}
+
+table tr:last-child td:first-child {border-bottom-left-radius: 5px;}
+table tr:last-child td:last-child {border-bottom-right-radius: 5px;}
+
+div.button {
+    background:#002147 url('{{ MEDIA_URL }}png/icons/list-arrow.png') no-repeat;
+    background-position: right center;
+    
+    margin: 0 2px 0 auto;
+    min-width: 70px;
+    max-width: 100px;
+    padding: 3px;
+ 
+    box-shadow: 3px 3px 4px #999;-webkit-box-shadow: 3px 3px 4px #999;-moz-box-shadow: 3px 3px 4px #999;
+    border-radius: 3px; -webkit-border-radius: 3px; -moz-border-radius: 3px; 
+    
+    border-color: #ccc;
+    border: 1px solid rgba(255,255,255,0.3);
+    border-width: 1px 0 0 1px; 
+}
+</style>
 {% endblock %}
 
-{% block content %}
 
+{% block content %}
 <div class="section">
     <div class="header">
     <h2>{{ event.title }}</h2>
-    </div>
-{# Metadata about the tutorial slots #} 
-<div class="bubble"><div class="article pad-10">   
-<dl>
-  <dt>Description</dt>
-  {# CLENSE ME! #}
-  <dd>{{ event.description|sanitize_html }}</dd>
-  <dt>Organiser</dt>
-  <dd>{{ event.organizerName }}</dd>
-  <dt>Location</dt>
-  <dd>{{ event.location }}</dd>
-  <dt>Date/Time</dt>
-  <dd>{% ifequal event.start|date:"dMY" event.end|date:"dMY" %}
+{# Metadata about the tutorial slots #}
+
+{# Time and Date #} 
+    {% ifequal event.start|date:"dMY" event.end|date:"dMY" %}
       {# Display Term Week + Name, Date + Time start -> end #}
         {{ event.startTime|from_sakai_timestamp|oxdate:"%(week)s%(ordinal)s Week %(term_long)s Term" }}, {{ event.startTime|from_sakai_timestamp|date:"d M Y" }} 
         {{ event.startTime|from_sakai_timestamp|date:"g:iA" }} - {{ event.endTime|from_sakai_timestamp|date:"g:iA" }}
@@ -29,7 +116,26 @@
       {# Display startTime + startDate - endTime + endDate #}
         {{ event.startTime|from_sakai_timestamp|date:"g:iA, d M Y" }} - {{ event.endTime|from_sakai_timestamp|date:"g:iA, d M Y" }}
       {% endifequal %}
-  </dd>
+    <br />
+{# Location #}      
+     {{ event.location }} 
+
+
+</div>
+{# End Metadata about the tutorial slots #}
+
+
+<table>
+    <tbody>
+    <tr><td colspan="3">
+    <dl>
+  <dt>Description</dt>
+  {# CLENSE ME! #}
+  <dd>{{ event.description|sanitize_html }}</dd>
+  <dt>Organiser</dt>
+  <dd>{{ event.organizerName }}</dd>
+  <dt>Location</dt>
+  <dd></dd>
 
       
   <dt>Status</dt>
@@ -47,46 +153,31 @@
   {% endif %}
 {% endif %}
 </dl>
-</div></div>
-{# End Metadata about the tutorial slots #}
-
-
-<table>
-    <thead>
-    <tr>
-        <th></th>
-        <th></th>
-        <th></th>
-   </tr>
-   </thead>
-   
-   <tbody>
-   
+    </td></tr>
+    
+    
+{# Loop through the individual slots #}    
    {% for ts in event.signupTimeSlotItems %}
-    <tr class="{% if ts.signedUp %}signed-up{%endif%}">
-        <td></td>
-        <td></td>
-        <td></td>
-    </tr>
-   {% endfor %}
-   </tbody>
-</table>
-
-<ul>
-{% for ts in event.signupTimeSlotItems %}
-<li {% if ts.signedUp %} style="background:green;"{% endif %}>
+    <tr class="{{ ts|signup_status:event }}">
+        <td>
+        {{ ts|signup_status:event|signup_status_human }}
+        </td>
+        <td>
+        
     {# Time Range -- needs multi date possibility #}
     {{ ts.startTime|from_sakai_timestamp|date:"g:iA"|lower }} - {{ ts.endTime|from_sakai_timestamp|date:"g:iA"|lower }}
     <br />
     {# max Attendees #}
     <small>Places available: {{ ts|places_left }}/{{ ts.maxNoOfAttendees }}</small>
     <br />
+    
 {# if the tutorial is set up to display attendee names #}
 {% if ts.displayAttendees %}
   {% for attendee in ts.attendees %}
           {{ attendee.displayName }}{% if not forloop.last %},{% endif %}
   {% endfor %}
 {% else %}
+
 {# otherwise #}
   {% if ts.signedUp and not ts.attendees|length_is:"1" %}
         You and {{ ts.attendees|length|add:"-1" }} other{{ ts.attendees|length|add:"-1"|pluralize }}
@@ -100,13 +191,19 @@
 {% endif %}
 {# end #}
 
+
 {# Is user signed up or on waiting list? #}
-<br />{% if ts.signedUp %}
+{% if ts.signedUp %}
     You're Signed up
-    {% else %}{% if ts.onWaitList %}You're on the waiting list
+    {% else %}
+    {% if ts.onWaitList %}You're on the waiting list
     {% endif %}
 {% endif %}
 
+        </td>
+        <td>
+        
+        
 <form method="post" action=".">
           <input type="hidden" name="timeslot_id" value="{{ ts.id }}"/>
 {% comment %}
@@ -145,10 +242,13 @@
   {% endif %}
 {% endif %}
 </form>
+        
+        </td>
+    </tr>
+   {% endfor %}
+   </tbody>
+</table>
 
-</li>
-{% endfor %}
-</ul>
 
 </div>
 {% endblock %}

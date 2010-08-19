@@ -72,7 +72,6 @@ class IndexView(BaseView):
 
         if form.is_valid():
             results = geocode(form.cleaned_data['name'], cls.conf.local_name)
-            print len(results)
 
             if len(results) == 1:
                 form.cleaned_data.update(results[0])
@@ -109,7 +108,6 @@ class IndexView(BaseView):
         form = context['form']
 
         if form.is_valid():
-            print form.cleaned_data
             cls.set_location(request,
                              form.cleaned_data['name'],
                              form.cleaned_data['location'],
