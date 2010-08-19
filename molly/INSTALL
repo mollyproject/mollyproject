@@ -8,7 +8,7 @@ Debian packages or their equivalents for your distribution or OS:
  * postgis
  * python-gdal
  * proj
- * libgeos-3.0.0
+ * libgeos-3.0.0 or higher
  * binutils
  * libgdal1-1.5.0
  * postgresql-8.3
