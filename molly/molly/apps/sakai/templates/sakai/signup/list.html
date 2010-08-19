@@ -131,10 +131,10 @@ div.button {
     <td>
         {{ event.title }}
     </td>
-    {% if event.permissions.update %}
+    {% if event.permission.update %}
     <td><div class="button"><a href="{% url sakai:signup-event site,event.id %}">View</a></div></td>
     {% else %}
-    {% if event.permissions.attend %}
+    {% if event.permission.attend %}
     <td><div class="button"><a href="{% url sakai:signup-event site,event.id %}">Book</a></div></td>
     {% endif %}
     {% endif %}
