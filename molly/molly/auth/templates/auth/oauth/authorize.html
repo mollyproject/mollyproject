@@ -1,0 +1,19 @@
+{% extends "auth/secure.html" %}
+
+{% block content %}
+
+<div class="section">
+  <div class="header">
+    <h2>Redirecting&hellip;</h2>
+  </div>
+  
+  <div class="section-content">
+    <p>Before you can look at this page, you need to authenticate with {{ service_name }}.</p>
+    
+    <div class="button">
+      <a href="{{ authorize_url }}">Authorize&hellip;</a>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

@@ -34,7 +34,7 @@ class OAuthView(BaseView):
         if 'oauth_token' in request.GET and token_type == 'request':
             return cls.access_token(request, *args, **kwargs)
 
-        cls.add_opener_to_request(request, access_token)
+        cls.add_opener_to_request(request, access_token if token_type == 'access' else None)
 
         # If we aren't authenticated but the view requires it then try
         # to obtain a valid oauth token immediately.
@@ -69,8 +69,14 @@ class OAuthView(BaseView):
             http_url=request.client.authorization_url,
         )
 
-
-        return HttpResponseRedirect(oauth_request.to_url())
+        if getattr(cls.conf, 'oauth_authorize_interstitial', True):
+            context = {
+                'authorize_url': oauth_request.to_url(),
+                'service_name': cls.conf.service_name,
+            }
+            return cls.render(request, context, 'auth/oauth/authorize')
+        else:
+            return HttpResponseRedirect(oauth_request.to_url())
 
     def access_token(cls, request, *args, **kwargs):
         token_type, request_token = ExternalServiceToken.get(request.user, cls.conf.local_name, (None, None))
@@ -155,7 +161,7 @@ class OAuthView(BaseView):
             except urllib2.HTTPError, e:
                 if e.code == 404:
                     raise Http404
-                elif e.code == 403:
+                elif e.code == 403 and access_token is not None:
                     raise PermissionDenied
                 else:
                     raise
