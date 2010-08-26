@@ -263,7 +263,7 @@ APPLICATIONS = [
     ),
 
     Application('molly.apps.sakai', 'weblearn', 'WebLearn',
-        host = 'https://weblearn.ox.ac.uk/',
+        host = 'https://staging.weblearn.ox.ac.uk/',
         service_name = 'WebLearn',
         secure = True,
         tools = [
@@ -277,7 +277,7 @@ APPLICATIONS = [
             ExtraBase('molly.auth.oauth.views.OAuthView',
                 secret = SECRETS.weblearn,
                 signature_method = OAuthSignatureMethod_PLAINTEXT(),
-                base_url = 'https://weblearn.ox.ac.uk/oauth-tool/',
+                base_url = 'https://staging.weblearn.ox.ac.uk/oauth-tool/',
                 request_token_url = 'request_token',
                 access_token_url = 'access_token',
                 authorize_url = 'authorize',
