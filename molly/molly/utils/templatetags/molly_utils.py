@@ -14,7 +14,7 @@ register = template.Library()
 
 @register.filter
 def sanitize_html(value, args=''):
-    document = etree.parse(StringIO.StringIO('<body>%s</body>' % value), parser = etree.HTMLParser())
+    document = etree.fromstring(u'<body>%s</body>' % value, parser = etree.HTMLParser())
 
     args = args.split(',') + [None, None]
     id_prefix, class_prefix = args[0] or 'sani', args[1] or 'sani'
