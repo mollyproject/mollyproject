@@ -267,7 +267,7 @@ APPLICATIONS = [
         service_name = 'WebLearn',
         secure = True,
         tools = [
-            ('signup', 'Tutorial sign-ups'),
+            ('signup', 'Sign-ups'),
             ('poll', 'Polls'),
             ('direct', 'User information'),
             ('sites', 'Sites'),

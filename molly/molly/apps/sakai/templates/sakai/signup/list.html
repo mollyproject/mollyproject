@@ -1,71 +1,5 @@
 {% extends "sakai/base.html" %}{% load portal_misc %}
 
-{% block extrahead %}
-<style type="text/css">
-
-.header {border-bottom: 1px solid #888;}
-
-table {
-    border-spacing:0;
-    width: 100%;
-    border-bottom-left-radius: 5px;
-    border-bottom-right-radius: 5px;
-    text-shadow: 0px 1px 1px #fff;
-}
-
-table tr.new-week td {
-    background: #DEE6FF;
-    background: -webkit-gradient(linear, left top, left bottom, from(#A7BAC7), to(#DEE6FF));
-    background:-moz-linear-gradient(center top, #A7BAC7, #DEE6FF);
-    
-    padding: 5px 5px 5px 7px; 
-    border: 0;
-    font-size: 1.1em;
-}
-
-table tr td {
-    border-bottom: 1px solid #888;
-    border-top: 1px solid #fff;
-    padding: 7px 3px;
-    
-    background: #eee;
-    background: -webkit-gradient(linear, left top, left bottom, from(#f3f3f3), to(#eee));
-    background: -moz-linear-gradient(center top, #f3f3f3, #eee);
-}
-
-table tr td:last-child a {
-    color: #fff;
-    text-decoration:none;
-    display: block;
-    height: 2em;
-    line-height: 2em;
-    vertical-align: middle; 
-    text-shadow: 0 -1px 1px #000;
-}
-
-table tr:last-child td:first-child {border-bottom-left-radius: 5px;}
-table tr:last-child td:last-child {border-bottom-right-radius: 5px;}
-
-div.button {
-    background:#002147 url('{{ MEDIA_URL }}png/icons/list-arrow.png') no-repeat;
-    background-position: right center;
-    
-    margin: 0 2px 0 auto;
-    min-width: 70px;
-    max-width: 100px;
-    padding: 3px;
- 
-    box-shadow: 3px 3px 4px #999;-webkit-box-shadow: 3px 3px 4px #999;-moz-box-shadow: 3px 3px 4px #999;
-    border-radius: 3px; -webkit-border-radius: 3px; -moz-border-radius: 3px; 
-    
-    border-color: #ccc;
-    border: 1px solid rgba(255,255,255,0.3);
-    border-width: 1px 0 0 1px; 
-}
-</style>
-
-{% endblock %}
-
 {% block pagetitle %}Meetings{% endblock %}
 
 {% block content %}
@@ -77,13 +11,13 @@ div.button {
 {#<ul> #}
 
 {% regroup events by start|date:"W" as weeks %}
-<table>
+<table class="content">
 {% for event in events %}
 
 {% ifchanged event.start|oxdate:"%(week)s%(ordinal)s%(term_long)s" %}
-<tr class="new-week"><td colspan='3'>
+<tr class="sub-section-divider"><th colspan='3'>
 {{ event.start|oxdate:"%(week)s%(ordinal)s Week %(term_long)s Term" }}
-</td></tr>
+</th></tr>
 <tr> <td class="center tutorial-date ">
 {% else %}
 <tr><td class="center tutorial-date">
@@ -135,7 +69,7 @@ div.button {
     <td>
         {{ event.title }}
     </td>
-    {% if event.permission.update %}
+    {% if 1 or event.permission.update %}
     <td><div class="button"><a href="{% url sakai:signup-event site,event.id %}">View</a></div></td>
     {% else %}
     {% if event.permission.attend %}

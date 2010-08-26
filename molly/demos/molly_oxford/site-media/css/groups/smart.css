@@ -263,12 +263,15 @@ ul.link-list li a, ol.search-results li a {
 }
 /* End Link-List */
 
+/* What is this /for/!?
 ul li span {
     background-position: left;
     background-repeat: no-repeat;
     display:block;
     padding-left: 25px;
 }
+*/
+
 ul.stand-alone {
     margin: 10px;
 }
@@ -775,4 +778,79 @@ div.sakai-error-message {
     -moz-border-radius:8px;
     -webkit-border-radius:8px;
     border-radius:8px;
+}
+
+div.sakai-error-message p {
+    margin: 1em 0 0 0;
+}
+
+div.sakai-error-message p:first-child {
+    margin-top: 0;
+}
+
+
+.header {border-bottom: 1px solid #888;}
+
+table.content {
+    border-spacing:0;
+    width: 100%;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    text-shadow: 0px 1px 1px #fff;
+}
+
+table.content > * > tr.sub-section-divider > th, table.content > thead > tr > th  {
+    background: #DEE6FF;
+    background: -webkit-gradient(linear, left top, left bottom, from(#A7BAC7), to(#DEE6FF));
+    background:-moz-linear-gradient(center top, #A7BAC7, #DEE6FF);
+
+    padding: 5px 5px 5px 7px;
+    border: 0;
+    font-size: 1.1em;
+}
+
+table.content > * > tr > td {
+    border-bottom: 1px solid #888;
+    border-top: 1px solid #fff;
+    padding: 7px 3px;
+
+    background: #eee;
+    background: -webkit-gradient(linear, left top, left bottom, from(#f3f3f3), to(#eee));
+    background: -moz-linear-gradient(center top, #f3f3f3, #eee);
+}
+
+table.content > *:last-child > tr:last-child > td:first-child {
+    -webkit-border-bottom-left-radius: 5px;    -moz-border-radius-bottomleft: 5px;
+    border-bottom-left-radius: 5px;
+}
+table.content > *:last-child > tr:last-child > td:last-child {
+    -webkit-border-bottom-right-radius: 5px;    -moz-border-radius-bottomright: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+div.button {
+    background:#002147 url('../../png/icons/list-arrow.png') no-repeat;
+    background-position: right center;
+
+    margin: 0 2px 0 auto;
+    min-width: 70px;
+    max-width: 100px;
+    padding: 3px;
+
+    box-shadow: 3px 3px 4px #999;-webkit-box-shadow: 3px 3px 4px #999;-moz-box-shadow: 3px 3px 4px #999;
+    border-radius: 3px; -webkit-border-radius: 3px; -moz-border-radius: 3px;
+
+    border-color: #ccc;
+    border: 1px solid rgba(255,255,255,0.3);
+    border-width: 1px 0 0 1px;
+}
+
+div.button > a {
+    color: #fff;
+    text-decoration:none;
+    display: block;
+    height: 2em;
+    line-height: 2em;
+    vertical-align: middle;
+    text-shadow: 0 -1px 1px #000;
 }

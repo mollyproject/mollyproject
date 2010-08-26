@@ -241,7 +241,7 @@ class PollDetailView(SakaiView):
     def initial_context(cls, request, id):
         try:
             url = cls.build_url('direct/poll/%s.json' % id)
-            poll = simplejson.load(request.opener.open(url))
+            poll = simplejson.load(request.urlopen(url))
         except urllib2.HTTPError, e:
             if e.code == 404:
                 raise Http404
@@ -249,12 +249,41 @@ class PollDetailView(SakaiView):
                 raise
 
         url = cls.build_url('direct/poll/%s/option.json' % id)
-        options = simplejson.load(request.opener.open(url))
+        options = simplejson.load(request.urlopen(url))
+        options = options['poll-option_collection']
+
+        try:
+            url = cls.build_url('direct/poll/%s/vote.json' % id)
+            votes = simplejson.load(request.urlopen(url))
+            votes = votes["poll-vote_collection"]
+        except urllib2.HTTPError, e:
+            if e.code != 403:
+                raise
+            max_votes, vote_count = None, None
+
+        else:
+            pollOptions, max_votes, vote_count = {}, 0, len(votes)
+            for option in options:
+                option['voteCount'] = 0
+                pollOptions[option['optionId']] = option
+            for vote in votes:
+                pollOptions[vote['pollOption']]['voteCount'] += 1
+                max_votes = max(max_votes, pollOptions[vote['pollOption']]['voteCount'])
+
+        # Add votedFor attributes if the user voted for any given option
+        userVotes =  [vote['pollOption'] for vote in poll['currentUserVotes']]
+        for option in options:
+            option['votedFor'] = option['optionId'] in userVotes
 
         return {
             'poll': poll,
-            'options': options['poll-option_collection'],
+            'options': options,
             'site_title': cls.get_site_title(request, poll['siteId']),
+            'max_votes': max_votes,
+            'vote_count': vote_count,
+            'may_vote': not poll['currentUserVotes'] and poll['maxOptions'] == 1,
+            'sakai_host': cls.conf.host,
+            'service_name': cls.conf.service_name,
         }
 
     @BreadcrumbFactory
@@ -262,7 +291,7 @@ class PollDetailView(SakaiView):
         return Breadcrumb(
             cls.conf.local_name,
             lazy_parent(PollIndexView),
-            "Poll: %s" % context['poll']['text'],
+            context['poll']['text'],
             lazy_reverse('sakai:poll-detail'),
         )
 
@@ -270,10 +299,14 @@ class PollDetailView(SakaiView):
         return cls.render(request, context, 'sakai/poll/detail')
 
     def handle_POST(cls, request, context, id):
+        if not context['mayVote']:
+            return HttpResponseBadRequest()
+        if not int(request.POST.get('pollOption', -1)) in (option['optionId'] for option in context['options']):
+            return HttpResponseBadRequest()
         try:
             response = request.opener.open(
                 cls.build_url('direct/poll-vote/new'),
-                data = simplejson.dumps({
+                data = urllib.urlencode({
                     'pollId': int(id),
                     'pollOption': int(request.POST['pollOption']),
             }))
