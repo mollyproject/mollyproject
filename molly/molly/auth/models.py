@@ -1,4 +1,5 @@
 try:
+    raise ImportError
     import cPickle as pickle
 except ImportError:
     import pickle
