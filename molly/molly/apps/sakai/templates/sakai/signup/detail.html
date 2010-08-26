@@ -101,7 +101,7 @@ div.button {
 <div class="section">
     <div class="header">
     <h2>{{ event.title }}</h2>
-{# Metadata about the tutorial slots #}
+{# Metadata about the sign-up slots #}
 
 {# Time and Date #} 
     {% ifequal event.start|date:"dMY" event.end|date:"dMY" %}
@@ -141,7 +141,7 @@ div.button {
 {% endif %}
 </dl>
 </div>
-{# End Metadata about the tutorial slots #}
+{# End Metadata about the sign-up slots #}
 
 
 <table>
@@ -161,7 +161,7 @@ div.button {
     <small>Places available: {{ ts|places_left }}/{{ ts.maxNoOfAttendees }}</small>
     <br />
     
-{# if the tutorial is set up to display attendee names #}
+{# if the sign-up event is set up to display attendee names #}
 {% if ts.displayAttendees %}
   {% for attendee in ts.attendees %}
           {{ attendee.displayName }}{% if not forloop.last %},{% endif %}

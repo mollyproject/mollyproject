@@ -90,7 +90,7 @@ class SignupIndexView(SakaiView):
         return Breadcrumb(
             cls.conf.local_name,
             lazy_parent(IndexView),
-            'Tutorial sign-ups',
+            'Sign-ups',
             lazy_reverse('sakai:signup-index'),
         )
 
@@ -130,7 +130,7 @@ class SignupSiteView(SakaiView):
         return Breadcrumb(
             cls.conf.local_name,
             lazy_parent(SignupIndexView),
-            context.get('title', 'Tutorial sign-ups'),
+            context.get('title', 'Sign-ups'),
             lazy_reverse('sakai:signup-site', args=[site]),
         )
 
@@ -163,7 +163,7 @@ class SignupEventView(SakaiView):
         return Breadcrumb(
             cls.conf.local_name,
             lazy_parent(SignupSiteView, site),
-            context['event']['title'] if 'event' in context else 'Tutorial sign-ups',
+            context['event']['title'] if 'event' in context else 'Sign-ups',
             lazy_reverse('sakai:signup-detail', args=[site, event_id]),
         )
 
