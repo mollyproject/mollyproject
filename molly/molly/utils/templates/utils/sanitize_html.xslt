@@ -40,7 +40,11 @@
   <xsl:template match="a[@href]">
     <xsl:choose>
       <xsl:when test="molly:safe-href(@href)">
-        <xsl:copy-of select="."/>
+        <a>
+          <xsl:attribute name="rel">nofollow</xsl:attribute>
+          <xsl:copy-of select="@href"/>
+          <xsl:apply-templates select="node()"/>
+        </a>
       </xsl:when>
       <xsl:otherwise>
         <xsl:apply-templates select="node()"/>
