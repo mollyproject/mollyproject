@@ -34,7 +34,7 @@ def system_cairo_required():
         version = open('/etc/debian_version', 'r').read()
         major = int(version.split('.')[0])
         return major <= 5
-    except IOError:
+    except (IOError, ValueError):
         return False
 
 
