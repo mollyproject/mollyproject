@@ -69,10 +69,17 @@ class OAuthView(BaseView):
             http_url=request.client.authorization_url,
         )
 
-        if getattr(cls.conf, 'oauth_authorize_interstitial', True):
+        if getattr(cls.conf, 'oauth_authorize_interstitial', True) and not request.GET.get('skip_interstitial') == 'true':
             context = {
                 'authorize_url': oauth_request.to_url(),
                 'service_name': cls.conf.service_name,
+                'breadcrumbs': (
+                    cls.conf.local_name,
+                    (cls.conf.service_name, reverse('%s:index' % cls.conf.local_name)),
+                    (cls.conf.service_name, reverse('%s:index' % cls.conf.local_name)),
+                    True,
+                    'Authorization required',
+                ),
             }
             return cls.render(request, context, 'auth/oauth/authorize')
         else:

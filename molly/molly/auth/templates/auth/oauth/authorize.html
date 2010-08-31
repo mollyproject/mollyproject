@@ -4,11 +4,12 @@
 
 <div class="section">
   <div class="header">
-    <h2>Redirecting&hellip;</h2>
+    <h2>Redirecting to {{ service_name }}&hellip;</h2>
   </div>
   
   <div class="section-content">
-    <p>Before you can look at this page, you need to authenticate with {{ service_name }}.</p>
+    <p>This page requires Mobile Oxford to have access to your account on {{ service_name }}.</p>
+    <p>You will now be redirected to {{ service_name }} to confirm that you agree that access should be granted.</p>
     
     <div class="button">
       <a href="{{ authorize_url }}">Authorize&hellip;</a>
