@@ -95,7 +95,7 @@ def main(source_path, deploy_path):
         else:
             return_code = subprocess.call(command, stdout=stdout_log, stderr=stderr_log)
         print "[%s]" % ('FAILED' if return_code else '  OK  ')
-        succeeded == succeeded and (return_code == 0)
+        succeeded = succeeded and (return_code == 0)
 
     if succeeded:
         print """
@@ -106,6 +106,12 @@ $ source %(activate)s""" % {
             'deploy_path': deploy_path,
             'activate': os.path.join(deploy_path, "bin", "activate"),
         }
+    else:
+        print """
+The installation failed. You may find useful information in molly.stdout.log
+and molly.stderr.log. For assistance, please e-mail the mailing list at
+mollyproject-devel@lists.sourceforge.net or join the #molly IRC channel on
+irc.freenode.net.""" 
 
 
 if __name__ == '__main__':
