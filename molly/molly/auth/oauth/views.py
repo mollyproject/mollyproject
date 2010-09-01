@@ -8,10 +8,11 @@ if not hasattr(urlparse, 'parse_qs'):
 
 from oauth import oauth
 
-from django.http import HttpResponseRedirect, Http404
+from django.http import HttpResponseRedirect, Http404, HttpResponseBadRequest
 from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied, ImproperlyConfigured
 
+from molly.utils.http import HttpResponseSeeOther
 from molly.utils.views import BaseView
 
 from molly.auth.utils import unify_users
@@ -90,12 +91,14 @@ class OAuthView(BaseView):
             }
             return cls.render(request, context, 'auth/oauth/authorize')
         else:
-            return HttpResponseRedirect(oauth_request.to_url())
+            return HttpResponseSeeOther(oauth_request.to_url())
 
     def access_token(cls, request, *args, **kwargs):
         token_type, request_token = ExternalServiceToken.get(request.user, cls.conf.local_name, (None, None))
         if token_type != 'request':
-            return HttpResponse('', status=400)
+            return HttpResponseBadRequest()
+        if request_token.key != request.GET.get('oauth_token'):
+            return HttpResponseBadRequest()
 
         oauth_request = oauth.OAuthRequest.from_consumer_and_token(
             request.consumer,
