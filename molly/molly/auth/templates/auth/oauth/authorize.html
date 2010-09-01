@@ -8,11 +8,28 @@
   </div>
   
   <div class="section-content">
-    <p>This page requires Mobile Oxford to have access to your account on {{ service_name }}.</p>
-    <p>You will now be redirected to {{ service_name }} to confirm that you agree that access should be granted.</p>
+    <p>
+      This page provides information from {{ service_name }}, requiring you to allow access from Mobile Oxford to your {{ service_name }} account.
+    </p>
+    <p>
+      Select <strong>Authorise&hellip;</strong> to be redirected to
+      {{ service_name }} to confirm that you agree that access should be
+      granted. If this page is not what you expected, select
+      <strong>Cancel</strong>.
+    </p>
+    <p>
+      To revoke access from Mobile Oxford in the future, head to <em>Trusted
+      Applications</em> within <em>My Workspace</em> in {{ service_name }}.
+      If you wish to remove access from one of your devices, head to
+      <em>Security preferences</em> at the bottom of any authenticated page
+      on Mobile Oxford.
+    </p>
     
     <div class="button">
-      <a href="{{ authorize_url }}">Authorize&hellip;</a>
+      <a href="{{ authorize_url }}">Authorise&hellip;</a>
+    </div>
+    <div class="button">
+      <a href="{{ return_url }}">Cancel</a>
     </div>
   </div>
 </div>

@@ -31,7 +31,7 @@ class PreferencesForm(forms.Form):
 def UserSessionFormSet(request, *args, **kwargs):
     formset = modelformset_factory(UserSession, fields=TrueEmptyTuple(), extra=0, can_delete=True)
     return formset(
-        queryset=UserSession.objects.filter(user=request.user),
+        queryset=UserSession.objects.filter(user=request.user).order_by('-last_used'),
         prefix="user-sessions",
         *args, **kwargs
     )

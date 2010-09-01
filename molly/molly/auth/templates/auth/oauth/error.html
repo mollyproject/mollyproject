@@ -11,7 +11,7 @@
 {% ifequal error "oauth_problem" %}
   {% ifequal oauth_problem "permission_denied" %}
     You did not give Mobile Oxford permission to access your data held with
-    {{ service_name }}. You may <a href="{{ full_path }}">try again</a>, go
+    {{ service_name }}. You may <a href=".?skip_interstitial=true">try again</a>, go
     <a href="{{ breadcrumbs.1.1 }}" title="{{ breadcrumbs.1.0 }}">back to the
     {{ service_name }} page</a>, or back to the
     <a href="{% url home:index %}">Mobile Oxford homepage</a>.
@@ -21,20 +21,20 @@
     Mobile Oxford was unable to access your data held with {{ service_name }},
     most likely because you have revoked permission from within
     {{ service_name }}. If you'd still like to access {{ service_name }} from
-    Mobile Oxford <a href="{{ full_path }}">renew Mobile Oxford's permissions</a>.
+    Mobile Oxford <a href=".?skip_interstitial=true">renew Mobile Oxford's permissions</a>.
     Alternatively, you can go
     <a href="{{ breadcrumbs.1.1 }}" title="{{ breadcrumbs.1.0 }}">back to the
     {{ service_name }} page</a>, or back to the
     <a href="{% url home:index %}">Mobile Oxford homepage</a>.
     {% else %}
-    There was an unexpected error. You can <a href="{{ full_path }}">try again</a>, go
+    There was an unexpected error. You can <a href=".?skip_interstitial=true">try again</a>, go
     <a href="{{ breadcrumbs.1.1 }}" title="{{ breadcrumbs.1.0 }}">back to the
     {{ service_name }} page</a>, or back to the
     <a href="{% url home:index %}">Mobile Oxford homepage</a>.
     {% endifequal %}
   {% endifequal %}
 {% else %}
-    There was an unexpected error. You can <a href="{{ full_path }}">try again</a>, go
+    There was an unexpected error. You can <a href=".?skip_interstitial=true">try again</a>, go
     <a href="{{ breadcrumbs.1.1 }}" title="{{ breadcrumbs.1.0 }}">back to the
     {{ service_name }} page</a>, or back to the
     <a href="{% url home:index %}">Mobile Oxford homepage</a>.

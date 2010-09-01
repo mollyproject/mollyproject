@@ -8,7 +8,8 @@
     <div class="header">
     <h2>Available Events</h2>
     </div>
-{#<ul> #}
+
+{% if events %}
 
 {% regroup events by start|date:"W" as weeks %}
 <table class="content">
@@ -80,7 +81,15 @@
 
 
 </table>
-{#</ul>#}
+
+{% else %}
+
+<div class="section-content">
+  There are currently no available sign-ups for this site.
+</div>
+
+{% endif %}
+
 </div>
 {% endblock %}
 
