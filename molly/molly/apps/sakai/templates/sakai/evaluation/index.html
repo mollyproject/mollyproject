@@ -11,7 +11,8 @@
     </div>
     {% endif %}
   </div>
-{% endif %}
+
+{% if evaluations %}
   <ul class="link-list">
 {% for evaluation in evaluations %}
     <li>
@@ -28,6 +29,11 @@
     </li>
 {% endfor %}
   </ul>
+{% else %}
+  <div class="section-content">
+    There are currently no surveys available to complete.
+  </div>
+{% endif %}
 </div>
 
 {% endblock %}
