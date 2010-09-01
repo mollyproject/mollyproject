@@ -10,7 +10,7 @@ from oauth import oauth
 
 from django.http import HttpResponseRedirect, Http404
 from django.core.urlresolvers import reverse
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ImproperlyConfigured
 
 from molly.utils.views import BaseView
 
@@ -60,7 +60,12 @@ class OAuthView(BaseView):
         )
         oauth_request.sign_request(cls.signature_method, request.consumer, None)
 
-        token = request.client.fetch_request_token(oauth_request)
+        try:
+            token = request.client.fetch_request_token(oauth_request)
+        except urllib2.HTTPError, e:
+            if e.code == 401:
+                raise ImproperlyConfigured("OAuth shared secret not accepted by service %s. Check that the server is configured with the right credentials." % cls.conf.service_name)
+            raise
 
         ExternalServiceToken.set(request.user, cls.conf.local_name, ('request', token))
 
@@ -103,7 +108,7 @@ class OAuthView(BaseView):
 
         try:
             access_token = request.client.fetch_access_token(oauth_request)
-        except OAuthHTTPError, e:
+        except urllib2.HTTPError, e:
             return cls.handle_error(request, e, 'request_token', *args, **kwargs)
 
         ExternalServiceToken.set(request.user, cls.conf.local_name, ('access', access_token))
@@ -125,8 +130,7 @@ class OAuthView(BaseView):
             error = 'oauth_problem'
             oauth_problem = d.get('oauth_problem', [None])[0]
 
-        if token_type == 'access':
-            ExternalServiceToken.remove(request.user, cls.conf.local_name)
+        ExternalServiceToken.remove(request.user, cls.conf.local_name)
 
         try:
             breadcrumbs = cls.breadcrumb(request, {'oauth_problem': True}, *args, **kwargs)
