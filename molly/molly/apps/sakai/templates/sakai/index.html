@@ -4,14 +4,21 @@
 
 {% block content %}
 <div class="section">
-    <div class="header">
+  <div class="header">
     <h2>WebLearn</h2>
     {% if user_details.firstName %}
-        <p>Hello {{ user_details.firstName }}, welcome to mobile Weblearn!</p>
+        <p>Hello {{ user_details.firstName }}; welcome to mobile WebLearn!</p>
     {% endif %}
-    <p>In our Weblearn Mobile preview, you can book timeslots/tutorials that are available on your Weblearn Sign-Ups tool.</p> 
-    <p>You'll see this section expand and improve over time and we would really like to hear what you think, so do drop us a note via the link at the bottom of the page.</p>
-    </div>
+    <p>
+      In our WebLearn Mobile preview, you can book sign-up to events that are
+      available through your WebLearn Sign-up tool.
+    </p>
+    <p>
+      You'll see this section expand and improve over time and we would really
+      like to hear what you think, so do drop us a note via the link at the
+      bottom of the page.
+    </p>
+  </div>
 <ul class="link-list">
 {% for tool in tools %}
   <li><a href="{{ tool.url }}">{{ tool.title }}</a></li>
