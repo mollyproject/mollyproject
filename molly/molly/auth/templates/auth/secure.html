@@ -1,4 +1,4 @@
-{% extends "base.xhtml" %}
+{% extends "base.xhtml" %}{% load molly_auth %}
 
 {% block bottom_links %}
 
@@ -8,7 +8,7 @@
       <div style="background-image:url('{{ MEDIA_URL }}png/auth/padlock.png'); background-repeat:no-repeat; background-position:left center; padding-left:44px"> 
   <a href="{% url auth:index %}">Security preferences</a><br/>
   <a href="{% url auth:clear-session %}?return_url={{ full_path }}">Clear secure session</a><br/>
-  {{ user.externalservicetoken_set.all.count }} service{{ user.externalservicetoken_set.all.count|pluralize }} accessible from {{ user.usersession_set.all.count }} device{{ user.usersession_set.all.count|pluralize }}. <a href="{% url auth:index %}">Change</a>
+  {{ user|externalservicetoken_count }} service{{ user|externalservicetoken_count|pluralize }} accessible from {{ user.usersession_set.all.count }} device{{ user.usersession_set.all.count|pluralize }}. <a href="{% url auth:index %}">Change</a>
   </div></div>
   </div>
   {{ block.super }}

@@ -47,6 +47,7 @@ class UserSession(models.Model):
 class ExternalServiceToken(models.Model):
     user = models.ForeignKey(User)
     namespace = models.CharField(max_length=32)
+    authorized = models.BooleanField(default=False)
     value = models.TextField()
 
     @property
@@ -66,11 +67,13 @@ class ExternalServiceToken(models.Model):
             return default
 
     @classmethod
-    def set(cls, user, namespace, value):
+    def set(cls, user, namespace, value, authorized = None):
         try:
             token = cls.objects.get(user=user, namespace=namespace)
         except cls.DoesNotExist:
             token = cls(user=user, namespace=namespace)
+        if authorized is not None:
+            token.authorized = authorized
         token.value = pickle.dumps(value)
         token.save()
 

@@ -41,6 +41,7 @@
 <div class="section">
   <div class="header">
     <h2>Authenticated services</h2>
+{% if external_service_tokens.forms %}
     <p>You may currently access the following authenticated services using this device and those listed above.</p>
   </div>
   <div class="section-content">
@@ -61,6 +62,9 @@
 {% endfor %}
       </tbody>
     </table>
+{% else %}
+     <p>There are no currently authenticated services.</p>
+{% endif %}
   </div>
 </div>
 

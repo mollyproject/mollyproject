@@ -39,7 +39,7 @@ def UserSessionFormSet(request, *args, **kwargs):
 def ExternalServiceTokenFormSet(request, *args, **kwargs):
     formset = modelformset_factory(ExternalServiceToken, fields=TrueEmptyTuple(), extra=0, can_delete=True)
     return formset(
-        queryset=ExternalServiceToken.objects.filter(user=request.user),
+        queryset=ExternalServiceToken.objects.filter(user=request.user, authorized=True),
         prefix="external-service-tokens",
         *args, **kwargs
     )

@@ -67,7 +67,7 @@ class OAuthView(BaseView):
                 raise ImproperlyConfigured("OAuth shared secret not accepted by service %s. Check that the server is configured with the right credentials." % cls.conf.service_name)
             raise
 
-        ExternalServiceToken.set(request.user, cls.conf.local_name, ('request', token))
+        ExternalServiceToken.set(request.user, cls.conf.local_name, ('request', token), authorized=False)
 
         oauth_request = oauth.OAuthRequest.from_token_and_callback(
             token=token,
@@ -111,7 +111,7 @@ class OAuthView(BaseView):
         except urllib2.HTTPError, e:
             return cls.handle_error(request, e, 'request_token', *args, **kwargs)
 
-        ExternalServiceToken.set(request.user, cls.conf.local_name, ('access', access_token))
+        ExternalServiceToken.set(request.user, cls.conf.local_name, ('access', access_token), authorized=True)
 
         cls.add_opener_to_request(request, access_token)
         cls.add_user_identifiers(request)
