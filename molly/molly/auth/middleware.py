@@ -69,6 +69,9 @@ class SecureSessionMiddleware(object):
         if not secure_view and secure_request:
             uri = request.build_absolute_uri().split(':', 1)
             uri = 'http:' + uri[1]
+            if uri == 'http://%s/' % request.META.get('HTTP_HOST', ''):
+                uri += '?preview=true'
+
             return HttpResponsePermanentRedirect(
                 uri
             )
