@@ -1,0 +1,39 @@
+{% extends "sakai/evaluation/base.html" %}
+
+{% block content %}
+
+<div class="section">
+  <div class="header">
+    <h2>Current surveys</h2>
+    {% if submitted %}
+    <div class="bubble pad-10">
+      Thank you for taking part in the survey; your responses have been safely submitted.
+    </div>
+    {% endif %}
+  </div>
+
+{% if evaluations %}
+  <ul class="link-list">
+{% for evaluation in evaluations %}
+    <li>
+{% if evaluation.id %}
+      <a href="{% url sakai:evaluation-detail evaluation.id %}">
+{% endif %}
+        {{ evaluation.title }}<br/>
+        <small>
+        <em>{{ evaluation.status }}</em><br/>
+        {{ evaluation.site }}, open from {{ evaluation.start }} until {{ evaluation.end }}</small>
+{% if evaluation.id %}
+      </a>
+{% endif %}
+    </li>
+{% endfor %}
+  </ul>
+{% else %}
+  <div class="section-content">
+    There are currently no surveys available to complete.
+  </div>
+{% endif %}
+</div>
+
+{% endblock %}

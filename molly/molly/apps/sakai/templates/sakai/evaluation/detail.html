@@ -1,0 +1,27 @@
+{% extends "sakai/evaluation/base.html" %}
+
+{% block content %}
+
+{% if state_message %}
+  <div class="sakai-error-message">{{ state_message|safe }}</div>
+{% endif %}
+
+{% if instructions %}
+  <div class="bubble pad-10">
+    {{ instructions|safe }}
+  </div>
+{% endif %}
+
+{% if questions %}
+
+<form method="post" action="{% url sakai:evaluation-detail id %}">
+{{ questions|safe }}
+
+<p style="text-align:center">
+{{ submitButton|safe }}
+</p>
+</form>
+
+{% endif %}
+
+{% endblock %}

@@ -1,12 +1,14 @@
-import time
+import time, random
 
 from django.conf import settings
 from django.utils.cache import patch_vary_headers
 from django.utils.http import cookie_date
 from django.utils.importlib import import_module
 from django.http import HttpResponsePermanentRedirect, HttpResponseForbidden
+from django.contrib.auth.models import User
 
 from .views import SecureView
+from .models import UserSession
 
 class SecureSessionMiddleware(object):
     def process_request(self, request):
@@ -19,6 +21,28 @@ class SecureSessionMiddleware(object):
             # refuse requests where session keys have been swapped about.
             if secure_session_key is None:
                 request.secure_session['is_secure'] = True
+
+            secure_session_key = request.secure_session.session_key
+
+            try:
+                user_session = UserSession.objects.get(secure_session_key=secure_session_key)
+                user_session.save()
+                user = user_session.user
+            except UserSession.DoesNotExist:
+                if request.user.is_authenticated():
+                    user = request.user
+                else:
+                    username = ''.join(('%x' % random.randint(0, 15)) for i in range(16))
+                    user = User.objects.create(
+                        username = username,
+                        password = '!',
+                    )
+                user_session = UserSession.objects.create(
+                    user = user,
+                    secure_session_key = secure_session_key,
+                    device_name = ' '.join((request.device.brand_name, request.device.model_name)),
+                )
+            request.user = user
         else:
             request.secure_session = None
 
