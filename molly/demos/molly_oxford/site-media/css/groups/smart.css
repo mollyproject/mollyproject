@@ -264,14 +264,12 @@ ul.link-list li a, ol.search-results li a {
 }
 /* End Link-List */
 
-/* What is this /for/!?
-ul li span {
+li.service-status > span {
     background-position: left;
     background-repeat: no-repeat;
     display:block;
     padding-left: 25px;
 }
-*/
 
 ul.stand-alone {
     margin: 10px;
