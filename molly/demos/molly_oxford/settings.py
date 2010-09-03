@@ -51,9 +51,6 @@ MEDIA_ROOT = os.path.join(project_root, 'media')
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
 MEDIA_URL = '/media/'
 
-# Update MEDIA_ROOT, since they're local directories
-MEDIA_ROOT += MEDIA_URL
-
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
@@ -339,6 +336,8 @@ STATICFILES_PREPEND_LABEL_APPS = ('django.contrib.admin',) + extract_installed_a
 COMPRESS_CSS, COMPRESS_JS = {}, {}
 
 for directory in os.listdir(STATIC_ROOT):
+    if directory == 'c':
+        continue
     directory = os.path.join(STATIC_ROOT, directory)
     for root, dirs, files in os.walk(directory):
         for file in files:
@@ -353,10 +352,10 @@ for directory in os.listdir(STATIC_ROOT):
             if not group in compress:
                 compress[group] = {
                     'source_filenames': (),
-                    'output_filename': os.path.join(STATIC_ROOT, 'c', os.path.relpath(root, STATIC_ROOT), file),
+                    'output_filename': os.path.join('c', os.path.relpath(root, STATIC_ROOT), file),
                     'extra_context': {},
                 }
-            compress[group]['source_filenames'] += (os.path.join(directory, root, file),)
+            compress[group]['source_filenames'] += (os.path.relpath(os.path.join(directory, root, file), STATIC_ROOT),)
 
 # CSS filter is custom-written since the provided one mangles it too much
 #COMPRESS_CSS_FILTERS = ('molly_compress.CSSFilter',)
