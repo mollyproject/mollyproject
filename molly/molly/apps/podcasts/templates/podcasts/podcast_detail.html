@@ -56,7 +56,7 @@
     {% for enc in item.podcastenclosure_set.all %}
       <li style="vertical-align:middle;">
         <a href="{{ enc.url }}?CAMEFROM=moxacuk" style="vertical-align:middle; font-size:11px">
-        <img src="{{ MEDIA_URL }}png/icons/list-{{ podcast.medium }}.png" style="vertical-align:middle; border:0; margin:2px;" alt="({{ podcast.medium }})"/>
+        <img src="{{ MEDIA_URL }}png/icons/list-{{ enc.medium }}.png" style="vertical-align:middle; border:0; margin:2px;" alt="({{ enc.medium }})"/>
           {% if item.duration %}{{ item.duration|humanize_seconds }}, {% endif %}{{ enc.get_mimetype_display|capfirst }}, {{ enc.length|filesizeformat }}
           </a>
         </li>
