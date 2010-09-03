@@ -350,9 +350,11 @@ for directory in os.listdir(STATIC_ROOT):
             
             group = '-'.join(os.path.relpath(os.path.join(root, file.rsplit('.', 1)[0]), STATIC_ROOT).split('/')[1:])
             if not group in compress:
+                output_filename = file.rsplit('.', 1)
+                output_filename = '.'.join((output_filename[0], 'c', output_filename[1]))
                 compress[group] = {
                     'source_filenames': (),
-                    'output_filename': os.path.join('c', os.path.relpath(root, STATIC_ROOT), file),
+                    'output_filename': os.path.join(os.path.relpath(root, STATIC_ROOT), output_filename),
                     'extra_context': {},
                 }
             compress[group]['source_filenames'] += (os.path.relpath(os.path.join(directory, root, file), STATIC_ROOT),)
