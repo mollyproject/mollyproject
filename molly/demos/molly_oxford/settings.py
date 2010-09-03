@@ -322,7 +322,7 @@ INSTALLED_APPS = extract_installed_apps(APPLICATIONS) + (
 
 # Media handling using django-staticfiles and django-compress
 
-import imp
+import imp, re
 molly_root = imp.find_module('molly')[1]
 
 STATIC_ROOT = os.path.join(project_root, 'media')
@@ -336,8 +336,6 @@ STATICFILES_PREPEND_LABEL_APPS = ('django.contrib.admin',) + extract_installed_a
 COMPRESS_CSS, COMPRESS_JS = {}, {}
 
 for directory in os.listdir(STATIC_ROOT):
-    if directory == 'c':
-        continue
     directory = os.path.join(STATIC_ROOT, directory)
     for root, dirs, files in os.walk(directory):
         for file in files:
@@ -347,11 +345,13 @@ for directory in os.listdir(STATIC_ROOT):
                 compress = COMPRESS_JS
             else:
                 continue
+            if re.match(r'^.*\.r\d+\.(css|js)$', file):
+                continue
             
             group = '-'.join(os.path.relpath(os.path.join(root, file.rsplit('.', 1)[0]), STATIC_ROOT).split('/')[1:])
             if not group in compress:
                 output_filename = file.rsplit('.', 1)
-                output_filename = '.'.join((output_filename[0], 'c', output_filename[1]))
+                output_filename = '.'.join((output_filename[0], 'r?', output_filename[1]))
                 compress[group] = {
                     'source_filenames': (),
                     'output_filename': os.path.join(os.path.relpath(root, STATIC_ROOT), output_filename),
@@ -361,6 +361,9 @@ for directory in os.listdir(STATIC_ROOT):
 
 # CSS filter is custom-written since the provided one mangles it too much
 #COMPRESS_CSS_FILTERS = ('molly_compress.CSSFilter',)
+
+CSSTIDY_BINARY = 'cp'
+CSSTIDY_ARGUMENTS = '' #"--optimise_shorthands=0 --preserve_css=true"
 
 COMPRESS_CSSTIDY_SETTINGS = {
     'remove_bslash': True, # default True
