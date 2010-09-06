@@ -4,11 +4,13 @@ from datetime import datetime, date
 from xml.etree import ElementTree as ET
 
 from django.db import models
-from django.http import HttpResponse, HttpResponseNotAllowed, HttpResponseForbidden
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotAllowed, HttpResponseForbidden, Http404
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.core.paginator import Paginator
 from django.contrib.gis.geos import Point
+from django.core.urlresolvers import reverse, resolve, NoReverseMatch
+from django.conf import settings
 
 logger = logging.getLogger('core.requests')
 
@@ -397,9 +399,6 @@ class ZoomableView(BaseView):
             'zoom': zoom,
         }
 
-class SecureView(BaseView):
-    pass
-
 # FIXME:
 #       Block rendering methods, from http://djangosnippets.org/942
 #       Will need tidying up and fitting for the style of annotation we end up with
@@ -452,3 +451,22 @@ def render_block_to_string(template_name, block, dictionary=None, context_instan
     t.render(context_instance)
     return render_template_block(t, block, context_instance)
 
+def ReverseView(request):
+    from molly.auth.views import SecureView
+
+    try:
+        name = request.GET['name']
+        args = request.GET.getlist('arg')
+        
+        path = reverse(name, args=args)
+        view, view_args, view_kwargs = resolve(path)
+        is_secure = issubclass(view, SecureView) and not settings.DEBUG_SECURE
+        return HttpResponse("http%s://%s%s" % (
+            's' if is_secure else '',
+            request.META['HTTP_HOST'],
+            path,
+        ), mimetype='text/plain')
+    except NoReverseMatch:
+        raise Http404
+    except KeyError:
+        return HttpResponseBadRequest()

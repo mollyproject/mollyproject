@@ -8,7 +8,7 @@ from secrets import SECRETS
 project_root = os.path.normpath(os.path.dirname(__file__))
 
 DEBUG = True
-DEBUG_SECURE = False
+DEBUG_SECURE = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -74,7 +74,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-#    'molly.auth.middleware.SecureSessionMiddleware',
+    'molly.auth.middleware.SecureSessionMiddleware',
     'molly.stats.middleware.StatisticsMiddleware',
     'molly.apps.url_shortener.middleware.URLShortenerMiddleware',
 #    'debug_toolbar.middleware.DebugToolbarMiddleware',
@@ -130,6 +130,7 @@ APPLICATIONS = [
             'molly.providers.apps.maps.OxpointsMapsProvider',
             'molly.providers.apps.maps.OSMMapsProvider',
             'molly_oxford.providers.apps.places.OxfordParkAndRidePlacesProvider',
+            'molly.providers.apps.maps.LiveDepartureBoardPlacesProvider',
         ],
         nearby_entity_types = (
             ('Transport', (
@@ -257,32 +258,42 @@ APPLICATIONS = [
         display_to_user = False,
     ),
 
-#    Application('molly.auth', 'auth', 'Authentication',
-#        display_to_user = False,
-#        secure = True,
-#    ),
+    Application('molly.auth', 'auth', 'Authentication',
+        display_to_user = False,
+        secure = True,
+        unify_identifiers = ('oxford:sso', 'oxford:oss', 'weblearn:id', 'oxford_ldap'),
+    ),
 
-#    Application('molly.apps.sakai', 'weblearn', 'WebLearn',
-#        host = 'https://weblearn.ox.ac.uk/',
-#        service_name = 'WebLearn',
-#        secure = True,
-#        tools = [
-#            ('signup', 'Tutorial sign-ups'),
+    Application('molly.apps.sakai', 'weblearn', 'WebLearn',
+        host = 'https://weblearn.ox.ac.uk/',
+        service_name = 'WebLearn',
+        secure = True,
+        tools = [
+            ('signup', 'Sign-ups'),
 #            ('poll', 'Polls'),
 #            ('direct', 'User information'),
 #            ('sites', 'Sites'),
-#        ],
-#        extra_bases = (
-#            ExtraBase('molly.auth.oauth.views.OAuthView',
-#                secret = SECRETS.weblearn,
-#                signature_method = OAuthSignatureMethod_PLAINTEXT(),
-#                base_url = 'https://weblearn.ox.ac.uk/oauth-tool/',
-#                request_token_url = 'request_token',
-#                access_token_url = 'access_token',
-#                authorize_url = 'authorize',
-#            ),
-#        ),
-#    ),
+#            ('evaluation', 'Surveys'),
+        ],
+        extra_bases = (
+            ExtraBase('molly.auth.oauth.views.OAuthView',
+                secret = SECRETS.weblearn,
+                signature_method = OAuthSignatureMethod_PLAINTEXT(),
+                base_url = 'https://weblearn.ox.ac.uk/oauth-tool/',
+                request_token_url = 'request_token',
+                access_token_url = 'access_token',
+                authorize_url = 'authorize',
+            ),
+        ),
+        enforce_timeouts = False,
+        identifiers = (
+            ('oxford:sso', ('props', 'aid',)),
+            ('weblearn:id', ('id',)),
+            ('oxford:oss', ('props', 'oakOSSID',)),
+            ('oxford:ldap', ('props', 'udp.dn',)),
+            ('weblearn:email', ('email',)),
+        ),
+    ),
 
 #    Application('molly.apps.feeds.events', 'events', 'Events',
 #    ),
@@ -309,6 +320,53 @@ INSTALLED_APPS = extract_installed_apps(APPLICATIONS) + (
     'molly.utils',
 #    'debug_toolbar',
 )
+
+# Settings for django-compress: CSS
+COMPRESS_CSS = {
+    'smart': {
+        'source_filenames': ('css/groups/smart.css',),
+        'output_filename': 'css/groups/smart.min.css',
+        'extra_context': {},
+        },
+    'dumb': {
+        'source_filenames': ('css/groups/dumb.css',),
+        'output_filename': 'css/groups/dumb.min.css',
+        'extra_context': {},
+        },
+    }
+# CSS filter is custom-written since the provided one mangles it too much
+COMPRESS_CSS_FILTERS = ('molly_compress.CSSFilter',)
+COMPRESS_CSSTIDY_SETTINGS = {
+    'remove_bslash': True, # default True
+    'compress_colors': True, # default True
+    'compress_font-weight': True, # default True
+    'lowercase_s': False, # default False
+    'optimise_shorthands': 0, # default 2, tries to merge bg rules together and makes a hash of things
+    'remove_last_': False, # default False
+    'case_properties': 1, # default 1
+    'sort_properties': False, # default False
+    'sort_selectors': False, # default False
+    'merge_selectors': 0, # default 2, messes things up
+    'discard_invalid_properties': False, # default False
+    'css_level': 'CSS2.1', # default 'CSS2.1'
+    'preserve_css': False, # default False
+    'timestamp': False, # default False
+    'template': 'high_compression', # default 'highest_compression'
+}
+# django-compress JS
+COMPRESS_JS = {
+    'all': {
+        'source_filenames': ('js/jquery-1.4.2.js', 'js/groups/smart.js'),
+        'output_filename': 'js/all.min.js',
+        'extra_context': {},
+        },
+    }
+if not DEBUG:
+    COMPRESS_JS['all']['source_filenames'] = COMPRESS_JS['all']['source_filenames'] + ('js/async_load.js',)
+
+COMPRESS_JS_FILTERS = ('compress.filters.jsmin.JSMinFilter',)
+# On or off?
+COMPRESS = not DEBUG
 
 CACHE_DIR = '/var/cache/molly'
 SRID = 27700

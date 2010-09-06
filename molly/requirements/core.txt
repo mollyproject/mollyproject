@@ -17,4 +17,5 @@ PIL
 lxml
 python-ldap
 django-compress
+suds
 

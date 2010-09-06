@@ -62,6 +62,8 @@ class RSSPodcastsProvider(BasePodcastsProvider):
         podcast.description = xml.find('.//channel/description').text
         
         podcast.license = self.determine_license(xml.find('.//channel'))
+        if self.medium is not None:
+            podcast.medium = medium
 
         logo = xml.find('.//channel/image/url')
         podcast.logo = logo.text if logo is not None else None

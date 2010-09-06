@@ -6,30 +6,44 @@
 
 {% for poll_set in polls_by_title %}
 <div class="section">
-  <h2>{{ poll_set.grouper }}</h2>
-  
-  <div class="content pad-10">
-  <table>
+  <div class="header">
+    <h2>{{ poll_set.grouper }}</h2>
+  </div>
+
+  <table class="content">
     <thead>
       <tr>
         <th>Question</th>
-        <th>Opens</th>
-        <th>Closes</th>
+        <th>Open</th>
+        <th></th>
     <tbody>
 {% for poll in poll_set.list %}
       <tr>
-        <td><a href="{% url sakai:poll-detail poll.id %}">{{ poll.text }}</a></td>
-        <td>{{ poll.voteOpen|from_sakai_timestamp|date:"d M Y, g:iA" }}</td>
-        <td>{{ poll.voteClose|from_sakai_timestamp|date:"d M Y, g:iA" }}</td>
+        <td>{{ poll.text }}</td>
+        <td>
+          {{ poll.voteOpen|from_sakai_timestamp|date:"d M Y, g:iA" }}
+          until
+          {{ poll.voteClose|from_sakai_timestamp|date:"d M Y, g:iA" }}
+        </td>
+        <td>
+          <div class="button">
+            <a href="{% url sakai:poll-detail poll.id %}">{% if poll.currentUserVotes %}View{% else %}Take{% endif %}</a>
+          </div>
+        </td>
       </tr>
 {% endfor %}
     </tbody>
   </table>
-  </div>
 </div>
+
 {% empty %}
-<div class="content pad-10">
-  There aren't currently any polls.
+<div class="section">
+  <div class="header">
+    <h2>Polls</h2>
+  </div>
+  <div class="section-content">
+    There aren't currently any polls.
+  </div>
 </div>
 {% endfor %}
 

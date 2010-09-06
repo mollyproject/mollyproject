@@ -22,7 +22,7 @@ class Application(object):
     def __init__(self, application_name, local_name, title, **kwargs):
         self.application_name, self.local_name = application_name, local_name
         self.title = title
-        
+
         self.authentication = kwargs.pop('authentication', None)
         self.secure = kwargs.pop('secure', False)
         self.extra_bases = kwargs.pop('extra_bases', ())
