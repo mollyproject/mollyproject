@@ -1,4 +1,4 @@
-{% load portal_misc %}<!DOCTYPE HTML>
+{% load portal_misc %}{% load compressed %}<!DOCTYPE HTML>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-GB" lang="en-GB" manifest="/static/app-cache.manifest">
 <head>
         <title>{% block title %}m.ox | {{ breadcrumbs.4 }}{% endblock %}</title>
@@ -14,9 +14,9 @@
     </script>
 {% endif %}
 
-    <link rel="stylesheet" href="{{ MEDIA_URL }}css/groups/{{ style_group }}.css" type="text/css" />
-    <link rel="icon" type="image/png" href="{{ MEDIA_URL }}png/favicon.png"/>{% if device|device_has_parent:"apple_iphone_ver4" or browser.svgt_1_1 %}
-    <link rel="stylesheet" href="{{ MEDIA_URL }}css/svg.css" type="text/css" />
+  {% compressed_css style_group %}
+  <link rel="icon" type="image/png" href="{{ MEDIA_URL }}png/favicon.png"/>{% if device|device_has_parent:"apple_iphone_ver4" or browser.svgt_1_1 %}
+  {% compressed_css 'svg' %}
 {% endif %}
 
 {% if device|device_has_parent:"apple_iphone_ver1" %}
@@ -27,8 +27,8 @@
 {% endif %}
 
 {% if use_javascript %}
-    <script src="{{ MEDIA_URL }}js/jquery-1.4.2.js"  type="text/javascript"> </script>
-    <script src="{{ MEDIA_URL }}js/groups/{{ style_group }}.js"  type="text/javascript"> </script>
+  {% compressed_js 'jquery-1.4.2' %}
+  {% compressed_js style_group %}
 {% endif %}
     <link rel="icon" type="image/png" href="{{ MEDIA_URL }}png/favicon.png"/>
 {% block extrahead %}{% endblock extrahead %}
@@ -37,7 +37,6 @@
 <body>
 
 {% block body %}
-<div id="loading-bg"> <div id="loading-img"><img align="center" style="position:fixed; left: 40%;" src="{{ MEDIA_URL }}gif/ajax-loader.gif"/></div> </div>
 
 {% block header %}
 
