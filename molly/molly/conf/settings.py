@@ -95,6 +95,8 @@ class Application(object):
         self.conf.has_urlconf = isinstance(urls, tuple)
         self.conf.display_to_user = self.kwargs['display_to_user'] and isinstance(urls, tuple)
 
+        # Configure any logging for this application, passing the
+        # configuration lest it needs it.
         try:
             logconfig = import_module(self.application_name + '.logconfig')
         except ImportError, e:
