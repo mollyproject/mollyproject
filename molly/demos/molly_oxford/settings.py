@@ -331,33 +331,45 @@ STATICFILES_DIRS = (
     ('base', os.path.join(molly_root, 'media')),
 )
 STATIC_URL = '/media/'
-STATICFILES_PREPEND_LABEL_APPS = ('django.contrib.admin',) + extract_installed_apps(APPLICATIONS)
+STATICFILES_PREPEND_LABEL_APPS = ('django.contrib.admin',) #+ extract_installed_apps(APPLICATIONS)
 
 COMPRESS_CSS, COMPRESS_JS = {}, {}
 
 for directory in os.listdir(STATIC_ROOT):
+    # We don't want to compress admin media or already-compressed media.
+    if directory in ('admin', 'c', ):
+        continue
     directory = os.path.join(STATIC_ROOT, directory)
     for root, dirs, files in os.walk(directory):
-        for file in files:
-            if file.endswith('.css'):
+        for filename in files:
+            #print STATIC_ROOT, directory, root, filename
+            filename = os.path.relpath(os.path.join(root, filename), STATIC_ROOT)
+            print filename
+            if filename.endswith('.css'):
                 compress = COMPRESS_CSS
-            elif file.endswith('.js'):
+            elif filename.endswith('.js'):
                 compress = COMPRESS_JS
             else:
                 continue
-            if re.match(r'^.*\.r\d+\.(css|js)$', file):
-                continue
             
-            group = '-'.join(os.path.relpath(os.path.join(root, file.rsplit('.', 1)[0]), STATIC_ROOT).split('/')[1:])
+            path = filename.split('/')[:-1]
+            if not path[0] in ('openlayers',):
+                path = path[1:]
+            output_filename = filename.split('/')[-1].rsplit('.', 1)
+            group = '-'.join(path + [output_filename[0],])
+            if group.startswith('css-') or group.startswith('js-'):
+                group = group.split('-', 1)[1]
             if not group in compress:
-                output_filename = file.rsplit('.', 1)
-                output_filename = '.'.join((output_filename[0], 'r?', output_filename[1]))
+                output_filename = '.'.join((output_filename[0], 'v?', output_filename[1]))
+                output_filename = os.path.join(os.path.join('c', *path), output_filename)
                 compress[group] = {
                     'source_filenames': (),
-                    'output_filename': os.path.join(os.path.relpath(root, STATIC_ROOT), output_filename),
+                    'output_filename': output_filename,
                     'extra_context': {},
                 }
-            compress[group]['source_filenames'] += (os.path.relpath(os.path.join(directory, root, file), STATIC_ROOT),)
+            compress[group]['source_filenames'] += (filename,)
+
+print COMPRESS_CSS
 
 # CSS filter is custom-written since the provided one mangles it too much
 #COMPRESS_CSS_FILTERS = ('molly_compress.CSSFilter',)
@@ -385,7 +397,8 @@ COMPRESS_CSSTIDY_SETTINGS = {
 
 COMPRESS_JS_FILTERS = ('compress.filters.jsmin.JSMinFilter',)
 # On or off?
-COMPRESS = not DEBUG
+COMPRESS = True
+COMPRESS_VERSION = True
 
 CACHE_DIR = '/var/cache/molly'
 SRID = 27700
