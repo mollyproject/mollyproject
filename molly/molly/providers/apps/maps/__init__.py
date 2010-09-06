@@ -3,3 +3,4 @@ from oxontime import OxontimeMapsProvider
 from osm import OSMMapsProvider
 from oxpoints import OxpointsMapsProvider
 from postcodes import PostcodesMapsProvider
+from ldb import LiveDepartureBoardPlacesProvider

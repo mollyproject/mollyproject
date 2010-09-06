@@ -1,4 +1,4 @@
-import ftplib, os, urllib, zipfile, tempfile, random, re
+import ftplib, os, urllib, zipfile, tempfile, random, re, csv
 
 from StringIO import StringIO
 
@@ -29,9 +29,10 @@ class NaptanContentHandler(ContentHandler):
     def naptan_dial(c):
         return unicode(min(9, (ord(c)-91)//3))
 
-    def __init__(self, entity_types, source):
+    def __init__(self, entity_types, source, station_codes):
         self.name_stack = []
         self.entity_types, self.source = entity_types, source
+        self.station_codes = station_codes
         self.entities = set()
 
     def startElement(self, name, attrs):
@@ -118,6 +119,9 @@ class NaptanContentHandler(ContentHandler):
         if ind and re.match('Stop [A-Z]\d\d?', ind):
             identifiers['stop'] = ind[5:]
 
+        if self.meta['stop-type'] == 'RSE' and meta['atco-code'][4:-1] in self.station_codes:
+            identifiers['crs'] = self.station_codes[meta['atco-code'][4:-1]]
+
         entity.save(identifiers=identifiers)
         entity.all_types.add(entity_type)
 
@@ -198,6 +202,14 @@ class NaptanMapsProvider(BaseMapsProvider):
             self._password,
         )
 
+        # Create a mapping from ATCO codes to CRS codes.
+        f, filename =  tempfile.mkstemp()
+        ftp.cwd("/V2/010/")
+        ftp.retrbinary('RETR RailReferences.csv', data_chomper(f))
+        os.close(f)
+        self._station_codes = self._get_station_codes(open(filename, 'r'))
+        os.unlink(filename)
+
         for area in self._areas:
             f, filename = tempfile.mkstemp()
 
@@ -218,18 +230,34 @@ class NaptanMapsProvider(BaseMapsProvider):
         ftp.quit()
 
     def _import_from_http(self):
+        # TODO Pull data from RailReferences.csv pulled over HTTP
+        self._station_codes = {}
+        
         f, filename = tempfile.mkstemp()
         os.close(f)
         urllib.urlretrieve(self.HTTP_URL, filename)
         archive = zipfile.ZipFile(filename)
-        self._import_from_pipe(archive.open('NaPTAN.xml'))
+        if hasattr(archive, 'open'):
+            f = archive.open('NaPTAN.xml')
+        else:
+            f = StringIO(archive.read('NaPTAN.xml'))
+        self._import_from_pipe(f)
         archive.close()
         os.unlink(filename)
 
     def _import_from_pipe(self, pipe_r):
         parser = make_parser()
-        parser.setContentHandler(NaptanContentHandler(self._entity_types, self._source))
+        parser.setContentHandler(NaptanContentHandler(self._entity_types, self._source, self._station_codes))
         parser.parse(pipe_r)
+
+    def _get_station_codes(self, f):
+        csvfile = csv.reader(f)
+        
+        codes = {}
+        for line in csvfile:
+            codes[line[1]] = line[2]
+        
+        return codes
 
 
     def _get_entity_types(self):
