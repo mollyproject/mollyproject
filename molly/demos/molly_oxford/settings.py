@@ -148,6 +148,14 @@ APPLICATIONS = [
         ),
 
     ),
+    
+    Application('molly.apps.transport', 'transport', 'Transport',
+        train_station = 'crs:OXF',
+        nearby = {
+            'park_and_rides': ('park-and-ride', 5, True),
+            'bus_stops': ('bus-stop', 5, False),
+        },
+    ),
 
     Application('molly.apps.z3950', 'library', 'Library search',
         verbose_name = 'Oxford Library Information System',

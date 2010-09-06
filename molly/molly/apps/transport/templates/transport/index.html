@@ -1,11 +1,128 @@
-{% extends "transport/base.html" %}
+{% extends "transport/base.html" %}{% load molly_utils %}
 
 {% block content %}
 
+{% if train_station %}
 <div class="section">
   <div class="header">
-    <h2>Transport</h2>
+    <h2>{{ train_station.title }} (departures)</h2>
   </div>
+  
+  {% if train_station.metadata.ldb.nrccMessages.message %}
+  <ul class="content-list no-round-bottom">
+    {% for message in train_station.metadata.ldb.nrccMessages.message %}
+      <li>{{ message|sanitize_html }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+
+  <table class="content">
+    <thead>
+      <tr>
+        <th>Destination</th>
+        <th>Plat.</th>
+        <th>Due</th>
+        <th>Expected</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for service in train_station.metadata.ldb.trainServices.service %}
+        <tr>
+            <td>{{ service.destination.location.0.locationName }}{% if service.destination.location.0.via %}<br/>
+            <small>{{ service.destination.location.0.via }}</small>{% endif %}</td>
+            <td>{{ service.platform }}</td>
+            <td>{{ service.std }}</td>
+            <td>{{ service.etd }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+        
+</div>
+{% endif %}
+
+<div class="section">
+  <div class="header">
+    <h2>Park and Rides</h2>
+  </div>
+  
+  <table class="content">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Spaces</th>
+        <th>Capacity</th>
+        <th>View</th>
+      </tr>
+    </thead>
+    <tbody>
+{% for entity in park_and_rides.entities %}
+      <tr>
+        <td>{{ entity.title|slice:":-14" }}</td>
+        <td>{{ entity.metadata.park_and_ride.spaces }}</td>
+        <td>{{ entity.metadata.park_and_ride.capacity }}</td>
+        <td>
+          <div class="button">
+            <a href="{{ entity.get_absolute_url }}">View</a>
+          </div>
+        </td>
+      </tr>
+{% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="section">
+  <div class="header">
+    <h2>Nearby bus stops</h2>
+  </div>
+  
+  <table class="content">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Nº</th>
+        <th>Dest.</th>
+        <th>Next</th>
+        <th>View</th>
+      </tr>
+    </thead>
+    <tbody>
+{% for entity in bus_stops.entities %}
+{% with entity.metadata.real_time_information.services|slice:":3" as services %}
+{% if services %}
+{% for service in services %}
+      <tr>
+{% if forloop.first %}
+        <td rowspan="{{ services|length }}">{{ entity.title|truncatewords:2 }}<br/><small>{{ entity.distance }}</small></td>
+{% endif %}
+        <td>{{ service.service }}</td>
+        <td>{{ service.destination }}</td>
+        <td>{{ service.next }}</td>
+{% if forloop.first %}
+        <td rowspan="{{ services|length }}">
+          <div class="button">
+            <a href="{{ entity.get_absolute_url }}">View</a>
+          </div>
+        </td>
+{% endif %}
+      </tr>
+{% endfor %}
+{% else %}
+      <tr>
+        <td>{{ entity.title|truncatewords:2 }}<br/><small>{{ entity.distance }}</small></td>
+        <td colspan="3">{{ entity.metadata.real_time_information.pip_info }}</td>
+        <td>
+          <div class="button">
+            <a href="{{ entity.get_absolute_url }}">View</a>
+          </div>
+        </td>
+      </tr>
+{% endif %}
+{% endwith %}
+{% endfor %}
+    </tbody>
+  </table>
 </div>
 
 {% endblock %}

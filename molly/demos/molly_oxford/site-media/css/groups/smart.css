@@ -831,7 +831,7 @@ div.button {
     background:#002147 url('../../png/icons/list-arrow.png') no-repeat;
     background-position: right center;
 
-    margin: 8px 2px 0 auto;
+	 margin: 4px 2px 4px auto;
     min-width: 70px;
     max-width: 100px;
     padding: 3px;
