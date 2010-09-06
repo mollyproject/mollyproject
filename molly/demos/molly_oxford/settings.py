@@ -129,6 +129,7 @@ APPLICATIONS = [
             'molly.providers.apps.maps.OxontimeMapsProvider',
             'molly.providers.apps.maps.OxpointsMapsProvider',
             'molly.providers.apps.maps.OSMMapsProvider',
+            'molly_oxford.providers.apps.places.OxfordParkAndRidePlacesProvider',
         ],
         nearby_entity_types = (
             ('Transport', (
