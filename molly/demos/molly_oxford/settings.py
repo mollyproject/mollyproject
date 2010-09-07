@@ -131,6 +131,9 @@ APPLICATIONS = [
             'molly.providers.apps.maps.OSMMapsProvider',
             'molly_oxford.providers.apps.places.OxfordParkAndRidePlacesProvider',
             'molly.providers.apps.maps.LiveDepartureBoardPlacesProvider',
+            Provider('molly.providers.apps.maps.BBCTPEGPlacesProvider',
+                url='http://www.bbc.co.uk/travelnews/tpeg/en/local/rtm/oxford_tpeg.xml',
+            ),
         ],
         nearby_entity_types = (
             ('Transport', (
