@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.urlresolvers import reverse
 from molly.apps.podcasts import TOP_DOWNLOADS_RSS_URL
+from molly.data import licenses
 
 MEDIUM_CHOICES = (
     ('audio', 'audio'),
@@ -33,12 +34,18 @@ class Podcast(models.Model):
     most_recent_item_date = models.DateTimeField(null=True)
     medium = models.CharField(max_length=8, choices=MEDIUM_CHOICES, null=True)
     provider = models.TextField()
+    license = models.URLField(null=True)
+    logo = models.URLField(null=True)
     
     def get_absolute_url(self):
         return reverse('podcasts:podcast', args=[self.slug])
         
     def __unicode__(self):
         return self.title or ''
+        
+    @property
+    def license_data(self):
+        return licenses.get(self.license)
 
     class Meta:
         verbose_name = 'Podcast feed'
@@ -55,9 +62,14 @@ class PodcastItem(models.Model):
     duration = models.PositiveIntegerField(null=True)
     guid = models.TextField()
     order = models.IntegerField(null=True)
+    license = models.URLField(null=True)
 
     def __unicode__(self):
         return self.title or ''
+        
+    @property
+    def license_data(self):
+        return licenses.get(self.license) or licenses.get(self.podcast.license)
 
     class Meta:
         verbose_name = 'Podcast item'
@@ -82,6 +94,20 @@ class PodcastEnclosure(models.Model):
     url = models.URLField()
     length = models.IntegerField(null=True)
     mimetype = models.TextField(null=True)
+    
+    @property
+    def medium(self):
+        medium = {'application/pdf': 'document', 'MPEG4 Video': 'video'}.get(self.mimetype)
+        if medium:
+            return medium
+        elif not self.mimetype:
+            return self.podcast_item.podcast.medium or 'unknown'
+        elif self.mimetype.startswith('audio/'):
+            return 'audio'
+        elif self.mimetype.startswith('video/'):
+            return 'video'
+        else:
+            return self.podcast_item.podcast.medium or 'unknown'
     
     def get_mimetype_display(self):
         return MIMETYPES.get(self.mimetype, 'unknown')

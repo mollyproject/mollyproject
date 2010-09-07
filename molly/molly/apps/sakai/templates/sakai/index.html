@@ -4,11 +4,22 @@
 
 {% block content %}
 <div class="section">
+  <div class="header">
     <h2>WebLearn</h2>
-    <div class="note"><div class="bubble pad-10">
-     Here you'll see a gradually increasing list of tools you can use from Weblearn.     
-    </div></div>
-<ul>
+    {% if user_details.firstName %}
+        <p>Hello {{ user_details.firstName }}; welcome to mobile WebLearn!</p>
+    {% endif %}
+    <p>
+      In our WebLearn Mobile preview, you can book sign-up to events that are
+      available through your WebLearn Sign-up tool.
+    </p>
+    <p>
+      You'll see this section expand and improve over time and we would really
+      like to hear what you think, so do drop us a note via the link at the
+      bottom of the page.
+    </p>
+  </div>
+<ul class="link-list">
 {% for tool in tools %}
   <li><a href="{{ tool.url }}">{{ tool.title }}</a></li>
 {% endfor %}

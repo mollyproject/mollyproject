@@ -2,12 +2,14 @@ from django.conf.urls.defaults import *
 from django.conf import settings
 from django.contrib import admin
 
-from molly.conf import applications
+from molly.conf import applications, all_apps
 
 admin.autodiscover()
 
+all_apps()
+
 urlpatterns = patterns('',
-    (r'^adm/(.*)', admin.site.root),
+    (r'^adm/', include(admin.site.urls)),
 
     # These are how we expect all applications to be eventually.
     (r'^contact/', applications.contact.urls),
@@ -25,11 +27,18 @@ urlpatterns = patterns('',
     (r'^external-media/', applications.external_media.urls),
     (r'^device-detection/', applications.device_detection.urls),
     (r'^osm/', applications.osm.urls),
+    (r'^desktop/', applications.desktop.urls),
+    (r'^url-shortener/', applications.url_shortener.urls),
+    (r'^feature-suggestions/', applications.feature_vote.urls),
+
+    (r'^comments/', include('django.contrib.comments.urls')),
+
     (r'', applications.home.urls),
 
     (r'^auth/', applications.auth.urls),
     (r'^weblearn/', applications.weblearn.urls),
-#    (r'^url-shortener/', applications.url_shortener.urls),
+
+    (r'^reverse/$', 'molly.utils.views.ReverseView', {}, 'reverse'),
 #    (r'^events/', applications.events.urls),
 
     # These ones still need work

@@ -34,7 +34,7 @@
   </div>
   {% endifnotequal %}
 
-  <ul id="people">
+  <ul class="link-list" id="people">
     {% for person in page.object_list %}
       <li class="contact-person{% if forloop.last %} round-bottom{% endif %}">
         {% include "contact/result.html" %}

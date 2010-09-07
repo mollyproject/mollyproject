@@ -9,3 +9,6 @@ class Webcam(models.Model):
     title = models.TextField()
     description = models.TextField(null=True)
     credit = models.TextField(null=True)
+
+    class Meta:
+        ordering = ('title',)

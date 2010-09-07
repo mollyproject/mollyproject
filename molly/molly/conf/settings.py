@@ -22,7 +22,7 @@ class Application(object):
     def __init__(self, application_name, local_name, title, **kwargs):
         self.application_name, self.local_name = application_name, local_name
         self.title = title
-        
+
         self.authentication = kwargs.pop('authentication', None)
         self.secure = kwargs.pop('secure', False)
         self.extra_bases = kwargs.pop('extra_bases', ())
@@ -30,7 +30,7 @@ class Application(object):
         self.kwargs = kwargs
         self.batches = []
         self.conf = None
-        
+
         kwargs['display_to_user'] = kwargs.get('display_to_user', True)
 
         self.providers = kwargs.pop('providers', ())
@@ -63,6 +63,7 @@ class Application(object):
         try:
             urlpatterns = import_module(self.urlconf).urlpatterns
         except ImportError, e:
+            urlconf_load_exception = e
             if e.message == 'No module named urls':
                 # We'll assume this means the application we're trying to load
                 # doesn't have a urls module, so we'll create a usefully named
@@ -75,6 +76,7 @@ class Application(object):
                 # we should give up and tell someone.
                 raise
         else:
+            urlconf_load_exception = None
             # Load our extra base classes
             bases = tuple(base() for base in self.extra_bases)
             if self.secure:
@@ -88,8 +90,17 @@ class Application(object):
             urls = urlconf_include(new_urlpatterns, self.application_name.split('.')[-1], self.local_name)
 
         # Add our newly created urls to our conf object.
-        self.conf.urls = urls
+
+        self.conf.urls = self._get_urls_property(urls, urlconf_load_exception)
+        self.conf.has_urlconf = isinstance(urls, tuple)
         self.conf.display_to_user = self.kwargs['display_to_user'] and isinstance(urls, tuple)
+
+        try:
+            logconfig = import_module(self.application_name + '.logconfig')
+        except ImportError, e:
+            pass
+        else:
+            logconfig.configure_logging(self.conf)
 
         return self.conf
 
@@ -127,6 +138,7 @@ class Application(object):
             callback = type(callback.__name__ + 'WithConf',
                             (callback,) + bases,
                             { 'conf': conf })
+            callback.__module__ = pattern.callback.__module__
             # Transplant this new callback into a new RegexURLPattern, keeping
             # the same regex, default_args and name.
             return RegexURLPattern(pattern.regex.pattern,
@@ -135,6 +147,14 @@ class Application(object):
                                    pattern.name)
         else:
             raise TypeError("Expected RegexURLResolver or RegexURLPattern instance, got %r." % type(pattern))
+
+    def _get_urls_property(self, urls, urlconf_load_exception):
+        if urls:
+            return urls
+        else:
+            def p(self):
+                raise urlconf_load_exception
+            return property(p)
 
 class Authentication(object):
     def __init__(klass, **kwargs):

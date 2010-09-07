@@ -6,9 +6,9 @@
 <div class="section">
   <h2>{{ name }} <small>at {{ lastBuildDate|date:"G:i D, j F Y" }}</small></h2>
   {% if announcements %}
-  <h3>Service announcements</h3>
+  <h3 class="invisible">Service announcements</h3>
   
-  <ul>
+  <ul class="content-list no-round-bottom">
 {% for announcement in announcements %}
     <li>
       <h3>{{ announcement.title }}</h3>
@@ -19,9 +19,9 @@
   </ul>
 {% endif %}
 
+  <h3 class="invisible">Services</h3>
 
-
-  <ul class="service-status">
+  <ul class="link-list service-status">
 {% for status in statuses %}
     <li class="service-status service-status-{{ status.status }}{% if forloop.last %} round-bottom{% endif %}">
       <span class="service-name">{{ status.name }}</span>

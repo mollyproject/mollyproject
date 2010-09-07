@@ -51,7 +51,8 @@ class ExternalImageSized(models.Model):
 
     def save(self, force_insert=False, force_update=False):
         if not self.id:
-            data = StringIO(urllib.urlopen(self.external_image.url).read())
+            response = urllib.urlopen(self.external_image.url)
+            data = StringIO(response.read())
             im = Image.open(data)
 
             size = im.size
@@ -73,13 +74,14 @@ class ExternalImageSized(models.Model):
             try:
                 resized.save(self.get_filename(), format='jpeg')
                 self.content_type = 'image/jpeg'
-            except IOError:
+            except IOError, e:
+                print "ERR", e
                 try:
                     resized.convert('RGB').save(self.get_filename(), format='jpeg')
                     self.content_type = 'image/jpeg'
                 except IOError:
-                    open(self.get_filename(), 'w').write(data.read())
-                    self.content_type = 'image/png'
+                    open(self.get_filename(), 'w').write(data.getvalue())
+                    self.content_type = response.headers['content-type']
 
             self.external_image.width = size[0]
             self.external_image.height = size[1]

@@ -1,4 +1,4 @@
-{% extends "base.xhtml" %}
+{% extends "base.html" %}
 
 {% block content %}
 
@@ -7,7 +7,7 @@
 <dl id="results">
 {% regroup items by pubDate as is %}
 {% for g in is %}
-    <dt>{{ g.grouper|date:"jS M Y"}}</dt>
+    <dt>{{ g.grouper|date:"jS M Y"}} </dt>
 <!--
 	<div class="section">
 	<h2>{{ g.grouper|date:"d M Y" }}</h2>

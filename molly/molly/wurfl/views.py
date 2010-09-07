@@ -36,6 +36,6 @@ class IndexView(BaseView):
         }
 
         if request.GET.get('capabilities') == 'true':
-            context['capabilities'] = dict((k, getattr(device, k)) for k in dir(device) if (not k.startswith('_') and not k.startswith('dev') and not k=='groups'))
+            context['capabilities'] = dict((k, getattr(device, k)) for k in dir(device) if (not k.startswith('_') and not k.startswith('dev') and not k in ('groups','children')))
 
         return cls.render(request, context, None)

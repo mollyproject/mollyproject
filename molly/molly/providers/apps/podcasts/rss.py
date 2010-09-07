@@ -12,14 +12,16 @@ class RSSPodcastsProvider(BasePodcastsProvider):
         ('guid', 'guid'),
         ('title', 'title'),
         ('author', '{itunes:}author'),
-        ('duration', '{itunes:}duration'),
+        ('duration', '{http://www.itunes.com/dtds/podcast-1.0.dtd}duration'),
         ('published_date', 'pubDate'),
         ('description', 'description'),
+        
 #       ('itunesu_code', '{itunesu:}code'),
     )
 
-    def __init__(self, podcasts):
+    def __init__(self, podcasts, medium=None):
         self.podcasts = podcasts
+        self.medium = medium
     
     @batch('%d * * * *' % random.randint(0, 59))
     def import_data(self, metadata, output):
@@ -28,10 +30,17 @@ class RSSPodcastsProvider(BasePodcastsProvider):
                 provider=self.class_path,
                 rss_url=url,
                 defaults={'slug': slug})
-            
+            if self.medium: 
+                podcast.medium = self.medium
+                
             podcast.slug = slug
             self.update_podcast(podcast)
             
+    def determine_license(self, o):
+        license = o.find('{http://purl.org/dc/terms/}license') or \
+                  o.find('{http://backend.userland.com/creativeCommonsRssModule}license')
+        
+        return license.text if license is not None else None
         
     def update_podcast(self, podcast):
         def gct(node, name):
@@ -51,6 +60,13 @@ class RSSPodcastsProvider(BasePodcastsProvider):
 
         podcast.title = xml.find('.//channel/title').text
         podcast.description = xml.find('.//channel/description').text
+        
+        podcast.license = self.determine_license(xml.find('.//channel'))
+        if self.medium is not None:
+            podcast.medium = medium
+
+        logo = xml.find('.//channel/image/url')
+        podcast.logo = logo.text if logo is not None else None
 
         guids = []
         for item in xml.findall('.//channel/item'):
@@ -70,7 +86,9 @@ class RSSPodcastsProvider(BasePodcastsProvider):
                 if getattr(podcast_item, attr) != gct(item, x_attr):
                     setattr(podcast_item, attr, gct(item, x_attr))
                     require_save = True
-            if require_save:
+            license = self.determine_license(item)
+            if require_save or podcast_item.license != license:
+                podcast_item.license = license
                 podcast_item.save()
 
             enc_urls = []

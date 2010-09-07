@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import os, sys, os.path, subprocess, shutil
+import os, sys, os.path, subprocess, shutil, traceback
 
 def cairo_hack(source_path, deploy_path):
     # This is a hack to create a file that should have been created at the pip stage.
@@ -14,14 +14,9 @@ def cairo_hack(source_path, deploy_path):
         f.close()
 
 def cairo_link(source_path, deploy_path):
-    for path in sys.path:
-        path = os.path.join(path, 'cairo')
-        if os.path.exists(path):
-            break
-    else:
-        raise ImportError
+    import cairo
 
-    os.link(path, os.path.join(deploy_path,
+    os.symlink(cairo.__path__[0], os.path.join(deploy_path,
                                "lib",
                                "python%d.%d" % sys.version_info[:2],
                                "site-packages",
@@ -51,7 +46,7 @@ def main(source_path, deploy_path):
     use_system_cairo = system_cairo_required()
 
     commands = [
-        ('Creating', 'virtual environment', ["virtualenv", "--no-site-packages", deploy_path]),
+        ('Creating', 'virtual environment', ["virtualenv", "--distribute", "--no-site-packages", deploy_path]),
     ]
 
     requirements = [l[:-1] for l in open(os.path.join(source_path, "requirements", "core.txt")) if l[:-1]]
@@ -90,8 +85,9 @@ def main(source_path, deploy_path):
         if callable(command):
             try:
                 return_code = command(source_path, deploy_path) or 0
-            except Exception:
+            except Exception, e:
                 return_code = 1
+                traceback.print_exc(file=stderr_log)
         else:
             return_code = subprocess.call(command, stdout=stdout_log, stderr=stderr_log)
         print "[%s]" % ('FAILED' if return_code else '  OK  ')
