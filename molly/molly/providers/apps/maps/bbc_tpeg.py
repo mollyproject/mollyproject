@@ -1,7 +1,7 @@
 import os, os.path, urllib, random, zipfile, tempfile
 from lxml import etree
 
-from django.contrib.gis.geos import Point
+from django.contrib.gis.geos import Point, LineString
 from django.conf import settings
 
 from molly.apps.places.providers import BaseMapsProvider
@@ -61,6 +61,8 @@ class BBCTPEGPlacesProvider(BaseMapsProvider):
         
         for message in xml.getroot().findall('tpeg_message'):
             id = message.find('road_traffic_message').attrib['message_id']
+            road_traffic_message = message.find('road_traffic_message')
+            
             try:
                 entity = entities[id]
             except KeyError:
@@ -71,8 +73,25 @@ class BBCTPEGPlacesProvider(BaseMapsProvider):
             entity.title = message.find('summary').text
             entity.primary_type = entity_type
             
-            location = message.find('road_traffic_message/location_container/location_coordinates/WGS84').attrib
-            entity.location = Point(float(location['longitude']), float(location['latitude']), srid=4326)
+            locs = map(self._wgs84_to_point, road_traffic_message.findall('location_container/location_coordinates/WGS84'))
+            if len(locs) > 1:
+                entity.geometry = LineString(*locs)
+            elif len(locs) == 1:
+                entity.geometry = locs[0]
+            else:
+                continue
+            entity.location = Point(
+                sum(p.x for p in locs)/len(locs), 
+                sum(p.y for p in locs)/len(locs), 
+                srid=4326,
+            )
+            
+            entity.metadata['bbc_tpeg'] = {
+                'xml': etree.tostring(message),
+                'severity': road_traffic_message.attrib['severity_factor'],
+                'generated': road_traffic_message.attrib['message_generation_time'],
+                'version': int(road_traffic_message.attrib['version_number']),
+            }
             
             entity.save(identifiers={'bbc-tpeg': id})
             entity.all_types = [entity_type]
@@ -84,7 +103,11 @@ class BBCTPEGPlacesProvider(BaseMapsProvider):
         for entity in Entity.objects.filter(primary_type=entity_type):
             if not entity.pk in seen:
                 entity.delete()
-        
+    
+    def _wgs84_to_point(self, elem):
+        attrib = elem.attrib
+        return Point(float(attrib['longitude']), float(attrib['latitude']), srid=4326)
+
     def _get_source(self):
         try:
             source = Source.objects.get(module_name="molly.providers.apps.maps.bbc_tpeg")
