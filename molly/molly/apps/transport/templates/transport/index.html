@@ -125,4 +125,20 @@
   </table>
 </div>
 
+{% if travel_alerts %}
+
+<div class="section">
+  <div class="header">
+    <h2>Travel alerts</h2>
+  </div>
+  
+  <ul class="content-list">
+{% for alert in travel_alerts %}
+    <li>{{ alert.title }}</li>
+{% endfor %}
+  </ul>
+</div>
+
+{% endif %}
+
 {% endblock %}

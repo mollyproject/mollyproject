@@ -36,7 +36,7 @@ class IndexView(BaseView):
             if location:
                 es = et.entities_completion.filter(location__isnull=False).distance(location).order_by('distance')[:count]
             elif without_location:
-                es = et.entities_completion.filter(location__isnull=False).order_by('title')[:count]
+                es = et.entities_completion.order_by('title')[:count]
             else:
                 continue
             entities |= set(es)
@@ -44,6 +44,15 @@ class IndexView(BaseView):
                 'type': et,
                 'entities': es,
             }
+            
+        if getattr(cls.conf, 'travel_alerts', False):
+            es = Entity.objects.filter(primary_type__slug='travel-alert')
+            if location:
+                es = es.filter(location__isnull=False).distance(location).order_by('distance')
+            else:
+                es = es.order_by('title')
+            entities |= set(es)
+            context['travel_alerts'] = es
                 
         
         # Get any real-time information for all the places we're about to display

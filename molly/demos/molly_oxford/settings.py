@@ -158,6 +158,7 @@ APPLICATIONS = [
             'park_and_rides': ('park-and-ride', 5, True),
             'bus_stops': ('bus-stop', 5, False),
         },
+        travel_alerts = True,
     ),
 
     Application('molly.apps.z3950', 'library', 'Library search',
