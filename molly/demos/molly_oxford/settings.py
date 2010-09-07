@@ -108,6 +108,9 @@ APPLICATIONS = [
 
     Application('molly.apps.desktop', 'desktop', 'Desktop',
         display_to_user = False,
+        twitter_username = 'mobileox',
+        twitter_ignore_urls = 'http://post.ly/',
+        blog_rss_url = 'http://feeds.feedburner.com/mobileoxford',
     ),
 
     Application('molly.apps.contact', 'contact', 'Contact search',
