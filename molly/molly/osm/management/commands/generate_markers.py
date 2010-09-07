@@ -1,4 +1,4 @@
-import itertools, subprocess, os.path
+import itertools, subprocess, os.path, tempfile, os
 from django.core.management.base import NoArgsCommand
 from django.conf import settings
 
@@ -23,16 +23,18 @@ class Command(NoArgsCommand):
                 'text_color': color[3],
             }
             
-            f = open('out.svg', 'w')
-            f.write(out)
-            f.close()
+            f, infile = tempfile.mkstemp()
+            os.write(f, out)
+            os.close(f)
             
-            filename = os.path.join(marker_dir, '%s-%d.png' % (color[0], index))
+            outfile = os.path.join(marker_dir, '%s-%d.png' % (color[0], index))
+            print infile, outfile
             subprocess.call([
                 'inkscape',
-                'out.svg',
-                '--export-png=%s' % filename,
+                infile,
+                '--export-png=%s' % outfile,
             ])
+            os.unlink(infile)
         
         template = open(os.path.join(os.path.dirname(__file__), 'star-base.svg')).read()
             
