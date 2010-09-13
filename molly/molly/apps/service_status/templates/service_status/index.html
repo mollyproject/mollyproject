@@ -4,7 +4,9 @@
 
 {% for slug, name, lastBuildDate, statuses, announcements in services %}
 <div class="section">
-  <h2>{{ name }} <small>at {{ lastBuildDate|date:"G:i D, j F Y" }}</small></h2>
+  <div class="header">
+    <h2>{{ name }} <small>at {{ lastBuildDate|date:"G:i D, j F Y" }}</small></h2>
+  </div>
   {% if announcements %}
   <h3 class="invisible">Service announcements</h3>
   
@@ -21,13 +23,14 @@
 
   <h3 class="invisible">Services</h3>
 
-  <ul class="link-list service-status">
+  <ul class="content-list service-status-list">
 {% for status in statuses %}
-    <li class="service-status service-status-{{ status.status }}{% if forloop.last %} round-bottom{% endif %}">
-      <span class="service-name">{{ status.name }}</span>
-      <span class="service-status">{{ status.status|capfirst }}</span>
-{% if status.detail %}
-      <span class="service-detail">{{ status.detail }}</span>
+    <li class="service-status-item service-status-{{ status.status }}{% if forloop.last %} round-bottom{% endif %}">
+      <span class="service-status-name">{{ status.name }}</span><br/>
+      <span class="service-status-status">{{ status.status|capfirst }}</span>
+{% if status.statusMessage %}
+      <br/>
+      <span class="service-status-detail">{{ status.statusMessage }}</span>
 {% endif %}
     </li>
 {% endfor %}
