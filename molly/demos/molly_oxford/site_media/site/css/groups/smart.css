@@ -96,41 +96,6 @@ li#menu-weblearn {background-image:url('../../../site/index-icons/weblearn.png')
 li#menu-service_status {background-image:url('../../../site/png/index-icons/service_status.png');}
 /* End Index Page Specific */
 
-/* Results Releases */
-dl#results {
-    font-size: 1.2em;
-    margin:10px;
-    padding: 10px;
-    border-radius: 8px; -moz-border-radius: 8px; -webkit-border-radius:8px;
-    background:#B88C54 url('../../../site/png/new/gradients/gradient-50-nrWhite-Transparent.png') repeat-x;
-    background:-webkit-gradient(linear, left top, right top, from(#dfdfdf), to(#fff));
-    background:-moz-linear-gradient(top, #dfdfdf, #fff);
-    background:linear-gradient(top, #dfdfdf, #fff);
-    -moz-box-shadow: 2px 2px 2px #333; -webkit-box-shadow: 2px 2px 2px #333; box-shadow: 2px 2px 2px #333;
-    border-left: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-dl#results dt {
-    color: #fff;
-    background: #002B4C;
-    background:-webkit-gradient(linear, left top, right top, from(#002B4C), to(rgba(223,223,223,0.2)));
-    background:-moz-linear-gradient(left, #002B4C, rgba(223,223,223,0.2));
-    padding: 3px;
-    margin: 8px 0;
-    text-shadow: 1px 1px 0px #111;
-}
-
-dl#results dd {
-    color: #111;
-    margin: 2px 0 2px 20px;
-    border-bottom: 1px solid #ccc;
-    text-shadow: 1px 1px 1px #ccc;
-    line-height: 1.3em;
-}
-
-dl#results dd.no-border {border: 0;}
-/* End Results Releases */
-
 
 /* Breadcrumb Trail Styles */
 div#bc-header {
