@@ -328,7 +328,7 @@ molly_root = imp.find_module('molly')[1]
 STATIC_ROOT = os.path.join(project_root, 'media')
 STATICFILES_DIRS = (
     ('', os.path.join(project_root, 'site_media')),
-    ('base', os.path.join(molly_root, 'media')),
+    ('', os.path.join(molly_root, 'media')),
 )
 STATIC_URL = '/media/'
 STATICFILES_PREPEND_LABEL_APPS = ('django.contrib.admin',) #+ extract_installed_apps(APPLICATIONS)
@@ -342,9 +342,7 @@ for directory in os.listdir(STATIC_ROOT):
     directory = os.path.join(STATIC_ROOT, directory)
     for root, dirs, files in os.walk(directory):
         for filename in files:
-            #print STATIC_ROOT, directory, root, filename
             filename = os.path.relpath(os.path.join(root, filename), STATIC_ROOT)
-            print filename
             if filename.endswith('.css'):
                 compress = COMPRESS_CSS
             elif filename.endswith('.js'):
@@ -368,8 +366,6 @@ for directory in os.listdir(STATIC_ROOT):
                     'extra_context': {},
                 }
             compress[group]['source_filenames'] += (filename,)
-
-print COMPRESS_CSS
 
 # CSS filter is custom-written since the provided one mangles it too much
 #COMPRESS_CSS_FILTERS = ('molly_compress.CSSFilter',)
