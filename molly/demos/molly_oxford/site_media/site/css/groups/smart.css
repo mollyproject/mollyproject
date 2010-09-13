@@ -772,7 +772,7 @@ table.content > *:last-child > tr:last-child > td:last-child {
 }
 
 div.button {
-    background:#002147 url('../../png/icons/list-arrow.png') no-repeat;
+    background:#002147 url('../../site/png/icons/list-arrow.png') no-repeat;
     background-position: right center;
 
     margin: 8px 2px 0 auto;
