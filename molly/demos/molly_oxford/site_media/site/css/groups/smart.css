@@ -102,7 +102,7 @@ dl#results {
     margin:10px;
     padding: 10px;
     border-radius: 8px; -moz-border-radius: 8px; -webkit-border-radius:8px;
-    background:#B88C54 url('../../png/new/gradients/gradient-50-nrWhite-Transparent.png') repeat-x;
+    background:#B88C54 url('../../../site/png/new/gradients/gradient-50-nrWhite-Transparent.png') repeat-x;
     background:-webkit-gradient(linear, left top, right top, from(#dfdfdf), to(#fff));
     background:-moz-linear-gradient(top, #dfdfdf, #fff);
     background:linear-gradient(top, #dfdfdf, #fff);
@@ -136,7 +136,7 @@ dl#results dd.no-border {border: 0;}
 div#bc-header {
     height:34px;
     width: 100%;
-    background:url('../../png/new/gradients/bc-gradient.png') repeat-x top;
+    background:url('../../../site/png/new/gradients/bc-gradient.png') repeat-x top;
     overflow:hidden;
 }
 ol#bc {
@@ -260,7 +260,7 @@ ul.link-list li a, ol.search-results li a {
     text-align: left;
     background-position: right center;
     background-repeat: no-repeat;
-    background-image:url('../../png/icons/list-arrow.png'); /* Default background image */
+    background-image:url('../../../site/png/icons/list-arrow.png'); /* Default background image */
 }
 /* End Link-List */
 
@@ -686,7 +686,7 @@ ul.content-list li.superuser-comment {
 
 /* div.section is now 'legacy' - it should be replaced by div.section and one of the above */
 div.section {
-    background:#B88C54 url('../../png/new/gradients/gradient-50-nrWhite-Transparent.png') repeat-x;
+    background:#B88C54 url('../../../site/png/new/gradients/gradient-50-nrWhite-Transparent.png') repeat-x;
     margin:10px;
     -webkit-border-radius:8px; -moz-border-radius: 8px; border-radius: 8px;
     -moz-box-shadow: 2px 2px 2px #333; -webkit-box-shadow: 2px 2px 2px #333; box-shadow: 2px 2px 2px #333;
@@ -831,4 +831,13 @@ div.button > a {
     line-height: 2em;
     vertical-align: middle;
     text-shadow: 0 -1px 1px #000;
+}
+
+
+a img {
+  border:0;
+}
+
+small {
+  font-size:90%;
 }
