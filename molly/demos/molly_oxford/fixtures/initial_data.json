@@ -60,6 +60,18 @@
         }
     },
     {
+        "pk": "6",
+        "model": "webcams.Webcam",
+        "fields": {
+            "slug": "radcliffe-observatory-quarter",
+            "url": "http://roq.some.ox.ac.uk/wp-content/gallery/webcam01/image.jpg",
+            "fetch_period": 1,
+            "title": "Somerville College ROQ",
+            "description": "Overlooking the construction of the new Radcliffe Observatory Quarter.",
+            "credit": "&copy; Somerville College"
+        }
+    },
+    {
         "pk": "1",
         "model": "feeds.Feed",
         "fields": {
