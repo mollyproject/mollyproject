@@ -84,19 +84,6 @@
         }
     },
     {
-        "pk": 4,
-        "model": "feeds.Feed",
-        "fields":
-        {
-            "rss_url": "http://www.keble.ox.ac.uk/news/RSS",
-            "title": "Keble College news",
-            "slug": "keble",
-            "unit": "kebl",
-            "ptype": "n",
-            "provider": "molly.providers.apps.feeds.RSSFeedsProvider"
-        }
-    },
-    {
         "pk": 5,
         "model": "feeds.Feed",
         "fields": {
