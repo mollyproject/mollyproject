@@ -3,6 +3,7 @@ import simplejson, urllib2, feedparser
 from django.http import Http404, HttpResponse
 from django.template import loader, TemplateDoesNotExist, RequestContext
 from django.shortcuts import render_to_response
+from django.core.cache import cache
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import NullBreadcrumb
@@ -19,8 +20,8 @@ class IndexView(BaseView):
     
     def initial_context(cls, request, page):
         return {
-            'twitter_feed': cls._get_twitter_feed(getattr(cls.conf, 'twitter_username')),
-            'blog_feed': cls._get_blog_feed(getattr(cls.conf, 'blog_rss_url')),
+            'twitter_feed': cls._cache(cls._get_twitter_feed, 'twitter', args=[getattr(cls.conf, 'twitter_username')], timeout=300),
+            'blog_feed': cls._cache(cls._get_blog_feed, 'blog', args=[getattr(cls.conf, 'blog_rss_url')], timeout=300),
             'twitter_username': getattr(cls.conf, 'twitter_username'),
             'twitter_url': ('http://twitter.com/' + cls.conf.twitter_username) if getattr(cls.conf, 'twitter_username') else None,
         }
@@ -44,6 +45,15 @@ class IndexView(BaseView):
                 'content': content,
                 'page': page,
             }, context_instance=RequestContext(request))
+
+    def _cache(cls, f, key, args=None, kwargs=None, timeout=None):
+        key = '.'.join(['molly', cls.conf.local_name, key])
+        value = cache.get(key)
+        if value is None:
+            print "Fetching"
+            value = f(*(args or ()), **(kwargs or {}))
+            cache.set(key, value, timeout)
+        return value
 
     _TWITTER_URL = 'http://api.twitter.com/1/statuses/user_timeline.json?user=%s&include_entities=true'
     def _get_twitter_feed(cls, username):

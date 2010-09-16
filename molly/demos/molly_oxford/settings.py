@@ -376,6 +376,8 @@ COMPRESS = not DEBUG
 CACHE_DIR = '/var/cache/molly'
 SRID = 27700
 
+CACHE_BACKEND = 'memcached://localhost:11211/?timeout=60'
+
 FIXTURE_DIRS = [
     os.path.join(project_root, 'fixtures'),
 ]
