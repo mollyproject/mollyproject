@@ -14,4 +14,4 @@ class ErrorHandlingMiddleware(object):
         elif isinstance(exception, ImproperlyConfigured):
             logger.critical("Site improperly configured", exc_info=True)
         else:
-            logger.exception("View raised an uncaught error")
+            logger.exception("[500] %s at %s" % (type(exception).__name__, request.path))

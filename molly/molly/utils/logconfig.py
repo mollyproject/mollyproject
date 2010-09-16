@@ -8,9 +8,9 @@ from . import email
 class EmailHandler(logging.Handler):
     _NOT_EXTRA = (
         'args', 'created', 'exc_info', 'exc_text', 'filename', 'funcName',
-        'getMessage', 'levelname', 'levelno', 'lineno', 'msg', 'module', 'msecs',
-        #'name', 'pathname', 'process', 'processName', 'relativeCreated',
-        'thread', 'threadName'
+        'getMessage', 'levelname', 'levelno', 'lineno', 'msg', 'message',
+        'module', 'msecs', 'name', 'pathname', 'process', 'processName',
+        'relativeCreated', 'thread', 'threadName'
     )
     
     def emit(self, record):
@@ -49,6 +49,7 @@ class EmailHandler(logging.Handler):
 
         if record.exc_info:
             exc_type, exc_value, exc_traceback = record.exc_info
+            hash.update('%s%s' % (exc_type.__module__, exc_type.__name__))
             context['traceback'] = ''.join(traceback.format_exception(exc_type, exc_value, exc_traceback))
             for i in range(2):
                 hash.update('%d%s' % (exc_traceback.tb_lineno, exc_traceback.tb_frame.f_code.co_filename))
