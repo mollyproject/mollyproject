@@ -29,6 +29,7 @@ def send_email(request, context, template_name, cls=None, to_email=None):
         'from_email': from_email,
         'host': request.META.get('HTTP_HOST'),
         'to_email': to_email,
+        'request': request,
     })
     email_context.update(context)
 
