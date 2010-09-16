@@ -59,13 +59,17 @@ class OAuthView(BaseView):
             callback=callback_uri,
             http_url = request.client.request_token_url,
         )
-        oauth_request.sign_request(cls.signature_method, request.consumer, None)
+        
+        try:
+            oauth_request.sign_request(cls.signature_method, request.consumer, None)
+        except TypeError, e:
+            raise ImproperlyConfigured("No OAuth shared secret has been set for app %r. Check that the server is configured with the right credentials." % cls.conf.local_name)
 
         try:
             token = request.client.fetch_request_token(oauth_request)
         except urllib2.HTTPError, e:
             if e.code == 401:
-                raise ImproperlyConfigured("OAuth shared secret not accepted by service %s. Check that the server is configured with the right credentials." % cls.conf.service_name)
+                raise ImproperlyConfigured("OAuth shared secret not accepted by service %r. Check that the server is configured with the right credentials." % cls.conf.service_name)
             raise
 
         ExternalServiceToken.set(request.user, cls.conf.local_name, ('request', token), authorized=False)

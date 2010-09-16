@@ -1,3 +1,4 @@
+{% load molly_utils %}
 <div class="container">
 <div class="two-col">
 
@@ -124,4 +125,41 @@
 </div>
 </div>
 <div style="clear:both;"> </div>
+</div>
+
+<div class="container">
+
+<div class="outer-col"><div class="about">
+  <h3>Twitter</h3>
+  <ul style="list-style:none; padding:0;">
+{% for tweet in twitter_feed|slice:":5" %}
+    <li style="margin-bottom:0.5em">
+      <h4 style="margin:0">{{ tweet.formatted_text|safe }}</h4>
+      <small>{{ tweet.created_at }}</small>
+    </li>
+{% endfor %}
+  </ul>
+  <p>
+    <a href="{{ twitter_url }}">More&hellip;</a>
+  </p>
+</div></div>
+
+<div class="centre-col"><div class="about">
+  <h3>Blog</h3>
+  <ul style="list-style:none; padding:0;">
+{% for entry in blog_feed.entries|slice:":5" %}
+    <li style="margin-bottom:0.5em">
+      <h4 style="margin:0">{{ entry.title }}</h4>
+      <small>
+        {{ entry.description|striptags|truncatewords:20|safe }}
+        <a href="{{ entry.link }}">More&hellip;</a>
+      </small>
+    </li>
+{% endfor %}
+  </ul>
+</div></div>
+<div style="clear:both;"> </div>
+
+</div>
+
 </div>

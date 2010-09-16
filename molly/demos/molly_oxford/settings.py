@@ -73,6 +73,7 @@ MIDDLEWARE_CLASSES = (
     'molly.wurfl.middleware.WurflMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'molly.utils.middleware.ErrorHandlingMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'molly.auth.middleware.SecureSessionMiddleware',
     'molly.stats.middleware.StatisticsMiddleware',
@@ -108,6 +109,9 @@ APPLICATIONS = [
 
     Application('molly.apps.desktop', 'desktop', 'Desktop',
         display_to_user = False,
+        twitter_username = 'mobileox',
+        twitter_ignore_urls = 'http://post.ly/',
+        blog_rss_url = 'http://feeds.feedburner.com/mobileoxford',
     ),
 
     Application('molly.apps.contact', 'contact', 'Contact search',
@@ -266,6 +270,10 @@ APPLICATIONS = [
         display_to_user = False,
     ),
 
+    Application('molly.utils', 'utils', 'Molly utility services',
+        display_to_user = False,
+    ),
+
     Application('molly.apps.feature_vote', 'feature_vote', 'Feature suggestions',
         display_to_user = False,
     ),
@@ -329,7 +337,6 @@ INSTALLED_APPS = extract_installed_apps(APPLICATIONS) + (
     'django.contrib.gis',
     'django.contrib.comments',
     'molly.batch_processing',
-    'molly.utils',
 #    'debug_toolbar',
 )
 
@@ -382,6 +389,8 @@ COMPRESS = not DEBUG
 
 CACHE_DIR = '/var/cache/molly'
 SRID = 27700
+
+CACHE_BACKEND = 'memcached://localhost:11211/?timeout=60'
 
 FIXTURE_DIRS = [
     os.path.join(project_root, 'fixtures'),
