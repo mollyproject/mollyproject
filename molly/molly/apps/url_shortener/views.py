@@ -44,7 +44,7 @@ class IndexView(BaseView):
         view, view_context = context['view'], context['view_context']
         view_args, view_kwargs = context['view_args'], context['view_kwargs']
 
-        if IndexView in getattr(context['view'], '__mro__', ()):
+        if not isinstance(context['view'], BaseView):
             return None
 
         if view_context:

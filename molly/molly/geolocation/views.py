@@ -29,24 +29,25 @@ class IndexView(BaseView):
         try:
             parent_view, args, kwargs = resolve(request.REQUEST['return_url'])
             parent_data = parent_view.breadcrumb.data(cls, request, context, *args, **kwargs)
-            parent_data = parent_data.parent(cls, request, context)
+            parent_data = parent_data.parent(cls, parent_view.conf.local_name, request, context)
 
-            parent = lambda _1, _2, _3: parent_data
+            parent = lambda _1, _2, _3, _4: parent_data
             application = parent_data.application
         except Exception:
+            raise
             application = 'home'
-            parent = lambda _1,_2,_3: type(
+            parent = lambda _1,_2,_3, _4: type(
                 'BC', (), {
                     'application': 'home',
                     'title': 'Back...',
-                    'url':staticmethod(lambda:request.REQUEST.get('return_url', reverse('home:index')))
+                    'url':staticmethod(lambda _:request.REQUEST.get('return_url', reverse('home:index')))
                 }
             )
         return Breadcrumb(
             application,
             parent,
             'Update location',
-            lazy_reverse('geolocation:index'),
+            lazy_reverse('index'),
         )
 
     def initial_context(cls, request):
@@ -191,9 +192,9 @@ class LocationRequiredView(BaseView):
     def is_location_required(cls, request, *args, **kwargs):
         return True
 
-    def __new__(cls, request, *args, **kwargs):
-        if not cls.is_location_required(request, *args, **kwargs) or request.session.get('geolocation:location'):
-            return super(LocationRequiredView, cls).__new__(cls, request, *args, **kwargs)
+    def __call__(self, request, *args, **kwargs):
+        if not self.is_location_required(request, *args, **kwargs) or request.session.get('geolocation:location'):
+            return super(LocationRequiredView, self).__call__(request, *args, **kwargs)
         else:
             return HttpResponseSeeOther('%s?%s' % (
                 reverse('geolocation:index'),

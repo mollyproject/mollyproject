@@ -34,7 +34,7 @@ class IndexView(BaseView):
             'places',
             None,
             'Places',
-            lazy_reverse('places:index')
+            lazy_reverse('index')
         )
 
     def initial_context(cls, request):
@@ -56,9 +56,9 @@ class NearbyListView(LocationRequiredView):
     def breadcrumb(cls, request, context, entity=None):
         return Breadcrumb(
             'places',
-            lazy_parent(IndexView),
+            lazy_parent('index'),
             'Things nearby',
-            url = lazy_reverse('places:nearby_list'),
+            url = lazy_reverse('nearby-list'),
         )
 
 
@@ -66,9 +66,9 @@ class NearbyListView(LocationRequiredView):
         point = get_point(request, entity)
 
         if entity:
-            return_url = reverse('places:entity_nearby_list', args=[entity.identifier_scheme, entity.identifier_value])
+            return_url = reverse('places:entity-nearby-list', args=[entity.identifier_scheme, entity.identifier_value])
         else:
-            return_url = reverse('places:nearby_list')
+            return_url = reverse('places:nearby-list')
 
         entity_types_map = dict((e.slug, e) for e in EntityType.objects.all())
         entity_types = tuple((name, tuple(entity_types_map[t] for t in types)) for (name, types) in cls.conf.nearby_entity_types)
@@ -139,9 +139,9 @@ class NearbyDetailView(LocationRequiredView, ZoomableView):
     def breadcrumb(cls, request, context, ptypes, entity=None):
         title = NearbyDetailView.get_metadata(request, ptypes, entity)['title']
         return Breadcrumb('places',
-                          lazy_parent(NearbyListView, entity=entity),
+                          lazy_parent('nearby-list', entity=entity),
                           title,
-                          lazy_reverse('places:nearby_detail', args=[ptypes]))
+                          lazy_reverse('nearby-detail', args=[ptypes]))
 
     def get_metadata(cls, request, ptypes, entity=None):
         context = NearbyDetailView.initial_context(request, ptypes, entity)
@@ -250,15 +250,15 @@ class EntityDetailView(ZoomableView):
     @BreadcrumbFactory
     def breadcrumb(cls, request, context, scheme, value):
         if request.session.get('geolocation:location'):
-            parent_view = NearbyDetailView
+            parent_view = 'nearby-detail'
         else:
-            parent_view = CategoryDetailView
+            parent_view = 'category-detail'
         entity = get_entity(scheme, value)
         return Breadcrumb(
             'places',
             lazy_parent(parent_view, ptypes=entity.primary_type.slug),
             context['entity'].title,
-            lazy_reverse('places:entity', args=[scheme,value]),
+            lazy_reverse('entity', args=[scheme,value]),
         )
 
     def handle_GET(cls, request, context, scheme, value):
@@ -290,9 +290,9 @@ class EntityUpdateView(ZoomableView):
     def breadcrumb(cls, request, context, scheme, value):
         return Breadcrumb(
             'places',
-            lazy_parent(EntityDetailView, scheme=scheme, value=value),
+            lazy_parent('entity', scheme=scheme, value=value),
             'Update place',
-            lazy_reverse('places:entity_update', args=[scheme, value])
+            lazy_reverse('entity-update', args=[scheme, value])
         )
 
     def handle_GET(cls, request, context, scheme, value):
@@ -361,9 +361,9 @@ class NearbyEntityListView(NearbyListView):
     def breadcrumb(cls, request, context, scheme, value):
         return Breadcrumb(
             'places',
-            lazy_parent(EntityDetailView, scheme=scheme, value=value),
+            lazy_parent('entity', scheme=scheme, value=value),
             'Things near %s' % context['entity'].title,
-            lazy_reverse('places:entity_nearby_list', args=[scheme, value])
+            lazy_reverse('entity-nearby-list', args=[scheme, value])
         )
 
     def handle_GET(cls, request, context, scheme, value):
@@ -385,7 +385,7 @@ class NearbyEntityDetailView(NearbyDetailView):
         entity_type = get_object_or_404(EntityType, slug=ptype)
         return Breadcrumb(
             'places',
-            lazy_parent(NearbyEntityListView, scheme=scheme, value=value),
+            lazy_parent('entity-nearby-list', scheme=scheme, value=value),
             '%s near %s' % (
                 capfirst(entity_type.verbose_name_plural),
                 context['entity'].title,
@@ -414,9 +414,9 @@ class CategoryListView(BaseView):
     def breadcrumb(cls, request, context):
         return Breadcrumb(
             'places',
-            lazy_parent(IndexView),
+            lazy_parent('index'),
             'Categories',
-            lazy_reverse('places:category_list'),
+            lazy_reverse('category-list'),
         )
 
     def handle_GET(cls, request, context):
@@ -447,9 +447,9 @@ class CategoryDetailView(BaseView):
     def breadcrumb(cls, request, context, ptypes):
         return Breadcrumb(
             'places',
-            lazy_parent(CategoryListView),
+            lazy_parent('category-list'),
             capfirst(context['entity_types'][0].verbose_name_plural),
-            lazy_reverse('places:category_detail', args=[ptypes]),
+            lazy_reverse('category-detail', args=[ptypes]),
         )
 
     def get_metadata(cls, request, ptypes):

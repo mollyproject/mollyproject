@@ -21,7 +21,7 @@ class SecureView(BaseView):
     for this class in a view's MRO in order to enforce an HTTPS connection.
     """
 
-    def __new__(cls, request, *args, **kwargs):
+    def __call__(self, request, *args, **kwargs):
         """
         Enforces timeouts for idle sessions.
         """
@@ -32,11 +32,13 @@ class SecureView(BaseView):
 
         last_accessed = request.secure_session.get('last_accessed', datetime.now())
         timeout_period = request.secure_session.get('timeout_period', 15)
-        if last_accessed < datetime.now() - timedelta(minutes=timeout_period) and getattr(cls.conf, 'enforce_timeouts', True):
-            return TimedOutView(request, cls, *args, **kwargs)
+        if last_accessed < datetime.now() - timedelta(minutes=timeout_period) and getattr(self.conf, 'enforce_timeouts', True):
+            return TimedOutView(request, self, *args, **kwargs)
         request.secure_session['last_accessed'] = datetime.now()
 
-        return super(SecureView, cls).__new__(cls, request, *args, **kwargs)
+        print type(self).__mro__
+
+        return super(SecureView, self).__call__(request, *args, **kwargs)
 
 class TimedOutView(BaseView):
     """
@@ -47,7 +49,7 @@ class TimedOutView(BaseView):
     SecureView.
     """
 
-    def initial_context(cls, request, view, *args, **kwargs):
+    def initial_context(self, request, view, *args, **kwargs):
         return {
             'has_pin': 'pin' in request.secure_session,
         }    
