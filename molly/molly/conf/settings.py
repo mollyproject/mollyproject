@@ -133,12 +133,16 @@ class Application(object):
             # Get the callback and make sure it derives BaseView
             callback = pattern.callback
             if not (isinstance(callback, type) and BaseView in callback.__mro__):
-                return
-            # Create a new callback with the conf and extra bases
-            callback = type(callback.__name__ + 'WithConf',
-                            (callback,) + bases,
-                            { 'conf': conf })
-            callback.__module__ = pattern.callback.__module__
+                return callback
+            
+            if bases:
+                # Create a new callback with the extra bases
+                callback = type(callback.__name__ + 'Extended', (callback,) + bases, {})
+                callback.__module__ = pattern.callback.__module__
+            
+            # Instantiate the callback with the conf object
+            callback = callback(conf)
+                
             # Transplant this new callback into a new RegexURLPattern, keeping
             # the same regex, default_args and name.
             return RegexURLPattern(pattern.regex.pattern,
