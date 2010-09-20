@@ -1,7 +1,22 @@
-import functools
+import functools, datetime
+
+from lxml import etree
 
 from django.contrib.gis.geos import Point
 from django.core.paginator import Paginator
+from django.db import models
+
+class DateUnicode(unicode): pass
+class DateTimeUnicode(unicode): pass
+
+_XML_DATATYPES = (
+    (DateUnicode, 'date'),
+    (DateTimeUnicode, 'datetime'),
+    (str, 'string'),
+    (unicode, 'string'),
+    (int, 'integer'),
+    (float, 'float'),
+)
 
 def simplify_value(value):
     if hasattr(value, 'simplify_for_render'):
@@ -28,9 +43,9 @@ def simplify_value(value):
             return out
     elif isinstance(value, (basestring, int, float)):
         return value
-    elif isinstance(value, datetime):
+    elif isinstance(value, datetime.datetime):
         return DateTimeUnicode(value.isoformat(' '))
-    elif isinstance(value, date):
+    elif isinstance(value, datetime.date):
         return DateUnicode(value.isoformat())
     elif hasattr(type(value), '__mro__') and models.Model in type(value).__mro__:
         return simplify_model(value)
@@ -74,3 +89,49 @@ def simplify_model(obj, terse=False):
             except NotImplementedError:
                 pass
     return out
+
+def serialize_to_xml(value):
+    if value is None:
+        node = etree.Element('null')
+    elif isinstance(value, bool):
+        node = etree.Element('literal')
+        node.text = 'true' if value else 'false'
+        node.attrib['type'] = 'boolean'
+    elif isinstance(value, (basestring, int, float)):
+        node = etree.Element('literal')
+        node.text = unicode(value)
+        node.attrib['type'] = [d[1] for d in _XML_DATATYPES if isinstance(value, d[0])][0]
+    elif isinstance(value, dict):
+        if '_type' in value:
+            node = etree.Element('object', {'type': value['_type'], 'pk': unicode(value.get('_pk', ''))})
+            del value['_type']
+            del value['_pk']
+            if '_url' in value:
+                node.attrib['url'] = value['_url']
+                del value['_url']
+            if value.get('_terse'):
+                node.attrib['terse'] = 'true'
+                del value['_terse']
+        else:
+            node = etree.Element('collection', {'type': 'mapping'})
+        for key in value:
+            v = serialize_to_xml(value[key])
+            subnode = etree.Element('item', {'key':key})
+            subnode.append(v)
+            node.append(subnode)
+    elif isinstance(value, (list, tuple, set, frozenset)):
+        for x,y in ((list, 'list'), (tuple, 'tuple')):
+            if isinstance(value, x):
+                node = etree.Element('collection', {'type': y})
+                break
+        else:
+            node = etree.Element('collection', {'type':'set'})
+        for item in value:
+            v = serialize_to_xml(item)
+            subnode = etree.Element('item')
+            subnode.append(v)
+            node.append(subnode)
+    else:
+        node = etree.Element('unknown')
+
+    return node

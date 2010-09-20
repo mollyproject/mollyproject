@@ -1,37 +1,21 @@
 from inspect import isfunction
-import simplejson, logging
+import logging
 from datetime import datetime, date
-from xml.etree import ElementTree as ET
+
+import simplejson
+from lxml import etree
 
 from django.db import models
 from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest, HttpResponseNotAllowed, HttpResponseForbidden, Http404
 from django.template import RequestContext
 from django.shortcuts import render_to_response
-from django.core.paginator import Paginator
-from django.contrib.gis.geos import Point
 from django.core.urlresolvers import reverse, resolve, NoReverseMatch
 from django.conf import settings
 
 logger = logging.getLogger('core.requests')
 
 from .http import MediaType
-from .simplify import simplify_value, simplify_model
-
-from time import clock as time_clock
-import sys
-
-class timing(object):
-    def __new__(cls, f, *args, **kwargs):
-        t1 = time_clock()
-        value = f(*args, **kwargs)
-        t2 = time_clock()
-        frame = sys._getframe()
-        print "TIME %s:%d %2.4f %s" % (__file__, frame.f_lineno, t2-t1, f.__name__)
-        return value
-
-
-class DateUnicode(unicode): pass
-class DateTimeUnicode(unicode): pass
+from .simplify import simplify_value, simplify_model, serialize_to_xml
 
 def renderer(format, mimetypes=(), priority=0):
     """
@@ -57,9 +41,6 @@ def renderer(format, mimetypes=(), priority=0):
         f.mimetypes = set(MediaType(mimetype, priority) for mimetype in mimetypes)
         return f
     return g
-
-
-import types
 
 class ViewMetaclass(type):
     def __new__(cls, name, bases, dict):
@@ -98,7 +79,6 @@ class ViewMetaclass(type):
         view = type.__new__(cls, name, bases, dict)
 
         return view
-
 
 
 class BaseView(object):
@@ -245,7 +225,7 @@ Supported ranges are:
     @renderer(format="xml", mimetypes=('application/xml', 'text/xml'))
     def render_xml(self, request, context, template_name):
         context = simplify_value(context)
-        return HttpResponse(ET.tostring(self.serialize_to_xml(context), encoding='UTF-8'), mimetype="application/xml")
+        return HttpResponse(etree.tostring(serialize_to_xml(context), encoding='UTF-8'), mimetype="application/xml")
 
     @renderer(format="yaml", mimetypes=('application/x-yaml',))
     def render_yaml(self, request, context, template_name):
@@ -267,60 +247,6 @@ Supported ranges are:
         content = render_block_to_string(template_name + '.html', 'content', context, RequestContext(request))
         return HttpResponse(simplejson.dumps({'body': body, 'title': title, 'content': content}), mimetype="application/json")
 
-    XML_DATATYPES = (
-        (DateUnicode, 'date'),
-        (DateTimeUnicode, 'datetime'),
-        (str, 'string'),
-        (unicode, 'string'),
-        (int, 'integer'),
-        (float, 'float'),
-    )
-
-    def serialize_to_xml(self, value):
-        if value is None:
-            node = ET.Element('null')
-        elif isinstance(value, bool):
-            node = ET.Element('literal')
-            node.text = 'true' if value else 'false'
-            node.attrib['type'] = 'boolean'
-        elif isinstance(value, (basestring, int, float)):
-            node = ET.Element('literal')
-            node.text = unicode(value)
-            node.attrib['type'] = [d[1] for d in self.XML_DATATYPES if isinstance(value, d[0])][0]
-        elif isinstance(value, dict):
-            if '_type' in value:
-                node = ET.Element('object', {'type': value['_type'], 'pk': unicode(value.get('_pk', ''))})
-                del value['_type']
-                del value['_pk']
-                if '_url' in value:
-                    node.attrib['url'] = value['_url']
-                    del value['_url']
-                if value.get('_terse'):
-                    node.attrib['terse'] = 'true'
-                    del value['_terse']
-            else:
-                node = ET.Element('collection', {'type': 'mapping'})
-            for key in value:
-                v = self.serialize_to_xml(value[key])
-                subnode = ET.Element('item', {'key':key})
-                subnode.append(v)
-                node.append(subnode)
-        elif isinstance(value, (list, tuple, set, frozenset)):
-            for x,y in ((list, 'list'), (tuple, 'tuple')):
-                if isinstance(value, x):
-                    node = ET.Element('collection', {'type': y})
-                    break
-            else:
-                node = ET.Element('collection', {'type':'set'})
-            for item in value:
-                v = self.serialize_to_xml(item)
-                subnode = ET.Element('item')
-                subnode.append(v)
-                node.append(subnode)
-        else:
-            node = ET.Element('unknown')
-
-        return node
 
 
 class ZoomableView(BaseView):
