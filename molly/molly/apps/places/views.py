@@ -137,14 +137,14 @@ class NearbyDetailView(LocationRequiredView, ZoomableView):
 
     @BreadcrumbFactory
     def breadcrumb(self, request, context, ptypes, entity=None):
-        title = NearbyDetailView.get_metadata(request, ptypes, entity)['title']
+        title = NearbyDetailView.get_metadata(self, request, ptypes, entity)['title']
         return Breadcrumb('places',
                           lazy_parent('nearby-list', entity=entity),
                           title,
                           lazy_reverse('nearby-detail', args=[ptypes]))
 
     def get_metadata(self, request, ptypes, entity=None):
-        context = NearbyDetailView.initial_context(request, ptypes, entity)
+        context = NearbyDetailView.initial_context(self, request, ptypes, entity)
 
         if len(context['entity_types']) == 0:
             return {
@@ -453,7 +453,7 @@ class CategoryDetailView(BaseView):
         )
 
     def get_metadata(self, request, ptypes):
-        context = CategoryDetailView.initial_context(request, ptypes)
+        context = CategoryDetailView.initial_context(self, request, ptypes)
 
         if len(context['entity_types']) > 1:
             return {
