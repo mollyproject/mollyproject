@@ -6,6 +6,10 @@ class HttpResponseSeeOther(HttpResponseRedirect):
     status_code = 303
 
 class MediaType(object):
+    """
+    Represents a parsed internet media type.
+    """
+    
     _MEDIA_TYPE_RE = re.compile(r'(\*/\*)|(?P<type>[^/]+)/(\*|((?P<subsubtype>[^+]+)\+)?(?P<subtype>.+))')    
     def __init__(self, value, priority=0):
         value = unicode(value).strip()
@@ -52,6 +56,9 @@ class MediaType(object):
     def __ne__(self, other):
         return not self.__eq__(other)
     def equivalent(self, other):
+        """
+        Returns whether two MediaTypes have the same overall specifity.
+        """
         return not (self > other or self < other)
     
     def __cmp__(self, other):
@@ -66,24 +73,41 @@ class MediaType(object):
         return "%s(%r, [%f])" % (type(self).__name__, self.value, self.priority)
     
     def provides(self, imt):
+        """
+        Returns True iff the self is at least as specific as other.
+
+        Examples:
+        application/xhtml+xml provides application/xml, application/*, */*
+        text/html provides text/*, but not application/xhtml+xml or application/html
+        """
         return self.type[:imt.specifity] == imt.type[:imt.specifity]
         
     @classmethod
     def resolve(cls, accept, provide):
-        accept.sort()
-        groups, accept = [[accept[-1]]], accept[:-1]
+        """
+        Resolves a list of accepted MediaTypes and available renderers to the preferred renderer.
         
+        Call as MediaType.resolve([MediaType], [(MediaType, renderer)]).
+        """
+        accept.sort()
+        eq_classes, accept = [[accept[-1]]], accept[:-1]
+        
+        # Group the accepted types into equivalence classes
         while accept:
             imt = accept.pop()
-            if imt.equivalent(groups[0][-1]):
-                groups[-1].append(imt)
+            if imt.equivalent(eq_classes[0][-1]):
+                eq_classes[-1].append(imt)
             else:
-                groups.append([imt])
+                eq_classes.append([imt])
 
-        for imts in groups:
+        # For each equivalence class, find the first renderer MediaType that
+        # can handle one of its members, and return the renderer.
+        for imts in eq_classes:
             for provide_type, renderer in provide:
                 for imt in imts:
                     if provide_type.provides(imt):
                         return renderer
         
+        # If no suitable renderer could be found, raise a ValueError to
+        # signify an HTTP 406 Not Acceptable condition. 
         raise ValueError

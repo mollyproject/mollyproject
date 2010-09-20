@@ -42,10 +42,12 @@ def renderer(format, mimetypes=(), priority=0):
     or
         @renderer(format="foo", mimetypes=("application/x-foo",))
         def render_foo(self, request, context, template_name): ...
-
+    
     The former case will inherit mimetypes from the previous renderer for that
     format in the MRO. Where there isn't one, it will default to the empty
     tuple.
+
+    Takes an optional priority argument to resolve ties between renderers.
     """
 
     def g(f):
@@ -62,7 +64,7 @@ class ViewMetaclass(type):
     def __new__(cls, name, bases, dict):
 
         # Pull the renderers from the bases into a couple of new dicts for
-        # this views renderers
+        # this view's renderers
         formats_by_mimetype = {}
         formats = {}
         for base in reversed(bases):
@@ -72,9 +74,9 @@ class ViewMetaclass(type):
 
         for key, value in dict.items():
             # If the method is a renderer we add it to our dicts. We can't add
-            # the functions right now because we want them bound to the class
-            # object that hasn't yet been created. Instead, add the keys (strs)
-            # and we'll replace them with the bound classmethods later.
+            # the functions right now because we want them bound to the view
+            # instance that hasn't yet been created. Instead, add the keys (strs)
+            # and we'll replace them with the bound instancemethods in BaseView.__init__.
             if isfunction(value) and getattr(value, 'is_renderer', False):
                 if value.mimetypes is not None:
                     mimetypes = value.mimetypes
@@ -129,6 +131,9 @@ class BaseView(object):
 
     def __init__(self, conf=None):
         self.conf = conf
+        
+        # Resolve renderer names to bound instancemethods. Also turn the
+        # FORMATS_BY_MIMETYPE dict into a list of pairs ordered by descending priority.
         self.FORMATS = dict((key, getattr(self, value)) for key, value in self.FORMATS.items())
         formats_sorted = sorted(self.FORMATS_BY_MIMETYPE.items(), key=lambda x: x[0].priority, reverse=True)
         self.FORMATS_BY_MIMETYPE = tuple((key, getattr(self, value)) for (key, value) in formats_sorted)
