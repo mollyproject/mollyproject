@@ -14,7 +14,8 @@ from django.conf import settings
 
 logger = logging.getLogger('core.requests')
 
-from molly.utils.http import MediaType
+from .http import MediaType
+from .simplify import simplify_value, simplify_model
 
 from time import clock as time_clock
 import sys
@@ -223,13 +224,13 @@ Supported ranges are:
 
     @renderer(format="json", mimetypes=('application/json',))
     def render_json(self, request, context, template_name):
-        context = self.simplify_value(context)
+        context = simplify_value(context)
         return HttpResponse(simplejson.dumps(context), mimetype="application/json")
 
     @renderer(format="js", mimetypes=('text/javascript','application/javascript',))
     def render_js(self, request, context, template_name):
         callback = request.GET.get('callback', request.GET.get('jsonp', 'callback'))
-        content = simplejson.dumps(self.simplify_value(context))
+        content = simplejson.dumps(simplify_value(context))
         content = "%s(%s);" % (callback, content)
         return HttpResponse(content, mimetype="application/javascript")
 
@@ -243,7 +244,7 @@ Supported ranges are:
 
     @renderer(format="xml", mimetypes=('application/xml', 'text/xml'))
     def render_xml(self, request, context, template_name):
-        context = self.simplify_value(context)
+        context = simplify_value(context)
         return HttpResponse(ET.tostring(self.serialize_to_xml(context), encoding='UTF-8'), mimetype="application/xml")
 
     @renderer(format="yaml", mimetypes=('application/x-yaml',))
@@ -253,7 +254,7 @@ Supported ranges are:
         except ImportError:
             raise NotImplementedError
 
-        context = self.simplify_value(context)
+        context = simplify_value(context)
         return HttpResponse(yaml.safe_dump(context), mimetype="application/x-yaml")
 
     @renderer(format="fragment")
@@ -266,48 +267,6 @@ Supported ranges are:
         content = render_block_to_string(template_name + '.html', 'content', context, RequestContext(request))
         return HttpResponse(simplejson.dumps({'body': body, 'title': title, 'content': content}), mimetype="application/json")
 
-    def simplify_value(self, value):
-        if hasattr(value, 'simplify_for_render'):
-            return value.simplify_for_render(self.simplify_value, self.simplify_model)
-        elif isinstance(value, dict):
-            out = {}
-            for key in value:
-                new_key = key if isinstance(key, (basestring, int)) else str(key)
-                try:
-                    out[new_key] = self.simplify_value(value[key])
-                except NotImplementedError:
-                    pass
-            return out
-        elif isinstance(value, (list, tuple, set, frozenset)):
-            out = []
-            for subvalue in value:
-                try:
-                    out.append(self.simplify_value(subvalue))
-                except NotImplementedError:
-                    pass
-            if isinstance(value, tuple):
-                return tuple(out)
-            else:
-                return out
-        elif isinstance(value, (basestring, int, float)):
-            return value
-        elif isinstance(value, datetime):
-            return DateTimeUnicode(value.isoformat(' '))
-        elif isinstance(value, date):
-            return DateUnicode(value.isoformat())
-        elif hasattr(type(value), '__mro__') and models.Model in type(value).__mro__:
-            return self.simplify_model(value)
-        elif isinstance(value, Paginator):
-            return self.simplify_value(value.object_list)
-        elif value is None:
-            return None
-        elif isinstance(value, Point):
-            return self.simplify_value(list(value))
-        elif hasattr(value, '__iter__'):
-            return [self.simplify_value(item) for item in value]
-        else:
-            raise NotImplementedError
-
     XML_DATATYPES = (
         (DateUnicode, 'date'),
         (DateTimeUnicode, 'datetime'),
@@ -316,35 +275,6 @@ Supported ranges are:
         (int, 'integer'),
         (float, 'float'),
     )
-
-    def simplify_model(self, obj, terse=False):
-        if obj is None:
-            return None
-        # It's a Model instance
-        if hasattr(obj._meta, 'expose_fields'):
-            expose_fields = obj._meta.expose_fields
-        else:
-            expose_fields = [f.name for f in obj._meta.fields]
-        out = {
-            '_type': '%s.%s' % (obj.__module__[:-7], obj._meta.object_name),
-            '_pk': obj.pk,
-        }
-        if hasattr(obj, 'get_absolute_url'):
-            out['_url'] = obj.get_absolute_url()
-        if terse:
-            out['_terse'] = True
-        else:
-            for field_name in expose_fields:
-                if field_name in ('password',):
-                    continue
-                try:
-                    value = getattr(obj, field_name)
-                    if hasattr(type(value), '__bases__') and models.Model in type(value).__bases__:
-                        value = self.simplify_model(value, terse=True)
-                    out[field_name] = self.simplify_value(value)
-                except NotImplementedError:
-                    pass
-        return out
 
     def serialize_to_xml(self, value):
         if value is None:
