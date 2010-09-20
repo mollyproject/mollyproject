@@ -8,7 +8,7 @@ from views import (
     EvaluationIndexView, EvaluationDetailView,
 )
 
-urlpatterns = patterns('mobile_portal.sakai.views',
+urlpatterns = patterns('',
     (r'^$',
         IndexView, {},
         'index'),

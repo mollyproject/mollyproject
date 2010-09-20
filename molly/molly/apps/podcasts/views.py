@@ -15,18 +15,18 @@ from . import TOP_DOWNLOADS_RSS_URL
 
 
 class IndexView(BaseView):
-    def get_metadata(cls, request):
+    def get_metadata(self, request):
         return {
             'title': 'Podcasts',
             'additional': 'Browse and listen to podcasts from around the University.'
         }
         
     @BreadcrumbFactory
-    def breadcrumb(cls, request, context):
-        return Breadcrumb('podcasts', None,
-                          'Podcasts', lazy_reverse('podcasts:index'))
+    def breadcrumb(self, request, context):
+        return Breadcrumb(self.conf.local_name, None,
+                          'Podcasts', lazy_reverse('index'))
         
-    def handle_GET(cls, request, context):
+    def handle_GET(self, request, context):
         show_itunesu_link = request.session.get('podcasts:use_itunesu') == None
         if 'show_itunesu_link' in request.GET:
             show_itunesu_link = request.GET['show_itunesu_link'] != 'false'
@@ -37,10 +37,10 @@ class IndexView(BaseView):
             'categories': PodcastCategory.objects.all(),
             'show_itunesu_link': show_itunesu_link,
         })
-        return cls.render(request, context, 'podcasts/index')
+        return self.render(request, context, 'podcasts/index')
 
 class CategoryDetailView(BaseView):
-    def get_metadata(cls, request, category, medium=None):
+    def get_metadata(self, request, category, medium=None):
         if medium:
             raise Http404
             
@@ -50,7 +50,7 @@ class CategoryDetailView(BaseView):
             'additional': '<strong>Podcast category</strong>'
         }
         
-    def initial_context(cls, request, category, medium=None):
+    def initial_context(self, request, category, medium=None):
         category = get_object_or_404(PodcastCategory, slug=category)
         podcasts = Podcast.objects.filter(category=category)
         if medium:
@@ -63,25 +63,25 @@ class CategoryDetailView(BaseView):
         }
 
     @BreadcrumbFactory
-    def breadcrumb(cls, request, context, category, medium=None):
+    def breadcrumb(self, request, context, category, medium=None):
         if medium:
-            url = lazy_reverse('podcasts:category_medium', args=[category,medium])
+            url = lazy_reverse('category-medium', args=[category,medium])
         else:
-            url = lazy_reverse('podcasts:category', args=[category])
+            url = lazy_reverse('category', args=[category])
         
-        return Breadcrumb('podcasts', lazy_parent(IndexView),
+        return Breadcrumb(self.conf.local_name, lazy_parent('index'),
                           context['category'].name,
                           url)
         
-    def handle_GET(cls, request, context, category, medium=None):
-        return cls.render(request, context, 'podcasts/category_detail')
+    def handle_GET(self, request, context, category, medium=None):
+        return self.render(request, context, 'podcasts/category_detail')
 
 class PodcastDetailView(BaseView):
     class RespondThus(Exception):
         def __init__(self, response):
             self.response = response
             
-    def get_metadata(cls, request, slug=None, podcast=None):
+    def get_metadata(self, request, slug=None, podcast=None):
         if not podcast:
             podcast = get_object_or_404(Podcast, slug=slug)
         
@@ -93,7 +93,7 @@ class PodcastDetailView(BaseView):
             'additional': '<strong>Podcast</strong> %s' % podcast.last_updated.strftime('%d %b %Y')
         }
         
-    def initial_context(cls, request, slug=None, podcast=None):
+    def initial_context(self, request, slug=None, podcast=None):
         if not podcast:
             podcast = get_object_or_404(Podcast, slug=slug)
         return {
@@ -102,18 +102,18 @@ class PodcastDetailView(BaseView):
         }
     
     @BreadcrumbFactory
-    def breadcrumb(cls, request, context, slug=None, podcast=None):
+    def breadcrumb(self, request, context, slug=None, podcast=None):
         if context['podcast'].category:
-            parent = lazy_parent(CategoryDetailView,
+            parent = lazy_parent('category',
                                  category=context['podcast'].category.slug)
         else:
-            parent = lazy_parent(IndexView)
-        return Breadcrumb('podcasts',
+            parent = lazy_parent('index')
+        return Breadcrumb(self.conf.local_name,
                           parent,
                           context['podcast'].title,
-                          lazy_reverse('podcasts:podcast'))
+                          lazy_reverse('podcast'))
         
-    def handle_GET(cls, request, context, slug=None, podcast=None):
+    def handle_GET(self, request, context, slug=None, podcast=None):
         if 'response' in context:
             return context['response']        
         
@@ -122,12 +122,12 @@ class PodcastDetailView(BaseView):
         context.update({
             'items': items,
         })
-        return cls.render(request, context, 'podcasts/podcast_detail')
+        return self.render(request, context, 'podcasts/podcast_detail')
 
 class ITunesURedirectView(BaseView):
     breadcrumb = NullBreadcrumb
     
-    def handle_POST(cls, request, context):
+    def handle_POST(self, request, context):
         use_itunesu = request.POST.get('use_itunesu') == 'yes'
         remember = 'remember' in request.POST
         

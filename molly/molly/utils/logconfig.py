@@ -60,7 +60,7 @@ class EmailHandler(logging.Handler):
         email.send_email(request, context, 'utils/log_record.eml')
 
 def configure_logging(conf):
-    if not settings.DEBUG:
+    if settings.DEBUG:
         return
 
     logger = logging.getLogger()

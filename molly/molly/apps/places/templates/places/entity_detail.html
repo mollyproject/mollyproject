@@ -21,7 +21,7 @@
     {% endifnotequal %}
     
 	<ul class="link-list">
-	    <li class="round-bottom"><a href="{% url places:entity_nearby_list entity.identifier_scheme entity.identifier_value %}" rel="nofollow">Find things near here</a></li>
+	    <li class="round-bottom"><a href="{% url places:entity-nearby-list entity.identifier_scheme entity.identifier_value %}" rel="nofollow">Find things near here</a></li>
 	</ul>
 	{% else %}
 	    <div class="note"><div class="bubble">

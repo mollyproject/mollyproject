@@ -23,21 +23,21 @@ class SakaiView(BaseView):
     breadcrumb = NullBreadcrumb
     abstract = True
 
-    def build_url(cls, url):
-        return '%s%s' % (cls.conf.host, url)
+    def build_url(self, url):
+        return '%s%s' % (self.conf.host, url)
 
-    def get_site_title(cls, request, id):
+    def get_site_title(self, request, id):
         if not 'sakai_site_titles' in request.secure_session:
             request.secure_session['sakai_site_titles'] = {}
-        json = simplejson.load(request.opener.open(cls.build_url('direct/site.json')))
+        json = simplejson.load(request.opener.open(self.build_url('direct/site.json')))
         for site in json['site_collection']:
             request.secure_session['sakai_site_titles'][site['id']] = site['title']
         return request.secure_session['sakai_site_titles'].get(id, 'Unknown site(%s)' % id)
 
-    def add_user_identifiers(cls, request):
-        user_details = simplejson.load(request.urlopen(cls.build_url('direct/user/current.json')))
+    def add_user_identifiers(self, request):
+        user_details = simplejson.load(request.urlopen(self.build_url('direct/user/current.json')))
 
-        for target, identifier in cls.conf.identifiers:
+        for target, identifier in self.conf.identifiers:
             value = user_details
             for i in identifier:
                 if not i in (value or ()):
@@ -50,33 +50,33 @@ class SakaiView(BaseView):
 class IndexView(SakaiView):
 
     @BreadcrumbFactory
-    def breadcrumb(cls, request, context):
+    def breadcrumb(self, request, context):
         return Breadcrumb(
-            cls.conf.local_name,
+            self.conf.local_name,
             None,
             'WebLearn',
-            lazy_reverse('sakai:index'),
+            lazy_reverse('index'),
         )
 
-    def initial_context(cls, request): 
+    def initial_context(self, request): 
         return {
-            'user_details': simplejson.load(request.opener.open(cls.build_url('/direct/user/current.json'))),
+            'user_details': simplejson.load(request.opener.open(self.build_url('/direct/user/current.json'))),
             'tools': [{
                 'name': tool[0],
                 'title': tool[1],
                 'url': reverse('sakai:%s-index' % tool[0]),
-            } for tool in cls.conf.tools],
+            } for tool in self.conf.tools],
         }
 
-    def handle_GET(cls, request, context):
+    def handle_GET(self, request, context):
         
-        return cls.render(request, context, 'sakai/index')
+        return self.render(request, context, 'sakai/index')
 
 class SignupIndexView(SakaiView):
     force_auth = True
 
-    def initial_context(cls, request):
-        sites = etree.parse(request.opener.open(cls.build_url('direct/site.xml')))
+    def initial_context(self, request):
+        sites = etree.parse(request.opener.open(self.build_url('direct/site.xml')))
         return {
             'sites': [
                 (e.find('id').text, e.find('entityTitle').text)
@@ -86,24 +86,24 @@ class SignupIndexView(SakaiView):
         }
 
     @BreadcrumbFactory
-    def breadcrumb(cls, request, context):
+    def breadcrumb(self, request, context):
         return Breadcrumb(
-            cls.conf.local_name,
-            lazy_parent(IndexView),
+            self.conf.local_name,
+            lazy_parent('index'),
             'Sign-ups',
-            lazy_reverse('sakai:signup-index'),
+            lazy_reverse('signup-index'),
         )
 
-    def handle_GET(cls, request, context):
+    def handle_GET(self, request, context):
         if not 'sakai_site_titles' in request.secure_session:
             request.secure_session['sakai_site_titles'] = {}
         for site_id, title in context['sites']:
             request.secure_session['sakai_site_titles'][site_id] = title
-        return cls.render(request, context, 'sakai/signup/index')
+        return self.render(request, context, 'sakai/signup/index')
 
 class SignupSiteView(SakaiView):
-    def initial_context(cls, request, site):
-        url = cls.build_url('direct/signupEvent/site/%s.xml' % site)
+    def initial_context(self, request, site):
+        url = self.build_url('direct/signupEvent/site/%s.xml' % site)
         events_et = etree.parse(request.opener.open(url)).getroot().findall('signupEvent')
         events = []
         for event_et in events_et:
@@ -120,37 +120,37 @@ class SignupSiteView(SakaiView):
         return {
             'site': site,
             'events': events,
-            'title': cls.get_site_title(request, site),
+            'title': self.get_site_title(request, site),
             'complex_shorten': True,
             'now': datetime.utcnow(),
         }
 
     @BreadcrumbFactory
-    def breadcrumb(cls, request, context, site):
+    def breadcrumb(self, request, context, site):
         return Breadcrumb(
-            cls.conf.local_name,
-            lazy_parent(SignupIndexView),
+            self.conf.local_name,
+            lazy_parent('signup-index'),
             context.get('title', 'Sign-ups'),
-            lazy_reverse('sakai:signup-site', args=[site]),
+            lazy_reverse('signup-site', args=[site]),
         )
 
-    def handle_GET(cls, request, context, site):
-        return cls.render(request, context, 'sakai/signup/list')
+    def handle_GET(self, request, context, site):
+        return self.render(request, context, 'sakai/signup/list')
 
 class SignupEventView(SakaiView):
-    def initial_context(cls, request, site, event_id):
+    def initial_context(self, request, site, event_id):
         # This request does absolutely nothing, except force some cache to be
         # reset, making sure the data we receive subsequently is up-to-date.
         # This should be reported as a bug in Sakai.
         request.opener.open(
-            cls.build_url('direct/signupEvent/%s/edit' % event_id),
+            self.build_url('direct/signupEvent/%s/edit' % event_id),
             data = urllib.urlencode({
             'siteId': site,
             'allocToTSid': '0',
             'userActionType': 'invalidAction',
         }))
 
-        url = cls.build_url('direct/signupEvent/%s.json?siteId=%s' % (event_id, site))
+        url = self.build_url('direct/signupEvent/%s.json?siteId=%s' % (event_id, site))
         event = simplejson.load(request.urlopen(url))
     
         return {
@@ -159,21 +159,21 @@ class SignupEventView(SakaiView):
         }
 
     @BreadcrumbFactory
-    def breadcrumb(cls, request, context, site, event_id):
+    def breadcrumb(self, request, context, site, event_id):
         return Breadcrumb(
-            cls.conf.local_name,
-            lazy_parent(SignupSiteView, site),
+            self.conf.local_name,
+            lazy_parent('signup-site', site),
             context['event']['title'] if 'event' in context else 'Sign-ups',
-            lazy_reverse('sakai:signup-detail', args=[site, event_id]),
+            lazy_reverse('signup-detail', args=[site, event_id]),
         )
 
-    def handle_GET(cls, request, context, site, event_id):
-        return cls.render(request, context, 'sakai/signup/detail')
+    def handle_GET(self, request, context, site, event_id):
+        return self.render(request, context, 'sakai/signup/detail')
 
-    def handle_POST(cls, request, context, site, event_id):
+    def handle_POST(self, request, context, site, event_id):
         try:
             response = request.opener.open(
-                cls.build_url('direct/signupEvent/%s/edit' % event_id),
+                self.build_url('direct/signupEvent/%s/edit' % event_id),
                 data = urllib.urlencode({
                 'siteId': site,
                 'allocToTSid': request.POST['timeslot_id'],
@@ -190,34 +190,34 @@ class SignupEventView(SakaiView):
 class SiteView(SakaiView):
     force_auth = True
 
-    def handle_GET(cls, request, context):
-        sites = etree.parse(request.opener.open(cls.build_url('direct/site.xml')))
+    def handle_GET(self, request, context):
+        sites = etree.parse(request.opener.open(self.build_url('direct/site.xml')))
         context['sites'] = [e.find('entityTitle').text for e in sites.getroot()]
-        return cls.render(request, context, 'sakai/sites')
+        return self.render(request, context, 'sakai/sites')
 
 class DirectView(SakaiView):
     @BreadcrumbFactory
-    def breadcrumb(cls, request, context):
+    def breadcrumb(self, request, context):
         return Breadcrumb(
-            cls.conf.local_name,
-            lazy_parent(IndexView),
+            self.conf.local_name,
+            lazy_parent('index'),
             'User information',
-            lazy_reverse('sakai:direct-index'),
+            lazy_reverse('direct-index'),
         )
 
-    def handle_GET(cls, request, context):
+    def handle_GET(self, request, context):
         context['user_details'] = simplejson.load(
-            request.opener.open(cls.build_url('/direct/user/current.json')))
-        return cls.render(request, context, 'sakai/direct/index')
+            request.opener.open(self.build_url('/direct/user/current.json')))
+        return self.render(request, context, 'sakai/direct/index')
 
 class PollIndexView(SakaiView):
     force_auth = True
 
-    def initial_context(cls, request):
-        json = simplejson.load(request.opener.open(cls.build_url('direct/poll.json')))
+    def initial_context(self, request):
+        json = simplejson.load(request.opener.open(self.build_url('direct/poll.json')))
         polls = []
         for poll in json['poll_collection']:
-            poll['title'] = cls.get_site_title(request, poll['siteId'])
+            poll['title'] = self.get_site_title(request, poll['siteId'])
             polls.append(poll)
 
         return {
@@ -226,21 +226,21 @@ class PollIndexView(SakaiView):
         }
 
     @BreadcrumbFactory
-    def breadcrumb(cls, request, context):
+    def breadcrumb(self, request, context):
         return Breadcrumb(
-            cls.conf.local_name,
-            lazy_parent(IndexView),
+            self.conf.local_name,
+            lazy_parent('index'),
             'Polls',
-            lazy_reverse('sakai:poll-index'),
+            lazy_reverse('poll-index'),
         )
 
-    def handle_GET(cls, request, context):
-        return cls.render(request, context, 'sakai/poll/index')
+    def handle_GET(self, request, context):
+        return self.render(request, context, 'sakai/poll/index')
 
 class PollDetailView(SakaiView):
-    def initial_context(cls, request, id):
+    def initial_context(self, request, id):
         try:
-            url = cls.build_url('direct/poll/%s.json' % id)
+            url = self.build_url('direct/poll/%s.json' % id)
             poll = simplejson.load(request.urlopen(url))
         except urllib2.HTTPError, e:
             if e.code == 404:
@@ -248,12 +248,12 @@ class PollDetailView(SakaiView):
             else:
                 raise
 
-        url = cls.build_url('direct/poll/%s/option.json' % id)
+        url = self.build_url('direct/poll/%s/option.json' % id)
         options = simplejson.load(request.urlopen(url))
         options = options['poll-option_collection']
 
         try:
-            url = cls.build_url('direct/poll/%s/vote.json' % id)
+            url = self.build_url('direct/poll/%s/vote.json' % id)
             votes = simplejson.load(request.urlopen(url))
             votes = votes["poll-vote_collection"]
         except urllib2.HTTPError, e:
@@ -278,34 +278,34 @@ class PollDetailView(SakaiView):
         return {
             'poll': poll,
             'options': options,
-            'site_title': cls.get_site_title(request, poll['siteId']),
+            'site_title': self.get_site_title(request, poll['siteId']),
             'max_votes': max_votes,
             'vote_count': vote_count,
             'may_vote': not poll['currentUserVotes'] and poll['maxOptions'] == 1,
-            'sakai_host': cls.conf.host,
-            'service_name': cls.conf.service_name,
+            'sakai_host': self.conf.host,
+            'service_name': self.conf.service_name,
         }
 
     @BreadcrumbFactory
-    def breadcrumb(cls, request, context, id):
+    def breadcrumb(self, request, context, id):
         return Breadcrumb(
-            cls.conf.local_name,
-            lazy_parent(PollIndexView),
+            self.conf.local_name,
+            lazy_parent('poll-index'),
             context['poll']['text'],
-            lazy_reverse('sakai:poll-detail'),
+            lazy_reverse('poll-detail'),
         )
 
-    def handle_GET(cls, request, context, id):
-        return cls.render(request, context, 'sakai/poll/detail')
+    def handle_GET(self, request, context, id):
+        return self.render(request, context, 'sakai/poll/detail')
 
-    def handle_POST(cls, request, context, id):
+    def handle_POST(self, request, context, id):
         if not context['mayVote']:
             return HttpResponseBadRequest()
         if not int(request.POST.get('pollOption', -1)) in (option['optionId'] for option in context['options']):
             return HttpResponseBadRequest()
         try:
             response = request.opener.open(
-                cls.build_url('direct/poll-vote/new'),
+                self.build_url('direct/poll-vote/new'),
                 data = urllib.urlencode({
                     'pollId': int(id),
                     'pollOption': int(request.POST['pollOption']),
@@ -323,17 +323,17 @@ class EvaluationIndexView(SakaiView):
     force_auth = True
 
     @BreadcrumbFactory
-    def breadcrumb(cls, request, context):
+    def breadcrumb(self, request, context):
         return Breadcrumb(
-            cls.conf.local_name,
-            lazy_parent(IndexView),
+            self.conf.local_name,
+            lazy_parent('index'),
             'Surveys',
-            lazy_reverse('sakai:evaluation-index'),
+            lazy_reverse('evaluation-index'),
         )
 
-    def initial_context(cls, request):
+    def initial_context(self, request):
         try:
-            url = cls.build_url('direct/eval-evaluation/1/summary')
+            url = self.build_url('direct/eval-evaluation/1/summary')
             summary = etree.parse(request.opener.open(url), parser = etree.HTMLParser(recover=False))
         except urllib2.HTTPError, e:
             if e.code == 404:
@@ -361,12 +361,12 @@ class EvaluationIndexView(SakaiView):
             'submitted': request.GET.get('submitted') == 'true',
         }
 
-    def handle_GET(cls, request, context):
-        return cls.render(request, context, 'sakai/evaluation/index')
+    def handle_GET(self, request, context):
+        return self.render(request, context, 'sakai/evaluation/index')
 
 class EvaluationDetailView(SakaiView):
-    def initial_context(cls, request, id):
-        url = cls.build_url('direct/eval-evaluation/%s' % id)
+    def initial_context(self, request, id):
+        url = self.build_url('direct/eval-evaluation/%s' % id)
         data = request.raw_post_data if request.method == 'POST' else None
         response = request.urlopen(url, data)
         evaluation = etree.parse(response, parser = etree.HTMLParser(recover=False))
@@ -392,18 +392,18 @@ class EvaluationDetailView(SakaiView):
         return context
 
     @BreadcrumbFactory
-    def breadcrumb(cls, request, context, id):
+    def breadcrumb(self, request, context, id):
         if not 'evaluation' in context:
-            context = cls.initial_context(request, id)
+            context = self.initial_context(request, id)
 
         return Breadcrumb(
-            cls.conf.local_name,
-            lazy_parent(EvaluationIndexView),
+            self.conf.local_name,
+            lazy_parent('evaluation-index'),
             context.get('title', 'Survey'),
-            lazy_reverse('sakai:evaluation-detail', args=[id]),
+            lazy_reverse('evaluation-detail', args=[id]),
         )
 
-    def handle_GET(cls, request, context, id):
+    def handle_GET(self, request, context, id):
         evaluation = context['evaluation']
 
         if context['state'] == 'forbidden':
@@ -414,13 +414,13 @@ class EvaluationDetailView(SakaiView):
                 'breadcrumbs': context['breadcrumbs'],
                 'id': id,
             }
-            return cls.render(request, context, 'sakai/evaluation/closed')
+            return self.render(request, context, 'sakai/evaluation/closed')
 
-        return cls.render(request, context, 'sakai/evaluation/detail')
+        return self.render(request, context, 'sakai/evaluation/detail')
 
-    def handle_POST(cls, request, context, id):
+    def handle_POST(self, request, context, id):
         print context['response_url']
-        if context['response_url'].startswith(cls.build_url('direct/eval-evaluation/%s/take_eval?' % id)):
-            return cls.handle_GET(request, context, id)
+        if context['response_url'].startswith(self.build_url('direct/eval-evaluation/%s/take_eval?' % id)):
+            return self.handle_GET(request, context, id)
 
         return HttpResponseSeeOther(reverse('sakai:evaluation-index') + '?submitted=true')
