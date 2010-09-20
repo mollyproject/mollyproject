@@ -14,6 +14,8 @@ from django.conf import settings
 
 logger = logging.getLogger('core.requests')
 
+from molly.utils.http import MediaType
+
 from time import clock as time_clock
 import sys
 
@@ -30,7 +32,7 @@ class timing(object):
 class DateUnicode(unicode): pass
 class DateTimeUnicode(unicode): pass
 
-def renderer(format, mimetypes=None):
+def renderer(format, mimetypes=(), priority=0):
     """
     Decorates a view method to say that it renders a particular format and mimetypes.
 
@@ -49,7 +51,7 @@ def renderer(format, mimetypes=None):
     def g(f):
         f.is_renderer = True
         f.format = format
-        f.mimetypes = mimetypes
+        f.mimetypes = set(MediaType(mimetype, priority) for mimetype in mimetypes)
         return f
     return g
 
@@ -127,6 +129,9 @@ class BaseView(object):
 
     def __init__(self, conf=None):
         self.conf = conf
+        self.FORMATS = dict((key, getattr(self, value)) for key, value in self.FORMATS.items())
+        formats_sorted = sorted(self.FORMATS_BY_MIMETYPE.items(), key=lambda x: x[0].priority, reverse=True)
+        self.FORMATS_BY_MIMETYPE = tuple((key, getattr(self, value)) for (key, value) in formats_sorted)
     
     def __unicode__(self):
         cls = type(self)
@@ -171,20 +176,10 @@ class BaseView(object):
         #elif request.is_ajax():
         #    renderer = self.FORMATS['json']
         elif request.META.get('HTTP_ACCEPT'):
-            accepts = [a.split(';')[0].strip() for a in request.META['HTTP_ACCEPT'].split(',')]
-            for accept in accepts:
-                # WebKit's Accept header is broken. See
-                # http://www.newmediacampaigns.com/page/webkit-team-admits-accept-header-error
-                # and https://bugs.webkit.org/show_bug.cgi?id=27267
-                if accept in ('application/xml', 'text/xml') and ' AppleWebKit/' in request.META.get('HTTP_USER_AGENT', ''):
-                    continue
-                if accept in self.FORMATS_BY_MIMETYPE:
-                    renderer = self.FORMATS_BY_MIMETYPE[accept]
-                    try:
-                        return getattr(self, renderer)(request, context, template_name)
-                    except NotImplementedError:
-                        pass
-            else:
+            accepts = self.parse_accept_header(request.META['HTTP_ACCEPT'])
+            try:
+                renderer = MediaType.resolve(accepts, self.FORMATS_BY_MIMETYPE)
+            except ValueError:
                 response = HttpResponse("""\
 Your Accept header didn't contain any supported media ranges.
 
@@ -195,8 +190,6 @@ Supported ranges are:
                 return response
         else:
             renderer = self.FORMATS['html']
-
-        renderer = getattr(self, renderer)
 
         # Stop external sites from grabbing JSON representations of pages
         # which contain sensitive user information.
@@ -210,6 +203,14 @@ Supported ranges are:
         except NotImplementedError:
             return self.not_acceptable(request)
 
+    def parse_accept_header(cls, accept):
+        media_types = []
+        for media_type in accept.split(','):
+            try:
+                media_types.append(MediaType(media_type))
+            except ValueError:
+                pass
+        return media_types
 
     def render_to_format(self, request, context, template_name, format):
         render_method = self.FORMATS[format]
@@ -227,7 +228,7 @@ Supported ranges are:
         content = "%s(%s);" % (callback, content)
         return HttpResponse(content, mimetype="application/javascript")
 
-    @renderer(format="html", mimetypes=('text/html', 'application/xhtml+xml', '*/*'))
+    @renderer(format="html", mimetypes=('text/html', 'application/xhtml+xml'), priority=1)
     def render_html(self, request, context, template_name):
         if template_name is None:
             raise NotImplementedError
