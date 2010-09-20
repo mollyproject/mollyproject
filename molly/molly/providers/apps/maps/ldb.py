@@ -1,4 +1,8 @@
+import logging
+
 import suds, suds.sudsobject
+
+logger = logging.getLogger('molly.providers.apps.places.ldb')
 
 from molly.apps.places.providers import BaseMapsProvider
 
@@ -20,10 +24,20 @@ class LiveDepartureBoardPlacesProvider(BaseMapsProvider):
         if not station_entities:
             return
         
-        ldb = suds.client.Client(self._WSDL_URL)
+        try:
+            ldb = suds.client.Client(self._WSDL_URL)
+        except Exception, e:
+            logger.warning("Could not instantiate suds client for live departure board.", exc_info=True, extra={'wsdl_url': self._WSDL_URL})
+            self._add_error(station_entities)
+            return
         
         for entity in station_entities:
-            db = ldb.service.GetDepartureBoard(self._max_services, entity.identifiers['crs'])
+            try:
+                db = ldb.service.GetDepartureBoard(self._max_services, entity.identifiers['crs'])
+            except Exception, e:
+                logger.warning("Could not retrieve departure board for station: %r", entity.identifiers.get('crs'), crs_code=entity.identifiers.get('crs'))
+                self._add_error(station_entities)
+                return
             
             entity.metadata['ldb'] = self.transform_suds(db)
             
@@ -34,3 +48,7 @@ class LiveDepartureBoardPlacesProvider(BaseMapsProvider):
             return map(self.transform_suds, o)
         else:
             return o
+
+    def _add_error(self, entities):
+        for entity in entities:
+            entity.metadata['ldb'] = {'error': True}

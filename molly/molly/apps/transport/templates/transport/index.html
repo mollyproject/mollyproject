@@ -26,15 +26,36 @@
       </tr>
     </thead>
     <tbody>
-      {% for service in train_station.metadata.ldb.trainServices.service %}
+      {% if train_station.metadata.ldb.error %}
         <tr>
-            <td>{{ service.destination.location.0.locationName }}{% if service.destination.location.0.via %}<br/>
-            <small>{{ service.destination.location.0.via }}</small>{% endif %}</td>
+          <td colspan="4">
+            <p>
+              There is currently a problem retrieving live departure information from the National Rail web site.
+            </p>
+            <p>
+              Departure information may still be accessed
+              <a href="http://pda.ojp.nationalrail.co.uk/en/pj/ldbboard/dep/{{ train_station.identifiers.crs }}">directly
+              from their web site</a>.
+            </p>
+          </td>
+        </tr>
+      {% else %}
+        {% for service in train_station.metadata.ldb.trainServices.service %}
+          <tr>
+            <td>
+              {{ service.destination.location.0.locationName }}{% if service.destination.location.0.via %}<br/>
+              <small>{{ service.destination.location.0.via }}</small>{% endif %}
+            </td>
             <td>{{ service.platform }}</td>
             <td>{{ service.std }}</td>
             <td>{{ service.etd }}</td>
-        </tr>
-      {% endfor %}
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="4">There are currently no scheduled departures.</td>
+          </tr>
+        {% endfor %}
+      {% endif %}
     </tbody>
   </table>
         
