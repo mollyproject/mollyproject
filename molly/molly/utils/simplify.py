@@ -1,4 +1,4 @@
-import functools, datetime
+import itertools, datetime
 
 from lxml import etree
 
@@ -57,7 +57,7 @@ def simplify_value(value):
         return simplify_value(list(value))
     elif hasattr(value, '__iter__'):
         # Iterators may be unbounded; silently ignore elements once we've already had 1000.
-        return [simplify_value(item) for item in functools.islice(value, 1000)]
+        return [simplify_value(item) for item in itertools.islice(value, 1000)]
     else:
         raise NotImplementedError
     
