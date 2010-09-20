@@ -4,7 +4,7 @@ from datetime import datetime, date
 from xml.etree import ElementTree as ET
 
 from django.db import models
-from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotAllowed, HttpResponseForbidden, Http404
+from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest, HttpResponseNotAllowed, HttpResponseForbidden, Http404
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.core.paginator import Paginator
@@ -36,10 +36,10 @@ def renderer(format, mimetypes=None):
 
     Use as:
         @renderer(format="foo")
-        def render_foo(cls, request, context, template_name): ...
+        def render_foo(self, request, context, template_name): ...
     or
         @renderer(format="foo", mimetypes=("application/x-foo",))
-        def render_foo(cls, request, context, template_name): ...
+        def render_foo(self, request, context, template_name): ...
 
     The former case will inherit mimetypes from the previous renderer for that
     format in the MRO. Where there isn't one, it will default to the empty
@@ -54,6 +54,7 @@ def renderer(format, mimetypes=None):
     return g
 
 
+import types
 
 class ViewMetaclass(type):
     def __new__(cls, name, bases, dict):
@@ -68,11 +69,6 @@ class ViewMetaclass(type):
                 formats_by_mimetype.update(base.FORMATS_BY_MIMETYPE)
 
         for key, value in dict.items():
-            # Wrap all methods in classmethods so they don't need decorating
-            # individually.
-            if isfunction(value) and key != '__new__':
-                dict[key] = classmethod(value)
-
             # If the method is a renderer we add it to our dicts. We can't add
             # the functions right now because we want them bound to the class
             # object that hasn't yet been created. Instead, add the keys (strs)
@@ -96,15 +92,6 @@ class ViewMetaclass(type):
         # Create our view.
         view = type.__new__(cls, name, bases, dict)
 
-        # Replace those that items that have string values with the bound
-        # classmethods we wanted in the first place.
-        for format in view.FORMATS:
-            if isinstance(view.FORMATS[format], basestring):
-                view.FORMATS[format] = getattr(view, view.FORMATS[format])
-        for mimetype in view.FORMATS_BY_MIMETYPE:
-            if isinstance(view.FORMATS_BY_MIMETYPE[mimetype], basestring):
-                view.FORMATS_BY_MIMETYPE[mimetype] = getattr(view, view.FORMATS_BY_MIMETYPE[mimetype])
-
         return view
 
 
@@ -114,47 +101,60 @@ class BaseView(object):
 
     ALLOWABLE_METHODS = ('GET', 'POST', 'DELETE', 'HEAD', 'OPTIONS', 'PUT')
 
-    def method_not_allowed(cls, request):
-        return HttpResponseNotAllowed([m for m in cls.ALLOWABLE_METHODS if hasattr(cls, 'handle_%s' % m)])
+    def method_not_allowed(self, request):
+        return HttpResponseNotAllowed([m for m in self.ALLOWABLE_METHODS if hasattr(self, 'handle_%s' % m)])
 
-    def not_acceptable(cls, request):
+    def not_acceptable(self, request):
         response = HttpResponse("The desired media type is not supported for this resource.", mimetype="text/plain")
         response.status_code = 406
         return response
 
-    def bad_request(cls, request):
+    def bad_request(self, request):
         response = HttpResponse(
             'Your request was malformed.',
             status=400,
         )
         return response
 
-    def initial_context(cls, request, *args, **kwargs):
+    def initial_context(self, request, *args, **kwargs):
         return {}
+    
+    def __new__(cls, conf, *args, **kwargs):
+        if isinstance(conf, HttpRequest):
+            return cls(None)(conf, *args, **kwargs)
+        else:
+            return object.__new__(cls, conf, *args, **kwargs)
 
-    def __new__(cls, request, *args, **kwargs):
+    def __init__(self, conf=None):
+        self.conf = conf
+    
+    def __unicode__(self):
+        cls = type(self)
+        return ".".join((cls.__module__, cls.__name__))
+
+    def __call__(self, request, *args, **kwargs):
         method_name = 'handle_%s' % request.method
-        if hasattr(cls, method_name):
-            context = cls.initial_context(request, *args, **kwargs)
-            context['breadcrumbs'] = cls.breadcrumb(request, context, *args, **kwargs)
-            response = getattr(cls, method_name)(request, context, *args, **kwargs)
+        if hasattr(self, method_name):
+            context = self.initial_context(request, *args, **kwargs)
+            context['breadcrumbs'] = self.breadcrumb(request, context, *args, **kwargs)
+            response = getattr(self, method_name)(request, context, *args, **kwargs)
             return response
         else:
-            return cls.method_not_allowed(request)
+            return self.method_not_allowed(request)
 
-    def handle_HEAD(cls, request, *args, **kwargs):
+    def handle_HEAD(self, request, *args, **kwargs):
         """
         Provides a default HEAD handler that strips the content from the
         response returned by the GET handler.
         """
-        if hasattr(cls, 'handle_GET'):
-            response = cls.handle_GET(request, *args, **kwargs)
+        if hasattr(self, 'handle_GET'):
+            response = self.handle_GET(request, *args, **kwargs)
         else:
-            response = cls.method_not_acceptable(request)
+            response = self.method_not_acceptable(request)
         response.content = ''
         return response
 
-    def get_zoom(cls, request, default=16):
+    def get_zoom(self, request, default=16):
         try:
             zoom = int(request.GET['zoom'])
         except (ValueError, KeyError):
@@ -163,13 +163,13 @@ class BaseView(object):
             zoom = min(max(10, zoom), 18)
         return zoom
 
-    def render(cls, request, context, template_name):
-        if request.REQUEST.get('format') in cls.FORMATS:
-            renderer = cls.FORMATS[request.REQUEST['format']]
+    def render(self, request, context, template_name):
+        if request.REQUEST.get('format') in self.FORMATS:
+            renderer = self.FORMATS[request.REQUEST['format']]
         elif 'format' in request.REQUEST:
-            return cls.not_acceptable(request)
+            return self.not_acceptable(request)
         #elif request.is_ajax():
-        #    renderer = cls.FORMATS['json']
+        #    renderer = self.FORMATS['json']
         elif request.META.get('HTTP_ACCEPT'):
             accepts = [a.split(';')[0].strip() for a in request.META['HTTP_ACCEPT'].split(',')]
             for accept in accepts:
@@ -178,10 +178,10 @@ class BaseView(object):
                 # and https://bugs.webkit.org/show_bug.cgi?id=27267
                 if accept in ('application/xml', 'text/xml') and ' AppleWebKit/' in request.META.get('HTTP_USER_AGENT', ''):
                     continue
-                if accept in cls.FORMATS_BY_MIMETYPE:
-                    renderer = cls.FORMATS_BY_MIMETYPE[accept]
+                if accept in self.FORMATS_BY_MIMETYPE:
+                    renderer = self.FORMATS_BY_MIMETYPE[accept]
                     try:
-                        return renderer(request, context, template_name)
+                        return getattr(self, renderer)(request, context, template_name)
                     except NotImplementedError:
                         pass
             else:
@@ -190,11 +190,13 @@ Your Accept header didn't contain any supported media ranges.
 
 Supported ranges are:
 
- * %s\n""" % '\n * '.join(f for f in cls.FORMATS), mimetype="text/plain" )
+ * %s\n""" % '\n * '.join(f for f in self.FORMATS), mimetype="text/plain" )
                 response.status_code = 406 # Not Acceptable
                 return response
         else:
-            renderer = cls.FORMATS['html']
+            renderer = self.FORMATS['html']
+
+        renderer = getattr(self, renderer)
 
         # Stop external sites from grabbing JSON representations of pages
         # which contain sensitive user information.
@@ -206,27 +208,27 @@ Supported ranges are:
         try:
             return renderer(request, context, template_name)
         except NotImplementedError:
-            return cls.not_acceptable(request)
+            return self.not_acceptable(request)
 
 
-    def render_to_format(cls, request, context, template_name, format):
-        render_method = cls.FORMATS[format]
+    def render_to_format(self, request, context, template_name, format):
+        render_method = self.FORMATS[format]
         return render_method(request, context, template_name)
 
     @renderer(format="json", mimetypes=('application/json',))
-    def render_json(cls, request, context, template_name):
-        context = cls.simplify_value(context)
+    def render_json(self, request, context, template_name):
+        context = self.simplify_value(context)
         return HttpResponse(simplejson.dumps(context), mimetype="application/json")
 
     @renderer(format="js", mimetypes=('text/javascript','application/javascript',))
-    def render_js(cls, request, context, template_name):
+    def render_js(self, request, context, template_name):
         callback = request.GET.get('callback', request.GET.get('jsonp', 'callback'))
-        content = simplejson.dumps(cls.simplify_value(context))
+        content = simplejson.dumps(self.simplify_value(context))
         content = "%s(%s);" % (callback, content)
         return HttpResponse(content, mimetype="application/javascript")
 
     @renderer(format="html", mimetypes=('text/html', 'application/xhtml+xml', '*/*'))
-    def render_html(cls, request, context, template_name):
+    def render_html(self, request, context, template_name):
         if template_name is None:
             raise NotImplementedError
         return render_to_response(template_name+'.html',
@@ -234,22 +236,22 @@ Supported ranges are:
                                   mimetype='text/html')
 
     @renderer(format="xml", mimetypes=('application/xml', 'text/xml'))
-    def render_xml(cls, request, context, template_name):
-        context = cls.simplify_value(context)
-        return HttpResponse(ET.tostring(cls.serialize_to_xml(context), encoding='UTF-8'), mimetype="application/xml")
+    def render_xml(self, request, context, template_name):
+        context = self.simplify_value(context)
+        return HttpResponse(ET.tostring(self.serialize_to_xml(context), encoding='UTF-8'), mimetype="application/xml")
 
     @renderer(format="yaml", mimetypes=('application/x-yaml',))
-    def render_yaml(cls, request, context, template_name):
+    def render_yaml(self, request, context, template_name):
         try:
             import yaml
         except ImportError:
             raise NotImplementedError
 
-        context = cls.simplify_value(context)
+        context = self.simplify_value(context)
         return HttpResponse(yaml.safe_dump(context), mimetype="application/x-yaml")
 
     @renderer(format="fragment")
-    def render_fragment(cls, request, context, template_name):
+    def render_fragment(self, request, context, template_name):
         '''Uses block rendering functions, see end of file.'''
         if template_name is None:
             raise NotImplementedError
@@ -258,15 +260,15 @@ Supported ranges are:
         content = render_block_to_string(template_name + '.html', 'content', context, RequestContext(request))
         return HttpResponse(simplejson.dumps({'body': body, 'title': title, 'content': content}), mimetype="application/json")
 
-    def simplify_value(cls, value):
+    def simplify_value(self, value):
         if hasattr(value, 'simplify_for_render'):
-            return value.simplify_for_render(cls.simplify_value, cls.simplify_model)
+            return value.simplify_for_render(self.simplify_value, self.simplify_model)
         elif isinstance(value, dict):
             out = {}
             for key in value:
                 new_key = key if isinstance(key, (basestring, int)) else str(key)
                 try:
-                    out[new_key] = cls.simplify_value(value[key])
+                    out[new_key] = self.simplify_value(value[key])
                 except NotImplementedError:
                     pass
             return out
@@ -274,7 +276,7 @@ Supported ranges are:
             out = []
             for subvalue in value:
                 try:
-                    out.append(cls.simplify_value(subvalue))
+                    out.append(self.simplify_value(subvalue))
                 except NotImplementedError:
                     pass
             if isinstance(value, tuple):
@@ -288,15 +290,15 @@ Supported ranges are:
         elif isinstance(value, date):
             return DateUnicode(value.isoformat())
         elif hasattr(type(value), '__mro__') and models.Model in type(value).__mro__:
-            return cls.simplify_model(value)
+            return self.simplify_model(value)
         elif isinstance(value, Paginator):
-            return cls.simplify_value(value.object_list)
+            return self.simplify_value(value.object_list)
         elif value is None:
             return None
         elif isinstance(value, Point):
-            return cls.simplify_value(list(value))
+            return self.simplify_value(list(value))
         elif hasattr(value, '__iter__'):
-            return [cls.simplify_value(item) for item in value]
+            return [self.simplify_value(item) for item in value]
         else:
             raise NotImplementedError
 
@@ -309,7 +311,7 @@ Supported ranges are:
         (float, 'float'),
     )
 
-    def simplify_model(cls, obj, terse=False):
+    def simplify_model(self, obj, terse=False):
         if obj is None:
             return None
         # It's a Model instance
@@ -332,13 +334,13 @@ Supported ranges are:
                 try:
                     value = getattr(obj, field_name)
                     if hasattr(type(value), '__bases__') and models.Model in type(value).__bases__:
-                        value = cls.simplify_model(value, terse=True)
-                    out[field_name] = cls.simplify_value(value)
+                        value = self.simplify_model(value, terse=True)
+                    out[field_name] = self.simplify_value(value)
                 except NotImplementedError:
                     pass
         return out
 
-    def serialize_to_xml(cls, value):
+    def serialize_to_xml(self, value):
         if value is None:
             node = ET.Element('null')
         elif isinstance(value, bool):
@@ -348,7 +350,7 @@ Supported ranges are:
         elif isinstance(value, (basestring, int, float)):
             node = ET.Element('literal')
             node.text = unicode(value)
-            node.attrib['type'] = [d[1] for d in cls.XML_DATATYPES if isinstance(value, d[0])][0]
+            node.attrib['type'] = [d[1] for d in self.XML_DATATYPES if isinstance(value, d[0])][0]
         elif isinstance(value, dict):
             if '_type' in value:
                 node = ET.Element('object', {'type': value['_type'], 'pk': unicode(value.get('_pk', ''))})
@@ -363,7 +365,7 @@ Supported ranges are:
             else:
                 node = ET.Element('collection', {'type': 'mapping'})
             for key in value:
-                v = cls.serialize_to_xml(value[key])
+                v = self.serialize_to_xml(value[key])
                 subnode = ET.Element('item', {'key':key})
                 subnode.append(v)
                 node.append(subnode)
@@ -375,7 +377,7 @@ Supported ranges are:
             else:
                 node = ET.Element('collection', {'type':'set'})
             for item in value:
-                v = cls.serialize_to_xml(item)
+                v = self.serialize_to_xml(item)
                 subnode = ET.Element('item')
                 subnode.append(v)
                 node.append(subnode)
@@ -388,11 +390,11 @@ Supported ranges are:
 class ZoomableView(BaseView):
     default_zoom = None
 
-    def initial_context(cls, request, *args, **kwargs):
+    def initial_context(self, request, *args, **kwargs):
         try:
             zoom = int(request.GET['zoom'])
         except (KeyError, ValueError):
-            zoom = cls.default_zoom
+            zoom = self.default_zoom
         else:
             zoom = min(max(10, zoom), 18)
         return {

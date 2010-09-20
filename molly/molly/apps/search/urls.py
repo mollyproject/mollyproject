@@ -1,7 +1,7 @@
 from django.conf.urls.defaults import *
 
-from views import GoogleSearchView
+from views import IndexView
 
 urlpatterns = patterns('',
-    (r'^$', GoogleSearchView, {}, 'index'),
+    (r'^$', IndexView, {}, 'index'),
 )

@@ -9,36 +9,36 @@ from .forms import GenericContactForm
 
 class IndexView(BaseView):
     @BreadcrumbFactory
-    def breadcrumb(cls, request, context):
+    def breadcrumb(self, request, context):
         return Breadcrumb(
-            'contact',
+            self.conf.local_name,
             None,
             'Contact search',
-            lazy_reverse('contact:index'),
+            lazy_reverse('index'),
         )
 
-    def initial_context(cls, request):
+    def initial_context(self, request):
         return {
-            'form': cls.conf.provider.form(request.GET or None),
-            'medium_choices': cls.conf.provider.medium_choices,
+            'form': self.conf.provider.form(request.GET or None),
+            'medium_choices': self.conf.provider.medium_choices,
         }
 
-    def handle_GET(cls, request, context):
-        return cls.render(request, context, 'contact/index')
+    def handle_GET(self, request, context):
+        return self.render(request, context, 'contact/index')
 
 class ResultListView(IndexView):
 
     @BreadcrumbFactory
-    def breadcrumb(cls, request, context):
+    def breadcrumb(self, request, context):
         return Breadcrumb(
-            'contact',
+            self.conf.local_name,
             None,
             'Contact search',
-            lazy_reverse('contact:index'),
+            lazy_reverse('result_list'),
         )
 
-    def handle_GET(cls, request, context):
-        provider = cls.conf.provider
+    def handle_GET(self, request, context):
+        provider = self.conf.provider
 
         form = provider.form(request.GET or None)
         medium = request.GET.get('medium')
@@ -61,7 +61,7 @@ class ResultListView(IndexView):
                 paginator = Paginator(people, 10)
 
             if not (1 <= page <= paginator.num_pages):
-                return cls.handle_error(
+                return self.handle_error(
                     request, context,
                     'There are no results for this page.',
                 )
@@ -74,31 +74,30 @@ class ResultListView(IndexView):
             })
 
         context['form'] = form
-        return cls.render(request, context, 'contact/result_list')
+        return self.render(request, context, 'contact/result_list')
 
-    def handle_error(cls, request, context, message):
+    def handle_error(self, request, context, message):
         context.update({
             'message': message,
         })
 
-        return cls.render(request, context, 'contact/result_list')
+        return self.render(request, context, 'contact/result_list')
 
 
 class ResultDetailView(BaseView):
     @BreadcrumbFactory
-    def breadcrumb(cls, request, context):
+    def breadcrumb(self, request, context):
         return Breadcrumb(
-            'contact',
+            self.conf.local_name,
             None,
             'Contact search',
-            lazy_reverse('contact:index'),
+            lazy_reverse('result_detail'),
         )
 
-
-    def handle_GET(cls, request, context, id):
+    def handle_GET(self, request, context, id):
         try:
-            context['result'] = cls.conf.provider.fetch_result(id)
+            context['result'] = self.conf.provider.fetch_result(id)
         except BaseContactProvider.NoSuchResult:
             raise Http404
 
-        return cls.render(request, context, 'context/result_detail')
+        return self.render(request, context, 'context/result_detail')
