@@ -139,7 +139,7 @@ class NearbyDetailView(LocationRequiredView, ZoomableView):
     def breadcrumb(self, request, context, ptypes, entity=None):
         title = NearbyDetailView.get_metadata(self, request, ptypes, entity)['title']
         return Breadcrumb('places',
-                          lazy_parent('nearby-list', entity=entity),
+                          lazy_parent('nearby-list'),
                           title,
                           lazy_reverse('nearby-detail', args=[ptypes]))
 

@@ -134,7 +134,7 @@ class Application(object):
         elif isinstance(pattern, RegexURLPattern):
             # Get the callback and make sure it derives BaseView
             callback = pattern.callback
-            if not (isinstance(callback, type) and BaseView in callback.__mro__):
+            if not issubclass(callback, BaseView):
                 return callback
             
             if bases:
