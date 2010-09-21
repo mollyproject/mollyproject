@@ -13,21 +13,21 @@ class Breadcrumb(object):
         self.parent = parent
 
 def BreadcrumbFactory(breadcrumb_func):
-    def data(cls, request, context, *args, **kwargs):
-        return breadcrumb_func(cls, request, context, *args, **kwargs)
+    def data(self, request, context, *args, **kwargs):
+        return breadcrumb_func(self, request, context, *args, **kwargs)
     
-    def render(cls, request, context, *args, **kwargs):
-        breadcrumb = data(cls, request, context, *args, **kwargs)
+    def render(self, request, context, *args, **kwargs):
+        breadcrumb = data(self, request, context, *args, **kwargs)
         
         if breadcrumb.parent:
-            parent_data = breadcrumb.parent(cls, request, context)
-            parent = parent_data.title, parent_data.url()
+            parent_data = breadcrumb.parent(self, breadcrumb.application, request, context)
+            parent = parent_data.title, parent_data.url(breadcrumb.application)
         else:
             parent = None
         
         index_view = resolve(reverse('%s:index' % breadcrumb.application))[0]
         index = index_view.breadcrumb.data(index_view, request, context)
-        index = index.title, index.url()
+        index = index.title, index.url(breadcrumb.application)
         
         parent_is_index = index == parent
         
@@ -41,15 +41,18 @@ def BreadcrumbFactory(breadcrumb_func):
         
     render.data = data
     render.breadcrumb_func = breadcrumb_func
-    
-    return classmethod(render)
 
-def NullBreadcrumb(cls, request, context, *args, **kwargs):
+    return render
+
+def NullBreadcrumb(self, request, context, *args, **kwargs):
     return None
 
 def lazy_reverse(view_name, *args, **kwargs):
-    def f():
-        return reverse(view_name, *args, **kwargs)
+    def f(application_name):
+        view = view_name
+        if ':' not in view:
+            view = '%s:%s' % (application_name, view)
+        return reverse(view, *args, **kwargs)
     return f
     
 def static_reverse(path):
@@ -57,13 +60,17 @@ def static_reverse(path):
         return path
     return f
     
-def lazy_parent(view, *args, **kwargs):
-    def f(cls, request, context):
-        return view.breadcrumb.data(cls, request, context, *args, **kwargs)
+def lazy_parent(view_name, *args, **kwargs):
+    def f(self, application_name, request, context):
+        view = view_name
+        if ':' not in view:
+            view = '%s:%s' % (application_name, view)
+        view, view_args, view_kwargs = resolve(reverse(view, args=args, kwargs=kwargs))
+        return view.breadcrumb.data(view, request, context, *view_args, **view_kwargs)
     return f
 
 def static_parent(path, title, application=None):
-    def f(cls, request, context):
+    def f(self, request, context):
         return Breadcrumb(
             application, None, title, lambda: path
         )

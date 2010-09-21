@@ -18,7 +18,7 @@ class IndexView(BaseView):
     @BreadcrumbFactory
     def breadcrumb(cls, request, context):
         return Breadcrumb(
-            cls.conf.local_name, None, 'News', lazy_reverse('news:index')
+            cls.conf.local_name, None, 'News', lazy_reverse('index')
         )
         
     def handle_GET(cls, request, context):
@@ -30,19 +30,20 @@ class ItemListView(BaseView):
     def get_metadata(cls, request, slug):
         feed = get_object_or_404(Feed.news, slug=slug)
         
+        last_modified = feed.last_modified.strftime('%a, %d %b %Y') if feed.last_modified else 'never updated'
         return {
             'last_modified': feed.last_modified,
             'title': feed.title,
-            'additional': '<strong>News feed</strong> %s' % feed.last_modified.strftime('%a, %d %b %Y'),
+            'additional': '<strong>News feed</strong>, %s' % last_modified,
         }
 
     @BreadcrumbFactory
     def breadcrumb(cls, request, context, slug):
         return Breadcrumb(
             cls.conf.local_name,
-            lazy_parent(IndexView),
+            lazy_parent('index'),
             'News feed',
-            lazy_reverse('news:item_list', args=[slug])
+            lazy_reverse('item-list', args=[slug])
         )
         
     def handle_GET(cls, request, context, slug):
@@ -54,19 +55,20 @@ class ItemDetailView(BaseView):
     def get_metadata(cls, request, slug, id):
         item = get_object_or_404(Item, feed__slug=slug, id=id)
         
+        last_modified = item.last_modified.strftime('%a, %d %b %Y') if item.last_modified else 'never updated'
         return {
             'last_modified': item.last_modified,
             'title': item.title,
-            'additional': '<strong>News item</strong>, %s, %s' % (escape(item.feed.title), item.last_modified.strftime('%a, %d %b %Y')),
+            'additional': '<strong>News item</strong>, %s, %s' % (escape(item.feed.title), last_modified),
         }
 
     @BreadcrumbFactory
     def breadcrumb(cls, request, context, slug, id):
         return Breadcrumb(
             cls.conf.local_name,
-            lazy_parent(ItemListView, slug=slug),
+            lazy_parent('item-list', slug=slug),
             'News item',
-            lazy_reverse('news:item_detail', args=[slug,id])
+            lazy_reverse('item-detail', args=[slug,id])
         )
         
     def handle_GET(cls, request, context, slug, id):

@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 import email.utils
 import xml.utils.iso8601
 from datetime import datetime, timedelta, tzinfo

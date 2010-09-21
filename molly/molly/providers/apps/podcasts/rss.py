@@ -32,8 +32,9 @@ class RSSPodcastsProvider(BasePodcastsProvider):
     #       ('itunesu_code', '{itunesu:}code'),
         )
 
-    def __init__(self, podcasts):
+    def __init__(self, podcasts, medium=None):
         self.podcasts = podcasts
+        self.medium = medium
     
     @property
     def atom(self):
@@ -46,10 +47,17 @@ class RSSPodcastsProvider(BasePodcastsProvider):
                 provider=self.class_path,
                 rss_url=url,
                 defaults={'slug': slug})
-            
+            if self.medium: 
+                podcast.medium = self.medium
+                
             podcast.slug = slug
             self.update_podcast(podcast)
             
+    def determine_license(self, o):
+        license = o.find('{http://purl.org/dc/terms/}license') or \
+                  o.find('{http://backend.userland.com/creativeCommonsRssModule}license')
+        
+        return license.text if license is not None else None
         
     def update_podcast(self, podcast):
         atom = self.atom
@@ -77,6 +85,13 @@ class RSSPodcastsProvider(BasePodcastsProvider):
             podcast.title = xml.find(atom('title')).text
             podcast.description = xml.find(atom('subtitle')).text
         
+        podcast.license = self.determine_license(xml.find('.//channel'))
+        if self.medium is not None:
+            podcast.medium = medium
+
+        logo = xml.find('.//channel/image/url')
+        podcast.logo = logo.text if logo is not None else None
+
         ids = []
         for item in xml.findall('.//channel/item') or xml.findall(atom('entry')):
             id = gct(item, 'guid') or gct(item, atom('id'))
@@ -96,8 +111,9 @@ class RSSPodcastsProvider(BasePodcastsProvider):
                 if getattr(podcast_item, attr) != gct(item, x_attr):
                     setattr(podcast_item, attr, gct(item, x_attr))
                     require_save = True
-            if require_save:
-                print "PI", podcast_item
+            license = self.determine_license(item)
+            if require_save or podcast_item.license != license:
+                podcast_item.license = license
                 podcast_item.save()
 
             enc_urls = []

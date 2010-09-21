@@ -5,7 +5,7 @@ from molly.utils.breadcrumbs import *
 
 from forms import SearchForm
 
-class GoogleSearchView(BaseView):
+class IndexView(BaseView):
     def initial_context(cls, request):
         return {
             'search_form': getattr(cls.conf, 'form', SearchForm(request.GET or None))
@@ -14,7 +14,7 @@ class GoogleSearchView(BaseView):
     @BreadcrumbFactory
     def breadcrumb(cls, request, context):
         return Breadcrumb(
-            'search', None, 'Search', lazy_reverse('search:index')
+            'search', None, 'Search', lazy_reverse('index')
         )
 
     def handle_GET(cls, request, context):

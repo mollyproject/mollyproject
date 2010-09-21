@@ -7,12 +7,13 @@ from secrets import SECRETS
 
 project_root = os.path.normpath(os.path.dirname(__file__))
 
-DEBUG = False
-DEBUG_SECURE = False
+DEBUG = True
+DEBUG_SECURE = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    # ('Your Name', 'your_email@domain.com'),
+    ('Alexander Dutton', 'alexander.dutton@oucs.ox.ac.uk'),
+    ('Tim Fernando', 'tim.fernando@oucs.ox.ac.uk'),
 )
 
 MANAGERS = ADMINS
@@ -43,12 +44,15 @@ USE_I18N = True
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = ''
+MEDIA_ROOT = os.path.abspath(os.path.dirname(__file__))
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
 MEDIA_URL = '/site-media/'
+
+# Update MEDIA_ROOT, since they're local directories
+MEDIA_ROOT += MEDIA_URL
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
@@ -66,11 +70,14 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = (
+    'molly.wurfl.middleware.WurflMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'molly.utils.middleware.ErrorHandlingMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'molly.wurfl.middleware.WurflMiddleware',
-#    'molly.auth.middleware.SecureSessionMiddleware',
+    'molly.auth.middleware.SecureSessionMiddleware',
+    'molly.stats.middleware.StatisticsMiddleware',
+    'molly.apps.url_shortener.middleware.URLShortenerMiddleware',
 #    'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
@@ -98,6 +105,13 @@ TEMPLATE_DIRS = (
 APPLICATIONS = [
     Application('molly.apps.home', 'home', 'Home',
         display_to_user = False,
+    ),
+
+    Application('molly.apps.desktop', 'desktop', 'Desktop',
+        display_to_user = False,
+        twitter_username = 'mobileox',
+        twitter_ignore_urls = 'http://post.ly/',
+        blog_rss_url = 'http://feeds.feedburner.com/mobileoxford',
     ),
 
     Application('molly.apps.contact', 'contact', 'Contact search',
@@ -185,10 +199,12 @@ APPLICATIONS = [
                 domain = 'm.ox.ac.uk',
                 params = {
                     'client': 'oxford',
+                    'frontend': 'mobile',
                 },
                 title_clean_re = r'm\.ox \| (.*)',
             ),
         ],
+        query_expansion_file = os.path.join(project_root, 'data', 'query_expansion.txt'),
         display_to_user = False,
     ),
 
@@ -213,7 +229,12 @@ APPLICATIONS = [
                 search_locality = 'Oxford',
             ),
         ],
+        location_request_period = 900,
         display_to_user = False,
+    ),
+
+    Application('molly_oxford.apps.river_status', 'river_status', 'River status',
+        provider = Provider('molly_oxford.providers.apps.river_status.RiverStatusProvider'),
     ),
 
     Application('molly.apps.feedback', 'feedback', 'Feedback',
@@ -229,36 +250,56 @@ APPLICATIONS = [
         expose_view = True,
     ),
 
-#    Application('molly.apps.url_shortener', 'url_shortener', 'URL Shortener',
-#        display_to_user = False,
-#    ),
+    Application('molly.stats', 'stats', 'Statistics'),
 
-#    Application('molly.auth', 'auth', 'Authentication',
-#        display_to_user = False,
-#        secure = True,
-#    ),
+    Application('molly.apps.url_shortener', 'url_shortener', 'URL Shortener',
+        display_to_user = False,
+    ),
 
-#    Application('molly.apps.sakai', 'weblearn', 'WebLearn',
-#        host = 'https://weblearn.ox.ac.uk/',
-#        service_name = 'WebLearn',
-#        secure = True,
-#        tools = [
-#            ('signup', 'Tutorial sign-ups'),
+    Application('molly.utils', 'utils', 'Molly utility services',
+        display_to_user = False,
+    ),
+
+    Application('molly.apps.feature_vote', 'feature_vote', 'Feature suggestions',
+        display_to_user = False,
+    ),
+
+    Application('molly.auth', 'auth', 'Authentication',
+        display_to_user = False,
+        secure = True,
+        unify_identifiers = ('oxford:sso', 'oxford:oss', 'weblearn:id', 'oxford_ldap'),
+    ),
+
+    Application('molly.apps.sakai', 'weblearn', 'WebLearn',
+        host = 'https://weblearn.ox.ac.uk/',
+        service_name = 'WebLearn',
+        secure = True,
+        tools = [
+            ('signup', 'Sign-ups'),
 #            ('poll', 'Polls'),
 #            ('direct', 'User information'),
 #            ('sites', 'Sites'),
-#        ],
-#        extra_bases = (
-#            ExtraBase('molly.auth.oauth.views.OAuthView',
-#                secret = SECRETS.weblearn,
-#                signature_method = OAuthSignatureMethod_PLAINTEXT(),
-#                base_url = 'https://weblearn.ox.ac.uk/oauth-tool/',
-#                request_token_url = 'request_token',
-#                access_token_url = 'access_token',
-#                authorize_url = 'authorize',
-#            ),
-#        ),
-#    ),
+#            ('evaluation', 'Surveys'),
+        ],
+        extra_bases = (
+            ExtraBase('molly.auth.oauth.views.OAuthView',
+                secret = SECRETS.weblearn,
+                signature_method = OAuthSignatureMethod_PLAINTEXT(),
+                base_url = 'https://weblearn.ox.ac.uk/oauth-tool/',
+                request_token_url = 'request_token',
+                access_token_url = 'access_token',
+                authorize_url = 'authorize',
+            ),
+        ),
+        enforce_timeouts = False,
+        identifiers = (
+            ('oxford:sso', ('props', 'aid',)),
+            ('weblearn:id', ('id',)),
+            ('oxford:oss', ('props', 'oakOSSID',)),
+            ('oxford:ldap', ('props', 'udp.dn',)),
+            ('weblearn:email', ('email',)),
+        ),
+    ),
 
 #    Application('molly.apps.feeds.events', 'events', 'Events',
 #    ),
@@ -273,22 +314,75 @@ API_KEYS = {
 
 SITE_MEDIA_PATH = os.path.join(project_root, 'site-media')
 
-INSTALLED_APPS = (
+INSTALLED_APPS = extract_installed_apps(APPLICATIONS) + (
     'django.contrib.auth',
     'django.contrib.admin',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
+    'django.contrib.gis',
+    'django.contrib.comments',
     'molly.batch_processing',
-    'molly.utils',
 #    'debug_toolbar',
-) + extract_installed_apps(APPLICATIONS)
+)
+
+# Settings for django-compress: CSS
+COMPRESS_CSS = {
+    'smart': {
+        'source_filenames': ('css/groups/smart.css',),
+        'output_filename': 'css/groups/smart.min.css',
+        'extra_context': {},
+        },
+    'dumb': {
+        'source_filenames': ('css/groups/dumb.css',),
+        'output_filename': 'css/groups/dumb.min.css',
+        'extra_context': {},
+        },
+    }
+# CSS filter is custom-written since the provided one mangles it too much
+COMPRESS_CSS_FILTERS = ('molly_compress.CSSFilter',)
+COMPRESS_CSSTIDY_SETTINGS = {
+    'remove_bslash': True, # default True
+    'compress_colors': True, # default True
+    'compress_font-weight': True, # default True
+    'lowercase_s': False, # default False
+    'optimise_shorthands': 0, # default 2, tries to merge bg rules together and makes a hash of things
+    'remove_last_': False, # default False
+    'case_properties': 1, # default 1
+    'sort_properties': False, # default False
+    'sort_selectors': False, # default False
+    'merge_selectors': 0, # default 2, messes things up
+    'discard_invalid_properties': False, # default False
+    'css_level': 'CSS2.1', # default 'CSS2.1'
+    'preserve_css': False, # default False
+    'timestamp': False, # default False
+    'template': 'high_compression', # default 'highest_compression'
+}
+# django-compress JS
+COMPRESS_JS = {
+    'all': {
+        'source_filenames': ('js/jquery-1.4.2.js', 'js/groups/smart.js'),
+        'output_filename': 'js/all.min.js',
+        'extra_context': {},
+        },
+    }
+if not DEBUG:
+    COMPRESS_JS['all']['source_filenames'] = COMPRESS_JS['all']['source_filenames'] + ('js/async_load.js',)
+
+COMPRESS_JS_FILTERS = ('compress.filters.jsmin.JSMinFilter',)
+# On or off?
+COMPRESS = not DEBUG
 
 CACHE_DIR = '/var/cache/molly'
 SRID = 27700
+
+CACHE_BACKEND = 'memcached://localhost:11211/?timeout=60'
 
 FIXTURE_DIRS = [
     os.path.join(project_root, 'fixtures'),
 ]
 
 INTERNAL_IPS = ('127.0.0.1',)  # for the debug_toolbar
+
+SERVER_EMAIL = 'molly@m.ox.ac.uk'
+EMAIL_HOST = 'smtp.ox.ac.uk'

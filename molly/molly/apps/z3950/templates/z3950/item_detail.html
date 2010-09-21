@@ -79,7 +79,7 @@
 
 {% endif %}
 
-    <ul>
+    <ul class="link-list">
 {% for library, books in libraries %}
     {% if library.oxpoints_id %}
             <li><a href="{{ library.oxpoints_entity.get_absolute_url }}">{% if map_hash %}{{ library.marker_number|default_if_none:"Not on map" }}. {% endif %}{{ library.location|join:" - " }}</a></li>
@@ -96,7 +96,7 @@
     {% else %}
         {# Sub item #}
         <li>
-          <a href="{% url z3950:item_holdings_detail control_number,library.location.1 %}">
+          <a href="{% url z3950:item-holdings-detail control_number,library.location.1 %}">
             {{ books|length }} items with availability at most <em>{{ library.availability_display }}</em>
           </a>
     {% endifequal %}
@@ -109,7 +109,7 @@
 {% if stacks %}
 <div class="section">
     <h2>Holdings in stacks</h2>
-    <ul>
+    <ul class="link-list">
 {% for library, books in stacks %}
 {% if library.oxpoints_id %}
         <li><a href="{{ library.oxpoints_entity.get_absolute_url }}">{{ forloop.counter }}. {{ library.location|join:" - " }}</a></li>

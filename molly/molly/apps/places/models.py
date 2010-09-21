@@ -11,6 +11,9 @@ class Source(models.Model):
     name = models.CharField(max_length=128)
     last_updated = models.DateTimeField(auto_now=True)
     
+    def __unicode__(self):
+        return self.name
+    
 IDENTIFIER_SCHEME_PREFERENCE = ('atco', 'oxpoints', 'osm', 'naptan', 'postcode')
 
 class EntityType(models.Model):

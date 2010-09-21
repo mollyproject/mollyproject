@@ -3,32 +3,93 @@
 {% block pagetitle %}Meetings{% endblock %}
 
 {% block content %}
+
 <div class="section">
-    <h2>Available Tutorials</h2>
-<ul>
-{% for id,event in events.items %}
+    <div class="header">
+    <h2>Available Events</h2>
+    </div>
 
-<li {% if forloop.last %}class="round-bottom"{% endif %}><a href="{% url sakai:signup-event site,id %}">
+{% if events %}
 
-{{ event.title }} <small>{{ event.start|oxdate:"%(week)s%(ordinal)s Week %(term_long)s Term" }}</small>
-<br /><small>
-      {% ifequal event.start|date:"dMY" event.end|date:"dMY" %}
-      {# If start and end time are on the same day #}
-        {% ifequal event.start|date:"A" event.end|date:"A"  %}
-            {# If start and end times are both am or pm #}
-            {{ event.start|date:"g:i"|lower }}-{{ event.end|date:"g:iA"|lower }}
-            {{ event.start|date:"D, j F y"}}
-        {% else %}
-            {{ event.start|date:"g:iA"|lower }}-{{ event.end|date:"g:iA"|lower }}
-            {{ event.start|date:"D, j F y"}}
-        {% endifequal %}
-      {% else %}
-      {# Handle the rare occurence that tutorials start and end on different days #}
-        {{ event.start|date:"g:iA"|lower}}{{ event.start|date:"D, j F y" }}-{{ event.end|date:"g:iA"|lower}}{{ event.end|date:"D, j F y" }}
+{% regroup events by start|date:"W" as weeks %}
+<table class="content">
+{% for event in events %}
+
+{% ifchanged event.start|oxdate:"%(week)s%(ordinal)s%(term_long)s" %}
+<tr class="sub-section-divider"><th colspan='3'>
+{{ event.start|oxdate:"%(week)s%(ordinal)s Week %(term_long)s Term" }}
+</th></tr>
+<tr> <td class="center tutorial-date ">
+{% else %}
+<tr><td class="center tutorial-date">
+{% endifchanged %}
+    {% ifequal event.start|date:"dMY" event.end|date:"dMY" %}
+      {# 1. If start and end time are on the same day #}
+
+      <big>{{ event.start|date:"D"}}</big>
+      <br />
+       <small>
+      {# Date - Month #}
+      {{ event.start|date:"j M"}}
+      {# Only show year if start date is not in this year #}
+       {% ifnotequal event.start|date:"Y" now|date:"Y"%}
+         {{ event.start|date:"Y"}}
+       {% endifnotequal %}
+      <br />
+
+      {# Day - Time #}
+
+      {% ifequal event.start|date:"A" event.end|date:"A"  %}
+          {# If start and end times are both am or pm #}
+          {{ event.start|date:"g:i"|lower }}-{{ event.end|date:"g:iA"|lower }}
+          {% else %}
+          {{ event.start|date:"g:iA"|lower }}-{{ event.end|date:"g:iA"|lower }}
       {% endifequal %}
-</small>
-</a></li>
-{% endfor %}
-</ul>
+       </small>
+      {# 1. END #}
+
+    {% else %}
+      {# Handle the rare occurence that tutorials start and end on different days #}
+        {% ifequal event.start|date:"Y" event.end|date:"Y" %}
+            {% ifequal event.start|date:"Y" now|date:"Y" %}
+            {# Event starts this year and finishes this year %}
+                {{ event.start|date:"j M" }}, <small>{{ event.start|date:"g:iA"|lower}}</small>-
+                <br />{{ event.end|date:"j M" }}, <small>{{ event.end|date:"g:iA"|lower}}</small>
+            {% else %}
+            {# Event starts in a different year but finishes in that year too #}
+                {{ event.start|date:"j M y" }}, <small>{{ event.start|date:"g:iA"|lower}}</small>-
+                <br />{{ event.end|date:"j M y" }}, <small>{{ event.end|date:"g:iA"|lower}}</small>
+            {% endifequal %}
+        {% else %}
+            {{ event.start|date:"j M y" }}, <small>{{ event.start|date:"g:iA"|lower}}</small>-
+            <br />{{ event.end|date:"j M y" }}, <small>{{ event.end|date:"g:iA"|lower}}</small>
+        {% endifequal %}
+    {% endifequal %}
+
+    </td>
+    <td>
+        {{ event.title }}
+    </td>
+    {% if 1 or event.permission.update %}
+    <td><div class="button"><a href="{% url sakai:signup-event site,event.id %}">View</a></div></td>
+    {% else %}
+    {% if event.permission.attend %}
+    <td><div class="button"><a href="{% url sakai:signup-event site,event.id %}">Book</a></div></td>
+    {% endif %}
+    {% endif %}
+  </tr> {% endfor %}
+
+
+</table>
+
+{% else %}
+
+<div class="section-content">
+  There are currently no available sign-ups for this site.
+</div>
+
+{% endif %}
+
 </div>
 {% endblock %}
+

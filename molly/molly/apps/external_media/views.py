@@ -20,7 +20,7 @@ class ExternalImageView(BaseView):
 
     def handle_GET(cls, request, context, slug):
         eis = get_object_or_404(ExternalImageSized, slug=slug)
-        response = HttpResponse(open(eis.get_filename(), 'r').read(), mimetype=eis.content_type)
+        response = HttpResponse(open(eis.get_filename(), 'r').read(), mimetype=eis.content_type.encode('ascii'))
         last_updated = pytz.utc.localize(eis.external_image.last_updated)
 
         response['ETag'] = slug

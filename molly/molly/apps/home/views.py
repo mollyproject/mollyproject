@@ -17,10 +17,10 @@ from forms import UserMessageFormSet
 class IndexView(BaseView):
 
     @BreadcrumbFactory
-    def breadcrumb(cls, request, context):
-        return Breadcrumb('home', None, 'Home', lazy_reverse('home:index'))
+    def breadcrumb(self, request, context):
+        return Breadcrumb(self.conf.local_name, None, 'Home', lazy_reverse('index'))
 
-    def handle_GET(cls, request, context):
+    def handle_GET(self, request, context):
         # Check whether the referer header is from the same host as the server
         # is responding as
         try:
@@ -34,14 +34,15 @@ class IndexView(BaseView):
             and not request.session.get('home:desktop_shown', False)
             and not request.GET.get('preview') == 'true'
             and not internal_referer
-            and not settings.DEBUG):
-            return HttpResponseRedirect(reverse('home:exposition'))
+            and not settings.DEBUG
+            and conf.has_app('molly.apps.desktop')):
+            return HttpResponseRedirect(reverse('desktop:index'))
 
         applications = [{
             'application_name': app.application_name,
             'local_name': app.local_name,
             'title': app.title,
-            'url': reverse('%s:index' % app.local_name) if app.urls else None,
+            'url': reverse('%s:index' % app.local_name) if app.has_urlconf else None,
             'display_to_user': app.display_to_user,
         } for app in conf.all_apps()]
 
@@ -49,9 +50,14 @@ class IndexView(BaseView):
             'applications': applications,
             'hide_feedback_link': True,
         }
-        return cls.render(request, context, 'home/index')
+        return self.render(request, context, 'home/index')
 
-    def handle_POST(cls, request, context):
+    def get_metadata(self, request):
+        return {
+            'exclude_from_search': True,
+        }
+
+    def handle_POST(self, request, context):
         no_desktop_about = {'true':True, 'false':False}.get(request.POST.get('no_desktop_about'))
         if not no_desktop_about is None:
             request.session['home:desktop_about_shown'] = no_desktop_about
@@ -60,50 +66,20 @@ class IndexView(BaseView):
 
 class StaticDetailView(BaseView):
     @BreadcrumbFactory
-    def breadcrumb(cls, request, context, title, template):
+    def breadcrumb(self, request, context, title, template):
         return Breadcrumb(
-            'home', None, title,
-            lazy_reverse('home:static', args=[template])
+            self.conf.local_name, None, title,
+            lazy_reverse('static', args=[template])
         )
 
-    def handle_GET(cls, request, context, title, template):
+    def handle_GET(self, request, context, title, template):
         t = loader.get_template('static/%s.html' % template)
 
         context.update({
             'title': title,
             'content': t.render(Context()),
         })
-        return cls.render(request, context, 'home/static_detail')
-
-class ExpositionView(BaseView):
-    def get_metadata(cls, request, page):
-        return {
-            'exclude_from_search': True
-        }
-
-    breadcrumb = NullBreadcrumb
-    cache_page_duration = 60*15
-
-    def handle_GET(cls, request, context, page):
-        page = page or 'about'
-        template = loader.get_template('home/exposition/%s.html' % page)
-
-        if page == 'blog':
-            inner_context = {
-                'articles': BlogArticle.objects.all(),
-            }
-        else:
-            inner_context = {}
-
-        content = template.render(RequestContext(request, inner_context))
-
-        if request.GET.get('ajax') == 'true':
-            return HttpResponse(content)
-        else:
-            return render_to_response('home/exposition/container.html', {
-                'content': content,
-                'page': page,
-            }, context_instance=RequestContext(request))
+        return self.render(request, context, 'home/static_detail')
 
 def handler500(request):
     context = {
@@ -124,13 +100,13 @@ def handler500(request):
 
 class UserMessageView(BaseView):
     @BreadcrumbFactory
-    def breadcrumb(cls, request, context):
+    def breadcrumb(self, request, context):
         return Breadcrumb(
-            'home', None, 'View messages from the developers',
-            lazy_reverse('home:messages')
+            self.conf.local_name, None, 'View messages from the developers',
+            lazy_reverse('messages')
         )
 
-    def initial_context(cls, request):
+    def initial_context(self, request):
         try:
             formset = UserMessageFormSet(
                 request.POST or None,
@@ -149,13 +125,12 @@ class UserMessageView(BaseView):
             'formset': formset,
         }
 
-    def handle_GET(cls, request, context):
+    def handle_GET(self, request, context):
         UserMessage.objects.filter(session_key=request.session.session_key).update(read=True)
-        return cls.render(request, context, 'home/messages')
+        return self.render(request, context, 'home/messages')
 
-    def handle_POST(cls, request, context):
+    def handle_POST(self, request, context):
         if context['formset'].is_valid():
             context['formset'].save()
 
         return HttpResponseRedirect(reverse('home:messages'))
-

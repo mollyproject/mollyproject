@@ -1,5 +1,4 @@
-import simplejson, urllib, random, csv, zipfile
-from StringIO import StringIO
+import simplejson, urllib, random, csv, zipfile, tempfile
 
 from django.contrib.gis.geos import Point
 
@@ -31,19 +30,22 @@ class PostcodesMapsProvider(BaseMapsProvider):
             if hasattr(archive, 'open'):
                 f = archive.open(filename)
             else:
-                f = StringIO(filename)
+                f = tempfile.TemporaryFile()
+                f.write(archive.read(filename))
+                f.seek(0)
             reader = csv.reader(f)
-            
             self._load_from_csv(reader, entity_type, source)
+            del f
 
     def _load_from_csv(self, reader, entity_type, source):
         j = 0
         for i, line in enumerate(reader):
             postcode_abbrev, (easting, northing) = line[0], line[10:12]
-            if postcode_abbrev[3] != ' ':
-                postcode = '%s %s' % (postcode_abbrev[:3], postcode_abbrev[3:])
+            if postcode_abbrev[-4] != ' ':
+                postcode = '%s %s' % (postcode_abbrev[:-3], postcode_abbrev[-3:])
             else:
                 postcode = postcode_abbrev
+            postcode_abbrev = postcode_abbrev.replace(' ', '')
             
             if not (i % 100):
                 print "%7d %7d %s" % (i, j, postcode)
@@ -56,7 +58,7 @@ class PostcodesMapsProvider(BaseMapsProvider):
             j += 1
             
             try:
-                entity = Entity.objects.get(source=source, _identifiers__scheme='postcode-abbrev', _identifiers__value=postcode_abbrev)
+                entity = Entity.objects.get(source=source, _identifiers__scheme='postcode', _identifiers__value=postcode_abbrev)
             except Entity.DoesNotExist:
                 entity = Entity(source=source)
             
@@ -67,9 +69,11 @@ class PostcodesMapsProvider(BaseMapsProvider):
             
             identifiers = {
                 'postcode': postcode_abbrev,
+                'postcode-canonical': postcode,
             }
             entity.save(identifiers=identifiers)
             entity.all_types.add(entity_type)
+            entity.update_all_types_completion()
 
     def _get_entity_type(self):
         try:

@@ -14,11 +14,11 @@ urlpatterns = patterns('',
         'category'),
     (r'^category:(?P<category>[\dA-Z\-a-z]+)/(?P<medium>audio|video)/$',
         CategoryDetailView, {},
-        'category_medium'),
+        'category-medium'),
 
     (r'^itunesu_redirect/$',
         ITunesURedirectView, {},
-        'itunesu_redirect'),
+        'itunesu-redirect'),
 
     (r'^(?P<slug>[a-zA-Z\d_@.\-/]+)/$',
         PodcastDetailView, {},

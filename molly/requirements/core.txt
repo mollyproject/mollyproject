@@ -16,3 +16,5 @@ psycopg2
 PIL
 lxml
 python-ldap
+django-compress
+

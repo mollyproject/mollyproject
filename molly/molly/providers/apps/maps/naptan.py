@@ -166,16 +166,17 @@ class NaptanMapsProvider(BaseMapsProvider):
 
 
     def __init__(self, method, areas=None, username=None, password=None):
-        if not method in ('http', 'ftp',):
-            raise ValueError("mode must be either 'http' or 'ftp'")
-        if (method == 'ftp') == (username is None or password is None):
-            raise ValueError("username and password must be provided iff mode is 'ftp'")
-
         self._username, self._password = username, password
         self._method, self._areas = method, areas
 
     @batch('%d 10 * * mon' % random.randint(0, 59))
     def import_data(self, metadata, output):
+        method, username, password = self._method, self._username, self._password
+        if not method in ('http', 'ftp',):
+            raise ValueError("mode must be either 'http' or 'ftp'")
+        if (method == 'ftp') == (username is None or password is None):
+            raise ValueError("username and password must be provided iff mode is 'ftp'")
+
         self._source = self._get_source()
         self._entity_types = self._get_entity_types()
 
