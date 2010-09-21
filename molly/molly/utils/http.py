@@ -70,7 +70,7 @@ class MediaType(object):
             return 0
 
     def __repr__(self):
-        return "%s(%r, [%f])" % (type(self).__name__, self.value, self.priority)
+        return "%s(%r)" % (type(self).__name__, self.value)
 
     def provides(self, imt):
         """
@@ -100,14 +100,15 @@ class MediaType(object):
             else:
                 eq_classes.append([imt])
 
+        renderers, seen_renderers = [], set()
+
         # For each equivalence class, find the first renderer MediaType that
         # can handle one of its members, and return the renderer.
         for imts in eq_classes:
             for provide_type, renderer in provide:
                 for imt in imts:
-                    if provide_type.provides(imt):
-                        return renderer
-        
-        # If no suitable renderer could be found, raise a ValueError to
-        # signify an HTTP 406 Not Acceptable condition. 
-        raise ValueError
+                    if renderer not in seen_renderers and provide_type.provides(imt):
+                        renderers.append(renderer)
+                        seen_renderers.add(renderer)
+
+        return renderers
