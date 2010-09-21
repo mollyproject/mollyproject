@@ -227,15 +227,16 @@ Supported ranges are:
         context = simplify_value(context)
         return HttpResponse(etree.tostring(serialize_to_xml(context), encoding='UTF-8'), mimetype="application/xml")
 
-    @renderer(format="yaml", mimetypes=('application/x-yaml',), priority=-1)
-    def render_yaml(self, request, context, template_name):
-        try:
+    # We don't want to depend on YAML. If it's there offer it as a renderer, otherwise ignore it.
+    try:
+        __import__('yaml') # Try importing, but don't stick the result in locals.
+        @renderer(format="yaml", mimetypes=('application/x-yaml',), priority=-1)
+        def render_yaml(self, request, context, template_name):
             import yaml
-        except ImportError:
-            raise NotImplementedError
-
-        context = simplify_value(context)
-        return HttpResponse(yaml.safe_dump(context), mimetype="application/x-yaml")
+            context = simplify_value(context)
+            return HttpResponse(yaml.safe_dump(context), mimetype="application/x-yaml")
+    except ImportError, e:
+        pass
 
     @renderer(format="fragment")
     def render_fragment(self, request, context, template_name):
