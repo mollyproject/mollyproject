@@ -227,7 +227,7 @@ Supported ranges are:
         context = simplify_value(context)
         return HttpResponse(etree.tostring(serialize_to_xml(context), encoding='UTF-8'), mimetype="application/xml")
 
-    @renderer(format="yaml", mimetypes=('application/x-yaml',))
+    @renderer(format="yaml", mimetypes=('application/x-yaml',), priority=-1)
     def render_yaml(self, request, context, template_name):
         try:
             import yaml
