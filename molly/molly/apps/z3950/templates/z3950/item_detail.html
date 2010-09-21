@@ -96,7 +96,7 @@
     {% else %}
         {# Sub item #}
         <li>
-          <a href="{% url z3950:item_holdings_detail control_number,library.location.1 %}">
+          <a href="{% url z3950:item-holdings-detail control_number,library.location.1 %}">
             {{ books|length }} items with availability at most <em>{{ library.availability_display }}</em>
           </a>
     {% endifequal %}

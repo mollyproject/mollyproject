@@ -23,7 +23,10 @@ class IndexView(BaseView):
             elif IndexView in getattr(view, '__mro__', ()):
                 view_context = None
             else:
-                view_context = view.initial_context(request, *view_args, **view_kwargs)
+                try:
+                    view_context = view.initial_context(request, *view_args, **view_kwargs)
+                except Exception, e:
+                    view_context = None
 
         except (KeyError, ):
             raise Http404
@@ -41,7 +44,7 @@ class IndexView(BaseView):
         view, view_context = context['view'], context['view_context']
         view_args, view_kwargs = context['view_args'], context['view_kwargs']
 
-        if IndexView in getattr(context['view'], '__mro__', ()):
+        if not isinstance(context['view'], BaseView):
             return None
 
         if view_context:

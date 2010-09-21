@@ -41,7 +41,7 @@ class IndexView(BaseView):
 
     @BreadcrumbFactory
     def breadcrumb(cls, request, context):
-        return Breadcrumb(cls.conf.local_name, None, 'Library search', lazy_reverse('z3950:index'))
+        return Breadcrumb(cls.conf.local_name, None, 'Library search', lazy_reverse('index'))
 
     def handle_GET(cls, request, context):
         return cls.render(request, context, 'z3950/index')
@@ -62,9 +62,9 @@ class SearchDetailView(BaseView):
         x = 'item' in context or context['search_form'].is_valid()
         return Breadcrumb(
             cls.conf.local_name,
-            lazy_parent(IndexView),
+            lazy_parent('index'),
             'Search results' if x else 'Library search',
-            lazy_reverse('z3950:search'),
+            lazy_reverse('search'),
         )
 
     class InconsistentQuery(ValueError):
@@ -181,9 +181,9 @@ class ItemDetailView(BaseView):
     def breadcrumb(cls, request, context, control_number):
         return Breadcrumb(
             cls.conf.local_name,
-            lazy_parent(SearchDetailView),
+            lazy_parent('search'),
             'Search result',
-            lazy_reverse('z3950:item_detail', args=[control_number]),
+            lazy_reverse('item-detail', args=[control_number]),
         )
 
     def handle_GET(cls, request, context, control_number):
@@ -305,9 +305,9 @@ class ItemHoldingsView(BaseView):
     def breadcrumb(cls, request, context, control_number, sublocation):
         return Breadcrumb(
             cls.conf.local_name,
-            lazy_parent(ItemDetailView, control_number=control_number),
+            lazy_parent('item-detail', control_number=control_number),
             'Item holdings information',
-            lazy_reverse('z3950:item_holdings_detail', args=[control_number,sublocation]),
+            lazy_reverse('item-holdings-detail', args=[control_number,sublocation]),
         )
 
     def handle_GET(cls, request, context, control_number, sublocation):

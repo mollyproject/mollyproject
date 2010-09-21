@@ -5,7 +5,7 @@ from views import (
     ItemDetailView, ItemHoldingsView,
 )
 
-urlpatterns = patterns('mobile_portal.z3950.views',
+urlpatterns = patterns('',
     (r'^$',
         IndexView, {},
         'index'),
@@ -15,8 +15,8 @@ urlpatterns = patterns('mobile_portal.z3950.views',
 
     (r'^item:(?P<control_number>\d{8})/$',
         ItemDetailView, {},
-        'item_detail'),
+        'item-detail'),
     (r'^item:(?P<control_number>\d{8})/(?P<sublocation>.+)/$',
         ItemHoldingsView, {},
-        'item_holdings_detail'),
+        'item-holdings-detail'),
 )

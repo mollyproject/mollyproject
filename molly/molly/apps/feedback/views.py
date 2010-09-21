@@ -14,8 +14,8 @@ class IndexView(BaseView):
     @BreadcrumbFactory
     def breadcrumb(cls, request, context):
         return Breadcrumb(
-            'home', None, 'Feedback',
-            lazy_reverse('feedback')
+            cls.conf.local_name, None, 'Feedback',
+            lazy_reverse('index')
         )
 
     def initial_context(cls, request):

@@ -18,7 +18,7 @@ class IndexView(BaseView):
     @BreadcrumbFactory
     def breadcrumb(cls, request, context):
         return Breadcrumb(
-            cls.conf.local_name, None, 'News', lazy_reverse('news:index')
+            cls.conf.local_name, None, 'News', lazy_reverse('index')
         )
         
     def handle_GET(cls, request, context):
@@ -41,9 +41,9 @@ class ItemListView(BaseView):
     def breadcrumb(cls, request, context, slug):
         return Breadcrumb(
             cls.conf.local_name,
-            lazy_parent(IndexView),
+            lazy_parent('index'),
             'News feed',
-            lazy_reverse('news:item_list', args=[slug])
+            lazy_reverse('item-list', args=[slug])
         )
         
     def handle_GET(cls, request, context, slug):
@@ -66,9 +66,9 @@ class ItemDetailView(BaseView):
     def breadcrumb(cls, request, context, slug, id):
         return Breadcrumb(
             cls.conf.local_name,
-            lazy_parent(ItemListView, slug=slug),
+            lazy_parent('item-list', slug=slug),
             'News item',
-            lazy_reverse('news:item_detail', args=[slug,id])
+            lazy_reverse('item-detail', args=[slug,id])
         )
         
     def handle_GET(cls, request, context, slug, id):

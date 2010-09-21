@@ -67,9 +67,9 @@ class Feed(models.Model):
         
     def get_absolute_url(self):
         if self.ptype == 'n':
-            return reverse('news:item_list', args=[self.slug])
+            return reverse('news:item-list', args=[self.slug])
         else:
-            return reverse('events:item_list', args=[self.slug])
+            return reverse('events:item-list', args=[self.slug])
         
     class Meta:
         ordering = ('title',)
