@@ -1,0 +1,48 @@
+{% extends "podcasts/base.html" %}
+
+{% block breadcrumbs %}
+{{ block.super }}
+            <li><a href="{% url podcasts_index %}">
+                <img src="{{ MEDIA_URL }}png/index-icons/podcasts-bc.png" alt="Podcasts"/>
+            </a></li>
+{% if podcast.category %}
+    <li><a href="{{ podcast.category.get_absolute_url }}">...</a></li>
+{% endif %}
+{% endblock %}
+
+{% block pagetitle %}Podcast{% endblock %}
+{% block title %}m.ox | {{ podcast.title }}{% endblock %}
+
+
+{% block extrahead %}
+<link href="{{ podcast.rss_url }}?destination=moxacuk" type="application/rss+xml" rel="alternate" title="Podcast RSS feed" />
+{% endblock %}
+
+{% block content %}
+
+<div class="section">
+    <h2>{{ podcast.title }}</h2>
+    
+    <div class="article"><div class="bubble pad-10">{{ podcast.description|safe }}</div></div>
+
+<ul>
+{% for item in items %}
+    
+    <li {% if forloop.parentloop.last %}class="round-bottom"{% endif %}>
+    <h3>{{ item.title }}</h3>
+    <small>{{ item.description|safe }}<br />
+    {% if item.duration %}{{ item.duration }}{% endif %}
+    {{ item.published_date|date:"j M Y" }}<br />
+{% for enc in item.podcastenclosure_set.all %}
+<a href="{{ enc.url }}">
+                {{ enc.get_mimetype_display|capfirst }}
+                {{ enc.length|filesizeformat }}
+</a>
+{% endfor %}
+    </small>        </li>
+
+{% endfor %}
+</ul>
+</div>
+
+{% endblock %}

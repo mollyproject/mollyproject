@@ -89,7 +89,11 @@ def main(source_path, deploy_path):
                 return_code = 1
                 traceback.print_exc(file=stderr_log)
         else:
-            return_code = subprocess.call(command, stdout=stdout_log, stderr=stderr_log)
+            try:
+                return_code = subprocess.call(command, stdout=stdout_log, stderr=stderr_log)
+            except OSError, e:
+                print "\n", ("No such shell command: %r" % command[0]).ljust(61),
+                return_code = 1
         print "[%s]" % ('FAILED' if return_code else '  OK  ')
         succeeded = succeeded and (return_code == 0)
 
