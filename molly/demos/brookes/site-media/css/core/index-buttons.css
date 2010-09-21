@@ -1,0 +1,62 @@
+ol.icon-menu {
+    list-style:none;
+    margin-top:0;
+    padding:0;
+    padding-bottom:6px;
+}
+
+ol.icon-menu li {
+    display:inline-block;
+    margin-left:0px;
+    margin-top:0px;
+    background-repeat:no-repeat;
+    background-position:center 10px;
+    overflow:hidden;
+}
+
+ol.icon-menu li a {
+    width:60px;
+    height:2em;
+    padding:4px;
+    padding-top:75px;
+    text-align:center;
+    display:block;
+    text-decoration:none;
+}
+
+li#menu-contact {
+    background-image:url('../../png/index-icons/contact.png');
+}
+
+li#menu-olis {
+    background-image:url('../../png/index-icons/podcasts.png');
+}
+
+li#menu-maps {
+    background-image:url('../../png/index-icons/maps.png');
+}
+
+li#menu-podcasts {
+    background-image:url('../../png/index-icons/podcasts.png');
+}
+
+li#menu-webcams {
+    background-image:url('../../png/index-icons/webcams.png');
+}
+
+li#menu-rss {
+    background-image:url('../../png/index-icons/rss.png');
+}
+
+li#menu-results {
+    background-image:url('../../png/index-icons/results.png');
+}
+
+li#menu-z3950 {
+    background-image:url('../../png/index-icons/z3950.png');
+}
+
+li#menu-weather {
+    background-image:url('../../png/index-icons/weather.png');
+}
+

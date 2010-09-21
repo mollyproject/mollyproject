@@ -1,0 +1,554 @@
+/* Results Releases */
+dl#results {
+    font-size: 1.2em;
+
+    margin:10px;
+    padding: 10px;
+    -webkit-border-radius:8px;
+    -moz-border-radius: 8px;
+    border-radius: 8px;    
+    
+    background:#B88C54 url('../../png/new/gradients/gradient-50-nrWhite-Transparent.png') repeat-x;
+    
+    background:-webkit-gradient(linear, left top, right top, from(#B88C54), to(#E0C792));
+    background:-moz-linear-gradient(top, #B88C54, #E0C792);
+    background:linear-gradient(top, #B88C54, #E0C792);
+    
+    -moz-box-shadow: 2px 2px 2px #333; -webkit-box-shadow: 2px 2px 2px #333; box-shadow: 2px 2px 2px #333;
+
+}
+
+dl#results dt {
+    color: #fff;
+    background: #002B4C;
+    background:-webkit-gradient(linear, left top, right top, from(#002B4C), to(rgba(0,145,245,0.2)));
+    
+    padding: 3px;
+    margin: 8px 0;
+	text-shadow: 1px 1px 0px #111;    
+}
+
+dl#results dd {
+    color: #111;
+    margin: 2px 0 2px 20px;
+    border-bottom: 1px solid #E0C792;
+    text-shadow: 1px 1px 1px #999;
+}
+
+dl#results dd.no-border {border: 0;}
+/* Results Releases */
+
+
+body {
+    background:#bbc4ce url('../../png/new/gradients/backdrop-iphone.png') repeat-x top;
+
+    font-family: "Liberation Sans", sans-serif;
+    font-size:9pt;
+    
+    -webkit-text-size-adjust: none;
+    
+    text-align: left;
+    margin: 0; 
+}
+
+
+
+/* Index Page Specific 
+    - 1 CSS 2.1 Selector
+    - 4 Webkit Only Tags
+    -- Written in order of use on index.html
+*/
+div#index-header {
+    width:100%;
+    height:51px;
+}
+div#index-title {
+    position:absolute;
+    top:0;
+    left:0;
+}
+div#index-search {
+    position:absolute;
+    top: 0;
+    right:5px;
+}
+/* CSS 2.1 selector */
+div#index-search input[type="text"] {
+    float: left;
+    /* Total height - 27px inc 2px border + 1px padding: does not correspond with 34px high search button, but displays correctly on iphone */
+    height: 24px;
+    width: 125px;
+    font-size:1.2em;
+    border: 2px solid #dddddd;
+    -webkit-border-top-left-radius: 5px; -webkit-border-bottom-left-radius: 5px; -webkit-border-top-right-radius:0; -webkit-border-bottom-right-radius:0;
+    -moz-border-radius-topleft: 5px; -moz-border-radius-bottomleft: 5px; -moz-border-radius-topright: 0px; -moz-border-radius-bottomright: 0px;
+    background: #fff;
+    border-top-left-radius: 5px; border-bottom-left-radius: 5px; border-top-right-radius:0; border-bottom-right-radius:0;
+}
+
+/* icon-menu & menu-x handles the menu icons on the front page 
+    - this section would ideally be rewritten to handle a little more gracefully on varied sizes of screens */
+ol.icon-menu {
+    list-style:none;
+    margin: 0;
+    padding:5px;
+}
+ol.icon-menu li {
+    display:inline-block;
+    background-repeat:no-repeat;
+    background-position:center 10px;
+    vertical-align:top;
+}
+ol.icon-menu li a {
+    width: 60px;
+    height:2em;
+    padding:4px;
+    padding-top: 75px;
+    text-align:center;
+    display:block;
+    text-decoration:none;
+    color: #002147;
+}
+li#menu-contact {background-image:url('../../png/index-icons/contact.png');}
+li#menu-places {background-image:url('../../png/index-icons/places.png');}
+li#menu-podcasts {background-image:url('../../png/index-icons/podcasts.png');}
+li#menu-webcams {background-image:url('../../png/index-icons/webcams.png');}
+li#menu-news {background-image:url('../../png/index-icons/news.png');}
+li#menu-events {background-image:url('../../png/index-icons/events.png');}
+li#menu-results {background-image:url('../../png/index-icons/results.png');}
+li#menu-library {background-image:url('../../png/index-icons/library.png');}
+li#menu-weather {background-image:url('../../png/index-icons/weather.png');}
+li#menu-weblearn {background-image:url('../../png/index-icons/weblearn.png');}
+li#menu-service_status {background-image:url('../../png/index-icons/service_status.png');}
+/* End Index Page Specific */
+
+
+
+
+
+/* Breadcrumb Trail Styles */
+div#bc-header {
+    height:34px;
+    width: 100%;
+    background:url('../../png/new/gradients/bc-gradient.png') repeat-x top;
+    overflow:hidden;
+}
+ol#bc {
+    list-style:none;
+    padding:0; margin:0;
+    display:block;
+}
+ol#bc li {
+    background-image:url('../../png/sep.png');
+    background-repeat:no-repeat;
+    background-position: center right;
+    padding-right: 10px;
+    padding-left:0px;
+    display:block;
+    float:left;
+    height:30px;
+    line-height:30px;
+    overflow:hidden;
+    -webkit-border-radius: 13px;
+    -moz-border-radius: 13px;
+    border-radius: 13px;
+}
+ol#bc li a {
+    font-size:12pt;
+    vertical-align: top;
+    color: #ffffff;
+    text-decoration:none;
+}
+ol#bc img {
+    border:0;
+}
+
+div#bc-title {
+    overflow:hidden;
+}
+
+div#bc-title h1 {
+    margin: 0;
+    line-height:30px;
+    padding-top: 0px;
+    float:left;
+    font-size:12pt;
+    text-align:left;
+    color:#ffffff;
+    white-space: nowrap;
+}
+div#bc-title h1.with-icon {
+    background-repeat: no-repeat;
+    background-position: left center;
+    padding-left: 34px; /* Moves text to allow background breadcrumb image to coexist */
+}
+div#bc-title h1.places-header {     background-image:url('../../png/index-icons/places-bc.png');}
+div#bc-title h1.contact-header {  background-image:url('../../png/index-icons/contact-bc.png');}
+div#bc-title h1.webcams-header {  background-image:url('../../png/index-icons/webcams-bc.png');}
+div#bc-title h1.podcasts-header { background-image:url('../../png/index-icons/podcasts-bc.png');}
+div#bc-title h1.results-header {  background-image:url('../../png/index-icons/results-bc.png');}
+div#bc-title h1.library-header {    background-image:url('../../png/index-icons/library-bc.png');}
+div#bc-title h1.news-header {      background-image:url('../../png/index-icons/news-bc.png');}
+div#bc-title h1.events-header {      background-image:url('../../png/index-icons/events-bc.png');}
+div#bc-title h1.weather-header {  background-image:url('../../png/index-icons/weather-bc.png');}
+div#bc-title h1.service_status-header {  background-image:url('../../png/index-icons/service_status-bc.png');}
+div#bc-title h1.weblearn-header {  background-image:url('../../png/index-icons/weblearn-bc.png');}
+/* End Breadcrumb Trail Styles */
+
+
+
+
+/* Standard List Styles */
+ul, ol.search-results {
+    list-style: none;
+    padding: 0; margin: 0;
+}
+ul.stand-alone {
+    margin: 10px;
+}
+ul li, ol.search-results li {
+    font-size:12pt;
+    color:#ffffff;
+    border-top:1px solid #98a1ac;
+    background-color:#002B4C;
+    padding: 10px;
+    display:block;
+}
+ul li a, ol.search-results li a {
+    color:#ffffff;
+    text-decoration:none;
+    display:block;
+    
+    padding-right: 20px; /* Moves background image (ul li a) away from edge */
+    text-align: left;
+    background-position: right center;
+    background-repeat: no-repeat;
+    background-image:url('../../png/icons/list-arrow.png'); /* Default background image */
+}
+ul li span {
+    background-position: left;
+    background-repeat: no-repeat;
+    display:block;
+    padding-left: 25px;
+}
+
+    /* Background images primarily for list items */
+.phone {background-image:url('../../png/icons/list-phone.png');}
+.email {background-image:url('../../png/icons/list-email.png');}
+.external {background-image:url('../../png/icons/list-external.png');}
+.external-mobile {background-image:url('../../png/icons/list-external-mobile.png');}
+.audio {background-image:url('../../png/icons/list-audio.png');}
+.video {background-image:url('../../png/icons/list-video.png');}
+    /* End background images for list items */
+/* End Standard List Styles */
+
+
+
+
+
+
+/* Webcams/Maps Display */
+div.backgrounded-image {
+    background-repeat:no-repeat;
+    background-position: center center;
+    position: relative;
+}
+a.zoom-out, a.zoom-in {
+    padding: 5px;
+    display: block;
+}
+a.zoom-out {float: left;}
+a.zoom-in {float: right;}
+a.zoom-out img, a.zoom-in img { border:0 ;}
+div.osm-license {
+    position: absolute;
+    top: auto;
+    right: 0;
+    bottom: 0;
+    font-size: 8pt;
+    text-align:right;
+    padding: 2px;
+    background: #ffffff;
+    background-opacity: 0.5;
+}
+/* End Webcams/Maps */
+
+/* News Articles */
+div.article {
+    text-align:left;
+    color: #000000;
+    font-size:10pt;
+    margin: 0;
+    padding: 2px;
+}
+/* End News Articles */
+
+
+/* Weather */
+div.weather-icon {
+    display:inline-block;
+    width: 128px;
+    vertical-align:top;
+}
+div.weather-live-info {
+    display:inline-block;
+    vertical-align: top;
+    width: 150px;
+}
+div.weather-live-info ul {
+    list-style: none;
+    padding: 0; margin: 0;
+}
+div.weather-live-info li {
+    background: none;
+    border: none;
+    padding: 0;
+    text-align:left;
+    font-size:10pt;
+    color:#ffffff;
+    display:block;
+}
+table.weather-forecast {
+    padding: 20px;
+    width: 100%;
+    color:#ffffff;
+}
+/* End Weather */
+
+/* Library Search */
+div#library-search ul li{
+    border: none;
+    padding: 5px 0;
+    text-align:center;
+    font-size:10pt;
+    display:block;
+    background: none;
+}
+/* End Library */
+
+/* Forms/Search */
+div.form {
+    text-align: center;
+    padding:5px; margin: 0;
+}
+div.form input#id_query {
+    width:90%;
+    font-size: 1.4em;
+    height: 1.4em;
+}
+
+div.form input#id_email {
+    width:90%;
+    font-size: 1.4em;
+    height: 1.4em;
+}
+
+div.form textarea#id_body {
+    width:90%;
+    font-size: 1.4em;
+    font-size: 1.4em;
+}
+    /* CSS 2.1 */
+div.form button[type="submit"] {
+    min-width: 80px ;
+    font-size: 1.3em;
+    min-height: 1.3em; 
+}
+/* End Forms/Search */
+
+
+/* New Standard Search Form */
+
+table.search {
+    padding: 0 10px;
+    width:100%;
+}
+table tbody td {padding: 0; margin: 0;}
+table tbody tr {padding: 0; margin: 0;}
+
+/* CSS 2.1 selector */
+table.search * input[type="text"] {
+    float:left;
+    width:100%;
+    height:30px;
+    border:0;
+    padding: 2px 0 2px 2px;
+    margin: 0;
+    font-size: 20px;
+    -webkit-border-top-left-radius: 5px; -webkit-border-bottom-left-radius: 5px;
+    -webkit-border-top-right-radius:0; -webkit-border-bottom-right-radius:0;
+    -moz-border-radius-topleft: 5px; -moz-border-radius-bottomleft: 5px;
+    -moz-border-radius-topright: 0px; -moz-border-radius-bottomright: 0px;
+
+}
+
+/* CSS 2.1 selector */
+table.search * input[type="image"] {
+    position: relative;
+    margin:0; padding:0;
+    border:0;
+    float:left;
+}
+/* End New Standard Search Form */
+
+
+
+/* OUCS Status */
+ul.service-status li {
+    background: #121C28;
+    background-position:10px center;
+    background-repeat:no-repeat;
+    border:none;
+    padding-left:25px;
+}
+ul.service-status li.service-status-up { background-image:url('../../png/icons/service-up.png'); background-color: #102821;}
+ul.service-status li.service-status-partial { background-image:url('../../png/icons/service-partial.png'); background-color: #272810;}
+ul.service-status li.service-status-unknown { background-image:url('../../png/icons/service-unknown.png'); background-color: #101b28;}
+ul.service-status li.service-status-down { background-image:url('../../png/icons/service-down.png'); background-color: #281010;}
+span.service-status, span.service-detail { font-size:90%; }
+span.service-detail { font-style:italic; }
+/* End OUCS Status */
+
+
+
+/* Help Bubble */
+.help-bubble {
+    position:relative;
+    padding:6px;
+    margin:1em 0.5em 1em;
+    color:#000;
+    background:#dfdfdf;
+    width:auto;
+    
+    -moz-border-radius:10px; -webkit-border-radius:10px; border-radius:10px;
+    
+    background:-webkit-gradient(linear, left top, left bottom, from(#dfdfdf), to(#fff));
+    background:-moz-linear-gradient(top, #dfdfdf, #fff);
+    background:linear-gradient(top, #dfdfdf, #fff);
+    
+    -moz-box-shadow: 2px 2px 2px #333; -webkit-box-shadow: 2px 2px 2px #333; box-shadow: 2px 2px 2px #333;
+}
+
+.help-bubble:after {
+    content:"\00a0";
+    display:block;
+    position:absolute;
+    z-index:-1;
+    top:-30px; /* value = - border-top-width - border-bottom-width */
+    left:40px; /* controls horizontal position */    
+    width:0;
+    height:0;
+    border-width:18px 18px; /* vary these values to change the angle of the vertex */
+    border-style:solid;
+    border-color:#dfdfdf transparent transparent;
+    bottom:auto;
+	left:auto;
+	border-color:transparent transparent #dfdfdf;
+}
+/* End Help Bubble */
+
+
+/* RTI */
+table.real-time-information {
+    width: 100%;
+    background: #121C28;
+    color: #FFBF00;
+    border: 2px solid #FFBF00;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    border-radius: 8px;
+
+    padding: 2px 0;
+}
+
+table.real-time-information tr {
+
+    border-collapse: collapse;
+    border-top: 1px solid #FFBF00;
+}
+/* End RTI */
+
+
+
+/* Input Buttons */
+button, input[type="submit"], input[type="reset"] {
+    display: inline-block;
+        color: #fff;
+    	background: #838791 url(../../png/new/buttons/btn.bg.png) repeat-x 0px 0px;
+    	padding:5px 10px 6px 10px;
+    	font-weight:bold;
+    	text-shadow: 1px 1px 1px #111;
+    	border:1px solid rgba(0,0,0,0.4);
+    	-moz-border-radius: 5px;
+    	-moz-box-shadow: 0px 0px 2px rgba(0,0,0,0.5);
+    	-webkit-border-radius: 5px;
+    	-webkit-box-shadow: 0px 0px 2px rgba(0,0,0,0.5);
+}
+/* END Input Buttons */
+
+
+/*** Generic ***/
+
+.invisible {display:none;}
+.center {text-align:center;}
+
+div.section {
+    background:#B88C54 url('../../png/new/gradients/gradient-50-nrWhite-Transparent.png') repeat-x;
+    margin:10px;
+    -webkit-border-radius:8px;
+    -moz-border-radius: 8px;
+    border-radius: 8px;
+    
+    -moz-box-shadow: 2px 2px 2px #333; -webkit-box-shadow: 2px 2px 2px #333; box-shadow: 2px 2px 2px #333;
+}
+h2 {
+    text-align:center;
+    color:white;
+    padding: 5px 0; margin: 0;
+}
+
+h3 {
+    color:white;
+    padding: 5px 5px; margin: 0;
+    text-align: center;
+}
+
+div.bubble {
+    color:#002147;
+    background-color:#ffffff;
+    padding: 0;
+    margin: 10px;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    border-radius: 8px;
+}
+
+div.note {
+    text-align:center;
+    padding: 5px;
+    font-size: 12pt;
+}
+div.note a{
+    color: #002B4C;;
+}
+
+.round-top {
+    -webkit-border-top-left-radius: 8px;
+    -webkit-border-top-right-radius: 8px;
+    -moz-border-radius-topleft: 8px;
+    -moz-border-radius-topright: 8px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    border-top: 0;
+}
+.round-bottom {
+    -webkit-border-bottom-left-radius: 8px;
+    -webkit-border-bottom-right-radius: 8px;
+    -moz-border-radius-bottomleft: 8px;
+    -moz-border-radius-bottomright: 8px;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+div.pad-10{padding: 10px;}
+div.pad-5 {padding:5px;}
+/* End Generic */
