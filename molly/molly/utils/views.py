@@ -159,7 +159,10 @@ class BaseView(object):
 
         if 'format' in request.REQUEST:
             formats = request.REQUEST['format'].split(',')
-            renderers = [self.FORMATS[format] for format in formats if format in self.FORMATS]
+            renderers, seen_formats = [], set()
+            for format in formats:
+                if format in self.FORMATS and format not in seen_formats:
+                    renderers.append(self.FORMATS[format])
         elif request.META.get('HTTP_ACCEPT'):
             accepts = self.parse_accept_header(request.META['HTTP_ACCEPT'])
             renderers = MediaType.resolve(accepts, self.FORMATS_BY_MIMETYPE)
