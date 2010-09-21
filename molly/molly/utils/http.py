@@ -9,7 +9,7 @@ class MediaType(object):
     """
     Represents a parsed internet media type.
     """
-    
+
     _MEDIA_TYPE_RE = re.compile(r'(\*/\*)|(?P<type>[^/]+)/(\*|((?P<subsubtype>[^+]+)\+)?(?P<subtype>.+))')    
     def __init__(self, value, priority=0):
         value = unicode(value).strip()
@@ -20,21 +20,21 @@ class MediaType(object):
         if not mt:
             raise ValueError("Not a correctly formatted internet media type (%r)" % media_type)
         mt = mt.groupdict()
-        
+
         try:
             self.quality = float(params.pop('q', 1))
         except ValueError:
             self.quality = 1
-            
+
         self.type = mt.get('type'), mt.get('subtype'), mt.get('subsubtype')
         self.specifity = len([t for t in self.type if t])
         self.params = params
         self.value = value
         self.priority = priority
-    
+
     def __unicode__(self):
         return self.value
-    
+
     def __gt__(self, other):
         if self.quality != other.quality:
             return self.quality > other.quality
@@ -50,7 +50,7 @@ class MediaType(object):
     
     def __lt__(self, other):
         return other > self
-    
+
     def __eq__(self, other):
         return self.quality == other.quality and self.type == other.type and self.params == other.params
     def __ne__(self, other):
@@ -60,7 +60,7 @@ class MediaType(object):
         Returns whether two MediaTypes have the same overall specifity.
         """
         return not (self > other or self < other)
-    
+
     def __cmp__(self, other):
         if self > other:
             return 1
@@ -71,7 +71,7 @@ class MediaType(object):
 
     def __repr__(self):
         return "%s(%r, [%f])" % (type(self).__name__, self.value, self.priority)
-    
+
     def provides(self, imt):
         """
         Returns True iff the self is at least as specific as other.
@@ -86,12 +86,12 @@ class MediaType(object):
     def resolve(cls, accept, provide):
         """
         Resolves a list of accepted MediaTypes and available renderers to the preferred renderer.
-        
+
         Call as MediaType.resolve([MediaType], [(MediaType, renderer)]).
         """
         accept.sort()
         eq_classes, accept = [[accept[-1]]], accept[:-1]
-        
+
         # Group the accepted types into equivalence classes
         while accept:
             imt = accept.pop()
