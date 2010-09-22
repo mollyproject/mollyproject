@@ -43,7 +43,7 @@
             "url": "http://erewhon-axis-206.oucs.ox.ac.uk/jpg/image.jpg",
             "fetch_period": 1,
             "title": "Banbury Road Webcam",
-            "description": "Looking out of OUCS over Banbury Road",
+            "description": "Looking out of OUCS over Banbury Road.",
             "credit": "&copy; Oxford University Computing Services"
         }
     },
@@ -60,6 +60,18 @@
         }
     },
     {
+        "pk": "6",
+        "model": "webcams.Webcam",
+        "fields": {
+            "slug": "radcliffe-observatory-quarter",
+            "url": "http://roq.some.ox.ac.uk/wp-content/gallery/webcam01/image.jpg",
+            "fetch_period": 1,
+            "title": "Somerville College ROQ",
+            "description": "Overlooking the construction of the new Radcliffe Observatory Quarter.",
+            "credit": "&copy; Somerville College"
+        }
+    },
+    {
         "pk": "1",
         "model": "feeds.Feed",
         "fields": {
@@ -67,19 +79,6 @@
             "unit": "oucs",
             "rss_url": "http://www.oucs.ox.ac.uk/rss/news.rss",
             "slug": "oucs-news",
-            "ptype": "n",
-            "provider": "molly.providers.apps.feeds.RSSFeedsProvider"
-        }
-    },
-    {
-        "pk": 4,
-        "model": "feeds.Feed",
-        "fields":
-        {
-            "rss_url": "http://www.keble.ox.ac.uk/news/RSS",
-            "title": "Keble College news",
-            "slug": "keble",
-            "unit": "kebl",
             "ptype": "n",
             "provider": "molly.providers.apps.feeds.RSSFeedsProvider"
         }

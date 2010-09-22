@@ -23,7 +23,7 @@ class IndexView(BaseView):
             'weather',
             None,
             'Weather',
-            lazy_reverse('weather:index'),
+            lazy_reverse('index'),
         )
 
     def handle_GET(cls, request, context):

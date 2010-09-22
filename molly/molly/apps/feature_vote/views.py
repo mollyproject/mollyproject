@@ -31,7 +31,7 @@ class IndexView(BaseView):
             cls.conf.local_name,
             None,
             'Feature suggestions',
-            lazy_reverse('feature_vote:index'),
+            lazy_reverse('index'),
         )
 
     def initial_context(cls, request):
@@ -100,9 +100,9 @@ class FeatureDetailView(BaseView):
     def breadcrumb(cls, request, context, id):
         return Breadcrumb(
             cls.conf.local_name,
-            lazy_parent(IndexView),
+            lazy_parent('index'),
             context['feature'].title,
-            lazy_reverse('feature_vote:feature-detail'),
+            lazy_reverse('feature-detail'),
         )
 
     def initial_context(cls, request, id):
