@@ -1,5 +1,5 @@
 from inspect import isfunction
-import logging
+import logging, itertools
 from datetime import datetime, date
 
 import simplejson
@@ -155,39 +155,41 @@ class BaseView(object):
         return zoom
 
     def render(self, request, context, template_name):
-        if request.REQUEST.get('format') in self.FORMATS:
-            renderer = self.FORMATS[request.REQUEST['format']]
-        elif 'format' in request.REQUEST:
-            return self.not_acceptable(request)
-        #elif request.is_ajax():
-        #    renderer = self.FORMATS['json']
+        context.pop('exposes_user_data', None)
+
+        if 'format' in request.REQUEST:
+            formats = request.REQUEST['format'].split(',')
+            renderers, seen_formats = [], set()
+            for format in formats:
+                if format in self.FORMATS and format not in seen_formats:
+                    renderers.append(self.FORMATS[format])
         elif request.META.get('HTTP_ACCEPT'):
             accepts = self.parse_accept_header(request.META['HTTP_ACCEPT'])
-            try:
-                renderer = MediaType.resolve(accepts, self.FORMATS_BY_MIMETYPE)
-            except ValueError:
-                response = HttpResponse("""\
-Your Accept header didn't contain any supported media ranges.
-
-Supported ranges are:
-
- * %s\n""" % '\n * '.join(f for f in self.FORMATS), mimetype="text/plain" )
-                response.status_code = 406 # Not Acceptable
-                return response
+            renderers = MediaType.resolve(accepts, self.FORMATS_BY_MIMETYPE)
         else:
-            renderer = self.FORMATS['html']
+            renderers = [self.FORMATS['html']]
 
         # Stop external sites from grabbing JSON representations of pages
         # which contain sensitive user information.
         offsite_referrer = 'HTTP_REFERER' in request.META and request.META['HTTP_REFERER'].split('/')[2] != request.META.get('HTTP_HOST')
-        if renderer.format != 'html' and context.get('exposes_user_data') and offsite_referrer:
-            return HttpResponseForbidden("This page cannot be requested with an off-site Referer", mimetype="text/plain")
-        context.pop('exposes_user_data', None)
 
-        try:
-            return renderer(request, context, template_name)
-        except NotImplementedError:
-            return self.not_acceptable(request)
+        for renderer in renderers:
+            if renderer.format != 'html' and context.get('exposes_user_data') and offsite_referrer:
+                continue
+            try:
+                return renderer(request, context, template_name)
+            except NotImplementedError:
+                continue
+        else:
+            tried_mimetypes = list(itertools.chain(*[r.mimetypes for r in renderers]))
+            response = HttpResponse("""\
+Your Accept header didn't contain any supported media ranges.
+
+Supported ranges are:
+
+ * %s\n""" % '\n * '.join(sorted('%s (%s)' % (f[0].value, f[1].format) for f in self.FORMATS_BY_MIMETYPE if not f[0] in tried_mimetypes)), mimetype="text/plain")
+            response.status_code = 406 # Not Acceptable
+            return response
 
     def parse_accept_header(cls, accept):
         media_types = []
@@ -227,15 +229,16 @@ Supported ranges are:
         context = simplify_value(context)
         return HttpResponse(etree.tostring(serialize_to_xml(context), encoding='UTF-8'), mimetype="application/xml")
 
-    @renderer(format="yaml", mimetypes=('application/x-yaml',))
-    def render_yaml(self, request, context, template_name):
-        try:
+    # We don't want to depend on YAML. If it's there offer it as a renderer, otherwise ignore it.
+    try:
+        __import__('yaml') # Try importing, but don't stick the result in locals.
+        @renderer(format="yaml", mimetypes=('application/x-yaml',), priority=-1)
+        def render_yaml(self, request, context, template_name):
             import yaml
-        except ImportError:
-            raise NotImplementedError
-
-        context = simplify_value(context)
-        return HttpResponse(yaml.safe_dump(context), mimetype="application/x-yaml")
+            context = simplify_value(context)
+            return HttpResponse(yaml.safe_dump(context), mimetype="application/x-yaml")
+    except ImportError, e:
+        pass
 
     @renderer(format="fragment")
     def render_fragment(self, request, context, template_name):

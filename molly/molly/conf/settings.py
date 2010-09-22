@@ -1,3 +1,5 @@
+import imp
+
 from django.utils.importlib import import_module
 from django.conf.urls.defaults import include as urlconf_include
 from django.core.urlresolvers import RegexURLResolver, RegexURLPattern
@@ -48,52 +50,26 @@ class Application(object):
             else:
                 providers.append(Provider(provider)())
 
+        bases = tuple(base() for base in self.extra_bases)
+        if self.secure:
+            from molly.auth.views import SecureView
+            bases = (SecureView,) + bases
+
         self.kwargs.update({
             'application_name': self.application_name,
             'local_name': self.local_name,
             'title': self.title,
             'providers': providers,
             'provider': providers[-1] if len(providers) else None,
+            'urls': self._get_urls_property(bases),
+            'has_urlconf': self._module_exists(self.urlconf),
         })
-        self.conf = type(self.local_name.capitalize()+'Conf', (ApplicationConf,), self.kwargs)
+        self.conf = type(self.local_name.capitalize()+'Conf', (ApplicationConf,), self.kwargs)()
 
         for provider in self.conf.providers:
             provider.conf = self.conf
 
-        try:
-            urlpatterns = import_module(self.urlconf).urlpatterns
-        except ImportError, e:
-            urlconf_load_exception = e
-            if e.message == 'No module named urls':
-                # We'll assume this means the application we're trying to load
-                # doesn't have a urls module, so we'll create a usefully named
-                # object in case someone tries to include it in a urlconf.
-                urls = type('Missing'+self.local_name.capitalize()+'URLConf',
-                            (object,),
-                            { '__nonzero__':(lambda self: False)} )()
-            else:
-                # Otherwise, the ImportError was something else unexpected and
-                # we should give up and tell someone.
-                raise
-        else:
-            urlconf_load_exception = None
-            # Load our extra base classes
-            bases = tuple(base() for base in self.extra_bases)
-            if self.secure:
-                from molly.auth.views import SecureView
-                bases = (SecureView,) + bases
-
-            # Walk the tree of urlpatterns to add the conf and bases
-            new_urlpatterns = []
-            for pattern in urlpatterns:
-                new_urlpatterns.append(self.add_conf_to_pattern(pattern, self.conf, bases))
-            urls = urlconf_include(new_urlpatterns, self.application_name.split('.')[-1], self.local_name)
-
-        # Add our newly created urls to our conf object.
-
-        self.conf.urls = self._get_urls_property(urls, urlconf_load_exception)
-        self.conf.has_urlconf = isinstance(urls, tuple)
-        self.conf.display_to_user = self.kwargs['display_to_user'] and isinstance(urls, tuple)
+        self.conf.display_to_user = self.kwargs['display_to_user'] and self.kwargs['has_urlconf']
 
         # Configure any logging for this application, passing the
         # configuration lest it needs it.
@@ -154,13 +130,45 @@ class Application(object):
         else:
             raise TypeError("Expected RegexURLResolver or RegexURLPattern instance, got %r." % type(pattern))
 
-    def _get_urls_property(self, urls, urlconf_load_exception):
-        if urls:
-            return urls
-        else:
-            def p(self):
-                raise urlconf_load_exception
-            return property(p)
+    def _get_urls_property(self, bases):
+        """
+        Returns a property object that will load and cache the urlconf for an app.
+
+        This will add base classes to the views as necessary and pass the conf to
+        each view instance.
+        """
+
+        @property
+        def urls(conf):
+            if hasattr(conf, '_urls_cache'):
+                return conf._urls_cache
+            # Load the urls module and extract the patterns
+            urlpatterns = import_module(self.urlconf).urlpatterns
+            new_urlpatterns = []
+            for pattern in urlpatterns:
+                # Call to recursively apply the conf and bases to each of the
+                # views referenced in the urlconf.
+                new_urlpatterns.append(self.add_conf_to_pattern(pattern, self.conf, bases))
+            conf._urls_cache = urlconf_include(new_urlpatterns, self.application_name.split('.')[-1], self.local_name)
+            return conf._urls_cache
+        return urls
+    
+    def _module_exists(self, module_name):
+        """
+        Returns True iff module_name exists (but isn't necessarily importable).
+        """
+
+        # imp.find_module doesn't handle hierarchical module names, so we split
+        # on full stops and keep feeding it the path it returns until we run
+        # out of module name.
+
+        module_name, path = module_name.split('.'), None
+        while module_name:
+            try:
+                path = [imp.find_module(module_name.pop(0), path)[1]]
+            except ImportError, e:
+                return False
+        return True
 
 class Authentication(object):
     def __init__(klass, **kwargs):
