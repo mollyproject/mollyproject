@@ -375,10 +375,8 @@ for directory in os.listdir(STATIC_ROOT):
             compress[group]['source_filenames'] += (filename,)
 
 # CSS filter is custom-written since the provided one mangles it too much
-#COMPRESS_CSS_FILTERS = ('molly_compress.CSSFilter',)
 
-CSSTIDY_BINARY = 'cp'
-CSSTIDY_ARGUMENTS = '' #"--optimise_shorthands=0 --preserve_css=true"
+COMPRESS_CSS_FILTERS = ('molly.utils.compress.MollyCSSFilter',)
 
 COMPRESS_CSSTIDY_SETTINGS = {
     'remove_bslash': True, # default True
