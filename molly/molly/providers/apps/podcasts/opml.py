@@ -11,6 +11,7 @@ from rss import RSSPodcastsProvider
 class OPMLPodcastsProvider(RSSPodcastsProvider):
     def __init__(self, url):
         self.url = url
+        self.medium = None
 
     CATEGORY_ORDERS = {}
 

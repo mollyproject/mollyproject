@@ -44,15 +44,12 @@ USE_I18N = True
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = os.path.abspath(os.path.dirname(__file__))
+MEDIA_ROOT = os.path.join(project_root, 'media')
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = '/site-media/'
-
-# Update MEDIA_ROOT, since they're local directories
-MEDIA_ROOT += MEDIA_URL
+MEDIA_URL = '/media/'
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
@@ -312,7 +309,7 @@ API_KEYS = {
     'fireeagle': SECRETS.fireeagle,
 }
 
-SITE_MEDIA_PATH = os.path.join(project_root, 'site-media')
+SITE_MEDIA_PATH = os.path.join(project_root, 'media')
 
 INSTALLED_APPS = extract_installed_apps(APPLICATIONS) + (
     'django.contrib.auth',
@@ -323,24 +320,64 @@ INSTALLED_APPS = extract_installed_apps(APPLICATIONS) + (
     'django.contrib.gis',
     'django.contrib.comments',
     'molly.batch_processing',
+    
+    'staticfiles',
+    'compress',
 #    'debug_toolbar',
 )
 
-# Settings for django-compress: CSS
-COMPRESS_CSS = {
-    'smart': {
-        'source_filenames': ('css/groups/smart.css',),
-        'output_filename': 'css/groups/smart.min.css',
-        'extra_context': {},
-        },
-    'dumb': {
-        'source_filenames': ('css/groups/dumb.css',),
-        'output_filename': 'css/groups/dumb.min.css',
-        'extra_context': {},
-        },
-    }
+
+# Media handling using django-staticfiles and django-compress
+
+import imp, re
+molly_root = imp.find_module('molly')[1]
+
+STATIC_ROOT = os.path.join(project_root, 'media')
+STATICFILES_DIRS = (
+    ('', os.path.join(project_root, 'site_media')),
+    ('', os.path.join(molly_root, 'media')),
+)
+STATIC_URL = '/media/'
+STATICFILES_PREPEND_LABEL_APPS = ('django.contrib.admin',) #+ extract_installed_apps(APPLICATIONS)
+
+COMPRESS_CSS, COMPRESS_JS = {}, {}
+
+for directory in os.listdir(STATIC_ROOT):
+    # We don't want to compress admin media or already-compressed media.
+    if directory in ('admin', 'c', ):
+        continue
+    directory = os.path.join(STATIC_ROOT, directory)
+    for root, dirs, files in os.walk(directory):
+        for filename in files:
+            filename = os.path.relpath(os.path.join(root, filename), STATIC_ROOT)
+            if filename.endswith('.css'):
+                compress = COMPRESS_CSS
+            elif filename.endswith('.js'):
+                compress = COMPRESS_JS
+            else:
+                continue
+            
+            path = filename.split('/')[:-1]
+            if not path[0] in ('openlayers',):
+                path = path[1:]
+            output_filename = filename.split('/')[-1].rsplit('.', 1)
+            group = '-'.join(path + [output_filename[0],])
+            if group.startswith('css-') or group.startswith('js-'):
+                group = group.split('-', 1)[1]
+            if not group in compress:
+                output_filename = '.'.join((output_filename[0], 'v?', output_filename[1]))
+                output_filename = os.path.join(os.path.join('c', *path), output_filename)
+                compress[group] = {
+                    'source_filenames': (),
+                    'output_filename': output_filename,
+                    'extra_context': {},
+                }
+            compress[group]['source_filenames'] += (filename,)
+
 # CSS filter is custom-written since the provided one mangles it too much
-COMPRESS_CSS_FILTERS = ('molly_compress.CSSFilter',)
+
+COMPRESS_CSS_FILTERS = ('molly.utils.compress.MollyCSSFilter',)
+
 COMPRESS_CSSTIDY_SETTINGS = {
     'remove_bslash': True, # default True
     'compress_colors': True, # default True
@@ -358,20 +395,11 @@ COMPRESS_CSSTIDY_SETTINGS = {
     'timestamp': False, # default False
     'template': 'high_compression', # default 'highest_compression'
 }
-# django-compress JS
-COMPRESS_JS = {
-    'all': {
-        'source_filenames': ('js/jquery-1.4.2.js', 'js/groups/smart.js'),
-        'output_filename': 'js/all.min.js',
-        'extra_context': {},
-        },
-    }
-if not DEBUG:
-    COMPRESS_JS['all']['source_filenames'] = COMPRESS_JS['all']['source_filenames'] + ('js/async_load.js',)
 
 COMPRESS_JS_FILTERS = ('compress.filters.jsmin.JSMinFilter',)
 # On or off?
-COMPRESS = not DEBUG
+COMPRESS = True
+COMPRESS_VERSION = True
 
 CACHE_DIR = '/var/cache/molly'
 SRID = 27700

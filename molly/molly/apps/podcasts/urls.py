@@ -12,7 +12,7 @@ urlpatterns = patterns('',
     (r'^category:(?P<category>[\dA-Z\-a-z]+)/$',
         CategoryDetailView, {},
         'category'),
-    (r'^category:(?P<category>[\dA-Z\-a-z]+)/(?P<medium>audio|video)/$',
+    (r'^category:(?P<category>[\dA-Z\-a-z]+)/(?P<medium>[a-z]+)/$',
         CategoryDetailView, {},
         'category-medium'),
 
