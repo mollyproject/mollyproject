@@ -33,6 +33,7 @@ class IndexView(BaseView):
             'model_name': device.model_name,
             'ua': ua,
             'matched_ua': device.devua,
+            'accept': request.META.get('HTTP_ACCEPT', ''),
         }
 
         if request.GET.get('capabilities') == 'true':

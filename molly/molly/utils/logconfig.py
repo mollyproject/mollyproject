@@ -17,6 +17,10 @@ class EmailHandler(logging.Handler):
         if record.name == 'molly.stats.requests':
             return
 
+        # Recurse up the call stack to find the request that was being
+        # processed when this log message was emitted. If none is found,
+        # request is set to None. Functional, but possibly hacky.
+        # Don't do this at home, kids.
         for frame in inspect.getouterframes(inspect.currentframe()):
             request = frame[0].f_locals.get('request', None)
             if isinstance(request, HttpRequest):

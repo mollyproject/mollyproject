@@ -1,0 +1,18 @@
+{% load portal_misc %}    
+
+{% ifequal medium "email" %}
+  <a class="email" href="mailto:{{ person.mail.0 }}">
+{% else %}
+  <a class="phone" href="{{ person.telephoneNumber.0|telephone_uri }}">
+{% endifequal %}
+    {{ person.cn }}
+    <br/>
+    <small>
+      {% if person.ou %}{{ person.ou|join:", " }}{% else %}<em>Unknown affiliation</em>{% endif %}<br />
+      {% ifequal medium "email" %}
+        {{ person.mail.0 }}
+      {% else %}
+        {{ person.telephoneNumber.0 }}
+      {% endifequal %}
+    </small>
+  </a>

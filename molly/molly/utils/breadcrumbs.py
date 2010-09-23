@@ -66,7 +66,7 @@ def lazy_parent(view_name, *args, **kwargs):
         if ':' not in view:
             view = '%s:%s' % (application_name, view)
         view, view_args, view_kwargs = resolve(reverse(view, args=args, kwargs=kwargs))
-        return view.breadcrumb.data(self, request, context, *view_args, **view_kwargs)
+        return view.breadcrumb.data(view, request, context, *view_args, **view_kwargs)
     return f
 
 def static_parent(path, title, application=None):
