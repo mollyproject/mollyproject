@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-import urllib, re, email, feedparser, time, random
+import urllib, re, email, feedparser, time, random, traceback, logging
 
 from molly.apps.external_media.sanitiser import sanitise_html
 from molly.conf.settings import batch
@@ -12,18 +12,26 @@ def parse_date(s):
     return struct_to_datetime(feedparser._parse_date(s))
 def struct_to_datetime(s):
     return datetime.fromtimestamp(time.mktime(s))
- 
+
+logger = logging.getLogger('molly.apps.providers.feeds.rss')
+
 class RSSFeedsProvider(BaseFeedsProvider):
     verbose_name = 'RSS'
     
     @batch('%d * * * *' % random.randint(0, 59))
     def import_data(self, metadata, output):
         "Pulls RSS feeds"
-        
+
         from molly.apps.feeds.models import Feed
         for feed in Feed.objects.filter(provider=self.class_path):
             output.write("Importing %s\n" % feed.title)
-            self.import_feed(feed)
+            try:
+                self.import_feed(feed)
+            except Exception, e:
+                output.write("Error importing %s\n" % feed.title)
+                traceback.print_exc(file=output)
+                output.write('\n')
+                logger.warn("Error importing feed %r" % feed.title, exc_info=True, extra={'url': feed.rss_url})
             
         return metadata
             
