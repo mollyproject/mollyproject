@@ -20,11 +20,12 @@ Location:  {{ record.module }}:{{ record.funcName }}
            {{ record.pathname }}:{{ record.lineno }}
 
 
-{{ traceback|safe }}
+{{ traceback|safe }}{% if extra %}
 
 
 {% for key, value in extra.items %}{{ key }}
 {{ value|safe }}
-{% endfor %}
+{% endfor %}{% endif %}
 
-{{ request }}
+
+{{ request|safe }}
