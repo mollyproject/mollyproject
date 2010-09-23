@@ -6,10 +6,13 @@ from molly.conf.settings import Application, extract_installed_apps, Authenticat
 from secrets import SECRETS
 
 if not hasattr(os.path, 'relpath'):
+    import posixpath
     from posixpath import curdir, sep, pardir, join
 
     def relpath(path, start=curdir):
         """Return a relative version of a path"""
+        import posixpath
+        from posixpath import curdir, sep, pardir, join
         if not path:
             raise ValueError("no path specified")
         start_list = posixpath.abspath(start).split(sep)
@@ -351,6 +354,7 @@ import imp, re
 molly_root = imp.find_module('molly')[1]
 
 STATIC_ROOT = os.path.join(project_root, 'media')
+print STATIC_ROOT
 STATICFILES_DIRS = (
     ('', os.path.join(project_root, 'site_media')),
     ('', os.path.join(molly_root, 'media')),
