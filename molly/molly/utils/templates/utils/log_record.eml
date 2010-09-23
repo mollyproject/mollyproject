@@ -5,9 +5,9 @@ X-Molly-Logging-Level: {{ level_name }}
 X-Molly-Logging-Level-Extent: {{ level_stars }}
 Priority: {{ priority }}
 References: molly-event-{{ hash }}@{{ host }}
-Subject: [Molly] [{{ record.levelname }}] {{ record.getMessage }}
+Subject: [Molly] [{{ record.levelname }}] {{ record.getMessage|safe }}
 
-{{ record.getMessage }}
+{{ record.getMessage|safe }}
 
 
 Logger:    {{ record.name }}
@@ -26,3 +26,5 @@ Location:  {{ record.module }}:{{ record.funcName }}
 {% for key, value in extra.items %}{{ key }}
 {{ value|safe }}
 {% endfor %}
+
+{{ request }}
