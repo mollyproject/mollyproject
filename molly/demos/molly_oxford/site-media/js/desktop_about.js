@@ -4,7 +4,7 @@ function preview() {
   var popup = window.open(
     '?preview=true',
     'popwin',
-    'left=20,top=20,innerwidth=330,innerheight=480,toolbar=1,menubar=0,location=0,status=1,resizable=1,scrollbars=yes'
+    'left=20,top=20,innerwidth=400,innerheight=480,toolbar=1,menubar=0,location=0,status=1,resizable=1,scrollbars=yes'
   );
   popup.window.location.href = "/" + "?preview=true";
 }
