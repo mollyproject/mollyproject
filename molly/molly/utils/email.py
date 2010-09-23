@@ -21,16 +21,19 @@ def send_email(request, context, template_name, cls=None, to_email=None):
         from_email = settings.DEFAULT_FROM_EMAIL
 
     email_context = Context({
-        'session_key': request.session.session_key,
-        'devid': request.device.devid,
-        'ua': request.META['HTTP_USER_AGENT'],
-        'lon': request.session.get('geolocation:location', (None, None))[0],
-        'lat': request.session.get('geolocation:location', (None, None))[1],
         'from_email': from_email,
-        'host': request.META.get('HTTP_HOST'),
         'to_email': to_email,
-        'request': request,
     })
+    if request:
+        email_context.update({
+            'session_key': request.session.session_key,
+            'devid': request.device.devid,
+            'ua': request.META['HTTP_USER_AGENT'],
+            'lon': request.session.get('geolocation:location', (None, None))[0],
+            'lat': request.session.get('geolocation:location', (None, None))[1],
+            'host': request.META.get('HTTP_HOST'),
+            'request': request,
+        })
     email_context.update(context)
 
     template = loader.get_template(template_name)
