@@ -59,11 +59,10 @@ class RSSFeedsProvider(BaseFeedsProvider):
                     item = Item.objects.get(guid=guid, feed=feed)
                 except Item.DoesNotExist:
                     item = Item(guid=guid, last_modified=datetime(1900,1,1), feed=feed)
-                    
-                
+
             if True or item.last_modified < last_modified:
                 item.title = x_item.title
-                item.description = sanitise_html(x_item.description or '')
+                item.description = sanitise_html(x_item.get('description', ''))
                 item.link = x_item.link
                 item.last_modified = last_modified
                 item.save()
