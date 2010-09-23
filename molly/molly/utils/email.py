@@ -62,6 +62,4 @@ def send_email(request, context, template_name, cls=None, to_email=None):
         headers = headers,
     )
 
-    print "E-mail", email
-    print "      ", email.recipients()
-    print email.send()
+    email.send()
