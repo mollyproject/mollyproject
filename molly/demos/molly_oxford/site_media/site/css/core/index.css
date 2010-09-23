@@ -1,0 +1,8 @@
+div#title {
+    width: 100%;
+    background-color: #002147;
+    text-align: center;
+    font-size:14pt;
+	background-image:url('../../png/headers/home_header_bg_240.png');
+	height: 46px;
+}

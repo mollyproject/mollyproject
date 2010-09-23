@@ -1,27 +1,17 @@
 {% extends "podcasts/base.html" %}{% load portal_misc %}{% load molly_external_media_tags %}
 
-{% block breadcrumbs %}
-{{ block.super }}
-            <li><a href="{% url podcasts_index %}">
-                <img src="{{ MEDIA_URL }}png/index-icons/podcasts-bc.png" alt="Podcasts"/>
-            </a></li>
-{% endblock %}
-
-{% block pagetitle %}{{ category.name }}{% endblock %}
-{% block title %}m.ox | Podcasts - {{ category.name }}{% endblock %}
-
 {% block content %}
 
 
 <div class="section">
-	<h2>{{ category.name }}</h2>
-    <div class="note"><div class="bubble pad-10">
+  <div class="header">
+    <h2>{{ category.name }}</h2>
     Show
     <a href="{% url podcasts:category-medium category.slug,"audio" %}">audio</a>
     <a href="{% url podcasts:category-medium category.slug,"video" %}">video</a>
     <a href="{% url podcasts:category category.slug %}">all</a>
-podcasts.
-    </div></div>
+    podcasts.
+  </div>
 		
 <ul class="link-list">
 {% for podcast in podcasts %}
@@ -33,7 +23,7 @@ podcasts.
           <img src="{% external_image podcast.logo max_width %}" width="60" height="60" alt="" style="border:0;"/>
           {% endwith %}
           {% endif %}
-          <img src="{{ MEDIA_URL }}png/icons/list-{{ podcast.medium }}.png") style="border:0; margin:2px;" alt="({{ podcast.medium }})">
+          <img src="{{ MEDIA_URL }}site/png/icons/list-{{ podcast.medium }}.png" style="border:0; margin:2px;" alt="({{ podcast.medium }})">
         </div>
         <div style="padding:0 0 0 60px">
         {{ podcast.title }}
