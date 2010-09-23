@@ -5,6 +5,24 @@ import os.path
 from molly.conf.settings import Application, extract_installed_apps, Authentication, ExtraBase, Provider
 from secrets import SECRETS
 
+if not hasattr(os.path, 'relpath'):
+    from posixpath import curdir, sep, pardir, join
+
+    def relpath(path, start=curdir):
+        """Return a relative version of a path"""
+        if not path:
+            raise ValueError("no path specified")
+        start_list = posixpath.abspath(start).split(sep)
+        path_list = posixpath.abspath(path).split(sep)
+        # Work out how much of the filepath is shared by start and path.
+        i = len(posixpath.commonprefix([start_list, path_list]))
+        rel_list = [pardir] * (len(start_list)-i) + path_list[i:]
+        if not rel_list:
+            return curdir
+        return join(*rel_list)
+    os.path.relpath = relpath
+    del curdir, sep, pardir, join, relpath
+
 project_root = os.path.normpath(os.path.dirname(__file__))
 
 DEBUG = True
