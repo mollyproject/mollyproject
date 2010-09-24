@@ -1,18 +1,21 @@
 # Django settings for oxford project.
 
 from oauth.oauth import OAuthSignatureMethod_PLAINTEXT
-import os.path
+import os.path, imp
 from molly.conf.settings import Application, extract_installed_apps, Authentication, ExtraBase, Provider
+from molly.utils.media import get_compress_groups
 from secrets import SECRETS
 
+molly_root = imp.find_module('molly')[1]
 project_root = os.path.normpath(os.path.dirname(__file__))
 
 DEBUG = True
-DEBUG_SECURE = False
+DEBUG_SECURE = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    # ('Your Name', 'your_email@domain.com'),
+    ('Alexander Dutton', 'alexander.dutton@oucs.ox.ac.uk'),
+    ('Tim Fernando', 'tim.fernando@oucs.ox.ac.uk'),
 )
 
 MANAGERS = ADMINS
@@ -41,23 +44,6 @@ SITE_ID = 1
 # to load the internationalization machinery.
 USE_I18N = True
 
-# Absolute path to the directory that holds media.
-# Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = os.path.abspath(os.path.dirname(__file__))
-
-# URL that handles the media served from MEDIA_ROOT. Make sure to use a
-# trailing slash if there is a path component (optional in other cases).
-# Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = '/site-media/'
-
-# Update MEDIA_ROOT, since they're local directories
-MEDIA_ROOT += MEDIA_URL
-
-# URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
-# trailing slash.
-# Examples: "http://foo.com/media/", "/media/".
-ADMIN_MEDIA_PREFIX = '/admin-media/'
-
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = SECRETS.secret_key
 
@@ -72,8 +58,9 @@ MIDDLEWARE_CLASSES = (
     'molly.wurfl.middleware.WurflMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'molly.utils.middleware.ErrorHandlingMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-#    'molly.auth.middleware.SecureSessionMiddleware',
+    'molly.auth.middleware.SecureSessionMiddleware',
     'molly.stats.middleware.StatisticsMiddleware',
     'molly.apps.url_shortener.middleware.URLShortenerMiddleware',
 #    'debug_toolbar.middleware.DebugToolbarMiddleware',
@@ -107,6 +94,9 @@ APPLICATIONS = [
 
     Application('molly.apps.desktop', 'desktop', 'Desktop',
         display_to_user = False,
+        twitter_username = 'mobileox',
+        twitter_ignore_urls = 'http://post.ly/',
+        blog_rss_url = 'http://feeds.feedburner.com/mobileoxford',
     ),
 
     Application('molly.apps.contact', 'contact', 'Contact search',
@@ -251,32 +241,50 @@ APPLICATIONS = [
         display_to_user = False,
     ),
 
-#    Application('molly.auth', 'auth', 'Authentication',
-#        display_to_user = False,
-#        secure = True,
-#    ),
+    Application('molly.utils', 'utils', 'Molly utility services',
+        display_to_user = False,
+    ),
 
-#    Application('molly.apps.sakai', 'weblearn', 'WebLearn',
-#        host = 'https://weblearn.ox.ac.uk/',
-#        service_name = 'WebLearn',
-#        secure = True,
-#        tools = [
-#            ('signup', 'Tutorial sign-ups'),
+    Application('molly.apps.feature_vote', 'feature_vote', 'Feature suggestions',
+        display_to_user = False,
+    ),
+
+    Application('molly.auth', 'auth', 'Authentication',
+        display_to_user = False,
+        secure = True,
+        unify_identifiers = ('oxford:sso', 'oxford:oss', 'weblearn:id', 'oxford_ldap'),
+    ),
+
+    Application('molly.apps.sakai', 'weblearn', 'WebLearn',
+        host = 'https://weblearn.ox.ac.uk/',
+        service_name = 'WebLearn',
+        secure = True,
+        tools = [
+            ('signup', 'Sign-ups'),
 #            ('poll', 'Polls'),
 #            ('direct', 'User information'),
 #            ('sites', 'Sites'),
-#        ],
-#        extra_bases = (
-#            ExtraBase('molly.auth.oauth.views.OAuthView',
-#                secret = SECRETS.weblearn,
-#                signature_method = OAuthSignatureMethod_PLAINTEXT(),
-#                base_url = 'https://weblearn.ox.ac.uk/oauth-tool/',
-#                request_token_url = 'request_token',
-#                access_token_url = 'access_token',
-#                authorize_url = 'authorize',
-#            ),
-#        ),
-#    ),
+#            ('evaluation', 'Surveys'),
+        ],
+        extra_bases = (
+            ExtraBase('molly.auth.oauth.views.OAuthView',
+                secret = SECRETS.weblearn,
+                signature_method = OAuthSignatureMethod_PLAINTEXT(),
+                base_url = 'https://weblearn.ox.ac.uk/oauth-tool/',
+                request_token_url = 'request_token',
+                access_token_url = 'access_token',
+                authorize_url = 'authorize',
+            ),
+        ),
+        enforce_timeouts = False,
+        identifiers = (
+            ('oxford:sso', ('props', 'aid',)),
+            ('weblearn:id', ('id',)),
+            ('oxford:oss', ('props', 'oakOSSID',)),
+            ('oxford:ldap', ('props', 'udp.dn',)),
+            ('weblearn:email', ('email',)),
+        ),
+    ),
 
 #    Application('molly.apps.feeds.events', 'events', 'Events',
 #    ),
@@ -289,24 +297,87 @@ API_KEYS = {
     'fireeagle': SECRETS.fireeagle,
 }
 
-SITE_MEDIA_PATH = os.path.join(project_root, 'site-media')
+SITE_MEDIA_PATH = os.path.join(project_root, 'media')
 
-INSTALLED_APPS = (
+INSTALLED_APPS = extract_installed_apps(APPLICATIONS) + (
     'django.contrib.auth',
     'django.contrib.admin',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
+    'django.contrib.gis',
+    'django.contrib.comments',
     'molly.batch_processing',
-    'molly.utils',
+    
+    'staticfiles',
+    'compress',
 #    'debug_toolbar',
-) + extract_installed_apps(APPLICATIONS)
+)
+
+
+# Media handling using django-staticfiles and django-compress
+
+# URL that handles the media served from MEDIA_ROOT. Make sure to use a
+# trailing slash if there is a path component (optional in other cases).
+# Examples: "http://media.lawrence.com", "http://example.com/media/"
+MEDIA_URL = '/media/'
+
+# URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
+# trailing slash.
+# Examples: "http://foo.com/media/", "/media/".
+ADMIN_MEDIA_PREFIX = MEDIA_URL + 'admin/' 
+
+# Absolute path to the directory that holds media.
+# Example: "/home/media/media.lawrence.com/"
+MEDIA_ROOT = STATIC_ROOT = os.path.join(project_root, 'media')
+
+STATICFILES_DIRS = (
+    ('', os.path.join(project_root, 'site_media')),
+    ('', os.path.join(molly_root, 'media')),
+)
+STATIC_URL = '/media/'
+STATICFILES_PREPEND_LABEL_APPS = ('django.contrib.admin',) #+ extract_installed_apps(APPLICATIONS)
+
+COMPRESS_CSS, COMPRESS_JS = get_compress_groups(STATIC_ROOT)
+
+# CSS filter is custom-written since the provided one mangles it too much
+COMPRESS_CSS_FILTERS = ('molly.utils.compress.MollyCSSFilter',)
+
+COMPRESS_CSSTIDY_SETTINGS = {
+    'remove_bslash': True, # default True
+    'compress_colors': True, # default True
+    'compress_font-weight': True, # default True
+    'lowercase_s': False, # default False
+    'optimise_shorthands': 0, # default 2, tries to merge bg rules together and makes a hash of things
+    'remove_last_': False, # default False
+    'case_properties': 1, # default 1
+    'sort_properties': False, # default False
+    'sort_selectors': False, # default False
+    'merge_selectors': 0, # default 2, messes things up
+    'discard_invalid_properties': False, # default False
+    'css_level': 'CSS2.1', # default 'CSS2.1'
+    'preserve_css': False, # default False
+    'timestamp': False, # default False
+    'template': 'high_compression', # default 'highest_compression'
+}
+
+COMPRESS_JS_FILTERS = ('compress.filters.jsmin.JSMinFilter',)
+
+COMPRESS = not DEBUG     # Only enable on production (to help debugging)
+COMPRESS_VERSION = True  # Add a version number to compressed files.
+
+
 
 CACHE_DIR = '/var/cache/molly'
 SRID = 27700
+
+CACHE_BACKEND = 'memcached://localhost:11211/?timeout=60'
 
 FIXTURE_DIRS = [
     os.path.join(project_root, 'fixtures'),
 ]
 
 INTERNAL_IPS = ('127.0.0.1',)  # for the debug_toolbar
+
+SERVER_EMAIL = 'molly@m.ox.ac.uk'
+EMAIL_HOST = 'smtp.ox.ac.uk'

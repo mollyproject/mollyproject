@@ -58,7 +58,7 @@ def device_specific_media(request):
         use_javascript = False
 
     return {
-        'style_group': style_group,
+        'style_group': 'groups-%s' % style_group,
         'use_javascript': use_javascript,
     }
 

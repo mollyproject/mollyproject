@@ -16,7 +16,7 @@ class IndexView(BaseView):
     def breadcrumb(cls, request, context):
         return Breadcrumb('service_status', None,
                           'Service Status',
-                          lazy_reverse('service_status:index'))
+                          lazy_reverse('index'))
 
     def handle_GET(cls, request, context):
         services = []

@@ -87,6 +87,8 @@ MIMETYPES = {
     'audio/x-m4b': 'MP4 audio',
     'application/octet-stream': 'unknown',
     'video/mpeg': 'MPEG video',
+    'video/x-m4v': 'MP4 video',
+    'audio/x-m4a': 'MP4 audio',
 }    
 
 class PodcastEnclosure(models.Model):
@@ -94,6 +96,20 @@ class PodcastEnclosure(models.Model):
     url = models.URLField()
     length = models.IntegerField(null=True)
     mimetype = models.TextField(null=True)
+    
+    @property
+    def medium(self):
+        medium = {'application/pdf': 'document', 'MPEG4 Video': 'video'}.get(self.mimetype)
+        if medium:
+            return medium
+        elif not self.mimetype:
+            return self.podcast_item.podcast.medium or 'unknown'
+        elif self.mimetype.startswith('audio/'):
+            return 'audio'
+        elif self.mimetype.startswith('video/'):
+            return 'video'
+        else:
+            return self.podcast_item.podcast.medium or 'unknown'
     
     def get_mimetype_display(self):
         return MIMETYPES.get(self.mimetype, 'unknown')

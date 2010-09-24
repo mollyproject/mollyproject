@@ -1,0 +1,24 @@
+X-Molly-Type: feedback
+X-Molly-Device-Id: {{ devid }}{% if referer %}
+X-Molly-Referer: {{ referer }}{% endif %}{% if email %}
+X-Molly-Email: {{ email }}
+Reply-To: {{ email }}{% endif %}
+From: Mobile Oxford <molly@m.ox.ac.uk>
+Subject: [Molly] Feedback
+
+Meta
+====
+
+E-mail:      {{ email }}
+Device:      {{ devid }}      
+             http://www.wurflpro.com/device/results?user_agent=&identifier={{ devid|urlencode }}
+User-agent:  {{ ua }}
+             http://www.wurflpro.com/device/results?user_agent={{ ua|urlencode }}
+Referer:     {{ referer }}
+Location:    {% if lat %}http://google.co.uk/maps?q={{ lat }},{{ lon }}{% else %}None{% endif %}
+Session key: {{ session_key }}
+
+Message
+=======
+
+{{ body }}

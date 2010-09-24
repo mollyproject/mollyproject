@@ -11,18 +11,18 @@ class IndexView(BaseView):
     RSS_FEED = 'http://twitter.com/statuses/user_timeline/46711686.rss'
     RESULT_RE = re.compile(r"(?P<code>[A-Z]+) \((?P<title>.+)\)")
     
-    def get_metadata(cls, request):
+    def get_metadata(self, request):
         return {
             'title': 'Results releases',
             'additional': 'View recently released Schools results'
         }
         
     @BreadcrumbFactory
-    def breadcrumb(cls, request, context):
+    def breadcrumb(self, request, context):
         return Breadcrumb('results', None, 'Results releases',
-                          lazy_reverse('results:index'))
+                          lazy_reverse('index'))
 
-    def handle_GET(cls, request, context):
+    def handle_GET(self, request, context):
         try:
             xml = ET.fromstring(urllib.urlopen(IndexView.RSS_FEED).read())
             x_items = xml.findall('.//item')
@@ -42,4 +42,4 @@ class IndexView(BaseView):
             items = []
             
         context['items'] = items
-        return cls.render(request, context, 'results/index')
+        return self.render(request, context, 'results/index')

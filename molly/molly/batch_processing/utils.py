@@ -2,7 +2,7 @@ import simplejson, os.path, sys
 
 from molly.conf import all_apps
 
-from molly.conf import app_by_local_name
+from molly.conf import app_by_local_name, app_by_application_name
 from molly.batch_processing.models import Batch
 
 
@@ -40,12 +40,15 @@ def load_batches():
             batch.delete()
 
 def run_batch(local_name, provider_name, method_name):
+    # This will force the loading of the molly.utils app, attaching its log
+    # handler lest the batch logs anything that needs e-mailing.
+    app_by_application_name('molly.utils')
     
     batch = Batch.objects.get(
         local_name=local_name,
         provider_name=provider_name,
         method_name=method_name)
-        
+
     batch.run(True)
 
     return batch.log

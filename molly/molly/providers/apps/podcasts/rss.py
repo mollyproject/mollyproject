@@ -1,27 +1,44 @@
 import random, urllib, email
-from xml.etree import ElementTree as ET
+from lxml import etree
 from datetime import datetime
 
 from molly.conf.settings import batch
+from molly.utils.date_parsing import iso_8601_datetime
 
 from molly.apps.podcasts.providers import BasePodcastsProvider
 from molly.apps.podcasts.models import Podcast, PodcastItem, PodcastEnclosure
 
+class Namespace(object):
+    def __init__(self, ns):
+        self.ns = ns
+    def __call__(self, local):
+        return '{%s}%s' % (self.ns, local)
+
 class RSSPodcastsProvider(BasePodcastsProvider):
-    PODCAST_ATTRS = (
-        ('guid', 'guid'),
-        ('title', 'title'),
-        ('author', '{itunes:}author'),
-        ('duration', '{http://www.itunes.com/dtds/podcast-1.0.dtd}duration'),
-        ('published_date', 'pubDate'),
-        ('description', 'description'),
-        
-#       ('itunesu_code', '{itunesu:}code'),
-    )
+    @property
+    def PODCAST_ATTRS(self):
+        atom = self.atom
+        return (
+            ('guid', 'guid'),
+            ('title', 'title'),
+            ('author', '{itunes:}author'),
+            ('duration', '{itunes:}duration'),
+            ('published_date', 'pubDate'),
+            ('description', 'description'),
+            ('guid', atom('id')),
+            ('title', atom('title')),
+            ('description', atom('summary')),
+            ('published_date', atom('published')),
+    #       ('itunesu_code', '{itunesu:}code'),
+        )
 
     def __init__(self, podcasts, medium=None):
         self.podcasts = podcasts
         self.medium = medium
+    
+    @property
+    def atom(self):
+        return Namespace('http://www.w3.org/2005/Atom')
     
     @batch('%d * * * *' % random.randint(0, 59))
     def import_data(self, metadata, output):
@@ -43,6 +60,7 @@ class RSSPodcastsProvider(BasePodcastsProvider):
         return license.text if license is not None else None
         
     def update_podcast(self, podcast):
+        atom = self.atom
         def gct(node, name):
             try:
                 value = node.find(name).text
@@ -50,28 +68,37 @@ class RSSPodcastsProvider(BasePodcastsProvider):
                     value = datetime.fromtimestamp(
                         email.utils.mktime_tz(
                             email.utils.parsedate_tz(value)))
+                elif name == atom('published'):
+                    value = iso_8601_datetime(value)
                 elif name == '{itunes:}duration':
                     value = int(value)
                 return value
             except AttributeError:
                 return None
 
-        xml = ET.parse(urllib.urlopen(podcast.rss_url))
+        xml = etree.parse(urllib.urlopen(podcast.rss_url)).getroot()
 
-        podcast.title = xml.find('.//channel/title').text
-        podcast.description = xml.find('.//channel/description').text
+        try:
+            podcast.title = xml.find('.//channel/title').text
+            podcast.description = xml.find('.//channel/description').text
+        except AttributeError:
+            podcast.title = xml.find(atom('title')).text
+            podcast.description = xml.find(atom('subtitle')).text
         
         podcast.license = self.determine_license(xml.find('.//channel'))
+        if self.medium is not None:
+            podcast.medium = medium
 
         logo = xml.find('.//channel/image/url')
         podcast.logo = logo.text if logo is not None else None
 
-        guids = []
-        for item in xml.findall('.//channel/item'):
-            if not gct(item, 'guid'):
+        ids = []
+        for item in xml.findall('.//channel/item') or xml.findall(atom('entry')):
+            id = gct(item, 'guid') or gct(item, atom('id'))
+            if not id:
                 continue
 
-            podcast_item, created = PodcastItem.objects.get_or_create(podcast=podcast, guid=gct(item, 'guid'))
+            podcast_item, created = PodcastItem.objects.get_or_create(podcast=podcast, guid=id)
 
             old_order = podcast_item.order
             try:
@@ -90,29 +117,30 @@ class RSSPodcastsProvider(BasePodcastsProvider):
                 podcast_item.save()
 
             enc_urls = []
-            for enc in item.findall('enclosure'):
+            for enc in item.findall('enclosure') or item.findall(atom('link')):
                 attrib = enc.attrib
-                podcast_enc, updated = PodcastEnclosure.objects.get_or_create(podcast_item=podcast_item, url=attrib['url'])
+                url = attrib.get('url', attrib['href'])
+                podcast_enc, updated = PodcastEnclosure.objects.get_or_create(podcast_item=podcast_item, url=url)
                 try:
-                    podcast_enc.length = int(attrib['length'])
+                    podcast_enc.length = int(attrib['length']) 
                 except ValueError:
                     podcast_enc.length = None
                 podcast_enc.mimetype = attrib['type']
                 podcast_enc.save()
-                enc_urls.append(attrib['url'])
+                enc_urls.append(url)
 
             encs = PodcastEnclosure.objects.filter(podcast_item = podcast_item)
             for enc in encs:
                 if not enc.url in enc_urls:
                     enc.delete()
 
-            guids.append( gct(item, 'guid') )
+            ids.append( id )
 
         for podcast_item in PodcastItem.objects.filter(podcast=podcast):
-            if not podcast_item.guid in guids:
+            if not podcast_item.guid in ids:
                 podcast_item.podcastenclosure_set.all().delete()
                 podcast_item.delete()
 
-        podcast.most_recent_item_date = max(i.published_date for i in PodcastItem.objects.filter(podcast=podcast))
+        #podcast.most_recent_item_date = max(i.published_date for i in PodcastItem.objects.filter(podcast=podcast))
 
         podcast.save()
