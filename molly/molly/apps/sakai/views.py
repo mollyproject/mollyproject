@@ -278,13 +278,23 @@ class PollDetailView(SakaiView):
         for option in options:
             option['votedFor'] = option['optionId'] in userVotes
 
+        multi_vote = poll['maxOptions'] > 1
+        has_opened = datetime.now() > datetime.fromtimestamp(poll['voteOpen']/1000)
+        has_closed = datetime.now() > datetime.fromtimestamp(poll['voteClose']/1000)
+        is_open = has_opened and not has_closed
+        has_voted = bool(poll['currentUserVotes'])
+
         return {
             'poll': poll,
             'options': options,
             'site_title': self.get_site_title(request, poll['siteId']),
             'max_votes': max_votes,
             'vote_count': vote_count,
-            'may_vote': not poll['currentUserVotes'] and poll['maxOptions'] == 1,
+            'multi_vote': multi_vote,
+            'has_opened': has_opened,
+            'has_closed': has_closed,
+            'is_open': is_open,
+            'may_vote': is_open and not has_voted and not multi_vote,
             'sakai_host': self.conf.host,
             'service_name': self.conf.service_name,
         }
@@ -303,7 +313,7 @@ class PollDetailView(SakaiView):
 
     def handle_POST(self, request, context, id):
         if not context['may_vote']:
-            return HttpResponseBadRequest()
+            return HttpResponseSeeOther(request.path)
         if not int(request.POST.get('pollOption', -1)) in (option['optionId'] for option in context['options']):
             return HttpResponseBadRequest()
         try:

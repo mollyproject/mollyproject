@@ -10,19 +10,30 @@
   <div class="header">
     <h2>{{ poll.text }}</h2>
 
-    {% if not poll.currentUserVotes and not may_vote %}
+    {% if not has_voted and multi_vote and is_open %}
       <div class="sakai-error-message">
         <p>
           This polls allows you to select more than one response, which is as yet unsupported through this interface.
         </p>
         <p>
-        To participate, please use the
-        <a href="{{ sakai_host }}portal/{{ poll.siteId }}/page/polls">{{ service_name }} website</a>.
+        To participate, please visit the {{ service_name }} website from a desktop browser.
         </p>
+      </div>
+    {% endif %}
+    {% if not has_voted and not is_open %}
+      <div class="sakai-error-message">
         <p>
-        This link will take you away from this site, and may require you to reauthenticate with {{ service_name }}. You may also wish to use a
-        desktop browser.
+          {% if has_closed %}
+            You are unable to vote in this poll as it closed {{ poll.voteClose|from_sakai_timestamp|timesince }} ago.
+          {% else %}
+            This poll has not yet opened. Please try again in {{ poll.voteOpen|from_sakai_timestamp|timeuntil }}.
+          {% endif %}
         </p>
+      </div>
+    {% endif %}
+    {% if not has_voted and is_open and not multi_vote %}
+      <div class="sakai-notice-message">
+        This poll closes {{ poll.voteClose|from_sakai_timestamp|timeuntil }} from now.
       </div>
     {% endif %}
 
