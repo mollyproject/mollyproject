@@ -8,7 +8,7 @@ import os, os.path
 # Many thanks to Elliot of saltycrane.com[0] and James Gardner[1].
 # [0] http://www.saltycrane.com/blog/2010/03/ospathrelpath-source-code-python-25/
 # [1] http://jimmyg.org/work/code/barenecessities/0.2.5/manual.html#the-relpath-function
-if True or not hasattr(os.path, 'relpath'):
+if not hasattr(os.path, 'relpath'):
     # This code taken from [0], above; modified slightly.
     import posixpath
     def relpath(path, start=posixpath.curdir):
