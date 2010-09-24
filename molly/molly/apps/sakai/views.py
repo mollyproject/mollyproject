@@ -293,6 +293,7 @@ class PollDetailView(SakaiView):
             'multi_vote': multi_vote,
             'has_opened': has_opened,
             'has_closed': has_closed,
+            'has_voted': has_voted,
             'is_open': is_open,
             'may_vote': is_open and not has_voted and not multi_vote,
             'sakai_host': self.conf.host,
