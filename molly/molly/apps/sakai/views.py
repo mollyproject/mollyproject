@@ -299,7 +299,7 @@ class PollDetailView(SakaiView):
         return self.render(request, context, 'sakai/poll/detail')
 
     def handle_POST(self, request, context, id):
-        if not context['mayVote']:
+        if not context['may_vote']:
             return HttpResponseBadRequest()
         if not int(request.POST.get('pollOption', -1)) in (option['optionId'] for option in context['options']):
             return HttpResponseBadRequest()
