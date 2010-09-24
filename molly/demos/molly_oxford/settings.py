@@ -1,10 +1,12 @@
 # Django settings for oxford project.
 
 from oauth.oauth import OAuthSignatureMethod_PLAINTEXT
-import os.path
+import os.path, imp
 from molly.conf.settings import Application, extract_installed_apps, Authentication, ExtraBase, Provider
+from molly.utils.media import get_compress_groups
 from secrets import SECRETS
 
+molly_root = imp.find_module('molly')[1]
 project_root = os.path.normpath(os.path.dirname(__file__))
 
 DEBUG = True
@@ -41,20 +43,6 @@ SITE_ID = 1
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
 USE_I18N = True
-
-# Absolute path to the directory that holds media.
-# Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = os.path.join(project_root, 'media')
-
-# URL that handles the media served from MEDIA_ROOT. Make sure to use a
-# trailing slash if there is a path component (optional in other cases).
-# Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = '/media/'
-
-# URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
-# trailing slash.
-# Examples: "http://foo.com/media/", "/media/".
-ADMIN_MEDIA_PREFIX = '/admin-media/'
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = SECRETS.secret_key
@@ -329,10 +317,20 @@ INSTALLED_APPS = extract_installed_apps(APPLICATIONS) + (
 
 # Media handling using django-staticfiles and django-compress
 
-import imp, re
-molly_root = imp.find_module('molly')[1]
+# URL that handles the media served from MEDIA_ROOT. Make sure to use a
+# trailing slash if there is a path component (optional in other cases).
+# Examples: "http://media.lawrence.com", "http://example.com/media/"
+MEDIA_URL = '/media/'
 
-STATIC_ROOT = os.path.join(project_root, 'media')
+# URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
+# trailing slash.
+# Examples: "http://foo.com/media/", "/media/".
+ADMIN_MEDIA_PREFIX = MEDIA_URL + 'admin/' 
+
+# Absolute path to the directory that holds media.
+# Example: "/home/media/media.lawrence.com/"
+MEDIA_ROOT = STATIC_ROOT = os.path.join(project_root, 'media')
+
 STATICFILES_DIRS = (
     ('', os.path.join(project_root, 'site_media')),
     ('', os.path.join(molly_root, 'media')),
@@ -340,42 +338,9 @@ STATICFILES_DIRS = (
 STATIC_URL = '/media/'
 STATICFILES_PREPEND_LABEL_APPS = ('django.contrib.admin',) #+ extract_installed_apps(APPLICATIONS)
 
-COMPRESS_CSS, COMPRESS_JS = {}, {}
-
-for directory in os.listdir(STATIC_ROOT):
-    # We don't want to compress admin media or already-compressed media.
-    if directory in ('admin', 'c', ):
-        continue
-    directory = os.path.join(STATIC_ROOT, directory)
-    for root, dirs, files in os.walk(directory):
-        for filename in files:
-            filename = os.path.relpath(os.path.join(root, filename), STATIC_ROOT)
-            if filename.endswith('.css'):
-                compress = COMPRESS_CSS
-            elif filename.endswith('.js'):
-                compress = COMPRESS_JS
-            else:
-                continue
-            
-            path = filename.split('/')[:-1]
-            if not path[0] in ('openlayers',):
-                path = path[1:]
-            output_filename = filename.split('/')[-1].rsplit('.', 1)
-            group = '-'.join(path + [output_filename[0],])
-            if group.startswith('css-') or group.startswith('js-'):
-                group = group.split('-', 1)[1]
-            if not group in compress:
-                output_filename = '.'.join((output_filename[0], 'v?', output_filename[1]))
-                output_filename = os.path.join(os.path.join('c', *path), output_filename)
-                compress[group] = {
-                    'source_filenames': (),
-                    'output_filename': output_filename,
-                    'extra_context': {},
-                }
-            compress[group]['source_filenames'] += (filename,)
+COMPRESS_CSS, COMPRESS_JS = get_compress_groups(STATIC_ROOT)
 
 # CSS filter is custom-written since the provided one mangles it too much
-
 COMPRESS_CSS_FILTERS = ('molly.utils.compress.MollyCSSFilter',)
 
 COMPRESS_CSSTIDY_SETTINGS = {
@@ -397,9 +362,11 @@ COMPRESS_CSSTIDY_SETTINGS = {
 }
 
 COMPRESS_JS_FILTERS = ('compress.filters.jsmin.JSMinFilter',)
-# On or off?
-COMPRESS = True
-COMPRESS_VERSION = True
+
+COMPRESS = not DEBUG     # Only enable on production (to help debugging)
+COMPRESS_VERSION = True  # Add a version number to compressed files.
+
+
 
 CACHE_DIR = '/var/cache/molly'
 SRID = 27700
