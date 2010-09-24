@@ -12,6 +12,8 @@ How-tos
  * :doc:`writing_an_application`
  * :doc:`app_media`
  * :doc:`testing`
+ * :doc:`rendering`
+
 
 Background
 ----------
@@ -28,4 +30,5 @@ Background
    writing_an_application
    class_based_views
    testing
+   rendering
    app_media
