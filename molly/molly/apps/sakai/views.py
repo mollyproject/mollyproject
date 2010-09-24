@@ -142,13 +142,18 @@ class SignupEventView(SakaiView):
         # This request does absolutely nothing, except force some cache to be
         # reset, making sure the data we receive subsequently is up-to-date.
         # This should be reported as a bug in Sakai.
-        request.opener.open(
-            self.build_url('direct/signupEvent/%s/edit' % event_id),
-            data = urllib.urlencode({
-            'siteId': site,
-            'allocToTSid': '0',
-            'userActionType': 'invalidAction',
-        }))
+        try:
+            request.opener.open(
+                self.build_url('direct/signupEvent/%s/edit' % event_id),
+                data = urllib.urlencode({
+                'siteId': site,
+                'allocToTSid': '0',
+                'userActionType': 'invalidAction',
+            }))
+        except urllib2.HTTPError, e:
+            # 204 really shouldn't be considered an error code.
+            if e.code != 204:
+                raise
 
         url = self.build_url('direct/signupEvent/%s.json?siteId=%s' % (event_id, site))
         event = simplejson.load(request.urlopen(url))
@@ -180,9 +185,7 @@ class SignupEventView(SakaiView):
                 'userActionType': request.POST['action'],
             }))
         except urllib2.HTTPError, e:
-            if e.code == 204:
-                pass
-            else:
+            if e.code != 204:
                 raise
 
         return HttpResponseSeeOther(request.path)
