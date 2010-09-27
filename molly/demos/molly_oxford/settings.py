@@ -261,7 +261,7 @@ APPLICATIONS = [
         secure = True,
         tools = [
             ('signup', 'Sign-ups'),
-#            ('poll', 'Polls'),
+            ('poll', 'Polls'),
 #            ('direct', 'User information'),
 #            ('sites', 'Sites'),
 #            ('evaluation', 'Surveys'),
