@@ -18,7 +18,7 @@ class IndexView(BaseView):
 
     breadcrumb = NullBreadcrumb
     
-    def initial_context(cls, request, page):
+    def initial_context(cls, request):
         return {
             'twitter_feed': cls._cache(cls._get_twitter_feed, 'twitter', args=[getattr(cls.conf, 'twitter_username')], timeout=300),
             'blog_feed': cls._cache(cls._get_blog_feed, 'blog', args=[getattr(cls.conf, 'blog_rss_url')], timeout=300),
@@ -26,25 +26,8 @@ class IndexView(BaseView):
             'twitter_url': ('http://twitter.com/' + cls.conf.twitter_username) if getattr(cls.conf, 'twitter_username') else None,
         }
 
-    def handle_GET(cls, request, context, page):
-        page = page or 'about'
-        
-        try:
-            if page in ('base', 'container'):
-                raise TemplateDoesNotExist
-            template = loader.get_template('desktop/%s.html' % page)
-        except TemplateDoesNotExist, e:
-            raise Http404
-
-        content = template.render(RequestContext(request, context))
-
-        if request.GET.get('ajax') == 'true':
-            return HttpResponse(content)
-        else:
-            return render_to_response('desktop/container.html', {
-                'content': content,
-                'page': page,
-            }, context_instance=RequestContext(request))
+    def handle_GET(cls, request, context):
+        return cls.render(request, context, 'desktop/index')
 
     def _cache(cls, f, key, args=None, kwargs=None, timeout=None):
         key = '.'.join(['molly', cls.conf.local_name, key])
@@ -64,7 +47,7 @@ class IndexView(BaseView):
         feed = simplejson.load(urllib2.urlopen(url))
         
         if hasattr(cls.conf, 'twitter_ignore_urls'):
-            feed = [tweet for tweet in feed if not any(url['url'].startswith(cls.conf.twitter_ignore_urls) for url in tweet['entities']['urls'])]
+            feed = [tweet for tweet in feed if 'entities' in tweet and not any(url['url'].startswith(cls.conf.twitter_ignore_urls) for url in tweet['entities']['urls'])]
 
         for tweet in feed:
             entities = tweet['entities']
