@@ -238,6 +238,7 @@ class PollIndexView(SakaiView):
             poll['siteTitle'] = self.get_site_title(request, poll['siteId'])
             annotate_poll(poll)
             polls.append(poll)
+        polls.sort(key=lambda p:(p['siteTitle'], p['voteClose']))
 
         return {
             'polls': polls,
