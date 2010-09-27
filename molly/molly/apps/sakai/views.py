@@ -213,6 +213,21 @@ class DirectView(SakaiView):
             request.opener.open(self.build_url('/direct/user/current.json')))
         return self.render(request, context, 'sakai/direct/index')
 
+def annotate_poll(poll):
+    """
+    Annotates a poll object as returned from Sakai with some useful derived information.
+    """
+    poll['voteOpen'] = datetime.fromtimestamp(poll['voteOpen']/1000)
+    poll['voteClose'] = datetime.fromtimestamp(poll['voteClose']/1000)
+    poll.update({
+        'multiVote': poll['maxOptions'] > 1,
+        'hasOpened': datetime.now() > poll['voteOpen'],
+        'hasClosed': datetime.now() > poll['voteClose'],
+        'hasVoted': bool(poll['currentUserVotes']),
+    })
+    poll['isOpen'] = poll['hasOpened'] and not poll['hasClosed']
+    poll['mayVote'] = poll['isOpen'] and not poll['hasVoted'] and not poll['multiVote']
+
 class PollIndexView(SakaiView):
     force_auth = True
 
@@ -220,7 +235,8 @@ class PollIndexView(SakaiView):
         json = simplejson.load(request.opener.open(self.build_url('direct/poll.json')))
         polls = []
         for poll in json['poll_collection']:
-            poll['title'] = self.get_site_title(request, poll['siteId'])
+            poll['siteTitle'] = self.get_site_title(request, poll['siteId'])
+            annotate_poll(poll)
             polls.append(poll)
 
         return {
@@ -278,11 +294,7 @@ class PollDetailView(SakaiView):
         for option in options:
             option['votedFor'] = option['optionId'] in userVotes
 
-        multi_vote = poll['maxOptions'] > 1
-        has_opened = datetime.now() > datetime.fromtimestamp(poll['voteOpen']/1000)
-        has_closed = datetime.now() > datetime.fromtimestamp(poll['voteClose']/1000)
-        is_open = has_opened and not has_closed
-        has_voted = bool(poll['currentUserVotes'])
+        annotate_poll(poll)
 
         return {
             'poll': poll,
@@ -290,12 +302,6 @@ class PollDetailView(SakaiView):
             'site_title': self.get_site_title(request, poll['siteId']),
             'max_votes': max_votes,
             'vote_count': vote_count,
-            'multi_vote': multi_vote,
-            'has_opened': has_opened,
-            'has_closed': has_closed,
-            'has_voted': has_voted,
-            'is_open': is_open,
-            'may_vote': is_open and not has_voted and not multi_vote,
             'sakai_host': self.conf.host,
             'service_name': self.conf.service_name,
         }
