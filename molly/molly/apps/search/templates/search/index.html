@@ -15,7 +15,7 @@
 	    <li{% if forloop.last %} class="round-bottom"{% endif %}>
 	      <a href="{{ result.url }}">
 	      {% if result.application %}
-	        <img src="{{ MEDIA_URL }}png/index-icons/{{ result.application }}-bc.png" style="float:left; border:0; margin-right: 5px; margin-bottom: 5px;"/>
+	        <img src="{{ MEDIA_URL }}site/png/index-icons/{{ result.application }}-bc.png" style="float:left; border:0; margin-right: 5px; margin-bottom: 5px;"/>
 	      {% endif %}
 	        {{ result.title|safe }}<br/>
 	{% if result.additional %}
