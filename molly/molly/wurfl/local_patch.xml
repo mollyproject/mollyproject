@@ -16,6 +16,7 @@
         <!-- Opera -->
         <device user_agent="Opera/9.63 (Windows NT 5.1; U) Presto/2.1.1" fall_back="opera_9" id="opera_9_subua"/>
         <device user_agent="Opera/9.80 (Macintosh; Intel Mac OS X; U; en) Presto/2.2.15 Version/10.10" fall_back="opera_9" id="opera_9_8_macosx"/>
+        <device user_agent="Opera/9.80 (Windows NT 6.0; U; en-GB) Presto/2.6.30 Version/10.62" fall_back="opera_9" id="opera_9_8_win"/>
 
         <!-- Safari -->
         <device user_agent="Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_2) AppleWebKit/531.9 (KHTML, like Gecko) Version/4.0.3 Safari/531.9" fall_back="safari_530" id="safari_531"/>
