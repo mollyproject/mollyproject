@@ -49,7 +49,7 @@ class ApplicationSearch(object):
                 'application': self.conf.local_name,
                 'redirect_if_sole_result': True,
             }
-            result.update(EntityDetailView.get_metadata(request, entity.identifier_scheme, entity.identifier_value))
+            result.update(EntityDetailView(self.conf).get_metadata(request, entity.identifier_scheme, entity.identifier_value))
             yield result
 
 
@@ -60,9 +60,9 @@ class ApplicationSearch(object):
 
         for entity_type in entity_types:
             result = {
-                'url': reverse('places:nearby_detail', args=[entity_type.slug]),
+                'url': reverse('places:nearby-detail', args=[entity_type.slug]),
                 'application': self.conf.local_name,
                 'redirect_if_sole_result': True,
             }
-            result.update(NearbyDetailView.get_metadata(request, entity_type.slug))
+            result.update(NearbyDetailView(self.conf).get_metadata(request, entity_type.slug))
             yield result
