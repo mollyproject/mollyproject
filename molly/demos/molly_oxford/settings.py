@@ -75,7 +75,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'molly.wurfl.context_processors.wurfl_device',
     'molly.wurfl.context_processors.device_specific_media',
     'molly.geolocation.context_processors.geolocation',
-    'molly.apps.feedback.context_processors.full_path',
+    'molly.utils.context_processors.full_path',
+    'molly.utils.context_processors.google_analytics',
 )
 
 
@@ -261,7 +262,7 @@ APPLICATIONS = [
         secure = True,
         tools = [
             ('signup', 'Sign-ups'),
-#            ('poll', 'Polls'),
+            ('poll', 'Polls'),
 #            ('direct', 'User information'),
 #            ('sites', 'Sites'),
 #            ('evaluation', 'Surveys'),
@@ -295,6 +296,7 @@ API_KEYS = {
     'google': SECRETS.google,
     'yahoo': SECRETS.yahoo,
     'fireeagle': SECRETS.fireeagle,
+    'google_analytics': SECRETS.google_analytics,
 }
 
 SITE_MEDIA_PATH = os.path.join(project_root, 'media')

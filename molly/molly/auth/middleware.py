@@ -51,7 +51,7 @@ class SecureSessionMiddleware(object):
             return
             
         secure_request = request.is_secure()
-        secure_view = isinstance(view_func, type) and SecureView in view_func.__mro__
+        secure_view = isinstance(view_func, SecureView)
         
         # If the non-secure session is marked secure, refuse the request.
         # Likewise, if the secure session isn't marked secure, refuse the request.

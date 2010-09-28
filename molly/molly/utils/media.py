@@ -53,6 +53,11 @@ def get_compress_groups(STATIC_ROOT):
                 if not group in compress:
                     output_filename = '.'.join((output_filename[0], 'v?', output_filename[1]))
                     output_filename = os.path.join(os.path.join('c', *path), output_filename)
+
+                    # Create the target directory if it doesn't already exist.
+                    if not os.path.exists(os.path.dirname(output_filename)):
+                        os.makedirs(os.path.dirname(output_filename))
+
                     compress[group] = {
                         'source_filenames': (),
                         'output_filename': output_filename,

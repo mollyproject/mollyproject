@@ -237,12 +237,12 @@ ul.stand-alone {
 
 
 /* Background images primarily for list items */
-.phone {background-image:url('../../../site/png/icons/list-phone.png');}
-.email {background-image:url('../../../site/png/icons/list-email.png');}
-.external {background-image:url('../../../site/png/icons/list-external.png');}
-.external-mobile {background-image:url('../../../site/png/icons/list-external-mobile.png');}
-.audio {background-image:url('../../../site/png/icons/list-audio.png');}
-.video {background-image:url('../../../site/png/icons/list-video.png');}
+ul.link-list li a.phone {background-image:url('../../../site/png/icons/list-phone.png');}
+ul.link-list li a.email {background-image:url('../../../site/png/icons/list-email.png');}
+ul.link-list li a.external {background-image:url('../../../site/png/icons/list-external.png');}
+ul.link-list li a.external-mobile {background-image:url('../../../site/png/icons/list-external-mobile.png');}
+ul.link-list li a.audio {background-image:url('../../../site/png/icons/list-audio.png');}
+ul.link-list li a.video {background-image:url('../../../site/png/icons/list-video.png');}
     /* End background images for list items */
 /* End Standard List Styles */
 
@@ -780,7 +780,7 @@ table.content > *:last-child > tr:last-child > td:last-child {
 }
 
 div.button {
-    background:#002147 url('../../site/png/icons/list-arrow.png') no-repeat;
+    background:#002147 url('../../../site/png/icons/list-arrow.png') no-repeat;
     background-position: right center;
 
     margin: 8px 2px 0 auto;
