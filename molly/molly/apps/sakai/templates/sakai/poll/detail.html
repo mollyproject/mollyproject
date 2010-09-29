@@ -2,7 +2,7 @@
 
 {% block content %}
 
-{% if may_vote %}
+{% if poll.mayVote %}
 <form method="POST" action="">
 {% endif %}
 
@@ -60,7 +60,7 @@
 {% for option in options %}
       <tr>
         <td style="text-align:center; font-size:200%; width:35px">
-{% if may_vote %}
+{% if poll.mayVote %}
           <label style="display:block; padding:10px; margin:8px; -moz-border-radius:8px; border:1px solid #888; width:1.1em; line-height:1.1em; vertical-align:middle">
             <input
               type="{{ poll.maxOptions|pluralize:"radio,checkbox" }}"
@@ -71,7 +71,7 @@
           </label>
 {% else %}
           {% if option.votedFor %}
-            <img src="{{ MEDIA_URL }}png/sakai/voted.png" alt="&#10007;"/>
+            <img src="{{ MEDIA_URL }}sakai-polls/png/voted.png" alt="&#10007;"/>
           {% endif %}
 {% endif %}
         </td>
@@ -89,7 +89,7 @@
      </tr>
 {% endfor %}
     </tbody>
-{% if may_vote %}
+{% if poll.mayVote %}
     <tfoot>
       <tr>
         <td colspan="{% if vote_count %}3{% else %}2{% endif %}" style="text-align:center; padding:10px">
@@ -101,7 +101,7 @@
   </table>
 </div>
 
-{% if may_vote %}
+{% if poll.mayVote %}
 </form>
 {% endif %}
 

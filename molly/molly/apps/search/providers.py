@@ -44,7 +44,7 @@ class BaseSearchProvider(object):
         except (Http404, Resolver404), e:
             raise
         except Exception, e:
-            logger.exception("Unexpected exception raised on call to %s.get_metadata" % callback.__name__)
+            logger.exception("Unexpected exception raised on call to %r", get_metadata)
 
         return metadata
 

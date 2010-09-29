@@ -70,9 +70,9 @@ def lazy_parent(view_name, *args, **kwargs):
     return f
 
 def static_parent(path, title, application=None):
-    def f(self, request, context):
+    def f(self, app, request, context):
         return Breadcrumb(
-            application, None, title, lambda: path
+            application, None, title, lambda app: path
         )
     return f
     

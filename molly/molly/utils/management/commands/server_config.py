@@ -7,6 +7,8 @@ from django.template import loader, Context
 from django.utils.importlib import import_module
 from django.conf import settings
 
+from molly.utils.misc import get_norm_sys_path
+
 class Command(BaseCommand):
     help = 'Generates an Apache config'
 
@@ -41,21 +43,9 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         template = loader.get_template('utils/apache.conf')
 
-        django_settings_module = os.environ['DJANGO_SETTINGS_MODULE']
-        project = import_module(django_settings_module.split('.')[0])
-        import django, molly
-
         use_https = any(app.secure for app in settings.APPLICATIONS)
 
-        sys_path = map(os.path.normpath, [
-            os.path.join(project.__path__[0], '..'),
-        ] + filter(lambda x:x != '', sys.path))
-
-        project_path = os.path.normpath(os.path.join(project.__path__[0], '..'))
-        if project_path not in sys_path:
-            sys_path.insert(0, project_path)
-
-        sys_path = [p for i,p in enumerate(sys_path) if p not in sys_path[:i]]
+        sys_path = get_norm_sys_path()
 
         context = Context({
             'project_root': os.path.abspath(project.__path__[0]),

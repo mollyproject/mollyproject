@@ -19,16 +19,12 @@ class RSSPodcastsProvider(BasePodcastsProvider):
     def PODCAST_ATTRS(self):
         atom = self.atom
         return (
-            ('guid', 'guid'),
-            ('title', 'title'),
-            ('author', '{itunes:}author'),
-            ('duration', '{itunes:}duration'),
-            ('published_date', 'pubDate'),
-            ('description', 'description'),
-            ('guid', atom('id')),
-            ('title', atom('title')),
-            ('description', atom('summary')),
-            ('published_date', atom('published')),
+            ('guid', ('guid', atom('id'),)),
+            ('title', ('title', atom('title'),)),
+            ('author', ('{itunes:}author',)),
+            ('duration', ('{itunes:}duration',)),
+            ('published_date', ('pubDate', atom('published'),)),
+            ('description', ('description', atom('summary'),)),
     #       ('itunesu_code', '{itunesu:}code'),
         )
 
@@ -57,12 +53,14 @@ class RSSPodcastsProvider(BasePodcastsProvider):
         license = o.find('{http://purl.org/dc/terms/}license') or \
                   o.find('{http://backend.userland.com/creativeCommonsRssModule}license')
         
-        return license.text if license is not None else None
+        return getattr(license, 'text', None)
         
     def update_podcast(self, podcast):
         atom = self.atom
-        def gct(node, name):
-            try:
+        def gct(node, names):
+            for name in names:
+                if node.find(name) is None:
+                    continue
                 value = node.find(name).text
                 if name == 'pubDate':
                     value = datetime.fromtimestamp(
@@ -73,8 +71,7 @@ class RSSPodcastsProvider(BasePodcastsProvider):
                 elif name == '{itunes:}duration':
                     value = int(value)
                 return value
-            except AttributeError:
-                return None
+            return None
 
         xml = etree.parse(urllib.urlopen(podcast.rss_url)).getroot()
 
@@ -94,10 +91,10 @@ class RSSPodcastsProvider(BasePodcastsProvider):
 
         ids = []
         for item in xml.findall('.//channel/item') or xml.findall(atom('entry')):
-            id = gct(item, 'guid') or gct(item, atom('id'))
+            id = gct(item, ('guid', atom('id'),))
             if not id:
                 continue
-
+            
             podcast_item, created = PodcastItem.objects.get_or_create(podcast=podcast, guid=id)
 
             old_order = podcast_item.order
@@ -107,9 +104,9 @@ class RSSPodcastsProvider(BasePodcastsProvider):
                 pass
 
             require_save = old_order != podcast_item.order
-            for attr, x_attr in self.PODCAST_ATTRS:
-                if getattr(podcast_item, attr) != gct(item, x_attr):
-                    setattr(podcast_item, attr, gct(item, x_attr))
+            for attr, x_attrs in self.PODCAST_ATTRS:
+                if getattr(podcast_item, attr) != gct(item, x_attrs):
+                    setattr(podcast_item, attr, gct(item, x_attrs))
                     require_save = True
             license = self.determine_license(item)
             if require_save or podcast_item.license != license:
@@ -119,7 +116,7 @@ class RSSPodcastsProvider(BasePodcastsProvider):
             enc_urls = []
             for enc in item.findall('enclosure') or item.findall(atom('link')):
                 attrib = enc.attrib
-                url = attrib.get('url', attrib['href'])
+                url = attrib.get('url', attrib.get('href'))
                 podcast_enc, updated = PodcastEnclosure.objects.get_or_create(podcast_item=podcast_item, url=url)
                 try:
                     podcast_enc.length = int(attrib['length']) 
@@ -142,5 +139,4 @@ class RSSPodcastsProvider(BasePodcastsProvider):
                 podcast_item.delete()
 
         #podcast.most_recent_item_date = max(i.published_date for i in PodcastItem.objects.filter(podcast=podcast))
-
         podcast.save()
