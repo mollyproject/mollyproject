@@ -55,7 +55,7 @@ class TimedOutView(BaseView):
         }    
     
     @BreadcrumbFactory
-    def breadcrumb(cls, request, context, view, *args, **kwargs):
+    def breadcrumb(self, request, context, view, *args, **kwargs):
         return Breadcrumb(
             view.conf.local_name,
             None,
@@ -63,10 +63,10 @@ class TimedOutView(BaseView):
             static_reverse(request.get_full_path()),
         )
     
-    def handle_GET(cls, request, context, view, *args, **kwargs):
-        return cls.render(request, context, 'auth/timed_out')
+    def handle_GET(self, request, context, view, *args, **kwargs):
+        return self.render(request, context, 'auth/timed_out')
             
-    def handle_POST(cls, request, context, view, *args, **kwargs):
+    def handle_POST(self, request, context, view, *args, **kwargs):
         if 'clear_session' in request.POST:
             for key in request.secure_session.keys():
                 del request.secure_session[key]
@@ -80,14 +80,14 @@ class TimedOutView(BaseView):
                 return HttpResponseRedirect('.')
             else:
                 context['incorrect_pin'] = True
-                return cls.render(request, context, 'auth/timed_out')
+                return self.render(request, context, 'auth/timed_out')
         else:
             return HttpResponse('', status=400)
         
 class IndexView(SecureView):
     app_name = 'secure'
     
-    def initial_context(cls, request):
+    def initial_context(self, request):
         return {
             'form': PreferencesForm(request.POST or {
                 'timeout_period': request.secure_session.get('timeout_period', 15),
@@ -99,27 +99,27 @@ class IndexView(SecureView):
         }
         
     @BreadcrumbFactory
-    def breadcrumb(cls, request, context):
+    def breadcrumb(self, request, context):
         return Breadcrumb(
-            cls.conf.local_name,
+            self.conf.local_name,
             None,
             'Authentication preferences',
             lazy_reverse('auth:index'),
         )
         
-    def handle_GET(cls, request, context):
-        return cls.render(request, context, 'auth/index')
+    def handle_GET(self, request, context):
+        return self.render(request, context, 'auth/index')
     
-    def handle_POST(cls, request, context):
+    def handle_POST(self, request, context):
         forms = context['form'], context['user_sessions'], context['external_service_tokens']
         
         if not all(form.is_valid() for form in forms):
             print [form.errors for form in forms]
-            return cls.render(request, context, 'auth/index')
+            return self.render(request, context, 'auth/index')
             
         if context['has_pin'] and form.cleaned_data['old_pin'] != request.secure_session['pin']:
             form.errors['old_pin'] = ErrorList(['You supplied an incorrect PIN. Please try again.'])
-            return cls.render(request, context, 'auth/index')
+            return self.render(request, context, 'auth/index')
 
         form = context['form']
         request.secure_session['timeout_period'] = form.cleaned_data['timeout_period']
@@ -129,7 +129,7 @@ class IndexView(SecureView):
                 request.secure_session['pin'] = form.cleaned_data['new_pin_a']
             else:
                 form.errors['new_pin_b'] = ErrorList(['Your repeated PIN did not match.'])
-                return cls.render(request, context, 'auth/index')
+                return self.render(request, context, 'auth/index')
 
         for form in forms:
             if hasattr(form, 'save'):
@@ -139,24 +139,24 @@ class IndexView(SecureView):
         
     
 class ClearSessionView(SecureView):
-    def initial_context(cls, request):
+    def initial_context(self, request):
         return {
             'return_url': request.REQUEST.get('return_url', '/'),
         }
         
     @BreadcrumbFactory
-    def breadcrumb(cls, request, context):
+    def breadcrumb(self, request, context):
         return Breadcrumb(
-            cls.conf.local_name,
+            self.conf.local_name,
             static_parent(context['return_url'], 'Back'),
             'Clear session',
             lazy_reverse('auth:clear-session'),
             
         )
             
-    def handle_GET(cls, request, context):
-        return cls.render(request, context, 'auth/clear_session')
-    def handle_POST(cls, request, context):
+    def handle_GET(self, request, context):
+        return self.render(request, context, 'auth/clear_session')
+    def handle_POST(self, request, context):
         UserSession.objects.filter(secure_session_key = request.secure_session.session_key).delete()
         if context['return_url']:
             return HttpResponseRedirect(context['return_url'])

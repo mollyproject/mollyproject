@@ -327,7 +327,7 @@ def ReverseView(request):
         
         path = reverse(name, args=args)
         view, view_args, view_kwargs = resolve(path)
-        is_secure = issubclass(view, SecureView) and not settings.DEBUG_SECURE
+        is_secure = isinstance(view, SecureView) and not settings.DEBUG_SECURE
         return HttpResponse("http%s://%s%s" % (
             's' if is_secure else '',
             request.META['HTTP_HOST'],

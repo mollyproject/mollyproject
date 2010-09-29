@@ -193,6 +193,26 @@ Finally, `file a bug
 <http://sourceforge.net/mail/?group_id=309230>`_ to let the developers know
 what went wrong, so we can make things a little better next time round.
 
+Compiling the media files
+-------------------------
+
+Molly maintains media for each application within its source tree. Thus, the
+media for molly.apps.contact is stored in :file:`molly/molly/apps/contact/media/`.
+
+Molly uses `django-staticfiles <http://pypi.python.org/pypi/django-staticfiles>`_
+and `django-compress <http://pypi.python.org/pypi/django-compress`_ to merge
+media from each app into the media directory served by the web server, which
+should be invoked using the following:
+
+.. code-block:: bash
+
+   $ cd ~/mollyenv/
+   $ source bin/activate
+   $ export PYTHONPATH=~/mollyenv/demos/
+   $ cd demos/molly_oxford/
+   $ ./manage.py build_static --noinput
+   $ ./manage.py synccompress
+
 Running a demo site
 -------------------
 

@@ -5,7 +5,7 @@
   <div style="width:100%; float:left; margin-top: 2px; margin-bottom:2px;">
     <div style="line-height:1.8em; margin:0 10px 0 10px; background-color:#ffffbf; padding:10px; -webkit-border-radius:6px; -moz-border-radius:6px; text-align:center; display:block"
        href="{% url feature_vote:index %}">
-      <div style="background-image:url('{{ MEDIA_URL }}png/auth/padlock.png'); background-repeat:no-repeat; background-position:left center; padding-left:28px"> 
+      <div style="background-image:url('{{ MEDIA_URL }}auth/png/padlock.png'); background-repeat:no-repeat; background-position:left center; padding-left:28px"> 
   <a style="padding:5px 1px;" href="{% url auth:index %}">Security preferences</a>
   <a style="padding:5px 1px;" href="{% url auth:clear-session %}?return_url={{ full_path }}">Clear secure session</a><br/>
   {{ user|externalservicetoken_count }} service{{ user|externalservicetoken_count|pluralize }} accessible from {{ user.usersession_set.all.count }} device{{ user.usersession_set.all.count|pluralize }}.

@@ -2,7 +2,7 @@
 
 {% block content %}
 
-{% if may_vote %}
+{% if poll.mayVote %}
 <form method="POST" action="">
 {% endif %}
 
@@ -10,19 +10,30 @@
   <div class="header">
     <h2>{{ poll.text }}</h2>
 
-    {% if not poll.currentUserVotes and not may_vote %}
+    {% if not poll.hasVoted and poll.multiVote and poll.isOpen %}
       <div class="sakai-error-message">
         <p>
           This polls allows you to select more than one response, which is as yet unsupported through this interface.
         </p>
         <p>
-        To participate, please use the
-        <a href="{{ sakai_host }}portal/{{ poll.siteId }}/page/polls">{{ service_name }} website</a>.
+        To participate, please visit the {{ service_name }} website from a desktop browser.
         </p>
+      </div>
+    {% endif %}
+    {% if not poll.hasVoted and not poll.isOpen %}
+      <div class="sakai-error-message">
         <p>
-        This link will take you away from this site, and may require you to reauthenticate with {{ service_name }}. You may also wish to use a
-        desktop browser.
+          {% if poll.hasClosed %}
+            You are unable to vote in this poll as it closed {{ poll.voteClose|timesince }} ago.
+          {% else %}
+            This poll has not yet opened. Please try again in {{ poll.voteOpen|timeuntil }}.
+          {% endif %}
         </p>
+      </div>
+    {% endif %}
+    {% if not poll.hasVoted and poll.isOpen and not poll.multiVote %}
+      <div class="sakai-notice-message">
+        This poll closes {{ poll.voteClose|from_sakai_timestamp|timeuntil }} from now.
       </div>
     {% endif %}
 
@@ -49,7 +60,7 @@
 {% for option in options %}
       <tr>
         <td style="text-align:center; font-size:200%; width:35px">
-{% if may_vote %}
+{% if poll.mayVote %}
           <label style="display:block; padding:10px; margin:8px; -moz-border-radius:8px; border:1px solid #888; width:1.1em; line-height:1.1em; vertical-align:middle">
             <input
               type="{{ poll.maxOptions|pluralize:"radio,checkbox" }}"
@@ -60,7 +71,7 @@
           </label>
 {% else %}
           {% if option.votedFor %}
-            <img src="{{ MEDIA_URL }}png/sakai/voted.png" alt="&#10007;"/>
+            <img src="{{ MEDIA_URL }}sakai-polls/png/voted.png" alt="&#10007;"/>
           {% endif %}
 {% endif %}
         </td>
@@ -78,7 +89,7 @@
      </tr>
 {% endfor %}
     </tbody>
-{% if may_vote %}
+{% if poll.mayVote %}
     <tfoot>
       <tr>
         <td colspan="{% if vote_count %}3{% else %}2{% endif %}" style="text-align:center; padding:10px">
@@ -90,7 +101,7 @@
   </table>
 </div>
 
-{% if may_vote %}
+{% if poll.mayVote %}
 </form>
 {% endif %}
 

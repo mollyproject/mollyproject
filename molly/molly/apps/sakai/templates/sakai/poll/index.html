@@ -2,32 +2,34 @@
 
 {% block content %}
 
-{% regroup polls by title as polls_by_title %}
+{% regroup polls by siteId as polls_by_siteId %}
 
-{% for poll_set in polls_by_title %}
+{% for poll_set in polls_by_siteId %}
 <div class="section">
   <div class="header">
-    <h2>{{ poll_set.grouper }}</h2>
+    <h2>{{ poll_set.list.0.siteTitle }}</h2>
   </div>
 
   <table class="content">
     <thead>
       <tr>
         <th>Question</th>
-        <th>Open</th>
+        <th>Status</th>
         <th></th>
     <tbody>
 {% for poll in poll_set.list %}
       <tr>
         <td>{{ poll.text }}</td>
         <td>
-          {{ poll.voteOpen|from_sakai_timestamp|date:"d M Y, g:iA" }}
-          until
-          {{ poll.voteClose|from_sakai_timestamp|date:"d M Y, g:iA" }}
+          {% if poll.hasOpened %}
+            Closes in <strong>{{ poll.voteClose|timeuntil }}</strong>.
+          {% else %}
+            Opens in <strong>{{ poll.voteOpen|timeuntil }}</strong> for <strong>{{ poll.voteClose|timeuntil:poll.voteOpen }}</strong>.
+          {% endif %}
         </td>
         <td>
           <div class="button">
-            <a href="{% url sakai:poll-detail poll.id %}">{% if poll.currentUserVotes %}View{% else %}Take{% endif %}</a>
+            <a href="{% url sakai:poll-detail poll.id %}">{% if poll.mayVote %}Vote!{% else %}View{% endif %}</a>
           </div>
         </td>
       </tr>

@@ -8,7 +8,7 @@
     <p>It looks like you're using an iPod/iPhone! You can also get all the University's podcasts via your iTunes U app, which gives you extra features like downloads for later listening/viewing.</p>
     
     <p>Please note that this will close Safari.</p>
-    <form method="post" action="{% url podcasts:itunesu_redirect %}">
+    <form method="post" action="{% url podcasts:itunesu-redirect %}">
     {% comment %}<p><input type="checkbox" name="remember" id="remember"/>
        <label for="remember">
        Remember this preference in future.
@@ -29,14 +29,14 @@
 <h2 class="invisible">Search Podcasts</h2>    
 <table class="search"><tbody>
         <tr><td>
-                <label style="display:none;" for="id_query">Search Podcasts Box</label>
+                <label class="invisible" for="id_query">Search podcasts</label>
                 {{ search_form.query }}
         </td><td>
                 <input type="hidden" name="application" value="podcasts" title="Search Podcasts" />
                 {% ifequal style_group "dumb" %}
                     <button type="submit">Go!</button>
                 {% else %}
-                	<input type="image" src="{{ MEDIA_URL }}png/new/buttons/search-button.png" title="Search" />
+                	<input type="image" src="{{ MEDIA_URL }}site/png/new/buttons/search-button.png" title="Search" />
                 {% endifequal %}
         </td></tr><tr><td>
                 <p class="help-bubble top">Try searching for a podcast by subject, name or author</p>
@@ -54,7 +54,9 @@
 
 
 <div class="section" >
+  <div class="header">
 	<h2>By division</h2>
+  </div>
 <ul class="link-list">
 {% for category in categories %}
     <li {% if forloop.last %}class="round-bottom" {% endif %}>

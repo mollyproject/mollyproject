@@ -5,7 +5,7 @@ from .views import (
 )
 
 urlpatterns = patterns('',
-    (r'^((?P<page>[a-z\-]+)/)?$',
+    (r'^$',
         IndexView, {},
         'index'),
 )

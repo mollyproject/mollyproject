@@ -31,7 +31,8 @@ class IndexView(BaseView):
         return cls.render(request, context, 'feedback/index')
 
     def handle_POST(cls, request, context):
-        if context['feedback_form'].is_valid():
+        form = context['feedback_form']
+        if form.is_valid():
             # Send an e-mail to the managers notifying of feedback.
             email = send_email(request, {
                 'email': form.cleaned_data['email'],

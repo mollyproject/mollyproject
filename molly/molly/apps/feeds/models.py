@@ -139,9 +139,9 @@ class Item(models.Model):
     
     def get_absolute_url(self):
         if self.ptype == 'n':
-            return reverse('news:item_detail', args=[self.feed.slug, self.id])
+            return reverse('news:item-detail', args=[self.feed.slug, self.id])
         else:
-            return reverse('events:item_detail', args=[self.feed.slug, self.id])
+            return reverse('events:item-detail', args=[self.feed.slug, self.id])
         
         
     def get_description_display(self, device):
