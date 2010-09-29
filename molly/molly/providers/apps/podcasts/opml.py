@@ -1,12 +1,14 @@
 from xml.etree import ElementTree as ET
 from datetime import datetime
-import urllib, re, email, random
+import urllib, re, email, random, logging
 
 from molly.conf.settings import batch
 from molly.apps.podcasts.providers import BasePodcastsProvider
 from molly.apps.podcasts.models import Podcast, PodcastItem, PodcastCategory, PodcastEnclosure
 
 from rss import RSSPodcastsProvider
+
+logger = logging.getLogger(__name__)
 
 class OPMLPodcastsProvider(RSSPodcastsProvider):
     def __init__(self, url):
@@ -44,29 +46,37 @@ class OPMLPodcastsProvider(RSSPodcastsProvider):
 
         podcast_elems = xml.findall('.//body/outline')
 
+        failure_logged = False
+
         for outline in podcast_elems:
             attrib = outline.attrib
-            podcast, created = Podcast.objects.get_or_create(
-                provider=self.class_path,
-                rss_url=attrib['xmlUrl'])
-
-            podcast.category = self.decode_category(attrib['category'])
-
-            # There are four podcast feed relics that existed before the
-            # -audio / -video convention was enforced. These need to be
-            # hard-coded as being audio feeds.
-            match_groups = self.RSS_RE.match(attrib['xmlUrl']).groups()
-            podcast.medium = {
-                'engfac/podcasts-medieval': 'audio',
-                'oucs/ww1-podcasts': 'audio',
-                'philfac/uehiro-podcasts': 'audio',
-                'offices/undergrad-podcasts': 'audio',
-            }.get(match_groups[0], match_groups[1])
-            podcast.slug = match_groups[0]
-
-            rss_urls.append(attrib['xmlUrl'])
-
-            self.update_podcast(podcast)
+            try:
+                podcast, created = Podcast.objects.get_or_create(
+                    provider=self.class_path,
+                    rss_url=attrib['xmlUrl'])
+    
+                podcast.category = self.decode_category(attrib['category'])
+    
+                # There are four podcast feed relics that existed before the
+                # -audio / -video convention was enforced. These need to be
+                # hard-coded as being audio feeds.
+                match_groups = self.RSS_RE.match(attrib['xmlUrl']).groups()
+                podcast.medium = {
+                    'engfac/podcasts-medieval': 'audio',
+                    'oucs/ww1-podcasts': 'audio',
+                    'philfac/uehiro-podcasts': 'audio',
+                    'offices/undergrad-podcasts': 'audio',
+                }.get(match_groups[0], match_groups[1])
+                podcast.slug = match_groups[0]
+    
+                rss_urls.append(attrib['xmlUrl'])
+    
+                self.update_podcast(podcast)
+                print "Updated %r" % podcast.title
+            except Exception, e:
+                if not failure_logged:
+                    logger.exception("Update of podcast %r failed.", attrib['xmlUrl'])
+                    failure_logged = True
 
         for podcast in Podcast.objects.filter(provider=self.class_path):
             if not podcast.rss_url in rss_urls:
