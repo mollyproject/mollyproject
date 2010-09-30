@@ -21,7 +21,7 @@ def BreadcrumbFactory(breadcrumb_func):
         
         if breadcrumb.parent:
             parent_data = breadcrumb.parent(self, breadcrumb.application, request, context)
-            parent = parent_data.title, parent_data.url(breadcrumb.application)
+            parent = parent_data.title, parent_data.url(parent_data.application)
         else:
             parent = None
         
