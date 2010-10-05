@@ -8,8 +8,6 @@ from django.core.cache import cache
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import NullBreadcrumb
 
-from molly.apps.home.models import BlogArticle
-
 class IndexView(BaseView):
     def get_metadata(self, request):
         return {
