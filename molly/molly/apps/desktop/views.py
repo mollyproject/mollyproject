@@ -1,4 +1,4 @@
-import simplejson, urllib2, feedparser
+import simplejson, urllib2, feedparser, logging
 
 from django.http import Http404, HttpResponse
 from django.template import loader, TemplateDoesNotExist, RequestContext
@@ -7,6 +7,8 @@ from django.core.cache import cache
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import NullBreadcrumb
+
+logger = logging.getLogger(__name__)
 
 class IndexView(BaseView):
     def get_metadata(self, request):
@@ -41,8 +43,12 @@ class IndexView(BaseView):
         if not username:
             return None
         
-        url = self._TWITTER_URL % username
-        feed = simplejson.load(urllib2.urlopen(url))
+        try:
+            url = self._TWITTER_URL % username
+            feed = simplejson.load(urllib2.urlopen(url))
+        except Exception:
+            logger.warn("Failed to fetch Twitter feed.", exc_info=True)
+            return None
         
         if hasattr(self.conf, 'twitter_ignore_urls'):
             feed = [tweet for tweet in feed if 'entities' in tweet and not any(url['url'].startswith(self.conf.twitter_ignore_urls) for url in tweet['entities']['urls'])]
@@ -70,4 +76,8 @@ class IndexView(BaseView):
         if not url:
             return None
         
-        return feedparser.parse(url)
+        try:
+            return feedparser.parse(url)
+        except Exception, e:
+            logger.warn("Failed to fetch blog feed.", exc_info=True)
+            return None
