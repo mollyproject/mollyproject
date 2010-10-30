@@ -50,12 +50,12 @@ class BBCWeatherProvider(object):
 
     _FORECAST_URL = 'http://newsrss.bbc.co.uk/weather/forecast/%d/Next3DaysRSS.xml'
     _FORECAST_RE = re.compile(
-        r'Max Temp: (?P<max_temperature>-?\d+|N\/A).+Min Temp: (?P<min_temperature>-?\d+|N\/A)'
-      + r'.+Wind Direction: (?P<wind_direction>[NESW]{0,3}|N\/A), Wind Speed: '
-      + r'(?P<wind_speed>\d+|N\/A).+Visibility: (?P<visibility>[A-Za-z\/ ]+), '
-      + r'Pressure: (?P<pressure>\d+|N\/A).+Humidity: (?P<humidity>\d+|N\/A).+'
-      + r'UV risk: (?P<uv_risk>[A-Za-z]+|N\/A), Pollution: (?P<pollution>[A-Za-z]+|N\/A), '
-      + r'Sunrise: (?P<sunrise>\d\d:\d\d)[A-Z]{3}, Sunset: (?P<sunset>\d\d:\d\d)[A-Z]{3}'
+        r'Max Temp:\s*(?P<max_temperature>-?\d+|N\/A).+Min Temp:\s*(?P<min_temperature>-?\d+|N\/A)'
+        r'.+Wind Direction:\s*(?P<wind_direction>[NESW]{0,3}|N\/A),\s*Wind Speed:\s*'
+        r'(?P<wind_speed>\d+|N\/A).+Visibility:\s*(?P<visibility>[A-Za-z\/ ]+),\s*'
+        r'Pressure:\s*(?P<pressure>\d+|N\/A).+Humidity:\s*(?P<humidity>\d+|N\/A).+'
+        r'UV risk:\s*(?P<uv_risk>[A-Za-z]+|N\/A),\s*Pollution:\s*(?P<pollution>[A-Za-z]+|N\/A),\s*'
+        r'Sunrise:\s*(?P<sunrise>\d\d:\d\d)[A-Z]{3},\s*Sunset:\s*(?P<sunset>\d\d:\d\d)[A-Z]{3}'
     )
 
     _FORECAST_TITLE_RE = re.compile(
