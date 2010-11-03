@@ -12,10 +12,10 @@ SECRETS = _Secrets({
     'database_host': '',
     'secret_key': 'secret key',
 
-    'weblearn': ('mobileox-dev', 'gatae1reeHai6Oogaequ'),
-    'cloudmade': 'a1e6c80b8ea450fcbaa294b673f0e42d',
+    'weblearn': (None, None),
+    'cloudmade': None,
     'google': None,
     'yahoo': None,
     'fireeagle': None,
-    'journeyweb': ('timfernando', 'tamefruit037'),
+    'journeyweb': (None, None),
 })

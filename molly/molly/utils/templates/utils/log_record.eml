@@ -1,0 +1,31 @@
+X-Molly-Type: logging-record
+X-Molly-Device-Id: {{ devid }}
+X-Molly-Logging-Level-No: {{ record.levelno }}
+X-Molly-Logging-Level: {{ level_name }}
+X-Molly-Logging-Level-Extent: {{ level_stars }}
+Priority: {{ priority }}
+References: molly-event-{{ hash }}@{{ host }}
+Subject: [Molly] [{{ record.levelname }}] {{ record.getMessage|safe }}
+
+{{ record.getMessage|safe }}
+
+
+Logger:    {{ record.name }}
+Path:      {{ request.build_absolute_uri }}
+UA:        {{ ua }}
+Device:    {{ devid }}
+
+When:      {{ created }}
+Location:  {{ record.module }}:{{ record.funcName }}
+           {{ record.pathname }}:{{ record.lineno }}
+
+
+{{ traceback|safe }}{% if extra %}
+
+
+{% for key, value in extra.items %}{{ key }}
+{{ value|safe }}
+{% endfor %}{% endif %}
+
+
+{{ request|safe }}

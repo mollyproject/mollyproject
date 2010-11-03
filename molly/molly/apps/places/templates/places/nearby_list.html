@@ -10,9 +10,9 @@
   <h2>{{ name }}</h2>
 	<ul class="link-list">
 	{% for entity_type in types %}{% if entity %}
-	    <li{% if forloop.last %} class="round-bottom"{% endif %}><a href="{% url places:entity_nearby_detail entity.identifier_scheme,entity.identifier_value,entity_type.slug %}">
+	    <li{% if forloop.last %} class="round-bottom"{% endif %}><a href="{% url places:entity-nearby-detail entity.identifier_scheme,entity.identifier_value,entity_type.slug %}">
 	{% else %}
-	    <li{% if forloop.last %} class="round-bottom"{% endif %}><a href="{% url places:nearby_detail entity_type.slug %}">
+	    <li{% if forloop.last %} class="round-bottom"{% endif %}><a href="{% url places:nearby-detail entity_type.slug %}">
 	{% endif %} {{ entity_type.verbose_name_plural|capfirst }} <small>({{ entity_type.entities_found }} within {{ entity_type.max_distance.m|floatformat:"-0" }}m)</small></a></li>{% endfor %}
 	</ul>
 </div>

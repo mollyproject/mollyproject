@@ -1,4 +1,7 @@
 from __future__ import division, absolute_import
+
+from inspect import isfunction
+
 from datetime import datetime
 import socket, time, logging, sys, traceback, Cookie
 import xml.utils.iso8601
@@ -16,7 +19,10 @@ class StatisticsMiddleware(object):
 
     def process_view(self, request, view_func, view_args, view_kwargs):
 
-        request._stats_view_name = ".".join((view_func.__module__, view_func.__name__))
+        if isfunction(view_func):
+            request._stats_view_name = ".".join((view_func.__module__, view_func.__name__))
+        else:
+            request._stats_view_name = unicode(view_func)
 
         try:
             request._stats_local_name = view_func.conf.local_name

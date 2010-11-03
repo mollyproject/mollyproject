@@ -67,9 +67,9 @@ class Feed(models.Model):
         
     def get_absolute_url(self):
         if self.ptype == 'n':
-            return reverse('news:item_list', args=[self.slug])
+            return reverse('news:item-list', args=[self.slug])
         else:
-            return reverse('events:item_list', args=[self.slug])
+            return reverse('events:item-list', args=[self.slug])
         
     class Meta:
         ordering = ('title',)
@@ -139,9 +139,9 @@ class Item(models.Model):
     
     def get_absolute_url(self):
         if self.ptype == 'n':
-            return reverse('news:item_detail', args=[self.feed.slug, self.id])
+            return reverse('news:item-detail', args=[self.feed.slug, self.id])
         else:
-            return reverse('events:item_detail', args=[self.feed.slug, self.id])
+            return reverse('events:item-detail', args=[self.feed.slug, self.id])
         
         
     def get_description_display(self, device):

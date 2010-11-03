@@ -1,6 +1,6 @@
 from django.conf.urls.defaults import *
 
-from views import IndexView, ClearHistoryView
+from views import IndexView, ClearHistoryView, FavouritesView
 
 urlpatterns = patterns('',
     (r'^$',
@@ -10,6 +10,10 @@ urlpatterns = patterns('',
     (r'^clear/$',
         ClearHistoryView, {},
         'clear'),
+
+    (r'^favourites/$',
+        FavouritesView, {},
+        'favourites'),
 
 )
     

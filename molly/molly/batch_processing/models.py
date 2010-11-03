@@ -1,10 +1,12 @@
-import simplejson, traceback, sys
+import simplejson, traceback, sys, logging
 from datetime import datetime
 from StringIO import StringIO
 
 from django.db import models
 
 from molly.conf import all_apps, app_by_local_name
+
+logger = logging.getLogger("molly.batch_processing")
 
 class TeeStringIO(StringIO):
     def __init__(self, *args, **kwargs):
@@ -69,10 +71,10 @@ class Batch(models.Model):
             
             self.metadata = method(self.metadata, output)
         except Exception, e:
-            traceback.print_exc()
             if output.getvalue():
                 output.write("\n\n")
             traceback.print_exc(file=output)
+            logger.exception('Batch %r threw an uncaught exception' % self.title)
         finally:
             self.log = output.getvalue()
             self.last_run = datetime.utcnow()

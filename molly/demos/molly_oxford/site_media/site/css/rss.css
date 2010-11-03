@@ -1,0 +1,34 @@
+
+div.rss_item-odd {
+    background-color:#cfdae7;
+}
+
+div.rss_item-even {
+    background-color:#ffffff;
+}
+
+
+div.rss_item {
+    padding:0.3em 0.1em;
+}
+
+h3 {
+    margin:0;
+    font-size:100%;
+    font-weight:bold;
+}
+
+p.feed_name {
+    font-style:italic;
+    font-size:90%;
+}
+
+div.page_navigation {
+    margin:0.4em 0;
+    text-align:center;
+    vertical-align:middle; 
+}
+
+div.page_navigation a {
+    text-decoration: none;
+}
