@@ -184,7 +184,9 @@ class NaptanMapsProvider(BaseMapsProvider):
             self._import_from_http()
         elif self._method == 'ftp':
             self._import_from_ftp()
-
+        
+        entity.update_all_types_completion()
+        
         return metadata
 
     def _import_from_ftp(self):
