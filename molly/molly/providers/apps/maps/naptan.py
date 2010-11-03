@@ -70,7 +70,6 @@ class NaptanContentHandler(ContentHandler):
         except Entity.DoesNotExist:
             entity = Entity(source=source)
 
-
         cnm, lmk, ind, str = [meta.get(k) for k in ['common-name', 'landmark', 'indicator', 'street']]
 
         if (cnm or '').endswith(' DEL') or (ind or '').lower == 'not in use':
@@ -120,6 +119,8 @@ class NaptanContentHandler(ContentHandler):
 
         entity.save(identifiers=identifiers)
         entity.all_types.add(entity_type)
+        
+        entity.update_all_types_completion()
 
         return entity
 
@@ -184,8 +185,6 @@ class NaptanMapsProvider(BaseMapsProvider):
             self._import_from_http()
         elif self._method == 'ftp':
             self._import_from_ftp()
-        
-        entity.update_all_types_completion()
         
         return metadata
 
