@@ -9,7 +9,7 @@ from molly.geolocation.utils import reverse_geocode
 from molly.conf.settings import batch
 
 from xml.sax import saxutils, handler, make_parser
-import urllib2, bz2, subprocess, popen2, sys, random
+import urllib2, bz2, subprocess, sys, random
 from os import path
 
 
@@ -193,11 +193,11 @@ class OSMMapsProvider(BaseMapsProvider):
             output.write('OSM data not updated. Not updating.\n')
             return
 
-        p = popen2.popen2(self.SHELL_CMD)
+        p = subprocess.Popen([self.SHELL_CMD], shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, close_fds=True)
 
         parser = make_parser()
         parser.setContentHandler(OSMHandler(self._get_source(), self._get_entity_types(), self._find_types, output))
-        parser.parse(p[0])
+        parser.parse(p.stdout)
         
         self.disambiguate_titles(self._get_source())
 
