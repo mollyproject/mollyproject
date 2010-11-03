@@ -1,4 +1,4 @@
-import simplejson, urllib, random, csv, zipfile, tempfile
+import simplejson, urllib, random, csv, zipfile, tempfile, urllib2, os.path
 
 from django.contrib.gis.geos import Point
 
@@ -6,9 +6,6 @@ from molly.apps.places.providers import BaseMapsProvider
 from molly.apps.places.models import Entity, EntityType, Source
 
 from molly.conf.settings import batch
-
-
-OXPOINTS_NS = 'http://ns.ox.ac.uk/namespace/oxpoints/2009/02/owl#'
 
 class PostcodesMapsProvider(BaseMapsProvider):
     def __init__(self, codepoint_path, import_areas=None):
@@ -20,7 +17,14 @@ class PostcodesMapsProvider(BaseMapsProvider):
 
         entity_type, source = self._get_entity_type(), self._get_source()
 
+        if not os.path.exists(self.codepoint_path):
+            archive_url = urllib2.urlopen('http://freepostcodes.org.uk/static/code-point-open/codepo_gb.zip')
+            archive_file = open(self.codepoint_path, 'w')
+            archive_file.write(archive_url.read())
+            archive_file.close()
+        
         archive = zipfile.ZipFile(self.codepoint_path)
+        
         if self.import_areas:
             filenames = ['Code-Point Open/data/CSV/%s.csv' % code.lower() for code in self.import_areas]
         else:

@@ -9,6 +9,8 @@ from secrets import SECRETS
 molly_root = imp.find_module('molly')[1]
 project_root = os.path.normpath(os.path.dirname(__file__))
 
+CACHE_DIR = '/var/cache/molly'
+
 DEBUG = True
 DEBUG_SECURE = True
 TEMPLATE_DEBUG = DEBUG
@@ -113,7 +115,7 @@ APPLICATIONS = [
                 areas=('340',),
             ),
             Provider('molly.providers.apps.maps.PostcodesMapsProvider',
-                codepoint_path = '/var/cache/molly/codepo_gb.zip',
+                codepoint_path = CACHE_DIR + '/codepo_gb.zip',
                 import_areas = ('OX',),
             ),
             'molly.providers.apps.maps.OxontimeMapsProvider',
@@ -370,7 +372,6 @@ COMPRESS_VERSION = True  # Add a version number to compressed files.
 
 
 
-CACHE_DIR = '/var/cache/molly'
 SRID = 27700
 
 CACHE_BACKEND = 'memcached://localhost:11211/?timeout=60'
