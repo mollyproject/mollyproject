@@ -8,7 +8,7 @@ from molly.osm.models import get_marker_dir
     
 class Command(NoArgsCommand):
     def handle_noargs(self, **options):
-        template = open(os.path.join(os.path.dirname(__file__), 'base.svg')).read()
+        template = open(os.path.join(os.path.dirname(__file__), 'markers', 'base.svg')).read()
         marker_dir = get_marker_dir()
         
         if not os.path.exists(marker_dir):
@@ -34,7 +34,7 @@ class Command(NoArgsCommand):
                 '--export-png=%s' % filename,
             ])
         
-        template = open(os.path.join(os.path.dirname(__file__), 'star-base.svg')).read()
+        template = open(os.path.join(os.path.dirname(__file__), 'markers', 'star-base.svg')).read()
             
         for color in MARKER_COLORS:
             out = template % {'fill': color[1], 'stroke': color[2]}

@@ -1,0 +1,769 @@
+{% load compressed %}<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-GB" lang="en-GB">
+<head>
+<title>Mobile Oxford</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+<link rel="stylesheet" href="{{ MEDIA_URL }}blueprint/blueprint/screen.css"
+	type="text/css" media="screen,projection" />
+<link rel="stylesheet" href="{{ MEDIA_URL }}blueprint/blueprint/print.css"
+	type="text/css" media="print" />
+<!--[if IE]>
+    <link rel="stylesheet" href="{{ MEDIA_URL }}blueprint/blueprint/ie.css" type="text/css" media="screen,projection"/>
+    <![endif]-->
+{% compressed_css "jquery.lightbox-0.5" %}
+<link rel="shortcut icon" href="{{ MEDIA_URL }}desktop/png/favicon.png" />
+
+<style type="text/css">
+
+#footer {
+    margin-top: 25px;
+    padding-top: 10px;
+    background: #fdfce5;
+    border-top: 12px solid #ccc;
+    font-size: 0.9em;
+    box-shadow: 0 0px 10px black;
+    -webkit-box-shadow: 0 0px 10px black;
+/*    -moz-box-shadow: 0 0px 10px black;  # Results in sideways scrolling in Firefox */
+}
+
+h1 {
+	margin-bottom: 0;
+}
+
+h2 {
+    font-size: 13pt;
+    margin-bottom: 0.4em;
+}
+
+body {
+	background-color: #fcfcf3;
+	color: #444;
+}
+
+a {
+    color: #1B2F69;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #5A2C2E;
+    text-decoration: underline;
+}
+
+div.content { 
+	margin: 0 auto 1em auto;
+	width: 960px;
+	
+	background: #2a3f5f;
+	background: -moz-linear-gradient(center top, #012348, #cfcfcf, #678aa3);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #012348), color-stop(0.5, #cfcfcf), color-stop(1, #678aa3));
+	
+	box-shadow: 2px 2px 10px black;
+	-webkit-box-shadow: 2px 2px 10px black;
+	-moz-box-shadow: 2px 2px 10px black;
+}
+
+div.background {
+	padding-bottom: 20px;
+	border-bottom: 1px solid #666;
+}
+
+img.brandmark {
+	margin: 22px 0;;
+	float:right;
+}
+img.logo {
+	margin: 0 0 0 22px;
+}
+
+p.strap-line {
+	margin: -5px 0 0 25px;
+	color: #fff;
+	font-size: 12pt;
+	font-weight: bold;
+}
+
+div.blurb {
+    padding: 20px 0; 
+    border-radius: 3px;
+    -webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	
+	box-shadow: 0 0 3px #AAA;
+	-moz-box-shadow: 0 0 3px #AAA;
+	-webkit-box-shadow: 0 0 3px #AAA;
+	
+	background: #fff;
+	background: -moz-linear-gradient(center top, rgba(255, 255, 255, 0.99), rgba(248,248,248, 0.99));
+	background: -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, 0.99)), to(rgba(248,248,248, 0.99)));
+}
+
+/* Social Networking Item list */
+div.social-items>ul {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+div.social-items li {
+	border-top: 1px solid #aaa;
+	padding: 0.3em 0;
+}
+div.social-items li:first-child {
+	border-top: 0;
+}
+div.social-items p {
+	margin-bottom: 0;
+}
+div.social-items h2 {
+	margin-bottom: 0.2em;
+}
+div.social-items h3 {
+	margin-bottom: 0;
+	font-size: 1.1em;
+}
+/* END Social Networking Item list */
+
+
+#features {
+    padding-top: 10px;
+    padding-bottom: 10px;
+	background: #FCFCFC;
+	background: -moz-linear-gradient(center top, #FFF, #EFEFEF, #EFEFEF);
+	background: -webkit-gradient(linear, right top, right bottom, from(#FFF), to(#EFEFEF), to(#EFEFEF));
+	border-top: 1px solid #dfdfdf;
+}
+
+
+div.accessing {
+	text-align: center;
+	font-size: 12pt;
+	color: #555; 
+	border: 2px solid #eee;
+	padding: 8px 15px;
+	
+	background: #fcfcf3;
+	background: -moz-linear-gradient(center top, #fffff7, #fdfce5,#fdfce5);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #fffff7), color-stop(0.5, #fdfce5));
+	
+	border-radius: 7px;
+    -moz-border-radius: 7px;
+    -webkit-border-radius: 7px;
+}
+
+div.accessing p {
+	margin-bottom: 0;
+}
+
+span.domain-link {
+	font-size: 20pt;
+}
+
+ul.feature-link-list {
+    list-style:none;
+}
+
+ul.feature-link-list li {
+    font-size: 1.2em;
+    padding-bottom: 3px;
+}
+
+#eduroam {
+    padding: 8px;
+    width: 280px;
+    float: right;
+    
+    border: 2px solid #eee;
+    
+    background: #fcfcf3;
+    background: -moz-linear-gradient(center top, #fffff7, #fdfce5,#fdfce5);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #fffff7), color-stop(0.5, #fdfce5));
+    
+    border-radius: 7px;
+    -moz-border-radius: 7px;
+    -webkit-border-radius: 7px;
+}
+
+a#wireless-setup {
+    background-image: url('{{ MEDIA_URL }}desktop/png/eduroam.png');
+    background-position: center left;
+    background-repeat: no-repeat;
+    padding: 8px 5px 8px 95px; 
+    display: block;
+}
+
+a.go-to-top {
+    float: right;
+}
+
+div.align-center {
+    text-align: center;
+}
+
+div.align-right {
+    text-align: right;
+}
+
+img.shadow {
+    box-shadow:0 0 10px black;
+    -moz-box-shadow: 3px 3px 10px black;
+    -webkit-box-shadow: 2px 2px 4px #444;
+}
+
+</style>
+
+{% compressed_js "jquery-1.4.2" %}
+{% compressed_js "jquery.lightbox-0.5.min" %}
+{% compressed_js "desktop_about" %}
+
+
+</head>
+
+<body>
+<div class="content">
+<div class="container">
+<div class="span-44 background">
+<div class="span-36 prepend-top">
+<h1><img class="logo" src="{{ MEDIA_URL }}desktop/png/logo.png"
+	alt="Mobile Oxford" /></h1>
+
+<p class="strap-line">Your university
+and city on the move</p>
+</div>
+<div class="span-7 append-1 last"><img class="brandmark"
+	src="{{ MEDIA_URL }}desktop/gif/brandmark.gif" width="115" height="115"
+	alt="University of Oxford" /></div>
+
+<div class="prepend-1 span-42 append-1 last">
+<div class="blurb">
+
+
+
+<div class="introduction">
+<div class="prepend-1 span-15">
+
+<h2>A wealth of
+information from across the University and City of Oxford.</h2>
+
+<p style="margin-bottom: 4px;">Whoever you are, Mobile Oxford
+is your central guide to help you do your day-to-day tasks. Whether
+it's <a href="#library">finding a library book</a>, <a href="#bus">checking
+the next bus</a> or even finding <a href="#places">what time
+the nearest post box is collected</a> Mobile Oxford is for you.</p>
+
+<div class="accessing" style="font-size:1.2em; margin-bottom: 4px;">
+<p><a href="#features">Discover Mobile Oxford's features</a></p>
+</div>
+
+<h2>You don't need a fancy phone</h2>
+<p>A device with a web browser is all you need to be able to use
+most of the features below. Of course if you're lucky enough to own a
+smartphone you can use more advanced features like your GPS.</p>
+
+<div class="accessing">
+<p>Use it now by visiting<br />
+<span class="domain-link"><a class="preview-link"
+	href="/?preview=true">m.ox.ac.uk</a></span><br />
+using your mobile device's web browser, <a class="preview-link"
+	href="/?preview=true">preview on your computer</a> or click on and scan
+a 2D barcode below 
+<br/>
+<a class="lightbox"
+	href="{{ MEDIA_URL }}desktop/png/barcodes/qrcode.png" title="QR Code"> <img
+	src="{{ MEDIA_URL }}desktop/png/barcodes/qrcode-small.png" alt="QR Code" /></a> <a
+	class="lightbox" href="{{ MEDIA_URL }}desktop/png/barcodes/datamatrix.png"
+	title="DataMatrix Code"> <img
+	src="{{ MEDIA_URL }}desktop/png/barcodes/datamatrix-small.png"
+	alt="DataMatrix Code" /></a> <a class="lightbox"
+	href="{{ MEDIA_URL }}desktop/png/barcodes/mstag.png" title="Microsoft Tag"> <img
+	src="{{ MEDIA_URL }}desktop/png/barcodes/mstag-small.png" alt="Microsoft Tag" /></a>
+</p>
+</div>
+</div>
+</div>
+
+<div class="span-24 append-1 last align-center"><img
+    src="{{ MEDIA_URL }}desktop/png/phones.png" height="500" width="450"
+    alt="Various phones showing Mobile Oxford" />
+    </div>
+
+<div class="prepend-1 span-40 append-1 last prepend-top">
+<hr />
+</div>
+
+<div class="prepend-1 span-23 colborder">
+<div class="social-items">
+<h2><a href="http://mobileoxford.posterous.com"/>Blog</a></h2>
+<ul>
+	{% for entry in blog_feed.entries|slice:":3" %}
+	<li>
+	<h3><a href="{{ entry.link }}">{{ entry.title }}</a></h3>
+	<p>{{ entry.description|striptags|truncatewords:27|safe }}</p>
+	</li>
+	{% endfor %}
+</ul>
+<a href="http://mobileoxford.posterous.com/">More entries&hellip;</a>
+</div>
+
+<hr />
+
+<h2><a href="http://facebook.com/mobileoxford">Facebook</a></h2>
+<iframe src="http://www.facebook.com/plugins/likebox.php?href=http%3A%2F%2Fwww.facebook.com%2Fmobileoxford&amp;width=290&amp;connections=0&amp;stream=false&amp;header=false&amp;height=62" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:290px; height:62px;" allowTransparency="true"></iframe>
+</div>
+
+<div class="span-15 append-1 last">
+<div class="social-items">
+<h2><a href="http://twitter.com/mobileox">Twitter</a></h2>
+<ul>
+	{% for entry in twitter_feed|slice:":6" %}
+	<li>
+	<p>{{ entry.formatted_text|safe }}</p>
+	</li>
+	{% endfor %}
+</ul>
+<a href="http://twitter.com/mobileox">More tweets&hellip;</a></div>
+</div>
+<hr class="space"/>
+</div>
+</div>
+</div>
+
+
+<div id="features" class="span-44">
+<div id="feature-margin" class="prepend-1 span-42 append-1 last" >
+
+<h2 style="font-size: 3em; ">Features</h2>
+<div id="feature-intro" class="span-42 last">
+<div class="span-24" >
+<h3>Jump to a feature:</h3>
+
+<div class="span-8">
+<ul class="feature-link-list">
+    <li><a href="#contact">Contact Search</a></li>
+    <li><a href="#library">Library Search</a></li>
+    <li><a href="#news">News</a></li>
+    <li><a href="#places">Places</a></li>
+    <li><a href="#podcasts">Podcasts</a></li>
+</ul>
+</div>
+
+<div class="span-8">
+<ul class="feature-link-list">
+    <li><a href="#results">Results Releases</a></li>
+    <li><a href="#river-flag">River Flag Status</a></li>
+    <li><a href="#search">Search</a></li>
+    <li><a href="#service-status">Service Status</a></li>
+    
+</ul>
+</div>
+
+<div class="span-8 last">
+<ul class="feature-link-list">
+    <li><a href="#term-date">Term Date</a></li>    
+    <li><a href="#weather">Weather</a></li>
+    <li><a href="#webcams">Webcams</a></li>
+    <li><a href="#weblearn">WebLearn</a></li>
+</ul>
+</div>
+</div>
+
+
+<div class="span-17 last">
+<div id="eduroam">
+<h2>Oxford Wireless Access</h2>
+<p>Did you know that if you're a member of Oxford University, you have free access to the
+international 'Eduroam' wireless (WiFi) network?<br />
+<a id="wireless-setup" href="http://www.oucs.ox.ac.uk/network/wireless/">
+Learn how to use Eduroam</a></p>
+</div>
+
+</div>
+</div>
+
+
+
+<div id="instant-info" class="span-42 append-bottom last">
+<a class="go-to-top" href="#features" title="scroll to top">Back to feature list</a>
+<hr>
+<h3>Instant Info</h3>
+<p>On the front page you'll find a little box which gives you quick access to some useful information.</p>
+<div class="span-12 prepend-1 align-right">
+<h4>Term Date</h4>
+<p>Shows you the current week number and term in an Oxford student-friendly way.</p>
+
+<h4>River Status</h4>
+<p>Check the status of the Isis and Godstow at a glance on the front page.</p>
+</div>
+
+<div class="span-16 align-center">
+<img class="shadow" src="{{ MEDIA_URL }}desktop/png/features/instant-info.png" alt="Instant Info Screenshot">
+<p>The Instant Info section on the front page</p>
+</div>
+
+<div class="span-12 append-1 last">
+<h4>Current Weather</h4>
+<p>See what the current temperature and cloud cover is like.</p>
+
+</div>
+
+
+</div><div class="span-42 last" id="places">
+<hr/>   
+	<div class="span-21 colborder">
+	<h3>Places</h3>
+	<div class="prepend-1 span-15 append-5 last">
+	<p>Find pubs, libraries, colleges and a huge number of other points of interest from around the city in Places.</p>
+	<p>You can search by name, by category with places and by proximity using your phone's GPS or place name/postcode.</p>
+	</div>
+	<h4>Places you can find</h4>
+	<div class="span-6">
+	   <dl>
+        <dt>Oxford University</dt>
+        <dd>Libraries</dd>
+        <dd>Colleges and PPHs</dd>
+        <dd>Faculties</dd>
+        <dd>Departments</dd>
+        <dd>Buildings</dd>
+        <dd>Rooms</dd>        
+    </dl>
+	
+
+	</div>
+	<div class="span-5">
+<dl>
+        <dt>Amenities</dt>
+        <dd>ATMs</dd>
+        <dd>Banks</dd>
+        <dd>Benches</dd>
+        <dd>Health</dd>
+        <dd>Post boxes</dd>
+        <dd>Post offices</dd>
+        <dd>Recycling</dd>
+        <dd>Bars</dd>
+        <dd>Places to eat</dd>
+        <dd>Pubs</dd>
+    </dl>
+
+	</div>
+	<div class="span-5">
+    <dl>
+        <dt>Leisure</dt>
+        <dd>Cinemas</dd>
+        <dd>Theatres</dd>
+        <dd>Museums</dd>
+        <dd>Parks </dd>
+        <dd>Swimming pools</dd>
+        <dd>Sports centres</dd>
+        <dd>Punt Hire</dd>    
+    </dl>
+	</div>
+	<div class="span-5 last">
+	   <dl>
+        <dt>Transport</dt>
+        <dd>Bicycle Racks</dd>
+        <dd>Bus Stops</dd>
+        <dd>Car Parks</dd>
+        <dd>Park and Rides</dd>
+        <dd>Taxi Ranks</dd>
+        <dd>Train Stations</dd>
+   </dl>
+	</div>
+	<hr />
+	<div id="postbox" class="span-10 align-center">
+	   <img class="shadow" src="{{ MEDIA_URL }}desktop/png/features/places-postboxes.png" />
+	   <img class="shadow" src="{{ MEDIA_URL }}desktop/png/features/places-postboxes-collection-times.png" />
+	   <p>Find your nearest post box and even the collection time (for most postboxes inside the ring road).</p>
+	</div>
+	<div class="span-10 align-center append-1 last">
+	   <img class="shadow" src="{{ MEDIA_URL }}desktop/png/features/places-punts.png" />
+	   <p>Places to go punting from</p>
+	</div>
+	</div>
+	<div id="bus" class="span-20 last">
+	   <h4>How to find things near you</h4>
+	<div class="span-9 prepend-1 align-center">
+	   <img class="shadow" src="{{ MEDIA_URL }}desktop/png/features/places-1.png" />
+	   <p>1. Let your phone find position, or enter it in.</p>
+	</div>
+	<div class="span-9 append-1 align-center last">
+	   <img class="shadow" src="{{ MEDIA_URL }}desktop/png/features/places-2.png" />
+       <p>2. Find things nearby.</p>
+    </div>
+    <div class="span-9 prepend-1 align-center">
+        <img class="shadow" src="{{ MEDIA_URL }}desktop/png/features/places-3.png" />
+        <p>3. Select a category.</p>
+    </div>
+	<div class="span-9 append-1 align-center last">
+	   <img class="shadow" src="{{ MEDIA_URL }}desktop/png/features/places-4.png" />
+       <p>4. Get information about the place, including real time bus times at bus stops!</p>
+	</div>
+	</div>  
+    
+</div>
+	
+	
+	<div class="span-42 last" id="library">
+	<a class="go-to-top" href="#features" title="scroll to top">Back to feature list</a>
+    <hr />
+	<div class="span-10 prepend-1 append-1">
+	<h3>Library Search</h3>
+    <p>Search Oxford University's extensive library collections on the move. If you have a phone that supports geo-location, Library search will show you a map of the libraries with availability of your book*.</p>
+    <p>Tip: The <a href="#search">'Universal search'</a> box on the front page will automatically search for a book if you enter its ISBN.</p>
+    <p><small>*Be aware that you may not have access to all libraries (especially those contained in colleges).</small></p>
+    </div>
+    <div class="span-10 align-center prepend-top">
+    <img class="shadow" src="{{ MEDIA_URL }}desktop/png/features/library-search-1.png" alt="Library Search box" />
+    <p>1. Search for a book</p>
+    </div>
+    <div class="span-10 align-center prepend-top">
+    <img class="shadow" src="{{ MEDIA_URL }}desktop/png/features/library-search-2.png" alt="Library Search results" />
+    <p>2. Find the right edition</p>
+    </div>
+    <div class="span-10 align-center last prepend-top">
+    <img class="shadow" src="{{ MEDIA_URL }}desktop/png/features/library-search-3.png" alt="Library Search Map Results" />
+    <p>3. See where you can find the book in relation to you.
+    </div>
+    </div>
+    
+    
+    
+    <div class="span-42 last" id="weblearn">
+    <a class="go-to-top" href="#features" title="scroll to top">Back to feature list</a>
+    <hr />
+    <div class="span-14">
+    <h3>WebLearn Mobile Preview</h3>
+    <p>With this "preview" version of WebLearn mobile you can book 'sign-up' events that have been set up by your WebLearn site manager e.g. Tutorials by a course tutor.</p>
+    </div>
+    
+    <div class="span-25 prepend-1 append-2 last prepend-top">
+    <small>
+    <p>We use a technology called "<a href="http://oauth.net/" title="oAuth.net link">oAuth</a>" to let you access very limited parts of WebLearn through Mobile Oxford without having to re-enter your password every time. 
+    To do this, follow the instructions on screen when you first click on the "Sign-Ups" tool (as seen in these screenshots). If at anytime you want to stop your phone having access to your WebLearn account you may stop it by using the instructions on Mobile Oxford or in <a href="http://weblearn.ox.ac.uk/">WebLearn</a> follow the "My workspace"->"Trusted applications" to remove Mobile Oxford.</p>
+    </small>
+    </div>  
+    
+    <div id="weblearn-oauth-login" class="span-42 align-center">
+    <div class="span-10 prepend-1">
+        <img class="shadow" src="{{ MEDIA_URL }}desktop/png/features/weblearn-1.png" />
+        <p>1.The first page in the one-time authorisation process</p>
+    </div>
+    
+    <div class="span-10">
+        <img class="shadow" src="{{ MEDIA_URL }}desktop/png/features/weblearn-2.png" />
+        <p>2. Select your appropriate account type. <em>NB: Whenever logging into any service, make sure the URL (the address) is one you recognise.</em></p>
+    </div>
+    
+    <div class="span-10">
+        <img class="shadow" src="{{ MEDIA_URL }}desktop/png/features/weblearn-3.png" />
+        <p>3. WebLearn then asks you to confirm that you want to be able to access WebLearn through Mobile Oxford.</p> 
+    </div>
+    
+    <div class="span-10 append-1 last">
+        <img class="shadow" src="{{ MEDIA_URL }}desktop/png/features/weblearn-4.png" />
+        <p>4. Then you can book events!</p>
+    </div>  
+    </div> 
+    </div>
+
+    
+<div id="contacts-webcams" class="span-42 append-bottom last">
+<a class="go-to-top" href="#features" title="scroll to top">Back to feature list</a>
+<hr/>
+<div id="contact">
+<div class="prepend-1 span-9">
+    <h3>Contact search</h3>
+    <p>Search the University e-mail and telephone directories and call them straight
+    <p>Also included are important contact numbers for students,
+    including welfare, emergency and University services.</p>
+</div>
+<div class="span-10 colborder">
+<img class="shadow" src="{{ MEDIA_URL }}desktop/png/features/contact-search.png" alt="Screenshot of the podcasts app showing Dr Stuart Lee's Old English: An Introduction page" />
+</div>
+</div>
+<div id="webcams">
+<div class="span-9">
+    <h3>Webcams</h3>
+    A selection of live web cams from around the city to fit your device's screen.  
+</div>
+<div class="span-11 append-1 last">
+<img class="shadow" src="{{ MEDIA_URL }}desktop/png/features/webcams.png" alt="Screenshot showing the Oxford Internet Institute Web cam overlooking St Giles, the Ashmolean and the Randolph Hotel." />
+</div>
+</div>
+</div>
+    
+<div id="search" class="span-42 last">   
+<a class="go-to-top" href="#features" title="scroll to top">Back to feature list</a>
+<hr> 
+    
+    <div class="span-13">
+    <h3>Search</h3>
+    
+    <p>You will find effective search boxes on all the key pages across Mobile Oxford, but they are a little smarter than you might think!</p>
+    <h4>Front page 'Universal Search'</h4>
+    <p>You will find this search box which searches all of Mobile Oxford on the front page.</p>
+    <h4>'App specific' searches</h4>
+    <p>On each app (e.g. "Podcasts" or "Places") you will find another search box. These search boxes will only search the contents of that specific app i.e. if you search for "History of Art" inside the "Podcasts" app, it will only show you podcasts related to the search.</p>
+    </div>
+    
+    <div class="span-16 align-center prepend-top ">
+    <img class="shadow" src="{{ MEDIA_URL }}desktop/png/features/search.png" alt="Universal Search Box Screenshot">
+    <p>The 'Universal search' Box</p>
+    <hr>
+    <img class="shadow" src="{{ MEDIA_URL }}desktop/png/features/news-search.png" alt="News App Search Box Screenshot">
+    <p>The search box found in the 'News' app</p>
+    </div>
+    
+    <div class="span-13 prepend-top last">
+    <h5>Special Searches</h5>
+    <dl>
+        <dt>Bus Stop Numbers</dt> 
+        <dd>
+         Typing in a bus stop number will take you straight to that stop's real time information page
+        </dd>  
+        <dd> Oxontime numbers (as on all bus stops in Oxfordshire) e.g. "69328969", a city centre bus stop number e.g. "E3", or an ATCO code e.g. "69328969".
+        </dd>
+        <dt>ISBN/ISSN Numbers</dt>
+        <dd>Type in an ISBN/ISSN number and Mobile Oxford will run a Library Search for you.</dd>
+        <dt>Postcodes</dt>
+        <dd>Type in a post code and you can use it as a starting point for finding things near by in the "Places" app.</dd>
+        
+    </dl>
+    
+    
+    </div>
+    
+    
+    
+
+</div><div id="weather-results-service-status" class="span-42 last">
+<a class="go-to-top" href="#features" title="scroll to top">Back to feature list</a>
+<hr>
+<div id="weather" class="prepend-1 span-12 colborder">    
+    <h3>Weather</h3>
+    <p>BBC Weather with a three day forecast and live observations from RAF Benson.</p>
+    <div class="align-center">
+    <img class="shadow" src="{{ MEDIA_URL }}desktop/png/features/weather.png" alt="Weather Screenshot">
+    <p>Weather</p> 
+    </div>
+</div>
+    
+<div id="results" class="span-13 colborder">    
+    <h3>Results Releases</h3>
+    <p>Want to know when your exam results have been released but don't want to keep logging into a computer? Check out Results Releases to see when your results have been released wherever you are.</p>
+    <div class="align-center">
+    <img class="shadow" src="{{ MEDIA_URL }}desktop/png/features/results-releases.png" alt="Results Releases App Screenshot">
+    <p>Results Releases</p> 
+    </div>
+</div>    
+
+<div id="service-status" class="span-13 append-1 last">    
+    <h3>Service Status</h3>
+    <p>Check status updates from Computing Services and Library Services.</p>
+    <div class="align-center">
+    <img class="shadow" src="{{ MEDIA_URL }}desktop/png/features/service-status.png" alt="Service Status App Screenshot">
+    <p>Service Status</p> 
+    </div>
+</div> 
+</div><div id="news-podcasts" class="span-42 last">
+<a class="go-to-top" href="#features" title="scroll to top">Back to feature list</a>
+<hr/>
+<div id="news">
+<div class="prepend-1 span-9">
+    <h3>News</h3>
+    <p>Quick and mobile optimised access to feeds from around the University are available here. Images are resized to fit your device and are designed to be quick to load.</p>
+    
+    <p>Tip: you can search all our news items by using the search box at the top of the news page or the universal search on the front page.</p>
+   
+    <p>Don't see your favourite University news source? Drop us a line: <a href="mailto:mobileoxford@oucs.ox.ac.uk">mobileoxford@oucs.ox.ac.uk</a> and we'll do our best to put it up.</p>
+     
+</div>
+<div class="span-10 colborder">
+<img class="shadow" src="{{ MEDIA_URL }}desktop/png/features/news.png" alt="News Screenshot" />
+</div>
+</div>
+<div id="podcasts">
+<div class="span-9">
+    <h3>Podcasts</h3>
+    <p>Full access to the University of Oxford's public podcasts library as found on <a href="http://podcasts.ox.ac.uk/">http://podcasts.ox.ac.uk/</a> and <a href="http://deimos.apple.com/WebObjects/Core.woa/Browse/ox-ac-uk-public">iTunes U</a>, but designed to be easy to browse on your device.</p>
+    <p><b>iPhone Tip:</b> When you click on 'podcasts' you will be asked whether you'd like to use your built in iTunes App to browse our podcasts. This gives you a few advantages like being able to queue downloads and store them in your library.</p>
+</div>
+<div class="span-11 append-1 last">
+<img class="shadow" src="{{ MEDIA_URL }}desktop/png/features/podcasts.png" alt="Screenshot of the podcasts app showing Dr Stuart Lee's Old English: An Introduction page" />
+</div>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+<div id="footer">
+<div class="container">
+<div class="span-32">
+<p>&copy; 2010 <a href="http://www.oucs.ox.ac.uk/">Oxford University Computing Services</a> <br />Mobile Oxford is a core-funded service and <a href="http://mollyproject.org/">open source software</a> originally developed by OUCS under the <a href="http://jisc.ac.uk/">JISC</a>-funded Erewhon Project.<br />
+We use <a href="http://mollyproject.org/">The Molly Project</a>: an open souce community project. Get involved or deploy at your institution by visiting <a href="http://mollyproject.org/">http://mollyproject.org/</a>.</p>
+</div>
+<div class="span-12 last">
+<a href="http://www.oucs.ox.ac.uk/"><img src="{{ MEDIA_URL }}desktop/png/oucs-logo-small.png" width="140" height="46" alt="Oxford University Computing Services" /></a>
+<a href="http://jisc.ac.uk/"><img src="{{ MEDIA_URL }}desktop/png/jisc-logo-small.png" width="88" height="46" alt="Joint Information Systems Committee" /></a>
+</div>
+
+<div class="span-14 append-1">
+<h2>Data Sources</h2>
+<dl>
+    <dt><a href="http://www.oxontime.com/">ACIS - Oxontime</a></dt>
+    <dd>Oxfordshire's real time bus information in conjunction with <a href="http://www.oxfordbus.co.uk">Oxford Bus Company</a>, <a href="http://www.stagecoachbus.com/">Stagecoach</a>, <a href="http://www.thames-travel.co.uk/">Thames Travel</a> and <a href="http://www.arrivabus.co.uk/">Arriva</a></dd>
+    <dt><a href="http://www.dft.gov.uk/">Department for Transport</a></dt>
+    <dd>The UK's <a href="http://www.dft.gov.uk/naptan/">NaPTAN database</a> allowing us to map the locations of bus stops, railway stations and other transport access nodes.</dd>
+    <dt><a href="http://www.oxfordshire.gov.uk/">Oxfordshire County Council</a></dt>
+    <dd>Information about the city's Park and Rides and access to the real time transport information provided by ACIS.</dd>
+    <dt><a href="http://www.admin.ox.ac.uk/schools/">Oxford University Exam Schools</a></dt>
+    <dd>Letting us know when exam results have been released.</dd> 
+</dl>    
+</div>
+<div class="span-14 colborder prepend-top">
+<dl>
+    <dt><a href="http://podcasts.ox.ac.uk/">OUCS Podcasting Team</a></dt>
+    <dd>Access to the University of Oxford's podcasts as mirrored on their iTunesU site.</dd>
+    <dt><a href="http://www.ouls.ox.ac.uk/">Oxford University Library Services</a></dt>
+    <dd>Access to their Z39.50 library information system allowing us to perform library searches and combine with our geo-spatial systems to provide location-sensitive searches</dd>
+    <dt><a href="http://www.openstreetmap.org/">The Open Street Map Community</a></dt>
+    <dd>Providing some of the most detailed and up to date maps of Oxford and points of interest listings.</dd> 
+    <dt><a href="http://backstage.bbc.co.uk/">BBC Backstage</a></dt>
+    <dd>Weather and traffic incident information</dd>
+</dl>
+</div>
+<div class="span-14 last">
+<h2>Contact or help out</h2>
+<p>There are many ways you can get involved with Mobile Oxford.</p>
+<dl>
+    <dt>Email feedback etc: </dt>
+    <dd><a href="mailto:mobileoxford@oucs.ox.ac.uk">mobileoxford@oucs.ox.ac.uk</a></dd>
+    <dt>Suggest new features:</dt>
+    <dd><a href="http://m.ox.ac.uk/feature-suggestions/">Our mobile feature suggestion page (optimised for mobile devices)</a></dd>
+    <dt>Join the Open Street Map community </dt>
+    <dd><a href="http://wiki.openstreetmap.org/wiki/Main_Page">and help improve the points of interest and maps of Oxford that we use: http://openstreetmap.org</a></dd>
+    <dt>Help develop our software (the Molly Project)</dt>
+    <dd><a href="http://mollyproject.org/">http://mollyproject.org/</a></dd>  
+</dl>
+</div>
+</div>
+</div>
+
+{% if google_analytics %}
+ <script type="text/javascript">
+ var _gaq = _gaq || [];
+ _gaq.push(['_setAccount', '{{ google_analytics|safe }}']);
+ _gaq.push(['_trackPageview']);
+ (function() {
+   var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+   ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+   var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+ })();
+</script>
+{% endif %}
+</body>
+</html>

@@ -11,7 +11,7 @@ from molly.utils.breadcrumbs import *
 from molly.wurfl import device_parents
 from molly import conf
 
-from models import UserMessage, BlogArticle
+from models import UserMessage
 from forms import UserMessageFormSet
 
 class IndexView(BaseView):

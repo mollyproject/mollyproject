@@ -1,0 +1,106 @@
+Application media
+=================
+
+Molly uses `django-staticfiles <http://pypi.python.org/pypi/django-staticfiles>`_
+and `django-compress <http://pypi.python.org/pypi/django-compress>`_ to collate
+and merge media files from various sources.
+
+Source media locations
+----------------------
+
+A set of base media are pulled in from :file:`molly/media/`. Each molly
+application may also define a :file:`media/` subdirectory, from which Molly
+will pull media related to that particular application. Finally, the site may
+provide additional media to override the defaults in
+:file:`<project_root>/site_media/`.
+
+In each of these locations media are organised within a directory bearing the
+name of the application that uses them. For example::
+
+    molly/apps/contact/
+      media/
+        contact/
+          css/
+            [...]
+          js/
+            [...]
+          png/
+            [...]
+    
+    molly/
+      media/
+        base/
+          css/
+            [...]
+          [...]
+    
+    your_site/
+      site_media/
+        contact/
+          png/
+            override_some_icon.png
+        base/
+          css/
+            [Add your own style here]
+
+Collating media
+---------------
+
+Media are collated into :const:`settings.STATIC_ROOT`, which is defined to be
+the same as :const:`settings.MEDIA_ROOT`. To invoke ``django-staticfiles`` to
+collate the media:
+
+.. code-block:: bash
+
+   $ python manange.py build_static -l --noinput
+   
+The ``-l`` option causes it to use symlinks instead of copying files. This has
+the added advantage that when editing your media during development you don't
+have to invoke ``build_static`` after every change.
+
+.. note::
+
+   You will however need to invoke ``build_static`` if you add new media files,
+   so as to create the new symlinks from :const:`~settings.STATIC_ROOT`.
+
+Compressing media
+-----------------
+
+Molly encourages the use of ``django-compress`` to merge and tidy up CSS and
+JavaScript files. Media are merged into a directory :file:`c/` within
+:const:`~settings.STATIC_ROOT`, with the first fragment of the path removed.
+
+``django-compress`` also adds a timestamp to each compressed file's filename.
+
+Thus, :file:`contact/css/index.css` and :file:`base/css/index.css` would be
+merged into :file:`c/css/index.r12345678.css`.
+
+To reference the combined media group from a template you should load the
+``compressed`` template library using ``{% load compressed %}``
+at the beginning of the template file. You may then use
+``{% compressed_js <group-name> %}`` and ``{% compressed_css <group-name> %}``
+to generate the required ``<script/>`` and ``<link rel="stylesheet"\>`` tags.
+
+The group name is the hyphenated path within the :file:`c/` directory without
+any ``js-`` or ``css-`` prefix. Thus :file:`contact/css/types/clever.css` would
+have a group of ``types-clever``.
+
+.. note::
+
+   For more information about ``django-compress``, please see `their
+   documentation <http://code.google.com/p/django-compress/>`_.
+
+``django-compress`` will automatically update the generated files if it
+discovers that a constituent file has changed on disk. However, if you want to
+sync them manually, it can be invoked as follows:
+
+.. code-block:: bash
+
+   $ python manage.py synccompress
+
+To only enable compression when not in ``DEBUG`` mode, use the following line
+in your settings file:
+
+.. code-block:: python
+
+   COMPRESS = not DEBUG

@@ -142,13 +142,18 @@ class SignupEventView(SakaiView):
         # This request does absolutely nothing, except force some cache to be
         # reset, making sure the data we receive subsequently is up-to-date.
         # This should be reported as a bug in Sakai.
-        request.opener.open(
-            self.build_url('direct/signupEvent/%s/edit' % event_id),
-            data = urllib.urlencode({
-            'siteId': site,
-            'allocToTSid': '0',
-            'userActionType': 'invalidAction',
-        }))
+        try:
+            request.opener.open(
+                self.build_url('direct/signupEvent/%s/edit' % event_id),
+                data = urllib.urlencode({
+                'siteId': site,
+                'allocToTSid': '0',
+                'userActionType': 'invalidAction',
+            }))
+        except urllib2.HTTPError, e:
+            # 204 really shouldn't be considered an error code.
+            if e.code != 204:
+                raise
 
         url = self.build_url('direct/signupEvent/%s.json?siteId=%s' % (event_id, site))
         event = simplejson.load(request.urlopen(url))
@@ -180,9 +185,7 @@ class SignupEventView(SakaiView):
                 'userActionType': request.POST['action'],
             }))
         except urllib2.HTTPError, e:
-            if e.code == 204:
-                pass
-            else:
+            if e.code != 204:
                 raise
 
         return HttpResponseSeeOther(request.path)
@@ -210,6 +213,21 @@ class DirectView(SakaiView):
             request.opener.open(self.build_url('/direct/user/current.json')))
         return self.render(request, context, 'sakai/direct/index')
 
+def annotate_poll(poll):
+    """
+    Annotates a poll object as returned from Sakai with some useful derived information.
+    """
+    poll['voteOpen'] = datetime.fromtimestamp(poll['voteOpen']/1000)
+    poll['voteClose'] = datetime.fromtimestamp(poll['voteClose']/1000)
+    poll.update({
+        'multiVote': poll['maxOptions'] > 1,
+        'hasOpened': datetime.now() > poll['voteOpen'],
+        'hasClosed': datetime.now() > poll['voteClose'],
+        'hasVoted': bool(poll['currentUserVotes']),
+    })
+    poll['isOpen'] = poll['hasOpened'] and not poll['hasClosed']
+    poll['mayVote'] = poll['isOpen'] and not poll['hasVoted'] and not poll['multiVote']
+
 class PollIndexView(SakaiView):
     force_auth = True
 
@@ -217,8 +235,10 @@ class PollIndexView(SakaiView):
         json = simplejson.load(request.opener.open(self.build_url('direct/poll.json')))
         polls = []
         for poll in json['poll_collection']:
-            poll['title'] = self.get_site_title(request, poll['siteId'])
+            poll['siteTitle'] = self.get_site_title(request, poll['siteId'])
+            annotate_poll(poll)
             polls.append(poll)
+        polls.sort(key=lambda p:(p['siteTitle'], p['voteClose']))
 
         return {
             'polls': polls,
@@ -275,13 +295,14 @@ class PollDetailView(SakaiView):
         for option in options:
             option['votedFor'] = option['optionId'] in userVotes
 
+        annotate_poll(poll)
+
         return {
             'poll': poll,
             'options': options,
             'site_title': self.get_site_title(request, poll['siteId']),
             'max_votes': max_votes,
             'vote_count': vote_count,
-            'may_vote': not poll['currentUserVotes'] and poll['maxOptions'] == 1,
             'sakai_host': self.conf.host,
             'service_name': self.conf.service_name,
         }
@@ -299,8 +320,8 @@ class PollDetailView(SakaiView):
         return self.render(request, context, 'sakai/poll/detail')
 
     def handle_POST(self, request, context, id):
-        if not context['mayVote']:
-            return HttpResponseBadRequest()
+        if not context['poll']['mayVote']:
+            return HttpResponseSeeOther(request.path)
         if not int(request.POST.get('pollOption', -1)) in (option['optionId'] for option in context['options']):
             return HttpResponseBadRequest()
         try:
@@ -311,8 +332,7 @@ class PollDetailView(SakaiView):
                     'pollOption': int(request.POST['pollOption']),
             }))
         except urllib2.HTTPError, e:
-            return HttpResponse(e.read(), mimetype="text/html")
-            if e.code == 204:
+            if e.code in (201, 204):
                 pass
             else:
                 raise

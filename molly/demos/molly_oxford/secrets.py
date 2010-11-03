@@ -18,4 +18,8 @@ SECRETS = _Secrets({
     'yahoo': None,
     'fireeagle': None,
     'journeyweb': (None, None),
+    
+    'google_analytics': None,
 })
+
+del _Secrets

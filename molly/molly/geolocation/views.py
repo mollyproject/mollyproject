@@ -34,7 +34,6 @@ class IndexView(BaseView):
             parent = lambda _1, _2, _3, _4: parent_data
             application = parent_data.application
         except Exception:
-            raise
             application = 'home'
             parent = lambda _1,_2,_3, _4: type(
                 'BC', (), {

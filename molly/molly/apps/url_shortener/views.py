@@ -20,7 +20,7 @@ class IndexView(BaseView):
             view, view_args, view_kwargs = resolve(path.split('?')[0])
             if getattr(view, 'simple_shorten_breadcrumb', False):
                 view_context = None
-            elif IndexView in getattr(view, '__mro__', ()):
+            elif isinstance(view, IndexView):
                 view_context = None
             else:
                 try:
@@ -58,8 +58,7 @@ class IndexView(BaseView):
                 'Shorten link',
             )
         else:
-            index = resolve(reverse('%s:index' % view.conf.local_name))[0].breadcrumb(request, context)
-            index = index[1]
+            index = (view.conf.title, reverse('%s:index' % view.conf.local_name))
             return (
                 view.conf.local_name,
                 index,
@@ -67,6 +66,7 @@ class IndexView(BaseView):
                 context['path'] == index[1],
                 'Shorten link',
             )
+                
 
     def handle_GET(cls, request, context):
         print context['complex_shorten']

@@ -1,11 +1,15 @@
 # Django settings for oxford project.
 
 from oauth.oauth import OAuthSignatureMethod_PLAINTEXT
-import os.path
+import os.path, imp
 from molly.conf.settings import Application, extract_installed_apps, Authentication, ExtraBase, Provider
+from molly.utils.media import get_compress_groups
 from secrets import SECRETS
 
+molly_root = imp.find_module('molly')[1]
 project_root = os.path.normpath(os.path.dirname(__file__))
+
+CACHE_DIR = '/var/cache/molly'
 
 DEBUG = True
 DEBUG_SECURE = True
@@ -42,23 +46,6 @@ SITE_ID = 1
 # to load the internationalization machinery.
 USE_I18N = True
 
-# Absolute path to the directory that holds media.
-# Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = os.path.abspath(os.path.dirname(__file__))
-
-# URL that handles the media served from MEDIA_ROOT. Make sure to use a
-# trailing slash if there is a path component (optional in other cases).
-# Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = '/site-media/'
-
-# Update MEDIA_ROOT, since they're local directories
-MEDIA_ROOT += MEDIA_URL
-
-# URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
-# trailing slash.
-# Examples: "http://foo.com/media/", "/media/".
-ADMIN_MEDIA_PREFIX = '/admin-media/'
-
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = SECRETS.secret_key
 
@@ -90,7 +77,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'molly.wurfl.context_processors.wurfl_device',
     'molly.wurfl.context_processors.device_specific_media',
     'molly.geolocation.context_processors.geolocation',
-    'molly.apps.feedback.context_processors.full_path',
+    'molly.utils.context_processors.full_path',
+    'molly.utils.context_processors.google_analytics',
 )
 
 
@@ -127,7 +115,7 @@ APPLICATIONS = [
                 areas=('340',),
             ),
             Provider('molly.providers.apps.maps.PostcodesMapsProvider',
-                codepoint_path = '/var/cache/molly/codepo_gb.zip',
+                codepoint_path = CACHE_DIR + '/codepo_gb.zip',
                 import_areas = ('OX',),
             ),
             'molly.providers.apps.maps.OxontimeMapsProvider',
@@ -276,7 +264,7 @@ APPLICATIONS = [
         secure = True,
         tools = [
             ('signup', 'Sign-ups'),
-#            ('poll', 'Polls'),
+            ('poll', 'Polls'),
 #            ('direct', 'User information'),
 #            ('sites', 'Sites'),
 #            ('evaluation', 'Surveys'),
@@ -310,9 +298,10 @@ API_KEYS = {
     'google': SECRETS.google,
     'yahoo': SECRETS.yahoo,
     'fireeagle': SECRETS.fireeagle,
+    'google_analytics': SECRETS.google_analytics,
 }
 
-SITE_MEDIA_PATH = os.path.join(project_root, 'site-media')
+SITE_MEDIA_PATH = os.path.join(project_root, 'media')
 
 INSTALLED_APPS = extract_installed_apps(APPLICATIONS) + (
     'django.contrib.auth',
@@ -323,24 +312,41 @@ INSTALLED_APPS = extract_installed_apps(APPLICATIONS) + (
     'django.contrib.gis',
     'django.contrib.comments',
     'molly.batch_processing',
+    
+    'staticfiles',
+    'compress',
 #    'debug_toolbar',
 )
 
-# Settings for django-compress: CSS
-COMPRESS_CSS = {
-    'smart': {
-        'source_filenames': ('css/groups/smart.css',),
-        'output_filename': 'css/groups/smart.min.css',
-        'extra_context': {},
-        },
-    'dumb': {
-        'source_filenames': ('css/groups/dumb.css',),
-        'output_filename': 'css/groups/dumb.min.css',
-        'extra_context': {},
-        },
-    }
+
+# Media handling using django-staticfiles and django-compress
+
+# URL that handles the media served from MEDIA_ROOT. Make sure to use a
+# trailing slash if there is a path component (optional in other cases).
+# Examples: "http://media.lawrence.com", "http://example.com/media/"
+MEDIA_URL = '/media/'
+
+# URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
+# trailing slash.
+# Examples: "http://foo.com/media/", "/media/".
+ADMIN_MEDIA_PREFIX = MEDIA_URL + 'admin/' 
+
+# Absolute path to the directory that holds media.
+# Example: "/home/media/media.lawrence.com/"
+MEDIA_ROOT = STATIC_ROOT = os.path.join(project_root, 'media')
+
+STATICFILES_DIRS = (
+    ('', os.path.join(project_root, 'site_media')),
+    ('', os.path.join(molly_root, 'media')),
+)
+STATIC_URL = '/media/'
+STATICFILES_PREPEND_LABEL_APPS = ('django.contrib.admin',) #+ extract_installed_apps(APPLICATIONS)
+
+COMPRESS_CSS, COMPRESS_JS = get_compress_groups(STATIC_ROOT)
+
 # CSS filter is custom-written since the provided one mangles it too much
-COMPRESS_CSS_FILTERS = ('molly_compress.CSSFilter',)
+COMPRESS_CSS_FILTERS = ('molly.utils.compress.MollyCSSFilter',)
+
 COMPRESS_CSSTIDY_SETTINGS = {
     'remove_bslash': True, # default True
     'compress_colors': True, # default True
@@ -358,22 +364,14 @@ COMPRESS_CSSTIDY_SETTINGS = {
     'timestamp': False, # default False
     'template': 'high_compression', # default 'highest_compression'
 }
-# django-compress JS
-COMPRESS_JS = {
-    'all': {
-        'source_filenames': ('js/jquery-1.4.2.js', 'js/groups/smart.js'),
-        'output_filename': 'js/all.min.js',
-        'extra_context': {},
-        },
-    }
-if not DEBUG:
-    COMPRESS_JS['all']['source_filenames'] = COMPRESS_JS['all']['source_filenames'] + ('js/async_load.js',)
 
 COMPRESS_JS_FILTERS = ('compress.filters.jsmin.JSMinFilter',)
-# On or off?
-COMPRESS = not DEBUG
 
-CACHE_DIR = '/var/cache/molly'
+COMPRESS = not DEBUG     # Only enable on production (to help debugging)
+COMPRESS_VERSION = True  # Add a version number to compressed files.
+
+
+
 SRID = 27700
 
 CACHE_BACKEND = 'memcached://localhost:11211/?timeout=60'
