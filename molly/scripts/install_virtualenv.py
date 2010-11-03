@@ -55,10 +55,16 @@ def main(source_path, deploy_path):
         requirements.remove('pycairo')
 
     for requirement in requirements:
-        commands.append(
-            ('Installing', requirement,
-             ["pip", "install", "-U", "-E", deploy_path, requirement])
-        )
+        if os.path.exists('/etc/fedora-release'):
+            commands.append(
+                ('Installing', requirement,
+                 ["pip-python", "install", "-U", "-E", deploy_path, requirement])
+            )
+        else:
+            commands.append(
+                ('Installing', requirement,
+                 ["pip", "install", "-U", "-E", deploy_path, requirement])
+            )
 
     if use_system_cairo:
         commands += [
