@@ -11,7 +11,7 @@
 {% endifnotequal %}
 {% endif %}
 
-<ul>
+<ul class="link-list">
 {% for result in results %}
     <li>
         <form method="post" action="{% url geolocation:index %}" class="submit-location-form">
