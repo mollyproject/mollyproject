@@ -9,7 +9,7 @@ from molly_oxford.apps.river_status.models import FlagStatus
 class RiverStatusProvider(object):
     _OURCS_URL = "http://www.ourcs.org.uk/disclaimer"
 
-    @batch('%d/10 * * * *' % random.randint(0, 59))
+    @batch('%(min)d,1%(min)d,2%(min)d,3%(min)d,4%(min)d,5%(min)d * * * *' % {'min': random.randint(0, 9)})
     def import_data(self, metadata, output):
 
         xml = etree.parse(urllib2.urlopen(self._OURCS_URL), parser=etree.HTMLParser())
