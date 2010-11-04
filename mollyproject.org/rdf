@@ -30,14 +30,14 @@
 
         <doap:repository>
             <doap:GitRepository>
-                <doap:anon-root>git://mollyproject.git.sourceforge.net/gitroot/mollyproject/mollyproject</doap:anon-root>
-                <doap:browse rdf:resource="http://mollyproject.git.sourceforge.net/git/gitweb-index.cgi"/>
-                <doap:location rdf:resource="ssh://mollyproject.git.sourceforge.net/gitroot/mollyproject/mollyproject"/>
+                <doap:anon-root>git://github.com/mollyproject/mollyproject.git</doap:anon-root>
+                <doap:browse rdf:resource="http://github.com/mollyproject/mollyproject/"/>
+                <doap:location rdf:resource="git@github.com:mollyproject/mollyproject.git"/>
             </doap:GitRepository>
         </doap:repository>
 
-        <doap:wiki rdf:resource="https://sourceforge.net/apps/mediawiki/mollyproject/"/>
-        <doap:bug-database rdf:resource="https://sourceforge.net/tracker/?group_id=309230"/>
+        <doap:wiki rdf:resource="http://github.com/mollyproject/mollyproject/wiki"/>
+        <doap:bug-database rdf:resource="http://github.com/mollyproject/mollyproject/issues"/>
 
         <doap:maintainer rdf:resource="http://alexdutton.co.uk/rdf#id"/>
         <doap:maintainer>
