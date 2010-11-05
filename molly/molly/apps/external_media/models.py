@@ -23,9 +23,9 @@ class ExternalImage(models.Model):
     width = models.PositiveIntegerField(null=True)
     height = models.PositiveIntegerField(null=True)
 
-    def save(self, force_insert=False, force_update=False):
+    def save(self, force_insert=False, force_update=False, *args, **kwargs):
         self.last_updated = datetime.utcnow()
-        super(ExternalImage, self).save(force_insert=False, force_update=False)
+        super(ExternalImage, self).save(force_insert=False, force_update=False, **kwargs)
 
 def get_external_image_dir():
     return getattr(settings, 'EXTERNAL_IMAGE_DIR', os.path.join(settings.CACHE_DIR, 'external_images'))
@@ -49,7 +49,7 @@ class ExternalImageSized(models.Model):
     def get_absolute_url(self):
         return reverse('external_media:image', args=[self.slug])
 
-    def save(self, force_insert=False, force_update=False):
+    def save(self, force_insert=False, force_update=False, *args, **kwargs):
         if not self.id:
             response = urllib.urlopen(self.external_image.url)
             data = StringIO(response.read())
@@ -86,7 +86,7 @@ class ExternalImageSized(models.Model):
             self.external_image.width = size[0]
             self.external_image.height = size[1]
 
-        super(ExternalImageSized, self).save(force_insert=False, force_update=False)
+        super(ExternalImageSized, self).save(force_insert=False, force_update=False, **kwargs)
 
     def delete(self):
         os.unlink(self.get_filename())
