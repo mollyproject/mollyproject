@@ -25,9 +25,12 @@ class SecureSessionMiddleware(object):
             secure_session_key = request.secure_session.session_key
 
             try:
-                user_session = UserSession.objects.get(secure_session_key=secure_session_key)
-                user_session.save()
-                user = user_session.user
+                if request.user.is_authenticated():
+                    user = request.user
+                else:
+                    user_session = UserSession.objects.get(secure_session_key=secure_session_key)
+                    user_session.save()
+                    user = user_session.user
             except UserSession.DoesNotExist:
                 if request.user.is_authenticated():
                     user = request.user
