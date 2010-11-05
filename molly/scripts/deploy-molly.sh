@@ -9,7 +9,7 @@ if [ -n "$1" ] ; then
     python $DIR/install_virtualenv.py $1
     
     # An empty directory is needed here otherwise things error later
-    mkdir $1/lib/python2.6/site-packages/molly/media
+    mkdir $1/lib/python`python -V 2>&1 | cut -d" " -f2`/site-packages/molly/media
     
     # Go inside the Python virtual environment
     source $1/bin/activate
