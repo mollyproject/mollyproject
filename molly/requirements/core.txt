@@ -10,7 +10,7 @@ pycairo==1.8.8
 textile
 pytz
 pyxml
-Django==1.1.2
+Django
 oauth==1.0.1
 psycopg2
 PIL
