@@ -26,12 +26,15 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-DATABASE_ENGINE = 'postgresql_psycopg2'           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-DATABASE_NAME = SECRETS.database_name             # Or path to database file if using sqlite3.
-DATABASE_USER = SECRETS.database_user             # Not used with sqlite3.
-DATABASE_PASSWORD = SECRETS.database_password         # Not used with sqlite3.
-DATABASE_HOST = SECRETS.database_host             # Set to empty string for localhost. Not used with sqlite3.
-DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'HOST': SECRETS.database_host,
+        'NAME': SECRETS.database_name,
+        'USER': SECRETS.database_user,
+        'PASSWORD': SECRETS.database_password,
+    }
+}
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
