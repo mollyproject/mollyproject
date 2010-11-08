@@ -15,6 +15,10 @@ DEBUG = True
 DEBUG_SECURE = True
 TEMPLATE_DEBUG = DEBUG
 
+HOPTOAD_SETINGS = {
+    'HOPTOAD_API_KEY': SECRETS.hoptoad,
+}
+
 ADMINS = (
     ('Alexander Dutton', 'alexander.dutton@oucs.ox.ac.uk'),
     ('Tim Fernando', 'tim.fernando@oucs.ox.ac.uk'),
@@ -66,6 +70,7 @@ MIDDLEWARE_CLASSES = (
     'molly.stats.middleware.StatisticsMiddleware',
     'molly.apps.url_shortener.middleware.URLShortenerMiddleware',
 #    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'hoptoad.middleware.HoptoadNotifierMiddleware',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (

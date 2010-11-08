@@ -20,6 +20,7 @@ SECRETS = _Secrets({
     'journeyweb': (None, None),
     
     'google_analytics': None,
+    'hoptoad': None,
 })
 
 del _Secrets
