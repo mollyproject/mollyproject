@@ -1,0 +1,12 @@
+= The Molly Project =
+As seen at http://mollyproject.org
+
+== Intro ==
+The Molly Project is a Django based Python application which provides a framework for creating a mobile web portal for higher education institutions.
+
+== Comms ==
+At the time of writing there are a few primary  methods of getting (free, best effort) support for the Molly Project:
+
+ a) Mailing lists: https://sourceforge.net/mail/?group_id=309230
+ b) IRC: irc://irc.freenode.net/#molly
+ c) Email the main contributing team (Mobile Oxford at Oxford University Computing Services): mobileoxford@oucs.ox.ac.uk
