@@ -83,12 +83,6 @@ class vCard(models.Model):
     location = models.PointField(null=True)
     entity = models.ForeignKey(Entity, null=True, blank=True)
     
-#    def save(self, *args, **kwargs):
-#        g = rdflib.Graph()
-#        g.parse(StringIO(self.rdf))
-#        g
-#        super(vCard, self).save(*args, **kwargs)
-    
 class Series(models.Model):
     feed = models.ForeignKey(Feed)
     guid = models.TextField()

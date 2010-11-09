@@ -6,7 +6,6 @@ feedparser
 simplejson
 rdflib
 pycairo==1.8.8
-textile
 pytz
 pyxml
 Django==1.1.2
