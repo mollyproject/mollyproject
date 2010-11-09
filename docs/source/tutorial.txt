@@ -20,7 +20,7 @@ anonymous clone by using the following command:
 
 .. code-block:: bash
 
-   $  git clone git://mollyproject.git.sourceforge.net/gitroot/mollyproject/mollyproject
+   $  git clone git://github.com/mollyproject/mollyproject.git
 
 The repository contains two directories, :file:`molly/` and
 :file:`mollyproject.org/`; the former containing the Molly framework, and the
