@@ -1,3 +1,9 @@
+""" 
+date_parsing returns datetime objects according to different input formats
+
+Also handles some timezone blackmagic
+"""
+
 from __future__ import absolute_import
 import email.utils
 import xml.utils.iso8601
