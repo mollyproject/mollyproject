@@ -3,7 +3,6 @@ pywurfl
 ply
 git+http://github.com/alexdutton/PyZ3950.git#egg=PyZ3950
 feedparser
-BeautifulSoup
 simplejson
 rdflib
 pycairo==1.8.8
