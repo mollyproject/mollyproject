@@ -7,6 +7,6 @@ The Molly Project is a Django based Python application which provides a framewor
 == Comms ==
 At the time of writing there are a few primary  methods of getting (free, best effort) support for the Molly Project:
 
- a) Mailing lists: https://sourceforge.net/mail/?group_id=309230
- b) IRC: irc://irc.freenode.net/#molly
- c) Email the main contributing team (Mobile Oxford at Oxford University Computing Services): mobileoxford@oucs.ox.ac.uk
+ * Mailing lists: https://sourceforge.net/mail/?group_id=309230
+ * IRC: irc://irc.freenode.net/#molly
+ * Email the main contributing team (Mobile Oxford at Oxford University Computing Services): mobileoxford@oucs.ox.ac.uk
