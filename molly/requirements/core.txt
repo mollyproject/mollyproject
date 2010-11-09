@@ -19,5 +19,3 @@ python-ldap
 django-compress
 python-memcached
 django-staticfiles
-pyyaml
-hg+http://bitbucket.org/sjl/django-hoptoad#egg=django-hoptoad

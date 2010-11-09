@@ -1,1 +1,1 @@
-python-virtualenv python-pip libxml-devel libxslt-devel python-devel cairo-devel postgresql-devel openldap-devel openssl-devel postgis gdal-python proj postgresql-server geos httpd libjpeg-devel libyaml-devel
+python-virtualenv python-pip libxml-devel libxslt-devel python-devel cairo-devel postgresql-devel openldap-devel openssl-devel postgis gdal-python proj postgresql-server geos httpd libjpeg-devel
