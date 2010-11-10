@@ -4,7 +4,7 @@ from django.core.management import call_command
 from django.test.client import Client
 from django.core.urlresolvers import reverse
 
-from molly.oxpoints.models import Entity, EntityType
+from molly.apps.places.models import Entity, EntityType
 
 class MapsTestCase(unittest.TestCase):
     def setUp(self):

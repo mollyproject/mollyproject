@@ -3,8 +3,8 @@ import unittest
 from django.core.management import call_command
 from django.test.client import Client
 
-from molly.podcasts import TOP_DOWNLOADS_RSS_URL
-from molly.podcasts.models import Podcast, PodcastCategory
+from molly.apps.podcasts import TOP_DOWNLOADS_RSS_URL
+from molly.apps.podcasts.models import Podcast, PodcastCategory
 
 class PodcastsTestCase(unittest.TestCase):
     def setUp(self):

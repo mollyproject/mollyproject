@@ -1,9 +1,8 @@
 import unittest, sys, inspect
 from django.conf import settings
 from django.utils.importlib import import_module
-from molly.core.handlers import BaseView
-from molly.core.breadcrumbs import NullBreadcrumb
-from search import GoogleSearch
+from molly.utils.views import BaseView
+from molly.utils.breadcrumbs import NullBreadcrumb
 
 class Argspec(tuple):
     args = property(lambda self: self[0])

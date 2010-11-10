@@ -6,8 +6,8 @@ from django.core.management import call_command
 from PyZ3950 import z3950 as z3950_
 from PyZ3950 import zoom
 
-from molly.z3950 import search
-from molly.oxpoints.models import Entity
+from molly.apps.z3950 import search
+from molly.apps.places.models import Entity
 
 TEST_DATA = [
 "00927nam  2200301 a 4500001001500000003000600015005001700021008004100038010001700079015001900096016001800115020002500133020002200158035002300180035001300203040004900216042001400265050002800279082001500307100003200322245006100354260003300415300003500448500002000483650001800503700001500521852008900536\x1eUkOxUb16686899\x1eUkOxU\x1e20080430135602.0\x1e071012s2007    cc a          001 0 eng d\x1e  \x1fa  2007278140\x1e  \x1faGBA709991\x1f2bnb\x1e7 \x1fa013660805\x1f2Uk\x1e  \x1fa9780596529260 (pbk.)\x1e  \x1fa0596529260 (pbk.)\x1e  \x1fa(OCoLC)ocm82671871\x1e  \x1fa15042568\x1e  \x1faUKM\x1fcUKM\x1fdBAKER\x1fdBTCTA\x1fdYDXCP\x1fdDPL\x1fdIXA\x1fdDLC\x1e  \x1falccopycat\x1e00\x1faTK5105.88813\x1fb.R53 2007\x1e04\x1fa006.76\x1f222\x1e1 \x1faRichardson, Leonard,\x1fd1979-\x1e10\x1faRESTful web services /\x1fcLeonard Richardson and Sam Ruby.\x1e  \x1faFarnham :\x1fbO'Reilly,\x1fcc2007.\x1e  \x1faxxiv, 419 p. :\x1fbill. ;\x1fc24 cm.\x1e  \x1faIncludes index.\x1e 0\x1faWeb services.\x1e1 \x1faRuby, Sam.\x1e  \x1faUkOxU\x1fbRadcl.Science\x1fbRSL Level 2\x1fhTK 5105.88813 RIC\x1f720689922\x1fp306162820\x1fyReference\x1e\x1d",

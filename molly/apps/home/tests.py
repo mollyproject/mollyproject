@@ -4,9 +4,9 @@ from django.core.management import call_command
 from django.test.client import Client
 from django.core.urlresolvers import reverse
 
-from molly.core.utils import OXFORD_EMAIL_RE
+#from molly.core.utils import OXFORD_EMAIL_RE
 
-from molly.core import geolocation
+from molly import geolocation
 
 class AjaxSetLocationTestCase(unittest.TestCase):
     def setUp(self):
@@ -111,25 +111,25 @@ class CoreTestCase(unittest.TestCase):
         self.assertEqual(response.redirect_chain, [(u'http://foo.bar/', 303)])
             
    
-    def testOxfordEmailRegex(self):
-        oxford_addresses = (
-            'bob.builder@estates.ox.ac.uk',
-            'jeremy.kyle@naff-tv.ox.ac.uk',
-            'barry.bookworm@oup.com',
-            
-        )
-        non_oxford_addresses = (
-            'ingrid.imposter@fake.sox.ox.ac.uk',
-            'couch.potato@coup.com',
-            'james@hotmail.com',
-        )
-        
-        for address in oxford_addresses:
-            self.assert_(OXFORD_EMAIL_RE.match(address),
-                "%s didn't match as an Oxford e-mail address when it should." % address)
-        for address in non_oxford_addresses:
-            self.assert_(not OXFORD_EMAIL_RE.match(address),
-                "%s matched as an Oxford e-mail address when it shouldn't." % address)
+    #def testOxfordEmailRegex(self):
+    #    oxford_addresses = (
+    #        'bob.builder@estates.ox.ac.uk',
+    #        'jeremy.kyle@naff-tv.ox.ac.uk',
+    #        'barry.bookworm@oup.com',
+    #        
+    #    )
+    #    non_oxford_addresses = (
+    #        'ingrid.imposter@fake.sox.ox.ac.uk',
+    #        'couch.potato@coup.com',
+    #        'james@hotmail.com',
+    #    )
+    #    
+    #    for address in oxford_addresses:
+    #        self.assert_(OXFORD_EMAIL_RE.match(address),
+    #            "%s didn't match as an Oxford e-mail address when it should." % address)
+    #    for address in non_oxford_addresses:
+    #        self.assert_(not OXFORD_EMAIL_RE.match(address),
+    #            "%s matched as an Oxford e-mail address when it shouldn't." % address)
                 
 class GeocodingTestCase(unittest.TestCase):
     def testReverseGeocode(self):
