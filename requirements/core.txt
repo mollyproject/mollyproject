@@ -5,7 +5,6 @@ git+http://github.com/alexdutton/PyZ3950.git#egg=PyZ3950
 feedparser
 simplejson
 rdflib
-pycairo==1.8.8
 pytz
 pyxml
 Django==1.1.2

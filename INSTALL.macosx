@@ -22,7 +22,7 @@ Note: This doesn't yet work - the postgres set-up needs more playing with.
 
 4. Install non-Python dependencies using MacPorts:
 
-   $ sudo port install cairo postgresql84 postgresql84-server postgis geos gdal proj
+   $ sudo port install postgresql84 postgresql84-server postgis geos gdal proj
 
    If you'd like postgres to start at system boot, enable its startup item thus:
 

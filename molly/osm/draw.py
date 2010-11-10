@@ -1,5 +1,5 @@
 from __future__ import division
-import math, random, cairo, urllib, os.path, sys, time
+import math, random, PIL.Image, urllib, os.path, sys, time
 
 from molly.osm.models import OSMTile, get_marker_dir
 
@@ -64,45 +64,28 @@ def get_map(points, width, height, filename, zoom=None, lon_center=None, lat_cen
     ty_max_ = int(ty_max + (height+oy)/256)
     tiles = [{'ref':(tx, ty)} for tx in range(tx_min_, tx_max_) for ty in range(ty_min_, ty_max_)]
     
-    surface = cairo.ImageSurface(
-        cairo.FORMAT_ARGB32,
-        width, #(ty_max-ty_min)*256,
-        height, #(tx_max-tx_min)*256,
-    )
-    context = cairo.Context(surface)
-
+    # Create a new blank image for us to add the tiles on to
+    image = PIL.Image.new('RGBA', (width, height))
+    
+    # Lots of different tiles contain the parts we're interested in, so take the
+    # parts of those tiles, and copy them into our new image
     for tile in tiles:
         offx = (tile['ref'][0] - tx_min) * 256 - ox
         offy = (tile['ref'][1] - ty_min) * 256 - oy
-
         
         if not (-256 < offx and offx < width and -256 < offy and offy < height):
-            continue  
-
-        print offx, offy
+            continue
         
         tile_data = OSMTile.get_data(tile['ref'][0], tile['ref'][1], zoom)
         
         try:
-            tile['surface'] = cairo.ImageSurface.create_from_png(tile_data)
+            tile['surface'] = PIL.Image.open(tile_data)
         except Exception, e:
-            tile['surface'] = cairo.ImageSurface(cairo.FORMAT_ARGB32, 256, 256)
-            
+            tile['surface'] = PIL.Image.new('RGB', (256, 256))
         
-        context.set_source_surface(
-            tile['surface'],
-            (tile['ref'][0] - tx_min) * 256 - ox,
-            (tile['ref'][1] - ty_min) * 256 - oy,
-        )
-        
-        context.rectangle(
-            (tile['ref'][0] - tx_min) * 256 - ox,
-            (tile['ref'][1] - ty_min) * 256 - oy,
-            256, 256
-        )
-        
-        context.fill()
-
+        image.paste(tile['surface'], ((tile['ref'][0] - tx_min) * 256 - ox, (tile['ref'][1] - ty_min) * 256 - oy))
+    
+    # Now add the markers to the image
     points.sort(key=lambda p:p[0][1])
     marker_dir = get_marker_dir()
     for (tx, ty), color, index in points:
@@ -111,32 +94,14 @@ def get_map(points, width, height, filename, zoom=None, lon_center=None, lat_cen
         else:
             off, fn = (10, 25), "%s-%d.png" % (color, index)
         fn = os.path.join(marker_dir, fn)
-        try:
-            marker = cairo.ImageSurface.create_from_png(fn)
-        except Exception:
-            raise AssertionError, "Got an exception in cairo.ImageSurface.create_from_png! " + repr(locals())
+        marker = PIL.Image.open(fn)
         off = (
-            (tx - tx_min) * 256 - off[0] - ox,
-            (ty - ty_min) * 256 - off[1] - oy,
-        )            
-        context.set_source_surface(
-            marker,
-            off[0], off[1]
+            int((tx - tx_min) * 256 - off[0] - ox),
+            int((ty - ty_min) * 256 - off[1] - oy),
         )
-        context.rectangle(off[0], off[1], marker.get_width(), marker.get_height())
-        context.fill()
-        
+        image.paste(marker, (off[0], off[1]), marker)
     
-    # The following is now rendered in HTML
-    #context.set_source_rgb(0,0,0)
-    #credit = "OpenStreetMap"
-    #xbearing, ybearing, cwidth, cheight, xadvance, yadvance = (
-    #    context.text_extents(credit))
-    #context.select_font_face('sanf-serif', cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
-    #context.move_to(width-cwidth-5, height-5)
-    #context.show_text(credit)
-           
-    surface.write_to_png(filename)
+    image.save(filename, 'png')
     
     return
     del surface

@@ -2,26 +2,6 @@
 
 import os, sys, os.path, subprocess, shutil, traceback
 
-def cairo_hack(source_path, deploy_path):
-    # This is a hack to create a file that should have been created at the pip stage.
-    cairo_init_path = os.path.join(
-        deploy_path, "lib", "python%d.%d" % sys.version_info[:2],
-        "site-packages", "cairo", "__init__.py"
-    )
-    if not os.path.exists(cairo_init_path):
-        f = open(cairo_init_path, 'w')
-        f.write("from _cairo import *\n")
-        f.close()
-
-def cairo_link(source_path, deploy_path):
-    import cairo
-
-    os.symlink(cairo.__path__[0], os.path.join(deploy_path,
-                               "lib",
-                               "python%d.%d" % sys.version_info[:2],
-                               "site-packages",
-                               "cairo"))
-
 def copy_demos(source_path, deploy_path):
     # Copy the demos across
     shutil.copytree(
@@ -29,21 +9,10 @@ def copy_demos(source_path, deploy_path):
         os.path.join(deploy_path, 'demos'),
     )
 
-def system_cairo_required():
-    try:
-        version = open('/etc/debian_version', 'r').read()
-        major = int(version.split('.')[0])
-        return major <= 5
-    except (IOError, ValueError):
-        return False
-
-
 def main(source_path, deploy_path):
     if os.path.exists(deploy_path):
         print "Cannot deploy to path - already exists"
         return 1
-
-    use_system_cairo = system_cairo_required()
 
     commands = [
         ('Creating', 'virtual environment', ["virtualenv", "--distribute", "--no-site-packages", deploy_path]),
@@ -51,31 +20,17 @@ def main(source_path, deploy_path):
 
     requirements = [l[:-1] for l in open(os.path.join(source_path, "requirements", "core.txt")) if l[:-1]]
 
-    if use_system_cairo:
-        requirements.remove('pycairo')
-
     for requirement in requirements:
         commands.append(
             ('Installing', requirement,
              [os.path.join(deploy_path, "bin", "pip"), "install", "-U", requirement])
         )
 
-    if use_system_cairo:
-        commands += [
-            ('Linking', 'cairo', cairo_link),
-        ]
-    else:
-        commands += [
-            ('Tidying', 'cairo', cairo_hack),
-        ]
-
-
     commands += [
         ('Deploying', 'molly',
          [os.path.join(deploy_path, "bin", "python"), os.path.join(source_path, "setup.py"), "install"]),
         ('Copying', 'demos', copy_demos),
     ]
-
 
     stdout_log = open('molly.stdout.log', 'w')
     stderr_log = open('molly.stderr.log', 'w')
