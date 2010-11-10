@@ -2,7 +2,7 @@ from datetime import datetime
 
 import urllib, urllib2, pytz, simplejson, urlparse, StringIO
 from lxml import etree
-import xml.utils.iso8601
+import dateutil.parser
 
 from django.http import Http404, HttpResponse, HttpResponseForbidden
 from django.core.urlresolvers import reverse
@@ -16,7 +16,7 @@ from molly.utils.http import HttpResponseSeeOther
 from molly.utils.xslt import transform, add_children_to_context
 
 def parse_iso_8601(s):
-    return datetime.fromtimestamp(xml.utils.iso8601.parse(s)).replace(tzinfo=pytz.utc)
+    return dateutil.parse(s).replace(tzinfo=pytz.utc)
 
 
 class SakaiView(BaseView):

@@ -6,7 +6,7 @@ feedparser
 simplejson
 rdflib
 pytz
-pyxml
+python-dateutil
 Django==1.1.2
 oauth==1.0.1
 psycopg2

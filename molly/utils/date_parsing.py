@@ -6,7 +6,7 @@ Also handles some timezone blackmagic
 
 from __future__ import absolute_import
 import email.utils
-import xml.utils.iso8601
+import dateutil.parse
 from datetime import datetime, timedelta, tzinfo
 
 class tz(tzinfo):
@@ -25,4 +25,4 @@ def rfc_2822_datetime(value):
     return datetime(*(time_tz[:6] + (0, tz(time_tz[9]))))
 
 def iso_8601_datetime(value):
-    return datetime.fromtimestamp(xml.utils.iso8601.parse(value))
+    return dateutil.parse(value)
