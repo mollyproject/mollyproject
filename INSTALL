@@ -1,0 +1,124 @@
+Installation
+============
+
+Molly is intended to be used with virtualenv and pip. However, before dealing
+with the Python side of the installation you'll need to install the following
+Debian packages or their equivalents for your distribution or OS:
+
+ * postgis
+ * python-gdal
+ * proj
+ * libgeos-3.0.0 or higher
+ * binutils
+ * libgdal1-1.5.0
+ * postgresql-8.3
+ * postgresql-8.3-postgis
+ * postgresql-server-dev-8.3
+ * python-virtualenv
+ * python-setuptools
+ * python-dev
+ * libxslt-dev
+ * libldap2-dev
+ * libsasl2-dev
+
+postgis python-gdal proj libgeos-3.0.0 binutils libgdal1-1.5.0 postgresql-8.3 postgresql-8.3-postgis postgresql-server-dev-8.3 python-virtualenv python-setuptools python-dev libxslt-dev libldap2-dev libsasl2-dev
+
+Unfortunately, pip isn't yet in Debian stable, so you'll need to install it
+using easy_install:
+
+ $ aptitude install python-setuptools
+ $ easy_install pip
+
+Next, set up and activate a virtualenv. This has been automated as
+scripts/install_virtualenv.py. If you want to do this by hand, do the following:
+
+     $ virtualenv --no-site-packages ~/mollyenv
+     $ cd ~/mollyenv
+     $ source bin/activate
+
+    Next, clone the git repository to a temporary directory:
+
+     $ git clone git://mollyproject.git.sourceforge.net/gitroot/mollyproject/mollyproject
+
+    Install the Molly dependencies and Molly itself:
+
+     $ cd ~/mollyenv/mollyproject/branches/extracting_oxford/molly/
+     $ pip -E ~/mollyenv/ install `cat requirements/core.txt` --upgrade
+     $ python setup.py install
+
+Once you've set up the database as below, you'll be able to run the development
+server as follows:
+
+ $ cd ~/mollyenv/mollyproject/branches/extracting_oxford/molly/demos/molly_oxford
+ $ python manage.py runserver
+
+
+
+Database
+--------
+
+There are two ways to create the PostGIS template used by a molly installation:
+
+ * Run one of the scripts in scripts/ as the postgis user.
+OR
+ * Follow the instructions at
+   http://geodjango.org/docs/install.html#creating-a-spatial-database-template-for-postgis
+
+The first one is likely the simpler, but if it fails the latter will provide
+more information to get it working.
+
+Once this is done, you should create the molly database as a DB superuser
+(e.g. as postgres) by executing the following:
+
+ $ createdb -T template_postgis molly
+
+As a DB superuser, create the molly user:
+
+
+(Make sure the password is the one given in settings.py in the demos folder)
+
+ $ createuser molly -P
+ Enter password for new role:
+ Enter it again:
+ Shall the new role be a superuser? (y/n) n
+ Shall the new role be allowed to create databases? (y/n) n
+ Shall the new role be allowed to create more new roles? (y/n) n
+
+
+Now edit pg_hba.conf (usually in /var/lib/pgsql/data) on Fedora systems, and
+/etc/postgresql/8.3/main/ on Debian systems) to allow passworded logins from
+the new user by adding the following line somewhere near the top.
+
+ local molly molly md5
+
+Order is important, so it needs to go above any more general access directives.
+
+Log in to the server as postgres and allow the user access to the database:
+
+ $ psql molly
+ Welcome to psql 8.3.7, the PostgreSQL interactive terminal.
+
+ Type:  \copyright for distribution terms
+        \h for help with SQL commands
+        \? for help with psql commands
+        \g or terminate with semicolon to execute query
+        \q to quit
+
+ molly=# grant all on database molly to molly;
+ GRANT
+ molly=# ^D
+
+Either send SIGHUP or restart the server to reload pg_hba.conf
+
+Change directory to your project directory and use manage.py to initialise the
+database:
+
+ $ cd /path/to/molly/project/
+ $ python manage.py syncdb
+
+It should ask you to create a new superuser. Say yes and set one up.
+
+The site also requires a cache directory, currently /var/cache/molly .
+Create this directory and give user www-data and/or your developer users/group
+all permissions to do things to it.
+

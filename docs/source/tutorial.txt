@@ -1,0 +1,246 @@
+Getting started
+===============
+
+The Molly framework is designed so that the least you have to do is choose the
+features you wish to expose, write some connectors, and create a base template.
+
+We'll start with how to acquire and install the code, before moving on to 
+getting the demonstration site working. After that we'll explore some basic
+customisation and deployment issues.
+
+Getting the code
+----------------
+
+Molly is distributed under an :doc:`Academic Free License v3.0 <license>` and
+is maintained in a Git repository at SourceForge. Releases 0.1 and 0.2 are
+specific to the University of Oxford, and work on 0.3 is ongoing. Instructions
+for accessing the Git repository can be found on `the project pages
+<https://sourceforge.net/projects/mollyproject/develop>`_. You may perform an
+anonymous clone by using the following command:
+
+.. code-block:: bash
+
+   $  git clone git://github.com/mollyproject/mollyproject.git
+
+The repository contains two directories, :file:`molly/` and
+:file:`mollyproject.org/`; the former containing the Molly framework, and the
+latter the website. For the rest of this tutorial we assume you are working
+relative to :file:`molly/`. 
+
+Installing the dependencies
+---------------------------
+
+We recommend the use of `pip <http://pip.openplans.org/>`_ and `virtualenv
+<http://virtualenv.openplans.org/>`_ for deployment, though you may install
+Molly into your :file:`site-packages` directly. We'll assume you're using
+:file:`~/mollyenv` as your virtual environment.
+
+Molly has a few non-Python dependencies not provided by pip. These should be
+installed system-wide using your default package manager (or from source). For
+example, Debian users would perform [#f1]_:
+
+.. code-block:: bash
+
+   $ apt-get install postgis python-gdal proj libgeos-3.0.0 binutils \
+         libgdal1-1.5.0 postgresql-8.3 postgresql-8.3-postgis \
+         postgresql-server-dev-8.3 python-setuptools \
+         python-dev libxslt-dev libldap2-dev libsasl2-dev
+         
+This installation assumes version 8.3 of PostgreSQL, but 8.4 is also known to
+work.
+
+Installing pip and virtualenv
+-----------------------------
+
+To use pip, Debian users must first install setuptools:
+
+.. code-block:: bash
+
+   $ apt-get install python-setuptools
+   $ easy_install pip
+   
+Fedora users may install pip directly:
+
+.. code-block:: bash
+
+   $ yum install python-pip
+
+Once this is done, use pip to install virtualenv:
+
+   $ pip install virtualenv
+
+Creating and configuring a database
+-----------------------------------
+
+Molly is targeted at using a PostgreSQL database with PostGIS extensions. For
+details on how to set this up, please consult `the GeoDjango installation
+documentation <http://docs.djangoproject.com/en/dev/ref/contrib/gis/install/>`_.
+
+Assuming your PostGIS template is called `postgis_template` you can now set up
+a database:
+
+.. code-block:: bash
+
+   $ sudo su postgres
+   $ createdb -T template_postgis molly
+   $ createuser molly -P
+   Enter password for new role:
+   Enter it again:
+   Shall the new role be a superuser? (y/n) n
+   Shall the new role be allowed to create databases? (y/n) n
+   Shall the new role be allowed to create more new roles? (y/n) n
+   $ psql molly
+   Welcome to psql 8.3.7, the PostgreSQL interactive terminal.
+
+   Type:  \copyright for distribution terms
+          \h for help with SQL commands
+          \? for help with psql commands
+          \g or terminate with semicolon to execute query
+          \q to quit
+
+   molly=# grant all on database molly to molly;
+   GRANT
+   molly=# ^D
+
+You may need to add your new user to :file:`pg_hba.conf` (usually in
+/var/lib/pgsql/data) on Fedora systems, and /etc/postgresql/8.3/main/ on
+Debian systems). To do so, add the following line somewhere near the top of
+the file::
+
+   local molly molly md5
+
+Once this is done, reload the configuration by restarting the ``PostgreSQL``
+server or sending it a SIGHUP:
+
+.. code-block:: bash
+
+   $ killall -SIGHUP postgresql
+
+Deploying molly
+---------------
+
+Molly comes with a script to deploy the :package:``molly`` Python package and
+the demonstration sites to a virtual environment, along with its Python
+dependencies. Using ``virtualenv`` enables you to have multiple parallel
+deployments using different versions of dependencies, increasing
+reproducability of deployments.
+
+The script takes one argument, the path to deploy to. It first creates a new
+virtual environment, then uses ``pip`` to install dependencies as listed in
+:file:`molly/requirements/core.txt`. On Debian systems it skips ``PyCairo``
+and attempts to symlink to a system-wide version. Finally it installs ``molly``
+and copies the :file:`demos` folder to the root of the virtual environment. 
+
+.. code-block:: none
+
+   $ cd molly/
+   $ scripts/install_virtualenv.py ~/mollyenv
+   Creating     virtual environment                      ( 1/21) [  OK  ]
+   Installing   feedparser                               ( 2/21) [  OK  ]
+   Installing   BeautifulSoup                            ( 3/21) [  OK  ]
+   Installing   simplejson                               ( 4/21) [  OK  ]
+   Installing   rdflib                                   ( 5/21) [  OK  ]
+   Installing   pycairo                                  ( 6/21) [  OK  ]
+   Installing   textile                                  ( 7/21) [  OK  ]
+   Installing   pytz                                     ( 8/21) [  OK  ]
+   Installing   pyxml                                    ( 9/21) [  OK  ]
+   Installing   Django==1.1                              (10/21) [  OK  ]
+   Installing   oauth==1.0.1                             (11/21) [  OK  ]
+   Installing   pywurfl                                  (12/21) [  OK  ]
+   Installing   psycopg2                                 (13/21) [  OK  ]
+   Installing   PIL                                      (14/21) [  OK  ]
+   Installing   lxml                                     (15/21) [  OK  ]
+   Installing   python-ldap                              (16/21) [  OK  ]
+   Installing   ply                                      (17/21) [  OK  ]
+   Installing   git+http://github.com/alexdutton/PyZ3950 (18/21) [  OK  ]
+   Tidying      cairo                                    (19/21) [  OK  ]
+   Deploying    molly                                    (20/21) [  OK  ]
+   Copying      demos                                    (21/21) [  OK  ]
+   
+   Molly was successfully installed to /home/alex/testdeploy.
+   The following command will take you inside your virtualenv:
+
+      $ source ~/mollyenv/bin/activate
+
+Problems with the installer
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+It's likely that at least one of these will fail. If one does, the output of
+all the commands run can be found in :file:`molly.stdout.log` and
+:file:`molly.stderr.log` in the directory where you ran the installer.
+
+To fix things manually, first 'activate' the python interpreter in the virtual
+environment:
+
+.. code-block:: bash
+
+   $ source ~/mollyenv/bin/activate
+   (mollyenv)$
+   
+Next you may wish to download source packages or rerun pip. The python
+interpreter you invoke will work relative to your new virtualenv.
+
+Once you are finished, 'deactivate' your virtual environment:
+
+.. code-block:: bash
+
+   (mollyenv)$ deactivate
+   $ 
+
+Finally, `file a bug
+<http://sourceforge.net/tracker/?func=add&group_id=309230&atid=1302249>`_ or
+`post to the developer or user mailing list
+<http://sourceforge.net/mail/?group_id=309230>`_ to let the developers know
+what went wrong, so we can make things a little better next time round.
+
+Compiling the media files
+-------------------------
+
+Molly maintains media for each application within its source tree. Thus, the
+media for molly.apps.contact is stored in :file:`molly/molly/apps/contact/media/`.
+
+Molly uses `django-staticfiles <http://pypi.python.org/pypi/django-staticfiles>`_
+and `django-compress <http://pypi.python.org/pypi/django-compress`_ to merge
+media from each app into the media directory served by the web server, which
+should be invoked using the following:
+
+.. code-block:: bash
+
+   $ cd ~/mollyenv/
+   $ source bin/activate
+   $ export PYTHONPATH=~/mollyenv/demos/
+   $ cd demos/molly_oxford/
+   $ ./manage.py build_static --noinput
+   $ ./manage.py synccompress
+
+Running a demo site
+-------------------
+
+At the moment there is only one demo site, kept in :file:`demos/molly_oxford/`.
+
+To run it:
+
+.. code-block:: bash
+
+   $ cd ~/mollyenv/
+   $ source bin/activate
+   $ export PYTHONPATH=~/mollyenv/demos/
+   $ cd demos/molly_oxford/
+   $ ./manage.py syncdb
+   $ ./manage.py runserver
+
+If all has gone smoothly, you should be able to point a web browser at
+`http://localhost:8000/ <http://localhost:8000/>`_.
+
+
+
+.. rubric:: Footnotes
+
+.. [#f1] If deploying to Debian, you will also need to install
+         ``python-cairo``, as the Python Package Index doesn't provide a
+         version of ``PyCairo`` compatible with Debian Lenny. The Molly
+         installer (described later) will then create a symbolic link from
+         your virtual environment to ``PyCairo`` in your system
+         ``site-packages``.
+
+
