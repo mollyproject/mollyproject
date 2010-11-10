@@ -16,7 +16,7 @@ from molly.utils.http import HttpResponseSeeOther
 from molly.utils.xslt import transform, add_children_to_context
 
 def parse_iso_8601(s):
-    return dateutil.parse(s).replace(tzinfo=pytz.utc)
+    return dateutil.parser.parse(s).replace(tzinfo=pytz.utc)
 
 
 class SakaiView(BaseView):
