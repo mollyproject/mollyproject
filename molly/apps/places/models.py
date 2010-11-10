@@ -33,7 +33,6 @@ class EntityType(models.Model):
         
     def save(self, *args, **kwargs):
         super(EntityType, self).save(*args, **kwargs)
-        print "Saved et"
 
         subtypes_of = set([self])
         for subtype_of in self.subtype_of.all():
