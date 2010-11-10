@@ -3,7 +3,7 @@ from lxml import etree
 from datetime import datetime
 
 from molly.conf.settings import batch
-from molly.utils.date_parsing import iso_8601_datetime
+import dateutil.parser
 
 from molly.apps.podcasts.providers import BasePodcastsProvider
 from molly.apps.podcasts.models import Podcast, PodcastItem, PodcastEnclosure
@@ -67,7 +67,7 @@ class RSSPodcastsProvider(BasePodcastsProvider):
                         email.utils.mktime_tz(
                             email.utils.parsedate_tz(value)))
                 elif name == atom('published'):
-                    value = iso_8601_datetime(value)
+                    value = dateutil.parser.parse(value)
                 elif name == '{itunes:}duration':
                     value = int(value)
                 return value
