@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-import pprint, rdflib, dateutil.parse , sys
+import pprint, rdflib, dateutil.parser , sys
 import cStringIO as StringIO
 
 from optparse import make_option
@@ -182,8 +182,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         cursor = connection.cursor()
         
-        start = dateutil.parse(options['start'])
-        end = dateutil.parse(options['end'])
+        start = dateutil.parser.parse(options['start'])
+        end = dateutil.parser.parse(options['end'])
         
         cursor.execute("""
             SELECT device_id, COUNT(DISTINCT session_key)

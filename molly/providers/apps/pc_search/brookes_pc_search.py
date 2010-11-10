@@ -1,5 +1,5 @@
 from datetime import datetime
-import dateutil.parse
+import dateutil.parser
 import feedparser
 
 class BrookesPCAvailabilityProvider(object):
@@ -8,7 +8,7 @@ class BrookesPCAvailabilityProvider(object):
 
     def parse_date(self, s):
         try:
-            return dateutil.parse(s)
+            return dateutil.parser.parse(s)
         except (TypeError, ValueError):
             return None
 
