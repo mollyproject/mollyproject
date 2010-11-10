@@ -24,7 +24,7 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'HOST': SECRETS.database_host,
         'NAME': SECRETS.database_name,
         'USER': SECRETS.database_user,
