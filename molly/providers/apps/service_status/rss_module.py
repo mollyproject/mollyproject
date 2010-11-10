@@ -1,5 +1,5 @@
 from datetime import datetime
-import dateutil.parse
+import dateutil.parser
 from molly.utils.date_parsing import rfc_2822_datetime
 import feedparser
 
@@ -9,7 +9,7 @@ class RSSModuleServiceStatusProvider(object):
 
     def parse_date(self, s):
         try:
-            return dateutil.parse(s)
+            return dateutil.parser.parse(s)
         except (TypeError, ValueError):
             return None
 
