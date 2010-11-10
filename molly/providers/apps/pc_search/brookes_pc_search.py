@@ -1,5 +1,5 @@
 from datetime import datetime
-from xml.utils import iso8601
+import dateutil.parse
 import feedparser
 
 class BrookesPCAvailabilityProvider(object):
@@ -8,7 +8,7 @@ class BrookesPCAvailabilityProvider(object):
 
     def parse_date(self, s):
         try:
-            return datetime.fromtimestamp(iso8601.parse(s))
+            return dateutil.parse(s)
         except (TypeError, ValueError):
             return None
 

@@ -1,7 +1,7 @@
 from django.core.management.base import NoArgsCommand
 from django.contrib.gis.geos import Point
 from datetime import datetime, timedelta
-from xml.utils import iso8601
+import dateutil.parser
 import ElementSoup as ES
 import urllib, re, email, feedparser
 from molly.rss.models import RSSItem, RSSFeed
@@ -68,8 +68,8 @@ class Command(NoArgsCommand):
                         
                     item.link = x_item.link
                     item.last_modified = last_modified
-                    item.dt_start = datetime.fromtimestamp(iso8601.parse(x_item.xcal_dtstart))
-                    item.dt_end = datetime.fromtimestamp(iso8601.parse(x_item.xcal_dtend))
+                    item.dt_start = dateutil.parser.parse(x_item.xcal_dtstart)
+                    item.dt_end = dateutil.parser.parse(x_item.xcal_dtend)
                     
                     item.location_url = x_item.xcal_url
                     

@@ -4,7 +4,6 @@ from inspect import isfunction
 
 from datetime import datetime
 import socket, time, logging, sys, traceback, Cookie
-import xml.utils.iso8601
 
 from django.contrib.auth.models import User
 from django.conf import settings
