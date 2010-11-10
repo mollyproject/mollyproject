@@ -28,6 +28,9 @@ if not hasattr(os.path, 'relpath'):
 def get_compress_groups(STATIC_ROOT):
     COMPRESS_CSS, COMPRESS_JS = {}, {}
     
+    if not os.path.exists(STATIC_ROOT):
+        os.makedirs(STATIC_ROOT)
+    
     for directory in os.listdir(STATIC_ROOT):
         # We don't want to compress admin media or already-compressed media.
         if directory in ('admin', 'c', ):
@@ -55,8 +58,8 @@ def get_compress_groups(STATIC_ROOT):
                     output_filename = os.path.join(os.path.join('c', *path), output_filename)
 
                     # Create the target directory if it doesn't already exist.
-                    if not os.path.exists(os.path.dirname(output_filename)):
-                        os.makedirs(os.path.dirname(output_filename))
+                    if not os.path.exists(os.path.join(STATIC_ROOT, os.path.dirname(output_filename))):
+                        os.makedirs(os.path.join(STATIC_ROOT, os.path.dirname(output_filename)))
 
                     compress[group] = {
                         'source_filenames': (),

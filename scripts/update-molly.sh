@@ -19,19 +19,8 @@ if [ -n "$1" ] ; then
     # settings.py and secrets.py
     cp -f $DIR/../local/* $1/demos/molly_oxford/
     
-    # Set up media directories
-    cd $1/demos/molly_oxford/
-    mkdir media
-    mkdir -p media/c/css
-    mkdir media/c/css/groups
-    mkdir media/c/css/core
-    mkdir media/c/blueprint
-    mkdir -p media/c/openlayers/theme/default
-    mkdir media/c/js
-    mkdir media/c/js/groups
-    mkdir media/c/js/devices
-    
     # Build media
+    cd $1/demos/molly_oxford/
     python manage.py build_static --noinput
     python manage.py synccompress
     

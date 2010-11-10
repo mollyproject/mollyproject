@@ -26,17 +26,6 @@ if [ -n "$1" ] ; then
     cp -f $DIR/../local/* $1/demos/molly_oxford/
     cd $1/demos/molly_oxford/
     
-    # Make media directories
-    mkdir media
-    mkdir -p media/c/css
-    mkdir media/c/css/groups
-    mkdir media/c/css/core
-    mkdir media/c/blueprint
-    mkdir -p media/c/openlayers/theme/default
-    mkdir media/c/js
-    mkdir media/c/js/groups
-    mkdir media/c/js/devices
-    
     # Update batch jobs
     PYTHONPATH=.. python manage.py create_crontab | python $DIR/merge-cron.py | crontab
     
