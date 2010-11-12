@@ -20,10 +20,6 @@ def get_tile_geo(xtile, ytile, zoom):
   lat_deg = lat_rad * 180.0 / math.pi
   return (lon_deg, lat_deg)
 
-
-def get_tile_url(xtile, ytile, zoom):
-    return "http://tile.openstreetmap.org/%d/%d/%d.png" % (zoom, xtile, ytile)
-
 def minmax(i):
     min_, max_ = float('inf'), float('-inf')
     for e in i:
@@ -67,6 +63,9 @@ def get_map(points, width, height, filename, zoom=None, lon_center=None, lat_cen
     # Create a new blank image for us to add the tiles on to
     image = PIL.Image.new('RGBA', (width, height))
     
+    # Keep track of if the image if malformed or not
+    malformed = False
+    
     # Lots of different tiles contain the parts we're interested in, so take the
     # parts of those tiles, and copy them into our new image
     for tile in tiles:
@@ -76,12 +75,12 @@ def get_map(points, width, height, filename, zoom=None, lon_center=None, lat_cen
         if not (-256 < offx and offx < width and -256 < offy and offy < height):
             continue
         
-        tile_data = OSMTile.get_data(tile['ref'][0], tile['ref'][1], zoom)
-        
         try:
+            tile_data = OSMTile.get_data(tile['ref'][0], tile['ref'][1], zoom)
             tile['surface'] = PIL.Image.open(tile_data)
         except Exception, e:
-            tile['surface'] = PIL.Image.new('RGB', (256, 256))
+            tile['surface'] = PIL.Image.open(os.path.join(os.path.dirname(__file__), 'fallback', 'fallback.png'))
+            malformed = True
         
         image.paste(tile['surface'], ((tile['ref'][0] - tx_min) * 256 - ox, (tile['ref'][1] - ty_min) * 256 - oy))
     
@@ -103,10 +102,9 @@ def get_map(points, width, height, filename, zoom=None, lon_center=None, lat_cen
     
     image.save(filename, 'png')
     
+    if malformed:
+        raise MapGenerationError()
     return
-    del surface
-    for tile in tiles:
-        del tile['surface']
 
 class PointSet(set):
     def __init__(self, initial=None):
@@ -191,16 +189,25 @@ def get_fitted_map(centre_point, points, min_points, zoom, width, height, filena
         points.append(
             (point[0], point[1], point[2], i+1)
         )
-        
-    get_map(points, width, height, filename, zoom)
     
     if centre_point:
         new_points = new_points[:len(point_set)-1]
     else:
         new_points = new_points[:len(point_set)]
+    
+    try:
+        get_map(points, width, height, filename, zoom)
+    except MapGenerationError as e:
+        e.metadata = (new_points, zoom)
+        raise
+    
     return new_points, zoom
+
+class MapGenerationError(Exception):
     
-    
+    def __init__(self):
+        self.metadata = None
+
 if __name__ == '__main__':
     RED, GREEN, BLUE = (1, 0, 0), (0, 0.5, 0), (0.25, 0.25, 1)
     get_map(
@@ -216,5 +223,3 @@ if __name__ == '__main__':
             (51.759247, -1.259904, 'green', 8),
             (51.759173, -1.259880, 'red', 9),
         ], 300, 200, 'foo.png')
-        
-        
