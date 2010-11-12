@@ -26,7 +26,7 @@ class StatisticsHandler(logging.Handler):
         except Exception, e:
             # Likely there was some sort of database exception, so this really
             # isn't going to work. We'll log it in case anyone's interested.
-            logger.exception("Couldn't save hit", extra={'hit': hit})
+            logger.exception("Couldn't save hit")
 
 def configure_logging(conf):
     if getattr(conf, 'log_to_database', True):
