@@ -3,3 +3,5 @@
 build/
 docs/build/
 local/
+molly.egg-info/
+dist/

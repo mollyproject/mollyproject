@@ -1,4 +1,7 @@
-from distutils.core import setup
+import ez_setup
+ez_setup.use_setuptools()
+
+from setuptools import setup
 from distutils.command.install import INSTALL_SCHEMES
 import os
 
@@ -51,7 +54,7 @@ for dirpath, dirnames, filenames in os.walk(molly_dir):
 
 setup(
     name = 'molly',
-    version = '0.3',
+    version = '0.4',
     url = 'http://mollyproject.org/',
     author = 'University of Oxford',
     description ="A framework for building mobile information portals",
@@ -67,6 +70,31 @@ setup(
         'Topic :: Education',
         'Topic :: Internet',
     ],
+    install_requires = [
+        "python-Levenshtein",
+        "pywurfl",
+        "ply",
+        "PyZ3950", # The one in PyPI is broken! You should install the one from
+                   # https://github.com/alexdutton/PyZ3950/ *BEFORE* running
+                   # this script
+        "feedparser",
+        "simplejson",
+        "rdflib",
+        "pytz",
+        "python-dateutil",
+        "Django",
+        "oauth==1.0.1",
+        "psycopg2",
+        "PIL",
+        "lxml",
+        "python-ldap",
+        "django-compress",
+        "python-memcached",
+        "django-staticfiles",
+    ],
+    dependency_links = [
+        'http://pylevenshtein.googlecode.com/files/python-Levenshtein-0.10.1.tar.bz2#egg=python-Levenshtein'
+    ]
 )
 
 

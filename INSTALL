@@ -21,38 +21,82 @@ Debian packages or their equivalents for your distribution or OS:
  * libldap2-dev
  * libsasl2-dev
 
-postgis python-gdal proj libgeos-3.0.0 binutils libgdal1-1.5.0 postgresql-8.3 postgresql-8.3-postgis postgresql-server-dev-8.3 python-virtualenv python-setuptools python-dev libxslt-dev libldap2-dev libsasl2-dev
-
 Unfortunately, pip isn't yet in Debian stable, so you'll need to install it
 using easy_install:
 
  $ aptitude install python-setuptools
  $ easy_install pip
 
-Next, set up and activate a virtualenv. This has been automated as
-scripts/install_virtualenv.py. If you want to do this by hand, do the following:
+On Fedora, this list is:
 
-     $ virtualenv --no-site-packages ~/mollyenv
-     $ cd ~/mollyenv
-     $ source bin/activate
+ * python-virtualenv
+ * python-pip
+ * libxml-devel
+ * libxslt-devel
+ * python-devel
+ * postgresql-devel
+ * openldap-devel
+ * openssl-devel
+ * postgis
+ * gdal-python
+ * proj
+ * postgresql-server
+ * geos
+ * httpd
+ * libjpeg-devel
 
-    Next, clone the git repository to a temporary directory:
+Next, you'll want to deploy Molly, this can be done in the usual way. This uses
+setuptools to install all your dependencies. If you just want to play with
+Molly, then it may make more sense to set up a virtualenv[1] and install Molly
+into that.
 
-     $ git clone git://mollyproject.git.sourceforge.net/gitroot/mollyproject/mollyproject
+Unfortunately, one of the dependencies on PyPI is actually broken - you will
+need to install a fixed version from http://github.com/alexdutton/PyZ3950/
+BEFORE running the setup script, otherwise the broken version will get
+installed:
 
-    Install the Molly dependencies and Molly itself:
+ $ pip install git+http://github.com/alexdutton/PyZ3950.git
 
-     $ cd ~/mollyenv/mollyproject/branches/extracting_oxford/molly/
-     $ pip -E ~/mollyenv/ install `cat requirements/core.txt` --upgrade
-     $ python setup.py install
+ $ python setup.py install
 
-Once you've set up the database as below, you'll be able to run the development
-server as follows:
+If you don't have network access, you will need to install the following Python
+packages manually (from PyPI unless otherwise listed):
 
- $ cd ~/mollyenv/mollyproject/branches/extracting_oxford/molly/demos/molly_oxford
+ * Levenshtein (SVN at http://pylevenshtein.googlecode.com/svn/trunk)
+ * pywurfl
+ * ply
+ * feedparser
+ * simplejson
+ * rdflib
+ * pytz
+ * python-dateutil
+ * Django
+ * oauth (version 1.0.1)
+ * psycopg2
+ * PIL
+ * lxml
+ * python-ldap
+ * django-compress
+ * python-memcached
+ * django-staticfiles
+
+You'll then need to set up the database as below, and configure a deployment
+of Molly. A simple deployment is provided in demo/. You'll need to give
+settings.py a once over, and then build the media for the site:
+
+ $ python manage.py build_static --noinput
+ $ python manage.py synccompress
+ $ python manage.py generate_markers
+
+You will also need to set up the cron jobs required for batch processing to
+work. If you don't have a crontab at present, simply running:
+
+ $ PYTHONPATH=.. python manage.py create_crontab | crontab
+
+will do the job, if not, don't pipe it to crontab and then add the required
+lines by hand. Once this is done, you can finally start a test server.
+
  $ python manage.py runserver
-
-
 
 Database
 --------
@@ -74,8 +118,7 @@ Once this is done, you should create the molly database as a DB superuser
 
 As a DB superuser, create the molly user:
 
-
-(Make sure the password is the one given in settings.py in the demos folder)
+(Make sure the password is the one given in settings.py in the demo folder)
 
  $ createuser molly -P
  Enter password for new role:
@@ -118,7 +161,8 @@ database:
 
 It should ask you to create a new superuser. Say yes and set one up.
 
-The site also requires a cache directory, currently /var/cache/molly .
+The site also requires a cache directory, currently /var/cache/molly.
 Create this directory and give user www-data and/or your developer users/group
 all permissions to do things to it.
 
+[1] http://pypi.python.org/pypi/virtualenv
