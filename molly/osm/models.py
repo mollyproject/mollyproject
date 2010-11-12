@@ -24,6 +24,7 @@ class GeneratedMap(models.Model):
     generated = models.DateTimeField()
     last_accessed = models.DateTimeField()
     _metadata = models.TextField(blank=True)
+    faulty = models.BooleanField(default=False)
 
     def _get_metadata(self):
         return simplejson.loads(self._metadata)
@@ -63,7 +64,12 @@ class OSMTile(models.Model):
         return os.path.join(osm_tile_dir, "%d-%d-%d.png" % (self.xtile, self.ytile, self.zoom))
 
     @staticmethod
-    def get_data(xtile, ytile, zoom):
+    def get_data(xtile, ytile, zoom, retry=True):
+        """
+        Fetch an OSM tile from the OSM tile server, and cache it if necessary.
+        If the last argument is True, then a retry to get data from the tile
+        server is attempted if the first attempt fails.
+        """
         try:
             osm_tile = OSMTile.objects.get(xtile=xtile, ytile=ytile, zoom=zoom, last_fetched__gt = datetime.now() - timedelta(1))
             return open(osm_tile.get_filename())
@@ -72,8 +78,17 @@ class OSMTile(models.Model):
                 osm_tile, created = OSMTile.objects.get_or_create(xtile=xtile, ytile=ytile, zoom=zoom)
             except IntegrityError:
                 return OSMTile.get_data(xtile, ytile, zoom)
-
-            response = urllib.urlopen(get_tile_url(xtile, ytile, zoom))
+            
+            # Try to get the file from the OSM tile server
+            try:
+                response = urllib.urlopen(get_tile_url(xtile, ytile, zoom))
+            except IOError:
+                # If it fails... try again, but only once
+                if retry:
+                    return OSMTile.get_data(xtile, ytile, zoom, retry=False)
+                else:
+                    raise
+            
             s = StringIO()
             s.write(response.read())
             f = open(osm_tile.get_filename(), 'w')

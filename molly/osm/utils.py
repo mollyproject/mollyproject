@@ -8,7 +8,7 @@ from datetime import datetime
 from django.conf import settings
 from django.db import IntegrityError
 from models import GeneratedMap, get_generated_map_dir
-from draw import get_map, get_fitted_map
+from draw import get_map, get_fitted_map, MapGenerationError
 
 MARKER_COLORS = (
     # name, fill, border, text
@@ -55,16 +55,32 @@ def get_or_create_map(f, args):
         gm.last_accessed = datetime.utcnow()
         gm.save()
         metadata = gm.metadata
-        logger.debug("Found previously generated map: %s", hash)
+        if gm.faulty:
+            gm.delete()
+            logger.debug("Found previously generated map: %s, but it's faulty, so regenerating", hash)
+            raise GeneratedMap.DoesNotExist()
+        else:
+            logger.debug("Found previously generated map: %s", hash)
     except GeneratedMap.DoesNotExist:
         generated_map_dir = get_generated_map_dir()
         if not os.path.exists(generated_map_dir):
             os.makedirs(generated_map_dir)
-        metadata = f(filename=os.path.join(generated_map_dir, hash), *args)
+        try:
+            metadata = f(filename=os.path.join(generated_map_dir, hash), *args)
+            faulty = False
+        except MapGenerationError as e:
+            # If a map generation error occurs, then mark this map as faulty
+            # this means that it is deleted next time it is requested, forcing
+            # it to be re-generated next time (hopefully the error is transient)
+            logger.warning("Unable to generate map")
+            metadata = e.metadata
+            faulty = True
+        
         gm = GeneratedMap(
             hash = hash,
             generated = datetime.utcnow(),
             last_accessed = datetime.utcnow(),
+            faulty = faulty,
         )
         gm.metadata = metadata
         try:
@@ -74,7 +90,6 @@ def get_or_create_map(f, args):
         else:
             logger.debug("Map generated: %s, took %.5f seconds", (hash, time.time()-start_time)) 
     
-
         if GeneratedMap.objects.all().count() > 25000:
             youngest = None
             for gm in GeneratedMap.objects.order_by('last_accessed')[:50]:
