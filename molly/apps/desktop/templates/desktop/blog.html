@@ -1,0 +1,13 @@
+
+<div id="content">
+  <h2>Blog</h2>
+
+
+{% for article in articles %}
+  {{ article.html|safe }}
+  {% if not forloop.last %}
+  <hr/>
+  {% endif %}
+{% endfor %}
+
+</div>
