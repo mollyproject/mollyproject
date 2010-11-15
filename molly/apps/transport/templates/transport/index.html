@@ -5,7 +5,7 @@
 {% if train_station %}
 <div class="section">
   <div class="header">
-    <h2>{{ train_station.title }} (departures)</h2>
+    <h2>{{ train_station.title }} (departures) - {{ train_station.metadata.ldb.generatedAt|date:"H:i:s" }}</h2>
   </div>
   
   {% if train_station.metadata.ldb.nrccMessages.message %}
@@ -20,7 +20,9 @@
     <thead>
       <tr>
         <th>Destination</th>
+        {% if train_station.metadata.ldb.platformAvailable %}
         <th>Plat.</th>
+        {% endif %}
         <th>Due</th>
         <th>Expected</th>
       </tr>
@@ -46,7 +48,9 @@
               {{ service.destination.location.0.locationName }}{% if service.destination.location.0.via %}<br/>
               <small>{{ service.destination.location.0.via }}</small>{% endif %}
             </td>
+            {% if train_station.metadata.ldb.platformAvailable %} 
             <td>{{ service.platform }}</td>
+            {% endif %}
             <td>{{ service.std }}</td>
             <td>{{ service.etd }}</td>
           </tr>
@@ -115,7 +119,7 @@
 {% for service in services %}
       <tr>
 {% if forloop.first %}
-        <td rowspan="{{ services|length }}">{{ entity.title|truncatewords:2 }}<br/><small>{{ entity.distance }}</small></td>
+        <td rowspan="{{ services|length }}">{{ entity.title }}<br/><small>{{ entity.distance|floatformat }}</small></td>
 {% endif %}
         <td>{{ service.service }}</td>
         <td>{{ service.destination }}</td>
@@ -131,7 +135,7 @@
 {% endfor %}
 {% else %}
       <tr>
-        <td>{{ entity.title|truncatewords:2 }}<br/><small>{{ entity.distance }}</small></td>
+        <td>{{ entity.title }}<br/><small>{{ entity.distance|floatformat }}</small></td>
         <td colspan="3">{{ entity.metadata.real_time_information.pip_info }}</td>
         <td>
           <div class="button">
