@@ -125,7 +125,9 @@ APPLICATIONS = [
             'molly.providers.apps.maps.OxpointsMapsProvider',
             'molly.providers.apps.maps.OSMMapsProvider',
             'molly_oxford.providers.apps.places.OxfordParkAndRidePlacesProvider',
-            'molly.providers.apps.maps.LiveDepartureBoardPlacesProvider',
+            Provider('molly.providers.apps.maps.LiveDepartureBoardPlacesProvider',
+                token = SECRETS.ldb
+            ),
             Provider('molly.providers.apps.maps.BBCTPEGPlacesProvider',
                 url='http://www.bbc.co.uk/travelnews/tpeg/en/local/rtm/oxford_tpeg.xml',
             ),

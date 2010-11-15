@@ -1,6 +1,7 @@
 import logging
 
 import suds, suds.sudsobject
+from suds.sax.element import Element
 
 logger = logging.getLogger('molly.providers.apps.places.ldb')
 
@@ -9,9 +10,10 @@ from molly.apps.places.providers import BaseMapsProvider
 class LiveDepartureBoardPlacesProvider(BaseMapsProvider):
     _WSDL_URL = "http://realtime.nationalrail.co.uk/ldbws/wsdl.aspx"
     
-    def __init__(self, max_services=10, max_results=1):
+    def __init__(self, token, max_services=10, max_results=1):
         self._max_services = max_services
         self._max_results = max_results
+        self._token = token
 
     def augment_metadata(self, entities):
         station_entities = []
@@ -25,7 +27,7 @@ class LiveDepartureBoardPlacesProvider(BaseMapsProvider):
             return
         
         try:
-            ldb = suds.client.Client(self._WSDL_URL)
+            ldb = suds.client.Client(self._WSDL_URL, soapheaders=Element('AccessToken').insert(Element('TokenValue').setText(self._token)))
         except Exception, e:
             logger.warning("Could not instantiate suds client for live departure board.", exc_info=True, extra={'wsdl_url': self._WSDL_URL})
             self._add_error(station_entities)
@@ -35,7 +37,7 @@ class LiveDepartureBoardPlacesProvider(BaseMapsProvider):
             try:
                 db = ldb.service.GetDepartureBoard(self._max_services, entity.identifiers['crs'])
             except Exception, e:
-                logger.warning("Could not retrieve departure board for station: %r", entity.identifiers.get('crs'), crs_code=entity.identifiers.get('crs'))
+                logger.warning("Could not retrieve departure board for station: %r", entity.identifiers.get('crs'))
                 self._add_error(station_entities)
                 return
             
