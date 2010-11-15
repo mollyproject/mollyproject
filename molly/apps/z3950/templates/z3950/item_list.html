@@ -2,15 +2,15 @@
 
 {% block content %}
 
-{% if search_form %}{% include "z3950/search_form.html" %}{% endif %}
-
 {% if error_message %}
 <div class="section">
-<div class="bubble">
+<div class="bubble pad-10">
 <p>There was an error with your search:</p>
 <p><strong>{{ error_message }}</strong></p>
 </div></div>
 {% endif %}
+
+{% if search_form %}{% include "z3950/search_form.html" %}{% endif %}
 
 {% if page %}
 <div class="section">
