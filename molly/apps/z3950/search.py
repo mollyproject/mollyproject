@@ -246,6 +246,7 @@ class OLISSearch(object):
         self.connection = zoom.Connection(
             getattr(conf, 'host'),
             getattr(conf, 'port', 210),
+            charset = 'UTF-8',
         )
         self.connection.databaseName = getattr(conf, 'database')
         self.connection.preferredRecordSyntax = getattr(conf, 'syntax', 'USMARC')
