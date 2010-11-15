@@ -47,7 +47,7 @@ class BBCTPEGPlacesProvider(BaseMapsProvider):
     def __init__(self, url=_TPEG_URL):
         self._tpeg_url = url
     
-    @batch('%d/3 * * * *' % random.randint(0, 2))
+    @batch('%d-59/3 * * * *' % random.randint(0, 2))
     def import_data(self, metadata, output):
         source, entity_type = self._get_source(), self._get_entity_type()
         
