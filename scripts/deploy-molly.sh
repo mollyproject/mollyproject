@@ -15,7 +15,7 @@ if [ -n "$1" ] ; then
     source $1/bin/activate
     
     # Install our PyZ3950, because the PyPI one is broken
-    pip install git+http://github.com/alexdutton/PyZ3950.git
+    pip install git+http://github.com/oucs/PyZ3950.git
     
     # Install Molly
     python $DIR/../setup.py install
