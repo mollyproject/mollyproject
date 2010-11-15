@@ -1,0 +1,33 @@
+{# Subset of result_list.html #}
+
+{% load portal_misc %}
+
+<h3 class="contact-cn">{% if person.id %}
+    <a href="{% url contact:result_detail person.id %}">{{ person.cn }}</a>
+  {% else %}
+    {{ person.cn }}
+{% endif %}</h3>
+
+<div class="contact-details">
+  {% for title in person.title %}
+    <p class="contact-title">
+      {{ title }}
+    </p>
+  {% endfor %}
+  {% for ou in person.ou %}
+    <p class="contact-ou">
+      {{ ou }}
+    </p>
+  {% endfor %}
+  {% for mail in person.mail %}
+    <p class="contact-mail">
+      <a class="email" href="mailto:{{ mail }}">{{ mail }}</a>
+    </p>
+  {% endfor %}
+  {% for telephoneNumber in person.telephoneNumber %}
+    <p class="contact-telephoneNumber">
+      <a class="phone" href="{{ telephoneNumber|telephone_uri }}">{{ telephoneNumber }}</a>
+    </p>
+  {% endfor %}
+</div>
+
