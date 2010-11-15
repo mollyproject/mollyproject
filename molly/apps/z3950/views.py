@@ -11,6 +11,8 @@ from molly.utils.breadcrumbs import *
 from molly.apps.places.models import Entity
 from molly.osm.utils import fit_to_map
 
+from PyZ3950.zoom import ConnectionError
+
 from . import search
 from .forms import SearchForm
 
@@ -95,6 +97,9 @@ class SearchDetailView(BaseView):
 
         try:
             results = search.OLISSearch(query, conf=cls.conf)
+        except ConnectionError:
+            logger.warning("Library connection error")
+            return cls.handle_error(request, context, 'An error occured communicating with the library - the database may be down, please try again later.')
         except Exception, e:
             logger.exception("Library query error")
             return cls.handle_error(request, context, 'An error occurred: %s' % e)
