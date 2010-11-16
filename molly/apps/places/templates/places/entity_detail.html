@@ -7,9 +7,9 @@
 
 
 <div class="section">
-  {% include "places/metadata/real_time_information.html" %}
-  {% include "places/metadata/ldb.html" %}
-	{% if entity.location %}
+    {% include "places/metadata/real_time_information.html" %}
+    {% include "places/metadata/ldb.html" %}
+    {% if entity.location %}
 	
 	{% ifnotequal style_group "dumb" %}
     	<div class="backgrounded-image" style="background-image:url('{% map_url entity.location %}'); height:{{ map_height }}px">
