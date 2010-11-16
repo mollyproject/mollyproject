@@ -51,7 +51,7 @@ for dirpath, dirnames, filenames in os.walk(molly_dir):
 
 setup(
     name = 'molly',
-    version = '0.3',
+    version = '0.3.1',
     url = 'http://mollyproject.org/',
     author = 'University of Oxford',
     description ="A framework for building mobile information portals",
