@@ -14,18 +14,18 @@
 {% block title %}m.ox | News: {{ item.title }}{% endblock %}
 
 {% block content %}
-
 <div class="section">
-    <h3>{{ item.title }}</h3>
-    
-    <div class="article"><div class="bubble pad-5" style="margin: 2px;">
-        {{ description|safe }}
-        <br />
+  <div class="header">
+    <h2>{{ item.title }}</h2>
+    <div style="font-size:1em; line-height:1.1em;">
+    {{ description|safe }}
+    <br />
         <small><em>
             {{ item.last_modified_local|date:"j M Y \a\t H:m" }}<br />
             Link: <a href="{{ item.link }}" title="{{ item.title }}">{{ item.link }}</a>
         </em></small>
-    </div></div>
+    </div>
+    <div style="clear:both;"> </div>
+  </div>
 </div>
-
 {% endblock %}
