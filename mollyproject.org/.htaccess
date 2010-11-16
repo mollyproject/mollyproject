@@ -1,4 +1,0 @@
-DirectoryIndex index.html
-<FilesMatch ^rdf$>
-    DefaultType application/rdf+xml
-</FilesMatch>
