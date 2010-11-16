@@ -546,6 +546,41 @@ class PostCodeDetailView(NearbyDetailView):
     def add_space(self, post_code):
         return post_code[:-3] + ' ' + post_code[-3:]
 
+class ServiceDetailView(BaseView):
+    """
+    A view showing details of a particular transport service leaving from a place
+    """
+    
+    @BreadcrumbFactory
+    def breadcrumb(self, request, context, scheme, value, service_scheme, service_id):
+        if request.session.get('geolocation:location'):
+            parent_view = 'nearby-detail'
+        else:
+            parent_view = 'category-detail'
+        entity = get_entity(scheme, value)
+        return Breadcrumb(
+            'places',
+            lazy_parent(parent_view, ptypes=entity.primary_type.slug),
+            context['entity'].title,
+            lazy_reverse('entity', args=[scheme,value]),
+            lazy_reverse('service-detail', args=[scheme, value, service_scheme, service_id]),
+        )
+    
+    def get_metadata(self, request):
+        return {}
+
+    def initial_context(self, request):
+        context = super(ServiceDetailView, self).initial_context(request)
+        entity = get_entity(scheme, value)
+        context.update({
+            'entity': entity,
+            'entity_types': entity.all_types.all(),
+        })
+        return context
+
+    def handle_GET(self, request, context):
+        return self.render(request, context, 'places/service_details')
+
 def entity_favourite(request, type_slug, id):
     entity = get_entity(type_slug, id)
 
