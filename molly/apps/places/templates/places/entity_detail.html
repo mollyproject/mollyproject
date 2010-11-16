@@ -5,10 +5,13 @@
 
 {% block content %}
 
+{% include "places/metadata/ldb.html" %}
 
 <div class="section">
     {% include "places/metadata/real_time_information.html" %}
-    {% include "places/metadata/ldb.html" %}
+    {% if not entity.metadata.real_time_information %}
+      <h2>Map</h2>
+    {% endif %}
     {% if entity.location %}
 	
 	{% ifnotequal style_group "dumb" %}

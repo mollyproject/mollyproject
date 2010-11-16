@@ -5,8 +5,102 @@
 
 
 <div class="section">
-    <h2>Service Information</h2>
+  <div class="header">
+    <h2>Live Service Information - {{ service.generatedAt }}</h2>
+  </div>
+  {% if service.error %}
+  
+  <ul class="content-list no-round-bottom">
+    <li> There is currently a problem retrieving live departure information from
+    the National Rail web site. Departure information may still be accessed
+    <a href="http://pda.ojp.nationalrail.co.uk/en/pj/ldbboard/dep/{{ entity.identifiers.crs }}">directly
+    from their web site</a>.</li>
+  </ul>
+  
+  {% else %}
+  
+  <ul class="content-list no-round-bottom">
+    <li>Operated by {{ service.operator }}</li>
+    {% if service.platform %}
+      <li>Departure from platform {{ service.platform }}</li>
+    {% endif %}
+    {% if service.disruptionReason %}
+      <li>{{ service.disruptionReason|sanitize_html }}</li>
+    {% endif %}
+    {% if service.overdueMessage %}
+      <li>{{ service.overdueMessage|sanitize_html }}</li>
+    {% endif %}
+  </ul>
 
+  <table class="content">
+    <thead>
+      <tr>
+        <th>Calling Point</th>
+        <th>Scheduled</th>
+        <th>Expected/Actual</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for point in service.calling_points %}
+        {% if point.joining %}
+          <tr>
+            <td colspan="3">
+                This train then merges with a train from {{ point.joining.0.locationName }}:
+                <table class="content">
+                  <thead>
+                    <tr>
+                      <th>Calling Point</th>
+                      <th>Scheduled</th>
+                      <th>Expected/Actual</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for joining_point in point.joining %}
+                    <tr>
+                      <td>{{ joining_point.locationName }}</td>
+                      <td>{{ joining_point.st }}</td>
+                      <td>{{ joining_point.et }}{{ joining_point.at }}</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+            </td>
+          </tr>
+        {% endif %}
+        <tr>
+          <td>{{ point.locationName }}</td>
+          <td>{{ point.st }}</td>
+          <td>{{ point.et }}{{ point.at }}</td>
+        </tr>
+        {% if point.splitting %}
+          <tr>
+            <td colspan="3">
+                This train then splits to go to {{ point.splitting.-1.locationName }}:
+                <table class="content">
+                  <thead>
+                    <tr>
+                      <th>Calling Point</th>
+                      <th>Scheduled</th>
+                      <th>Expected/Actual</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for splitting_point in point.splitting %}
+                    <tr>
+                      <td>{{ splitting_point.locationName }}</td>
+                      <td>{{ splitting_point.st }}</td>
+                      <td>{{ splitting_point.et }}{{ splitting_point.at }}</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+            </td>
+          </tr>
+        {% endif %}
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
 
 </div>
 

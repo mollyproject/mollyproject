@@ -3,67 +3,7 @@
 {% block content %}
 
 {% if train_station %}
-<div class="section">
-  <div class="header">
-    <h2>{{ train_station.title }} (departures) - {{ train_station.metadata.ldb.generatedAt|date:"H:i:s" }}</h2>
-  </div>
-  
-  {% if train_station.metadata.ldb.nrccMessages.message %}
-  <ul class="content-list no-round-bottom">
-    {% for message in train_station.metadata.ldb.nrccMessages.message %}
-      <li>{{ message|sanitize_html }}</li>
-    {% endfor %}
-  </ul>
-  {% endif %}
-
-  <table class="content">
-    <thead>
-      <tr>
-        <th>Destination</th>
-        {% if train_station.metadata.ldb.platformAvailable %}
-        <th>Plat.</th>
-        {% endif %}
-        <th>Due</th>
-        <th>Expected</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% if train_station.metadata.ldb.error %}
-        <tr>
-          <td colspan="4">
-            <p>
-              There is currently a problem retrieving live departure information from the National Rail web site.
-            </p>
-            <p>
-              Departure information may still be accessed
-              <a href="http://pda.ojp.nationalrail.co.uk/en/pj/ldbboard/dep/{{ train_station.identifiers.crs }}">directly
-              from their web site</a>.
-            </p>
-          </td>
-        </tr>
-      {% else %}
-        {% for service in train_station.metadata.ldb.trainServices.service %}
-          <tr>
-            <td>
-              {{ service.destination.location.0.locationName }}{% if service.destination.location.0.via %}<br/>
-              <small>{{ service.destination.location.0.via }}</small>{% endif %}
-            </td>
-            {% if train_station.metadata.ldb.platformAvailable %} 
-            <td>{{ service.platform }}</td>
-            {% endif %}
-            <td>{{ service.std }}</td>
-            <td>{{ service.etd }}</td>
-          </tr>
-        {% empty %}
-          <tr>
-            <td colspan="4">There are currently no scheduled departures.</td>
-          </tr>
-        {% endfor %}
-      {% endif %}
-    </tbody>
-  </table>
-        
-</div>
+{% include "places/metadata/ldb.html" %}
 {% endif %}
 
 <div class="section">
