@@ -33,7 +33,6 @@ class IndexView(BaseView):
         key = '.'.join(['molly', self.conf.local_name, key])
         value = cache.get(key)
         if value is None:
-            print "Fetching"
             value = f(*(args or ()), **(kwargs or {}))
             cache.set(key, value, timeout)
         return value

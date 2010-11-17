@@ -41,7 +41,6 @@ def oxp_id(value):
 
 @register.filter(name="load_oxp_json")
 def load_oxp_json(value):
-    print value['uri']
     return simplejson.load(urllib.urlopen(value['uri']+'.json'))[0]
 
 @register.filter(name="oxp_portal_url")

@@ -20,7 +20,6 @@ class GenericRSSImporter(BaseImporter):
         feed_data = feedparser.parse(feed.rss_url)
         try:
             feed.last_modified = struct_to_datetime(feed_data.feed.updated_parsed)
-            print "RRRRRRRRRRRRRRRRRRRRRRRRRRRR"
         except:
             feed.last_modified = parse_date(feed_data.headers.get('last-modified', datetime.now().strftime("%a, %d %b %Y %H:%M:%S +0000")))
             

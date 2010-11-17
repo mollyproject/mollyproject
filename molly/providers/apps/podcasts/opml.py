@@ -72,7 +72,6 @@ class OPMLPodcastsProvider(RSSPodcastsProvider):
                 rss_urls.append(attrib['xmlUrl'])
     
                 self.update_podcast(podcast)
-                print "Updated %r" % podcast.title
             except Exception, e:
                 if not failure_logged:
                     logger.exception("Update of podcast %r failed.", attrib['xmlUrl'])

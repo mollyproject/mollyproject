@@ -69,7 +69,6 @@ class IndexView(BaseView):
                 
 
     def handle_GET(cls, request, context):
-        print context['complex_shorten']
         try:
             path = request.GET['path']
         except (KeyError):

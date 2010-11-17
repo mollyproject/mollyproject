@@ -390,11 +390,7 @@ class EvaluationDetailView(SakaiView):
         data = request.raw_post_data if request.method == 'POST' else None
         response = request.urlopen(url, data)
         evaluation = etree.parse(response, parser = etree.HTMLParser(recover=False))
-
-        print etree.tostring(evaluation)
         evaluation = transform(evaluation, 'sakai/evaluation/detail.xslt', {'id': id})
-        
-        print etree.tostring(evaluation)
 
         # The evaluations tool doesn't give us a non-OK status if we need to authenticate. Instead,
         # we need to check for the login box (handily picked out by the XSL stylesheet).
@@ -408,7 +404,6 @@ class EvaluationDetailView(SakaiView):
             'response_url': response.geturl(),
         }
         add_children_to_context(evaluation, context)
-        print context['state_message']
         return context
 
     @BreadcrumbFactory
@@ -439,7 +434,6 @@ class EvaluationDetailView(SakaiView):
         return self.render(request, context, 'sakai/evaluation/detail')
 
     def handle_POST(self, request, context, id):
-        print context['response_url']
         if context['response_url'].startswith(self.build_url('direct/eval-evaluation/%s/take_eval?' % id)):
             return self.handle_GET(request, context, id)
 

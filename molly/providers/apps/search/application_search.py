@@ -28,10 +28,7 @@ class ApplicationSearchProvider(BaseSearchProvider):
                 results += app.perform_search(request, query, application is not None)
             except Exception, e:
                 logger.exception("Application search provider raised exception: %r", e)
-        print results
 
-        
-        print apps
         return results
         
     def find_applications(self):
@@ -53,6 +50,3 @@ class ApplicationSearchProvider(BaseSearchProvider):
                 search_provider = _temp.ApplicationSearch(application)
 
             self.applications[application.local_name] = search_provider
-        print self.applications
-            
-        
