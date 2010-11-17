@@ -3,7 +3,7 @@
 import os, os.path
 import sys
 
-os.environ['DJANGO_SETTINGS_MODULE'] = 'demos.molly_oxford.settings'
+os.environ['DJANGO_SETTINGS_MODULE'] = 'molly_oxford.settings'
 sys.path.insert(0, os.path.abspath(os.path.join(
     os.path.dirname(__file__), '..', '..',
 )))
