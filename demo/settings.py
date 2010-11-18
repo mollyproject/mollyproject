@@ -339,7 +339,8 @@ ADMIN_MEDIA_PREFIX = MEDIA_URL + 'admin/'
 MEDIA_ROOT = STATIC_ROOT = os.path.join(project_root, 'media')
 
 STATICFILES_DIRS = (
-    ('', os.path.join(project_root, 'site_media')),
+    # Uncomment the line below to have your site override the default media
+    #('', os.path.join(project_root, 'site_media')),
     ('', os.path.join(molly_root, 'media')),
 )
 STATIC_URL = '/media/'

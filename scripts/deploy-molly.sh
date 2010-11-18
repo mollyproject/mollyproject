@@ -16,7 +16,6 @@ if [ -n "$1" ] ; then
     
     # Install Molly in development mode
     python $DIR/../setup.py develop
-    mkdir $DIR/../media/
     
     # Install demos
     rm -rf $1/demos
