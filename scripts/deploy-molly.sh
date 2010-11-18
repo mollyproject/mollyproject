@@ -18,9 +18,6 @@ if [ -n "$1" ] ; then
     python $DIR/../setup.py develop
     mkdir $DIR/../media/
     
-    # An empty directory is needed here otherwise things error later
-    mkdir $1/lib/python`python -V 2>&1 | cut -d" " -f2`/site-packages/molly/media
-    
     # Install demos
     rm -rf $1/demos
     cp -rf $DIR/../demos/ $1/demos/
