@@ -36,8 +36,6 @@ class SecureView(BaseView):
             return TimedOutView(request, self, *args, **kwargs)
         request.secure_session['last_accessed'] = datetime.now()
 
-        print type(self).__mro__
-
         return super(SecureView, self).__call__(request, *args, **kwargs)
 
 class TimedOutView(BaseView):
@@ -114,7 +112,6 @@ class IndexView(SecureView):
         forms = context['form'], context['user_sessions'], context['external_service_tokens']
         
         if not all(form.is_valid() for form in forms):
-            print [form.errors for form in forms]
             return self.render(request, context, 'auth/index')
             
         if context['has_pin'] and form.cleaned_data['old_pin'] != request.secure_session['pin']:

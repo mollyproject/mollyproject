@@ -75,7 +75,6 @@ class ExternalImageSized(models.Model):
                 resized.save(self.get_filename(), format='jpeg')
                 self.content_type = 'image/jpeg'
             except IOError, e:
-                print "ERR", e
                 try:
                     resized.convert('RGB').save(self.get_filename(), format='jpeg')
                     self.content_type = 'image/jpeg'

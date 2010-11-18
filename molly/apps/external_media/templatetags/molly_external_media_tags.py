@@ -35,7 +35,6 @@ class ExternalImageNode(template.Node):
             width = float('inf')
             
         url, width = self.url.resolve(context), min(width, context['device'].max_image_width)
-        print "width", width, (self.max_width or 9999), context['device'].max_image_width
 
         eis = resize_external_image(url, width)
 

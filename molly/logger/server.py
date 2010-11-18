@@ -18,17 +18,13 @@ class SocketServer(object):
 
         self.listener_thread = threading.Thread(target=self.listener)
         self.listener_thread.start()
-        
 
-
-        
     def listener(self):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         
         while not self.close_down_event.is_set():
             try:
                 sock.bind(('localhost', logging.handlers.DEFAULT_TCP_LOGGING_PORT))
-                print "Bound"
             except socket.error:
                 time.sleep(1)
             else:

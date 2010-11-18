@@ -14,9 +14,8 @@ def initialise_logging():
             mod = __import__(log_module_name, globals(), locals(), ['config_logging'], -1)
             config_logging = mod.config_logging
         except (ImportError, AttributeError):
-            print "No config for %s" % app_name
+            pass
         else:
-            print "Found config for %s" % app_name
             config_logging()
         
 

@@ -68,7 +68,6 @@ class LDAPContactProvider(BaseContactProvider):
 
         results = []
         for ldap_result in ldap_results:
-            print ldap_result
             results.append({
                 'cn': cls.first_or_none(ldap_result, 'cn'),
 
