@@ -8,8 +8,9 @@ if [ -n "$1" ] ; then
     # Go inside the virtual environment
     source $1/bin/activate
     
-    # Update molly
-    python $DIR/../setup.py install
+    # Install Molly in development mode
+    python $DIR/../setup.py develop
+    mkdir $DIR/../media/
     
     # Rebuild demos
     rm -rf $1/demos

@@ -17,8 +17,9 @@ if [ -n "$1" ] ; then
     # Install our PyZ3950, because the PyPI one is broken
     pip install git+http://github.com/oucs/PyZ3950.git
     
-    # Install Molly
-    python $DIR/../setup.py install
+    # Install Molly in development mode
+    python $DIR/../setup.py develop
+    mkdir $DIR/../media/
     
     # Install demos
     rm -rf $1/demos
