@@ -13,6 +13,6 @@ psycopg2
 PIL
 lxml
 python-ldap
-django-compress
+git+git://github.com/mikelim/django-compress.git#egg=django-compress
 python-memcached
 django-staticfiles
