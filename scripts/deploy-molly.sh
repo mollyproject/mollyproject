@@ -36,6 +36,7 @@ if [ -n "$1" ] ; then
     
     # Start server
     python manage.py syncdb
+    python manage.py migrate
     python manage.py runserver
 else
     echo "$0 path-to-deployment"

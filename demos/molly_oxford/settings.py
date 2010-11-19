@@ -319,6 +319,7 @@ INSTALLED_APPS = extract_installed_apps(APPLICATIONS) + (
     
     'staticfiles',
     'compress',
+    'south',
 #    'debug_toolbar',
 )
 
