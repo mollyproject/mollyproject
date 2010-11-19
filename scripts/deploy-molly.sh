@@ -14,6 +14,9 @@ if [ -n "$1" ] ; then
     # Install our PyZ3950, because the PyPI one is broken
     pip install git+http://github.com/oucs/PyZ3950.git
     
+    # Install a fork of Django-compress to correctly handle SSL compressed media
+    pip install git+git://github.com/mikelim/django-compress.git#egg=django-compress
+    
     # Install Molly in development mode
     python $DIR/../setup.py develop
     
