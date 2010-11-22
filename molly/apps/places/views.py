@@ -553,56 +553,77 @@ class ServiceDetailView(BaseView):
     """
     
     @BreadcrumbFactory
-    def breadcrumb(self, request, context, scheme, value, service_scheme, service_id):
+    def breadcrumb(self, request, context, scheme, value, service_id):
         return Breadcrumb(
             'places',
             lazy_parent('entity', scheme=scheme, value=value),
-            context.title,
-            lazy_reverse('service-detail', args=[scheme, value, service_scheme, service_id])
+            context['title'],
+            lazy_reverse('service-detail', args=[scheme, value, service_id])
         )
     
-    def get_metadata(self, request, scheme, value, service_scheme, service_id):
+    def get_metadata(self, request, scheme, value, service_id):
         return {}
 
-    def initial_context(self, request, scheme, value, service_scheme, service_id):
+    def initial_context(self, request, scheme, value, service_id):
         context = super(ServiceDetailView, self).initial_context(request)
         entity = get_entity(scheme, value)
-        destinations = [points[-1].locationName for points in context.service.subsequentCallingPoints]
         
-        # Trains can split and join, which makes figuring out the list of
-        # calling points a bit difficult. The LiveDepartureBoards documentation
-        # details how these should be handled. First, we build a list of all
-        # the calling points on the "through" train.
-        calling_points = {}
-        calling_points = service.previousCallingPoints[0] + {
-            'locationName': service.locationName,
-            'crs': service['crs'],
-            'st': service['std'],
-            'et': service['etd'],
-            'at': service['atd']
-        } + service.subsequentCallingPoints[0]
+        # Add live information from the providers
+        for provider in reversed(self.conf.providers):
+            provider.augment_metadata((entity,))
         
-        # Then attach joining services to our thorough route in the correct point
-        for points in service.previousCallingPoints[1:]:
-            for point in calling_points:
-                if points[-1]['crs'] == point['crs']:
-                    point['joining'] = points
+        # If we have no way of getting further journey details, 404
+        if 'service_details' not in entity.metadata:
+            raise Http404
         
-        # And do the same with splitting services
-        for points in service.subsequentCalling[1:]:
-            for point in calling_points:
-                if points[0]['crs'] == point['crs']:
-                    point['splitting'] = points
+        # Deal with train service data
+        if entity.metadata['service_type'] == 'ldb':
+            service = entity.metadata['service_details'](service_id)
+            if service is None:
+                raise Http404
+            
+            destinations = [points['callingPoint'][-1]['locationName'] for points in service['subsequentCallingPoints']['callingPointList']]
+            
+            # Trains can split and join, which makes figuring out the list of
+            # calling points a bit difficult. The LiveDepartureBoards documentation
+            # details how these should be handled. First, we build a list of all
+            # the calling points on the "through" train.
+            calling_points = service['previousCallingPoints']['callingPointList'][0]['callingPoint'] if len(service['previousCallingPoints']) else []
+            calling_points += [{
+                'locationName': service['locationName'],
+                'crs': service['crs'],
+                'st': service['std'],
+                'et': service['etd'],
+                'at': service['atd'] if 'atd' in service else ''
+            }]
+            calling_points += service['subsequentCallingPoints']['callingPointList'][0]['callingPoint']
+            
+            # Then attach joining services to our thorough route in the correct
+            # point, but only if there is a list of previous calling points
+            if len(service['previousCallingPoints']):
+                for points in service['previousCallingPoints']['callingPointList'][1:]:
+                    for point in calling_points:
+                        if points['callingPoint'][-1]['crs'] == point['crs']:
+                            point['joining'] = points['callingPoint']
+            
+            # And do the same with splitting services
+            for points in service['subsequentCallingPoints']['callingPointList'][1:]:
+                for point in calling_points:
+                    if points['callingPoint'][0]['crs'] == point['crs']:
+                        point['splitting'] = { 'destination': points['callingPoint'][-1]['locationName'], 'list': points['callingPoint'] }
+            
+            print service
+            print calling_points
+            context.update({
+                'entity': entity,
+                'train_service': service,
+                'train_calling_points': calling_points,
+                'title': service['std'] + ' ' + service['locationName'] + ' to ' + ' and '.join(destinations),
+            })
         
-        context.update({
-            'entity': entity,
-            'service': None,
-            'calling_points': calling_points,
-            'title': service.std + ' ' + service.locationName + ' to ' + ' and '.join(destinations),
-        })
         return context
 
-    def handle_GET(self, request, context, scheme, value, service_scheme, service_id):
+    def handle_GET(self, request, context, scheme, value, service_id):
         return self.render(request, context, 'places/service_details')
 
 def entity_favourite(request, type_slug, id):

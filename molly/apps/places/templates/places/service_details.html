@@ -1,14 +1,14 @@
 {% extends "places/base.html" %}
-
+{% load molly_utils %}
 
 {% block content %}
 
-
+{% if train_service %}
 <div class="section">
   <div class="header">
-    <h2>Live Service Information - {{ service.generatedAt }}</h2>
+    <h2>Live Train Information - {{ train_service.generatedAt|date:"H:i:s" }}</h2>
   </div>
-  {% if service.error %}
+  {% if train_service.error %}
   
   <ul class="content-list no-round-bottom">
     <li> There is currently a problem retrieving live departure information from
@@ -20,15 +20,15 @@
   {% else %}
   
   <ul class="content-list no-round-bottom">
-    <li>Operated by {{ service.operator }}</li>
-    {% if service.platform %}
-      <li>Departure from platform {{ service.platform }}</li>
+    <li>Operated by {{ train_service.operator }}</li>
+    {% if train_service.platform %}
+      <li>Departing from platform {{ train_service.platform }}</li>
     {% endif %}
-    {% if service.disruptionReason %}
-      <li>{{ service.disruptionReason|sanitize_html }}</li>
+    {% if train_service.disruptionReason %}
+      <li>{{ train_service.disruptionReason|sanitize_html }}</li>
     {% endif %}
-    {% if service.overdueMessage %}
-      <li>{{ service.overdueMessage|sanitize_html }}</li>
+    {% if train_service.overdueMessage %}
+      <li>{{ train_service.overdueMessage|sanitize_html }}</li>
     {% endif %}
   </ul>
 
@@ -41,11 +41,11 @@
       </tr>
     </thead>
     <tbody>
-      {% for point in service.calling_points %}
+      {% for point in train_calling_points %}
         {% if point.joining %}
           <tr>
             <td colspan="3">
-                This train then merges with a train from {{ point.joining.0.locationName }}:
+                <p>This train then merges with a train from {{ point.joining.0.locationName }}</p>
                 <table class="content">
                   <thead>
                     <tr>
@@ -75,7 +75,7 @@
         {% if point.splitting %}
           <tr>
             <td colspan="3">
-                This train then splits to go to {{ point.splitting.-1.locationName }}:
+                <p>This train then splits to go to {{ point.splitting.destination }}</p>
                 <table class="content">
                   <thead>
                     <tr>
@@ -85,7 +85,7 @@
                     </tr>
                   </thead>
                   <tbody>
-                    {% for splitting_point in point.splitting %}
+                    {% for splitting_point in point.splitting.list %}
                     <tr>
                       <td>{{ splitting_point.locationName }}</td>
                       <td>{{ splitting_point.st }}</td>
@@ -104,4 +104,5 @@
 
 </div>
 
+{% endif %}
 {% endblock %}

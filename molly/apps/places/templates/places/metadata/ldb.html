@@ -42,7 +42,7 @@
         {% for service in train_station.metadata.ldb.trainServices.service %}
           <tr>
             <td>
-              <a href="{{ train_station.get_absolute_url }}ldb:{{ service.serviceID }}">
+              <a href="{{ train_station.get_absolute_url }}service:{{ service.serviceID }}">
                 {# This isn't that straight-forward - trains can split and go to multiple destinations #}
                 {% for location in service.destination.location %}
                   {% if not forloop.first and not forloop.last %}, {% endif %}

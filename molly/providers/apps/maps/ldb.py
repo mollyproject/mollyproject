@@ -36,12 +36,13 @@ class LiveDepartureBoardPlacesProvider(BaseMapsProvider):
         for entity in station_entities:
             try:
                 db = ldb.service.GetDepartureBoard(self._max_services, entity.identifiers['crs'])
+                entity.metadata['ldb'] = self.transform_suds(db)
+                entity.metadata['service_details'] = lambda s: self.transform_suds(ldb.service.GetServiceDetails(s))
+                entity.metadata['service_type'] = 'ldb'
             except Exception, e:
                 logger.warning("Could not retrieve departure board for station: %r", entity.identifiers.get('crs'))
-                self._add_error(station_entities)
-                return
+                self._add_error((entity,))
             
-            entity.metadata['ldb'] = self.transform_suds(db)
             
     def transform_suds(self, o):
         if isinstance(o, suds.sudsobject.Object):
