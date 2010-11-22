@@ -2,10 +2,6 @@
 
 {% block content %}
 
-{% if train_station %}
-{% include "places/metadata/ldb.html" %}
-{% endif %}
-
 <div class="section">
   <div class="header">
     <h2>Park and Rides</h2>
@@ -90,6 +86,10 @@
   </table>
 </div>
 
+{% if train_station %}
+{% include "places/metadata/ldb.html" %}
+{% endif %}
+
 {% if travel_alerts %}
 
 <div class="section">
@@ -99,7 +99,7 @@
   
   <ul class="content-list">
 {% for alert in travel_alerts %}
-    <li>{{ alert.title }}</li>
+    <li><a href="{{ alert.get_absolute_url }}">{{ alert.title }}</a></li>
 {% endfor %}
   </ul>
 </div>

@@ -44,6 +44,7 @@ class OxfordParkAndRidePlacesProvider(BaseMapsProvider):
                 carparks[self._CARPARKS[name]].metadata['park_and_ride'] = {
                     'spaces': int(tr[2].text),
                     'capacity': int(tr[3].text),
+                    'percentage': int(100 * (1 - float(tr[2].text) / float(tr[3].text))),
                 }
         except Exception, e:
             logger.exception("The Park and Ride page has changed in some way")

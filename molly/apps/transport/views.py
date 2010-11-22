@@ -53,7 +53,6 @@ class IndexView(BaseView):
                 es = es.order_by('title')
             entities |= set(es)
             context['travel_alerts'] = es
-                
         
         # Get any real-time information for all the places we're about to display
         places_conf = app_by_application_name('molly.apps.places')
