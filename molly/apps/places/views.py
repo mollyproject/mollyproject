@@ -576,6 +576,8 @@ class ServiceDetailView(BaseView):
         if 'service_details' not in entity.metadata:
             raise Http404
         
+        stop_entities = []
+        
         # Deal with train service data
         if entity.metadata['service_type'] == 'ldb':
             service = entity.metadata['service_details'](service_id)
@@ -593,8 +595,8 @@ class ServiceDetailView(BaseView):
                 'locationName': service['locationName'],
                 'crs': service['crs'],
                 'st': service['std'],
-                'et': service['etd'],
-                'at': service['atd'] if 'atd' in service else ''
+                'et': service['etd'] if 'etd' in service else '',
+                'at': service['atd'] if 'atd' in service else '',
             }]
             calling_points += service['subsequentCallingPoints']['callingPointList'][0]['callingPoint']
             
@@ -612,14 +614,55 @@ class ServiceDetailView(BaseView):
                     if points['callingPoint'][0]['crs'] == point['crs']:
                         point['splitting'] = { 'destination': points['callingPoint'][-1]['locationName'], 'list': points['callingPoint'] }
             
-            print service
-            print calling_points
+            # Now get a list of the entities for the stations (if they exist)
+            # to plot on a map
+            for point in calling_points:
+                
+                if 'joining' in point:
+                    for jpoint in point['joining']:
+                        point_entity = Entity.objects.filter(_identifiers__scheme='crs', _identifiers__value=str(jpoint['crs']))
+                        if len(point_entity):
+                            point_entity = point_entity[0]
+                            jpoint['entity'] = point_entity
+                            stop_entities.append(point_entity)
+                            jpoint['stop_num'] = len(stop_entities)
+                
+                point_entity = Entity.objects.filter(_identifiers__scheme='crs', _identifiers__value=str(point['crs']))
+                if len(point_entity):
+                    point_entity = point_entity[0]
+                    point['entity'] = point_entity
+                    stop_entities.append(point_entity)
+                    point['stop_num'] = len(stop_entities)
+                
+                if 'splitting' in point:
+                    for spoint in point['splitting']['list']:
+                        point_entity = Entity.objects.filter(_identifiers__scheme='crs', _identifiers__value=str(spoint['crs']))
+                        if len(point_entity):
+                            point_entity = point_entity[0]
+                            spoint['entity'] = point_entity
+                            stop_entities.append(point_entity)
+                            spoint['stop_num'] = len(stop_entities)
+                        
             context.update({
                 'entity': entity,
                 'train_service': service,
                 'train_calling_points': calling_points,
                 'title': service['std'] + ' ' + service['locationName'] + ' to ' + ' and '.join(destinations),
             })
+        
+        map_hash, (new_points, zoom) = fit_to_map(
+            centre_point = (entity.location[0], entity.location[1], 'green'),
+            points = ((e.location[0], e.location[1], 'red') for e in stop_entities),
+            min_points = len(stop_entities),
+            zoom = None,
+            width = request.map_width,
+            height = request.map_height,
+        )
+        
+        context.update({
+            'zoom': zoom,
+            'map_hash': map_hash
+        })
         
         return context
 

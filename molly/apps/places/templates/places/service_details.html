@@ -56,8 +56,8 @@
                   </thead>
                   <tbody>
                     {% for joining_point in point.joining %}
-                    <tr>
-                      <td>{{ joining_point.locationName }}</td>
+                    <tr{% if joining_point.at %} style="color:#7c7c7c;"{% endif %}>
+                      <td>{{ joining_point.stop_num }} <a href="{{ joining_point.entity.get_absolute_url }}" style="color: inherit;">{{ joining_point.locationName }}</a></td>
                       <td>{{ joining_point.st }}</td>
                       <td>{{ joining_point.et }}{{ joining_point.at }}</td>
                     </tr>
@@ -67,8 +67,8 @@
             </td>
           </tr>
         {% endif %}
-        <tr>
-          <td>{{ point.locationName }}</td>
+        <tr{% if point.at %} style="color:#7c7c7c;"{% endif %}>
+          <td>{{ point.stop_num }} <a href="{{ point.entity.get_absolute_url }}" style="color: inherit;">{{ point.locationName }}</a></td>
           <td>{{ point.st }}</td>
           <td>{{ point.et }}{{ point.at }}</td>
         </tr>
@@ -86,8 +86,8 @@
                   </thead>
                   <tbody>
                     {% for splitting_point in point.splitting.list %}
-                    <tr>
-                      <td>{{ splitting_point.locationName }}</td>
+                    <tr{% if splitting_point.at %} style="color:#7c7c7c;"{% endif %}>
+                      <td>{{ splitting_point.stop_num }} <a href="{{ splitting_point.entity.get_absolute_url }}" style="color: inherit;">{{ splitting_point.locationName }}</a></td>
                       <td>{{ splitting_point.st }}</td>
                       <td>{{ splitting_point.et }}{{ splitting_point.at }}</td>
                     </tr>
@@ -105,4 +105,17 @@
 </div>
 
 {% endif %}
+
+<div class="section">
+  <h2>Map</h2>
+{% ifnotequal style_group "dumb" %}
+    <div class="backgrounded-image" style="background-image:url('{% url osm:generated_map map_hash %}'); height:{{ map_height }}px">
+    {% include "places/map_elements.html" %}
+    </div>
+{% else %}
+    <img src="{% url osm:generated_map map_hash %}" alt="Map"><br />
+    {% include "places/map_elements.html" %}
+{% endifnotequal %}
+</div>
+
 {% endblock %}
