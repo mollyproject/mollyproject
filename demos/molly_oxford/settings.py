@@ -74,8 +74,9 @@ MIDDLEWARE_CLASSES = (
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.auth',
     'django.core.context_processors.debug',
+    'django.core.context_processors.request',
 #    'django.core.context_processors.i18n',
-    'django.core.context_processors.media',
+    'molly.utils.context_processors.ssl_media',
 #    'django.contrib.messages.context_processors.messages',
     'molly.wurfl.context_processors.wurfl_device',
     'molly.wurfl.context_processors.device_specific_media',
@@ -169,11 +170,11 @@ APPLICATIONS = [
             Provider('molly.providers.apps.podcasts.OPMLPodcastsProvider',
                 url = 'http://rss.oucs.ox.ac.uk/metafeeds/podcastingnewsfeeds.opml',
             ),
-            Provider('molly.providers.apps.podcasts.RSSPodcastsProvider',
-                podcasts = [
-                    ('top-downloads', 'http://rss.oucs.ox.ac.uk/oxitems/topdownloads.xml'),
-                ],
-            ),
+            #Provider('molly.providers.apps.podcasts.RSSPodcastsProvider',
+            #    podcasts = [
+            #        ('top-downloads', 'http://rss.oucs.ox.ac.uk/oxitems/topdownloads.xml'),
+            #    ],
+            #),
         ]
     ),
 
@@ -334,6 +335,7 @@ INSTALLED_APPS = extract_installed_apps(APPLICATIONS) + (
     
     'staticfiles',
     'compress',
+    'south',
 #    'debug_toolbar',
 )
 

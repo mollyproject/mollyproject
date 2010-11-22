@@ -27,7 +27,6 @@ class CloudmadeGeolocationProvider(BaseGeolocationProvider):
 
         data = urllib2.urlopen(self.REVERSE_GEOCODE_URL % params)
 
-        print self.REVERSE_GEOCODE_URL % params
         json = simplejson.load(data)
         if not json:
             return []

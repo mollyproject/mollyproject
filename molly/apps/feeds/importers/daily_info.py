@@ -33,7 +33,6 @@ def range(start, stop=None, step=1):
         start, stop = step-step, start
     
     while start < stop:
-        print start
         yield start
         start += step
 
@@ -70,7 +69,6 @@ class DailyInfoImporter(BaseImporter):
                     r'(\d\d [A-Za-z]{3} \d{4}( - \d\d [A-Za-z]{3} \d{4})?: )?(.+)',
                     x_item.find('title').text,
                 )
-                print match.group(3)
                 series.title = match.group(3)
             except AttributeError:
                 series.title = x_item.find('title').text
@@ -86,8 +84,6 @@ class DailyInfoImporter(BaseImporter):
             
             dt_start = parse_date(x_item.find(ns_xcal['dtstart']).text)
             dt_end = parse_date(x_item.find(ns_xcal['dtend']).text)
-            
-            #print feed_data, '\n\n\n'
             
             for i, dt in enumerate(x_item.findall(ns_dc['date'])):
 
@@ -177,12 +173,6 @@ if False:
                 for x_item in feed_data.entries:
                     guid, last_modified = x_item.id, datetime(*x_item.date_parsed[:7])
                     
-                    #print x_item.link
-                    #if x_item.link != 'http://www.dailyinfo.co.uk/events.php?colname=Lectures%2C+Seminars+and+Conferences&period=7&eventday=10&eventmonth=12&eventyear=2009#70276':
-                    #    continue
-                    
-                    print x_item.items()
-                                
                     for i in items:
                         if i.guid == guid:
                             item = i
@@ -224,7 +214,6 @@ if False:
                                 try:
                                     item.location_point = Point(float(x_item.geo_long),
                                                                 float(x_item.geo_lat))
-                                    print x_item.geo_lat, x_item.geo_long
                                 except AttributeError, ValueError:
                                     for link in venue_et.findall('.//a'):
                                         match = Command.GOOGLE_MAPS_LINK_RE.match(link.attrib.get('href', ''))
@@ -245,7 +234,6 @@ if False:
                                         break
                                         
                                     item.location_point = self.postcode_to_point(match.groups(0)[0])
-                                    print item.location_point
                                     break
                                 
                                 location_data[venue_id] = item.location_name, item.location_address, item.location_point

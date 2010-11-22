@@ -8,14 +8,14 @@ if [ -n "$1" ] ; then
     # Set up the virtual environment
     python $DIR/install_virtualenv.py $1
     
-    # An empty directory is needed here otherwise things error later
-    mkdir $1/lib/python`python -V 2>&1 | cut -d" " -f2`/site-packages/molly/media
-    
     # Go inside the Python virtual environment
     source $1/bin/activate
     
     # Install Molly
     python $DIR/../setup.py install
+    
+    # An empty directory is needed here otherwise things error later
+    mkdir $1/lib/python`python -V 2>&1 | cut -d" " -f2`/site-packages/molly/media
     
     # Install demos
     rm -rf $1/demos
@@ -36,6 +36,7 @@ if [ -n "$1" ] ; then
     
     # Start server
     python manage.py syncdb
+    python manage.py migrate
     python manage.py runserver
 else
     echo "$0 path-to-deployment"

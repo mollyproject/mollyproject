@@ -13,8 +13,9 @@
 {% block content %}
 
 <div class="section">
+<div class="header">
     <h2>{{ feed.title }}</h2>
-    
+</div>
     <ul class="link-list">
 {% for item in feed.item_set.all %}
         <li {% if forloop.last %}class="round-bottom"{% endif %}>

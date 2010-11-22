@@ -27,13 +27,8 @@ class Command(NoArgsCommand):
             os.write(f, out)
             os.close(f)
             
-            outfile = os.path.join(marker_dir, '%s-%d.png' % (color[0], index))
-            print infile, outfile
-            subprocess.call([
-                'inkscape',
-                infile,
-                '--export-png=%s' % outfile,
-            ])
+            filename = os.path.join(marker_dir, '%s-%d.png' % (color[0], index))
+            subprocess.call(['convert', '-background', 'none', infile, filename])
             os.unlink(infile)
         
         template = open(os.path.join(os.path.dirname(__file__), 'markers', 'star-base.svg')).read()
@@ -41,13 +36,10 @@ class Command(NoArgsCommand):
         for color in MARKER_COLORS:
             out = template % {'fill': color[1], 'stroke': color[2]}
             
-            f = open('out.svg', 'w')
-            f.write(out)
-            f.close()
+            f, infile = tempfile.mkstemp()
+            os.write(f, out)
+            os.close(f)
             
             filename = os.path.join(marker_dir, '%s-star.png' % color[0])
-            subprocess.call([
-                'inkscape',
-                'out.svg',
-                '--export-png=%s' % filename,
-            ])
+            subprocess.call(['convert', '-background', 'none', infile, filename])
+            os.unlink(infile)
