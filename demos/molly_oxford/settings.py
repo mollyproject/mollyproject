@@ -60,6 +60,7 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = (
+    'django.middleware.csrf.CsrfViewMiddleware',
     'molly.wurfl.middleware.WurflMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -83,6 +84,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'molly.geolocation.context_processors.geolocation',
     'molly.utils.context_processors.full_path',
     'molly.utils.context_processors.google_analytics',
+    'django.core.context_processors.csrf',
 )
 
 
@@ -311,6 +313,10 @@ APPLICATIONS = [
 
 #    Application('molly.apps.feeds.events', 'events', 'Events',
 #    ),
+
+    Application('molly.favourites', 'favourites', 'Favourite pages',
+        display_to_user = False,
+    ),
 ]
 
 API_KEYS = {

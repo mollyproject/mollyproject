@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="section">
+  <div class="header">
+    <h2>Favourites</h2>
+  </div>
+    
+    <table class="content">
+      <tbody>
+        {% for favourite in favourites %}
+        <tr>
+          <td><a href="{{ favourite }}">{{ favourite }}</a></td>
+          <td>
+            <form action="{% url favourites:index %}" method="post">
+                <input type="hidden" name="URL" value="{{ favourite|escape }}" />
+                <input type="hidden" name="return_to_favourites" value="True" />
+                {% csrf_token %}
+                <input type="submit" name="unfavourite" value="Unfavourite" />
+            </form>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="2" style="text-align:center;"><em>You haven't favourited anything yet!</em></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+</div>
+
+{% endblock %}

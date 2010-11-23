@@ -58,6 +58,7 @@
       </ol> 
       <div id="bc-title">
         <h1 class="{% if not breadcrumbs.2 %}{{ breadcrumbs.0 }}-header with-icon{% endif %}">{{ breadcrumbs.4 }}</h1>
+        {% include "favourite.html" %}
       </div>
     </div>
 {% else %}
@@ -71,6 +72,7 @@
          <div id="bc-title">
            <h1>{{ breadcrumbs.4 }}</h1>
          </div>
+	{% include "favourite.html" %}
        </div>
 {% endifnotequal %}
 

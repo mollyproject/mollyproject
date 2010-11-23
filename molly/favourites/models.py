@@ -1,0 +1,1 @@
+# Placeholder file to ensure this app gets correctly picked up by Django
