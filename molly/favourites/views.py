@@ -4,6 +4,8 @@ from django.core.urlresolvers import resolve
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import lazy_reverse, Breadcrumb, BreadcrumbFactory
 
+from molly.favourites.utils import get_favourites
+
 class FavouritableView(BaseView):
     """
     A view to inherit from if you want to be favouritable
@@ -18,9 +20,6 @@ class FavouritableView(BaseView):
         
         # Also, add whether or not this particular thing already is favourited
         context['is_favourite'] = request.path_info in (request.session['favourites'] if 'favourites' in request.session else [])
-        print request.session['favourites']
-        print request.path_info
-        print context['is_favourite']
         
         # And the URL of this page (so it can be favourited)
         context['favourite_url'] = request.path_info
@@ -55,7 +54,7 @@ class IndexView(BaseView):
         """
         Show a list of favourited things, and allow removal of these
         """
-        context['favourites'] = request.session['favourites'] if 'favourites' in request.session else []
+        context['favourites'] = get_favourites(request)
         return self.render(request, context, 'favourites/index')
     
     def handle_POST(self, request, context):

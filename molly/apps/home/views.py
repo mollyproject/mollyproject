@@ -7,7 +7,7 @@ from django.shortcuts import render_to_response
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
-
+from molly.favourites.utils import get_favourites
 from molly.wurfl import device_parents
 from molly import conf
 
@@ -49,6 +49,7 @@ class IndexView(BaseView):
         context = {
             'applications': applications,
             'hide_feedback_link': True,
+            'favourites': get_favourites(request),
         }
         return self.render(request, context, 'home/index')
 

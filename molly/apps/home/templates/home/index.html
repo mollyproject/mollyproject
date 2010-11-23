@@ -66,6 +66,22 @@
         </table>
     </div>
     
+    {% if favourites %}
+    <div class="section">
+      <div class="header">
+	<h2>Favourites</h2>
+      </div>
+      <ul class="content-list">
+      {% for favourite in favourites %}
+	<li><a href="{{ favourite.1 }}">{{ favourite.0 }}</a></li>
+      {% endfor %}
+      </ul>
+      <ul class="link-list">
+	<li><a href="{% url favourites:index %}">Manage Favourites</a></li>
+      </ul>
+    </div>
+    {% endif %}
+    
     <ul class="stand-alone">
             <li class="round-top"><a href="{% url home:static_about %}">About this site</a></li>
 			{% if has_user_messages %}
