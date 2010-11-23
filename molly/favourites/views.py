@@ -68,8 +68,8 @@ class IndexView(BaseView):
         # Alter favourites list
         if 'URL' in request.POST:
             
-            #if 'favourites' not in request.session:
-            request.session['favourites'] = set()
+            if 'favourites' not in request.session:
+                request.session['favourites'] = set()
             
             if 'favourite' in request.POST:
                 # Add
