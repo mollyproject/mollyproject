@@ -28,8 +28,8 @@
         
         <!-- Opera Mobile -->
         <device user_agent="Opera/9.80 (S60; SymbOS; Opera Mobi/499; U) Presto/2.4.18 Version/10.009" fall_back="generic_opera_mobi" id="opera_mobi_ver10"/>
-        
-	</devices>
+	
+	
 
   <!-- IOS 4.2.1, temporary patch until it gets into the main WURFL -->
   <device id="apple_iphone_ver4_2_1" user_agent="Mozilla/5.0 (iPhone; U; CPU iPhone OS 4_2_1 like Mac OS X; en_us) AppleWebKit/533.17.9 (KHTML, like Gecko)" fall_back="apple_iphone_ver4_2">
@@ -55,6 +55,7 @@
     </group>
   </device>
   <device id="apple_ipod_touch_ver4_2_1_subua" user_agent="Mozilla/5.0 (iPod touch; U; CPU iPhone OS 4_2_1 like Mac OS X; en_us) AppleWebKit/533.17.9 (KHTML, like Gecko)" fall_back="apple_ipod_touch_ver4_2_1"/>
- 
+        
+	</devices>
 
 </wurfl_patch>
