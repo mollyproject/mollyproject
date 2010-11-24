@@ -157,7 +157,8 @@ Change directory to your project directory and use manage.py to initialise the
 database:
 
  $ cd /path/to/molly/project/
- $ python manage.py syncdb
+ $ python manage.py syncdb --all
+ $ python manage.py migrate --fake
 
 It should ask you to create a new superuser. Say yes and set one up.
 
