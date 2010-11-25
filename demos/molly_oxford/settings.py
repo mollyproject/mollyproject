@@ -154,11 +154,11 @@ APPLICATIONS = [
             Provider('molly.providers.apps.podcasts.OPMLPodcastsProvider',
                 url = 'http://rss.oucs.ox.ac.uk/metafeeds/podcastingnewsfeeds.opml',
             ),
-            Provider('molly.providers.apps.podcasts.RSSPodcastsProvider',
-                podcasts = [
-                    ('top-downloads', 'http://rss.oucs.ox.ac.uk/oxitems/topdownloads.xml'),
-                ],
-            ),
+            #Provider('molly.providers.apps.podcasts.RSSPodcastsProvider',
+            #    podcasts = [
+            #        ('top-downloads', 'http://rss.oucs.ox.ac.uk/oxitems/topdownloads.xml'),
+            #    ],
+            #),
         ]
     ),
 
@@ -319,6 +319,7 @@ INSTALLED_APPS = extract_installed_apps(APPLICATIONS) + (
     
     'staticfiles',
     'compress',
+    'south',
 #    'debug_toolbar',
 )
 
