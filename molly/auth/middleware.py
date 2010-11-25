@@ -57,11 +57,14 @@ class SecureSessionMiddleware(object):
         secure_view = isinstance(view_func, SecureView)
         
         # If the non-secure session is marked secure, refuse the request.
-        # Likewise, if the secure session isn't marked secure, refuse the request.
-        if request.session.get('is_secure'):        
+        # Likewise, if the secure session isn't marked secure, refuse the
+        # request and delete the cookie.
+        if request.session.get('is_secure'):
             return HttpResponseForbidden('Invalid session_id', mimetype='text/plain')
         if request.secure_session and not request.secure_session.get('is_secure'):
-            return HttpResponseForbidden('Invalid secure_session_id', mimetype='text/plain')
+            resp = HttpResponseForbidden('Invalid secure_session_id', mimetype='text/plain')
+            resp.delete_cookie('secure_session_id')
+            return resp
 
         if secure_view and not secure_request:
             uri = request.build_absolute_uri().split(':', 1)
