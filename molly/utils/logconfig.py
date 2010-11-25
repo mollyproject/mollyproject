@@ -47,7 +47,7 @@ class EmailHandler(logging.Handler):
         # two elements of the traceback.
         hash = hashlib.sha1()
         hash.update('%d' % record.levelno)
-        hash.update(record.msg)
+        hash.update(str(record.msg))
         hash.update('%d%s' % (record.lineno, record.pathname))
 
 
