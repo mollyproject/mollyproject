@@ -458,11 +458,11 @@ class CategoryDetailView(BaseView):
         if len(context['entity_types']) > 1:
             return {
                 'exclude_from_search':True,
-                'title': 'All %s near%s%s' % capfirst(context['entity_types'][0].verbose_name_plural),
+                'title': 'All %s' % context['entity_types'][0].verbose_name_plural,
             }
 
         return {
-            'title': 'All %s near%s%s' % capfirst(context['entity_types'][0].verbose_name_plural),
+            'title': 'All %s' % context['entity_types'][0].verbose_name_plural,
             'additional': '<strong>%d %s</strong>' % (
                 len(context['entities']),
                 context['entity_types'][0].verbose_name_plural,
