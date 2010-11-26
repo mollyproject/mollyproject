@@ -22,7 +22,7 @@ class Command(NoArgsCommand):
         tempdir = tempfile.mkdtemp()
         
         final_filename = os.path.normpath(os.path.join(os.path.dirname(__file__), '..', '..', 'wurfl_data.py'))
-        local_filename = os.path.normpath(os.path.join(os.path.dirname(__file__), '..', '..', 'local_patch.xml'))
+        local_filename = os.path.normpath(os.path.join(os.path.dirname(__file__), '..', '..', 'data', 'local_patch.xml'))
         
         try:
             wurfl_gz = urllib.urlopen(Command.WURFL_URL)
@@ -53,13 +53,7 @@ class Command(NoArgsCommand):
             out_filename = os.path.join(tempdir, 'wurfl.xml')
             gen_filename = os.path.join(tempdir, 'wurfl.py')
             ET.ElementTree(root).write(out_filename)
-            
-            #pdb.set_trace()
-            
-            #sys.argv = ['python', 'wurfl2python.py', out_filename, '-o', gen_filename]
-            #pkg_resources.run_script('pywurfl==6.4.1b', 'wurfl2python.py')
-            
-            print out_filename, gen_filename
+
             subprocess.call(['wurfl2python.py', out_filename, '-o', gen_filename])
             
             shutil.move(gen_filename, final_filename)

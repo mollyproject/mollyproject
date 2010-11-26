@@ -36,6 +36,7 @@ if [ -n "$1" ] ; then
     python manage.py build_static --noinput
     python manage.py synccompress
     python manage.py generate_markers
+    python manage.py update_wurfl
     
     # Start server
     python manage.py syncdb
