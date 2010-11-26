@@ -73,7 +73,7 @@
       </div>
       <ul class="content-list">
       {% for favourite in favourites %}
-	<li><a href="{{ favourite.1 }}">{{ favourite.0 }}</a></li>
+	<li><a href="{{ favourite.url }}">{{ favourite.metadata.title }}</a></li>
       {% endfor %}
       </ul>
       <ul class="link-list">

@@ -25,16 +25,6 @@ class FavouritableView(BaseView):
         context['favourite_url'] = request.path_info
         
         return context
-    
-    def get_related(self, request, context, *args, **kwargs):
-        """
-        This allows a view to be queried for any related objects (such as an
-        entity it represents). This allows for things like favouriting places to
-        also get at the particular entity that is favourited.
-        """
-        
-        # By default return an empty list
-        return []
 
 class IndexView(BaseView):
     """
