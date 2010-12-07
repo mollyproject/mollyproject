@@ -33,7 +33,7 @@
     {% endif %}
     {% if not poll.hasVoted and poll.isOpen and not poll.multiVote %}
       <div class="sakai-notice-message">
-        This poll closes {{ poll.voteClose|from_sakai_timestamp|timeuntil }} from now.
+        This poll closes {{ poll.voteClose|timeuntil }} from now.
       </div>
     {% endif %}
 
