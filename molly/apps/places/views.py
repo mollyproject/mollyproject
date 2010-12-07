@@ -18,7 +18,7 @@ from molly.osm.models import OSMUpdate
 
 from models import Entity, EntityType
 from utils import get_entity, get_point
-from forms import BusstopSearchForm, UpdateOSMForm
+from forms import UpdateOSMForm
 
 
 class IndexView(BaseView):
@@ -219,8 +219,6 @@ class NearbyDetailView(LocationRequiredView, ZoomableView):
         })
         #raise Exception(context)
         return self.render(request, context, 'places/nearby_detail')
-
-
 
 class EntityDetailView(ZoomableView):
     default_zoom = 16
@@ -471,112 +469,6 @@ class CategoryDetailView(BaseView):
 
     def handle_GET(self, request, context, ptypes):
         return self.render(request, context, 'places/category_detail')
-
-class BusstopSearchView(BaseView):
-    def initial_context(self, request):
-        return {
-            'search_form': BusstopSearchForm(request.GET or None)
-        }
-
-    @BreadcrumbFactory
-    def breadcrumb(self, request, context):
-        return Breadcrumb(
-            'places',
-            lazy_parent(IndexView),
-            'Search bus stops',
-            lazy_reverse('places:busstop_search'),
-        )
-
-    def handle_GET(self, request, context):
-        id = request.GET.get('id', '').strip()
-        if len(id) == 5:
-            id = '693' + id
-        if len(id) == 2:
-            entities = Entity.objects.filter(central_stop_id=id.upper())
-        elif len(id) == 8:
-            entities = Entity.objects.filter(naptan_code=id)
-        else:
-            entities = []
-
-        entities = list(entities)
-        if len(entities) == 1:
-            return HttpResponseRedirect(entities[0].get_absolute_url())
-
-        context['entities'] = entities
-
-        return self.render(request, context, 'places/busstop_search')
-
-class PostCodeDetailView(NearbyDetailView):
-    def get_metadata(self, request, post_code, ptypes=None):
-        post_code = get_object_or_404(PostCode, post_code = self.add_space(post_code))
-        post_code.title = post_code.post_code
-        return super(PostCodeDetailView, self).get_metadata(request, ptypes, post_code)
-
-    def initial_context(self, request, post_code, ptypes=None):
-        post_code = get_object_or_404(PostCode, post_code = self.add_space(post_code))
-        post_code.title = post_code.post_code
-        return super(PostCodeDetailView, self).initial_context(request, ptypes, post_code)
-
-
-    @BreadcrumbFactory
-    def breadcrumb(self, request, context, post_code, ptypes=None):
-        return Breadcrumb(
-            'places',
-            lazy_parent(IndexView),
-            'Things near %s' % self.add_space(post_code),
-            lazy_reverse('places:postcode_detail', args=[post_code, ptypes]),
-        )
-
-    def handle_GET(self, request, context, post_code, ptypes=None):
-        return super(PostCodeDetailView, self).handle_GET(request, context,  ptypes, None)
-
-    def handlde_GET(self, request, context, post_code, ptypes=None):
-        post_code = get_object_or_404(PostCode, post_code = self.add_space(post_code))
-
-        entities = Entity.objects.filter(location__isnull = False, is_sublocation = False)
-        if ptypes:
-            entity_types = tuple(get_object_or_404(EntityType, slug=t) for t in ptypes.split(';'))
-            for et in entity_types:
-                entities = entities.filter(all_types=et)
-        entities = entities.distance(post_code.location).order_by('distance')[:99]
-
-        context['entities'] = entities
-        return self.render(request, context, 'places/postcode_detail')
-
-    def add_space(self, post_code):
-        return post_code[:-3] + ' ' + post_code[-3:]
-
-def entity_favourite(request, type_slug, id):
-    entity = get_entity(type_slug, id)
-
-    if request.method != 'POST':
-        return HttpResponse('', mimetype='text/plain', status=405)
-
-    try:
-        value = request.POST['is_favourite'] == 'true'
-    except KeyError:
-        return HttpResponse('', mimetype='text/plain', status=400)
-
-    make_favourite(request, entity, value)
-
-    if 'no_redirect' in request.POST:
-        return HttpResponse('', mimetype='text/plain', status=400)
-
-    if 'return_url' in request.POST:
-        return HttpResponseRedirect(request.POST['return_url'])
-    else:
-        return HttpResponseRedirect(entity.get_absolute_url())
-
-
-def without_location(request):
-    entities = Entity.objects.filter(entity_type__source='oxpoints', location__isnull=True)
-
-    data = (
-        '%d,"%s","%s"\n' % (e.oxpoints_id, e.title.replace('"', r'\"'), e.entity_type.slug) for e in entities
-    )
-
-    return HttpResponse(data, mimetype='text/csv')
-
 
 class APIView(BaseView):
     """
