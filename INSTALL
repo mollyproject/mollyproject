@@ -38,20 +38,46 @@ scripts/install_virtualenv.py. If you want to do this by hand, do the following:
 
     Next, clone the git repository to a temporary directory:
 
-     $ git clone git://mollyproject.git.sourceforge.net/gitroot/mollyproject/mollyproject
+     $ git clone git://github.com/mollyproject/mollyproject.git
 
     Install the Molly dependencies and Molly itself:
 
-     $ cd ~/mollyenv/mollyproject/branches/extracting_oxford/molly/
+     $ cd ~/mollyenv/mollyproject/
      $ pip -E ~/mollyenv/ install `cat requirements/core.txt` --upgrade
      $ python setup.py install
 
-Once you've set up the database as below, you'll be able to run the development
-server as follows:
+Once you've set up the database as below, then you'll need to update the
+secrets.py file in demos/molly_oxford to include your database details, etc.
 
- $ cd ~/mollyenv/mollyproject/branches/extracting_oxford/molly/demos/molly_oxford
+Once you've done this, you'll need to build the media files for your site. Molly
+uses compressed CSS and JavaScript in order to improve the performance on mobile
+devices, but these need to be generated:
+
+ $ cd ~/mollyenv/mollyproject/demos/molly_oxford
+ $ python manage.py build_static --noinput
+ $ python manage.py synccompress
+ $ python manage.py generate_markers
+
+You will also need to add any batch jobs you want to run into Molly:
+
+ $ PYTHONPATH=.. python manage.py create_crontab
+
+This outputs text ready to be piped into crontab which sets up these batch jobs.
+And now, you're ready to run your server!
+
  $ python manage.py runserver
 
+To get some initial data into Molly, you may want to run the batch jobs by hand.
+This can be done by going into the administration interface:
+
+ http://localhost:8000/adm/
+
+And then under batch processing, select 'Batches', and then select all the
+batches in the screen and then from the Action drop down 'Run batch', and Go.
+This will take some time, and when all the pending and currently running columns
+are red, means that the job is complete. Clicking on each individual job then
+shows the log for the last run, and if any errors have occurred, they will
+appear here.
 
 
 Database
@@ -114,7 +140,8 @@ Change directory to your project directory and use manage.py to initialise the
 database:
 
  $ cd /path/to/molly/project/
- $ python manage.py syncdb
+ $ python manage.py syncdb --all
+ $ python manage.py migrate --fake
 
 It should ask you to create a new superuser. Say yes and set one up.
 

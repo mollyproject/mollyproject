@@ -83,6 +83,7 @@ class StaticDetailView(BaseView):
 
 def handler500(request):
     context = {
+        'request': request,
         'MEDIA_URL': settings.MEDIA_URL,
     }
 
@@ -94,7 +95,7 @@ def handler500(request):
     except Exception, e:
         pass
 
-    response = render_to_response('500.html', context, context_instance=RequestContext(request))
+    response = render_to_response('500.html', context)
     response.status_code = 500
     return response
 
