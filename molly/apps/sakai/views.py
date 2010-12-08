@@ -226,7 +226,7 @@ def annotate_poll(poll):
         'hasVoted': bool(poll['currentUserVotes']),
     })
     poll['isOpen'] = poll['hasOpened'] and not poll['hasClosed']
-    poll['mayVote'] = poll['isOpen'] and not poll['hasVoted'] and not poll['multiVote']
+    poll['mayVote'] = poll['isOpen'] and not poll['hasVoted']
 
 class PollIndexView(SakaiView):
     force_auth = True
@@ -276,9 +276,7 @@ class PollDetailView(SakaiView):
             url = self.build_url('direct/poll/%s/vote.json' % id)
             votes = simplejson.load(request.urlopen(url))
             votes = votes["poll-vote_collection"]
-        except urllib2.HTTPError, e:
-            if e.code != 403:
-                raise
+        except PermissionDenied:
             max_votes, vote_count = None, None
 
         else:
