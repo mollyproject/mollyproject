@@ -10,16 +10,14 @@
   <div class="header">
     <h2>{{ poll.text }}</h2>
 
-    {% if not poll.hasVoted and poll.multiVote and poll.isOpen %}
+    {% if error %}
       <div class="sakai-error-message">
         <p>
-          This polls allows you to select more than one response, which is as yet unsupported through this interface.
-        </p>
-        <p>
-        To participate, please visit the {{ service_name }} website from a desktop browser.
+          {{ error }}
         </p>
       </div>
     {% endif %}
+
     {% if not poll.hasVoted and not poll.isOpen %}
       <div class="sakai-error-message">
         <p>
@@ -31,7 +29,7 @@
         </p>
       </div>
     {% endif %}
-    {% if not poll.hasVoted and poll.isOpen and not poll.multiVote %}
+    {% if not poll.hasVoted and poll.isOpen %}
       <div class="sakai-notice-message">
         This poll closes {{ poll.voteClose|timeuntil }} from now.
       </div>
