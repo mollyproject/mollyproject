@@ -294,12 +294,12 @@ a 2D barcode below
 <div class="social-items">
 <h2><a href="http://mobileoxford.posterous.com"/>Blog</a></h2>
 <ul>
-	{% for entry in blog_feed.entries|slice:":3" %}
-	<li>
-	<h3><a href="{{ entry.link }}">{{ entry.title }}</a></h3>
-	<p>{{ entry.description|striptags|truncatewords:27|safe }}</p>
-	</li>
-	{% endfor %}
+        {% for entry in blog_feed.entries|slice:":3" %}
+        <li><small>{{ entry.updated|slice:":-15" }}</small> 
+        <br />        <a href="{{ entry.link }}">{{ entry.title }}</a>
+        <p>{{ entry.description|striptags|truncatewords:27|safe }}</p>
+        </li>
+        {% endfor %}
 </ul>
 <a href="http://mobileoxford.posterous.com/">More entries&hellip;</a>
 </div>
