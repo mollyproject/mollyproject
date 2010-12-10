@@ -1,5 +1,6 @@
 import ftplib, os, urllib, zipfile, tempfile, random, re
 
+from collections import defaultdict
 from StringIO import StringIO
 
 from xml.sax import ContentHandler, make_parser
@@ -39,7 +40,7 @@ class NaptanContentHandler(ContentHandler):
         self.name_stack.append(name)
 
         if name == 'StopPoint':
-            self.meta = {}
+            self.meta = defaultdict(str)
 
     def endElement(self, name):
         self.name_stack.pop()
@@ -61,7 +62,7 @@ class NaptanContentHandler(ContentHandler):
         top = tuple(self.name_stack[3:])
 
         try:
-            self.meta[self.meta_names[top]] = text
+            self.meta[self.meta_names[top]] += text
         except KeyError:
             pass
 
