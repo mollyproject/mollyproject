@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.conf import settings
@@ -49,6 +51,7 @@ class IndexView(BaseView):
         context = {
             'applications': applications,
             'hide_feedback_link': True,
+            'is_christmas': datetime.now().month == 12,
         }
         return self.render(request, context, 'home/index')
 

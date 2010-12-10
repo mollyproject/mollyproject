@@ -11,7 +11,11 @@
 		{% ifequal style_group "dumb" %}
 		    <img src="{{ MEDIA_URL }}site/png/new/logos/logo-90x55.jpg" alt="Mobile Oxford">
 		{% else %}
-            <img src="{{ MEDIA_URL }}site/png/new/logos/logo-128x51-TRMargin-5px.png" alt="Mobile Oxford"/>
+		{% if is_christmas %}
+            <img src="{{ MEDIA_URL }}site/png/new/logos/logo-128x51-TRMargin-5px-christmas.png" alt="Mobile Oxford"/>
+		{% else %}
+	    <img src="{{ MEDIA_URL }}site/png/new/logos/logo-128x51-TRMargin-5px.png" alt="Mobile Oxford"/>
+		{% endif %}
         {% endifequal %}
     </div>
     <div id="index-search">
