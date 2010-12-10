@@ -7,6 +7,7 @@
 
 
 <div class="section">
+<div class="header">
   {% include "places/metadata/real_time_information.html" %}
 	{% if entity.location %}
 	
@@ -18,7 +19,7 @@
         <img src="{% map_url entity.location %}" alt="Map"><br />
         {% include "places/map_elements.html" %}
     {% endifnotequal %}
-    
+ </div>  
 	<ul class="link-list">
 	    <li class="round-bottom"><a href="{% url places:entity-nearby-list entity.identifier_scheme entity.identifier_value %}" rel="nofollow">Find things near here</a></li>
 	</ul>
@@ -27,6 +28,9 @@
 	        We do not yet have a location for this {{ entity.entity_type.verbose_name }}.
 	    </div></div>
 	{% endif %}
+
+
+
 </div>
 
 {% include "places/metadata/oxpoints.html" %}

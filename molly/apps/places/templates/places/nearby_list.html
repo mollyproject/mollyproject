@@ -7,7 +7,9 @@
 
 {% for name, types in entity_types %}
 <div class="section">
+<div class="header">
   <h2>{{ name }}</h2>
+</div>
 	<ul class="link-list">
 	{% for entity_type in types %}{% if entity %}
 	    <li{% if forloop.last %} class="round-bottom"{% endif %}><a href="{% url places:entity-nearby-detail entity.identifier_scheme,entity.identifier_value,entity_type.slug %}">

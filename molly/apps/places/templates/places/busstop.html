@@ -38,6 +38,7 @@ tr {
 
 
 <div class="section">
+<div class="header">
 	<h2><small>{{ entity.title }}<br /><span id="time_now">{% now "G:i:s "%}</span></small></h2>
 
 
@@ -93,7 +94,7 @@ tr {
     <a href="{% url maps:entity_nearby_list entity.entity_type.slug,entity.display_id %}" rel="nofollow">Find things near here</a>
     </li>
 </ul>
-
+</div>
 </div>
 
 {% endblock %}

@@ -14,7 +14,8 @@
 {% block content %}
 
 <div class="section">
-<h2>{{ webcam.title }}<br /><small>{% now "G:i "%}</small></h2>
+	<div class="header">
+		<h2>{{ webcam.title }}<br /><small>{% now "G:i "%}</small></h2>
 
 {% if eis %}
     {% ifnotequal style_group "dumb" %}
@@ -37,5 +38,7 @@
 <p><small>{{ webcam.credit|safe }}</small></p>
 {% endif %}
 
-</div></div></div>
+</div></div>
+</div>
+</div>
 {% endblock %}
