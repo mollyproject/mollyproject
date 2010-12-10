@@ -6,6 +6,7 @@
 {% block content %}
 
 <div class="section">
+<div class="header">
   <h2>
 {% if entity_types|length_is:0 %}
     Found {{ count }} thing{{ count|pluralize }} near {{ entity.title }}
@@ -57,7 +58,7 @@
     {% include "places/map_elements.html" %}
 {% endifnotequal %}
 
-
+</div>
 
 <ul class="link-list">
 {% if entities %}
