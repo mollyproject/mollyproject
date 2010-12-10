@@ -466,13 +466,13 @@ button, input[type="submit"], input[type="reset"] {
 .invisible {display:none;}
 .center {text-align:center;}
 
-
+/*
 h2 {
     text-align:center;
     color:white;
     padding: 5px 0; margin: 0;
 }
-
+*/
 h3 {
     color:white;
     padding: 5px 5px; margin: 0;
@@ -672,7 +672,7 @@ div.header {
 div.header h2 {
     color: rgb(34, 34, 34);
     text-shadow: 2px 2px 2px rgb(204, 204, 204);
-    text-align: left;
+    text-align: center;
     font-size: 11pt;
     padding-top: 3px;
 }

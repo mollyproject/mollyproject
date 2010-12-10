@@ -2,7 +2,9 @@
 
 {% with entity.metadata.oxpoints as oxp %}
 <div class="section">
+<div class="header">
 	<h2>{{ oxp.dc_title }}</h2>
+</div>
 <div class="article"><div class="bubble pad-5">
 	<dl>
 	{% if oxp.foaf_homepage or oxp.oxp_hasITHomepage or oxp.oxp_hasWeblearn or oxp.oxp_hasLibraryHomepage %}
@@ -77,7 +79,9 @@
 
 {% if oxp.foaf_depiction %}
 <div class="section">
+<div class="header">
 	<h2>Images</h2>
+</div>
 	{% for image in oxp.foaf_depiction %}
 		{% external_image image.uri asdiv %}
 	{% endfor %}
