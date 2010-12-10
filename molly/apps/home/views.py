@@ -43,7 +43,7 @@ class IndexView(BaseView):
         # Add any one-off messages to be shown to this user
         messages = []
         
-        if request.session.get('opera_mini_warning', False) and request.browser.mobile_browser == u'Opera Mini':
+        if not request.session.get('opera_mini_warning', False) and request.browser.mobile_browser == u'Opera Mini':
             messages.append('Please note that the "Mobile View" on Opera Mini does not display this site correctly. To ensure correct operation of this site, ensure "Mobile View" is set to Off in Opera settings')
             request.session['opera_mini_warning'] = True
 
@@ -53,13 +53,13 @@ class IndexView(BaseView):
             'title': app.title,
             'url': reverse('%s:index' % app.local_name) if app.has_urlconf else None,
             'display_to_user': app.display_to_user,
-            'messages': messages
         } for app in conf.all_apps()]
 
         context = {
             'applications': applications,
             'hide_feedback_link': True,
             'is_christmas': datetime.now().month == 12,
+            'messages': messages
         }
         return self.render(request, context, 'home/index')
 
