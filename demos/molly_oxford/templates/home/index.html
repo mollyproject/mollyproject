@@ -1,4 +1,5 @@
 {% extends "home/base.html" %}
+{% load molly_utils %}
 {% load molly_apps_weather %}
 {% load portal_misc %}{% load maps %}{% load molly_apps_search %}{% load oxford_apps_river_status %}
 
@@ -35,6 +36,15 @@
 {% endblock %}
 
 {% block content %}
+    {% if messages %}
+    <div class="section">
+      <ul class="content-list">
+        {% for message in messages %}
+	  <li>{{ message|sanitize_html }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
     <div class="bubble">
 	<div class="center">
     	<ol class="icon-menu">
