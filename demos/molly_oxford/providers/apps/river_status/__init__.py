@@ -26,7 +26,6 @@ class RiverStatusProvider(object):
                 flag_status = FlagStatus(order=i)
 
             flag_status.name = name
-            print tr[1][0].attrib['alt']
 
             flag_status.status = status
 

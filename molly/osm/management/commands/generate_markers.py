@@ -28,11 +28,7 @@ class Command(NoArgsCommand):
             f.close()
             
             filename = os.path.join(marker_dir, '%s-%d.png' % (color[0], index))
-            subprocess.call([
-                'inkscape',
-                'out.svg',
-                '--export-png=%s' % filename,
-            ])
+            subprocess.call(['convert', '-background', 'none', 'out.svg', filename])
         
         template = open(os.path.join(os.path.dirname(__file__), 'markers', 'star-base.svg')).read()
             
@@ -44,8 +40,4 @@ class Command(NoArgsCommand):
             f.close()
             
             filename = os.path.join(marker_dir, '%s-star.png' % color[0])
-            subprocess.call([
-                'inkscape',
-                'out.svg',
-                '--export-png=%s' % filename,
-            ])
+            subprocess.call(['convert', '-background', 'none', 'out.svg', filename])

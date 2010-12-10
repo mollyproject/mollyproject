@@ -8,12 +8,14 @@ if [ -n "$1" ] ; then
     # Go inside the virtual environment
     source $1/bin/activate
     
-    # Update molly
-    python $DIR/../setup.py install
+    # Install Molly in development mode
+    python $DIR/../setup.py develop
+    mkdir $DIR/../media/
     
     # Rebuild demos
     rm -rf $1/demos
-    cp -rf $DIR/../demos/ $1/demos/
+    mkdir -p $1/demos/molly_oxford/
+    cp -rf $DIR/../demos/molly_oxford/ $1/demos/
     
     # Copy any files in local to the molly_oxford demo - useful for overriding
     # settings.py and secrets.py
@@ -29,6 +31,7 @@ if [ -n "$1" ] ; then
     
     # Run server
     python manage.py syncdb
+    python manage.py migrate
     python manage.py runserver
 else
     echo "$0 path-to-deployment"

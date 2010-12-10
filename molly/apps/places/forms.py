@@ -1,8 +1,5 @@
 from django import forms
 
-class BusstopSearchForm(forms.Form):
-    id = forms.CharField(required=True, label='Search')
-
 YES_NO_DEFAULT = (
     ('', ''),
     ('yes', 'Yes'),

@@ -50,9 +50,6 @@ class PostcodesMapsProvider(BaseMapsProvider):
             else:
                 postcode = postcode_abbrev
             postcode_abbrev = postcode_abbrev.replace(' ', '')
-            
-            if not (i % 100):
-                print "%7d %7d %s" % (i, j, postcode)
                 
             try:
                 easting, northing = int(easting), int(northing)

@@ -11,7 +11,6 @@ from views import (
     NearbyEntityListView, NearbyEntityDetailView,
     CategoryListView, CategoryDetailView,
 
-    BusstopSearchView, PostCodeDetailView,
     APIView,
 )
 
@@ -34,11 +33,6 @@ urlpatterns = patterns('',
         CategoryDetailView, {},
         'category-detail'),
 
-#    (r'^postcode:(?P<post_code>OX\d{2,3}[A-Z]{2})/((?P<ptypes>[^/;]+(\;[^/;]+)*)/)?$',
-#        PostCodeDetailView, {},
-#        'maps_postcode_detail'),
-
-
     (r'^(?P<scheme>[a-z_\-]+):(?P<value>[\da-zA-Z]+)/$',
         EntityDetailView, {},
         'entity'),
@@ -52,19 +46,6 @@ urlpatterns = patterns('',
     (r'^(?P<scheme>[a-z_\-]+):(?P<value>[\da-zA-Z]+)/update/$',
         EntityUpdateView, {},
         'entity-update'),
-
-    (r'^busstop_search/$',
-        BusstopSearchView, {},
-        'busstop-search'),
-
-
-#    (r'^(?P<type_slug>[a-z_]+):(?P<id>[\dA-Z]+)/favourite/$',
-#        'entity_favourite', {},
-#        'maps_entity_favourite'),
-
-#    (r'^without_location/$', 
-#        'without_location', {},
-#        'maps_without_location'),
 
     (r'^openstreetmap/$',
         StaticDetailView,

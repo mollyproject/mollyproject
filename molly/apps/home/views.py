@@ -94,7 +94,7 @@ def handler500(request):
     except Exception, e:
         pass
 
-    response = render_to_response('500.html', context)
+    response = render_to_response('500.html', context, context_instance=RequestContext(request))
     response.status_code = 500
     return response
 

@@ -44,9 +44,6 @@ class AccessHandler(logging.Handler):
         
         
     def emit(self, record):
-        print dir(record)
-        print record.exc_info
-        print record.exc_text
         
         if hasattr(record, 'traceback'):
             self.error_handler.emit(record)

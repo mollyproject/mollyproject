@@ -89,6 +89,7 @@ MIMETYPES = {
     'video/mpeg': 'MPEG video',
     'video/x-m4v': 'MP4 video',
     'audio/x-m4a': 'MP4 audio',
+    'application/epub+zip': 'ePub eBook'
 }    
 
 class PodcastEnclosure(models.Model):

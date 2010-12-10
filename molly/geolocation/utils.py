@@ -51,7 +51,6 @@ def _cached(getargsfunc):
 def geocode(query, providers):
     results = []
     for provider in providers:
-        print "PROVIDER", provider
         results += provider.geocode(query)
     return results
 
@@ -59,7 +58,6 @@ def geocode(query, providers):
 def reverse_geocode(lon, lat, providers):
     results = []
     for provider in providers:
-        print "PROVIDER", provider
         results += provider.reverse_geocode(lon, lat)
     return results
     
