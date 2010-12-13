@@ -339,7 +339,7 @@ class EntityUpdateView(ZoomableView):
             )
             osm_update.save()
 
-            return HttpResponseRedirect(reverse('places:entity_update', args=[scheme, value])+'?submitted=true')
+            return HttpResponseRedirect(reverse('places:entity-update', args=[scheme, value])+'?submitted=true')
         else:
             context['form'] = form
             return self.render(request, context, 'places/update_osm')

@@ -1,5 +1,6 @@
 import ftplib, os, urllib, zipfile, tempfile, random, re, csv
 
+from collections import defaultdict
 from StringIO import StringIO
 
 from xml.sax import ContentHandler, make_parser
@@ -9,6 +10,7 @@ from django.contrib.gis.geos import Point
 from molly.apps.places.providers import BaseMapsProvider
 from molly.apps.places.models import EntityType, Entity, Source
 from molly.conf.settings import batch
+from secrets import SECRETS
 
 class NaptanContentHandler(ContentHandler):
 
@@ -38,7 +40,7 @@ class NaptanContentHandler(ContentHandler):
         self.name_stack.append(name)
 
         if name == 'StopPoint':
-            self.meta = {}
+            self.meta = defaultdict(str)
 
     def endElement(self, name):
         self.name_stack.pop()
@@ -60,7 +62,7 @@ class NaptanContentHandler(ContentHandler):
         top = tuple(self.name_stack[3:])
 
         try:
-            self.meta[self.meta_names[top]] = text
+            self.meta[self.meta_names[top]] += text
         except KeyError:
             pass
 
@@ -321,5 +323,5 @@ class NaptanMapsProvider(BaseMapsProvider):
         return source
 
 if __name__ == '__main__':
-    p = NaptanMapsProvider(method='ftp', username='timfernando', password='tamefruit037', areas=('340',))
+    p = NaptanMapsProvider(method='ftp', username=SECRETS.journeyweb[0], password=SECRETS.journeyweb[1], areas=('340',))
     p.import_data(None, None)

@@ -1,4 +1,5 @@
 {% extends "home/base.html" %}
+{% load molly_utils %}
 {% load molly_apps_weather %}
 {% load portal_misc %}{% load maps %}{% load molly_apps_search %}{% load oxford_apps_river_status %}
 
@@ -11,7 +12,11 @@
 		{% ifequal style_group "dumb" %}
 		    <img src="{{ MEDIA_URL }}site/png/new/logos/logo-90x55.jpg" alt="Mobile Oxford">
 		{% else %}
-            <img src="{{ MEDIA_URL }}site/png/new/logos/logo-128x51-TRMargin-5px.png" alt="Mobile Oxford"/>
+		{% if is_christmas %}
+            <img src="{{ MEDIA_URL }}site/png/new/logos/logo-128x51-TRMargin-5px-christmas.png" alt="Mobile Oxford"/>
+		{% else %}
+	    <img src="{{ MEDIA_URL }}site/png/new/logos/logo-128x51-TRMargin-5px.png" alt="Mobile Oxford"/>
+		{% endif %}
         {% endifequal %}
     </div>
     <div id="index-search">
@@ -31,6 +36,15 @@
 {% endblock %}
 
 {% block content %}
+    {% if messages %}
+    <div class="section">
+      <ul class="content-list">
+        {% for message in messages %}
+	  <li>{{ message|sanitize_html }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
     <div class="bubble">
 	<div class="center">
     	<ol class="icon-menu">

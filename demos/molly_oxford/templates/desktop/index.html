@@ -294,12 +294,12 @@ a 2D barcode below
 <div class="social-items">
 <h2><a href="http://mobileoxford.posterous.com"/>Blog</a></h2>
 <ul>
-	{% for entry in blog_feed.entries|slice:":3" %}
-	<li>
-	<h3><a href="{{ entry.link }}">{{ entry.title }}</a></h3>
-	<p>{{ entry.description|striptags|truncatewords:27|safe }}</p>
-	</li>
-	{% endfor %}
+        {% for entry in blog_feed.entries|slice:":3" %}
+        <li><small>{{ entry.updated|slice:":-15" }}</small> 
+        <br />        <a href="{{ entry.link }}">{{ entry.title }}</a>
+        <p>{{ entry.description|striptags|truncatewords:27|safe }}</p>
+        </li>
+        {% endfor %}
 </ul>
 <a href="http://mobileoxford.posterous.com/">More entries&hellip;</a>
 </div>
@@ -313,13 +313,17 @@ a 2D barcode below
 <div class="span-15 append-1 last">
 <div class="social-items">
 <h2><a href="http://twitter.com/mobileox">Twitter</a></h2>
-<ul>
-	{% for entry in twitter_feed|slice:":6" %}
-	<li>
-	<p>{{ entry.formatted_text|safe }}</p>
-	</li>
-	{% endfor %}
-</ul>
+<dl>
+        {% for entry in twitter_feed|slice:":6" %}
+        <dt>
+        <small>
+        {{ entry.created_at|slice:":10" }}
+        </small></dt>
+        <dd>
+        {{ entry.formatted_text|safe }}
+        </dd>
+        {% endfor %}
+</dl>
 <a href="http://twitter.com/mobileox">More tweets&hellip;</a></div>
 </div>
 <hr class="space"/>

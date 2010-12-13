@@ -171,7 +171,11 @@ class BaseView(object):
 
         # Stop external sites from grabbing JSON representations of pages
         # which contain sensitive user information.
-        offsite_referrer = 'HTTP_REFERER' in request.META and request.META['HTTP_REFERER'].split('/')[2] != request.META.get('HTTP_HOST')
+        try:
+            offsite_referrer = 'HTTP_REFERER' in request.META and request.META['HTTP_REFERER'].split('/')[2] != request.META.get('HTTP_HOST')
+        except IndexError:
+            # Malformed referrers (i.e., those not containing a full URL) throw this
+            offsite_referrer = True
 
         for renderer in renderers:
             if renderer.format != 'html' and context.get('exposes_user_data') and offsite_referrer:

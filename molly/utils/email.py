@@ -28,7 +28,7 @@ def send_email(request, context, template_name, cls=None, to_email=None):
         email_context.update({
             'session_key': request.session.session_key,
             'devid': request.device.devid,
-            'ua': request.META['HTTP_USER_AGENT'],
+            'ua': request.META.get('HTTP_USER_AGENT'),
             'lon': request.session.get('geolocation:location', (None, None))[0],
             'lat': request.session.get('geolocation:location', (None, None))[1],
             'host': request.META.get('HTTP_HOST'),

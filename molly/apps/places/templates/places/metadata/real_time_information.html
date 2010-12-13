@@ -1,7 +1,10 @@
 {% if entity.metadata.real_time_information %}
-
-  <h2>Real-time departure information - {% now "G:i:s "%}</h2>
-
+  {% if entity.identifiers.naptan %}
+  <h2><small>Real-time information from bus stop {{entity.identifiers.naptan}} - {% now "G:i:s "%}</small></h2>
+  {% else %}
+  <h2>Real-time information - {% now "G:i:s "%}</h2>
+  {% endif %}
+  
   {% if entity.metadata.real_time_information.services %}
 <div class="pad-5">
 <table class="real-time-information">
@@ -26,7 +29,6 @@
     </tbody>
 </table>
 </div>
-
   {% else %}
 <div class="note"><div class="bubble pad-10">
     {% if entity.metadata.real_time_information.pip_info %}
