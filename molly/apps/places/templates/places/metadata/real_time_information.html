@@ -1,9 +1,4 @@
 {% if entity.metadata.real_time_information %}
-  {% if entity.identifiers.naptan %}
-  <h2><small>Real-time information from bus stop {{entity.identifiers.naptan}} - {% now "G:i:s "%}</small></h2>
-  {% else %}
-  <h2>Real-time information - {% now "G:i:s "%}</h2>
-  {% endif %}
   
   {% if entity.metadata.real_time_information.services %}
 <div class="pad-5">

@@ -9,10 +9,16 @@
 
 <div class="section">
 <div class="header">
-    {% include "places/metadata/real_time_information.html" %}
     {% if not entity.metadata.real_time_information %}
       <h2>Map</h2>
+    {% else %}
+      {% if entity.identifiers.naptan %}
+	<h2><small>Real-time information from bus stop {{entity.identifiers.naptan}} - {% now "G:i:s "%}</small></h2>
+      {% else %}
+	<h2>Real-time information - {% now "G:i:s "%}</h2>
+      {% endif %}
     {% endif %}
+    {% include "places/metadata/real_time_information.html" %}
     {% if entity.location %}
 	
 	{% ifnotequal style_group "dumb" %}
@@ -33,12 +39,28 @@
 	    </div></div>
 	{% endif %}
 
-
-
 </div>
 
 {% include "places/metadata/oxpoints.html" %}
 {% include "places/metadata/osm.html" %}
 {% include "places/metadata/park_and_ride.html" %}
+
+{% for associated_type in associations %}
+
+<div class="section">
+  <div class="header">
+    <h2>{{ associated_type.type }}</h2>
+  </div>
+  <ul class="content-list">
+    {% for entity in associated_type.entities %}
+      <li>
+	<h3><a href="{{ entity.get_absolute_url }}">{{ entity.title }}</a></h3>
+	{% include "places/metadata/real_time_information.html" %}
+      </li>
+    {% endfor %}
+  </ul>
+</div>
+
+{% endfor %}
 
 {% endblock %}
