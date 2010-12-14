@@ -466,13 +466,12 @@ button, input[type="submit"], input[type="reset"] {
 .invisible {display:none;}
 .center {text-align:center;}
 
-/*
 h2 {
     text-align:center;
     color:white;
     padding: 5px 0; margin: 0;
 }
-*/
+
 h3 {
     color:white;
     padding: 5px 5px; margin: 0;
