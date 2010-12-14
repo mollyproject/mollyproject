@@ -4,6 +4,11 @@ from django.forms.models import BaseModelFormSet, modelformset_factory
 
 from .models import ExternalServiceToken, UserSession
 
+# This is required as Django <= 1.2 checks whether a fields parameter has been
+# passed to modelformset_factory by taking the truth value of fields, instead
+# of testing that it isn't None. See http://code.djangoproject.com/ticket/14119
+# for more information. When Molly moves to support Django 1.3 this can be
+# removed, and a normal empty tuple passed in its place.
 class TrueEmptyTuple(tuple):
     def __init__(self):
         super(TrueEmptyTuple, self).__init__(())
