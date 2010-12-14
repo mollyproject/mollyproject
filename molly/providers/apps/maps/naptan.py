@@ -96,6 +96,8 @@ class NaptanContentHandler(ContentHandler):
                 title = "%s, %s" % (ind, cnm)
         elif ind == lmk:
             title = "%s, %s" % (lmk, str)
+        elif lmk is None:
+            title = "%s on %s" % (ind, str)
         elif lmk != str:
             title = "%s %s, on %s" % (ind, lmk, str)
         else:
@@ -178,7 +180,6 @@ class NaptanMapsProvider(BaseMapsProvider):
         method, username, password = self._method, self._username, self._password
         if not method in ('http', 'ftp',):
             raise ValueError("mode must be either 'http' or 'ftp'")
-        print method, username, password, self._areas
         if (method == 'ftp') == (username is None or password is None):
             raise ValueError("username and password must be provided iff mode is 'ftp'")
 
