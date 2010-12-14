@@ -233,8 +233,6 @@ class NaptanMapsProvider(BaseMapsProvider):
             self._import_from_pipe(f)
             archive.close()
             os.unlink(filename)
-        
-        ftp.quit()
 
     def _import_from_http(self):
         # TODO Pull data from RailReferences.csv pulled over HTTP
