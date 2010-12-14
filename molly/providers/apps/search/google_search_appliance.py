@@ -32,7 +32,7 @@ class GSASearchProvider(BaseSearchProvider):
 
         params = dict(self.params)
         params.update({
-            'q': query,
+            'q': query.encode('utf-8'),
             'output': 'xml',
             'ie': 'utf8',
             'oe': 'utf8',
