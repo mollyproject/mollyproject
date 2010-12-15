@@ -7,6 +7,17 @@
 
 {% include "places/metadata/ldb.html" %}
 
+{% ifequal entity.primary_type.slug "travel-alert" %}
+<div class="section">
+  <div class="header">
+    <h2>Travel Alert</h2>
+  </div>
+  <div class="note"><div class="bubble pad-5">
+      {{ entity.title }}
+  </div></div>
+</div>
+{% endifequal %}
+
 <div class="section">
 <div class="header">
     {% if not entity.metadata.real_time_information %}
