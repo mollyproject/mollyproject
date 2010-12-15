@@ -37,7 +37,7 @@
     	<ol class="icon-menu">
 	      {% for application in applications %}
 	          <li id="menu-{{ application.local_name }}">
-	              <a accesskey="{{ forloop.counter }}" href="{{ application.url }}">{{ application.title }}</a>
+	              <a {% if forloop.counter < 10 %} accesskey="{{ forloop.counter }}"{% endif %} href="{{ application.url }}">{{ application.title }}</a>
 	          </li>
 	      {% endfor %}
 	    </ol>
