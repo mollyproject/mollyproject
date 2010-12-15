@@ -237,6 +237,7 @@ class EntityDetailView(ZoomableView, FavouritableView):
         return {
             'title': entity.title,
             'additional': additional,
+            'entity': entity,
         }
 
     def initial_context(self, request, scheme, value):

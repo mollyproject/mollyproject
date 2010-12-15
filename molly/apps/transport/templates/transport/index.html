@@ -35,14 +35,14 @@
 
 <div class="section">
   <div class="header">
-    <h2><img src="http://chart.apis.google.com/chart?chst=d_simple_text_icon_left&chld=|14|000|bus|24|000|FFF" />Nearby bus stops - {% now "G:i:s "%}</h2>
+    <h2><img src="http://chart.apis.google.com/chart?chst=d_simple_text_icon_left&chld=|14|000|bus|24|000|FFF" />{{ bus_stops.results_type }} bus stops - {% now "G:i:s "%}</h2>
   </div>
   
   <table class="content">
     <tbody>
 
 {% for entity in bus_stops.entities %}
-      <tr class="sub-section-divider"><th colspan="3"><a href="{{ entity.get_absolute_url }}" style="color:inherit;">{{ entity.title }} <small>({{ entity.distance.km|floatformat:3 }} km{{ entity.bearing }})</small></a></th></tr>
+      <tr class="sub-section-divider"><th colspan="3"><a href="{{ entity.get_absolute_url }}" style="color:inherit;">{{ entity.title }}{% ifnotequal bus_stops.results_type "Favourites" %} <small>({{ entity.distance.km|floatformat:3 }} km{{ entity.bearing }})</small>{% endifnotequal %}</a></th></tr>
 {% if entity.metadata.real_time_information.services %}
 {% for service in entity.metadata.real_time_information.services %}
       <tr>
@@ -54,6 +54,8 @@
 {% else %}
       <tr><td colspan="3">{{ entity.metadata.real_time_information.pip_info }}</td></tr>
 {% endif %}
+{% empty %}
+      <tr><td colspan="3">{% include "geolocation/update_location_embed.html" %}</td></tr>
 {% endfor %}
     </tbody>
   </table>
