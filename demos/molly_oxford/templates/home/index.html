@@ -87,6 +87,20 @@
             </tbody>
         </table>
     </div>
+    
+    {% if favourites %}
+    <div class="section">
+      <div class="header">
+	<h2>Favourites</h2>
+      </div>
+      <ul class="link-list">
+      {% for favourite in favourites %}
+	<li><a href="{{ favourite.url }}">{{ favourite.metadata.title }}</a></li>
+      {% endfor %}
+	<li><a href="{% url favourites:index %}"><strong>Manage Favourites</strong></a></li>
+      </ul>
+    </div>
+    {% endif %}
 
     <ul class="stand-alone link-list round-top">
             <li class="round-top"><a href="{% url feature_vote:index %}">Suggest a feature</a></li>

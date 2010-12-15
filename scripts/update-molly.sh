@@ -22,7 +22,7 @@ if [ -n "$1" ] ; then
     # Build media
     cd $1/demos/molly_oxford/
     python manage.py build_static --noinput
-    python manage.py synccompress
+    python manage.py synccompress &
     
     # Update batch jobs
     PYTHONPATH=.. python manage.py create_crontab | python $DIR/merge-cron.py | crontab

@@ -260,15 +260,15 @@ class ZoomableView(BaseView):
     default_zoom = None
 
     def initial_context(self, request, *args, **kwargs):
+        context = super(ZoomableView, self).initial_context(request, *args, **kwargs)
         try:
             zoom = int(request.GET['zoom'])
         except (KeyError, ValueError):
             zoom = self.default_zoom
         else:
             zoom = min(max(10, zoom), 18)
-        return {
-            'zoom': zoom,
-        }
+        context['zoom'] = zoom
+        return context
 
 # FIXME:
 #       Block rendering methods, from http://djangosnippets.org/942

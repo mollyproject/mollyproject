@@ -11,6 +11,7 @@ from django.template.defaultfilters import capfirst
 
 from molly.utils.views import BaseView, ZoomableView
 from molly.utils.breadcrumbs import *
+from molly.favourites.views import FavouritableView
 from molly.geolocation.views import LocationRequiredView
 
 from molly.osm.utils import fit_to_map
@@ -222,7 +223,7 @@ class NearbyDetailView(LocationRequiredView, ZoomableView):
 
 
 
-class EntityDetailView(ZoomableView):
+class EntityDetailView(ZoomableView, FavouritableView):
     default_zoom = 16
     OXPOINTS_URL = 'http://m.ox.ac.uk/oxpoints/id/%s.json'
 

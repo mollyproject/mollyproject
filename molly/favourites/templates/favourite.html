@@ -1,0 +1,13 @@
+{% if is_favouritable %}
+    <div id="favourite-bit">
+        <form action="{% url favourites:index %}" method="post">
+            <input type="hidden" name="URL" value="{{ favourite_url|escape }}" />
+            {% csrf_token %}
+            {% if is_favourite %}
+                <input type="submit" name="unfavourite" value="Unfavourite" />
+            {% else %}
+                <input type="submit" name="favourite" value="Favourite" />
+            {% endif %}
+        </form>
+    </div>
+{% endif %}
