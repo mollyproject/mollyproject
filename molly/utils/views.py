@@ -1,3 +1,5 @@
+from email.utils import formatdate
+from time import mktime
 from inspect import isfunction
 import logging, itertools
 from datetime import datetime, date
@@ -154,7 +156,7 @@ class BaseView(object):
             zoom = min(max(10, zoom), 18)
         return zoom
 
-    def render(self, request, context, template_name):
+    def render(self, request, context, template_name, expires=None):
         context.pop('exposes_user_data', None)
 
         if 'format' in request.REQUEST:
@@ -181,9 +183,13 @@ class BaseView(object):
             if renderer.format != 'html' and context.get('exposes_user_data') and offsite_referrer:
                 continue
             try:
-                return renderer(request, context, template_name)
+                response = renderer(request, context, template_name)
             except NotImplementedError:
                 continue
+            else:
+                if expires is not None:
+                    response['Expires'] = formatdate(mktime((datetime.now() + expires).timetuple()))
+                return response
         else:
             tried_mimetypes = list(itertools.chain(*[r.mimetypes for r in renderers]))
             response = HttpResponse("""\

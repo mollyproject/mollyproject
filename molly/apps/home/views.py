@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
@@ -60,7 +60,7 @@ class IndexView(BaseView):
             'is_christmas': datetime.now().month == 12,
             'messages': messages
         }
-        return self.render(request, context, 'home/index')
+        return self.render(request, context, 'home/index', expires=timedelta(minutes=10))
 
     def get_metadata(self, request):
         return {
