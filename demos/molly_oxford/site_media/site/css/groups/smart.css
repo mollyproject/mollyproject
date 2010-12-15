@@ -519,9 +519,11 @@ div.note a{
 div.pad-10{padding: 10px;}
 div.pad-5 {padding:5px;}
 
-div.no-round-bottom, ul.no-round-bottom {
-    -webkit-border-bottom-left-radius: 0px;   -moz-border-radius-bottomleft: 0px;     border-bottom-left-radius: 0px;
-    -webkit-border-bottom-right-radius: 0px;  -moz-border-radius-bottomright: 0px;    border-bottom-right-radius: 0px;
+div.no-round-bottom, ul.no-round-bottom,
+table.no-round-bottom > *:last-child > tr:last-child > *:last-child,
+table.no-round-bottom > *:last-child > tr:last-child > *:first-child {
+    -webkit-border-bottom-left-radius: 0px !important;   -moz-border-radius-bottomleft: 0px !important;     border-bottom-left-radius: 0px !important;
+    -webkit-border-bottom-right-radius: 0px !important;  -moz-border-radius-bottomright: 0px !important;    border-bottom-right-radius: 0px !important;
 }
 
 div.vote-box span {padding:0;}
