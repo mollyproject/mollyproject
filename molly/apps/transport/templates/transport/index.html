@@ -35,52 +35,25 @@
 
 <div class="section">
   <div class="header">
-    <h2>Nearby bus stops</h2>
+    <h2><img src="http://chart.apis.google.com/chart?chst=d_simple_text_icon_left&chld=|14|000|bus|24|000|FFF" />Nearby bus stops - {% now "G:i:s "%}</h2>
   </div>
   
   <table class="content">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Nº</th>
-        <th>Dest.</th>
-        <th>Next</th>
-        <th>View</th>
-      </tr>
-    </thead>
     <tbody>
+
 {% for entity in bus_stops.entities %}
-{% with entity.metadata.real_time_information.services|slice:":3" as services %}
-{% if services %}
-{% for service in services %}
+      <tr class="sub-section-divider"><th colspan="3"><a href="{{ entity.get_absolute_url }}" style="color:inherit;">{{ entity.title }} <small>({{ entity.distance.km|floatformat:3 }} km{{ entity.bearing }})</small></a></th></tr>
+{% if entity.metadata.real_time_information.services %}
+{% for service in entity.metadata.real_time_information.services %}
       <tr>
-{% if forloop.first %}
-        <td rowspan="{{ services|length }}">{{ entity.title }}<br/><small>{{ entity.distance|floatformat }}</small></td>
-{% endif %}
-        <td>{{ service.service }}</td>
+        <td style="text-align: center;"><big>{{ service.service }}</big></td>
         <td>{{ service.destination }}</td>
-        <td>{{ service.next }}</td>
-{% if forloop.first %}
-        <td rowspan="{{ services|length }}">
-          <div class="button">
-            <a href="{{ entity.get_absolute_url }}">View</a>
-          </div>
-        </td>
-{% endif %}
+        <td>{{ service.next }}{% if service.following %}<small>, {{ service.following.0 }}{% if service.following.1 %}, &hellip;{% endif %}</small>{% endif %}</td>
       </tr>
 {% endfor %}
 {% else %}
-      <tr>
-        <td>{{ entity.title }}<br/><small>{{ entity.distance|floatformat }}</small></td>
-        <td colspan="3">{{ entity.metadata.real_time_information.pip_info }}</td>
-        <td>
-          <div class="button">
-            <a href="{{ entity.get_absolute_url }}">View</a>
-          </div>
-        </td>
-      </tr>
+      <tr><td colspan="3">{{ entity.metadata.real_time_information.pip_info }}</td></tr>
 {% endif %}
-{% endwith %}
 {% endfor %}
     </tbody>
   </table>
@@ -99,7 +72,7 @@
   
   <ul class="content-list">
 {% for alert in travel_alerts %}
-    <li><a href="{{ alert.get_absolute_url }}">{{ alert.title }}</a></li>
+    <li><a href="{{ alert.get_absolute_url }}" style="color: inherit;">{{ alert.title }}</a></li>
 {% endfor %}
   </ul>
 </div>

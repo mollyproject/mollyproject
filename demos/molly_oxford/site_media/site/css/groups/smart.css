@@ -183,7 +183,9 @@ ul.content-list, ul.link-list, ol.search-results {
 }
 
 ul.content-list {
-    background-color:#dfdfdf;
+    background: #eee;
+    background: -webkit-gradient(linear, left top, left bottom, from(#f3f3f3), to(#eee));
+    background: -moz-linear-gradient(center top, #f3f3f3, #eee);
     color:#222;
 }
 ul.content-list a {color: #00f;}
