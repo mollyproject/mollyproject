@@ -14,7 +14,7 @@
     {% endif %}
     {% if entity.location %}
 	
-	{% ifnotequal style_group "dumb" %}
+	{% ifnotequal style_group "groups-dumb" %}
     	<div class="backgrounded-image" style="background-image:url('{% map_url entity.location %}'); height:{{ map_height }}px">
     		{% include "places/map_elements.html" %}
     	</div>

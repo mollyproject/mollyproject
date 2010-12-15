@@ -8,7 +8,7 @@
 <div id="index-header">
     <div id="index-title">
 		<!-- <img src="{{ MEDIA_URL }}png/headers/{{ device.resolution_width|header_width }}.png" alt="Mobile Oxford"/> -->
-		{% ifequal style_group "dumb" %}
+		{% ifequal style_group "groups-dumb" %}
 		    <img src="{{ MEDIA_URL }}png/new/logos/logo-90x55.jpg" alt="Mobile Oxford">
 		{% else %}
             <img src="{{ MEDIA_URL }}png/new/logos/logo-128x51-TRMargin-5px.png" alt="Mobile Oxford"/>
@@ -19,7 +19,7 @@
 	     <form method="get" action="{% url search:index %}">
 		 <p>
 			{{ search_form.query }}
-		{% ifequal style_group "dumb" %}
+		{% ifequal style_group "groups-dumb" %}
 		    <input type="button" value="Search" />
 		{% else %}
 			<input type="image" src="{{ MEDIA_URL }}png/new/buttons/search-button.png" title="Search" />
@@ -91,7 +91,7 @@
     </ul>
 
     <div class="center">
-        {% ifequal style_group "dumb" %}
+        {% ifequal style_group "groups-dumb" %}
             Produced by Oxford University Computing Services <br /><a href="http://www.oucs.ox.ac.uk">www.oucs.ox.ac.uk</a>
         {% else %}
     <div class="content" style="margin:8px;">

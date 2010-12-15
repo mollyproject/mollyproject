@@ -70,7 +70,7 @@
     </div></div> 
 
 {% if map_hash %}
-    {% ifnotequal style_group "dumb" %}
+    {% ifnotequal style_group "groups-dumb" %}
         <div class="backgrounded-image" style="background-image:url('{% url osm:generated_map map_hash %}'); height:{{ map_height }}px;"> </div>
     {% else %}
         <img src="{% url osm:generated_map map_hash %}" alt="Map">

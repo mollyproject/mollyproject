@@ -4,9 +4,9 @@
             <input type="hidden" name="URL" value="{{ favourite_url|escape }}" />
             {% csrf_token %}
             {% if is_favourite %}
-                <input type="submit" name="unfavourite" value="Unfavourite" />
+                <input type="submit" name="unfavourite" value="*" />
             {% else %}
-                <input type="submit" name="favourite" value="Favourite" />
+                <input type="submit" name="favourite" value="*" />
             {% endif %}
         </form>
     </div>
