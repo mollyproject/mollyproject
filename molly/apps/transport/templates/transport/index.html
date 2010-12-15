@@ -42,7 +42,7 @@
     <tbody>
 
 {% for entity in bus_stops.entities %}
-      <tr class="sub-section-divider"><th colspan="3"><a href="{{ entity.get_absolute_url }}" style="color:inherit;">{{ entity.title }}{% ifnotequal bus_stops.results_type "Favourites" %} <small>({{ entity.distance.km|floatformat:3 }} km{{ entity.bearing }})</small>{% endifnotequal %}</a></th></tr>
+      <tr class="sub-section-divider"><th colspan="3"><a href="{{ entity.get_absolute_url }}" style="color:inherit;">{{ entity.title }}{% ifnotequal bus_stops.results_type "Favourite" %} <small>({{ entity.distance.km|floatformat:3 }} km{{ entity.bearing }})</small>{% endifnotequal %}</a></th></tr>
 {% if entity.metadata.real_time_information.services %}
 {% for service in entity.metadata.real_time_information.services %}
       <tr>
