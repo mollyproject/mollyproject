@@ -35,11 +35,11 @@
     <div class="bubble">
 	<div class="center">
     	<ol class="icon-menu">
-	      {% for application in applications %}{% if application.display_to_user %}
+	      {% for application in applications %}
 	          <li id="menu-{{ application.local_name }}">
 	              <a accesskey="{{ forloop.counter }}" href="{{ application.url }}">{{ application.title }}</a>
 	          </li>
-	      {% endif %}{% endfor %}
+	      {% endfor %}
 	    </ol>
         {# Only necessary if using floating icons #}
         {# <div class="clearhidden"> </div> #}

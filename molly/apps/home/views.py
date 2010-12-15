@@ -52,8 +52,7 @@ class IndexView(BaseView):
             'local_name': app.local_name,
             'title': app.title,
             'url': reverse('%s:index' % app.local_name) if app.has_urlconf else None,
-            'display_to_user': app.display_to_user,
-        } for app in conf.all_apps()]
+        } for app in conf.all_apps() if app.display_to_user]
 
         context = {
             'applications': applications,
