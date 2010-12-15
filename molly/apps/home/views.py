@@ -52,7 +52,12 @@ class IndexView(BaseView):
             'local_name': app.local_name,
             'title': app.title,
             'url': reverse('%s:index' % app.local_name) if app.has_urlconf else None,
-        } for app in conf.all_apps() if app.display_to_user]
+            'display_to_user': app.display_to_user,
+        } for app in conf.all_apps()]
+
+        # Add accesskeys to the first 9 apps to be displayed to the user
+        for i, app in enumerate([app for app in applications if app['display_to_user']][:9]):
+            app['accesskey'] = i + 1
 
         context = {
             'applications': applications,
