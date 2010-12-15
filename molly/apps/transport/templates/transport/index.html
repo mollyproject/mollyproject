@@ -2,38 +2,31 @@
 
 {% block content %}
 
-<div class="section">
+<div style="width:100%;height:48px;">
+  <div style="width:25%;float:left;text-align:center;"><a href="#park_and_rides"><img src="" alt="Park and Rides" width="48" height="48" /></a></div>
+  <div style="width:25%;float:left;text-align:center;"><a href="#bus"><img src="" alt="Bus Stops" width="48" height="48" /></a></div>
+  <div style="width:25%;float:left;text-align:center;"><a href="#ldb"><img src="" alt="Train Departure Boards" width="48" height="48" /></a></div>
+  <div style="width:25%;float:left;text-align:center;"><a href="#travel_news"><img src="" alt="Travel News" width="48" height="48" /></a></div>
+</div>
+
+<div class="section" id="park_and_rides">
   <div class="header">
     <h2>Park and Rides</h2>
   </div>
-  
-  <table class="content">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Spaces</th>
-        <th>Capacity</th>
-        <th>View</th>
-      </tr>
-    </thead>
-    <tbody>
-{% for entity in park_and_rides.entities %}
-      <tr>
-        <td>{{ entity.title|slice:":-14" }}</td>
-        <td>{{ entity.metadata.park_and_ride.spaces }}</td>
-        <td>{{ entity.metadata.park_and_ride.capacity }}</td>
-        <td>
-          <div class="button">
-            <a href="{{ entity.get_absolute_url }}">View</a>
-          </div>
-        </td>
-      </tr>
-{% endfor %}
-    </tbody>
-  </table>
+  <div class="section-content" style="color:#000000;">
+    {% for entity in park_and_rides.entities %}
+    <div style="width: 50%;{% if not forloop.last or forloop.counter|divisibleby:2 %} float: left;{% endif %} margin: 3px auto 3px auto;">
+      <h3><a href="{{ entity.get_absolute_url}}" style="color:#000000;">{{ entity.title|slice:":-14" }}</a></h3>
+      <div style="width:90%;border: 1px solid #7c7c7c;height: 7px; background-color:#00ff00;margin: 5px auto;">
+        <div style="width: {{ entity.metadata.park_and_ride.percentage }}%; height:7px;background-color: #ff0000;">&nbsp;</div>
+      </div>
+      <p style="text-align:center;">Spaces: {{ entity.metadata.park_and_ride.spaces }} / {{ entity.metadata.park_and_ride.capacity }}</p>
+    </div>
+    {% endfor %}
+  </div>
 </div>
 
-<div class="section">
+<div class="section" id="bus">
   <div class="header">
     <h2><img src="http://chart.apis.google.com/chart?chst=d_simple_text_icon_left&chld=|14|000|bus|24|000|FFF" />{{ bus_stops.results_type }} bus stops - {% now "G:i:s "%}</h2>
   </div>
@@ -72,7 +65,7 @@
 
 {% if travel_alerts %}
 
-<div class="section">
+<div class="section" id="travel_news">
   <div class="header">
     <h2>Travel alerts</h2>
   </div>

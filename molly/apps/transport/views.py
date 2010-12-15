@@ -38,10 +38,10 @@ class IndexView(BaseView):
                 favourites = filter(lambda e: e is not None and et in e.all_types_completion.all(), [f['metadata'].get('entity') for f in get_favourites(request)])
             
             if not fav_override or len(favourites) == 0:
-                if location:
-                    es = et.entities_completion.filter(location__isnull=False).distance(location).order_by('distance')[:count]
-                elif without_location:
+                if without_location:
                     es = et.entities_completion.order_by('title')[:count]
+                elif location:
+                    es = et.entities_completion.filter(location__isnull=False).distance(location).order_by('distance')[:count]
                 else:
                     context[context_key] = {
                         'results_type': 'Favourite'
@@ -49,6 +49,15 @@ class IndexView(BaseView):
                     continue
             else:
                 es = favourites
+            
+            if context_key == 'park_and_rides' and getattr(cls.conf, 'park_and_ride_sort') is not None:
+                sorted_es = []
+                for key, id in [s.split(':') for s in cls.conf.park_and_ride_sort]:
+                    for e in es:
+                        if id in e.identifiers[key]:
+                            sorted_es.append(e)
+                            continue
+                es = sorted_es
             
             entities |= set(es)
             context[context_key] = {
