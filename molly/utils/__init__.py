@@ -45,9 +45,13 @@ def send_email(request, context, template_name, cls=None, to_email=None):
         if header.startswith(' '):
             headers[last_header] += ' ' + header.strip()
         else:
-            key, value = header.split(': ', 1)
-            headers[key] = value
-            last_header = key
+            try:
+                key, value = header.split(': ', 1)
+                headers[key] = value
+                last_header = key
+            except ValueError:
+                # if the header line isn't in the form Key: Value 
+                headers[last_header] += ' ' + header.strip()
 
     subject = headers.pop('Subject', '[no subject]')
     from_email = headers.pop('from_email', from_email)

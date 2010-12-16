@@ -5,6 +5,7 @@ from molly.utils.misc import AnyMethodRequest
 from models import ExternalImage, ExternalImageSized
 
 def resize_external_image(url, width, timeout=None):
+    
     ei, created = ExternalImage.objects.get_or_create(url=url)
 
     request = AnyMethodRequest(url, method='HEAD')
@@ -33,6 +34,11 @@ def resize_external_image(url, width, timeout=None):
         ei.last_modified = response.headers.get('Last-Modified')
         ei.save()
 
-    eis, created = ExternalImageSized.objects.get_or_create(external_image=ei, width=width)
+    try:
+        eis, created = ExternalImageSized.objects.get_or_create(external_image=ei, width=width)
+    except ExternalImageSized.MultipleObjectsReturned:
+        for eis in ExternalImageSized.objects.filter(external_image=ei, width=width):
+            eis.delete()
+        eis, created = ExternalImageSized.objects.get_or_create(external_image=ei, width=width)
 
     return eis
