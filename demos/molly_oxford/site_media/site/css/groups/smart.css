@@ -675,7 +675,7 @@ div.header {
 div.header h2 {
     color: rgb(34, 34, 34);
     text-shadow: 2px 2px 2px rgb(204, 204, 204);
-    text-align: center;
+    text-align: left;
     font-size: 11pt;
     padding-top: 3px;
 }
