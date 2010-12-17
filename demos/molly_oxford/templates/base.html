@@ -56,7 +56,7 @@
         </a></li>
     {% endif %}{% endif %}
       </ol> 
-      <div id="bc-title">
+      <div id="bc-title"{% if is_favouritable %} class="with-favourite"{% endif %}>
         <h1 class="{% if not breadcrumbs.2 %}{{ breadcrumbs.0 }}-header with-icon{% endif %}">{{ breadcrumbs.4 }}</h1>
         {% include "favourite.html" %}
       </div>

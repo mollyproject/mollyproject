@@ -814,3 +814,41 @@ a img {
 small {
   font-size:90%;
 }
+
+#favourite-bit
+{
+    position: absolute;
+    right: 0px;
+    padding: 5px;
+}
+
+#favourite
+{
+    background-color: transparent;
+    background-image: url('../../../favourites/png/star-grey.png');
+    border: 0;
+    text-shadow: none;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    height: 20px;
+    width: 20px;
+    cursor: pointer;
+}
+
+#unfavourite
+{
+    background-color: transparent;
+    background-image: url('../../../favourites/png/star.png');
+    border: 0;
+    text-shadow: none;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    height: 20px;
+    width: 20px;
+    cursor: pointer;
+}
+
+.with-favourite
+{
+    margin-right: 28px !important;
+}
