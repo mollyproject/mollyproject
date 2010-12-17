@@ -85,8 +85,8 @@ ul li.transport-link a img { border: 0; }
     {% for entity in park_and_rides.entities %}
     <div style="width: 50%;{% if not forloop.last or forloop.counter|divisibleby:2 %} float: left;{% endif %} margin: 3px auto 3px auto;">
       <h3><a href="{{ entity.get_absolute_url}}" style="color:#000;">{{ entity.title|slice:":-14" }}</a></h3>
-      <div style="width:90%;border: 1px solid #7c7c7c;height: 7px; background-color:#00ff00;margin: 5px auto;">
-        <div style="width: {{ entity.metadata.park_and_ride.percentage }}%; height:7px;background-color: #ff0000;">&nbsp;</div>
+      <div style="width:90%;border: 1px solid #7c7c7c;height: 7px; background-color:#39d93c;margin: 5px auto;">
+        <div style="width: {{ entity.metadata.park_and_ride.percentage }}%; height:7px;background-color: #960300;">&nbsp;</div>
       </div>
       <p style="text-align:center;">Spaces: {{ entity.metadata.park_and_ride.spaces }} / {{ entity.metadata.park_and_ride.capacity }}</p>
     </div>
