@@ -53,7 +53,7 @@ ul li.transport-link a img { border: 0; }
 
 {% block content %}
 
-{% if device|device_has_parent:"apple_iphone_ver4" or browser.svgt_1_1 %}
+{% if device|device_has_parent:"apple_generic" or browser.svgt_1_1 %}
 <ul id="transport-links">
 	<li class="transport-link">
 		<a href="#park_and_rides"><img src="{{ MEDIA_URL }}transport/svg/pride.svg" alt="Park and Rides" width="48" height="48" /></a></li>
