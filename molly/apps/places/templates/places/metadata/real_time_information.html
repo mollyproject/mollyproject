@@ -2,16 +2,16 @@
 {% if entity.metadata.real_time_information %}
     {% if entity.metadata.real_time_information.pip_info %}
     <ul class="content-list no-round-bottom">
-        {% for info in entity.metadata.real_time_information.pip_info %}
- 	<li>{{ info|sanitize_html }}</li>
-        {% endfor %}
+        <li>{% for info in entity.metadata.real_time_information.pip_info %}
+ 	{{ info|sanitize_html }}{% if not forloop.last %}<br/>{% endif %}
+        {% endfor %}</li>
     </ul>
     {% else %}
+    <ul class="content-list no-round-bottom">
         {% if not entity.metadata.real_time_information.services %}
-        <ul class="content-list no-round-bottom">
             <li>Sorry, there is currently no bus time information for this stop.</li>
-        </ul>
         {% endif %}
+    </ul>
     {% endif %}
   {% if entity.metadata.real_time_information.services %}
  <div class="section-content no-round-bottom">
