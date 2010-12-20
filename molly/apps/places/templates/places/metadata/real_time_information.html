@@ -27,9 +27,9 @@
     <tbody id="bus_times">
     {% for service in entity.metadata.real_time_information.services %}
         <tr>
-            <td rowspan="2" style="font-size:200%; text-align:center;width:75px;">{{ service.service }}</td>
+            <td rowspan="2" style="font-size:200%; text-align:center;">{{ service.service }}</td>
             <td>{{ service.destination }}</td>
-            <td style="width: 70px;">{{ service.next }}</td>
+            <td>{{ service.next }}</td>
         </tr>
         <tr class="notopborder">
             <td colspan="2"><small>Next: {% if service.following %}{{ service.following|join:", " }}{% else %}<em>No further info</em>{% endif %}</small></td>
