@@ -1,5 +1,6 @@
 import urllib2, logging
 from lxml import etree
+from django.conf import settings
 
 from molly.apps.places.providers import BaseMapsProvider
 
@@ -39,7 +40,7 @@ class OxfordParkAndRidePlacesProvider(BaseMapsProvider):
                     continue
                     
                 if not self._CARPARKS[name] in carparks:
-                    continue                
+                    continue
 
                 carparks[self._CARPARKS[name]].metadata['park_and_ride'] = {
                     'spaces': int(tr[2].text),
@@ -47,4 +48,5 @@ class OxfordParkAndRidePlacesProvider(BaseMapsProvider):
                     'percentage': int(100 * (1 - float(tr[2].text) / float(tr[3].text))),
                 }
         except Exception, e:
+            if settings.DEBUG: raise
             logger.exception("The Park and Ride page has changed in some way")
