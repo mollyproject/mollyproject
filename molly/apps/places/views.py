@@ -237,15 +237,26 @@ class EntityDetailView(ZoomableView, FavouritableView):
         return {
             'title': entity.title,
             'additional': additional,
+            'entity': entity,
         }
 
     def initial_context(self, request, scheme, value):
         context = super(EntityDetailView, self).initial_context(request)
         entity = get_entity(scheme, value)
+        associations = []
+        for association in self.conf.associations:
+            id_type, id, associated_entities = association
+            try:
+                if id in entity.identifiers[id_type]:
+                    associations += [{'type': type, 'entities': [get_entity(ns, value) for ns, value in es]} for type, es in associated_entities]
+            except (KeyError, Http404):
+                pass
+        
         context.update({
             'entity': entity,
             'train_station': entity, # This allows the ldb metadata to be portable
             'entity_types': entity.all_types.all(),
+            'associations': associations,
         })
         return context
 
@@ -267,9 +278,10 @@ class EntityDetailView(ZoomableView, FavouritableView):
         entity = context['entity']
         if entity.absolute_url != request.path:
             return HttpResponsePermanentRedirect(entity.absolute_url)
-
+        
         for provider in reversed(self.conf.providers):
             provider.augment_metadata((entity,))
+            provider.augment_metadata([e for atypes in context['associations'] for e in atypes['entities']])
 
         return self.render(request, context, 'places/entity_detail')
 

@@ -7,12 +7,31 @@
 
 {% include "places/metadata/ldb.html" %}
 
+{% ifequal entity.primary_type.slug "travel-alert" %}
+<div class="section">
+  <div class="header">
+    <h2>Travel Alert</h2>
+  </div>
+  <div class="section-content"><div class="bubble pad-5">
+      {{ entity.title }}
+  </div></div>
+</div>
+{% endifequal %}
+
 <div class="section">
 <div class="header">
-    {% include "places/metadata/real_time_information.html" %}
     {% if not entity.metadata.real_time_information %}
       <h2>Map</h2>
+    {% else %}
+      {% if entity.identifiers.naptan %}
+	<h2><small>Real-time information from bus stop {{entity.identifiers.naptan}} - {% now "G:i:s "%}</small></h2>
+      {% else %}
+	<h2>Real-time information - {% now "G:i:s "%}</h2>
+      {% endif %}
     {% endif %}
+ </div>
+ {% include "places/metadata/real_time_information.html" %}
+ <div class="section-content no-round-bottom">
     {% if entity.location %}
 	
 	{% ifnotequal style_group "groups-dumb" %}
@@ -23,7 +42,7 @@
         <img src="{% map_url entity.location %}" alt="Map"><br />
         {% include "places/map_elements.html" %}
     {% endifnotequal %}
- </div>  
+ </div>
 	<ul class="link-list">
 	    <li class="round-bottom"><a href="{% url places:entity-nearby-list entity.identifier_scheme entity.identifier_value %}" rel="nofollow">Find things near here</a></li>
 	</ul>
@@ -33,12 +52,28 @@
 	    </div></div>
 	{% endif %}
 
-
-
 </div>
 
 {% include "places/metadata/oxpoints.html" %}
 {% include "places/metadata/osm.html" %}
 {% include "places/metadata/park_and_ride.html" %}
+
+{% for associated_type in associations %}
+
+<div class="section">
+  <div class="header">
+    <h2>{{ associated_type.type }}</h2>
+  </div>
+  <ul class="content-list">
+    {% for entity in associated_type.entities %}
+      <li>
+	<h3><a href="{{ entity.get_absolute_url }}">{{ entity.title }}</a></h3>
+	{% include "places/metadata/real_time_information.html" %}
+      </li>
+    {% endfor %}
+  </ul>
+</div>
+
+{% endfor %}
 
 {% endblock %}

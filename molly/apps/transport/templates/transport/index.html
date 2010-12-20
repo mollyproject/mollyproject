@@ -1,89 +1,136 @@
-{% extends "transport/base.html" %}{% load molly_utils %}
+{% extends "transport/base.html" %}{% load molly_utils %}{% load portal_misc %}
+{% block extrahead %}
+<style type="text/css">
+ul#transport-links{
+	list-style: none;
+	margin: 5px 0 0 0;
+	padding: 5px;
+	text-align:center;
+}
+
+ul li.transport-link {
+	margin: 0 5px;
+	display: inline-block;
+	background-color: #002B4C;
+	background: -webkit-gradient(linear, left top, left bottom,
+	      from(rgb(105,153,195)), color-stop(0.5, rgb(3,59,113)), to(rgb(27,87,144)));
+	background: -moz-linear-gradient(top, rgb(105,153,195), rgb(3,59,113), rgb(27,87,144));
+	border-radius: 8px; -webkit-border-radius: 8px; -moz-border-radius: 8px; 
+	
+	box-shadow: 3px 3px 3px #333;
+	-webkit-box-shadow: 3px 3px 3px #333;
+	-moz-box-shadow: 3px 3px 3px #333;
+}
+
+ul li.transport-link a img { border: 0; }
+
+.section .header h2 {
+    background-repeat: no-repeat;
+    background-position: top right;
+    min-height: 20px;
+    padding-top: 7px;
+    width: 100%;
+}
+
+#park_and_rides .header h2 {
+    background-image: url('{{ MEDIA_URL }}transport/png/pride-small.png');
+}
+
+#bus .header h2 {
+    background-image: url('{{ MEDIA_URL }}transport/png/bus-small.png');
+}
+
+#ldb .header h2 {
+    background-image: url('{{ MEDIA_URL }}transport/png/train-small.png');
+}
+
+#travel_news .header h2 {
+    background-image: url('{{ MEDIA_URL }}transport/png/warn-small.png');
+}
+
+</style>
+{% endblock %}
 
 {% block content %}
 
-<div class="section">
+{% if device|device_has_parent:"apple_generic" or browser.svgt_1_1 %}
+<ul id="transport-links">
+	<li class="transport-link">
+		<a href="#park_and_rides"><img src="{{ MEDIA_URL }}transport/svg/pride.svg" alt="Park and Rides" width="48" height="48" /></a></li>
+	<li class="transport-link">
+		<a href="#bus"><img src="{{ MEDIA_URL }}transport/svg/bus.svg" alt="Bus Stops" width="48" height="48" /></a></li>
+	<li class="transport-link">
+		<a href="#ldb"><img src="{{ MEDIA_URL }}transport/svg/train.svg" alt="Train Departure Boards" width="48" height="48" /></a></li>
+	<li class="transport-link">
+		<a href="#travel_news"><img src="{{ MEDIA_URL }}transport/svg/warn.svg" alt="Travel News" width="48" height="48" /></a></li>
+</ul>
+{% else %}
+<ul id="transport-links">
+	<li class="transport-link">
+		<a href="#park_and_rides"><img src="{{ MEDIA_URL }}transport/png/pride.png" alt="Park and Rides" width="48" height="48" /></a></li>
+	<li class="transport-link">
+		<a href="#bus"><img src="{{ MEDIA_URL }}transport/png/bus.png" alt="Bus Stops" width="48" height="48" /></a></li>
+	<li class="transport-link">
+		<a href="#ldb"><img src="{{ MEDIA_URL }}transport/png/train.png" alt="Train Departure Boards" width="48" height="48" /></a></li>
+	<li class="transport-link">
+		<a href="#travel_news"><img src="{{ MEDIA_URL }}transport/png/warn.png" alt="Travel News" width="48" height="48" /></a></li>
+</ul>
+{% endif %}
+
+<div class="section" id="park_and_rides">
   <div class="header">
     <h2>Park and Rides</h2>
   </div>
-  
-  <table class="content">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Spaces</th>
-        <th>Capacity</th>
-        <th>View</th>
-      </tr>
-    </thead>
-    <tbody>
-{% for entity in park_and_rides.entities %}
-      <tr>
-        <td>{{ entity.title|slice:":-14" }}</td>
-        <td>{{ entity.metadata.park_and_ride.spaces }}</td>
-        <td>{{ entity.metadata.park_and_ride.capacity }}</td>
-        <td>
-          <div class="button">
-            <a href="{{ entity.get_absolute_url }}">View</a>
-          </div>
-        </td>
-      </tr>
-{% endfor %}
-    </tbody>
-  </table>
+  <div class="section-content" style="color:#000;">
+    {% for entity in park_and_rides.entities %}
+    <div style="width: 50%;{% if not forloop.last or forloop.counter|divisibleby:2 %} float: left;{% endif %} margin: 3px auto 3px auto;">
+      <h3><a href="{{ entity.get_absolute_url}}" style="color:#000;">{{ entity.title|slice:":-14" }}</a></h3>
+      {{ entity.metadata.unavailable }}
+      {% if not entity.metadata.park_and_ride.unavailable %}
+      <div style="width:90%;border: 1px solid #7c7c7c;height: 7px; background-color:#39d93c;margin: 5px auto;">
+        <div style="width: {{ entity.metadata.park_and_ride.percentage }}%; height:7px;background-color: #960300;">&nbsp;</div>
+      </div>
+      <p style="text-align:center;">Spaces: {{ entity.metadata.park_and_ride.spaces }} / {{ entity.metadata.park_and_ride.capacity }}</p>
+      {% else %}
+      <p style="text-align:center;"><em>Space information currently unavailable</em></p>
+      <p style="text-align:center;">Spaces: ? / {{ entity.metadata.park_and_ride.capacity }}</p>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
 </div>
 
-<div class="section">
+<div class="section" id="bus">
   <div class="header">
-    <h2>Nearby bus stops</h2>
+    <h2>{{ bus_stops.results_type }} bus stops - {% now "G:i:s "%}</h2>
   </div>
   
-  <table class="content">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Nº</th>
-        <th>Dest.</th>
-        <th>Next</th>
-        <th>View</th>
-      </tr>
-    </thead>
+  <table class="content{% ifequal bus_stops.results_type "Favourite" %} no-round-bottom{% endifequal %}">
     <tbody>
+
 {% for entity in bus_stops.entities %}
-{% with entity.metadata.real_time_information.services|slice:":3" as services %}
-{% if services %}
-{% for service in services %}
+      <tr class="sub-section-divider"><th colspan="3"><a href="{{ entity.get_absolute_url }}" style="color:inherit;">{{ entity.title }}{% ifnotequal bus_stops.results_type "Favourite" %} <small>({{ entity.distance.km|floatformat:3 }} km{{ entity.bearing }})</small>{% endifnotequal %}</a></th></tr>
+{% if entity.metadata.real_time_information.services %}
+{% for service in entity.metadata.real_time_information.services %}
       <tr>
-{% if forloop.first %}
-        <td rowspan="{{ services|length }}">{{ entity.title }}<br/><small>{{ entity.distance|floatformat }}</small></td>
-{% endif %}
-        <td>{{ service.service }}</td>
+        <td style="text-align: center;"><big>{{ service.service }}</big></td>
         <td>{{ service.destination }}</td>
-        <td>{{ service.next }}</td>
-{% if forloop.first %}
-        <td rowspan="{{ services|length }}">
-          <div class="button">
-            <a href="{{ entity.get_absolute_url }}">View</a>
-          </div>
-        </td>
-{% endif %}
+        <td>{{ service.next }}{% if service.following %}<small>, {{ service.following.0 }}{% if service.following.1 %}, &hellip;{% endif %}</small>{% endif %}</td>
       </tr>
 {% endfor %}
 {% else %}
-      <tr>
-        <td>{{ entity.title }}<br/><small>{{ entity.distance|floatformat }}</small></td>
-        <td colspan="3">{{ entity.metadata.real_time_information.pip_info }}</td>
-        <td>
-          <div class="button">
-            <a href="{{ entity.get_absolute_url }}">View</a>
-          </div>
-        </td>
-      </tr>
+      <tr><td colspan="3">{{ entity.metadata.real_time_information.pip_info }}</td></tr>
 {% endif %}
-{% endwith %}
+{% empty %}
+      <tr><td colspan="3">{% include "geolocation/update_location_embed.html" %}</td></tr>
 {% endfor %}
     </tbody>
   </table>
+  {% ifequal bus_stops.results_type "Favourite" %}
+  <ul class="link-list">
+    <li><a href="{% url places:nearby-detail "bus-stop" %}">View nearby bus stops</a></li>
+  </ul>
+  {% endifequal %}
 </div>
 
 {% if train_station %}
@@ -92,14 +139,14 @@
 
 {% if travel_alerts %}
 
-<div class="section">
+<div class="section" id="travel_news">
   <div class="header">
     <h2>Travel alerts</h2>
   </div>
   
   <ul class="content-list">
 {% for alert in travel_alerts %}
-    <li><a href="{{ alert.get_absolute_url }}">{{ alert.title }}</a></li>
+    <li><a href="{{ alert.get_absolute_url }}" style="color: inherit;">{{ alert.title }}</a></li>
 {% endfor %}
   </ul>
 </div>

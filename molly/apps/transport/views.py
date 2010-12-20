@@ -4,6 +4,7 @@ from molly.conf import app_by_application_name
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
+from molly.favourites.utils import get_favourites
 
 from molly.apps.places.models import Entity, EntityType
 
@@ -31,18 +32,38 @@ class IndexView(BaseView):
             context['train_station'] = entity
             
         for context_key in getattr(cls.conf, 'nearby', {}):
-            type_slug, count, without_location = cls.conf.nearby[context_key]
+            type_slug, count, without_location, fav_override = cls.conf.nearby[context_key]
             et = EntityType.objects.get(slug=type_slug)
-            if location:
-                es = et.entities_completion.filter(location__isnull=False).distance(location).order_by('distance')[:count]
-            elif without_location:
-                es = et.entities_completion.order_by('title')[:count]
+            if fav_override:
+                favourites = filter(lambda e: e is not None and et in e.all_types_completion.all(), [f['metadata'].get('entity') for f in get_favourites(request)])
+            
+            if not fav_override or len(favourites) == 0:
+                if without_location:
+                    es = et.entities_completion.order_by('title')[:count]
+                elif location:
+                    es = et.entities_completion.filter(location__isnull=False).distance(location).order_by('distance')[:count]
+                else:
+                    context[context_key] = {
+                        'results_type': 'Favourite'
+                    }
+                    continue
             else:
-                continue
+                es = favourites
+            
+            if context_key == 'park_and_rides' and getattr(cls.conf, 'park_and_ride_sort') is not None:
+                sorted_es = []
+                for key, id in [s.split(':') for s in cls.conf.park_and_ride_sort]:
+                    for e in es:
+                        if id in e.identifiers[key]:
+                            sorted_es.append(e)
+                            continue
+                es = sorted_es
+            
             entities |= set(es)
             context[context_key] = {
                 'type': et,
                 'entities': es,
+                'results_type': 'Favourite' if fav_override and len(favourites) > 0 else 'Nearby'
             }
             
         if getattr(cls.conf, 'travel_alerts', False):
