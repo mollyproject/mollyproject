@@ -41,12 +41,26 @@ class OxfordParkAndRidePlacesProvider(BaseMapsProvider):
                     
                 if not self._CARPARKS[name] in carparks:
                     continue
+                
+                unavailable = False
+                try:
+                    spaces = int(tr[2].text)
+                except ValueError:
+                    spaces = 0
+                    unavailable = True
 
                 carparks[self._CARPARKS[name]].metadata['park_and_ride'] = {
-                    'spaces': int(tr[2].text),
+                    'spaces': spaces,
                     'capacity': int(tr[3].text),
-                    'percentage': int(100 * (1 - float(tr[2].text) / float(tr[3].text))),
+                    'percentage': int(100 * (1 - float(spaces) / float(tr[3].text))),
+                    'unavailable': unavailable,
                 }
         except Exception, e:
             if settings.DEBUG: raise
             logger.exception("The Park and Ride page has changed in some way")
+            carparks[self._CARPARKS[name]].metadata['park_and_ride'] = {
+                'spaces': '?',
+                'capacity': '?',
+                'percentage': 0,
+                'unavailable': True,
+            }
