@@ -1,0 +1,109 @@
+{% extends "transport/base.html" %}{% load molly_utils %}
+
+{% block content %}
+
+<div class="section">
+  <div class="header">
+    <h2>Park and Rides</h2>
+  </div>
+  
+  <table class="content">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Spaces</th>
+        <th>Capacity</th>
+        <th>View</th>
+      </tr>
+    </thead>
+    <tbody>
+{% for entity in park_and_rides.entities %}
+      <tr>
+        <td>{{ entity.title|slice:":-14" }}</td>
+        <td>{{ entity.metadata.park_and_ride.spaces }}</td>
+        <td>{{ entity.metadata.park_and_ride.capacity }}</td>
+        <td>
+          <div class="button">
+            <a href="{{ entity.get_absolute_url }}">View</a>
+          </div>
+        </td>
+      </tr>
+{% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="section">
+  <div class="header">
+    <h2>Nearby bus stops</h2>
+  </div>
+  
+  <table class="content">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Nº</th>
+        <th>Dest.</th>
+        <th>Next</th>
+        <th>View</th>
+      </tr>
+    </thead>
+    <tbody>
+{% for entity in bus_stops.entities %}
+{% with entity.metadata.real_time_information.services|slice:":3" as services %}
+{% if services %}
+{% for service in services %}
+      <tr>
+{% if forloop.first %}
+        <td rowspan="{{ services|length }}">{{ entity.title }}<br/><small>{{ entity.distance|floatformat }}</small></td>
+{% endif %}
+        <td>{{ service.service }}</td>
+        <td>{{ service.destination }}</td>
+        <td>{{ service.next }}</td>
+{% if forloop.first %}
+        <td rowspan="{{ services|length }}">
+          <div class="button">
+            <a href="{{ entity.get_absolute_url }}">View</a>
+          </div>
+        </td>
+{% endif %}
+      </tr>
+{% endfor %}
+{% else %}
+      <tr>
+        <td>{{ entity.title }}<br/><small>{{ entity.distance|floatformat }}</small></td>
+        <td colspan="3">{{ entity.metadata.real_time_information.pip_info }}</td>
+        <td>
+          <div class="button">
+            <a href="{{ entity.get_absolute_url }}">View</a>
+          </div>
+        </td>
+      </tr>
+{% endif %}
+{% endwith %}
+{% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% if train_station %}
+{% include "places/metadata/ldb.html" %}
+{% endif %}
+
+{% if travel_alerts %}
+
+<div class="section">
+  <div class="header">
+    <h2>Travel alerts</h2>
+  </div>
+  
+  <ul class="content-list">
+{% for alert in travel_alerts %}
+    <li><a href="{{ alert.get_absolute_url }}">{{ alert.title }}</a></li>
+{% endfor %}
+  </ul>
+</div>
+
+{% endif %}
+
+{% endblock %}

@@ -9,7 +9,7 @@ from django.shortcuts import render_to_response
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
-
+from molly.favourites.utils import get_favourites
 from molly.wurfl import device_parents
 from molly import conf
 
@@ -63,7 +63,8 @@ class IndexView(BaseView):
             'applications': applications,
             'hide_feedback_link': True,
             'is_christmas': datetime.now().month == 12,
-            'messages': messages
+            'messages': messages,
+            'favourites': get_favourites(request),
         }
         return self.render(request, context, 'home/index', expires=timedelta(minutes=10))
 

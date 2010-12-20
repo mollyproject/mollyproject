@@ -11,6 +11,7 @@ from django.template.defaultfilters import capfirst
 
 from molly.utils.views import BaseView, ZoomableView
 from molly.utils.breadcrumbs import *
+from molly.favourites.views import FavouritableView
 from molly.geolocation.views import LocationRequiredView
 
 from molly.osm.utils import fit_to_map
@@ -222,7 +223,7 @@ class NearbyDetailView(LocationRequiredView, ZoomableView):
 
 
 
-class EntityDetailView(ZoomableView):
+class EntityDetailView(ZoomableView, FavouritableView):
     default_zoom = 16
     OXPOINTS_URL = 'http://m.ox.ac.uk/oxpoints/id/%s.json'
 
@@ -243,6 +244,7 @@ class EntityDetailView(ZoomableView):
         entity = get_entity(scheme, value)
         context.update({
             'entity': entity,
+            'train_station': entity, # This allows the ldb metadata to be portable
             'entity_types': entity.all_types.all(),
         })
         return context
@@ -545,6 +547,128 @@ class PostCodeDetailView(NearbyDetailView):
 
     def add_space(self, post_code):
         return post_code[:-3] + ' ' + post_code[-3:]
+
+class ServiceDetailView(BaseView):
+    """
+    A view showing details of a particular transport service leaving from a place
+    """
+    
+    @BreadcrumbFactory
+    def breadcrumb(self, request, context, scheme, value, service_id):
+        return Breadcrumb(
+            'places',
+            lazy_parent('entity', scheme=scheme, value=value),
+            context['title'],
+            lazy_reverse('service-detail', args=[scheme, value, service_id])
+        )
+    
+    def get_metadata(self, request, scheme, value, service_id):
+        return {}
+
+    def initial_context(self, request, scheme, value, service_id):
+        context = super(ServiceDetailView, self).initial_context(request)
+        entity = get_entity(scheme, value)
+        
+        # Add live information from the providers
+        for provider in reversed(self.conf.providers):
+            provider.augment_metadata((entity,))
+        
+        # If we have no way of getting further journey details, 404
+        if 'service_details' not in entity.metadata:
+            raise Http404
+        
+        stop_entities = []
+        
+        # Deal with train service data
+        if entity.metadata['service_type'] == 'ldb':
+            service = entity.metadata['service_details'](service_id)
+            if service is None:
+                raise Http404
+            
+            destinations = [points['callingPoint'][-1]['locationName'] for points in service['subsequentCallingPoints']['callingPointList']]
+            
+            # Trains can split and join, which makes figuring out the list of
+            # calling points a bit difficult. The LiveDepartureBoards documentation
+            # details how these should be handled. First, we build a list of all
+            # the calling points on the "through" train.
+            calling_points = service['previousCallingPoints']['callingPointList'][0]['callingPoint'] if len(service['previousCallingPoints']) else []
+            calling_points += [{
+                'locationName': service['locationName'],
+                'crs': service['crs'],
+                'st': service['std'],
+                'et': service['etd'] if 'etd' in service else '',
+                'at': service['atd'] if 'atd' in service else '',
+            }]
+            calling_points += service['subsequentCallingPoints']['callingPointList'][0]['callingPoint']
+            
+            # Then attach joining services to our thorough route in the correct
+            # point, but only if there is a list of previous calling points
+            if len(service['previousCallingPoints']):
+                for points in service['previousCallingPoints']['callingPointList'][1:]:
+                    for point in calling_points:
+                        if points['callingPoint'][-1]['crs'] == point['crs']:
+                            point['joining'] = points['callingPoint']
+            
+            # And do the same with splitting services
+            for points in service['subsequentCallingPoints']['callingPointList'][1:]:
+                for point in calling_points:
+                    if points['callingPoint'][0]['crs'] == point['crs']:
+                        point['splitting'] = { 'destination': points['callingPoint'][-1]['locationName'], 'list': points['callingPoint'] }
+            
+            # Now get a list of the entities for the stations (if they exist)
+            # to plot on a map
+            for point in calling_points:
+                
+                if 'joining' in point:
+                    for jpoint in point['joining']:
+                        point_entity = Entity.objects.filter(_identifiers__scheme='crs', _identifiers__value=str(jpoint['crs']))
+                        if len(point_entity):
+                            point_entity = point_entity[0]
+                            jpoint['entity'] = point_entity
+                            stop_entities.append(point_entity)
+                            jpoint['stop_num'] = len(stop_entities)
+                
+                point_entity = Entity.objects.filter(_identifiers__scheme='crs', _identifiers__value=str(point['crs']))
+                if len(point_entity):
+                    point_entity = point_entity[0]
+                    point['entity'] = point_entity
+                    stop_entities.append(point_entity)
+                    point['stop_num'] = len(stop_entities)
+                
+                if 'splitting' in point:
+                    for spoint in point['splitting']['list']:
+                        point_entity = Entity.objects.filter(_identifiers__scheme='crs', _identifiers__value=str(spoint['crs']))
+                        if len(point_entity):
+                            point_entity = point_entity[0]
+                            spoint['entity'] = point_entity
+                            stop_entities.append(point_entity)
+                            spoint['stop_num'] = len(stop_entities)
+                        
+            context.update({
+                'entity': entity,
+                'train_service': service,
+                'train_calling_points': calling_points,
+                'title': service['std'] + ' ' + service['locationName'] + ' to ' + ' and '.join(destinations),
+            })
+        
+        map_hash, (new_points, zoom) = fit_to_map(
+            centre_point = (entity.location[0], entity.location[1], 'green'),
+            points = ((e.location[0], e.location[1], 'red') for e in stop_entities),
+            min_points = len(stop_entities),
+            zoom = None,
+            width = request.map_width,
+            height = request.map_height,
+        )
+        
+        context.update({
+            'zoom': zoom,
+            'map_hash': map_hash
+        })
+        
+        return context
+
+    def handle_GET(self, request, context, scheme, value, service_id):
+        return self.render(request, context, 'places/service_details')
 
 def entity_favourite(request, type_slug, id):
     entity = get_entity(type_slug, id)

@@ -60,6 +60,7 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = (
+    'django.middleware.csrf.CsrfViewMiddleware',
     'molly.wurfl.middleware.WurflMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -83,6 +84,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'molly.geolocation.context_processors.geolocation',
     'molly.utils.context_processors.full_path',
     'molly.utils.context_processors.google_analytics',
+    'django.core.context_processors.csrf',
 )
 
 
@@ -125,6 +127,13 @@ APPLICATIONS = [
             'molly.providers.apps.maps.OxontimeMapsProvider',
             'molly.providers.apps.maps.OxpointsMapsProvider',
             'molly.providers.apps.maps.OSMMapsProvider',
+            'molly_oxford.providers.apps.places.OxfordParkAndRidePlacesProvider',
+            Provider('molly.providers.apps.maps.LiveDepartureBoardPlacesProvider',
+                token = SECRETS.ldb
+            ),
+            Provider('molly.providers.apps.maps.BBCTPEGPlacesProvider',
+                url='http://www.bbc.co.uk/travelnews/tpeg/en/local/rtm/oxford_tpeg.xml',
+            ),
         ],
         nearby_entity_types = (
             ('Transport', (
@@ -141,6 +150,15 @@ APPLICATIONS = [
                 'building', 'room')),
         ),
 
+    ),
+    
+    Application('molly.apps.transport', 'transport', 'Transport',
+        train_station = 'crs:OXF',
+        nearby = {
+            'park_and_rides': ('park-and-ride', 5, True),
+            'bus_stops': ('bus-stop', 5, False),
+        },
+        travel_alerts = True,
     ),
 
     Application('molly.apps.z3950', 'library', 'Library search',
@@ -295,6 +313,10 @@ APPLICATIONS = [
 
 #    Application('molly.apps.feeds.events', 'events', 'Events',
 #    ),
+
+    Application('molly.favourites', 'favourites', 'Favourite pages',
+        display_to_user = False,
+    ),
 ]
 
 API_KEYS = {

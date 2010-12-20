@@ -1,0 +1,13 @@
+{% if entity.metadata.park_and_ride %}
+<div class="section">
+  <h2>Car Park Information</h2>
+  <div class="article">
+    <div class="bubble pad-5">
+      Spaces: {{ entity.metadata.park_and_ride.spaces }} / {{ entity.metadata.park_and_ride.capacity }}
+      <div style="width:100%;border: 1px solid #7c7c7c;height: 5px; background-color:#00ff00;">
+        <div style="width: {{ entity.metadata.park_and_ride.percentage }}%; height:5px;background-color: #ff0000;">&nbsp;</div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}

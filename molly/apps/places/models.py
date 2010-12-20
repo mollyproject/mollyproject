@@ -14,7 +14,7 @@ class Source(models.Model):
     def __unicode__(self):
         return self.name
     
-IDENTIFIER_SCHEME_PREFERENCE = ('atco', 'oxpoints', 'osm', 'naptan', 'postcode')
+IDENTIFIER_SCHEME_PREFERENCE = ('atco', 'oxpoints', 'osm', 'naptan', 'postcode', 'bbc-tpeg')
 
 class EntityType(models.Model):
     slug = models.SlugField()

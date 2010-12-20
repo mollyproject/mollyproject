@@ -782,7 +782,7 @@ div.button {
     background:#002147 url('../../../site/png/icons/list-arrow.png') no-repeat;
     background-position: right center;
 
-    margin: 8px 2px 0 auto;
+	 margin: 4px 2px 4px auto;
     min-width: 70px;
     max-width: 100px;
     padding: 3px;
@@ -812,4 +812,42 @@ a img {
 
 small {
   font-size:90%;
+}
+
+#favourite-bit
+{
+    position: absolute;
+    right: 0px;
+    padding: 5px;
+}
+
+#favourite
+{
+    background-color: transparent;
+    background-image: url('../../../favourites/png/star-grey.png');
+    border: 0;
+    text-shadow: none;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    height: 20px;
+    width: 20px;
+    cursor: pointer;
+}
+
+#unfavourite
+{
+    background-color: transparent;
+    background-image: url('../../../favourites/png/star.png');
+    border: 0;
+    text-shadow: none;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    height: 20px;
+    width: 20px;
+    cursor: pointer;
+}
+
+.with-favourite
+{
+    margin-right: 28px !important;
 }

@@ -59,7 +59,7 @@
 <div class="section">
     <h2>{{ library.location|join:" - " }}</h2>
 {% if library.oxpoints_id and library.oxpoints_location %}
-    {% ifnotequal style_group "dumb" %}
+    {% ifnotequal style_group "groups-dumb" %}
     	<div class="backgrounded-image" style="background-image:url('{% map_url library.oxpoints_location %}'); height:{{ map_height }}px">
             {% include "places/map_elements.html" %}
         </div>

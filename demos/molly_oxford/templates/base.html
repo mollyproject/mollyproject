@@ -41,7 +41,7 @@
 
 {% block header %}
 
-{% ifnotequal style_group "dumb" %}
+{% ifnotequal style_group "groups-dumb" %}
     <div id="bc-header">
       <ol id="bc">
         <li><a href="{% url home:index %}">
@@ -57,8 +57,9 @@
         </a></li>
     {% endif %}{% endif %}
       </ol> 
-      <div id="bc-title">
+      <div id="bc-title"{% if is_favouritable %} class="with-favourite"{% endif %}>
         <h1 class="{% if not breadcrumbs.2 %}{{ breadcrumbs.0 }}-header with-icon{% endif %}">{{ breadcrumbs.4 }}</h1>
+        {% include "favourite.html" %}
       </div>
     </div>
 {% else %}
@@ -72,6 +73,7 @@
          <div id="bc-title">
            <h1>{{ breadcrumbs.4 }}</h1>
          </div>
+	{% include "favourite.html" %}
        </div>
 {% endifnotequal %}
 

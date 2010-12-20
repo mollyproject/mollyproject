@@ -7,7 +7,7 @@
 {% block header %}
 <div id="index-header">
     <div id="index-title">
-		{% ifequal style_group "dumb" %}
+		{% ifequal style_group "groups-dumb" %}
 		    <img src="{{ MEDIA_URL }}png/new/logos/logo-90x55.jpg" alt="Mobile Oxford">
 		{% else %}
             <img src="{{ MEDIA_URL }}png/new/logos/logo-128x51-TRMargin-5px.png" alt="Mobile Oxford"/>
@@ -18,7 +18,7 @@
 	     <form method="get" action="{% url search:index %}">
 		 <p>
 			{{ search_form.query }}
-		{% ifequal style_group "dumb" %}
+		{% ifequal style_group "groups-dumb" %}
 		    <input type="button" value="Search" />
 		{% else %}
 			<input type="image" src="{{ MEDIA_URL }}png/new/buttons/search-button.png" title="Search" alt="Search"/>
@@ -65,6 +65,22 @@
         </table>
     </div>
     
+    {% if favourites %}
+    <div class="section">
+      <div class="header">
+	<h2>Favourites</h2>
+      </div>
+      <ul class="content-list">
+      {% for favourite in favourites %}
+	<li><a href="{{ favourite.url }}">{{ favourite.metadata.title }}</a></li>
+      {% endfor %}
+      </ul>
+      <ul class="link-list">
+	<li><a href="{% url favourites:index %}">Manage Favourites</a></li>
+      </ul>
+    </div>
+    {% endif %}
+    
     <ul class="stand-alone">
             <li class="round-top"><a href="{% url home:static_about %}">About this site</a></li>
 			{% if has_user_messages %}
@@ -74,7 +90,7 @@
     </ul>
 
     <div class="center">
-        {% ifequal style_group "dumb" %}
+        {% ifequal style_group "groups-dumb" %}
             Produced by Oxford University Computing Services <br /><a href="http://www.oucs.ox.ac.uk">www.oucs.ox.ac.uk</a>
         {% else %}
     <div class="content" style="margin:8px;">

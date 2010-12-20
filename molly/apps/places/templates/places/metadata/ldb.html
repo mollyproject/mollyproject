@@ -1,0 +1,73 @@
+{% load molly_utils %}{% if train_station.metadata.ldb %}
+
+<div class="section">
+  <div class="header">
+    <h2>{{ train_station.title }} (departures) - {{ train_station.metadata.ldb.generatedAt|date:"H:i:s" }}</h2>
+  </div>
+  
+  {% if train_station.metadata.ldb.nrccMessages.message %}
+  <ul class="content-list no-round-bottom">
+    {% for message in train_station.metadata.ldb.nrccMessages.message %}
+      <li>{{ message|sanitize_html }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+
+  <table class="content">
+    <thead>
+      <tr>
+        <th>Destination</th>
+        {% if train_station.metadata.ldb.platformAvailable %}
+        <th>Plat.</th>
+        {% endif %}
+        <th>Due</th>
+        <th>Expected</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% if train_station.metadata.ldb.error %}
+        <tr>
+          <td colspan="4">
+            <p>
+              There is currently a problem retrieving live departure information from the National Rail web site.
+            </p>
+            <p>
+              Departure information may still be accessed
+              <a href="http://pda.ojp.nationalrail.co.uk/en/pj/ldbboard/dep/{{ train_station.identifiers.crs }}">directly
+              from their web site</a>.
+            </p>
+          </td>
+        </tr>
+      {% else %}
+        {% for service in train_station.metadata.ldb.trainServices.service %}
+          <tr>
+            <td>
+              <a href="{{ train_station.get_absolute_url }}service:{{ service.serviceID }}" style="color: inherit;">
+                {# This isn't that straight-forward - trains can split and go to multiple destinations #}
+                {% for location in service.destination.location %}
+                  {% if not forloop.first and not forloop.last %}, {% endif %}
+                  {% if not forloop.first and forloop.last %} &amp; {% endif %}
+                  {% if not forloop.first %}<br />{% endif %}
+                  {{ location.locationName }}
+                  {% if location.via %}<br /><small>{{ location.via }}</small>{% if not forloop.last %}<br />{% endif %}{% endif %}
+                {% endfor %}
+                {% if service.isCircularRoute %}<br /><small>(Circular Route)</small>{% endif %}</a>
+            </td>
+            {% if train_station.metadata.ldb.platformAvailable %} 
+            <td>{{ service.platform }}</td>
+            {% endif %}
+            <td>{{ service.std }}</td>
+            <td>{{ service.etd }}</td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="4">There are currently no scheduled departures.</td>
+          </tr>
+        {% endfor %}
+      {% endif %}
+    </tbody>
+  </table>
+        
+</div>
+
+{% endif %}
