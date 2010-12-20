@@ -1,8 +1,22 @@
+{% load molly_utils %}
 {% if entity.metadata.real_time_information %}
-  
+    {% if entity.metadata.real_time_information.pip_info %}
+    <ul class="content-list no-round-bottom">
+        {% for info in entity.metadata.real_time_information.pip_info %}
+ 	<li>{{ info|sanitize_html }}</li>
+        {% endfor %}
+    </ul>
+    {% else %}
+        {% if not entity.metadata.real_time_information.services %}
+        <ul class="content-list no-round-bottom">
+            <li>Sorry, there is currently no bus time information for this stop.</li>
+        </ul>
+        {% endif %}
+    {% endif %}
   {% if entity.metadata.real_time_information.services %}
-<div class="pad-5">
-<table class="real-time-information">
+ <div class="section-content no-round-bottom">
+  <div class="pad-5">
+   <table class="real-time-information">
     <thead style="display:none;">
         <tr>
             <th>Service</th>
@@ -22,16 +36,9 @@
         </tr>
     {% endfor %}
     </tbody>
-</table>
-</div>
-  {% else %}
-<div class="note"><div class="bubble pad-10">
-    {% if entity.metadata.real_time_information.pip_info %}
-      {{ entity.metadata.real_time_information.pip_info }}
-    {% else %}
-      Sorry, there is currently no bus time information for this stop.
-    {% endif %}
-</div></div>
+   </table>
+  </div>
+ </div>
   {% endif %}
 
 {% endif %}
