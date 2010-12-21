@@ -254,6 +254,7 @@ APPLICATIONS = [
             'park_and_rides': ('park-and-ride', 5, True, False),
             'bus_stops': ('bus-stop', 5, False, True),
         },
+        park_and_ride_sort = ('osm:W4333225', 'osm:W4329908', 'osm:W34425625', 'osm:W24719725', 'osm:W2809915'),
         travel_alerts = True,
     ),
 
