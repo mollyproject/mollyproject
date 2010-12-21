@@ -10,7 +10,6 @@ from django.contrib.gis.geos import Point
 from molly.apps.places.providers import BaseMapsProvider
 from molly.apps.places.models import EntityType, Entity, Source
 from molly.conf.settings import batch
-from secrets import SECRETS
 
 class NaptanContentHandler(ContentHandler):
 
@@ -328,6 +327,11 @@ class NaptanMapsProvider(BaseMapsProvider):
 
         return source
 
-if __name__ == '__main__':
-    p = NaptanMapsProvider(method='ftp', username=SECRETS.journeyweb[0], password=SECRETS.journeyweb[1], areas=('340',))
-    p.import_data(None, None)
+try:
+    from secrets import SECRETS
+except ImportError:
+    pass
+else:
+    if __name__ == '__main__':
+        p = NaptanMapsProvider(method='ftp', username=SECRETS.journeyweb[0], password=SECRETS.journeyweb[1], areas=('340',))
+        p.import_data(None, None)
