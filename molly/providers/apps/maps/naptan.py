@@ -255,6 +255,13 @@ class NaptanMapsProvider(BaseMapsProvider):
         parser.parse(pipe_r)
 
     def _import_stations(self, f, source, entity_type):
+        
+        # Delete any train stations from the main NaPTAN file
+        for area in self._areas:
+            Entity.objects.filter(all_types_completion__slug='train-station',
+                                  _identifiers__scheme='atco',
+                                  _identifiers__value__startswith=str(area)).delete()
+        
         csvfile = csv.reader(f)
         csvfile.next()
 
