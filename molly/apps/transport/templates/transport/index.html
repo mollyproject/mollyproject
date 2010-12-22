@@ -79,7 +79,7 @@ ul li.transport-link a img { border: 0; }
 
 <div class="section" id="park_and_rides">
   <div class="header">
-    <h2>Park and Rides</h2>
+    <h2><a href="{% url places:nearby-detail "park-and-ride" %}" style="color:inherit;">Park and Rides</a></h2>
   </div>
   <div class="section-content" style="color:#000;">
     {% for entity in park_and_rides.entities %}
