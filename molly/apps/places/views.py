@@ -566,18 +566,24 @@ class ServiceDetailView(BaseView):
     """
     
     @BreadcrumbFactory
-    def breadcrumb(self, request, context, scheme, value, service_id):
+    def breadcrumb(self, request, context, scheme, value):
         return Breadcrumb(
             'places',
             lazy_parent('entity', scheme=scheme, value=value),
             context['title'],
-            lazy_reverse('service-detail', args=[scheme, value, service_id])
+            lazy_reverse('service-detail', args=[scheme, value])
         )
     
-    def get_metadata(self, request, scheme, value, service_id):
+    def get_metadata(self, request, scheme, value):
         return {}
 
-    def initial_context(self, request, scheme, value, service_id):
+    def initial_context(self, request, scheme, value):
+        
+        try:
+            service_id = request.GET['id']
+        except KeyError:
+            raise Http404
+        
         context = super(ServiceDetailView, self).initial_context(request)
         entity = get_entity(scheme, value)
         
@@ -679,7 +685,7 @@ class ServiceDetailView(BaseView):
         
         return context
 
-    def handle_GET(self, request, context, scheme, value, service_id):
+    def handle_GET(self, request, context, scheme, value):
         return self.render(request, context, 'places/service_details')
 
 def entity_favourite(request, type_slug, id):

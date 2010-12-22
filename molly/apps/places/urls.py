@@ -45,7 +45,7 @@ urlpatterns = patterns('',
         EntityDetailView, {},
         'entity'),
     
-    (r'^(?P<scheme>[a-z_\-]+):(?P<value>[\da-zA-Z]+)/service:(?P<service_id>.+)$',
+    (r'^(?P<scheme>[a-z_\-]+):(?P<value>[\da-zA-Z]+)/service$',
         ServiceDetailView, {},
         'service-detail'),
     
