@@ -675,6 +675,7 @@ class ServiceDetailView(BaseView):
                 'train_service': service,
                 'train_calling_points': calling_points,
                 'title': service['std'] + ' ' + service['locationName'] + ' to ' + ' and '.join(destinations),
+                'zoom_controls': False,
             })
         
         map_hash, (new_points, zoom) = fit_to_map(
