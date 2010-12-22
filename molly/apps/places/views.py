@@ -604,7 +604,7 @@ class ServiceDetailView(BaseView):
             try:
                 service = entity.metadata['service_details'](service_id)
             except WebFault as f:
-                if f.faultstring == 'Unexpected server error: Invalid length for a Base-64 char array.':
+                if f.fault['faultstring'] == 'Unexpected server error: Invalid length for a Base-64 char array.':
                     raise Http404
                 else:
                     raise
