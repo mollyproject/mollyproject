@@ -19,6 +19,8 @@ def _cached(getargsfunc):
                 return Geocode.recent.get(local_name=app.local_name, **args).results
             except Geocode.DoesNotExist:
                 pass
+            except Geocode.MultipleObjectsReturned:
+                Geocode.recent.filter(local_name=app.local_name, **args).delete()
             results = f(providers=app.providers, **args)
 
             i = 0
