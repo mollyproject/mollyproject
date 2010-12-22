@@ -3,6 +3,8 @@ from __future__ import division
 from itertools import chain
 import simplejson, copy
 
+from suds import WebFault
+
 from django.contrib.gis.geos import Point
 from django.http import Http404, HttpResponse, HttpResponseRedirect, HttpResponsePermanentRedirect
 from django.shortcuts import get_object_or_404
@@ -599,7 +601,13 @@ class ServiceDetailView(BaseView):
         
         # Deal with train service data
         if entity.metadata['service_type'] == 'ldb':
-            service = entity.metadata['service_details'](service_id)
+            try:
+                service = entity.metadata['service_details'](service_id)
+            except WebFault as f:
+                if f.faultstring == 'Unexpected server error: Invalid length for a Base-64 char array.':
+                    raise Http404
+                else:
+                    raise
             if service is None:
                 raise Http404
             
