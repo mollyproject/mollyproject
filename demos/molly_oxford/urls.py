@@ -39,6 +39,7 @@ urlpatterns = patterns('',
 
     (r'^auth/', applications.auth.urls),
     (r'^weblearn/', applications.weblearn.urls),
+    (r'^stats/', applications.stats.urls),
 
     (r'^reverse/$', 'molly.utils.views.ReverseView', {}, 'reverse'),
 #    (r'^events/', applications.events.urls),

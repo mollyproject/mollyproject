@@ -3,6 +3,12 @@ from django.contrib.auth.models import User
 from django.contrib.sessions.models import Session
 
 class Hit(models.Model):
+    
+    class Meta:
+        permissions = (
+            ("can_view", "Can see statistics"),
+        )
+    
     session_key = models.CharField(max_length=40)
 
     user_agent = models.TextField(null=True, blank=True)
