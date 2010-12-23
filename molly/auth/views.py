@@ -2,6 +2,7 @@ import urllib, urllib2, urlparse, logging
 from datetime import datetime, timedelta
 
 from django.conf import settings
+from django.contrib.auth import logout
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponse
 from django.forms.util import ErrorList
@@ -155,6 +156,7 @@ class ClearSessionView(SecureView):
         return self.render(request, context, 'auth/clear_session')
     def handle_POST(self, request, context):
         UserSession.objects.filter(secure_session_key = request.secure_session.session_key).delete()
+        logout(request)
         if context['return_url']:
             return HttpResponseRedirect(context['return_url'])
         else:

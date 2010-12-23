@@ -1,6 +1,10 @@
-import pytz, simplejson, urllib2, base64
+from email.utils import formatdate
+from datetime import datetime, timedelta
+from time import mktime
+import simplejson, urllib2, base64
 from xml.etree import ElementTree as ET
 from xml.sax.saxutils import escape
+
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse, Http404
 
@@ -30,9 +34,10 @@ class GeneratedMapView(BaseView):
 
     def handle_GET(cls, request, context, hash):
         gm = get_object_or_404(GeneratedMap, hash=hash)
-        response = HttpResponse(open(gm.get_filename(), 'r').read(), mimetype='image/png') 
-        last_updated = pytz.utc.localize(gm.generated)
+        response = HttpResponse(open(gm.get_filename(), 'r').read(), mimetype='image/png')
 
+        response['Expires'] = formatdate(mktime((datetime.now() + timedelta(days=7)).timetuple()))
+        response['Last-Modified'] = formatdate(mktime(gm.generated.timetuple()))
         response['ETag'] = hash
         return response
 

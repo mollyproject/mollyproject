@@ -22,6 +22,7 @@ urlpatterns = patterns('',
     (r'^search/', applications.search.urls),
     (r'^geolocation/', applications.geolocation.urls),
     (r'^places/', applications.places.urls),
+    (r'^transport/', applications.transport.urls),
     (r'^feedback/', applications.feedback.urls),
     (r'^news/', applications.news.urls),
     (r'^external-media/', applications.external_media.urls),
@@ -30,6 +31,7 @@ urlpatterns = patterns('',
     (r'^desktop/', applications.desktop.urls),
     (r'^url-shortener/', applications.url_shortener.urls),
     (r'^feature-suggestions/', applications.feature_vote.urls),
+    (r'^favourites/', applications.favourites.urls),
 
     (r'^comments/', include('django.contrib.comments.urls')),
 
@@ -37,6 +39,7 @@ urlpatterns = patterns('',
 
     (r'^auth/', applications.auth.urls),
     (r'^weblearn/', applications.weblearn.urls),
+    (r'^stats/', applications.stats.urls),
 
     (r'^reverse/$', 'molly.utils.views.ReverseView', {}, 'reverse'),
 #    (r'^events/', applications.events.urls),

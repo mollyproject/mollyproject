@@ -18,10 +18,10 @@
 		<h2>{{ webcam.title }}<br /><small>{% now "G:i "%}</small></h2>
 
 {% if eis %}
-    {% ifnotequal style_group "dumb" %}
+    {% ifnotequal style_group "groups-dumb" %}
         <div class="backgrounded-image" style="background-image:url('{{ eis.get_absolute_url }}'); height:{{ eis.height }}px;"> </div>
       {% else %}
-        <img src="{{ eis.get_absolute_url }}" alt="Map">
+        <img src="{{ eis.get_absolute_url }}" alt="Webcam Image">
     {% endifnotequal %}
 {% else %}
     <div class="note"><div class="bubble pad-10">

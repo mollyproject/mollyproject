@@ -6,7 +6,7 @@ from django.core.urlresolvers import reverse
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import BreadcrumbFactory, Breadcrumb, lazy_reverse
-from molly.utils.email import send_email
+from molly.utils import send_email
 
 from forms import FeedbackForm
 

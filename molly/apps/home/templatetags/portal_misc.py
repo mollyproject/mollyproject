@@ -1,4 +1,5 @@
 import simplejson, urllib
+from simplejson.decoder import JSONDecodeError
 from datetime import datetime
 from django import template
 from django.utils.safestring import mark_safe
@@ -41,7 +42,10 @@ def oxp_id(value):
 
 @register.filter(name="load_oxp_json")
 def load_oxp_json(value):
-    return simplejson.load(urllib.urlopen(value['uri']+'.json'))[0]
+    try:
+        return simplejson.load(urllib.urlopen(value['uri']+'.json'))[0]
+    except JSONDecodeError:
+        return {}
 
 @register.filter(name="oxp_portal_url")
 def oxp_portal_url(value):

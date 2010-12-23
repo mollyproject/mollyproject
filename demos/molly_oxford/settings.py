@@ -60,6 +60,7 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = (
+    'django.middleware.csrf.CsrfViewMiddleware',
     'molly.wurfl.middleware.WurflMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -83,6 +84,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'molly.geolocation.context_processors.geolocation',
     'molly.utils.context_processors.full_path',
     'molly.utils.context_processors.google_analytics',
+    'django.core.context_processors.csrf',
 )
 
 
@@ -125,6 +127,13 @@ APPLICATIONS = [
             'molly.providers.apps.maps.OxontimeMapsProvider',
             'molly.providers.apps.maps.OxpointsMapsProvider',
             'molly.providers.apps.maps.OSMMapsProvider',
+            'molly_oxford.providers.apps.places.OxfordParkAndRidePlacesProvider',
+            Provider('molly.providers.apps.maps.LiveDepartureBoardPlacesProvider',
+                token = SECRETS.ldb
+            ),
+            Provider('molly.providers.apps.maps.BBCTPEGPlacesProvider',
+                url='http://www.bbc.co.uk/travelnews/tpeg/en/local/rtm/oxford_tpeg.xml',
+            ),
         ],
         nearby_entity_types = (
             ('Transport', (
@@ -140,7 +149,113 @@ APPLICATIONS = [
                 'university-library', 'college-hall', 'faculty-department',
                 'building', 'room')),
         ),
+        associations = (
+            ('osm', 'W4333225', ( # Pear Tree park and ride
+                ('Park & Ride Bus Stops',
+                 (
+                    ('atco', '340000420PR'),
+                 )
+                ),
+                ('Road Bus Stops',
+                 (
+                    ('atco', '340003247CNR'),
+                    ('atco', '340003247OPP'),
+                 )
+                ),
+              )
+            ),
+            ('osm', 'W4329908', ( # Water Eaton
+                ('Park & Ride Bus Stops',
+                 (
+                    ('atco', '340003026W'),
+                 )
+                ),
+                ('Road Bus Stops',
+                 (
+                    ('atco', '340001903OUT'),
+                    ('atco', '340001903OPP'),
+                 )
+                ),
+              )
+            ),
+            ('osm', 'W34425625', ( # Seacourt
+                ('Park & Ride Bus Stops',
+                 (
+                    ('atco', '340001095CP'),
+                 )
+                ),
+                ('Road Bus Stops',
+                 (
+                    ('atco', '340001095OUT'),
+                    ('atco', '340001095OPP'),
+                 )
+                ),
+              )
+            ),
+            ('osm', 'W2809915', ( # Redbridge
+                ('Park & Ride Bus Stops',
+                 (
+                    ('atco', '340000418PR'),
+                 )
+                ),
+                ('Road Bus Stops',
+                 (
+                    ('atco', '340001371ENT'),
+                    ('atco', '340001371EX'),
+                 )
+                ),
+              )
+            ),
+            ('osm', 'W24719725', ( # Thornhill
+                ('Park & Ride Bus Stops',
+                 (
+                    ('atco', '340000009PR'),
+                    ('atco', '340000009PR2'),
+                    ('atco', '340000009PR3'),
+                    ('atco', '340000009PR4'),
+                 )
+                ),
+                ('London Road Bus Stops',
+                 (
+                    ('atco', '340000009LRE'),
+                    ('atco', '340000009LRW'),
+                 )
+                ),
+              )
+            ),
+            ('atco', '9100OXFD', ( # Railway station
+                ('Station Forecourt',
+                 (
+                    ('atco', '340000006R1'),
+                    ('atco', '340000006R2'),
+                    ('atco', '340000006R3'),
+                    ('atco', '340000006R4'),
+                    ('atco', '340000006R5'),
+                    ('atco', '340000006R6'),
+                 )
+                ),
+                ('Frideswide Square',
+                 (
+                    ('atco', '340002070R7'),
+                    ('atco', '340002070R8'),
+                    ('atco', '340002070R9'),
+                    ('atco', '340002070R10'),
+                 )
+                ),
+              )
+            ),
+        )
 
+    ),
+    
+    Application('molly.apps.transport', 'transport', 'Transport',
+        train_station = 'crs:OXF',
+        nearby = {
+            'park_and_rides': ('park-and-ride', 5, True, False),
+            'bus_stops': ('bus-stop', 5, False, True),
+        },
+        park_and_ride_sort = ('osm:W4333225', 'osm:W4329908', 'osm:W34425625', 'osm:W24719725', 'osm:W2809915'),
+        travel_alerts = True,
     ),
 
     Application('molly.apps.z3950', 'library', 'Library search',
@@ -295,6 +410,10 @@ APPLICATIONS = [
 
 #    Application('molly.apps.feeds.events', 'events', 'Events',
 #    ),
+
+    Application('molly.favourites', 'favourites', 'Favourite pages',
+        display_to_user = False,
+    ),
 ]
 
 API_KEYS = {

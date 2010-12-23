@@ -1,0 +1,125 @@
+{% extends "places/base.html" %}
+{% load molly_utils %}
+
+{% block content %}
+
+{% if train_service %}
+<div class="section">
+  <div class="header">
+    <h2>Live Train Information - {{ train_service.generatedAt|date:"H:i:s" }}</h2>
+  </div>
+  {% if train_service.error %}
+  
+  <ul class="content-list no-round-bottom">
+    <li> There is currently a problem retrieving live departure information from
+    the National Rail web site. Departure information may still be accessed
+    <a href="http://pda.ojp.nationalrail.co.uk/en/pj/ldbboard/dep/{{ entity.identifiers.crs }}">directly
+    from their web site</a>.</li>
+  </ul>
+  
+  {% else %}
+  
+  <ul class="content-list no-round-bottom">
+    <li>Operated by {{ train_service.operator }}</li>
+    {% if train_service.platform %}
+      <li>Departing from platform {{ train_service.platform }}</li>
+    {% endif %}
+    {% if train_service.disruptionReason %}
+      <li>{{ train_service.disruptionReason|sanitize_html }}</li>
+    {% endif %}
+    {% if train_service.overdueMessage %}
+      <li>{{ train_service.overdueMessage|sanitize_html }}</li>
+    {% endif %}
+  </ul>
+
+  <table class="content">
+    <thead>
+      <tr>
+        <th>Calling Point</th>
+        <th>Scheduled</th>
+        <th>Expected / Actual</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for point in train_calling_points %}
+        {% if point.joining %}
+          <tr>
+            <td colspan="3">
+                <p>This train then merges with a train from {{ point.joining.0.locationName }}</p>
+                <table class="content">
+                  <thead>
+                    <tr>
+                      <th>Calling Point</th>
+                      <th>Scheduled</th>
+                      <th>Expected / Actual</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for joining_point in point.joining %}
+                    <tr{% if joining_point.at %} style="color:#7c7c7c;"{% endif %}>
+                      <td>{{ joining_point.stop_num }} <a href="{{ joining_point.entity.get_absolute_url }}" style="color: inherit;">{{ joining_point.locationName }}</a></td>
+                      <td>{{ joining_point.st }}</td>
+                      <td>{{ joining_point.et }}{{ joining_point.at }}</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+            </td>
+          </tr>
+        {% endif %}
+        <tr{% if point.at %} style="color:#7c7c7c;"{% endif %}>
+          <td>{{ point.stop_num }} <a href="{{ point.entity.get_absolute_url }}" style="color: inherit;">{{ point.locationName }}</a></td>
+          <td>{{ point.st }}</td>
+          <td>{{ point.et }}{{ point.at }}</td>
+        </tr>
+        {% if point.splitting %}
+          <tr>
+            <td colspan="3">
+                <p>This train then splits to go to {{ point.splitting.destination }}</p>
+                <table class="content">
+                  <thead>
+                    <tr>
+                      <th>Calling Point</th>
+                      <th>Scheduled</th>
+                      <th>Expected / Actual</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for splitting_point in point.splitting.list %}
+                    <tr{% if splitting_point.at %} style="color:#7c7c7c;"{% endif %}>
+                      <td>{{ splitting_point.stop_num }} <a href="{{ splitting_point.entity.get_absolute_url }}" style="color: inherit;">{{ splitting_point.locationName }}</a></td>
+                      <td>{{ splitting_point.st }}</td>
+                      <td>{{ splitting_point.et }}{{ splitting_point.at }}</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+            </td>
+          </tr>
+        {% endif %}
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+
+</div>
+
+{% endif %}
+
+<div class="section">
+    <div class="header">
+        <h2>Map</h2>
+    </div>
+    <div class="section-content">
+{% ifnotequal style_group "dumb" %}
+    <div class="backgrounded-image" style="background-image:url('{% url osm:generated_map map_hash %}'); height:{{ map_height }}px">
+    {% include "places/map_elements.html" %}
+    </div>
+{% else %}
+    <img src="{% url osm:generated_map map_hash %}" alt="Map"><br />
+    {% include "places/map_elements.html" %}
+{% endifnotequal %}
+    </div>
+</div>
+
+{% endblock %}

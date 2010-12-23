@@ -10,6 +10,8 @@ from views import (
 
     NearbyEntityListView, NearbyEntityDetailView,
     CategoryListView, CategoryDetailView,
+    
+    ServiceDetailView,
 
     APIView,
 )
@@ -36,6 +38,11 @@ urlpatterns = patterns('',
     (r'^(?P<scheme>[a-z_\-]+):(?P<value>[\da-zA-Z]+)/$',
         EntityDetailView, {},
         'entity'),
+    
+    (r'^(?P<scheme>[a-z_\-]+):(?P<value>[\da-zA-Z]+)/service$',
+        ServiceDetailView, {},
+        'service-detail'),
+    
     (r'^(?P<scheme>[a-z_\-]+):(?P<value>[\da-zA-Z]+)/nearby/$',
         NearbyEntityListView, {},
         'entity-nearby-list'),

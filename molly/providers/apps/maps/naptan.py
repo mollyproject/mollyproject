@@ -1,5 +1,6 @@
-import ftplib, os, urllib, zipfile, tempfile, random, re
+import ftplib, os, urllib, zipfile, tempfile, random, re, csv
 
+from collections import defaultdict
 from StringIO import StringIO
 
 from xml.sax import ContentHandler, make_parser
@@ -38,7 +39,7 @@ class NaptanContentHandler(ContentHandler):
         self.name_stack.append(name)
 
         if name == 'StopPoint':
-            self.meta = {}
+            self.meta = defaultdict(str)
 
     def endElement(self, name):
         self.name_stack.pop()
@@ -60,7 +61,7 @@ class NaptanContentHandler(ContentHandler):
         top = tuple(self.name_stack[3:])
 
         try:
-            self.meta[self.meta_names[top]] = text
+            self.meta[self.meta_names[top]] += text
         except KeyError:
             pass
 
@@ -94,6 +95,8 @@ class NaptanContentHandler(ContentHandler):
                 title = "%s, %s" % (ind, cnm)
         elif ind == lmk:
             title = "%s, %s" % (lmk, str)
+        elif lmk is None:
+            title = "%s on %s" % (ind, str)
         elif lmk != str:
             title = "%s %s, on %s" % (ind, lmk, str)
         else:
@@ -129,6 +132,7 @@ class NaptanMapsProvider(BaseMapsProvider):
 
     HTTP_URL = "http://www.dft.gov.uk/NaPTAN/snapshot/NaPTANxml.zip"
     FTP_SERVER = 'journeyweb.org.uk'
+    TRAIN_STATION = object()
 
     entity_type_definitions = {
         'BCT': {
@@ -147,7 +151,7 @@ class NaptanMapsProvider(BaseMapsProvider):
             'nearby': False, 'category': False,
             'uri-local': 'TaxiRank',
         },
-        'RSE': {
+        TRAIN_STATION: { # We want to add this as an entity_type, but not have it match when parsing the main naptan file
             'slug': 'train-station',
             'article': 'a',
             'verbose-name': 'train station',
@@ -201,6 +205,14 @@ class NaptanMapsProvider(BaseMapsProvider):
         
         files = []
 
+        # Create a mapping from ATCO codes to CRS codes.
+        f, filename =  tempfile.mkstemp()
+        ftp.cwd("/V2/010/")
+        ftp.retrbinary('RETR RailReferences.csv', data_chomper(f))
+        os.close(f)
+        self._import_stations(open(filename, 'r'), self._source, self._entity_types[self.TRAIN_STATION])
+        os.unlink(filename)
+
         for area in self._areas:
             f, filename = tempfile.mkstemp()
             files.append(filename)
@@ -222,11 +234,17 @@ class NaptanMapsProvider(BaseMapsProvider):
             os.unlink(filename)
 
     def _import_from_http(self):
+        # TODO Pull data from RailReferences.csv pulled over HTTP
+        
         f, filename = tempfile.mkstemp()
         os.close(f)
         urllib.urlretrieve(self.HTTP_URL, filename)
         archive = zipfile.ZipFile(filename)
-        self._import_from_pipe(archive.open('NaPTAN.xml'))
+        if hasattr(archive, 'open'):
+            f = archive.open('NaPTAN.xml')
+        else:
+            f = StringIO(archive.read('NaPTAN.xml'))
+        self._import_from_pipe(f)
         archive.close()
         os.unlink(filename)
 
@@ -235,6 +253,39 @@ class NaptanMapsProvider(BaseMapsProvider):
         parser.setContentHandler(NaptanContentHandler(self._entity_types, self._source))
         parser.parse(pipe_r)
 
+    def _import_stations(self, f, source, entity_type):
+        
+        # Delete any train stations from the main NaPTAN file
+        for area in self._areas:
+            Entity.objects.filter(all_types_completion__slug='train-station',
+                                  _identifiers__scheme='atco',
+                                  _identifiers__value__startswith=str(area)).delete()
+        
+        csvfile = csv.reader(f)
+        csvfile.next()
+
+        for line in csvfile:
+            atco, tiploc, crs, name, lang, grid_type, east, north, created, modified, rev, mod_type = line
+
+            entity, created = Entity.objects.get_or_create(source=source, _identifiers__scheme='atco', _identifiers__value=atco)
+            if modified == entity.metadata.get('naptan', {}).get('modified', ''):
+                continue
+
+            entity.title = name
+            entity.location = entity.geometry = Point(int(east), int(north), srid=27700) # GB National Grid
+            entity.primary_type = entity_type
+
+            entity.metadata['naptan'] = {
+                'modified': modified,
+            }
+
+            entity.save(identifiers={
+                'atco': atco,
+                'crs': crs,
+                'tiploc': tiploc,
+            })
+            entity.all_types.add(entity_type)
+            entity.update_all_types_completion()
 
     def _get_entity_types(self):
 
@@ -276,6 +327,11 @@ class NaptanMapsProvider(BaseMapsProvider):
 
         return source
 
-if __name__ == '__main__':
-    p = NaptanMapsProvider(method='ftp', username='timfernando', password='tamefruit037', areas=('340',))
-    p.import_data(None, None)
+try:
+    from secrets import SECRETS
+except ImportError:
+    pass
+else:
+    if __name__ == '__main__':
+        p = NaptanMapsProvider(method='ftp', username=SECRETS.journeyweb[0], password=SECRETS.journeyweb[1], areas=('340',))
+        p.import_data(None, None)

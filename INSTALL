@@ -51,11 +51,11 @@ Molly, then it may make more sense to set up a virtualenv[1] and install Molly
 into that.
 
 Unfortunately, one of the dependencies on PyPI is actually broken - you will
-need to install a fixed version from http://github.com/alexdutton/PyZ3950/
+need to install a fixed version from http://github.com/oucs/PyZ3950/
 BEFORE running the setup script, otherwise the broken version will get
 installed:
 
- $ pip install git+http://github.com/alexdutton/PyZ3950.git
+ $ pip install git+http://github.com/oucs/PyZ3950.git
 
  $ python setup.py install
 
@@ -97,6 +97,18 @@ will do the job, if not, don't pipe it to crontab and then add the required
 lines by hand. Once this is done, you can finally start a test server.
 
  $ python manage.py runserver
+
+To get some initial data into Molly, you may want to run the batch jobs by hand.
+This can be done by going into the administration interface:
+
+ http://localhost:8000/adm/
+
+And then under batch processing, select 'Batches', and then select all the
+batches in the screen and then from the Action drop down 'Run batch', and Go.
+This will take some time, and when all the pending and currently running columns
+are red, means that the job is complete. Clicking on each individual job then
+shows the log for the last run, and if any errors have occurred, they will
+appear here.
 
 Database
 --------

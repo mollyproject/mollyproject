@@ -48,6 +48,10 @@ def device_specific_media(request):
     elif browser.brand_name == 'Opera':
         style_group = 'smart'
 
+    # Windows Mobile 7
+    elif (device.device_os, device.device_os_version) == (u'Windows Mobile OS', u'7'):
+        style_group = 'smart'
+
     # Desktop browsers
     elif 'generic_web_browser' in device_parents[browser.devid]:
         style_group = 'smart'
@@ -56,7 +60,7 @@ def device_specific_media(request):
     else:
         style_group = "dumb"
         use_javascript = False
-
+    
     return {
         'style_group': 'groups-%s' % style_group,
         'use_javascript': use_javascript,

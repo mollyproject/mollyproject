@@ -95,7 +95,11 @@ class RSSPodcastsProvider(BasePodcastsProvider):
             if not id:
                 continue
             
-            podcast_item, created = PodcastItem.objects.get_or_create(podcast=podcast, guid=id)
+            try:
+                podcast_item, created = PodcastItem.objects.get_or_create(podcast=podcast, guid=id)
+            except PodcastItem.MultipleObjectsReturned:
+                PodcastItem.objects.filter(podcast=podcast, guid=id).delete()
+                podcast_item, created = PodcastItem.objects.get_or_create(podcast=podcast, guid=id)
 
             old_order = podcast_item.order
             try:
