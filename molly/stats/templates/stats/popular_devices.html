@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="section">
+  <div class="header">
+    <h2>{{ title }}</h2>
+  </div>
+    
+    <table class="content">
+      <thead>
+        <tr>
+          <th>Device</th>
+          <th>Share</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for device in devices %}
+        <tr>
+          <td><a href="http://db.wurflpro.com/device/results?user_agent=&identifier={{ device.device_id }}&uaprof=&brand=&model=">{{ device.device_id }}</a></td>
+          <td>{{ device.count }}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+</div>
+
+{% endblock %}
