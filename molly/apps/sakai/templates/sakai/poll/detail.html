@@ -34,11 +34,25 @@
         This poll closes {{ poll.voteClose|timeuntil }} from now.
       </div>
     {% endif %}
+    {% if poll.minOptions > 1 %}
+      <div class="sakai-notice-message">
+        {% if poll.maxOptions > poll.minOptions %}
+          <p>You must select at least {{ poll.minOptions }} and at most {{ poll.maxOptions }} options.</p>
+        {% else %}
+          <p>You must select {{ poll.minOptions }} options.</p>
+        {% endif %}
+      </div>
+    {% else %}
+      {% if poll.maxOptions > 1 %}
+        <div class="sakai-notice-message">
+          <p>You can select up to {{ poll.maxOptions }} options.</p>
+        </div>
+      {% endif %}
+    {% endif %}
 
     {% if poll.details %}
       <div class="content">
         {{ poll.details|sanitize_html }}
-
       </div>
     {% endif %}
   </div>
