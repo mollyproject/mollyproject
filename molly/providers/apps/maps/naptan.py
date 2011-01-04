@@ -70,10 +70,13 @@ class NaptanContentHandler(ContentHandler):
             entity = Entity.objects.get(source=source, _identifiers__scheme='atco', _identifiers__value=meta['atco-code'])
         except Entity.DoesNotExist:
             entity = Entity(source=source)
+        except Entity.MultipleObjectsReturned:
+            Entity.objects.filter(source=source, _identifiers__scheme='atco', _identifiers__value=meta['atco-code']).delete()
+            entity = Entity(source=source)
 
         cnm, lmk, ind, str = [meta.get(k) for k in ['common-name', 'landmark', 'indicator', 'street']]
 
-        if (cnm or '').endswith(' DEL') or (ind or '').lower == 'not in use':
+        if (cnm or '').endswith(' DEL') or (ind or '').lower() == 'not in use':
             return
 
         if lmk and ind and ind.endswith(lmk) and len(ind) > len(lmk):
@@ -133,16 +136,19 @@ class NaptanMapsProvider(BaseMapsProvider):
     HTTP_URL = "http://www.dft.gov.uk/NaPTAN/snapshot/NaPTANxml.zip"
     FTP_SERVER = 'journeyweb.org.uk'
     TRAIN_STATION = object()
-
-    entity_type_definitions = {
-        'BCT': {
+    BUS_STOP_DEFINITION = {
             'slug': 'bus-stop',
             'article': 'a',
             'verbose-name': 'bus stop',
             'verbose-name-plural': 'bus stops',
             'nearby': True, 'category': False,
             'uri-local': 'BusStop',
-        },
+        }
+
+    entity_type_definitions = {
+        'BCT': BUS_STOP_DEFINITION,
+        'BCS': BUS_STOP_DEFINITION,
+        'BCQ': BUS_STOP_DEFINITION,
         'TXR': {
             'slug': 'taxi-rank',
             'article': 'a',
