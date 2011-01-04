@@ -2,7 +2,6 @@
 
 function build_documentation {
     tag=$1
-    cd docs
     rm -rf build
     make html
     rm -rf $OUTPUT_DIR/$tag/
@@ -18,13 +17,9 @@ if [ -z "$OUTPUT_DIR" ] ; then
     exit;
 fi
 
-BUILD_DIR=`mktemp -d`
-git clone $REPO $BUILD_DIR
-
-cd $BUILD_DIR
-
 build_documentation dev
 for tag in `git tag`; do
+    git checkout $tag
     build_documentation $tag
 done
 
