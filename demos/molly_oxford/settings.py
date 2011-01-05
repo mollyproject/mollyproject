@@ -1,7 +1,7 @@
 # Django settings for oxford project.
 
 from oauth.oauth import OAuthSignatureMethod_PLAINTEXT
-import os.path, imp
+import os, os.path, imp
 from molly.conf.settings import Application, extract_installed_apps, Authentication, ExtraBase, Provider
 from molly.utils.media import get_compress_groups
 from secrets import SECRETS
@@ -438,9 +438,11 @@ INSTALLED_APPS = extract_installed_apps(APPLICATIONS) + (
     
     'staticfiles',
     'compress',
-    'south',
 #    'debug_toolbar',
 )
+
+if 'NO_SOUTH' not in os.environ:
+    INSTALLED_APPS += ('south',)
 
 
 # Media handling using django-staticfiles and django-compress
