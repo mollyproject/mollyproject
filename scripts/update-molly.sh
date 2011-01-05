@@ -28,7 +28,7 @@ if [ -n "$1" ] ; then
     # Copy any files in local to the molly_oxford demo - useful for overriding
     # settings.py and secrets.py
     cp -f $DIR/../local/* $1/demos/molly_oxford/
-    
+    cd $1/demos/molly_oxford/
     
     # Update batch jobs
     if [ -z "$no_cron" ] ; then
