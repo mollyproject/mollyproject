@@ -6,3 +6,5 @@ Originally as deployed by the University of Oxford as 'Mobile Oxford' at http://
 """
 
 import init_logging
+
+__version__ = '0.9'
