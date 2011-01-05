@@ -5,19 +5,22 @@ from django.test.client import Client
 from django.core.urlresolvers import reverse
 
 from molly.apps.places.models import Entity, EntityType
+from molly.providers.apps.maps.oxpoints import OxpointsMapsProvider
+from molly.providers.apps.maps.naptan import NaptanMapsProvider
+from secrets import SECRETS
 
 class MapsTestCase(unittest.TestCase):
     def setUp(self):
         self.client = Client()
         
     def ensureBusstops(self):
-        if Entity.objects.filter(entity_type__slug='busstop').count():
+        if Entity.objects.filter(all_types__slug='busstop').count():
             return
-        call_command('update_busstops')
+        NaptanMapsProvider(method='ftp', username=SECRETS.journeyweb[0], password=SECRETS.journeyweb[1], areas=('340',)).import_data(None, None)
     def ensureOxPoints(self):
-        if Entity.objects.filter(entity_type__slug='college').count():
+        if Entity.objects.filter(all_types__slug='college').count():
             return
-        call_command('update_oxpoints')
+        OxpointsMapsProvider().import_data(None, None)
 
     def testBusstops(self):
         return
@@ -34,8 +37,8 @@ class MapsTestCase(unittest.TestCase):
     def testOxpoints(self):
         self.ensureOxPoints()
 
-        entities = random.sample(list(Entity.objects.filter(entity_type__source='oxpoints')), 200)
-        entities = Entity.objects.filter(entity_type__source='oxpoints')
+        entities = random.sample(list(Entity.objects.filter(all_types__slug='oxpoints')), 20)
+        entities = Entity.objects.filter(all_types__slug='oxpoints')
         client = Client()
         for entity in entities:
             try:
@@ -58,8 +61,8 @@ class MapsTestCase(unittest.TestCase):
         
         for entity, entity_type in entities_with_types:
             response = self.client.get(reverse(
-                'maps_entity_nearby_detail', args=[
-                    entity.entity_type.slug,
+                'entity-nearby-detail', args=[
+                    entity.all_types.all()[0].slug,
                     entity.display_id,
                     entity_type.slug,
                 ]))
@@ -72,7 +75,7 @@ class MapsTestCase(unittest.TestCase):
             if isinstance(p, int):
                 return Entity.objects.get(oxpoints_id=p)
             elif isinstance(p, basestring):
-                return Entity.objects.filter(title=p, entity_type__source='oxpoints')[0]
+                return Entity.objects.filter(title=p, all_types__slug='oxpoints')[0]
                 
         NEARBY_ENTITIES = (
             ('Keble College', 'University Museum of Natural History'),
