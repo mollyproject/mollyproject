@@ -55,7 +55,7 @@ class IndexView(BaseView):
         for tweet in feed:
             entities = tweet['entities']
             tweet['formatted_text'] = self._format_tweet(tweet['text'], entities['urls'], entities['hashtags'], entities['user_mentions'])
-        
+            
         return feed
     
     def _format_tweet(self, text, urls, hashtags, user_mentions):
