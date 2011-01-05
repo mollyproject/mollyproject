@@ -1,5 +1,16 @@
 #!/bin/bash
 
+while getopts dcf o
+do	case "$o" in
+	d)	start_dev_server=yes;;
+	c)	no_cron=yes;;
+        f)      first_migrate=yes;;
+	[?])	print >&2 "Usage: $0 [-d] [-c] [-f] path-to-deployment"
+		exit 1;;
+	esac
+done
+shift $((OPTIND-1))
+
 if [ -n "$1" ] ; then
 
     # Make sure we're working from the directory the script is in
@@ -27,7 +38,9 @@ if [ -n "$1" ] ; then
     cd $1/demos/molly_oxford/
     
     # Update batch jobs
-    PYTHONPATH=.. python manage.py create_crontab | python $DIR/merge-cron.py | crontab
+    if [ -z "$no_cron" ] ; then
+        PYTHONPATH=.. python manage.py create_crontab | python $DIR/merge-cron.py | crontab
+    fi
     
     # Build Media
     python manage.py build_static --noinput
@@ -35,9 +48,20 @@ if [ -n "$1" ] ; then
     python manage.py generate_markers
     
     # Start server
-    python manage.py syncdb
-    python manage.py migrate
-    python manage.py runserver
+    if [ -n "$first_migrate" ] ; then
+        python manage.py syncdb --all
+        python manage.py migrate --fake
+    else
+        python manage.py syncdb
+        python manage.py migrate
+    fi
+    if [ -n "$start_dev_server" ] ; then
+        python manage.py runserver
+    fi
+    
 else
-    echo "$0 path-to-deployment"
+    echo "$0 [-d] [-c] [-f] path-to-deployment"
+    echo "    -d: starts the development server afterwards"
+    echo "    -c: doesn't alter the crontab"
+    echo "    -f: does the first database migration (use on first install)"
 fi
