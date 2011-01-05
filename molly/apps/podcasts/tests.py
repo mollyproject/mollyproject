@@ -5,15 +5,23 @@ from django.test.client import Client
 
 from molly.apps.podcasts import TOP_DOWNLOADS_RSS_URL
 from molly.apps.podcasts.models import Podcast, PodcastCategory
+from molly.providers.apps.podcasts.rss import RSSPodcastsProvider
+from molly.providers.apps.podcasts.opml import OPMLPodcastsProvider
 
 class PodcastsTestCase(unittest.TestCase):
     def setUp(self):
         if not Podcast.objects.count():
-            call_command('update_podcasts', maxitems=10)
+            rss = RSSPodcastsProvider([('top-downloads', 'http://rss.oucs.ox.ac.uk/oxitems/topdownloads.xml')])
+            rss.class_path = 'molly.providers.apps.podcasts.rss.RSSPodcastsProvider'
+            rss.import_data(None, None)
+            opml = OPMLPodcastsProvider('http://rss.oucs.ox.ac.uk/metafeeds/podcastingnewsfeeds.opml')
+            opml.class_path = 'molly.providers.apps.podcasts.opml.OPMLPodcastsProvider'
+            opml.import_data(None, None)
         
     def testTopDownloads(self):
         c = Client()
-        r = c.get('/podcasts/top_downloads/')
+        r = c.get('/podcasts/top-downloads/')
+        print r.context
         self.assertTrue(r.context['podcast'].podcastitem_set.count() > 0)
         
     def testPodcasts(self):
@@ -25,8 +33,8 @@ class PodcastsTestCase(unittest.TestCase):
             if podcast.rss_url == TOP_DOWNLOADS_RSS_URL:
                 continue
             
-            r = c.get('/podcasts/%s/' % podcast.category.code)
-            r = c.get('/podcasts/%s/%d/' % (podcast.category.code, podcast.id))
+            r = c.get('/podcasts/%s/' % podcast.category.slug)
+            r = c.get('/podcasts/%s/%d/' % (podcast.category.slug, podcast.id))
             self.assertTrue(r.context['podcast'].podcastitem_set.count() > 0)
             
     def testTidy(self):
@@ -39,7 +47,7 @@ class PodcastsTestCase(unittest.TestCase):
         
         urls = [
             '/podcasts/',
-            '/podcasts/top_downloads/',
+            '/podcasts/top-downloads/',
         ]
         for category in PodcastCategory.objects.all():
             urls.append('podcasts/%s/' % category.code)
