@@ -242,10 +242,11 @@ class ClearHistoryView(GeolocationView):
     def handle_POST(cls, request, context):
         keys_to_delete = set()
         for key in request.session._session:
-            if key.startswith('geolocation:'):
+            if key.startswith('geolocation:history'):
                 keys_to_delete.add(key)
         for key in keys_to_delete:
             del request.session[key]
+        request.session.modified = True
         return HttpResponseSeeOther(request.POST.get('return_url', reverse('home:index')))
 
 class LocationRequiredView(BaseView):
