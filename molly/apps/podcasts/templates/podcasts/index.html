@@ -9,6 +9,7 @@
     
     <p>Please note that this will close Safari.</p>
     <form method="post" action="{% url podcasts:itunesu-redirect %}">
+	{% csrf_token %}
     {% comment %}<p><input type="checkbox" name="remember" id="remember"/>
        <label for="remember">
        Remember this preference in future.

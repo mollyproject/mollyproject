@@ -16,6 +16,7 @@
     </p>
     <p>
       <form method="post" action=".">
+        {% csrf_token %}
         <label for="pin">
           Enter your PIN
         </label>
@@ -36,6 +37,7 @@
 {% endif %}
     <p>
       <form method="post" action=".">
+        {% csrf_token %}
         <input type="submit" name="clear_session" value="Start over"/>
       </form>
     </p>
