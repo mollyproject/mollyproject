@@ -57,7 +57,7 @@ class EmailHandler(logging.Handler):
             context['traceback'] = ''.join(traceback.format_exception(exc_type, exc_value, exc_traceback))
             for i in range(2):
                 hash.update('%d%s' % (exc_traceback.tb_lineno, exc_traceback.tb_frame.f_code.co_filename))
-                exc_traceback = exc_traceback.tb_next
+                exc_traceback = exc_traceback.tb_next if exc_traceback.tb_next is not None else exc_traceback
 
         context['hash'] = hash.hexdigest()[:8]
 
