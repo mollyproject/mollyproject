@@ -13,13 +13,13 @@
                 {{ search_form.query }}
         </td><td>
                 <input type="hidden" name="application" value="news" title="Search News" />
-                {% ifequal style_group "groups-dumb" %}
+                {% ifequal style_group "dumb" %}
                     <button type="submit">Go!</button>
                 {% else %}
                 	<input type="image" src="{{ MEDIA_URL }}site/png/new/buttons/search-button.png" title="Search" alt="Search"/>
                 {% endifequal %}
         </td></tr><tr><td>
-                <p class="help-bubble top">New! You can now search for particular news articles</p>
+                <p class="help-bubble top">Search for particular news articles</p>
         </td><td></td></tr></tbody>
 </table>
 </form>

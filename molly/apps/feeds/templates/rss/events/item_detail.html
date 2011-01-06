@@ -32,7 +32,7 @@
 <div class="section">
     <h2>Location</h2>
 {% if item.location_point %}
-{% ifnotequal style_group "groups-dumb" %}
+{% ifnotequal style_group "dumb" %}
     <div class="backgrounded-image" style="background-image:url('{% map_url item.location_point %}'); height:{{ map_height }}px">
     {% include "maps/map_elements.xhtml" %}
     </div>
