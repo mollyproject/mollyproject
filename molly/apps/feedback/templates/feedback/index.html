@@ -23,6 +23,7 @@
 </style>
 
 <form method="post" action=".">
+  {% csrf_token %}
 <input type="hidden" name="referer" value="{{ referer }}"/>
 
 <div class="section">

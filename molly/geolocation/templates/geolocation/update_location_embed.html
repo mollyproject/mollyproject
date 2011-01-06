@@ -2,6 +2,7 @@
 {% if location_error %}<p class="location-error">{{ location_error }}</p>{% endif %}
 <span class="location">{{ geolocation.name|default:"No location set" }}</span>
 <form method="post" action="{% url geolocation:index %}" class="location-form">
+        {% csrf_token %}
         <label style="display:none;" for="location-name">Set a new location:</label>
         <input class="return_url" name="return_url" type="hidden" value="{{ return_url|default:"" }}"/>
         <input class="location-name" name="name" value="{{ location }}"/>
@@ -24,6 +25,7 @@
 {% for location in geolocation.history|slice:"1:" %}
     <li>
       <form class="location-history-form location-update-form" method="post" action="{% url geolocation:index %}">
+        {% csrf_token %}
         <input type="hidden" name="method" value="manual"/>
         <input type="hidden" name="accuracy" value="{{ location.accuracy }}"/>
         <input type="hidden" name="longitude" value="{{ location.location.0 }}"/>
@@ -33,6 +35,7 @@
         <input type="submit" value="{{ location.name }}"/>
       </form>
       <form class="location-history-form" method="post" action="{% url geolocation:favourites %}">
+        {% csrf_token %}
         <input type="hidden" name="action" value="add"/>
         <input type="hidden" name="accuracy" value="{{ location.accuracy }}"/>
         <input type="hidden" name="longitude" value="{{ location.location.0 }}"/>
@@ -59,6 +62,7 @@
 {% for id, location in geolocation.favourites.items %}
     <li>
       <form class="location-history-form location-update-form" method="post" action="{% url geolocation:index %}">
+        {% csrf_token %}
         <input type="hidden" name="method" value="manual"/>
         <input type="hidden" name="accuracy" value="{{ location.accuracy }}"/>
         <input type="hidden" name="longitude" value="{{ location.longitude }}"/>
@@ -68,6 +72,7 @@
         <input type="submit" value="{{ location.name }}"/>
       </form>
       <form class="location-history-form" method="post" action="{% url geolocation:favourites %}">
+        {% csrf_token %}
         <input type="hidden" name="action" value="remove"/>
         <input type="hidden" name="return_url" value="{{ full_path }}"/>
         <input type="hidden" name="id" value="{{ id }}"/>
@@ -84,6 +89,7 @@
 </div>
 
   <form class="location-history-form location-clear-form" method="post" action="{% url geolocation:clear %}">
+        {% csrf_token %}
     <p>
       <input type="hidden" name="return_url" value="{{ full_path }}"/>
       <input type="submit" value="Clear all location information"/>

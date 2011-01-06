@@ -3,6 +3,7 @@
 {% block content %}
 
 <form method="post" action=".">
+  {% csrf_token %}
   {{ user_sessions.management_form }}
   {{ external_service_tokens.management_form }}
 

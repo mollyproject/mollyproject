@@ -41,6 +41,7 @@
   <h2>Add a comment</h2>
   </div>
   <form method="post" action="{% comment_form_target %}">
+    {% csrf_token %}
     {{ form.content_type }}
     {{ form.object_pk }}
     {{ form.timestamp }}

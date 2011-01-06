@@ -15,6 +15,7 @@
 {% for result in results %}
     <li>
         <form method="post" action="{% url geolocation:index %}" class="submit-location-form">
+            {% csrf_token %}
             <input type="hidden" name="name" value="{{ result.name }}"/>
             <input type="hidden" name="longitude" value="{{ result.location.0 }}"/>
             <input type="hidden" name="latitude" value="{{ result.location.1 }}"/>
