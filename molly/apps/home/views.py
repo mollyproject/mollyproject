@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.conf import settings
@@ -7,7 +9,7 @@ from django.shortcuts import render_to_response
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
-
+from molly.favourites.utils import get_favourites
 from molly.wurfl import device_parents
 from molly import conf
 
@@ -37,6 +39,13 @@ class IndexView(BaseView):
             and not settings.DEBUG
             and conf.has_app('molly.apps.desktop')):
             return HttpResponseRedirect(reverse('desktop:index'))
+        
+        # Add any one-off messages to be shown to this user
+        messages = []
+        
+        if not request.session.get('opera_mini_warning', False) and request.browser.mobile_browser == u'Opera Mini':
+            messages.append('Please note that the "Mobile View" on Opera Mini does not display this site correctly. To ensure correct operation of this site, ensure "Mobile View" is set to Off in Opera settings')
+            request.session['opera_mini_warning'] = True
 
         applications = [{
             'application_name': app.application_name,
@@ -46,11 +55,18 @@ class IndexView(BaseView):
             'display_to_user': app.display_to_user,
         } for app in conf.all_apps()]
 
+        # Add accesskeys to the first 9 apps to be displayed to the user
+        for i, app in enumerate([app for app in applications if app['display_to_user']][:9]):
+            app['accesskey'] = i + 1
+
         context = {
             'applications': applications,
             'hide_feedback_link': True,
+            'is_christmas': datetime.now().month == 12,
+            'messages': messages,
+            'favourites': get_favourites(request),
         }
-        return self.render(request, context, 'home/index')
+        return self.render(request, context, 'home/index', expires=timedelta(minutes=10))
 
     def get_metadata(self, request):
         return {
@@ -83,6 +99,7 @@ class StaticDetailView(BaseView):
 
 def handler500(request):
     context = {
+        'request': request,
         'MEDIA_URL': settings.MEDIA_URL,
     }
 

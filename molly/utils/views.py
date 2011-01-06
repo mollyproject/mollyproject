@@ -1,3 +1,5 @@
+from email.utils import formatdate
+from time import mktime
 from inspect import isfunction
 import logging, itertools
 from datetime import datetime, date
@@ -154,7 +156,7 @@ class BaseView(object):
             zoom = min(max(10, zoom), 18)
         return zoom
 
-    def render(self, request, context, template_name):
+    def render(self, request, context, template_name, expires=None):
         context.pop('exposes_user_data', None)
 
         if 'format' in request.REQUEST:
@@ -171,15 +173,23 @@ class BaseView(object):
 
         # Stop external sites from grabbing JSON representations of pages
         # which contain sensitive user information.
-        offsite_referrer = 'HTTP_REFERER' in request.META and request.META['HTTP_REFERER'].split('/')[2] != request.META.get('HTTP_HOST')
+        try:
+            offsite_referrer = 'HTTP_REFERER' in request.META and request.META['HTTP_REFERER'].split('/')[2] != request.META.get('HTTP_HOST')
+        except IndexError:
+            # Malformed referrers (i.e., those not containing a full URL) throw this
+            offsite_referrer = True
 
         for renderer in renderers:
             if renderer.format != 'html' and context.get('exposes_user_data') and offsite_referrer:
                 continue
             try:
-                return renderer(request, context, template_name)
+                response = renderer(request, context, template_name)
             except NotImplementedError:
                 continue
+            else:
+                if expires is not None:
+                    response['Expires'] = formatdate(mktime((datetime.now() + expires).timetuple()))
+                return response
         else:
             tried_mimetypes = list(itertools.chain(*[r.mimetypes for r in renderers]))
             response = HttpResponse("""\
@@ -222,7 +232,7 @@ Supported ranges are:
             raise NotImplementedError
         return render_to_response(template_name+'.html',
                                   context, context_instance=RequestContext(request),
-                                  mimetype='text/html')
+                                  mimetype='text/html;charset=UTF-8')
 
     @renderer(format="xml", mimetypes=('application/xml', 'text/xml'))
     def render_xml(self, request, context, template_name):
@@ -256,15 +266,15 @@ class ZoomableView(BaseView):
     default_zoom = None
 
     def initial_context(self, request, *args, **kwargs):
+        context = super(ZoomableView, self).initial_context(request, *args, **kwargs)
         try:
             zoom = int(request.GET['zoom'])
         except (KeyError, ValueError):
             zoom = self.default_zoom
         else:
             zoom = min(max(10, zoom), 18)
-        return {
-            'zoom': zoom,
-        }
+        context['zoom'] = zoom
+        return context
 
 # FIXME:
 #       Block rendering methods, from http://djangosnippets.org/942

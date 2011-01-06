@@ -2,6 +2,7 @@ import urllib, urllib2, urlparse, logging
 from datetime import datetime, timedelta
 
 from django.conf import settings
+from django.contrib.auth import logout
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponse
 from django.forms.util import ErrorList
@@ -35,8 +36,6 @@ class SecureView(BaseView):
         if last_accessed < datetime.now() - timedelta(minutes=timeout_period) and getattr(self.conf, 'enforce_timeouts', True):
             return TimedOutView(request, self, *args, **kwargs)
         request.secure_session['last_accessed'] = datetime.now()
-
-        print type(self).__mro__
 
         return super(SecureView, self).__call__(request, *args, **kwargs)
 
@@ -114,7 +113,6 @@ class IndexView(SecureView):
         forms = context['form'], context['user_sessions'], context['external_service_tokens']
         
         if not all(form.is_valid() for form in forms):
-            print [form.errors for form in forms]
             return self.render(request, context, 'auth/index')
             
         if context['has_pin'] and form.cleaned_data['old_pin'] != request.secure_session['pin']:
@@ -158,6 +156,7 @@ class ClearSessionView(SecureView):
         return self.render(request, context, 'auth/clear_session')
     def handle_POST(self, request, context):
         UserSession.objects.filter(secure_session_key = request.secure_session.session_key).delete()
+        logout(request)
         if context['return_url']:
             return HttpResponseRedirect(context['return_url'])
         else:

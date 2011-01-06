@@ -2,24 +2,6 @@
 
 {% block content %}
 
-
-{# Favourites List (if exists) #}
-{% if preferences.maps.favourites %}
-<div class="section">
-  <h2>Favourites</h2>
-  <ul>
-    {% for entity_ref in preferences.maps.favourites %}
-      {% with entity_ref|get_entity as entity %}
-        <li><a href="{{ entity.get_absolute_url }}">{{ entity.title }}</a></li>
-      {% endwith %}
-    {% endfor %}
-  </ul>
-</div>
-{% endif %}
-{# End Favourites List #}
-
-
-
 {# Places Search #}
 {% search_form %}
 <form method="get" action="{% url search:index %}">
@@ -31,10 +13,10 @@
                 {{ search_form.query }}
         </td><td>
                 <input type="hidden" name="application" value="places" title="Search Places" />
-                {% ifequal style_group "dumb" %}
+                {% ifequal style_group "groups-dumb" %}
                     <button type="submit">Go!</button>
                 {% else %}
-                	<input type="image" src="{{ MEDIA_URL }}site/png/new/buttons/search-button.png" title="Search" />
+                	<input type="image" src="{{ MEDIA_URL }}site/png/new/buttons/search-button.png" title="Search" alt="Search" />
                 {% endifequal %}
         </td></tr>    
         <tr><td>
@@ -48,8 +30,10 @@
 
 {# Points of Interest #}
 <div class="section">
+<div class="header">
   <h2>Points of Interest</h2>
   {% include "geolocation/update_location_embed.html" %}
+</div>
   <ul class="link-list">
     <li><a href="{% url places:nearby-list %}">Near Me</a></li>
     <li class="round-bottom"><a href="{% url places:category-list %}">By Category</a></li>

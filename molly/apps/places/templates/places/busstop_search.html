@@ -5,7 +5,9 @@
 {% block content %}
 {% if search_form.is_valid %}
 	<div class="section">
+<div class="header">
 	  <h2>Results</h2>
+</div>
 	{% if entities %}
 	  <ul>
 	{% for entity in entities %}

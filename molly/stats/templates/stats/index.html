@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="section">
+  <div class="header">
+    <h2>Hit Analysis</h2>
+  </div>
+
+  <ul class="link-list">
+    <li><a href="{% url stats:popular-pages %}">Most Popular Pages</a></li>
+    <li><a href="{% url stats:slow-pages %}">Slow Pages</a></li>
+    <li><a href="{% url stats:popular-404s %}">Most Popular 404s</a></li>
+    <li><a href="{% url stats:popular-devices %}">Most Popular Devices</a></li>
+  </ul>
+
+</div>
+
+{% endblock %}

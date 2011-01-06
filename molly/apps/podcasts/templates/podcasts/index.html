@@ -33,10 +33,10 @@
                 {{ search_form.query }}
         </td><td>
                 <input type="hidden" name="application" value="podcasts" title="Search Podcasts" />
-                {% ifequal style_group "dumb" %}
+                {% ifequal style_group "groups-dumb" %}
                     <button type="submit">Go!</button>
                 {% else %}
-                	<input type="image" src="{{ MEDIA_URL }}site/png/new/buttons/search-button.png" title="Search" />
+                	<input type="image" src="{{ MEDIA_URL }}site/png/new/buttons/search-button.png" title="Search" alt="Search"/>
                 {% endifequal %}
         </td></tr><tr><td>
                 <p class="help-bubble top">Try searching for a podcast by subject, name or author</p>
@@ -44,14 +44,6 @@
 </table>
 </form>
 {# End Podcasts Search #}
-
-
-
-
-<ul class="stand-alone link-list round-top">
-	<li><a href="{% url podcasts:podcast "top-downloads" %}">Top downloads from iTunes U</a></li>
-</ul>
-
 
 <div class="section" >
   <div class="header">

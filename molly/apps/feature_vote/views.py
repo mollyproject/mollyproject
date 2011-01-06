@@ -7,7 +7,7 @@ from django.http import HttpResponseForbidden
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
 from molly.utils.http import HttpResponseSeeOther
-from molly.utils.email import send_email
+from molly.utils import send_email
 
 from .models import Feature
 from .forms import FeatureForm

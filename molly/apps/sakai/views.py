@@ -226,7 +226,7 @@ def annotate_poll(poll):
         'hasVoted': bool(poll['currentUserVotes']),
     })
     poll['isOpen'] = poll['hasOpened'] and not poll['hasClosed']
-    poll['mayVote'] = poll['isOpen'] and not poll['hasVoted'] and not poll['multiVote']
+    poll['mayVote'] = poll['isOpen'] and not poll['hasVoted']
 
 class PollIndexView(SakaiView):
     force_auth = True
@@ -259,14 +259,9 @@ class PollIndexView(SakaiView):
 
 class PollDetailView(SakaiView):
     def initial_context(self, request, id):
-        try:
-            url = self.build_url('direct/poll/%s.json' % id)
-            poll = simplejson.load(request.urlopen(url))
-        except urllib2.HTTPError, e:
-            if e.code == 404:
-                raise Http404
-            else:
-                raise
+        
+        url = self.build_url('direct/poll/%s.json' % id)
+        poll = simplejson.load(request.urlopen(url))
 
         url = self.build_url('direct/poll/%s/option.json' % id)
         options = simplejson.load(request.urlopen(url))
@@ -276,11 +271,9 @@ class PollDetailView(SakaiView):
             url = self.build_url('direct/poll/%s/vote.json' % id)
             votes = simplejson.load(request.urlopen(url))
             votes = votes["poll-vote_collection"]
-        except urllib2.HTTPError, e:
-            if e.code != 403:
-                raise
+        except PermissionDenied:
             max_votes, vote_count = None, None
-
+        
         else:
             pollOptions, max_votes, vote_count = {}, 0, len(votes)
             for option in options:
@@ -322,15 +315,22 @@ class PollDetailView(SakaiView):
     def handle_POST(self, request, context, id):
         if not context['poll']['mayVote']:
             return HttpResponseSeeOther(request.path)
-        if not int(request.POST.get('pollOption', -1)) in (option['optionId'] for option in context['options']):
-            return HttpResponseBadRequest()
+        
+        # Check poll boundaries
+        if len(request.POST.getlist('pollOption')) > context['poll']['maxOptions'] or \
+           len(request.POST.getlist('pollOption')) < context['poll']['minOptions']:
+            context['error'] = 'You must select between %d and %d options' % (context['poll']['minOptions'], context['poll']['maxOptions'])
+            return self.handle_GET(request, context, id)
         try:
+            data = [('pollId', int(id))]
+            for option in request.POST.getlist('pollOption'):
+                if not int(option) in (option['optionId'] for option in context['options']):
+                    return HttpResponseBadRequest()
+                data.append(('pollOption', int(option)))
             response = request.opener.open(
-                self.build_url('direct/poll-vote/new'),
-                data = urllib.urlencode({
-                    'pollId': int(id),
-                    'pollOption': int(request.POST['pollOption']),
-            }))
+                self.build_url('direct/poll-vote/%s' % ('vote.json' if len(request.POST.getlist('pollOption')) > 1 else 'new')),
+                data = urllib.urlencode(data)
+            )
         except urllib2.HTTPError, e:
             if e.code in (201, 204):
                 pass
@@ -390,11 +390,7 @@ class EvaluationDetailView(SakaiView):
         data = request.raw_post_data if request.method == 'POST' else None
         response = request.urlopen(url, data)
         evaluation = etree.parse(response, parser = etree.HTMLParser(recover=False))
-
-        print etree.tostring(evaluation)
         evaluation = transform(evaluation, 'sakai/evaluation/detail.xslt', {'id': id})
-        
-        print etree.tostring(evaluation)
 
         # The evaluations tool doesn't give us a non-OK status if we need to authenticate. Instead,
         # we need to check for the login box (handily picked out by the XSL stylesheet).
@@ -408,7 +404,6 @@ class EvaluationDetailView(SakaiView):
             'response_url': response.geturl(),
         }
         add_children_to_context(evaluation, context)
-        print context['state_message']
         return context
 
     @BreadcrumbFactory
@@ -439,7 +434,6 @@ class EvaluationDetailView(SakaiView):
         return self.render(request, context, 'sakai/evaluation/detail')
 
     def handle_POST(self, request, context, id):
-        print context['response_url']
         if context['response_url'].startswith(self.build_url('direct/eval-evaluation/%s/take_eval?' % id)):
             return self.handle_GET(request, context, id)
 

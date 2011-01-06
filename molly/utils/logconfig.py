@@ -3,7 +3,7 @@ import logging, inspect, traceback, hashlib, pprint, datetime
 from django.http import HttpRequest
 from django.conf import settings
 
-from . import email
+from . import send_email
 
 class EmailHandler(logging.Handler):
     _NOT_EXTRA = (
@@ -47,7 +47,7 @@ class EmailHandler(logging.Handler):
         # two elements of the traceback.
         hash = hashlib.sha1()
         hash.update('%d' % record.levelno)
-        hash.update(record.msg)
+        hash.update(str(record.msg))
         hash.update('%d%s' % (record.lineno, record.pathname))
 
 
@@ -61,7 +61,7 @@ class EmailHandler(logging.Handler):
 
         context['hash'] = hash.hexdigest()[:8]
 
-        email.send_email(request, context, 'utils/log_record.eml')
+        send_email(request, context, 'utils/log_record.eml')
 
 def configure_logging(conf):
     if settings.DEBUG:

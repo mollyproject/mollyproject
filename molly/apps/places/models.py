@@ -14,7 +14,7 @@ class Source(models.Model):
     def __unicode__(self):
         return self.name
     
-IDENTIFIER_SCHEME_PREFERENCE = ('atco', 'oxpoints', 'osm', 'naptan', 'postcode')
+IDENTIFIER_SCHEME_PREFERENCE = ('atco', 'oxpoints', 'osm', 'naptan', 'postcode', 'bbc-tpeg')
 
 class EntityType(models.Model):
     slug = models.SlugField()
@@ -177,10 +177,11 @@ class Entity(models.Model):
 
     @property
     def display_id(self):
-        if self.entity_type.slug == 'postcode':
-            return getattr(self, self.entity_type.id_field).strip()
-        else:
-            return getattr(self, self.entity_type.id_field)
+        for et in self.all_types.all():
+            if et.slug == 'postcode':
+                return getattr(self, et.id_field).strip()
+            else:
+                return getattr(self, et.id_field)
             
     def simplify_for_render(self, simplify_value, simplify_model):
         return simplify_value({

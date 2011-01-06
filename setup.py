@@ -1,5 +1,6 @@
 from distutils.core import setup
 from distutils.command.install import INSTALL_SCHEMES
+from molly import __version__ as molly_version
 import os
 
 #################################
@@ -51,7 +52,7 @@ for dirpath, dirnames, filenames in os.walk(molly_dir):
 
 setup(
     name = 'molly',
-    version = '0.3',
+    version = molly_version,
     url = 'http://mollyproject.org/',
     author = 'University of Oxford',
     description ="A framework for building mobile information portals",

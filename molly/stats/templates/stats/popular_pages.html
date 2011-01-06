@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="section">
+  <div class="header">
+    <h2>{{ title }}</h2>
+  </div>
+    
+    <table class="content">
+      <thead>
+        <tr>
+          <th>Page</th>
+          <th>Requests</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for page in pages %}
+        <tr>
+          <td><a href="{{ page.full_path }}">{{ page.full_path }}</a></td>
+          <td>{{ page.count }}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+</div>
+
+{% endblock %}

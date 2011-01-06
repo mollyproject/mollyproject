@@ -1,10 +1,22 @@
+{% load molly_utils %}
 {% if entity.metadata.real_time_information %}
-
-  <h2>Real-time departure information - {% now "G:i:s "%}</h2>
-
+    {% if entity.metadata.real_time_information.pip_info %}
+    <ul class="content-list no-round-bottom">
+        <li>{% for info in entity.metadata.real_time_information.pip_info %}
+ 	{{ info|sanitize_html }}{% if not forloop.last %}<br/>{% endif %}
+        {% endfor %}</li>
+    </ul>
+    {% else %}
+    <ul class="content-list no-round-bottom">
+        {% if not entity.metadata.real_time_information.services %}
+            <li>Sorry, there is currently no bus time information for this stop.</li>
+        {% endif %}
+    </ul>
+    {% endif %}
   {% if entity.metadata.real_time_information.services %}
-<div class="pad-5">
-<table class="real-time-information">
+ <div class="section-content no-round-bottom">
+  <div class="pad-5">
+   <table class="real-time-information">
     <thead style="display:none;">
         <tr>
             <th>Service</th>
@@ -24,20 +36,9 @@
         </tr>
     {% endfor %}
     </tbody>
-</table>
-</div>
-
-  {% else %}
-<div class="note"><div class="bubble pad-10">
-    {% if entity.metadata.real_time_information.pip_info %}
-      {{ entity.metadata.real_time_information.pip_info }}
-    {% else %}
-      Sorry, there is currently no bus time information for this stop.
-    {% endif %}
-</div></div>
+   </table>
+  </div>
+ </div>
   {% endif %}
-
-{% else %}
-  <h2>Map</h2>
 
 {% endif %}

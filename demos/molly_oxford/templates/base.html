@@ -1,5 +1,5 @@
 {% load portal_misc %}{% load compressed %}<!DOCTYPE HTML>
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-GB" lang="en-GB" manifest="/static/app-cache.manifest">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-GB" lang="en-GB">
 <head>
         <title>{% block title %}m.ox | {{ breadcrumbs.4 }}{% endblock %}</title>
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1"/>
@@ -15,11 +15,12 @@
 {% endif %}
 
   {% compressed_css style_group %}
-  <link rel="icon" type="image/png" href="{{ MEDIA_URL }}png/favicon.png"/>{% if device|device_has_parent:"apple_iphone_ver4" or browser.svgt_1_1 %}
-  {% compressed_css 'svg' %}
-{% endif %}
+  <link rel="icon" type="image/png" href="{{ MEDIA_URL }}png/favicon.png"/>
+  {% if device|device_has_parent:"apple_generic" or browser.svgt_1_1 %}
+    {% compressed_css 'svg' %}
+  {% endif %}
 
-{% if device|device_has_parent:"apple_iphone_ver1" %}
+{% if device|device_has_parent:"apple_generic" %}
     <link rel="apple-touch-icon" href="{{ MEDIA_URL}}site/png/apple-touch-icon.png"/>
     <link rel="apple-touch-startup-image" href="{{ MEDIA_URL}}site/png/apple-touch-startup-image.jpg">
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -40,7 +41,7 @@
 
 {% block header %}
 
-{% ifnotequal style_group "dumb" %}
+{% ifnotequal style_group "groups-dumb" %}
     <div id="bc-header">
       <ol id="bc">
         <li><a href="{% url home:index %}">
@@ -56,8 +57,9 @@
         </a></li>
     {% endif %}{% endif %}
       </ol> 
-      <div id="bc-title">
+      <div id="bc-title"{% if is_favouritable %} class="with-favourite"{% endif %}>
         <h1 class="{% if not breadcrumbs.2 %}{{ breadcrumbs.0 }}-header with-icon{% endif %}">{{ breadcrumbs.4 }}</h1>
+        {% include "favourite.html" %}
       </div>
     </div>
 {% else %}
@@ -71,6 +73,7 @@
          <div id="bc-title">
            <h1>{{ breadcrumbs.4 }}</h1>
          </div>
+	{% include "favourite.html" %}
        </div>
 {% endifnotequal %}
 

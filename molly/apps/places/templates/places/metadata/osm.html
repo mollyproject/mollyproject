@@ -3,6 +3,7 @@
 {% if entity|osm_tags or entity.metadata.osm.tags.phone or entity.metadata.osm.tags.wikipedia or entity.metadata.osm.tags.url %}
 
 <div class="section">
+<div class="header">
   <h2>Information from OpenStreetMap</h2>
 {% if entity|osm_tags %}
   <div class="article"><div class="bubble pad-5">
@@ -14,7 +15,7 @@
     </dl>
   </div></div>
 {% endif %}
-
+</div>
 <ul class="link-list">
 {% if entity.metadata.osm.tags.phone %}
     <li>

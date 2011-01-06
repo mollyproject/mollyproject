@@ -19,6 +19,8 @@ def _cached(getargsfunc):
                 return Geocode.recent.get(local_name=app.local_name, **args).results
             except Geocode.DoesNotExist:
                 pass
+            except Geocode.MultipleObjectsReturned:
+                Geocode.recent.filter(local_name=app.local_name, **args).delete()
             results = f(providers=app.providers, **args)
 
             i = 0
@@ -51,7 +53,6 @@ def _cached(getargsfunc):
 def geocode(query, providers):
     results = []
     for provider in providers:
-        print "PROVIDER", provider
         results += provider.geocode(query)
     return results
 
@@ -59,7 +60,6 @@ def geocode(query, providers):
 def reverse_geocode(lon, lat, providers):
     results = []
     for provider in providers:
-        print "PROVIDER", provider
         results += provider.reverse_geocode(lon, lat)
     return results
 

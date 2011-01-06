@@ -120,6 +120,9 @@ class OxpointsMapsProvider(BaseMapsProvider):
                 entity = Entity.objects.get(source=source, _identifiers__scheme='oxpoints', _identifiers__value=oxpoints_id)
             except Entity.DoesNotExist:
                 entity = Entity(source=source)
+            except Entity.MultipleObjectsReturned:
+                Entity.objects.filter(source=source, _identifiers__scheme='oxpoints', _identifiers__value=oxpoints_id).delete()
+                entity = Entity(source=source)
 
             entity.title = datum.get('oxp_fullyQualifiedTitle', datum.get('dc_title', ''))
             entity.primary_type = self.entity_types[self.OXPOINTS_TYPES[oxpoints_type][0]]

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="section">
+  <div class="header">
+    <h2>Pages that take a long time to generate (top 20)</h2>
+  </div>
+    
+    <table class="content">
+      <thead>
+        <tr>
+          <th>Page</th>
+          <th>Average Generation Time</th>
+          <th>Requests</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for slow_page in slow_pages %}
+        <tr>
+          <td><a href="{{ slow_page.full_path }}">{{ slow_page.full_path }}</a></td>
+          <td>{{ slow_page.average_response|floatformat:"3" }} s</td>
+          <td>{{ slow_page.count }}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+</div>
+
+{% endblock %}

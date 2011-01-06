@@ -36,7 +36,7 @@ class UserIdentifier(models.Model):
 
 class UserSession(models.Model):
     user = models.ForeignKey(User)
-    secure_session_key = models.CharField(max_length=40)
+    secure_session_key = models.CharField(max_length=40, unique=True)
 
     device_name = models.TextField()
     last_used = models.DateTimeField(auto_now=True)

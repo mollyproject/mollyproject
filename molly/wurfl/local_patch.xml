@@ -24,10 +24,39 @@
 
         <!-- Chrome -->
         <device user_agent="Mozilla/5.0 (Windows; U; Windows NT 5.1) AppleWebKit/532.0 (KHTML, like Gecko) Chrome/3.0.195.32 Safari/532.0" fall_back="google_chrome_2" id="google_chrome_3"/>
-        <device user_agent="Mozilla/5.0 (X11; U; Linux x86_64; en-US) AppleWebKit/533.4 (KHTML, like Gecko) Chrome/5.0.375.38 Safari/533.4" fall_back="google_chrome_2" id="google_chrome_4"/>
+        <device user_agent="Mozilla/5.0 (X11; U; Linux x86_64; en-US) AppleWebKit/533.4 (KHTML, like Gecko) Chrome/5.0.375.38 Safari/533.4" fall_back="google_chrome_3" id="google_chrome_4"/>
+	<device user_agent="Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/534.7 (KHTML, like Gecko) Chrome/7.0.517.44 Safari/534.7" fall_back="google_chrome_4" id="google_chrome_7"/>
+	<device user_agent="Mozilla/5.0 (X11; U; Linux i686; en-US) AppleWebKit/534.11 (KHTML, like Gecko) Chrome/8.0.560.0 Safari/534.11" fall_back="google_chrome_7" id="google_chrome_8"/>
         
         <!-- Opera Mobile -->
         <device user_agent="Opera/9.80 (S60; SymbOS; Opera Mobi/499; U) Presto/2.4.18 Version/10.009" fall_back="generic_opera_mobi" id="opera_mobi_ver10"/>
+	
+	
+
+  <!-- IOS 4.2.1, temporary patch until it gets into the main WURFL -->
+  <device id="apple_iphone_ver4_2_1" user_agent="Mozilla/5.0 (iPhone; U; CPU iPhone OS 4_2_1 like Mac OS X; en_us) AppleWebKit/533.17.9 (KHTML, like Gecko)" fall_back="apple_iphone_ver4_2">
+    <group id="product_info">
+      <capability name="device_os_version" value="4.2.1"/>
+      <capability name="model_extra_info" value="4.2.1"/>
+      <capability name="release_date" value="2010_november"/>
+    </group>
+  </device>
+  
+  <device id="apple_ipad_ver1_sub421" user_agent="Mozilla/5.0 (iPad; U; CPU iPhone OS 4_2_1 like Mac OS X; en_us) AppleWebKit/533.17.9 (KHTML, like Gecko)" fall_back="apple_ipad_ver1_sub42">
+    <group id="product_info">
+      <capability name="device_os_version" value="4.2.1"/>
+      <capability name="release_date" value="2010_november"/>
+    </group>
+  </device>
+  
+  <device id="apple_ipod_touch_ver4_2_1" user_agent="Mozilla/5.0 (iPod; U; CPU iPhone OS 4_2_1 like Mac OS X; en_us) AppleWebKit/533.17.9 (KHTML, like Gecko)" fall_back="apple_ipod_touch_ver4_1">
+    <group id="product_info">
+      <capability name="device_os_version" value="4.2.1"/>
+      <capability name="model_extra_info" value="4.2.1"/>
+      <capability name="release_date" value="2010_november"/>
+    </group>
+  </device>
+  <device id="apple_ipod_touch_ver4_2_1_subua" user_agent="Mozilla/5.0 (iPod touch; U; CPU iPhone OS 4_2_1 like Mac OS X; en_us) AppleWebKit/533.17.9 (KHTML, like Gecko)" fall_back="apple_ipod_touch_ver4_2_1"/>
         
 	</devices>
 

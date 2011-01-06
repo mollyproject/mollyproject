@@ -1,10 +1,12 @@
 import threading, urllib
 from lxml import etree
+import re
 
 from molly.apps.places.providers import BaseMapsProvider
 
 class OxontimeMapsProvider(BaseMapsProvider):
     OXONTIME_URL = 'http://www.oxontime.com/pip/stop.asp?naptan=%s&textonly=1'
+    OXONTIME_MESSAGE_URL = 'http://www.oxontime.com/pip/stop_simulator_message.asp?NaPTAN=%s'
     
     def augment_metadata(self, entities):
         threads = []
@@ -32,7 +34,9 @@ class OxontimeMapsProvider(BaseMapsProvider):
             except AttributeError:
                 rows = []
             try:
-                pip_info = xml.find(".//p[@class='pipdetail']").text
+                messages_page = urllib.urlopen(self.OXONTIME_MESSAGE_URL % entity.identifiers['atco']).read()
+                pip_info = re.findall(r'msgs\[\d+\] = "(?P<message>[^"]+)"', messages_page)
+                pip_info = filter(lambda pip: pip != '&nbsp;', pip_info)
             except:
                 pip_info = None
 

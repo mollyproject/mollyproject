@@ -21,8 +21,14 @@ def unify_users(request):
     identifier_namespaces = set(i.namespace for i in user.useridentifier_set.all())
 
     root_user = min(users, key=lambda u:u.date_joined)
-
-    for u in users:
+    
+    # Need to do the root_user first, otherwise if it's after the current user,
+    # tokens get assigned from the current user to the root user, and then
+    # removed from the root user, because it's not the current user.
+    # We accomplish this by sorting the set into a list, with a custom
+    # comparison function which gives the root_user the lowest value (and so is
+    # first)
+    for u in sorted(users, cmp=lambda x, y: -1 if x == root_user else 1 if y == root_user else 0):
 
         u.usersession_set.all().update(user=root_user)
 
