@@ -31,6 +31,7 @@
 {% else %}
 
 <form method="post" action="{% url geolocation:index %}" class="manual-update-form">
+        {% csrf_token %}
         <label for="location-name">Set a new location</label>:
         <input id="return_url" name="return_url" type="hidden" value="{{ return_url|default:"" }}"/>
         <input id="location-name" name="name" value="{{ location }}"/>
