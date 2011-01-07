@@ -1,5 +1,5 @@
 body {
-    background:#bbc4ce url('../../../site/png/new/gradients/backdrop-iphone.png') repeat-x top;
+    background:#bbc4ce url('../../site/png/new/gradients/backdrop-iphone.png') repeat-x top;
     font-family: "Liberation Sans", sans-serif;
     font-size:9pt;
     -webkit-text-size-adjust: none;
@@ -83,18 +83,18 @@ ol.icon-menu li a {
     text-decoration:none;
     color: #002147;
 }
-li#menu-contact {background-image:url('../../../site/png/index-icons/contact.png');}
-li#menu-places {background-image:url('../../../site/png/index-icons/places.png');}
-li#menu-podcasts {background-image:url('../../../site/png/index-icons/podcasts.png');}
-li#menu-webcams {background-image:url('../../../site/png/index-icons/webcams.png');}
-li#menu-news {background-image:url('../../../site/png/index-icons/news.png');}
-li#menu-events {background-image:url('../../../site/png/index-icons/events.png');}
-li#menu-results {background-image:url('../../../site/png/index-icons/results.png');}
-li#menu-library {background-image:url('../../../site/png/index-icons/library.png');}
-li#menu-weather {background-image:url('../../../site/png/index-icons/weather.png');}
-li#menu-weblearn {background-image:url('../../../site/png/index-icons/weblearn.png');}
-li#menu-service_status {background-image:url('../../../site/png/index-icons/service_status.png');}
-li#menu-transport {background-image:url('../../../site/png/index-icons/transport.png');}
+li#menu-contact {background-image:url('../../site/png/index-icons/contact.png');}
+li#menu-places {background-image:url('../../site/png/index-icons/places.png');}
+li#menu-podcasts {background-image:url('../../site/png/index-icons/podcasts.png');}
+li#menu-webcams {background-image:url('../../site/png/index-icons/webcams.png');}
+li#menu-news {background-image:url('../../site/png/index-icons/news.png');}
+li#menu-events {background-image:url('../../site/png/index-icons/events.png');}
+li#menu-results {background-image:url('../../site/png/index-icons/results.png');}
+li#menu-library {background-image:url('../../site/png/index-icons/library.png');}
+li#menu-weather {background-image:url('../../site/png/index-icons/weather.png');}
+li#menu-weblearn {background-image:url('../../site/png/index-icons/weblearn.png');}
+li#menu-service_status {background-image:url('../../site/png/index-icons/service_status.png');}
+li#menu-transport {background-image:url('../../site/png/index-icons/transport.png');}
 /* End Index Page Specific */
 
 
@@ -102,7 +102,7 @@ li#menu-transport {background-image:url('../../../site/png/index-icons/transport
 div#bc-header {
     height:34px;
     width: 100%;
-    background:url('../../../site/png/new/gradients/bc-gradient.png') repeat-x top;
+    background:url('../../site/png/new/gradients/bc-gradient.png') repeat-x top;
     overflow:hidden;
 }
 ol#bc {
@@ -111,7 +111,7 @@ ol#bc {
     display:block;
 }
 ol#bc li {
-    background-image:url('../../../site/png/sep.png');
+    background-image:url('../../site/png/sep.png');
     background-repeat:no-repeat;
     background-position: center right;
     padding-right: 10px;
@@ -155,19 +155,19 @@ div#bc-title h1.with-icon {
     background-position: left center;
     padding-left: 34px; /* Moves text to allow background breadcrumb image to coexist */
 }
-div#bc-title h1.places-header {     background-image:url('../../../site/png/index-icons/places-bc.png');}
-div#bc-title h1.contact-header {  background-image:url('../../../site/png/index-icons/contact-bc.png');}
-div#bc-title h1.webcams-header {  background-image:url('../../../site/png/index-icons/webcams-bc.png');}
-div#bc-title h1.podcasts-header { background-image:url('../../../site/png/index-icons/podcasts-bc.png');}
-div#bc-title h1.results-header {  background-image:url('../../../site/png/index-icons/results-bc.png');}
-div#bc-title h1.library-header {    background-image:url('../../../site/png/index-icons/library-bc.png');}
-div#bc-title h1.news-header {      background-image:url('../../../site/png/index-icons/news-bc.png');}
-div#bc-title h1.events-header {      background-image:url('../../../site/png/index-icons/events-bc.png');}
-div#bc-title h1.weather-header {  background-image:url('../../../site/png/index-icons/weather-bc.png');}
-div#bc-title h1.service_status-header {  background-image:url('../../../site/png/index-icons/service_status-bc.png');}
-div#bc-title h1.weblearn-header {  background-image:url('../../../site/png/index-icons/weblearn-bc.png');}
-div#bc-title h1.feature_vote-header {  background-image:url('../../../site/png/index-icons/feature_vote-bc.png');}
-div#bc-title h1.auth-header {  background-image:url('../../../site/png/index-icons/auth-bc.png');}
+div#bc-title h1.places-header {     background-image:url('../../site/png/index-icons/places-bc.png');}
+div#bc-title h1.contact-header {  background-image:url('../../site/png/index-icons/contact-bc.png');}
+div#bc-title h1.webcams-header {  background-image:url('../../site/png/index-icons/webcams-bc.png');}
+div#bc-title h1.podcasts-header { background-image:url('../../site/png/index-icons/podcasts-bc.png');}
+div#bc-title h1.results-header {  background-image:url('../../site/png/index-icons/results-bc.png');}
+div#bc-title h1.library-header {    background-image:url('../../site/png/index-icons/library-bc.png');}
+div#bc-title h1.news-header {      background-image:url('../../site/png/index-icons/news-bc.png');}
+div#bc-title h1.events-header {      background-image:url('../../site/png/index-icons/events-bc.png');}
+div#bc-title h1.weather-header {  background-image:url('../../site/png/index-icons/weather-bc.png');}
+div#bc-title h1.service_status-header {  background-image:url('../../site/png/index-icons/service_status-bc.png');}
+div#bc-title h1.weblearn-header {  background-image:url('../../site/png/index-icons/weblearn-bc.png');}
+div#bc-title h1.feature_vote-header {  background-image:url('../../site/png/index-icons/feature_vote-bc.png');}
+div#bc-title h1.auth-header {  background-image:url('../../site/png/index-icons/auth-bc.png');}
 /* End Breadcrumb Trail Styles */
 
 
@@ -228,7 +228,7 @@ ul.link-list li a, ol.search-results li a {
     text-align: left;
     background-position: right center;
     background-repeat: no-repeat;
-    background-image:url('../../../site/png/icons/list-arrow.png'); /* Default background image */
+    background-image:url('../../site/png/icons/list-arrow.png'); /* Default background image */
 }
 /* End Link-List */
 
@@ -240,12 +240,12 @@ ul.stand-alone {
 
 
 /* Background images primarily for list items */
-ul.link-list li a.phone {background-image:url('../../../site/png/icons/list-phone.png');}
-ul.link-list li a.email {background-image:url('../../../site/png/icons/list-email.png');}
-ul.link-list li a.external {background-image:url('../../../site/png/icons/list-external.png');}
-ul.link-list li a.external-mobile {background-image:url('../../../site/png/icons/list-external-mobile.png');}
-ul.link-list li a.audio {background-image:url('../../../site/png/icons/list-audio.png');}
-ul.link-list li a.video {background-image:url('../../../site/png/icons/list-video.png');}
+ul.link-list li a.phone {background-image:url('../../site/png/icons/list-phone.png');}
+ul.link-list li a.email {background-image:url('../../site/png/icons/list-email.png');}
+ul.link-list li a.external {background-image:url('../../site/png/icons/list-external.png');}
+ul.link-list li a.external-mobile {background-image:url('../../site/png/icons/list-external-mobile.png');}
+ul.link-list li a.audio {background-image:url('../../site/png/icons/list-audio.png');}
+ul.link-list li a.video {background-image:url('../../site/png/icons/list-video.png');}
     /* End background images for list items */
 /* End Standard List Styles */
 
@@ -452,7 +452,7 @@ table.real-time-information tr {
 button, input[type="submit"], input[type="reset"] {
     display: inline-block;
     color: #fff;
-    background: #838791 url(../../../site/png/new/buttons/btn.bg.png) repeat-x 0px 0px;
+    background: #838791 url(../../site/png/new/buttons/btn.bg.png) repeat-x 0px 0px;
     padding:5px 10px 6px 10px;
     font-weight:bold;
     text-shadow: 1px 1px 1px #111;
@@ -655,7 +655,7 @@ ul.content-list li.superuser-comment {
 
 /* div.section is now 'legacy' - it should be replaced by div.section and one of the above */
 div.section {
-    background:#B88C54 url('../../../site/png/new/gradients/gradient-50-nrWhite-Transparent.png') repeat-x;
+    background:#B88C54 url('../../site/png/new/gradients/gradient-50-nrWhite-Transparent.png') repeat-x;
     margin:10px;
     -webkit-border-radius:8px; -moz-border-radius: 8px; border-radius: 8px;
     -moz-box-shadow: 2px 2px 2px #333; -webkit-box-shadow: 2px 2px 2px #333; box-shadow: 2px 2px 2px #333;
@@ -784,7 +784,7 @@ table.content > *:last-child > tr:last-child > *:last-child {
 }
 
 div.button {
-    background:#002147 url('../../../site/png/icons/list-arrow.png') no-repeat;
+    background:#002147 url('../../site/png/icons/list-arrow.png') no-repeat;
     background-position: right center;
 
 	 margin: 4px 2px 4px auto;
@@ -829,7 +829,7 @@ small {
 #favourite
 {
     background-color: transparent;
-    background-image: url('../../../favourites/png/star-grey.png');
+    background-image: url('../../favourites/png/star-grey.png');
     border: 0;
     text-shadow: none;
     -webkit-box-shadow: none;
@@ -842,7 +842,7 @@ small {
 #unfavourite
 {
     background-color: transparent;
-    background-image: url('../../../favourites/png/star.png');
+    background-image: url('../../favourites/png/star.png');
     border: 0;
     text-shadow: none;
     -webkit-box-shadow: none;
