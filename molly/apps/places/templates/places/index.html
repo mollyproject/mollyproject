@@ -1,5 +1,7 @@
 {% extends "places/base.html" %}{% load portal_misc %}{% load molly_apps_search %}
 
+{% block extrahead %}{% include "geolocation/js.html" %}{% endblock extrahead %}
+
 {% block content %}
 
 {# Places Search #}

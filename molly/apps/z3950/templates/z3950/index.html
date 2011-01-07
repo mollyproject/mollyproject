@@ -1,5 +1,7 @@
 {% extends "z3950/base.html" %}
 
+{% block extrahead %}{% include "geolocation/js.html" %}{% endblock extrahead %}
+
 {% block content %}
 
 {% include "z3950/search_form.html" %}

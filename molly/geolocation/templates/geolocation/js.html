@@ -1,0 +1,11 @@
+{% load compressed %}{% if use_javascript %}
+    <script type="text/javascript">
+        var locationRequired = {{ require_location|yesno:"true,false" }};
+        var base = "{% url home:index %}";
+        var locationName = {% if geolocation.name %}"{{ geolocation.name|escapejs }}"{% else %}null{% endif %};
+        var csrfToken = "{% csrf_token %}";
+    </script>
+  
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+    {% compressed_js style_group %}
+{% endif %}
