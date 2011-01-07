@@ -156,7 +156,6 @@ class IndexView(GeolocationView):
             return cls.render(request, context, 'geolocation/update_location_embed')
         else:
             if request.session.get('geolocation:location') and context.get('return_url'):
-                print repr(context.get('return_url'))
                 return HttpResponseSeeOther(context.get('return_url'))
             return cls.render(request, context, 'geolocation/update_location')
 
@@ -166,7 +165,7 @@ class IndexView(GeolocationView):
         if form.is_valid():
             context['return_url'] = update_url(context['return_url'], {'location_error': None}, None)
             cls.handle_set_location(request, context)
-            return cls.get_location_response(request, context)
+            return cls.get_location_response(request, context, form)
         else:
             if context['format'] == 'json':
                 context = {
