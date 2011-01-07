@@ -25,18 +25,18 @@ if [ -n "$1" ] ; then
     # Rebuild demos
     rm -rf $1/demos
     mkdir -p $1/demos/molly_oxford/
-    cp -rf $DIR/../demos/molly_oxford/ $1/demos/
+    cp -rf $DIR/../demos/molly_oxford/ $1/demos/molly_oxford/
     
     # Copy any files in local to the molly_oxford demo - useful for overriding
     # settings.py and secrets.py
     cp -f $DIR/../local/* $1/demos/molly_oxford/
-    
+    cd $1/demos/molly_oxford/
     
     # Update batch jobs
     if [ -z "$no_cron" ] ; then
         PYTHONPATH=.. python manage.py create_crontab | python $DIR/merge-cron.py | crontab
     fi
-    
+
     # Build Media
     python manage.py build_static --noinput
     python manage.py synccompress &
