@@ -9,10 +9,10 @@ ul.service-status-list li.service-status-item {
     border:none;
     padding-left:45px;
 }
-ul.service-status-list li.service-status-up { background-image:url('../../../service_status/png/service-up.png'); background-color: #102821;}
-ul.service-status-list li.service-status-partial { background-image:url('../../../service_status/png/service-partial.png'); background-color: #272810;}
-ul.service-status-list li.service-status-unknown { background-image:url('../../../service_status/png/service-unknown.png'); background-color: #101b28;}
-ul.service-status-list li.service-status-down { background-image:url('../../../service_status/png/service-down.png'); background-color: #281010;}
+ul.service-status-list li.service-status-up { background-image:url('../../service_status/png/service-up.png'); background-color: #102821;}
+ul.service-status-list li.service-status-partial { background-image:url('../../service_status/png/service-partial.png'); background-color: #272810;}
+ul.service-status-list li.service-status-unknown { background-image:url('../../service_status/png/service-unknown.png'); background-color: #101b28;}
+ul.service-status-list li.service-status-down { background-image:url('../../service_status/png/service-down.png'); background-color: #281010;}
 
 span.service-status-status, span.service-status-detail { font-size:90%; }
 span.service-status-detail { font-style:italic; }
