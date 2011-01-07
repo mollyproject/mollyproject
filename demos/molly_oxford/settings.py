@@ -357,7 +357,7 @@ APPLICATIONS = [
         expose_view = True,
     ),
 
-    Application('molly.stats', 'stats', 'Statistics'),
+    Application('molly.stats', 'stats', 'Statistics', display_to_user = False),
 
     Application('molly.apps.url_shortener', 'url_shortener', 'URL Shortener',
         display_to_user = False,
