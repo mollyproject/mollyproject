@@ -39,7 +39,6 @@ class LocationUpdateForm(forms.Form):
         cleaned_data = self.cleaned_data
 
         if cleaned_data['method'] in ('html5', 'gears', 'manual', 'geocoded', 'other', 'favourite'):
-            print "CD1", cleaned_data
             if cleaned_data['method'] == 'geocoded':
                 results = geocode(cleaned_data['name'])
                 if len(results) > 0:
@@ -49,7 +48,6 @@ class LocationUpdateForm(forms.Form):
                 else:
                     raise forms.ValidationError("Unable to find a location that matches '%s'." % cleaned_data['name'])
 
-            print "CD2", cleaned_data
             for key in ('latitude', 'longitude', 'accuracy'):
                 if cleaned_data.get(key) is None:
                     self._errors[key] = ErrorList(['method requires that this field must be specified'])
