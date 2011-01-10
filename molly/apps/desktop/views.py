@@ -15,7 +15,7 @@ class IndexView(BaseView):
         return {
             'exclude_from_search': True
         }
-
+    
     breadcrumb = NullBreadcrumb
     
     def initial_context(self, request):
@@ -25,10 +25,10 @@ class IndexView(BaseView):
             'twitter_username': getattr(self.conf, 'twitter_username'),
             'twitter_url': ('http://twitter.com/' + self.conf.twitter_username) if getattr(self.conf, 'twitter_username') else None,
         }
-
+    
     def handle_GET(self, request, context):
         return self.render(request, context, 'desktop/index')
-
+    
     def _cache(self, f, key, args=None, kwargs=None, timeout=None):
         key = '.'.join(['molly', self.conf.local_name, key])
         value = cache.get(key)
@@ -36,7 +36,7 @@ class IndexView(BaseView):
             value = f(*(args or ()), **(kwargs or {}))
             cache.set(key, value, timeout)
         return value
-
+    
     _TWITTER_URL = 'http://api.twitter.com/1/statuses/user_timeline.json?user=%s&include_entities=true'
     def _get_twitter_feed(self, username):
         if not username:
@@ -51,11 +51,11 @@ class IndexView(BaseView):
         
         if hasattr(self.conf, 'twitter_ignore_urls'):
             feed = [tweet for tweet in feed if 'entities' in tweet and not any(url['url'].startswith(self.conf.twitter_ignore_urls) for url in tweet['entities']['urls'])]
-
+        
         for tweet in feed:
             entities = tweet['entities']
             tweet['formatted_text'] = self._format_tweet(tweet['text'], entities['urls'], entities['hashtags'], entities['user_mentions'])
-            
+        
         return feed
     
     def _format_tweet(self, text, urls, hashtags, user_mentions):
@@ -70,7 +70,7 @@ class IndexView(BaseView):
             entity['original'] = text[start:end]
             text = text[:start] + (replace % entity) + text[end:]
         return text
-
+    
     def _get_blog_feed(self, url):
         if not url:
             return None
