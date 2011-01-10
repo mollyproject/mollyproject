@@ -73,8 +73,6 @@ class CloudmadeGeolocationProvider(BaseGeolocationProvider):
         if not json:
             return []
 
-        print "Results!"
-
         results = []
         
         features = sorted(json['features'], key=lambda f: len(f['properties'].get('name', 'x'*1000)))        
@@ -94,7 +92,6 @@ class CloudmadeGeolocationProvider(BaseGeolocationProvider):
             
             try:
                 name = feature['properties']['name']
-                print self.search_locality, name.lower(), query.lower()
                 if name == self.search_locality and name.lower() != query.split(',')[0].lower():
                     continue
 
