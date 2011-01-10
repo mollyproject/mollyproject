@@ -18,8 +18,12 @@ if [ -n "$1" ] ; then
     # Go inside the virtual environment
     source $1/bin/activate
     
-    # Install Molly in development mode
-    python $DIR/../setup.py develop
+    if [ -n "$start_dev_server" ] ; then
+        # Install Molly in development mode
+        python setup.py develop
+    else
+        python setup.py install
+    fi
     
     # Rebuild demos
     rm -rf $1/demos

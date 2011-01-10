@@ -28,8 +28,15 @@ if [ -n "$1" ] ; then
     # Install a fork of Django-compress to correctly handle SSL compressed media
     pip install git+git://github.com/mikelim/django-compress.git#egg=django-compress
     
-    # Install Molly in development mode
-    python $DIR/../setup.py develop
+    # For some reason PIL doesn't work when installed as a dependency
+    pip install -U PIL
+    
+    if [ -n "$start_dev_server" ] ; then
+        # Install Molly in development mode
+        python setup.py develop
+    else
+        python setup.py install
+    fi
     
     # Install demos
     rm -rf $1/demos
