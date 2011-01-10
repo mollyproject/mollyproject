@@ -79,6 +79,7 @@ $(function(){
     }, locationFound);
     return false;
   })
+  $('.specific-location-form').submit(specificLocationFormSubmit)
 });
 
 function specificLocationForm(location, favourite) {
@@ -112,6 +113,25 @@ function specificLocationForm(location, favourite) {
     f += '  </form>'
   }
   return f
+}
+
+function specificLocationFormSubmit() {
+  $('.update-location-box').slideUp();
+  $('.alternate-location-box').slideUp();
+  $('.current-location-box').slideDown();
+  $.post($(this).attr('action'), {
+        longitude: $(this).find('[name=longitude]').val(),
+        latitude: $(this).find('[name=latitude]').val(),
+        accuracy: $(this).find('[name=accuracy]').val(),
+        name: $(this).find('[name=name]').val(),
+        return_url: $(this).find('[name=return_url]').val(),
+        method: $(this).find('[name=method]').val(),
+        id: $(this).find('[name=id]').val(),
+        action: $(this).find('[name=action]').val(),
+        format: 'json',
+        force: 'True'
+    }, locationFound, 'json');
+  return false;
 }
 
 function locationFound(data) {
@@ -152,19 +172,20 @@ function locationFound(data) {
                                         + '</div>'
                                         + '<ul class="historic-locations-list link-list">'
                                         + '<li>'
-                                        + '    <form class="location-history-form" method="post" action="'+base+'geolocation/clear">'
+                                        + '    <form class="specific-location-form" method="post" action="'+base+'geolocation/clear">'
                                         +        csrfToken
                                         + '      <input type="submit" value="Clear history" class="as-text-link" />'
                                         + '    </form>'
                                         + '</li>'
                                         + '</ul>');
       for (i in data.history.reverse()) {
-        $('.historic-locations-list').prepend('<li>' + specificLocationForm(data.history[i]) + '</i>')
+        $('.historic-locations-list').prepend('<li>' + specificLocationForm(data.history[i], false) + '</i>')
       }
     }
   } else {
     locationFailure({message: data.error, code: -1})
   }
+  $('.specific-location-form').submit(specificLocationFormSubmit)
 }
 
 // Copyright 2007, Google Inc.
