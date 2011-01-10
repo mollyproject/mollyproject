@@ -1,4 +1,7 @@
-import simplejson, urllib2, feedparser, logging
+import simplejson
+import urllib2
+import feedparser
+import logging
 
 from django.http import Http404, HttpResponse
 from django.template import loader, TemplateDoesNotExist, RequestContext
@@ -10,25 +13,33 @@ from molly.utils.breadcrumbs import NullBreadcrumb
 
 logger = logging.getLogger(__name__)
 
+
 class IndexView(BaseView):
+
     def get_metadata(self, request):
         return {
-            'exclude_from_search': True
-        }
-    
+            'exclude_from_search': True}
+
     breadcrumb = NullBreadcrumb
-    
+
     def initial_context(self, request):
         return {
-            'twitter_feed': self._cache(self._get_twitter_feed, 'twitter', args=[getattr(self.conf, 'twitter_username')], timeout=300),
-            'blog_feed': self._cache(self._get_blog_feed, 'blog', args=[getattr(self.conf, 'blog_rss_url')], timeout=300),
+            'twitter_feed': self._cache(self._get_twitter_feed, 'twitter',
+                                        args=[getattr(self.conf,
+                                        'twitter_username')], timeout=300),
+            'blog_feed': self._cache(self._get_blog_feed, 'blog',
+                                        args=[getattr(self.conf,
+                                        'blog_rss_url')], timeout=300),
             'twitter_username': getattr(self.conf, 'twitter_username'),
-            'twitter_url': ('http://twitter.com/' + self.conf.twitter_username) if getattr(self.conf, 'twitter_username') else None,
+            'twitter_url': ('http://twitter.com/' +
+                            self.conf.twitter_username)
+                            if getattr(self.conf, 'twitter_username')
+                            else None,
         }
-    
+
     def handle_GET(self, request, context):
         return self.render(request, context, 'desktop/index')
-    
+
     def _cache(self, f, key, args=None, kwargs=None, timeout=None):
         key = '.'.join(['molly', self.conf.local_name, key])
         value = cache.get(key)
@@ -36,45 +47,59 @@ class IndexView(BaseView):
             value = f(*(args or ()), **(kwargs or {}))
             cache.set(key, value, timeout)
         return value
-    
-    _TWITTER_URL = 'http://api.twitter.com/1/statuses/user_timeline.json?user=%s&include_entities=true'
+
+    _TWITTER_URL = 'http://api.twitter.com/1/statuses/user_timeline.json?' \
+                    'user=%s&include_entities=true'
+
     def _get_twitter_feed(self, username):
         if not username:
             return None
-        
+
         try:
             url = self._TWITTER_URL % username
             feed = simplejson.load(urllib2.urlopen(url))
         except Exception:
             logger.warn("Failed to fetch Twitter feed.", exc_info=True)
             return None
-        
+
         if hasattr(self.conf, 'twitter_ignore_urls'):
-            feed = [tweet for tweet in feed if 'entities' in tweet and not any(url['url'].startswith(self.conf.twitter_ignore_urls) for url in tweet['entities']['urls'])]
-        
+            """" TODO Rewrite the following list comprehension in nested loops.
+             - 10 January 2011 """
+            feed = [tweet for tweet in feed if 'entities' in tweet and not
+                    any(url['url'].startswith(self.conf.twitter_ignore_urls)
+                    for url in tweet['entities']['urls'])]
+
         for tweet in feed:
             entities = tweet['entities']
-            tweet['formatted_text'] = self._format_tweet(tweet['text'], entities['urls'], entities['hashtags'], entities['user_mentions'])
-        
+            tweet['formatted_text'] = self._format_tweet(tweet['text'],
+                                      entities['urls'],
+                                      entities['hashtags'],
+                                      entities['user_mentions'])
+
         return feed
-    
+
     def _format_tweet(self, text, urls, hashtags, user_mentions):
-        text = self._replace_entities(text, urls, '<a href="%(url)s">%(original)s</a>')
-        text = self._replace_entities(text, hashtags, '<a href="http://search.twitter.com/search?q=%%23%(text)s">%(original)s</a>')
-        text = self._replace_entities(text, user_mentions, '<a href="http://twitter.com/%(screen_name)s" title="%(name)s">%(original)s</a>')
+        text = self._replace_entities(text, urls,
+            '<a href="%(url)s">%(original)s</a>')
+        text = self._replace_entities(text, hashtags,
+            '<a href="http://search.twitter.com/search?q=%%23%(text)s">' \
+            '%(original)s</a>')
+        text = self._replace_entities(text, user_mentions,
+            '<a href="http://twitter.com/%(screen_name)s" title="%(name)s">' \
+            '%(original)s</a>')
         return text
-    
+
     def _replace_entities(self, text, entities, replace):
         for entity in reversed(entities):
             start, end = entity['indices']
             entity['original'] = text[start:end]
             text = text[:start] + (replace % entity) + text[end:]
         return text
-    
+
     def _get_blog_feed(self, url):
         if not url:
             return None
-        
+
         try:
             return feedparser.parse(url)
         except Exception, e:
