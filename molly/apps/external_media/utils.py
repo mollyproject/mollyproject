@@ -4,8 +4,9 @@ from molly.utils.misc import AnyMethodRequest
 
 from models import ExternalImage, ExternalImageSized
 
+
 def resize_external_image(url, width, timeout=None):
-    
+
     ei, created = ExternalImage.objects.get_or_create(url=url)
 
     request = AnyMethodRequest(url, method='HEAD')

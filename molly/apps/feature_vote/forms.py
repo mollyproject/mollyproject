@@ -1,6 +1,6 @@
 from django import forms
-
 from models import Feature
+
 
 class FeatureForm(forms.ModelForm):
     user_name = forms.CharField(widget=forms.TextInput(), label="Your name")

@@ -12,19 +12,17 @@ from molly.utils import send_email
 from .models import Feature
 from .forms import FeatureForm
 
-class IndexView(BaseView):
 
+class IndexView(BaseView):
     # A mapping from (old, new) to (delta down, delta up)
     vote_transitions = {
         (-1,-1) : ( 0, 0),  ( 0,-1): (+1, 0),  (+1,-1): (+1,-1),
         (-1, 0) : (-1, 0),  ( 0, 0): ( 0, 0),  (+1, 0): ( 0,-1),
         (-1,+1) : (-1,+1),  ( 0,+1): ( 0,+1),  (+1,+1): ( 0, 0),
     }
-    
     #  ++    -
     # -      -
-    # -    ++ 
-
+    # -    ++
     @BreadcrumbFactory
     def breadcrumb(cls, request, context):
         return Breadcrumb(
@@ -47,7 +45,7 @@ class IndexView(BaseView):
         return {
             'features': features,
             'form': FeatureForm(request.POST or None),
-            'csrf' : request.session['feature_vote:csrf'],
+            'csrf': request.session['feature_vote:csrf'],
             'submitted': request.GET.get('submitted') == 'true',
         }
 
@@ -69,7 +67,7 @@ class IndexView(BaseView):
             request.session.modified = True
 
             feature.down_vote += cls.vote_transitions[(previous_vote, vote)][0]
-            feature.up_vote   += cls.vote_transitions[(previous_vote, vote)][1]
+            feature.up_vote += cls.vote_transitions[(previous_vote, vote)][1]
 
             feature.save()
 
@@ -88,14 +86,14 @@ class IndexView(BaseView):
                 'description': form.cleaned_data['description'],
                 'feature': form.instance,
             }, 'feature_vote/feature_create.eml', cls)
-            
+
             return HttpResponseSeeOther(reverse('feature_vote:index') + '?submitted=true')
         else:
             return cls.handle_GET(request, context)
 
 
-
 class FeatureDetailView(BaseView):
+
     @BreadcrumbFactory
     def breadcrumb(cls, request, context, id):
         return Breadcrumb(
@@ -114,7 +112,7 @@ class FeatureDetailView(BaseView):
         feature.vote = request.session['feature_vote:votes'].get(feature.id, 0)
         return {
             'feature': feature,
-            'csrf' : request.session['feature_vote:csrf'],
+            'csrf': request.session['feature_vote:csrf'],
         }
 
     def handle_GET(cls, request, context, id):

@@ -10,11 +10,13 @@ from molly.utils.breadcrumbs import NullBreadcrumb
 
 from models import ExternalImageSized
 
+
 class IndexView(BaseView):
     breadcrumb = NullBreadcrumb
 
     def handle_GET(cls, request, context):
         raise Http404
+
 
 class ExternalImageView(BaseView):
 
@@ -28,4 +30,3 @@ class ExternalImageView(BaseView):
         response['Expires'] = formatdate(mktime((datetime.now() + timedelta(days=7)).timetuple()))
         response['Last-Modified'] = formatdate(mktime(eis.external_image.last_updated.timetuple()))
         return response
-

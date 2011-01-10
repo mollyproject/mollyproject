@@ -49,7 +49,7 @@ class IndexView(BaseView):
         return value
 
     _TWITTER_URL = 'http://api.twitter.com/1/statuses/user_timeline.json?' \
-                    'user=%s&include_entities=true'
+                   + 'user=%s&include_entities=true'
 
     def _get_twitter_feed(self, username):
         if not username:
@@ -83,10 +83,10 @@ class IndexView(BaseView):
             '<a href="%(url)s">%(original)s</a>')
         text = self._replace_entities(text, hashtags,
             '<a href="http://search.twitter.com/search?q=%%23%(text)s">' \
-            '%(original)s</a>')
+            + '%(original)s</a>')
         text = self._replace_entities(text, user_mentions,
             '<a href="http://twitter.com/%(screen_name)s" title="%(name)s">' \
-            '%(original)s</a>')
+            + '%(original)s</a>')
         return text
 
     def _replace_entities(self, text, entities, replace):

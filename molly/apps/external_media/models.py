@@ -15,6 +15,7 @@ from django.db import models
 from django.conf import settings
 from django.core.urlresolvers import reverse
 
+
 class ExternalImage(models.Model):
     url = models.URLField()
     etag = models.TextField(null=True)
@@ -27,8 +28,10 @@ class ExternalImage(models.Model):
         self.last_updated = datetime.utcnow()
         super(ExternalImage, self).save(force_insert=False, force_update=False, **kwargs)
 
+
 def get_external_image_dir():
     return getattr(settings, 'EXTERNAL_IMAGE_DIR', os.path.join(settings.CACHE_DIR, 'external_images'))
+
 
 class ExternalImageSized(models.Model):
     external_image = models.ForeignKey(ExternalImage)
@@ -90,5 +93,3 @@ class ExternalImageSized(models.Model):
     def delete(self):
         os.unlink(self.get_filename())
         super(ExternalImageSized, self).delete()
-
-

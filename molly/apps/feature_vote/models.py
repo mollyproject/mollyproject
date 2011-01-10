@@ -7,6 +7,7 @@ Defines properties of each suggested feature
 from django.db import models
 from django.core.urlresolvers import reverse
 
+
 class Feature(models.Model):
     user_name = models.TextField(verbose_name='Your name')
     user_email = models.EmailField(verbose_name='E-mail address')
@@ -19,7 +20,7 @@ class Feature(models.Model):
 
     created = models.DateTimeField(auto_now_add=True)
     last_commented = models.DateTimeField(blank=True, null=True)
-    
+
     is_public = models.BooleanField(default=False)
     is_removed = models.BooleanField(default=False)
 
@@ -35,4 +36,3 @@ class Feature(models.Model):
 
     def get_absolute_url(self):
         return reverse('feature_vote:feature-detail', args=[self.id])
-

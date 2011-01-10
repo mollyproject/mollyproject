@@ -4,12 +4,13 @@ from molly.apps.external_media.utils import resize_external_image
 
 register = template.Library()
 
+
 @register.tag(name='external_image')
 def external_image(parser, token):
     args = token.split_contents()
     if not len(args) in (2, 3, 4):
         raise template.TemplateSyntaxError, "%r takes one argument (the image location)" % token.contents.split()[0]
-    
+
     try:
         max_width = template.Variable(args[2])
     except (ValueError, IndexError):
@@ -18,6 +19,7 @@ def external_image(parser, token):
         return ExternalImageNode(template.Variable(args[1]), max_width, False)
     else:
         return ExternalImageNode(template.Variable(args[1]), max_width)
+
 
 class ExternalImageNode(template.Node):
     """
@@ -33,7 +35,7 @@ class ExternalImageNode(template.Node):
             width = int(self.max_width.resolve(context))
         except Exception:
             width = float('inf')
-            
+
         url, width = self.url.resolve(context), min(width, context['device'].max_image_width)
 
         eis = resize_external_image(url, width)
@@ -44,5 +46,3 @@ class ExternalImageNode(template.Node):
             return eis.get_absolute_url()
         else:
             return """<div class="backgrounded-image" style="background-image:url('%s'); height:%dpx"> </div>""" % (eis.get_absolute_url(), eis.height)
-
-
