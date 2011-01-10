@@ -10,18 +10,18 @@ from molly.utils import send_email
 
 from forms import FeedbackForm
 
+
 class IndexView(BaseView):
+
     @BreadcrumbFactory
     def breadcrumb(cls, request, context):
         return Breadcrumb(
             cls.conf.local_name, None, 'Feedback',
-            lazy_reverse('index')
-        )
+            lazy_reverse('index'))
 
     def initial_context(cls, request):
         return {
-            'feedback_form': FeedbackForm(request.POST or None)
-        }
+            'feedback_form': FeedbackForm(request.POST or None)}
 
     def handle_GET(cls, request, context):
         context.update({
@@ -41,11 +41,12 @@ class IndexView(BaseView):
             }, 'feedback/email.txt', cls)
 
             qs = urllib.urlencode({
-                'sent':'true',
+                'sent': 'true',
                 'referer': request.POST.get('referer', ''),
             })
 
-            return HttpResponseRedirect('%s?%s' % (reverse('feedback:index'), qs))
+            return HttpResponseRedirect('%s?%s' %
+                                        (reverse('feedback:index'), qs))
 
         else:
             return cls.handle_GET(request, context)
