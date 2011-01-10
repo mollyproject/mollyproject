@@ -856,3 +856,18 @@ small {
 {
     margin-right: 28px !important;
 }
+
+.as-text-link
+{
+    background: none !important;
+    border: 0 !important;
+    -moz-box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    padding: 0 !important;
+    color: #000000 !important;
+    text-shadow: none !important;
+}
+
+.link-list .as-text-link {
+    color: #ffffff !important;
+}
