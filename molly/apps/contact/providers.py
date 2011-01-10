@@ -1,5 +1,6 @@
 from forms import GenericContactForm
 
+
 class BaseContactProvider(object):
 
     class NoSuchResult(KeyError):
@@ -11,7 +12,7 @@ class BaseContactProvider(object):
 
     @property
     def medium_choices(self):
-        return (('all', 'Search'),)
+        return (('all', 'Search'), )
 
     @property
     def form(self):

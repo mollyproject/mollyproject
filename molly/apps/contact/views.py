@@ -1,4 +1,7 @@
-import simplejson, hashlib, urllib2
+import simplejson
+import hashlib
+import urllib2
+
 from django.http import HttpResponse
 from django.core.paginator import Paginator
 
@@ -7,7 +10,9 @@ from molly.utils.breadcrumbs import *
 
 from .forms import GenericContactForm
 
+
 class IndexView(BaseView):
+
     @BreadcrumbFactory
     def breadcrumb(self, request, context):
         return Breadcrumb(
@@ -25,6 +30,7 @@ class IndexView(BaseView):
 
     def handle_GET(self, request, context):
         return self.render(request, context, 'contact/index')
+
 
 class ResultListView(IndexView):
 
@@ -65,7 +71,7 @@ class ResultListView(IndexView):
                     request, context,
                     'There are no results for this page.',
                 )
-            page = paginator.page(page) 
+            page = paginator.page(page)
 
             context.update({
                 'page': page,
@@ -85,6 +91,7 @@ class ResultListView(IndexView):
 
 
 class ResultDetailView(BaseView):
+
     @BreadcrumbFactory
     def breadcrumb(self, request, context):
         return Breadcrumb(
