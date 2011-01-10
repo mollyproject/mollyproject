@@ -33,9 +33,9 @@ if [ -n "$1" ] ; then
     
     if [ -n "$start_dev_server" ] ; then
         # Install Molly in development mode
-        python setup.py develop
+        python $DIR/../setup.py develop
     else
-        python setup.py install
+        python $DIR/../setup.py install
     fi
     
     # Install demos
