@@ -868,6 +868,31 @@ small {
     text-shadow: none !important;
 }
 
-.link-list .as-text-link {
+.link-list .as-text-link
+{
     color: #ffffff !important;
+}
+
+.current-location-box p
+{
+    padding: 2px;
+    line-height: 17px;
+    margin-left: 34px;
+    height: 34px;
+}
+
+.current-location-box img
+{
+    font-size: 30px;
+    line-height: 30px;
+    position: absolute;
+    top: 7px;
+    left: 4px;
+}
+
+.current-location-box .update-location-opener
+{
+    position: absolute;
+    top: 2px;
+    right: 2px;
 }

@@ -115,7 +115,17 @@ class GeolocationView(BaseView):
             response['X-Embed-Location-Name'] = form.cleaned_data['name']
             return response
         else:
-            return HttpResponseSeeOther(redirect)
+            alternatives = form.cleaned_data.get('alternatives') if form else None
+            if alternatives != None and len(alternatives) > 0:
+                # Not doing AJAX update, so show the form allowing users to
+                # choose a location from alternatives before returning to their
+                # original screen
+                context.update({
+                    'geolocation_alternatives': form.cleaned_data.get('alternatives')
+                })
+                return cls.handle_GET(request, context)
+            else:
+                return HttpResponseSeeOther(redirect)
 
 class IndexView(GeolocationView):
     @BreadcrumbFactory
@@ -155,7 +165,10 @@ class IndexView(GeolocationView):
         if context['format'] == 'embed':
             return cls.render(request, context, 'geolocation/update_location_embed')
         else:
-            if request.session.get('geolocation:location') and context.get('return_url'):
+            if request.session.get('geolocation:location') \
+              and context.get('return_url') \
+              and not request.REQUEST.get('update', False) \
+              and not 'geolocation_alternatives' in context:
                 return HttpResponseSeeOther(context.get('return_url'))
             return cls.render(request, context, 'geolocation/update_location')
 

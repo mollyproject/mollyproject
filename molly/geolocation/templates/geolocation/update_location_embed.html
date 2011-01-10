@@ -1,16 +1,58 @@
 <div class="location-box section" id="location-box" style="position:relative; background-color:white; -webkit-border-radius:6px; -moz-border-radius:6px; margin:15px 10px 2px;">
-    <div class="current-location-box">
-        <img style="font-size:30px; line-height:30px; position: absolute; top: 7px; left: 4px;" src="{{ MEDIA_URL }}site/png/location.png" alt="⬠"/>
-        <p style="padding: 2px;line-height:17px;margin-left:34px;height:34px;"><span class="location">{{ geolocation.name|default:"No location known" }}</span><br/><span class="location-accuracy">{% if geolocation.accuracy %}within approx. {{ geolocation.accuracy|floatformat:"0" }} m{% endif %}</span></p>
+    <div class="current-location-box"{% if request.GET.update or geolocation_alternatives %} style="display:none;"{% endif %}>
+        <img src="{{ MEDIA_URL }}site/png/location.png" alt="⬠"/>
+        <p>
+            {% if location_error %}<em>{{ location_error }}</em><br/>{% endif %}
+            <span class="location">{{ geolocation.name|default:"No location known" }}</span><br/>
+            <span class="location-accuracy">{% if geolocation.accuracy %}within approx. {{ geolocation.accuracy|floatformat:"0" }} m{% endif %}</span>
+        </p>
         <form method="get" action="{% url geolocation:index %}">
-            <input type="submit" name="update" value="Update" class="update-location-opener" style="position: absolute; top: 2px; right: 2px;" />
+            {% if return_url %}<input type="hidden" name="return_url" value="{{ return_url }}"/>{% endif %}
+            <input type="submit" name="update" value="Update" class="update-location-opener" />
         </form>
     </div>
-    <div class="alternate-location-box" style="display:none;"></div>
-    <div class="update-location-box" style="display: none;">
-        <form method="get" action="{% url geolocation:index %}" class="update-location-form">
+    <div class="alternate-location-box"{% if not geolocation_alternatives %} style="display:none;"{% endif %}>
+        {% if geolocation_alternatives %}
+            <div class="header">
+                <h2>Did you mean&hellip;</h2>
+            </div>
+            <ul class="alternate-locations-list link-list">
+                <li>
+                    <form class="specific-location-form" method="post" action="{% url geolocation:index %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="method" value="manual"/>
+                        <input type="hidden" name="accuracy" value="{{  geolocation.accuracy }}"/>
+                        <input type="hidden" name="longitude" value="{{  geolocation.location.0 }}"/>
+                        <input type="hidden" name="latitude" value="{{  geolocation.location.1 }}"/>
+                        <input type="hidden" name="return_url" value="{% if return_url %}{{ return_url }}{% else %}{% url geolocation:index %}{% endif %}"/>
+                        <input type="hidden" name="name" value="{{  geolocation.name }}"/>
+                        <input type="submit" class="as-text-link" value="{{  geolocation.name }}"/>
+                    </form>
+                </li>
+              {% for alt in geolocation_alternatives %}
+                <li>
+                    <form class="specific-location-form" method="post" action="{% url geolocation:index %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="method" value="manual"/>
+                        <input type="hidden" name="accuracy" value="{{ alt.accuracy }}"/>
+                        <input type="hidden" name="longitude" value="{{ alt.location.0 }}"/>
+                        <input type="hidden" name="latitude" value="{{ alt.location.1 }}"/>
+                        <input type="hidden" name="return_url" value="{% if return_url %}{{ return_url }}{% else %}{% url geolocation:index %}{% endif %}"/>
+                        <input type="hidden" name="name" value="{{ alt.name }}"/>
+                        <input type="submit" class="as-text-link" value="{{ alt.name }}"/>
+                    </form>
+                </li>
+              {% endfor %}
+            </ul>
+        {% endif %}
+            <div class="header">
+                <h2>Or search again:</h2>
+            </div>
+    </div>
+    <div class="update-location-box"{% if not request.GET.update and not geolocation_alternatives %} style="display:none;"{% endif %}>
+        <form method="post" action="{% url geolocation:index %}" class="update-location-form">
             {% csrf_token %}
-            <input name="return_url" type="hidden" value="{{ return_url|default:"" }}"/>
+            <input name="return_url" type="hidden" value="{% if return_url %}{{ return_url }}{% else %}{% url geolocation:index %}{% endif %}"/>
             <label for="name"><strong>Set location:</strong></label> <input type="text" name="name" class="update-location-name" />
             <input name="method" type="hidden" value="geocoded" />
             <input type="submit" value="Update" class="update-location" />
@@ -29,7 +71,7 @@
                             <input type="hidden" name="accuracy" value="{{ favourite.accuracy }}"/>
                             <input type="hidden" name="longitude" value="{{ favourite.location.0 }}"/>
                             <input type="hidden" name="latitude" value="{{ favourite.location.1 }}"/>
-                            <input type="hidden" name="return_url" value="{{ return_url }}"/>
+                            <input type="hidden" name="return_url" value="{% if return_url %}{{ return_url }}{% else %}{% url geolocation:index %}{% endif %}"/>
                             <input type="hidden" name="name" value="{{ favourite.name }}"/>
                             <input type="submit" class="as-text-link" value="{{ favourite.name }}"/>
                         </form>
@@ -37,7 +79,7 @@
                             {% csrf_token %}
                             <input type="hidden" name="action" value="remove"/>
                             <input type="hidden" name="id" value="{{ id }}"/>
-                            <input type="hidden" name="return_url" value="{{ return_url }}"/>
+                            <input type="hidden" name="return_url" value="{% if return_url %}{{ return_url }}{% else %}{% url geolocation:index %}{% endif %}"/>
                             <input type="submit" class="as-text-link" value="(Remove from favourites)"/>
                         </form>
                     </li>
@@ -57,7 +99,7 @@
                             <input type="hidden" name="accuracy" value="{{ history.accuracy }}"/>
                             <input type="hidden" name="longitude" value="{{ history.location.0 }}"/>
                             <input type="hidden" name="latitude" value="{{ history.location.1 }}"/>
-                            <input type="hidden" name="return_url" value="{{ return_url }}"/>
+                            <input type="hidden" name="return_url" value="{% if return_url %}{{ return_url }}{% else %}{% url geolocation:index %}{% endif %}"/>
                             <input type="hidden" name="name" value="{{ history.name }}"/>
                             <input type="submit" class="as-text-link" value="{{ history.name }}"/>
                         </form>
@@ -67,7 +109,7 @@
                             <input type="hidden" name="accuracy" value="{{ history.accuracy }}"/>
                             <input type="hidden" name="longitude" value="{{ history.location.0 }}"/>
                             <input type="hidden" name="latitude" value="{{ history.location.1 }}"/>
-                            <input type="hidden" name="return_url" value="{{ return_url }}"/>
+                            <input type="hidden" name="return_url" value="{% if return_url %}{{ return_url }}{% else %}{% url geolocation:index %}{% endif %}"/>
                             <input type="hidden" name="name" value="{{ history.name }}"/>
                             <input type="submit" class="as-text-link" value="(Add as favourite)"/>
                         </form>
@@ -76,7 +118,7 @@
                     <li>
                         <form class="location-history-form" method="post" action="{% url geolocation:clear %}">
                           {% csrf_token %}
-                          <input name="return_url" type="hidden" value="{{ return_url|default:"" }}"/>
+                          <input name="return_url" type="hidden" value="{% if return_url %}{{ return_url }}{% else %}{% url geolocation:index %}{% endif %}"/>
                           <input class="as-text-link" type="submit" value="Clear history" />
                         </form>
                     </li>

@@ -1,23 +1,7 @@
 {% extends "geolocation/base.html" %}
 
-{% block extrahead %}{{ block.super }}
-<meta name="robots" content="noindex"/>
-<script type="text/javascript">
-
-window.addEventListener("locationFound", function(e) {
-  if (e.uploaded) {
-    r = /[?&]return_url=(.*)($|&)/;
-    return_url = unescape(r.exec(window.location.search)[1]);
-    l = window.location;
-    l.replace(l.protocol+"//"+l.host+return_url);
-  }
-}, false);
-    
-</script>
-{% endblock %}
-
 {% block content %}
 
-You need to set a location before you can view this page.
+{% include "geolocation/update_location_embed.html" %}
 
 {% endblock %}
