@@ -107,7 +107,7 @@ class GeolocationView(BaseView):
                 'latitude': request.session['geolocation:location'][1],
                 'history': request.session.get('geolocation:history', ())[1:],
                 'alternatives': form.cleaned_data.get('alternatives') if form else None,
-                'favourites': request.session.get('geolocation:favourites', ()),
+                'favourites': [dict(favourite.items() + [('id', id)]) for id, favourite in request.session.get('geolocation:favourites', {}).items()],
             }, None)
         elif context['format'] == 'embed':
             response = HttpResponse('')
@@ -218,8 +218,7 @@ class FavouritesView(GeolocationView):
 
         request.session['geolocation:favourites'][id] = {
             'name': request.POST['name'],
-            'latitude': float(request.POST['latitude']),
-            'longitude': float(request.POST['longitude']),
+            'location': (float(request.POST['longitude']), float(request.POST['latitude'])),
             'accuracy': float(request.POST['accuracy']),
         }
         request.session.modified = True
