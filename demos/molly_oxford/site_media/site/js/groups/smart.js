@@ -69,6 +69,7 @@ $(function(){
     })
     $('.alternate-location-box').slideUp();
     $('.update-location-box').slideDown();
+    $(window).scrollTop($('#location-box').offset().top)
     return false;
   });
   $('.update-location-form').submit(function() {
