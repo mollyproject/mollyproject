@@ -7,17 +7,10 @@
 {% include "z3950/search_form.html" %}
 
 <div class="section">
-    <h2>Maps</h2>
-	{% include "geolocation/update_location_embed.html" %}
-    <ul class="link-list">
-        <li><a href="{% url places:category-detail "university-library" %}">List of libraries</a></li>
-        <li class="round-bottom"><a href="{% url places:nearby-detail "university-library" %}">Libraries nearby</a></li>
-    </ul>
-</div>
-
-<div class="section">
     <h2>Library Services Info</h2>
     <ul class="link-list">
+        <li><a href="{% url places:category-detail "university-library" %}">List of libraries</a></li>
+        <li><a href="{% url places:nearby-detail "university-library" %}">Libraries nearby</a></li>
         <li><a class="email" href="mailto:reader.services@ouls.ox.ac.uk">E-mail<br/>
 	        <small>reader.services@ouls.ox.ac.uk</small></a></li>
         <li><a class="phone" href="tel:+441865277162">Telephone<br/><small>01865 (2)77162</small></a></li>
