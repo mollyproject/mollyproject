@@ -34,7 +34,10 @@ function locationFailure(d) {
 $(function(){
   
   if(geo_position_js.init()) {
-    $('.update-location-form').append('<input type="button" value="Determine location automatically" class="automatic-update as-text-link" />');
+    $('.update-location-form').append('<ul class="link-list location-automatic-list"><li><input type="submit" value="Determine location automatically" class="automatic-update as-text-link" /></li></ul>');
+    if ($('.favourite-locations-list').length + $('.historic-locations-list').length) {
+      $('.location-automatic-list').addClass('no-round-bottom')
+    }
     $('.automatic-update').click(function(){
       $('.update-location-box').slideUp();
       $('.current-location-box').slideDown();
@@ -44,6 +47,7 @@ $(function(){
         enableHighAccuracy: true,
         maximumAge: 30000
       });
+      return false;
     });
     // Attempt to do location if available
     if (locationRequired) {
@@ -80,6 +84,15 @@ $(function(){
     return false;
   })
   $('.specific-location-form').submit(specificLocationFormSubmit)
+
+  $('.update-location-name').click(function(){
+    $(this).val('');
+    $(this).css('color', '#000000')
+    $(this).unbind('click')
+  });
+  $('.update-location-name').val('e.g., OX2 6NN, kebl, St Clements')
+  $('.update-location-name').css('color', '#a3a3a3')
+
 });
 
 function specificLocationForm(location, favourite) {
@@ -91,7 +104,7 @@ function specificLocationForm(location, favourite) {
      + '    <input type="hidden" name="latitude" value="'+location.location[1]+'"/>'
      + '    <input type="hidden" name="return_url" value="'+window.location.pathname+'"/>'
      + '    <input type="hidden" name="name" value="'+location.name+'"/>'
-     + '    <input type="submit" class="as-text-link" value="'+location.name+'"/>'
+     + '    <input type="submit" class="as-text-link" value="'+location.name+'" style="font-weight: normal;" />'
      + '  </form>'
   if (favourite != null)
   {
@@ -181,6 +194,9 @@ function locationFound(data) {
       for (i in data.history.reverse()) {
         $('.historic-locations-list').prepend('<li>' + specificLocationForm(data.history[i], false) + '</i>')
       }
+    }
+    if ($('.favourite-locations-list').length + $('.historic-locations-list').length) {
+      $('.location-automatic-list').addClass('no-round-bottom')
     }
   } else {
     locationFailure({message: data.error, code: -1})
