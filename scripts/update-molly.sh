@@ -27,7 +27,7 @@ if [ -n "$1" ] ; then
     
     # Rebuild demos
     rm -rf $1/demos
-    mkdir -p $1/demos/molly_oxford/
+    mkdir -p $1/demos/
     cp -rf $DIR/../demos/molly_oxford/ $1/demos/molly_oxford/
     
     # Copy any files in local to the molly_oxford demo - useful for overriding
