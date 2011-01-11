@@ -64,7 +64,7 @@
     </div>
 {% else %}
     <div id="bc-header">
-           <a href="{% url home:index %}">m.ox</a>
+           <a href="{% url home:index %}">{% block breadcrumb_0 %}Home{% endblock %}</a>
        {% if breadcrumbs.2 %}
            / <a href="{{ breadcrumbs.1.1 }}" title="{{ breadcrumbs.1.0 }}">{{ breadcrumbs.1.0 }}</a>
        {% if not breadcrumbs.3 %}

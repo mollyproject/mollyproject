@@ -1,6 +1,6 @@
 {% extends "places/base.html" %}
 
-{% block title %}m.ox | {{ entity_type.verbose_name_plural|capfirst }} near {% if entity %}{{ entity.type }}{% else %}me{% endif %}{% endblock %}
+{% block title %}{{ entity_type.verbose_name_plural|capfirst }} near {% if entity %}{{ entity.type }}{% else %}me{% endif %}{% endblock %}
 
 
 {% block content %}

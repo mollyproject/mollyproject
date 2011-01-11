@@ -4,7 +4,7 @@
 {% endblock %}
 
 {% block pagetitle %}Server error{% endblock %}
-{% block title %}m.ox | 500 Server Error{% endblock %}
+{% block title %}500 Server Error{% endblock %}
 
 {% block content %}
 <div class="section">
@@ -16,7 +16,7 @@
       <a href="mailto:mobileoxford@oucs.ox.ac.uk">mobileoxford@oucs.ox.ac.uk</a>.
   </p>
   <p id="alt-suggest">
-      Alternatively, you can try returning to the home page.
+      Alternatively, you can try <a href="{% url home:index %}">returning to the home page</a>.
   </p>
   <script type="text/javascript">
       suggest = document.getElementById('alt-suggest');
