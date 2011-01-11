@@ -826,30 +826,28 @@ small {
     padding: 5px;
 }
 
-#favourite
+#favourite, .favourite,
+#unfavourite, .unfavourite
 {
-    background-color: transparent;
-    background-image: url('../../../favourites/png/star-grey.png');
-    border: 0;
-    text-shadow: none;
-    -webkit-box-shadow: none;
-    -moz-box-shadow: none;
-    height: 20px;
-    width: 20px;
-    cursor: pointer;
+    background-color: transparent !important;
+    border: 0 !important;
+    text-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    -moz-box-shadow: none !important;
+    height: 20px !important;
+    width: 20px !important;
+    cursor: pointer !important;
+    text-indent:-999em; /* Hack to not show the text on a button when we're showing the image */
 }
 
-#unfavourite
+#favourite, .favourite
 {
-    background-color: transparent;
-    background-image: url('../../../favourites/png/star.png');
-    border: 0;
-    text-shadow: none;
-    -webkit-box-shadow: none;
-    -moz-box-shadow: none;
-    height: 20px;
-    width: 20px;
-    cursor: pointer;
+    background-image: url('../../../favourites/png/star-grey.png') !important;
+}
+
+#unfavourite, .unfavourite
+{
+    background-image: url('../../../favourites/png/star.png') !important;
 }
 
 .with-favourite
@@ -866,6 +864,7 @@ small {
     padding: 0 !important;
     color: #000000 !important;
     text-shadow: none !important;
+    cursor: pointer;
 }
 
 .link-list .as-text-link

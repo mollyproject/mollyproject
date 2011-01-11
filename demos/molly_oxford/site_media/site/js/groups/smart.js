@@ -109,12 +109,12 @@ function specificLocationForm(location, favourite) {
      + '  </form>'
   if (favourite != null)
   {
-    f += '  <form class="specific-location-form" method="post" action="'+base+'geolocation/favourites/">'
+    f += '  <form class="specific-location-form favourite-location-form" method="post" action="'+base+'geolocation/favourites/">'
        +      csrfToken
     if (favourite) {
       f += '    <input type="hidden" name="action" value="remove"/>'
          + '    <input type="hidden" name="id" value="'+location.id+'"/>'
-         + '    <input type="submit" class="as-text-link" value="(Remove from favourites)"/>'
+         + '    <input type="submit" class="unfavourite" value="(Remove from favourites)"/>'
     } else {
       f += '    <input type="hidden" name="action" value="add"/>'
          + '    <input type="hidden" name="accuracy" value="'+location.accuracy+'"/>'
@@ -122,7 +122,7 @@ function specificLocationForm(location, favourite) {
          + '    <input type="hidden" name="latitude" value="'+location.location[1]+'"/>'
          + '    <input type="hidden" name="return_url" value="'+window.location.pathname+'"/>'
          + '    <input type="hidden" name="name" value="'+location.name+'"/>'
-         + '    <input type="submit" class="as-text-link" value="(Add as favourite)"/>'
+         + '    <input type="submit" class="favourite" value="(Add as favourite)"/>'
     }
     f += '  </form>'
   }
