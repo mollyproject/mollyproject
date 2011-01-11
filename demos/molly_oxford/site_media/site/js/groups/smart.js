@@ -34,7 +34,7 @@ function locationFailure(d) {
 $(function(){
   
   if(geo_position_js.init()) {
-    $('.update-location-form').append('<input type="submit" value="Determine location automatically" class="automatic-update as-text-link" />');
+    $('.update-location-form').append('<input type="button" value="Determine location automatically" class="automatic-update as-text-link" />');
     $('.automatic-update').click(function(){
       $('.update-location-box').slideUp();
       $('.current-location-box').slideDown();
@@ -55,7 +55,7 @@ $(function(){
   }
   
   // Switch to update view from display
-  $('.update-location-form').append('<input type="submit" value="Cancel" class="cancel-update as-text-link" />');
+  $('.update-location-form').append('<input type="button" value="Cancel" class="cancel-update as-text-link" />');
   $('.current-location-box form input').click(function(){
     $('.current-location-box').slideUp();
     $('.cancel-update').click(function(){
