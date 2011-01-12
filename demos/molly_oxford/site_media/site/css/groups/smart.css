@@ -881,7 +881,7 @@ small {
 {
     padding: 2px;
     line-height: 17px;
-    height: 34px;
+    min-height: 34px;
     margin: 0;
 }
 
