@@ -899,10 +899,10 @@ small {
 
 .location-automatic-list li
 {
-    padding-left: 30px !important;
+    padding-left: 35px !important;
     background-image: url('../../../site/png/location-white.png');
     background-repeat: no-repeat;
-    background-position: 3px center;
+    background-position: 5px center;
 }
 
 .update-location-name-container
@@ -915,7 +915,7 @@ small {
 .update-location-name
 {
     width: 100%;
-    padding: 5px 0;
+    padding: 5px 0 5px 3px;
 }
 
 .update-location

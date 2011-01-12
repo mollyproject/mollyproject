@@ -56,7 +56,12 @@
             <form method="post" action="{% url geolocation:index %}" class="update-location-form">
                 {% csrf_token %}
                 <input name="return_url" type="hidden" value="{% if return_url %}{{ return_url }}{% else %}{% url geolocation:index %}{% endif %}"/>
-                <div class="update-location-name-container"><input type="text" name="name" class="update-location-name" /></div>
+                <div class="update-location-name-container">
+                    <input type="text" name="name" class="update-location-name" />
+                    {% ifnotequal style_group "groups-smart" %}
+                    <p>e.g., OX2 6NN, kebl, St Clements</p>
+                    {% endifnotequal %}
+                </div>
                 <input name="method" type="hidden" value="geocoded" />
                 <input type="submit" value="Set Location" class="update-location" />
             </form>
