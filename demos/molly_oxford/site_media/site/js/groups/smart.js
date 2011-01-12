@@ -1,5 +1,6 @@
 // Molly Geolocation code
 function automaticLocation(position) {
+  // Geocode a callback from geolocation API
   $('.location').html('Location found; please wait while we put a name to it.')
   jQuery.post(base+'geolocation/', {
     longitude: position.coords.longitude,
@@ -13,6 +14,7 @@ function automaticLocation(position) {
 }
 
 function locationFailure(d) {
+  // Show error
   if (d.code == 1) { // PERMISSION_DENIED
     $('.location').html('<i>You did not give permission for the site to know your location.</i>');
     jQuery.post(base+'geolocation/', {
@@ -24,8 +26,10 @@ function locationFailure(d) {
       method: 'error'
     });
   } else {
+    // Unknown error
     $('.location').html('<i>An error occurred: ' + d.message + '</i>')
   }
+  // Default back to location after 5 seconds
   window.setTimeout(function() {
     $('.location').text(locationName);
   }, 5000);
@@ -34,6 +38,7 @@ function locationFailure(d) {
 $(function(){
   
   if(geo_position_js.init()) {
+    // Add automatic location buttons if geolocation API is available
     $('.update-location-form').append('<ul class="link-list location-automatic-list"><li><input type="submit" value="Determine location automatically" class="automatic-update as-text-link" /></li></ul>');
     if ($('.favourite-locations-list').length + $('.historic-locations-list').length) {
       $('.location-automatic-list').addClass('no-round-bottom')
@@ -55,6 +60,15 @@ $(function(){
         enableHighAccuracy: true,
         maximumAge: 30000
       });
+    }
+    // If this page is open a while, then automatically send geolocation updates back
+    if (autoLocationUpdating) {
+      setTimeout(function(){
+        geo_position_js.getCurrentPosition(automaticLocation, locationFailure, {
+          enableHighAccuracy: true,
+          maximumAge: 30000
+        });
+      }, 600000)
     }
   }
   

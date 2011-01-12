@@ -3,6 +3,7 @@
         var locationRequired = {{ require_location|yesno:"true,false" }};
         var base = "{% url home:index %}";
         var locationName = {% if geolocation.name %}"{{ geolocation.name|escapejs }}"{% else %}null{% endif %};
+        var autoLocationUpdating = {% ifequal geolocation.method "html5" %}true{% else %}false{% endif %};
         var csrfToken = "{% csrf_token %}";
     </script>
   
