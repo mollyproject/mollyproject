@@ -2,7 +2,7 @@
     <div class="header location-box-header">
         <h2>Your Location</h2>
     </div>
-    <div class="section-content" style="padding:0;">
+    <div class="section-content">
         <div class="current-location-box" style="position:relative;{% if request.GET.update or geolocation_alternatives %}display:none;{% endif %}">
             <p>
                 {% if location_error %}<em>{{ location_error }}</em><br/>{% endif %}

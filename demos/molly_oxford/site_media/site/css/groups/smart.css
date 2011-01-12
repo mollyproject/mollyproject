@@ -897,17 +897,19 @@ small {
     right: 2px;
 }
 
-.location-box-header h2
+.location-automatic-list li
 {
-    padding-left: 30px;
-    background-image: url('../../../site/png/location.png');
+    padding-left: 30px !important;
+    background-image: url('../../../site/png/location-white.png');
     background-repeat: no-repeat;
+    background-position: 3px center;
 }
 
 .update-location-name-container
 {
     margin-right: 110px;
     padding-left: 5px;
+    margin-bottom: 2px;
 }
 
 .update-location-name
@@ -926,8 +928,9 @@ small {
 .cancel-update
 {
     position: absolute;
-    top: -36px;
-    right: 2px;
+    top: -34px;
+    right: 5px;
+    font-weight: bold;
 }
 
 .favourite-location-form
@@ -943,4 +946,28 @@ small {
 {
     position: relative;
     overflow: hidden;
+}
+
+.location-box .header
+{
+    border-bottom: none !important;
+}
+
+.location-box .section-content
+{
+    padding: 0;
+    border-top: none !important;
+}
+
+.automatic-location-button
+{
+    background-color: transparent !important;
+    border: 0 !important;
+    text-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    -moz-box-shadow: none !important;
+    height: 25px !important;
+    width: 25px !important;
+    cursor: pointer !important;
+    text-indent:-999em; /* Hack to not show the text on a button when we're showing the image */
 }
