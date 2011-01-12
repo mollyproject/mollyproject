@@ -83,7 +83,7 @@
                                 <input type="hidden" name="name" value="{{ favourite.name }}"/>
                                 <input type="submit" class="as-text-link" value="{{ favourite.name }}" style="font-weight: normal;" />
                             </form>
-                            <form class="specific-location-form favourite-location-form" method="post" action="{% url geolocation:favourites %}">
+                            <form class="favourite-location-form" method="post" action="{% url geolocation:favourites %}">
                                 {% csrf_token %}
                                 <input type="hidden" name="action" value="remove"/>
                                 <input type="hidden" name="id" value="{{ id }}"/>
@@ -111,7 +111,7 @@
                                 <input type="hidden" name="name" value="{{ history.name }}"/>
                                 <input type="submit" class="as-text-link" value="{{ history.name }}" style="font-weight: normal;" />
                             </form>
-                            <form class="specific-location-form favourite-location-form" method="post" action="{% url geolocation:favourites %}">
+                            <form class="favourite-location-form" method="post" action="{% url geolocation:favourites %}">
                                 {% csrf_token %}
                                 <input type="hidden" name="action" value="add"/>
                                 <input type="hidden" name="accuracy" value="{{ history.accuracy }}"/>
