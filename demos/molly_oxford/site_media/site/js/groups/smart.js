@@ -76,13 +76,13 @@ $(function(){
   // Switch to update view from display
   $('.update-location-form').append('<input type="button" value="Cancel Update" class="cancel-update as-text-link" />');
   $('.current-location-box form input').click(function(){
-    $('.current-location-box').slideUp();
+    $('.current-location-box').hide();
     $('.cancel-update').click(function(){
       $('.update-location-box').slideUp();
       $('.alternate-location-box').slideUp();
       $('.current-location-box').slideDown();
     })
-    $('.alternate-location-box').slideUp();
+    $('.alternate-location-box').hide();
     $('.update-location-box').slideDown();
     $(window).scrollTop($('#location-box').offset().top)
     return false;
