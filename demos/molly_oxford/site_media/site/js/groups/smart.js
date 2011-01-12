@@ -42,7 +42,7 @@ $(function(){
   
   if(geo_position_js.init()) {
     // Add automatic location buttons if geolocation API is available
-    $('.update-location-form').append('<ul class="link-list location-automatic-list"><li><input type="submit" value="Determine location automatically" class="automatic-update as-text-link" /></li></ul>');
+    $('.update-location-form').append('<ul class="link-list location-automatic-list"><li><input type="submit" value="Get location automatically" class="automatic-update as-text-link" /></li></ul>');
     if ($('.favourite-locations-list').length + $('.historic-locations-list').length) {
       $('.location-automatic-list').addClass('no-round-bottom')
     }
