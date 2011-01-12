@@ -959,15 +959,19 @@ small {
     border-top: none !important;
 }
 
-.automatic-location-button
+.automatic-update-button
 {
     background-color: transparent !important;
     border: 0 !important;
     text-shadow: none !important;
     -webkit-box-shadow: none !important;
     -moz-box-shadow: none !important;
-    height: 25px !important;
     width: 25px !important;
     cursor: pointer !important;
     text-indent:-999em; /* Hack to not show the text on a button when we're showing the image */
+    background-image: url('../../../site/png/location.png') !important;
+    position: absolute;
+    top: 2px;
+    right: 73px;
+    background-position: center center;
 }

@@ -43,6 +43,7 @@ $(function(){
     if ($('.favourite-locations-list').length + $('.historic-locations-list').length) {
       $('.location-automatic-list').addClass('no-round-bottom')
     }
+    $('.current-location-box').append('<input type="submit" value="Determine location automatically" class="automatic-update automatic-update-button" />')
     $('.automatic-update, .location-automatic-list').click(function(){
       $('.update-location-box').slideUp();
       $('.current-location-box').slideDown();
