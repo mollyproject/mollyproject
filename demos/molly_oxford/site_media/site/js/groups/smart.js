@@ -2,6 +2,7 @@
 function automaticLocation(position) {
   // Geocode a callback from geolocation API
   $('.location').html('Location found; please wait while we put a name to it.')
+  $('.location-accuracy').hide()
   jQuery.post(base+'geolocation/', {
     longitude: position.coords.longitude,
     latitude: position.coords.latitude,
@@ -14,6 +15,7 @@ function automaticLocation(position) {
 }
 
 function locationFailure(d) {
+  $('.location-accuracy').hide()
   // Show error
   if (d.code == 1) { // PERMISSION_DENIED
     $('.location').html('<i>You did not give permission for the site to know your location.</i>');
@@ -32,6 +34,7 @@ function locationFailure(d) {
   // Default back to location after 5 seconds
   window.setTimeout(function() {
     $('.location').text(locationName);
+    $('.location-accuracy').show()
   }, 5000);
 }
 
@@ -48,7 +51,8 @@ $(function(){
       $('.update-location-box').slideUp();
       $('.current-location-box').slideDown();
       $('.alternate-location-box').slideUp();
-      $('.location').html('Please wait while we attempt to determine your location&hellip;')
+      $('.location').html('Please wait while we attempt to determine your location&hellip;')    
+      $('.location-accuracy').hide()
       geo_position_js.getCurrentPosition(automaticLocation, locationFailure, {
         enableHighAccuracy: true,
         maximumAge: 30000
@@ -185,6 +189,7 @@ function locationFound(data) {
     $('.location').html(data.name)
     locationName = data.name
     $('.location-accuracy').html('within approx. ' + Math.round(data.accuracy) + 'm')
+    $('.location-accuracy').show()
     
     if (data.alternatives != null && data.alternatives.length > 0) {
       $('.alternate-location-box').empty()
