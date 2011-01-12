@@ -106,10 +106,10 @@ $(function(){
   $('.specific-location-form').submit(specificLocationFormSubmit)
   $('.favourite-location-form').submit(favouriteLocationFormSubmit)
 
-  $('.update-location-name').click(function(){
+  $('.update-location-name').focus(function(){
     $(this).val('');
     $(this).css('color', '#000000')
-    $(this).unbind('click')
+    $(this).unbind('focus')
   });
   $('.update-location-name').val('e.g., OX2 6NN, kebl, St Clements')
   $('.update-location-name').css('color', '#a3a3a3')
