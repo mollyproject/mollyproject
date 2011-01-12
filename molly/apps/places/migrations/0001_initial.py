@@ -7,7 +7,7 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
+
         # Adding model 'Source'
         db.create_table('places_source', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
@@ -98,7 +98,7 @@ class Migration(SchemaMigration):
 
 
     def backwards(self, orm):
-        
+
         # Deleting model 'Source'
         db.delete_table('places_source')
 

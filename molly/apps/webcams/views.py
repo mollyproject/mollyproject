@@ -11,6 +11,8 @@ from molly.utils.breadcrumbs import *
 from molly.apps.external_media.utils import resize_external_image
 from models import Webcam, WEBCAM_WIDTHS
 
+import datetime
+
 class IndexView(BaseView):
     def get_metadata(self, request):
         return {
