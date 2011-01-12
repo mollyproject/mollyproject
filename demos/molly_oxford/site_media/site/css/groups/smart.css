@@ -929,3 +929,18 @@ small {
     top: -36px;
     right: 2px;
 }
+
+.favourite-location-form
+{
+    position: absolute;
+    top: 0;
+    right: 2px;
+    border-left: 1px solid #98A1AC;
+    padding: 8px;
+}
+
+.update-location-lists .link-list li
+{
+    position: relative;
+    overflow: hidden;
+}
