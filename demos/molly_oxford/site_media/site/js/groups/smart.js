@@ -100,6 +100,7 @@ $(function(){
     return false;
   })
   $('.specific-location-form').submit(specificLocationFormSubmit)
+  $('.favourite-location-form').submit(favouriteLocationFormSubmit)
 
   $('.update-location-name').click(function(){
     $(this).val('');
@@ -124,7 +125,7 @@ function specificLocationForm(location, favourite) {
      + '  </form>'
   if (favourite != null)
   {
-    f += '  <form class="specific-location-form favourite-location-form" method="post" action="'+base+'geolocation/favourites/">'
+    f += '  <form class="favourite-location-form" method="post" action="'+base+'geolocation/favourites/">'
        +      csrfToken
     if (favourite) {
       f += '    <input type="hidden" name="action" value="remove"/>'
@@ -148,6 +149,22 @@ function specificLocationFormSubmit() {
   $('.update-location-box').slideUp();
   $('.alternate-location-box').slideUp();
   $('.current-location-box').slideDown();
+  $.post($(this).attr('action'), {
+        longitude: $(this).find('[name=longitude]').val(),
+        latitude: $(this).find('[name=latitude]').val(),
+        accuracy: $(this).find('[name=accuracy]').val(),
+        name: $(this).find('[name=name]').val(),
+        return_url: $(this).find('[name=return_url]').val(),
+        method: $(this).find('[name=method]').val(),
+        id: $(this).find('[name=id]').val(),
+        action: $(this).find('[name=action]').val(),
+        format: 'json',
+        force: 'True'
+    }, locationFound, 'json');
+  return false;
+}
+
+function favouriteLocationFormSubmit() {
   $.post($(this).attr('action'), {
         longitude: $(this).find('[name=longitude]').val(),
         latitude: $(this).find('[name=latitude]').val(),
