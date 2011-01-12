@@ -26,6 +26,9 @@ def device_specific_media(request):
     # Symbian S60 v3 and above (iresspective of browser)
     elif device.device_os in ('Symbian', 'Symbian OS') and parse_version(device.device_os_version) >= (9, 2) :
         style_group = "smart"
+        if parse_version(device.device_os_version) < (9, 4):
+            # Only S60 5th edition properly supports JQuery
+            use_javascript = False
 
     # Nokia Maemo
     elif device.brand_name == 'Nokia' and device.device_os == 'Linux Smartphone OS' :
