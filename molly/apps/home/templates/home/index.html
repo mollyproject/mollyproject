@@ -2,6 +2,8 @@
 {% load molly_apps_weather %}
 {% load portal_misc %}{% load maps %}{% load molly_apps_search %}
 
+{% block extrahead %}{% include "geolocation/js.html" %}{% endblock extrahead %}
+
 {% block title %}Mobile Oxford{% endblock %}
 
 {% block header %}

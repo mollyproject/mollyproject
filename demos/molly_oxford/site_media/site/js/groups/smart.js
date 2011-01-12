@@ -1,3 +1,225 @@
+// Molly Geolocation code
+function automaticLocation(position) {
+  // Geocode a callback from geolocation API
+  $('.location').html('Location found; please wait while we put a name to it.')
+  jQuery.post(base+'geolocation/', {
+    longitude: position.coords.longitude,
+    latitude: position.coords.latitude,
+    accuracy: position.coords.accuracy,
+    method: 'html5',
+    format: 'json',
+    return_url: $('#return_url').val(),
+    force: 'True'
+  }, locationFound, 'json');
+}
+
+function locationFailure(d) {
+  // Show error
+  if (d.code == 1) { // PERMISSION_DENIED
+    $('.location').html('<i>You did not give permission for the site to know your location.</i>');
+    jQuery.post(base+'geolocation/', {
+      method: 'denied'
+    });
+  } else if (d.code == 2 || d.code == 3) { // POSITION_UNAVAILABLE / TIMEOUT
+    $('.location').html('<i>We couldn\'t get a fix on your location right now</i>')
+    jQuery.post(base+'geolocation/', {
+      method: 'error'
+    });
+  } else {
+    // Unknown error
+    $('.location').html('<i>An error occurred: ' + d.message + '</i>')
+  }
+  // Default back to location after 5 seconds
+  window.setTimeout(function() {
+    $('.location').text(locationName);
+  }, 5000);
+}
+
+$(function(){
+  
+  if(geo_position_js.init()) {
+    // Add automatic location buttons if geolocation API is available
+    $('.update-location-form').append('<ul class="link-list location-automatic-list"><li><input type="submit" value="Determine location automatically" class="automatic-update as-text-link" /></li></ul>');
+    if ($('.favourite-locations-list').length + $('.historic-locations-list').length) {
+      $('.location-automatic-list').addClass('no-round-bottom')
+    }
+    $('.current-location-box p').prepend('<input type="submit" value="Determine location automatically" class="automatic-update automatic-update-button" />')
+    $('.automatic-update, .location-automatic-list').click(function(){
+      $('.update-location-box').slideUp();
+      $('.current-location-box').slideDown();
+      $('.alternate-location-box').slideUp();
+      $('.location').html('Please wait while we attempt to determine your location&hellip;')
+      geo_position_js.getCurrentPosition(automaticLocation, locationFailure, {
+        enableHighAccuracy: true,
+        maximumAge: 30000
+      });
+      return false;
+    });
+    // Attempt to do location if available
+    if (locationRequired) {
+      geo_position_js.getCurrentPosition(automaticLocation, locationFailure, {
+        enableHighAccuracy: true,
+        maximumAge: 30000
+      });
+    }
+    // If this page is open a while, then automatically send geolocation updates back
+    if (autoLocationUpdating) {
+      setTimeout(function(){
+        geo_position_js.getCurrentPosition(automaticLocation, locationFailure, {
+          enableHighAccuracy: true,
+          maximumAge: 30000
+        });
+      }, 600000)
+    }
+  }
+  
+  // Switch to update view from display
+  $('.update-location-form').append('<input type="button" value="Cancel Update" class="cancel-update as-text-link" />');
+  $('.current-location-box form input').click(function(){
+    $('.current-location-box').slideUp();
+    $('.cancel-update').click(function(){
+      $('.update-location-box').slideUp();
+      $('.alternate-location-box').slideUp();
+      $('.current-location-box').slideDown();
+    })
+    $('.alternate-location-box').slideUp();
+    $('.update-location-box').slideDown();
+    $(window).scrollTop($('#location-box').offset().top)
+    return false;
+  });
+  $('.update-location-form').submit(function() {
+    $('.update-location-box').slideUp();
+    $('.alternate-location-box').slideUp();
+    $('.current-location-box').slideDown();
+    $('.location').html('Please wait while we attempt to determine your location&hellip;')
+    $.post(base+'geolocation/', {
+      format: 'json',
+      method: 'geocoded',
+      name: $(this).find('.update-location-name').val()
+    }, locationFound);
+    return false;
+  })
+  $('.specific-location-form').submit(specificLocationFormSubmit)
+
+  $('.update-location-name').click(function(){
+    $(this).val('');
+    $(this).css('color', '#000000')
+    $(this).unbind('click')
+  });
+  $('.update-location-name').val('e.g., OX2 6NN, kebl, St Clements')
+  $('.update-location-name').css('color', '#a3a3a3')
+
+});
+
+function specificLocationForm(location, favourite) {
+  f  = '  <form class="specific-location-form" method="post" action="'+base+'geolocation/">'
+     +      csrfToken
+     + '    <input type="hidden" name="method" value="manual"/>'
+     + '    <input type="hidden" name="accuracy" value="'+location.accuracy+'"/>'
+     + '    <input type="hidden" name="longitude" value="'+location.location[0]+'"/>'
+     + '    <input type="hidden" name="latitude" value="'+location.location[1]+'"/>'
+     + '    <input type="hidden" name="return_url" value="'+window.location.pathname+'"/>'
+     + '    <input type="hidden" name="name" value="'+location.name+'"/>'
+     + '    <input type="submit" class="as-text-link" value="'+location.name+'" style="font-weight: normal;" />'
+     + '  </form>'
+  if (favourite != null)
+  {
+    f += '  <form class="specific-location-form favourite-location-form" method="post" action="'+base+'geolocation/favourites/">'
+       +      csrfToken
+    if (favourite) {
+      f += '    <input type="hidden" name="action" value="remove"/>'
+         + '    <input type="hidden" name="id" value="'+location.id+'"/>'
+         + '    <input type="submit" class="unfavourite" value="(Remove from favourites)"/>'
+    } else {
+      f += '    <input type="hidden" name="action" value="add"/>'
+         + '    <input type="hidden" name="accuracy" value="'+location.accuracy+'"/>'
+         + '    <input type="hidden" name="longitude" value="'+location.location[0]+'"/>'
+         + '    <input type="hidden" name="latitude" value="'+location.location[1]+'"/>'
+         + '    <input type="hidden" name="return_url" value="'+window.location.pathname+'"/>'
+         + '    <input type="hidden" name="name" value="'+location.name+'"/>'
+         + '    <input type="submit" class="favourite" value="(Add as favourite)"/>'
+    }
+    f += '  </form>'
+  }
+  return f
+}
+
+function specificLocationFormSubmit() {
+  $('.update-location-box').slideUp();
+  $('.alternate-location-box').slideUp();
+  $('.current-location-box').slideDown();
+  $.post($(this).attr('action'), {
+        longitude: $(this).find('[name=longitude]').val(),
+        latitude: $(this).find('[name=latitude]').val(),
+        accuracy: $(this).find('[name=accuracy]').val(),
+        name: $(this).find('[name=name]').val(),
+        return_url: $(this).find('[name=return_url]').val(),
+        method: $(this).find('[name=method]').val(),
+        id: $(this).find('[name=id]').val(),
+        action: $(this).find('[name=action]').val(),
+        format: 'json',
+        force: 'True'
+    }, locationFound, 'json');
+  return false;
+}
+
+function locationFound(data) {
+  if (data.name) {
+    $('.location').html(data.name)
+    locationName = data.name
+    $('.location-accuracy').html('within approx. ' + Math.round(data.accuracy) + 'm')
+    
+    if (data.alternatives != null && data.alternatives.length > 0) {
+      $('.alternate-location-box').empty()
+      $('.alternate-location-box').append( '<div class="header">'
+                                         + '  <h2>Or did you mean&hellip;</h2>'
+                                         + '</div>'
+                                         + '<ul class="alternate-locations-list link-list">'
+                                         + '</ul>');
+      for (i in data.alternatives) {
+        $('.alternate-locations-list').append('<li>' + specificLocationForm(data.alternatives[i], null) + '</li>')
+      }
+      $('.alternate-location-box').slideDown();
+    } else {
+      $('.alternate-location-box').slideUp();
+    }
+    $('.update-location-lists').empty()
+    if (data.favourites.length > 0) {
+      $('.update-location-lists').append( '<div class="header">'
+                                        + '  <h2>Or select a favourite location</h2>'
+                                        + '</div>'
+                                        + '<ul class="favourite-locations-list link-list">'
+                                        + '</ul>');
+      for (i in data.favourites) {
+        $('.favourite-locations-list').append('<li>' + specificLocationForm(data.favourites[i], true) + '</i>')
+      }
+    }
+    if (data.history.length > 0) {
+      $('.favourite-locations-list').addClass('no-round-bottom')
+      $('.update-location-lists').append( '<div class="header">'
+                                        + '  <h2>Or select from history</h2>'
+                                        + '</div>'
+                                        + '<ul class="historic-locations-list link-list">'
+                                        + '<li>'
+                                        + '    <form class="specific-location-form" method="post" action="'+base+'geolocation/clear">'
+                                        +        csrfToken
+                                        + '      <input type="submit" value="Clear history" class="as-text-link" />'
+                                        + '    </form>'
+                                        + '</li>'
+                                        + '</ul>');
+      for (i in data.history.reverse()) {
+        $('.historic-locations-list').prepend('<li>' + specificLocationForm(data.history[i], false) + '</i>')
+      }
+    }
+    if ($('.favourite-locations-list').length + $('.historic-locations-list').length) {
+      $('.location-automatic-list').addClass('no-round-bottom')
+    }
+  } else {
+    locationFailure({message: data.error, code: -1})
+  }
+  $('.specific-location-form').submit(specificLocationFormSubmit)
+}
+
 // Copyright 2007, Google Inc.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -18,7 +240,7 @@
 // EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
 // SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
 // PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
-// OR BUSINESS INTERRUPTION) HOWEVER CAUgeolocation/update/SED AND ON ANY THEORY OF LIABILITY,
+// OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
 // WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
 // OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 // ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
@@ -62,6 +284,12 @@
         factory.height = 0;
         factory.type = "application/x-googlegears";
         document.documentElement.appendChild(factory);
+        if(factory && (typeof factory.create == 'undefined')) {
+          // If NP_Initialize() returns an error, factory will still be created.
+          // We need to make sure this case doesn't cause Gears to appear to
+          // have been initialized.
+          factory = null;
+        }
       }
     }
   }
@@ -86,258 +314,235 @@
   }
 })();
 
+/*!
+ * geo-location-javascript v0.4.3
+ * http://code.google.com/p/geo-location-javascript/
+ *
+ * Copyright (c) 2009 Stan Wiechers
+ * Licensed under the MIT licenses.
+ *
+ * Revision: $Rev$: 
+ * Author: $Author$:
+ * Date: $Date$:    
+ */
+var bb_successCallback;
+var bb_errorCallback;
+var bb_blackberryTimeout_id=-1;
 
-
-/************************************
- *        The following is          *
- * (C) University of Oxford 2009    *
- * E-mail: erewhon AT oucs.ox.ac.uk *
- ************************************/
-
-/************************************
- *           Geolocation            *
- ************************************/
-
-var positionRequestCount = 0;
-var positionWatchId = null;
-var positionInterface = null;
-var positionMethod = null;
-var positionGeo = null;
-var manualUpdateLocation = null;
-
-
-
-function sendPosition(position, final) {
-    if (positionRequestCount == 1)
-        $('.location-status').html('Location found; please wait while we put a name to it.');
-    jQuery.post(base+'geolocation/', {
-        longitude: position.coords.longitude,
-        latitude: position.coords.latitude,
-        accuracy: position.coords.accuracy,
-        method: positionMethod,
-        format: 'json',
-        return_url: $('#return_url').val(),
-        force: 'True',
-    }, function(data) {
-        oldPositionName = positionName;
-        positionName = data.name;
-        $('.location').html(data.name);
-        $('.location-status').html('We think you are somewhere near <span class="location">'+data.name+'</span>.');
-        if (oldPositionName == null && data.redirect)
-            window.location.pathname = data.redirect;
-    }, 'json');
+function handleBlackBerryLocationTimeout()
+{
+	if(bb_blackberryTimeout_id!=-1)
+	{
+		bb_errorCallback({message:"Timeout error", code:3});
+	}
 }
-
-function sendPositionError(error) {
-    if (error.code == error.PERMISSION_DENIED) {
-        $('.location-status').html(
-            'You did not give permission for the site to know your location. '
-          + 'You won\'t be asked again unless you initiate an automatic '
-          + 'update using the link below.');
-        jQuery.post(base+'geolocation/', {
-            method: 'denied',
-        });
-    } else if (error.code == error.POSITION_UNAVAILABLE) {
-        $('.location-status').html(
-            'We were unable to determine your location at this time. Please '
-          + 'try again later, or enter your location manually.'
-        );
-    } else {
-        $('.location-status').html(
-            'An error occured while determining your location.'
-        );
-        jQuery.post(base+'geolocation/', {
-            method: 'error',
-        });
-    }
-}
-
-function getGearsPositionInterface(name) {
-    if (positionGeo == null)
-        positionGeo = google.gears.factory.create('beta.geolocation');
-    geo = positionGeo;
-    
-    function wrapWithPermission(fname) {
-        return function(successCallback, errorCallback, options) {
-            if (geo.getPermission(name)) {
-                if (fname == 'gcp')
-                    return geo.getCurrentPosition(successCallback, errorCallback, options);
+function handleBlackBerryLocation()
+{
+		clearTimeout(bb_blackberryTimeout_id);
+		bb_blackberryTimeout_id=-1;
+        if (bb_successCallback && bb_errorCallback)
+        {
+                if(blackberry.location.latitude==0 && blackberry.location.longitude==0)
+                {
+                        //http://dev.w3.org/geo/api/spec-source.html#position_unavailable_error
+                        //POSITION_UNAVAILABLE (numeric value 2)
+                        bb_errorCallback({message:"Position unavailable", code:2});
+                }
                 else
-                    return geo.watchPosition(successCallback, errorCallback, options);
-            } else
-                errorCallback({
-                    PERMISSION_DENIED: geo.PositionEror.PERMISSION_DENIED,
-                    code: geo.PositionError.PERMISSION_DENIED,
-                });
-        };
-    }
-    
-    return {
-        getCurrentPosition: wrapWithPermission('getCurrentPosition'),
-        watchPosition: wrapWithPermission('watchPosition'),
-        clearWatch: function(id) {
-            geo.clearWatch(id);
-        },
-    }
-}
+                {  
+                        var timestamp=null;
+                        //only available with 4.6 and later
+                        //http://na.blackberry.com/eng/deliverables/8861/blackberry_location_568404_11.jsp
+                        if (blackberry.location.timestamp)
+                        {
+                                timestamp=new Date(blackberry.location.timestamp);
+                        }
+                        bb_successCallback({timestamp:timestamp, coords: {latitude:blackberry.location.latitude,longitude:blackberry.location.longitude}});
+                }
+                //since blackberry.location.removeLocationUpdate();
+                //is not working as described http://na.blackberry.com/eng/deliverables/8861/blackberry_location_removeLocationUpdate_568409_11.jsp
+                //the callback are set to null to indicate that the job is done
 
-function positionWatcher(position) {
-    positionRequestCount += 1;
-    if (positionRequestCount > 10 || position.coords.accuracy <= 150 || position.coords.accuracy == 18000) {
-        positionInterface.clearWatch(positionWatchId);
-        positionWatchId = null;
-        $('.location-action').html(
-            ' <a class="update-location-toggle" href="#" onclick="javascript:toggleUpdateLocation(); return false;">Update</a>');
-    }
-    
-    sendPosition(position, positionWatchId != null);
-}
-
-function requestPosition() {
-    $('.update-location').slideUp();
-    if (positionWatchId != null)
-        return; 
-        
-    location_options = {
-            enableHighAccuracy: true,
-            maximumAge: 30000,
-    }
-    if (window.google && google.gears) {
-        positionInterface = getGearsPositionInterface('Oxford Mobile Portal');
-        positionMethod = 'gears';
-    } else if (window.navigator && navigator.geolocation) {
-        positionInterface = navigator.geolocation;
-        positionMethod = 'html5';
-    }
-    
-    positionRequestCount = 0;
-    
-    if (positionInterface) {
-        $('.location-status').html('Please wait while we attempt to determine your location...');
-        $('.location-action').html(
-            ' <a class="update-location-cancel" href="#" onclick="javascript:cancelUpdateLocation(); return false;">Cancel</a>');
-        positionWatchId = positionInterface.watchPosition(positionWatcher, sendPositionError, location_options);
-    } else
-        $('.location-status').html('We have no means of determining your location automatically.');
-}
-
-function positionMethodAvailable() {
-    return ((window.navigator && navigator.geolocation) || (window.google && google.gears))
-}
-
-function toggleUpdateLocation(event) {
-    updateLocationToggle = $('.update-location-toggle');
-    
-    if (updateLocationToggle.html() == 'Update') {
-        $('.update-location').slideDown();
-        updateLocationToggle.html('Cancel');
-    } else {
-        $('.update-location').slideUp();
-        updateLocationToggle.html('Update');
-    }
-    return false;
-}
-
-function cancelUpdateLocation() {
-    positionRequestCount = 11;
-    if (positionName)
-        $('.location-status').html('We think you are somewhere near <span class="location">'+positionName+'</span>.');
-    else
-        $('.location-status').html('We do not know where you are.');
-    $('.location-action').html(
-        ' <a class="update-location-toggle" href="#" onclick="javascript:toggleUpdateLocation(); return false;">Update</a>');
-
-}
-
-function cancelManualUpdateLocation() {
-    positionRequestCount = 11;
-    if (positionName)
-        $('.location-status').html('We think you are somewhere near <span class="location">'+positionName+'</span>.');
-    else
-        $('.location-status').html('We do not know where you are.');
-    $('.location-action').html(
-        ' <a class="update-location-toggle" href="#" onclick="javascript:toggleUpdateLocation(); return false;">Update</a>');
-
-    $('.update-location').slideUp('normal', function() {
-        $('.manual-update-location').replaceWith(manualUpdateLocation);
-    });
-        
-}
-
-function manualLocationSubmit(event) {
-    $('.manual-update-location-submit').css('display', 'none');
-    
-    $('.location-action').html(
-            ' <a class="update-location-cancel" href="#" onclick="javascript:cancelManualUpdateLocation(); return false;">Cancel</a>');
-    manualUpdateLocation = $('.manual-update-location').clone(true);
-        
-    $.post(base+'geolocation/', {
-        method: 'geocoded',
-        name: $('#location-name').val(),
-        format: 'embed',
-        return_url: $('#return_url').val(),
-    }, function(data, textStatus, xhr) {
-        if (xhr.getResponseHeader('X-Embed-Redirect') != null) {
-            if (positionName == null)
-                window.location.pathname = xhr.getResponseHeader('X-Embed-Redirect');
-            positionName = xhr.getResponseHeader('X-Embed-Location-Name');
-            $('.location').html(positionName);
-            cancelManualUpdateLocation();
-            return;
+                bb_successCallback = null;
+                bb_errorCallback = null;
         }
-        
-        $('.manual-update-location').html(data);
-        $('.submit-location-form').each(function () {
-            button = $(this).find(".submit-location-form-button");
-            link = $('<a href="#">'+button.html()+'</a>');
-            link.css('color', '#ffffff').bind('click', {form:this}, function(event) {
-                form = $(event.data.form);
-                $.post(base+'geolocation/', {
-                    longitude: form.find('[name=longitude]').val(),
-                    latitude: form.find('[name=latitude]').val(),
-                    accuracy: form.find('[name=accuracy]').val(),
-                    name: form.find('[name=name]').val(),
-                    return_url: form.find('[name=return_url]').val(),
-                    method: 'geocoded',
-                    format: 'json',
-                    force: 'True'
-                }, function(data) {
-                    oldPositionName = positionName;
-                    positionName = form.find('[name=name]').val();
-                    $('.location').html(positionName);
-                    cancelManualUpdateLocation();
-                    if (oldPositionName == null && data.redirect)
-                        window.location.pathname = data.redirect;
-                }, 'json');
-                return false;
-            });
-            button.replaceWith(link);
-        });
-    });
-
-    return false;
 }
-    
-if (require_location)
-    jQuery(document).ready(requestPosition);
+
+var geo_position_js=function() {
+
+        var pub = {};
+        var provider=null;
+
+        pub.getCurrentPosition = function(successCallback,errorCallback,options)
+        {
+                provider.getCurrentPosition(successCallback, errorCallback,options);
+        }
+
+        pub.init = function()
+        {			
+                try
+                {
+                        if (typeof(geo_position_js_simulator)!="undefined")
+                        {
+                                provider=geo_position_js_simulator;
+                        }
+                        else if (typeof(bondi)!="undefined" && typeof(bondi.geolocation)!="undefined")
+                        {
+                                provider=bondi.geolocation;
+                        }
+                        else if (typeof(navigator.geolocation)!="undefined")
+                        {
+                                provider=navigator.geolocation;
+                                pub.getCurrentPosition = function(successCallback, errorCallback, options)
+                                {
+                                        function _successCallback(p)
+                                        {
+                                                //for mozilla geode,it returns the coordinates slightly differently
+                                                if(typeof(p.latitude)!="undefined")
+                                                {
+                                                        successCallback({timestamp:p.timestamp, coords: {latitude:p.latitude,longitude:p.longitude}});
+                                                }
+                                                else
+                                                {
+                                                        successCallback(p);
+                                                }
+                                        }
+                                        provider.getCurrentPosition(_successCallback,errorCallback,options);
+                                }
+                        }
+                         else if(typeof(window.google)!="undefined" && typeof(google.gears)!="undefined")
+                        {
+                                provider=google.gears.factory.create('beta.geolocation');
+                        }
+                        else if ( typeof(Mojo) !="undefined" && typeof(Mojo.Service.Request)!="Mojo.Service.Request")
+                        {
+                                provider=true;
+                                pub.getCurrentPosition = function(successCallback, errorCallback, options)
+                                {
+
+                                parameters={};
+                                if(options)
+                                {
+                                         //http://developer.palm.com/index.php?option=com_content&view=article&id=1673#GPS-getCurrentPosition
+                                         if (options.enableHighAccuracy && options.enableHighAccuracy==true)
+                                         {
+                                                parameters.accuracy=1;
+                                         }
+                                         if (options.maximumAge)
+                                         {
+                                                parameters.maximumAge=options.maximumAge;
+                                         }
+                                         if (options.responseTime)
+                                         {
+                                                if(options.responseTime<5)
+                                                {
+                                                        parameters.responseTime=1;
+                                                }
+                                                else if (options.responseTime<20)
+                                                {
+                                                        parameters.responseTime=2;
+                                                }
+                                                else
+                                                {
+                                                        parameters.timeout=3;
+                                                }
+                                         }
+                                }
 
 
-$(document).ready(function() {
-    $('.update-location').css('display', 'none');
-    $('.location-action').html(
-        ' <a class="update-location-toggle" href="#" onclick="javascript:toggleUpdateLocation(); return false;">Update</a>');
-      
-    if (positionMethodAvailable()) {
-        $('#geolocate-js').html(
-            '<a href="#" onclick="javascript:requestPosition(); return false;">Determine location automaticaly</a>');
-    }
-    
-    $('.manual-update-form').bind('submit', manualLocationSubmit);
-    $('.manual-update-form').bind('submit', function(){ return false; });
-    
-    if (require_location && positionMethodAvailable())
-        $('#location_status').html('We do not yet have a location for you; please wait while we attempt to determine one.');
-    else if (positionMethodAvailable())
-        $('#location_status').css('display', 'none');
-   
-});
+                                 r=new Mojo.Service.Request('palm://com.palm.location', {
+                                        method:"getCurrentPosition",
+                                            parameters:parameters,
+                                            onSuccess: function(p){successCallback({timestamp:p.timestamp, coords: {latitude:p.latitude, longitude:p.longitude,heading:p.heading}});},
+                                            onFailure: function(e){
+                                                                if (e.errorCode==1)
+                                                                {
+                                                                        errorCallback({code:3,message:"Timeout"});
+                                                                }
+                                                                else if (e.errorCode==2)
+                                                                {
+                                                                        errorCallback({code:2,message:"Position Unavailable"});
+                                                                }
+                                                                else
+                                                                {
+                                                                        errorCallback({code:0,message:"Unknown Error: webOS-code"+errorCode});
+                                                                }
+                                                        }
+                                            });
+                                }
+
+                        }
+                        else if (typeof(device)!="undefined" && typeof(device.getServiceObject)!="undefined")
+                        {
+                                provider=device.getServiceObject("Service.Location", "ILocation");
+
+                                //override default method implementation
+                                pub.getCurrentPosition = function(successCallback, errorCallback, options)
+                                {
+                                        function callback(transId, eventCode, result) {
+                                            if (eventCode == 4)
+                                                {
+                                                errorCallback({message:"Position unavailable", code:2});
+                                            }
+                                                else
+                                                {
+                                                        //no timestamp of location given?
+                                                        successCallback({timestamp:null, coords: {latitude:result.ReturnValue.Latitude, longitude:result.ReturnValue.Longitude, altitude:result.ReturnValue.Altitude,heading:result.ReturnValue.Heading}});
+                                                }
+                                        }
+                                        //location criteria
+                                    var criteria = new Object();
+                                criteria.LocationInformationClass = "BasicLocationInformation";
+                                        //make the call
+                                        provider.ILocation.GetLocation(criteria,callback);
+                                }
+                        }
+                        else if(typeof(window.blackberry)!="undefined" && blackberry.location.GPSSupported)
+                        {
+
+                                // set to autonomous mode
+								if(typeof(blackberry.location.setAidMode)=="undefined")
+								{
+	                                return false;									
+								}
+								blackberry.location.setAidMode(2);
+                                //override default method implementation
+                                pub.getCurrentPosition = function(successCallback,errorCallback,options)
+                                {
+										//alert(parseFloat(navigator.appVersion));
+                                        //passing over callbacks as parameter didn't work consistently
+                                        //in the onLocationUpdate method, thats why they have to be set
+                                        //outside
+                                        bb_successCallback=successCallback;
+                                        bb_errorCallback=errorCallback;
+                                        //function needs to be a string according to
+                                        //http://www.tonybunce.com/2008/05/08/Blackberry-Browser-Amp-GPS.aspx
+										if(options['timeout'])  
+										{
+										 	bb_blackberryTimeout_id=setTimeout("handleBlackBerryLocationTimeout()",options['timeout']);
+										}
+										else
+										//default timeout when none is given to prevent a hanging script
+										{
+											bb_blackberryTimeout_id=setTimeout("handleBlackBerryLocationTimeout()",60000);
+										}										
+										blackberry.location.onLocationUpdate("handleBlackBerryLocation()");
+                                        blackberry.location.refreshLocation();
+                                }
+                                provider=blackberry.location;				
+                        }
+                }
+                catch (e){ 
+					alert("error="+e);
+					if(typeof(console)!="undefined")
+					{
+						console.log(e);
+					}
+					return false;
+				}
+                return  provider!=null;
+        }
+
+
+        return pub;
+}();

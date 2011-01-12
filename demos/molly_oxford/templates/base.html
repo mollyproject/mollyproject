@@ -6,14 +6,6 @@
     <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
     <meta name="format-detection" content="telephone=no" />
 
-{% if use_javascript %}
-    <script type="text/javascript">
-        var require_location = {{ require_location|yesno:"true,false" }};
-        var base = "{% url home:index %}";
-        var positionName = {% if geolocation.name %}"{{ geolocation.name|escapejs }}"{% else %}null{% endif %};
-    </script>
-{% endif %}
-
   {% compressed_css style_group %}
   <link rel="icon" type="image/png" href="{{ MEDIA_URL }}png/favicon.png"/>
   {% if device|device_has_parent:"apple_generic" or browser.svgt_1_1 %}
@@ -26,12 +18,8 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
 {% endif %}
-
-{% if use_javascript %}
-  {% compressed_js 'jquery-1.4.2' %}
-  {% compressed_js style_group %}
-{% endif %}
     <link rel="icon" type="image/png" href="{{ MEDIA_URL }}site/png/favicon.png"/>
+
 {% block extrahead %}{% endblock extrahead %}
 </head>
 
@@ -97,11 +85,11 @@
 {% if not hide_feedback_link %}
 <div style="margin-top:15px">
 {% block bottom_links %}
-  <div style="width:50%; float:left; margin-top: 2px; margin-bottom:2px;">
+  <div style="width:50%; float:left; margin-top: 2px; margin-bottom:10px;">
     <a style="margin:0 2px 0 10px; background-color:white; padding:10px; -webkit-border-radius:6px; -moz-border-radius:6px; text-align:center; display:block"
        href="{% url feedback:index %}?referer={{ full_path|urlencode }}">Provide feedback for this page</a>
   </div>
-  <div style="width:50%; float:left; margin-top: 2px; margin-bottom:2px;">
+  <div style="width:50%; float:left; margin-top: 2px; margin-bottom:10px;">
     <a style="margin:0 10px 0 2px; background-color:white; padding:10px; -webkit-border-radius:6px; -moz-border-radius:6px; text-align:center; display:block"
        href="{% url url_shortener:index %}?path={{ full_path|urlencode }}">2D barcode and shortened link</a>
   </div>
