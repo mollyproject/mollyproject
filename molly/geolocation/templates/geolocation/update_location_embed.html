@@ -4,15 +4,15 @@
     </div>
     <div class="section-content">
         <div class="current-location-box" style="position:relative;{% if request.GET.update or geolocation_alternatives %}display:none;{% endif %}">
+            <form method="get" action="{% url geolocation:index %}">
+                {% if return_url %}<input type="hidden" name="return_url" value="{{ return_url }}"/>{% endif %}
+                <input type="submit" name="update" value="Update" class="update-location-opener" />
+            </form>
             <p>
                 {% if location_error %}<em>{{ location_error }}</em><br/>{% endif %}
                 <span class="location">{{ geolocation.name|default:"No location known" }}</span><br/>
                 <span class="location-accuracy">{% if geolocation.accuracy %}within approx. {{ geolocation.accuracy|floatformat:"0" }} m{% endif %}</span>
             </p>
-            <form method="get" action="{% url geolocation:index %}">
-                {% if return_url %}<input type="hidden" name="return_url" value="{{ return_url }}"/>{% endif %}
-                <input type="submit" name="update" value="Update" class="update-location-opener" />
-            </form>
         </div>
         <div class="alternate-location-box"{% if not geolocation_alternatives %} style="display:none;"{% endif %}>
             {% if geolocation_alternatives %}

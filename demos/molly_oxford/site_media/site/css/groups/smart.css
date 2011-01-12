@@ -892,9 +892,7 @@ small {
 
 .current-location-box .update-location-opener
 {
-    position: absolute;
-    top: 2px;
-    right: 2px;
+    float: right;
 }
 
 .location-automatic-list li
@@ -931,6 +929,7 @@ small {
     top: -34px;
     right: 5px;
     font-weight: bold;
+    text-decoration: underline;
 }
 
 .favourite-location-form
@@ -970,8 +969,7 @@ small {
     cursor: pointer !important;
     text-indent:-999em; /* Hack to not show the text on a button when we're showing the image */
     background-image: url('../../../site/png/location.png') !important;
-    position: absolute;
-    top: 2px;
-    right: 73px;
+    float: right;
     background-position: center center;
+    margin-right: 5px;
 }

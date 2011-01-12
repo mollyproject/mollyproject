@@ -43,7 +43,7 @@ $(function(){
     if ($('.favourite-locations-list').length + $('.historic-locations-list').length) {
       $('.location-automatic-list').addClass('no-round-bottom')
     }
-    $('.current-location-box').append('<input type="submit" value="Determine location automatically" class="automatic-update automatic-update-button" />')
+    $('.current-location-box p').prepend('<input type="submit" value="Determine location automatically" class="automatic-update automatic-update-button" />')
     $('.automatic-update, .location-automatic-list').click(function(){
       $('.update-location-box').slideUp();
       $('.current-location-box').slideDown();
@@ -74,7 +74,7 @@ $(function(){
   }
   
   // Switch to update view from display
-  $('.update-location-form').append('<input type="button" value="Cancel" class="cancel-update as-text-link" />');
+  $('.update-location-form').append('<input type="button" value="Cancel Update" class="cancel-update as-text-link" />');
   $('.current-location-box form input').click(function(){
     $('.current-location-box').slideUp();
     $('.cancel-update').click(function(){
