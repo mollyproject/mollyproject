@@ -43,7 +43,7 @@ $(function(){
     if ($('.favourite-locations-list').length + $('.historic-locations-list').length) {
       $('.location-automatic-list').addClass('no-round-bottom')
     }
-    $('.automatic-update').click(function(){
+    $('.automatic-update, .location-automatic-list').click(function(){
       $('.update-location-box').slideUp();
       $('.current-location-box').slideDown();
       $('.alternate-location-box').slideUp();
