@@ -952,10 +952,20 @@ small {
     border-bottom: none !important;
 }
 
+.location-box .header h2
+{
+    background-image: none !important;
+}
+
 .location-box .section-content
 {
     padding: 0;
     border-top: none !important;
+}
+
+.location-box
+{
+    background-color: #DFDFDF !important;
 }
 
 .automatic-update-button

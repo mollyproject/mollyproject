@@ -105,7 +105,9 @@ ul li.transport-link a img { border: 0; }
   <div class="header">
     <h2>{{ bus_stops.results_type }} bus stops - {% now "G:i:s "%}</h2>
   </div>
-  
+  {% ifnotequal bus_stops.results_type "Favourite" %}
+	<div class="section-content no-round-bottom">{% include "geolocation/update_location_embed.html" %}</div>
+  {% endifnotequal %}
   <table class="content">
     <tbody>
 
@@ -130,7 +132,6 @@ ul li.transport-link a img { border: 0; }
 {% endfor %}
 	  </tbody>
 	</table>
-  {% include "geolocation/update_location_embed.html" %}
   {% ifequal bus_stops.results_type "Favourite" %}
   <ul class="link-list">
     <li><a href="{% url places:nearby-detail "bus-stop" %}">View nearby bus stops</a></li>
