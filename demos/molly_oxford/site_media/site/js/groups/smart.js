@@ -3,7 +3,7 @@ function automaticLocation(position) {
   // Geocode a callback from geolocation API
   $('.location').html('Location found; please wait while we put a name to it.')
   $('.location-accuracy').hide()
-  jQuery.post(base+'geolocation/', {
+  $.post(base+'geolocation/', {
     longitude: position.coords.longitude,
     latitude: position.coords.latitude,
     accuracy: position.coords.accuracy,
@@ -19,12 +19,12 @@ function locationFailure(d) {
   // Show error
   if (d.code == 1) { // PERMISSION_DENIED
     $('.location').html('<i>You did not give permission for the site to know your location.</i>');
-    jQuery.post(base+'geolocation/', {
+    $.post(base+'geolocation/', {
       method: 'denied'
     });
   } else if (d.code == 2 || d.code == 3) { // POSITION_UNAVAILABLE / TIMEOUT
     $('.location').html('<i>We couldn\'t get a fix on your location right now</i>')
-    jQuery.post(base+'geolocation/', {
+    $.post(base+'geolocation/', {
       method: 'error'
     });
   } else {
@@ -100,7 +100,7 @@ $(function(){
       format: 'json',
       method: 'geocoded',
       name: $(this).find('.update-location-name').val()
-    }, locationFound);
+    }, locationFound, 'json');
     return false;
   })
   $('.specific-location-form').submit(specificLocationFormSubmit)
