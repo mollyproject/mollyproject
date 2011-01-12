@@ -5,6 +5,7 @@
         var locationName = {% if geolocation.name %}"{{ geolocation.name|escapejs }}"{% else %}null{% endif %};
         var autoLocationUpdating = {% ifequal geolocation.method "html5" %}true{% else %}false{% endifequal %};
         var csrfToken = "{% csrf_token %}";
+        var doReloadAfterUpdate = {% if reload_after_location_update %}true{% else %}false{% endif %};
     </script>
   
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.2.6/jquery.min.js"></script>

@@ -242,6 +242,9 @@ function locationFound(data) {
   }
   $('.specific-location-form').submit(specificLocationFormSubmit)
   $('.favourite-location-form').submit(favouriteLocationFormSubmit)
+  if (doReloadAfterUpdate) {
+    window.location.reload()
+  }
 }
 
 // Copyright 2007, Google Inc.
