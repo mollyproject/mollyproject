@@ -105,7 +105,7 @@ class GeolocationView(BaseView):
                 'accuracy': request.session['geolocation:accuracy'],
                 'longitude': request.session['geolocation:location'][0],
                 'latitude': request.session['geolocation:location'][1],
-                'history': request.session.get('geolocation:history', ())[1:],
+                'history': request.session.get('geolocation:history', ()),
                 'alternatives': form.cleaned_data.get('alternatives') if form else None,
                 'favourites': [dict(favourite.items() + [('id', id)]) for id, favourite in request.session.get('geolocation:favourites', {}).items()],
             }, None)
