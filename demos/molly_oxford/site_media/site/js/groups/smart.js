@@ -134,6 +134,7 @@ function specificLocationForm(location, favourite) {
     if (favourite) {
       f += '    <input type="hidden" name="action" value="remove"/>'
          + '    <input type="hidden" name="id" value="'+location.id+'"/>'
+         + '    <input type="hidden" name="return_url" value="'+window.location.pathname+'"/>'
          + '    <input type="submit" class="unfavourite" value="(Remove from favourites)"/>'
     } else {
       f += '    <input type="hidden" name="action" value="add"/>'
@@ -240,6 +241,7 @@ function locationFound(data) {
     locationFailure({message: data.error, code: -1})
   }
   $('.specific-location-form').submit(specificLocationFormSubmit)
+  $('.favourite-location-form').submit(favouriteLocationFormSubmit)
 }
 
 // Copyright 2007, Google Inc.
