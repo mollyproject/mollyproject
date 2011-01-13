@@ -48,7 +48,7 @@ def device_specific_media(request):
         style_group = 'smart'
 
     # Opera Mini/Mobile Browsers
-    elif browser.brand_name == 'Opera':
+    elif browser.brand_name == 'Opera' or browser.mobile_browser == 'Opera':
         style_group = 'smart'
         # Opera Mini 4 doesn't properly support JS
         if browser.mobile_browser == 'Opera Mini' and parse_version(browser.mobile_browser_version) <= (5,):
