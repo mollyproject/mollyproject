@@ -4,6 +4,7 @@
 
 {% if poll.mayVote %}
 <form method="POST" action="">
+  {% csrf_token %}
 {% endif %}
 
 <div class="section">

@@ -28,10 +28,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
 {% endif %}
 
-{% if use_javascript %}
-  {% compressed_js 'jquery-1.4.2' %}
-  {% compressed_js style_group %}
-{% endif %}
+{% if use_javascript %}{% endif %}
     <link rel="icon" type="image/png" href="{{ MEDIA_URL }}site/png/favicon.png"/>
 {% block extrahead %}{% endblock extrahead %}
 </head>

@@ -1,18 +1,19 @@
 <div class="vote-box" style="float:right">
   <form method="post" action="{% url feature_vote:index %}">
+    {% csrf_token %}
     <input type="hidden" name="csrf" value="{{ csrf }}"/>
     <input type="hidden" name="id" value="{{ feature.id }}"/>
     <input type="hidden" name="return_url" value="{{ full_path }}"/>
     {% ifequal feature.vote 1 %}
-    <input type="image" src="{{ MEDIA_URL }}png/vote-up-voted.png" disabled="disabled" height="10" width="30" name="vote up" value="Vote up (already voted)" alt="vote_up"/>
+    <input type="image" src="{{ MEDIA_URL }}site/png/vote-up-voted.png" disabled="disabled" height="10" width="30" name="vote up" value="Vote up (already voted)" alt="vote_up"/>
     {% else %}
-    <input type="image" src="{{ MEDIA_URL }}png/vote-up.png" height="10" width="30" name="vote_up" value="Vote up" alt="vote up"/>
+    <input type="image" src="{{ MEDIA_URL }}site/png/vote-up.png" height="10" width="30" name="vote_up" value="Vote up" alt="vote up"/>
     {% endifequal %}
     <span class="vote-count">{{ feature.net_votes }}</span>
     {% ifequal feature.vote -1 %}
-    <input type="image" src="{{ MEDIA_URL }}png/vote-down-voted.png" disabled="disabled" height="10" width="30" name="vote_down" value="Vote down (already voted)" alt="vote down"/>
+    <input type="image" src="{{ MEDIA_URL }}site/png/vote-down-voted.png" disabled="disabled" height="10" width="30" name="vote_down" value="Vote down (already voted)" alt="vote down"/>
     {% else %}
-    <input type="image" src="{{ MEDIA_URL }}png/vote-down.png" height="10" width="30" name="vote_down" value="Vote down" alt="vote down"/>
+    <input type="image" src="{{ MEDIA_URL }}site/png/vote-down.png" height="10" width="30" name="vote_down" value="Vote down" alt="vote down"/>
     {% endifequal %}
       </form>
 </div>

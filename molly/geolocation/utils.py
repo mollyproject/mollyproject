@@ -62,4 +62,4 @@ def reverse_geocode(lon, lat, providers):
     for provider in providers:
         results += provider.reverse_geocode(lon, lat)
     return results
-    
+

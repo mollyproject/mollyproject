@@ -64,6 +64,7 @@
 
 <div class="article"><div class="bubble pad-5">
 <form method="post" action=".">
+  {% csrf_token %}
     <p>
       Not all fields will be relevant to the item you are updating, and all
       fields are optional.

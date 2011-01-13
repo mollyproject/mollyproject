@@ -15,6 +15,7 @@
 {% if questions %}
 
 <form method="post" action="{% url sakai:evaluation-detail id %}">
+  {% csrf_token %}
 {{ questions|safe }}
 
 <p style="text-align:center">

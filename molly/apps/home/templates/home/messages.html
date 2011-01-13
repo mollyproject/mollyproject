@@ -15,6 +15,7 @@
 
 
 <form method="post" action=".">
+  {% csrf_token %}
 
 {{ formset.management_form }}
 
@@ -28,7 +29,7 @@
       <small>Left on <em>{{ form.instance.when|date:"D j M Y, g:i A" }}</em></small><br/>
     </li>
     <li>
-      <a href="{% url home:contact %}?referer={{ path }}&#35;{{ form.instance.when|date:"YmdHis" }}">Respond to this message</a>
+      <a href="{% url feedback:index %}?referer={{ path }}&#35;{{ form.instance.when|date:"YmdHis" }}">Respond to this message</a>
     </li>
     <li class="non-link-item">
       {{ form.DELETE }} {{ form.DELETE.label_tag }}
