@@ -419,22 +419,46 @@ var geo_position_js=function() {
                         }
                         else if (typeof(navigator.geolocation)!="undefined")
                         {
+                                var positionWatchId = null;
                                 provider=navigator.geolocation;
                                 pub.getCurrentPosition = function(successCallback, errorCallback, options)
                                 {
-                                        function _successCallback(p)
+                                    if (positionWatchId == null)
+                                    {
+                                        var positionRequestCount = 0;
+                                        var lastPosition = null;
+                                        function _successCallback(p, timeout)
                                         {
+                                            // Added by Molly project to use watchPosition rather than getCurrentPosition
+                                            // to give better accuracy results
+                                            positionRequestCount += 1;
+                                            clearTimeout(positionWatchTimeout);
+                                            lastPosition = p;
+                                            if (positionRequestCount > 10 || p.coords.accuracy <= 150 || p.coords.accuracy == 18000 || timeout) {
+                                                provider.clearWatch(positionWatchId);
+                                                positionWatchId = null;
                                                 //for mozilla geode,it returns the coordinates slightly differently
                                                 if(typeof(p.latitude)!="undefined")
                                                 {
-                                                        successCallback({timestamp:p.timestamp, coords: {latitude:p.latitude,longitude:p.longitude}});
+                                                    successCallback({timestamp:p.timestamp, coords: {latitude:p.latitude,longitude:p.longitude}});
                                                 }
                                                 else
                                                 {
-                                                        successCallback(p);
+                                                    successCallback(p);
                                                 }
+                                            } else {
+                                                positionWatchTimeout = setTimeout(function(){
+                                                    _successCallback(lastPosition, true);
+                                                }, 5000);
+                                            }
                                         }
-                                        provider.getCurrentPosition(_successCallback,errorCallback,options);
+                                        var positionWatchId = provider.watchPosition(_successCallback,errorCallback,options);
+                                        var positionWatchTimeout = setTimeout(function(){
+                                            provider.getCurrentLocation(_successCallback,errorCallback,options);
+                                        }, 5000);
+                                    } else {
+                                        errorCallback({message: 'There is already a location request pending', code: -1})
+                                    }
                                 }
                         }
                          else if(typeof(window.google)!="undefined" && typeof(google.gears)!="undefined")
