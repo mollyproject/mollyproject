@@ -2,13 +2,17 @@ try:
     import cPickle as pickle
 except ImportError:
     import pickle
-    
-import hashlib, os, os.path, logging, time
+import hashlib
+import os
+import os.path
+import logging
+import time
 from datetime import datetime
-from django.conf import settings
+
 from django.db import IntegrityError
-from models import GeneratedMap, get_generated_map_dir
-from draw import get_map, get_fitted_map, MapGenerationError
+
+from molly.maps.osm.models import GeneratedMap, get_generated_map_dir
+from molly.maps.osm.draw import get_fitted_map, MapGenerationError
 
 MARKER_COLORS = (
     # name, fill, border, text
@@ -24,49 +28,72 @@ MARKER_RANGE = xrange(1, 100)
 
 logger = logging.getLogger('molly.osm.generation')
 
-def get_or_create_map(f, args):
-    # This assumes that f is functional, i.e. its return value is determined
-    # solely by its arguments. In the case that a map is requested again
-    # before the original map generation has finished, the following happens:
-    # * Nothing has yet been saved to the database as we have to wait for the
-    #   metadata to come back. Hence, we get a DoesNotExist.
-    # * The map is regenerated. Due to the atomic nature of filesystem writes
-    #   we can guarantee that we won't get a funnily spliced file written by
-    #   the function f.
-    # * The first call saves the GeneratedMap instance to the database.
-    # * The second call attempts to do the same, but it would result in a
-    #   duplicate primary key, and so it throws an IntegrityError.
-    # * Due to the functional nature of f, we know we have the correct metadata
-    #   for the map that has been generated, and that it will match that
-    #   already stored in the database. As such, we can leave the database
-    #   alone and return the metadata just generated.
-    # Assuming that if we get a DoesNotExist that there won't be one by the
-    # time we come to write leads to a race condition given the non-zero
-    # duration of f. Subsequent attempts to get the map with that hash then
-    # throws a MultipleObjectsReturned exception. Yes, this did happen. Seven
-    # times, no less.
+def get_or_create_map(generator, args):
+    """
+    A wrapper function for a map generator which protects against race
+    conditions in map generation. You should use this instead of calling a
+    generator directly.
+    
+    @param generator: The generator to use
+    @param args: Any extra arguments to pass to the generator function
+    
+    This assumes that generator is functional, i.e. its return value is
+    determined solely by its arguments. In the case that a map is requested
+    again before the original map generation has finished, the following
+    happens:
+    * Nothing has yet been saved to the database as we have to wait for the
+      metadata to come back. Hence, we get a DoesNotExist.
+    * The map is regenerated. Due to the atomic nature of filesystem writes
+      we can guarantee that we won't get a funnily spliced file written by
+      the function f.
+    * The first call saves the GeneratedMap instance to the database.
+    * The second call attempts to do the same, but it would result in a
+      duplicate primary key, and so it throws an IntegrityError.
+    * Due to the functional nature of f, we know we have the correct metadata
+      for the map that has been generated, and that it will match that
+      already stored in the database. As such, we can leave the database
+      alone and return the metadata just generated.
+    Assuming that if we get a DoesNotExist that there won't be one by the
+    time we come to write leads to a race condition given the non-zero
+    duration of f. Subsequent attempts to get the map with that hash then
+    throws a MultipleObjectsReturned exception. Yes, this did happen. Seven
+    times, no less.
+    """
 
     start_time = time.time()
     
+    # Generate a hash based on the arguments for this map
     hash = hashlib.sha224(pickle.dumps(repr(args))).hexdigest()[:16]
     
+    # Try fetching the map if it already exists
     try:
-        gm = GeneratedMap.objects.get(hash=hash)
-        gm.last_accessed = datetime.utcnow()
-        gm.save()
-        metadata = gm.metadata
-        if gm.faulty:
-            gm.delete()
-            logger.debug("Found previously generated map: %s, but it's faulty, so regenerating", hash)
+        generated_map = GeneratedMap.objects.get(hash=hash)
+        generated_map.last_accessed = datetime.utcnow()
+        generated_map.save()
+        metadata = generated_map.metadata
+        
+        # Except if the current map is marked as faulty (e.g., missing OSM tile,
+        # in which case we delete it and raise DoesNotExist to get it
+        # regenerated)
+        if generated_map.faulty:
+            generated_map.delete()
+            logger.debug("Found previously generated map: %s, but it's " + \
+                         "faulty, so regenerating", hash)
             raise GeneratedMap.DoesNotExist()
         else:
             logger.debug("Found previously generated map: %s", hash)
+            
+    
+    # If it doesn't exist, generate it
     except GeneratedMap.DoesNotExist:
         generated_map_dir = get_generated_map_dir()
         if not os.path.exists(generated_map_dir):
             os.makedirs(generated_map_dir)
         try:
-            metadata = f(filename=os.path.join(generated_map_dir, hash), *args)
+            # Call the generator to generate it
+            metadata = generator(filename=os.path.join(generated_map_dir, hash),
+                                 *args)
+            # If no exception was raised, we mark it as non-faulty
             faulty = False
         except MapGenerationError as e:
             # If a map generation error occurs, then mark this map as faulty
@@ -76,37 +103,74 @@ def get_or_create_map(f, args):
             metadata = e.metadata
             faulty = True
         
-        gm = GeneratedMap(
+        generated_map = GeneratedMap(
             hash = hash,
             generated = datetime.utcnow(),
             last_accessed = datetime.utcnow(),
             faulty = faulty,
         )
-        gm.metadata = metadata
+        generated_map.metadata = metadata
         try:
-            gm.save()
+            generated_map.save()
         except IntegrityError:
-            logger.debug("Map generated: %s, took %.5f seconds (with race)", (hash, time.time()-start_time)) 
+            # This means a race error was generated, but because of the
+            # functional nature of generator, we can carry on here
+            logger.debug("Map generated: %s, took %.5f seconds (with race)",
+                         (hash, time.time()-start_time)) 
         else:
-            logger.debug("Map generated: %s, took %.5f seconds", (hash, time.time()-start_time)) 
-    
+            logger.debug("Map generated: %s, took %.5f seconds",
+                         (hash, time.time()-start_time)) 
+        
+        # If there are more than 25000 generated maps, then clear it up
         if GeneratedMap.objects.all().count() > 25000:
+            # But only clear up 50 at a time
             youngest = None
-            for gm in GeneratedMap.objects.order_by('last_accessed')[:50]:
+            to_delete = GeneratedMap.objects.order_by('last_accessed')[:50]
+            for generated_map in to_delete:
                 if not youngest:
-                    youngest = gm.last_accessed
-                gm.delete()
+                    youngest = generated_map.last_accessed
+                generated_map.delete()
             age = (datetime.now()-youngest)
             age = age.days*24 + age.seconds/3600.0
             logger.debug("Cleared out old maps, youngest is %f hours", age)
-                
         
     return hash, metadata
-
-
-def get_generated_map(points, width, height):
-    return get_or_create_map(get_map, (points, width, height))
     
 def fit_to_map(centre_point, points, min_points, zoom, width, height):
+    """
+    Given a list of points and some minimum number of points, then a "fitted
+    map" is generated, which is one which contains at least @C{min_points}, and
+    is at least at the zoom level @C{zoom}, but also contains any other points
+    in the list which is inside the bounding area of this minimal map. This
+    uses the @C{get_or_create_map} wrapper to protect against race conditions.
+    
+    Valid colours in point definitions below are defined in @C{MARKER_COLOURS}
+    
+    @param centre_point: A tuple of longitude, latitude and colour corresponding
+                         to the "centre" of the map. This is NOT the central
+                         latitude/longitude of the generated image, which is
+                         simply the middle of the set of points passed in, but
+                         simply a special marker which is indicated with a star.
+    @type centre_point: (float, float, str) or None
+    @param points: An (ordered) list of points to be plotted on the map. These
+                   are indicated on the map with numbered markers. This list
+                   consists of tuples of longitude, latitude and a string
+                   indicating the colours of the markers to be rendered.
+    @type points: [(float, float, str)]
+    @param min_points: The minimum number of points to be displayed on the
+                       resulting map
+    @type min_points: int
+    @param zoom: A bound on the maximum zoom level to be rendered. If this zoom
+                 level is too small to fit @C{min_points} points on it, then the
+                 map will be zoomed out further to fit in. If this is None, then
+                 this is equivalent to the smallest zoom level.
+    @type zoom: int
+    @param width: The width of the generated map image, in pixels
+    @type width: int
+    @param height: The height of the generated map image, in pixels
+    @type height: int
+    """
     points = list(points)
-    return get_or_create_map(get_fitted_map, (centre_point, points, min_points, zoom, width, height))
+    return get_or_create_map(get_fitted_map,
+                             (centre_point, points, min_points,
+                              zoom, width, height))

@@ -1,12 +1,36 @@
 from __future__ import division
-import math, random, PIL.Image, urllib, os.path, sys, time
+import math
+import random
+import PIL.Image
+import urllib
+import os.path
+import sys
+import time
 
 from molly.maps.osm.models import OSMTile, get_marker_dir
 
 def log2(x):
+    """
+    @return: log(x)/log(2)
+    """
     return math.log(x)/math.log(2)
 
 def get_tile_ref(lon_deg, lat_deg, zoom):
+    """
+    Gets OSM tile co-ordinates for the specified longitude, latitude and zoom
+    level.
+    
+    @param lon_deg: The longitude, in degrees
+    @type lon_deg: float
+    
+    @param lat_deg: The latitude, in degrees
+    @type lat_deg: float
+    
+    @param zoom: The zoom level to get the tile references for
+    @type zoom: int
+    
+    @return: A tuple of (x, y) co-ordinates for the OSM tile
+    """
     lat_rad = lat_deg * math.pi / 180.0
     n = 2.0 ** zoom
     xtile = (lon_deg + 180.0) / 360.0 * n
@@ -14,13 +38,36 @@ def get_tile_ref(lon_deg, lat_deg, zoom):
     return (xtile, ytile)
 
 def get_tile_geo(xtile, ytile, zoom):
-  n = 2.0 ** zoom
-  lon_deg = xtile / n * 360.0 - 180.0
-  lat_rad = math.atan(math.sinh(math.pi * (1 - 2 * ytile / n)))
-  lat_deg = lat_rad * 180.0 / math.pi
-  return (lon_deg, lat_deg)
+    """
+    Gets the latitude and longitude corresponding to a particular set of OSM
+    tile co-ordinates.
+    
+    @param lon_deg: The longitude, in degrees
+    @type lon_deg: int
+    
+    @param lat_deg: The latitude, in degrees
+    @type lat_deg: int
+    
+    @param zoom: The zoom level this tile exists at
+    @type zoom: int
+    
+    @return: A tuple of (long, lat) co-ordinates for the OSM tile
+    """
+    n = 2.0 ** zoom
+    lon_deg = xtile / n * 360.0 - 180.0
+    lat_rad = math.atan(math.sinh(math.pi * (1 - 2 * ytile / n)))
+    lat_deg = lat_rad * 180.0 / math.pi
+    return (lon_deg, lat_deg)
 
 def minmax(i):
+    """
+    Gets the minimum and maximum values in some list
+    
+    @param i: The list for the maximum and minimum values to be obtained from
+    @type i: list
+    
+    @return: A tuple (min, max)
+    """
     min_, max_ = float('inf'), float('-inf')
     for e in i:
         min_ = min(min_, e)
@@ -28,6 +75,31 @@ def minmax(i):
     return min_, max_
 
 def get_map(points, width, height, filename, zoom=None, lon_center=None, lat_center=None):
+    """
+    Generates a map for the passed in arguments, saving that to filename
+    
+    @param points: The points where markers on the map should be added. This
+                   should be a list of tuples corresponding to the points where
+                   markers should be added. These tuples should be in the form
+                   (latitude, longitude, colour, index), where acceptable values
+                   of colour are specified in @C{utils.MARKER_COLOURS}, and
+                   index is the number to appear on the marker, or None if
+                   you want a star to appear
+    @type points: list
+    @param width: The width of the generated map image, in pixels
+    @type width: int
+    @param height: The height of the generated map image, in pixels
+    @type height: int
+    @param filename: The name of the file to write the generated map to
+    @type filename: str
+    @param zoom: The maximum zoom level which to generate this map at
+    @type zoom: int
+    @param lon_center: The actual center of the generated map
+    @type lon_center: float
+    @param lat_center: The actual center of the generated map
+    @type lat_center: float
+    """
+    
     lon_min, lon_max = minmax(p[0] for p in points)
     lat_min, lat_max = minmax(p[1] for p in points)
     
@@ -48,7 +120,6 @@ def get_map(points, width, height, filename, zoom=None, lon_center=None, lat_cen
     ty_min, ty_max = map(int, minmax(p[0][1] for p in points))
     ty_max, tx_max = ty_max+1, tx_max+1
     
-    
     cx, cy = get_tile_ref(lon_center, lat_center, zoom)
     oxc = int((cx - tx_min) * 256 - width/2)
     oyc = int((cy - ty_min) * 256 - height/2)
@@ -58,7 +129,8 @@ def get_map(points, width, height, filename, zoom=None, lon_center=None, lat_cen
     tx_max_ = int(tx_max + (width+ox)/256)
     ty_min_ = int(ty_min + oy/256)
     ty_max_ = int(ty_max + (height+oy)/256)
-    tiles = [{'ref':(tx, ty)} for tx in range(tx_min_, tx_max_) for ty in range(ty_min_, ty_max_)]
+    tiles = [{ 'ref':(tx, ty) }
+        for tx in range(tx_min_, tx_max_) for ty in range(ty_min_, ty_max_)]
     
     # Create a new blank image for us to add the tiles on to
     image = PIL.Image.new('RGBA', (width, height))
@@ -107,7 +179,12 @@ def get_map(points, width, height, filename, zoom=None, lon_center=None, lat_cen
     return
 
 class PointSet(set):
+    
     def __init__(self, initial=None):
+        """
+        @param initial: An initial point set to use
+        @type initial: ( (float, float) )
+        """
         super(PointSet, self).__init__(initial)
         self._min = (float('inf'), float('inf'))
         self._max = (float('-inf'), float('-inf'))
@@ -115,38 +192,101 @@ class PointSet(set):
         for p in initial:
             self.update(p)
         
-    def add(self, p):
-        super(PointSet, self).add(p)
-        self.update(p)
+    def add(self, point):
+        """
+        Add a point to the set
+        
+        @param point: The point to be added
+        @type point: (float, float)
+        """
+        super(PointSet, self).add(point)
+        self.update(point)
     
-    def remove(self, p):
-        self.ordered.remove(p)
-        super(PointSet, self).remove(p)
-        if any((p[i] in (self._min[i], self._max[i])) for i in range(2)):
+    def remove(self, point):
+        """
+        Remove a point from the set
+        
+        @param point: The point to be removed
+        @type point: (float, float)
+        """
+        self.ordered.remove(point)
+        super(PointSet, self).remove(point)
+        if any((point[i] in (self._min[i], self._max[i])) for i in range(2)):
             self._min = (float('inf'), float('inf'))
             self._max = (float('-inf'), float('-inf'))
-            for p in self:
-                self._min = min(self._min[0], p[0]), min(self._min[1], p[1])
-                self._max = max(self._max[0], p[0]), max(self._max[1], p[1])
+            for point in self:
+                self._min = (min(self._min[0], point[0]),
+                             min(self._min[1], point[1]))
+                self._max = (max(self._max[0], point[0]),
+                             max(self._max[1], point[1]))
     
-    def update(self, p):
-        self.ordered.append(p)
-        self._min = min(self._min[0], p[0]), min(self._min[1], p[1])
-        self._max = max(self._max[0], p[0]), max(self._max[1], p[1])
+    def update(self, point):
+        """
+        Update the set
+        
+        @param point: The point to be added
+        @type point: (float, float)
+        """
+        self.ordered.append(point)
+        self._min = min(self._min[0], point[0]), min(self._min[1], point[1])
+        self._max = max(self._max[0], point[0]), max(self._max[1], point[1])
         
     def extent(self, zoom):
-        tl = get_tile_ref(self._min[0], self._min[1], zoom)
-        br = get_tile_ref(self._max[0], self._max[1], zoom)
+        """
+        Get the bounding box of this set of points
         
-        a = (br[0]-tl[0])*256, (tl[1]-br[1])*256
+        @param zoom: The zoom level to use
+        """
+        top_left = get_tile_ref(self._min[0], self._min[1], zoom)
+        bottom_right = get_tile_ref(self._max[0], self._max[1], zoom)
+        
+        a = (bottom_right[0]-top_left[0])*256, (top_left[1]-bottom_right[1])*256
         return a
         
     def contained_within(self, box, zoom):
+        """
+        Check if @C{box} is inside this pointset at the specified zoom level
+        """
         extent = self.extent(zoom)
         return extent[0] <= box[0] and extent[1] <= box[1]
         
 
 def get_fitted_map(centre_point, points, min_points, zoom, width, height, filename):
+    """
+    Given a list of points and some minimum number of points, then a "fitted
+    map" is generated, which is one which contains at least @C{min_points}, and
+    is at least at the zoom level @C{zoom}, but also contains any other points
+    in the list which is inside the bounding area of this minimal map.
+    
+    Valid colours in point definitions below are defined in @C{MARKER_COLOURS}
+    
+    @param centre_point: A tuple of longitude, latitude and colour corresponding
+                         to the "centre" of the map. This is NOT the central
+                         latitude/longitude of the generated image, which is
+                         simply the middle of the set of points passed in, but
+                         simply a special marker which is indicated with a star.
+    @type centre_point: (float, float, str) or None
+    @param points: An (ordered) list of points to be plotted on the map. These
+                   are indicated on the map with numbered markers. This list
+                   consists of tuples of longitude, latitude and a string
+                   indicating the colours of the markers to be rendered.
+    @type points: [(float, float, str)]
+    @param min_points: The minimum number of points to be displayed on the
+                       resulting map
+    @type min_points: int
+    @param zoom: A bound on the maximum zoom level to be rendered. If this zoom
+                 level is too small to fit @C{min_points} points on it, then the
+                 map will be zoomed out further to fit in. If this is None, then
+                 this is equivalent to the smallest zoom level.
+    @type zoom: int
+    @param width: The width of the generated map image, in pixels
+    @type width: int
+    @param height: The height of the generated map image, in pixels
+    @type height: int
+    
+    @raise MapGenerationError: If a map can not be generated (normally if the
+                               OSM tile server is down)
+    """
 
     # If we haven't been given a zoom, start as close as we can
     if not zoom:
@@ -163,13 +303,19 @@ def get_fitted_map(centre_point, points, min_points, zoom, width, height, filena
     
     points = [p[0] for p in new_points]
     
+    # Include the central point in the points to be considered
     if centre_point:
         points = [centre_point] + list(points)
+    
+    # Get a set of the minimum points
     point_set, points = PointSet(points[:min_points+1]), points[min_points+1:]
     
+    # Zoom out until the entire point set fits inside the generated map
     while not point_set.contained_within(box, zoom):
         zoom -= 1
 
+    # If there are points outside the minimum points, see if they fit inside
+    # the bounding box of the minimum points (or the specified zoom level)
     while point_set.contained_within(box, zoom):
         if not points:
             break
@@ -204,6 +350,11 @@ def get_fitted_map(centre_point, points, min_points, zoom, width, height, filena
     return new_points, zoom
 
 class MapGenerationError(Exception):
+    """
+    Indicates that a map was unable to be successfully generated, but one was
+    still attempted to be, in which case the metadata of the generated map can
+    be attached to this.
+    """
     
     def __init__(self):
         self.metadata = None

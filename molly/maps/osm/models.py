@@ -5,24 +5,35 @@ except:
 import hashlib, os, urllib, simplejson, sys
 from datetime import datetime, timedelta
 from StringIO import StringIO
+
 from django.db import models, IntegrityError
 from django.conf import settings
 
 from molly.apps.places.models import Entity
 
 # This used to be its own app, but has now been subsumed into the 'Maps' app,
-# but we use the old app_label for backwards compatibility
+# but we use the old app_label on the models for backwards compatibility
 
 def get_generated_map_dir():
-    return getattr(settings, 'GENERATED_MAP_DIR', os.path.join(settings.CACHE_DIR, 'generated_maps'))
+    return getattr(settings,
+                   'GENERATED_MAP_DIR',
+                   os.path.join(settings.CACHE_DIR, 'generated_maps'))
 
 def get_marker_dir():
-    return getattr(settings, 'MARKER_DIR', os.path.join(settings.CACHE_DIR, 'markers'))
+    return getattr(settings,
+                   'MARKER_DIR',
+                   os.path.join(settings.CACHE_DIR, 'markers'))
 
 def get_osm_tile_dir():
-    return getattr(settings, 'OSM_TILE_DIR', os.path.join(settings.CACHE_DIR, 'osm_tiles'))
+    return getattr(settings,
+                   'OSM_TILE_DIR',
+                   os.path.join(settings.CACHE_DIR, 'osm_tiles'))
 
 class GeneratedMap(models.Model):
+    """
+    In database representation of a generated map on disk
+    """
+    
     hash = models.CharField(max_length=16, unique=True, primary_key=True)
     generated = models.DateTimeField()
     last_accessed = models.DateTimeField()
@@ -45,6 +56,9 @@ class GeneratedMap(models.Model):
         return os.path.join(generated_map_dir, self.hash)
 
     def delete(self, *args, **kwargs):
+        """
+        When deleting from the db, also delete on disk
+        """
         try:
             os.unlink(self.get_filename())
         except:
@@ -52,9 +66,16 @@ class GeneratedMap(models.Model):
         return super(GeneratedMap, self).delete(*args, **kwargs)
 
 def get_tile_url(xtile, ytile, zoom):
+    """
+    Return a URL for a tile given some OSM tile co-ordinates
+    """
     return "http://tile.openstreetmap.org/%d/%d/%d.png" % (zoom, xtile, ytile)
 
 class OSMTile(models.Model):
+    """
+    In-database representation of a cached OSM tile on disk
+    """
+    
     xtile = models.IntegerField()
     ytile = models.IntegerField()
     zoom = models.IntegerField()
@@ -105,6 +126,10 @@ class OSMTile(models.Model):
             return s
     
 class OSMUpdate(models.Model):
+    """
+    A user-submitted update to OSM 
+    """
+    
     contributor_name = models.TextField(blank=True)
     contributor_email = models.TextField(blank=True)
     contributor_attribute = models.BooleanField()
