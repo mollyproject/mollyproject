@@ -9,7 +9,7 @@ from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
 
 from molly.apps.places.models import Entity
-from molly.osm.utils import fit_to_map
+from molly.maps import fit_to_map
 
 from PyZ3950.zoom import ConnectionError
 

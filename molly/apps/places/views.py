@@ -16,8 +16,8 @@ from molly.utils.breadcrumbs import *
 from molly.favourites.views import FavouritableView
 from molly.geolocation.views import LocationRequiredView
 
-from molly.osm.utils import fit_to_map
-from molly.osm.models import OSMUpdate
+from molly.maps import fit_to_map
+from molly.maps.osm.models import OSMUpdate
 
 from models import Entity, EntityType
 from utils import get_entity, get_point

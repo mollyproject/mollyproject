@@ -10,6 +10,9 @@ from django.conf import settings
 
 from molly.apps.places.models import Entity
 
+# This used to be its own app, but has now been subsumed into the 'Maps' app,
+# but we use the old app_label for backwards compatibility
+
 def get_generated_map_dir():
     return getattr(settings, 'GENERATED_MAP_DIR', os.path.join(settings.CACHE_DIR, 'generated_maps'))
 
@@ -25,6 +28,9 @@ class GeneratedMap(models.Model):
     last_accessed = models.DateTimeField()
     _metadata = models.TextField(blank=True)
     faulty = models.BooleanField(default=False)
+    
+    class Meta:
+        app_label = 'osm'
 
     def _get_metadata(self):
         return simplejson.loads(self._metadata)
@@ -56,6 +62,7 @@ class OSMTile(models.Model):
 
     class Meta:
         unique_together = (('xtile', 'ytile', 'zoom'),)
+        app_label = 'osm'
 
     def get_filename(self):
         osm_tile_dir = get_osm_tile_dir()
@@ -112,4 +119,7 @@ class OSMUpdate(models.Model):
     notes = models.TextField(blank=True)
     
     approved = models.BooleanField(default=False)
+    
+    class Meta:
+        app_label = 'osm'
     

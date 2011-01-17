@@ -5,7 +5,7 @@ from django import template
 from django.contrib.gis.geos import Point
 from django.core.urlresolvers import reverse
 from molly.wurfl import device_parents
-from molly.osm.utils import fit_to_map
+from molly.maps import fit_to_map
 
 register = template.Library()
 

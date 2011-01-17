@@ -1,6 +1,7 @@
 # encoding: utf-8
 import datetime
 from south.db import db
+from south.models import MigrationHistory
 from south.v2 import SchemaMigration
 from django.db import models
 
@@ -8,43 +9,46 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         
-        # Adding model 'GeneratedMap'
-        db.create_table('osm_generatedmap', (
-            ('hash', self.gf('django.db.models.fields.CharField')(unique=True, max_length=16, primary_key=True)),
-            ('generated', self.gf('django.db.models.fields.DateTimeField')()),
-            ('last_accessed', self.gf('django.db.models.fields.DateTimeField')()),
-            ('_metadata', self.gf('django.db.models.fields.TextField')(blank=True)),
-            ('faulty', self.gf('django.db.models.fields.BooleanField')(default=False)),
-        ))
-        db.send_create_signal('osm', ['GeneratedMap'])
-
-        # Adding model 'OSMTile'
-        db.create_table('osm_osmtile', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('xtile', self.gf('django.db.models.fields.IntegerField')()),
-            ('ytile', self.gf('django.db.models.fields.IntegerField')()),
-            ('zoom', self.gf('django.db.models.fields.IntegerField')()),
-            ('last_fetched', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
-        ))
-        db.send_create_signal('osm', ['OSMTile'])
-
-        # Adding unique constraint on 'OSMTile', fields ['xtile', 'ytile', 'zoom']
-        db.create_unique('osm_osmtile', ['xtile', 'ytile', 'zoom'])
-
-        # Adding model 'OSMUpdate'
-        db.create_table('osm_osmupdate', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('contributor_name', self.gf('django.db.models.fields.TextField')(blank=True)),
-            ('contributor_email', self.gf('django.db.models.fields.TextField')(blank=True)),
-            ('contributor_attribute', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('entity', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['places.Entity'])),
-            ('submitted', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
-            ('old', self.gf('django.db.models.fields.TextField')()),
-            ('new', self.gf('django.db.models.fields.TextField')()),
-            ('notes', self.gf('django.db.models.fields.TextField')(blank=True)),
-            ('approved', self.gf('django.db.models.fields.BooleanField')(default=False)),
-        ))
-        db.send_create_signal('osm', ['OSMUpdate'])
+        # this is a custom migration because we changed the name of the app that
+        # the models belong to 
+        if MigrationHistory.objects.filter(app_name='osm').count() == 0:
+            # Adding model 'GeneratedMap'
+            db.create_table('osm_generatedmap', (
+                ('hash', self.gf('django.db.models.fields.CharField')(unique=True, max_length=16, primary_key=True)),
+                ('generated', self.gf('django.db.models.fields.DateTimeField')()),
+                ('last_accessed', self.gf('django.db.models.fields.DateTimeField')()),
+                ('_metadata', self.gf('django.db.models.fields.TextField')(blank=True)),
+                ('faulty', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ))
+            db.send_create_signal('osm', ['GeneratedMap'])
+    
+            # Adding model 'OSMTile'
+            db.create_table('osm_osmtile', (
+                ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+                ('xtile', self.gf('django.db.models.fields.IntegerField')()),
+                ('ytile', self.gf('django.db.models.fields.IntegerField')()),
+                ('zoom', self.gf('django.db.models.fields.IntegerField')()),
+                ('last_fetched', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
+            ))
+            db.send_create_signal('osm', ['OSMTile'])
+    
+            # Adding unique constraint on 'OSMTile', fields ['xtile', 'ytile', 'zoom']
+            db.create_unique('osm_osmtile', ['xtile', 'ytile', 'zoom'])
+    
+            # Adding model 'OSMUpdate'
+            db.create_table('osm_osmupdate', (
+                ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+                ('contributor_name', self.gf('django.db.models.fields.TextField')(blank=True)),
+                ('contributor_email', self.gf('django.db.models.fields.TextField')(blank=True)),
+                ('contributor_attribute', self.gf('django.db.models.fields.BooleanField')(default=False)),
+                ('entity', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['places.Entity'])),
+                ('submitted', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
+                ('old', self.gf('django.db.models.fields.TextField')()),
+                ('new', self.gf('django.db.models.fields.TextField')()),
+                ('notes', self.gf('django.db.models.fields.TextField')(blank=True)),
+                ('approved', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ))
+            db.send_create_signal('osm', ['OSMUpdate'])
 
 
     def backwards(self, orm):
@@ -139,4 +143,4 @@ class Migration(SchemaMigration):
         }
     }
 
-    complete_apps = ['osm']
+    complete_apps = ['maps']

@@ -1,7 +1,7 @@
 from __future__ import division
 import math, random, PIL.Image, urllib, os.path, sys, time
 
-from molly.osm.models import OSMTile, get_marker_dir
+from molly.maps.osm.models import OSMTile, get_marker_dir
 
 def log2(x):
     return math.log(x)/math.log(2)

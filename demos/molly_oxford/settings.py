@@ -324,7 +324,7 @@ APPLICATIONS = [
 
     Application('molly.apps.feeds.news', 'news', 'News'),
 
-    Application('molly.osm', 'osm', 'OpenStreetMap',
+    Application('molly.maps', 'maps', 'Maps',
         display_to_user = False,
     ),
 

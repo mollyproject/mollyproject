@@ -16,19 +16,6 @@ from molly.apps.places.models import Entity
 
 from .models import GeneratedMap
 
-class IndexView(BaseView):
-    @BreadcrumbFactory
-    def breadcrumb(cls, request, context):
-        return Breadcrumb(
-            cls.conf.local_name,
-            None,
-            'OpenStreetMap',
-            lazy_reverse('osm:about'),
-        )
-
-    def handle_GET(cls, request, context):
-        raise Http404
-
 class GeneratedMapView(BaseView):
     breadcrumb = NullBreadcrumb
 
@@ -49,11 +36,11 @@ class AboutView(BaseView):
             cls.conf.local_name,
             None,
             'About OpenStreetMap',
-            lazy_reverse('osm:about'),
+            lazy_reverse('maps:osm-about'),
         )
 
     def handle_GET(cls, request, context):
-        return cls.render(request, context, 'osm/about')
+        return cls.render(request, context, 'maps/osm/about')
 
 class MetadataView(BaseView):
     breadcrumb = NullBreadcrumb
@@ -90,7 +77,7 @@ class MetadataView(BaseView):
         context['entities'] = []
         for entity in Entity.objects.filter(primary_type__slug=ptype, source__module_name='molly.providers.apps.maps.osm'):
             context['entities'].append((entity, [(x, entity.metadata['osm']['tags'].get(x, '')) for x in tags]))
-        return cls.render(request, context, 'osm/metadata')
+        return cls.render(request, context, 'maps/osm/metadata')
 
     def handle_POST(cls, request, context, ptype):
         data = simplejson.loads(request.raw_post_data)

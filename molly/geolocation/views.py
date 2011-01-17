@@ -10,8 +10,6 @@ from molly.utils.views import BaseView, renderer
 from molly.utils.breadcrumbs import *
 from molly.utils.http import HttpResponseSeeOther, update_url
 
-from molly.osm.utils import fit_to_map
-
 from .forms import LocationUpdateForm
 from .utils import geocode, reverse_geocode
 
