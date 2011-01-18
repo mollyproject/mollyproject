@@ -1,0 +1,8 @@
+{% ifnotequal style_group "groups-dumb" %}
+    <div class="backgrounded-image" style="background-image:url('{% url maps:osm-generated_map map.static_map_hash %}'); height:{{ map.height }}px">
+        {% include "maps/map_elements.html" %}
+    </div>
+{% else %}
+    <img src="{% url maps:osm-generated_map map.static_map_hash %}" alt="Map"><br />
+    {% include "maps/map_elements.html" %}
+{% endifnotequal %}
