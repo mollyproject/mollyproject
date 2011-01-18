@@ -47,49 +47,6 @@ body {
 	display: block;
 	/*-moz-outline: 1px dashed #FF0000;*/
 }
-#viewer .controls        
-{
-	position: absolute;
-	/* NOTE: the right and bottom can be adjusted when initialized */
-	right: 1em;
-	top: 3em;;
-	width: auto;
-	height: auto;
-	vertical-align: middle;
-	z-index: 2000;
-}
-
-#viewer .controls span {
-	background: #fff;
-	background:	rgba(255,255,255,0.4);
-	border: solid 2px #999;
-	border: solid 2px rgba(0,0,0,0.3);
-	color: #000000;
-	text-decoration: none;
-	-moz-outline: none;
-	cursor: pointer;
-	display: block;
-	margin: 0 0 0.3em 0;
-	padding: 0.2em;
-	font-size: 1.3em;
-	line-height: 1.3em;
-	-webkit-border-radius: 8px;
-	-moz-border-radius: 8px;
-	text-align: center;
-}
-
-
-#viewer .controls span.zoomIn {
-	font-size: 2em;
-	line-height: 1em;
-	padding: 0 0.2em 0.2em;
-}
-
-#viewer .controls span.zoomOut {
-	font-size: 3em;
-	line-height: .7em;
-	padding: 0 0.2em 0.1em;
-}
 
 #viewer #markers .marker {
 	cursor: pointer;
@@ -126,12 +83,28 @@ body {
 
 }
 
-#viewer .copyright {
-	position: absolute;
-	bottom:0em;
-	left:1em;
-	z-index:999;
-	color: #000;
+
+a.zoom-out, a.zoom-in {
+    padding: 5px;
+    display: block;
+    position: absolute;
+    z-index: 2000;
+}
+a.zoom-out {top: 0;left: 0;}
+a.zoom-in {top: 0;right: 0;}
+a.zoom-out img, a.zoom-in img { border:0 ;}
+div.osm-license {
+    position: absolute;
+    top: auto;
+    right: 0;
+    bottom: 0;
+    font-size: 8pt;
+    text-align:right;
+    padding: 2px;
+    background: #ffffff;
+    background-opacity: 0.5;
+    color: #000000;
+    z-index: 2000;
 }
 
 #viewer * {

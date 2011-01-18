@@ -285,7 +285,11 @@ PanoJS.prototype = {
 			else if (child.className == PanoJS.CONTROLS_STYLE_CLASS) {
 				for (var control = child.firstChild; control; control = control.nextSibling) {
 					if (control.className) {
-						control.onclick = PanoJS[control.className + 'Handler'];
+						classes = control.className.split(' ')
+						for (i in classes)
+						{
+							control.onclick = PanoJS[classes[i] + 'Handler'];
+						}
 					}
 				}
 			}

@@ -14,7 +14,6 @@
         <meta name="copyright" content="2009 dFacts Network, released under Apache License, Version 2.0" /> 
         <meta name="MSSmartTagsPreventParsing" content="true" /> 
         {% compressed_css "touchMapLite-viewer" %}
-        {% compressed_css style_group %}
         {% compressed_js "PanoJS-EventUtils" %}
         {% compressed_js "PanoJS-PanoJS" %}
         {% compressed_js "touchMapLite-touchMapLite" %}
@@ -43,10 +42,10 @@
     </head> 
     <body> 
         <div id="viewer"> 
-            {% include "maps/map_elements.html" %}
             <div class="well"><!-- --></div> 
             <div class="surface" id="touchArea"><!-- --></div> 
             <div class="marker" id="markers"></div>
+            <div class="controls">{% include "maps/map_elements.html" %}</div>
         </div>
         {% compressed_js "touchMapLite-touchMapLite.event.touch" %}
         {% compressed_js "touchMapLite-touchMapLite.event.wheel" %}
