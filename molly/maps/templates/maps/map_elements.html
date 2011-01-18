@@ -1,4 +1,4 @@
-{% if zoom_controls|default_if_none:1 %}
+{% if zoom_controls %}
     {% ifnotequal zoom 10 %}
         <a class="no-icon zoom-out" href="?zoom={{ map.zoom|add:"-1" }}" rel="nofollow">
             <img src="{{ MEDIA_URL }}site/png/icons/zoom-out.png" alt="Zoom out"/>
