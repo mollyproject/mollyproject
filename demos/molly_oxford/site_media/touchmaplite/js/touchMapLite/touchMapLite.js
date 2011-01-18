@@ -90,8 +90,8 @@ touchMapLite.prototype = {
 				tileExtension: 'gif',
 				maxZoom: 18,
 				initialZoom: this.zoom,
-				blankTile: 'images/blank.gif',
-				loadingTile: 'images/blank.gif',
+				blankTile: mediaUrl + 'touchmaplite/images/blank.gif',
+				loadingTile: mediaUrl + 'touchmaplite/images/blank.gif',
 				initialPan:	{ 'x' : this.lon2pan(this.lon), 'y' : this.lat2pan(this.lat)}
 			});
 			this.viewerBean.touchMap = this;
