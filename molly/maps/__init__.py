@@ -1,7 +1,5 @@
 from molly.maps.osm.utils import fit_to_map
 
-__all__ = ('Map',)
-
 class Map:
     """
     An object which represents a Map. This should be added to a context and then
@@ -50,3 +48,10 @@ class Map:
             width = width,
             height = height,
         )
+
+def map_from_point(point, width, height, colour='green'):
+    """
+    A shortcut which renders a simple map containing only one point rendered as
+    a star
+    """
+    return Map((point[0], point[1], colour), [], 1, 18, width, height)

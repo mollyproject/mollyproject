@@ -1,4 +1,4 @@
-{% extends "places/base.html" %}{% load portal_misc %}
+{% extends "places/base.html" %}{% load maps %}{% load portal_misc %}
 
 {% block extrahead %}{{ block.super }}{% if entity %}
 <meta name="robots" content="noindex" />{% endif %}
@@ -48,16 +48,7 @@
 <div class="note"><div class="bubble pad-10">{{ entity_type.note }}</div></div>
 {% endif %}
 
-
-
-{% ifnotequal style_group "groups-dumb" %}
-    <div class="backgrounded-image" style="background-image:url('{% url osm:generated_map map_hash %}'); height:{{ map_height }}px">
-    {% include "places/map_elements.html" %}
-    </div>
-{% else %}
-    <img src="{% url osm:generated_map map_hash %}" alt="Map"><br />
-    {% include "places/map_elements.html" %}
-{% endifnotequal %}
+{% render_map map %}
 
 </div>
 
