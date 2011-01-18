@@ -49,9 +49,9 @@ class Map:
             height = height,
         )
 
-def map_from_point(point, width, height, colour='green'):
+def map_from_point(point, width, height, colour='green', zoom=16):
     """
     A shortcut which renders a simple map containing only one point rendered as
     a star
     """
-    return Map((point[0], point[1], colour), [], 1, 18, width, height)
+    return Map((point[0], point[1], colour), [], 1, zoom, width, height)
