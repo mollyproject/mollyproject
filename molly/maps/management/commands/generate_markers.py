@@ -2,8 +2,8 @@ import itertools, subprocess, os.path, tempfile, os
 from django.core.management.base import NoArgsCommand
 from django.conf import settings
 
-from molly.osm.utils import MARKER_COLORS, MARKER_RANGE
-from molly.osm.models import get_marker_dir
+from molly.maps.osm.utils import MARKER_COLORS, MARKER_RANGE
+from molly.maps.osm.models import get_marker_dir
 
     
 class Command(NoArgsCommand):
