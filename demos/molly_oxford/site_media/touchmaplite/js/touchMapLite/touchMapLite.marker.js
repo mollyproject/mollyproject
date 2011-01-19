@@ -145,8 +145,8 @@ touchMapLite.prototype.marker.prototype = {
 	},
 	updateMarker: function(e){	
 	if(this.element){
-		top = (e.y+this.y);
-		left = (e.x+this.x);
+		var top = (e.y+this.y);
+		var left = (e.x+this.x);
 		if(top>=0 && top<this.viewer.height && left>=0 && left<this.viewer.width){
 			this.element.style.top = top+"px";
 			this.element.style.left = left+"px";
