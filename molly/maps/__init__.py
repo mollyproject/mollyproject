@@ -64,8 +64,6 @@ class Map:
                     width = width,
                     height = height,
                 )
-            print metadata
-            print static_map_hash
             GeneratedMap.objects.get(hash=static_map_hash).delete()
             self.static_map_hash, (self.points, self.zoom, lon_center, lat_center) = fit_to_map(
                     centre_point = centre_point,
@@ -75,8 +73,6 @@ class Map:
                     width = width,
                     height = height,
                 )
-            print self.static_map_hash
-            print (self.points, self.zoom, lon_center, lat_center)
         
         markers = [
             (str(centre_point[1]), str(centre_point[0]),
