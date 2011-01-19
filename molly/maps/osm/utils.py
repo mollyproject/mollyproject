@@ -133,7 +133,8 @@ def get_or_create_map(generator, args):
             age = (datetime.now()-youngest)
             age = age.days*24 + age.seconds/3600.0
             logger.debug("Cleared out old maps, youngest is %f hours", age)
-        
+    
+    print hash, metadata
     return hash, metadata
     
 def fit_to_map(centre_point, points, min_points, zoom, width, height):

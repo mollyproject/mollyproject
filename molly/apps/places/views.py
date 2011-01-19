@@ -196,7 +196,7 @@ class NearbyDetailView(LocationRequiredView, ZoomableView):
 
         entity_map = Map(
             centre_point = (point[0], point[1], 'green'),
-            points = ((e.location[0], e.location[1], 'red') for e in entities),
+            points = [(e.location[0], e.location[1], 'red') for e in entities],
             min_points = min_points,
             zoom = context['zoom'],
             width = request.map_width,
@@ -678,7 +678,7 @@ class ServiceDetailView(BaseView):
         
         map = Map(
             centre_point = (entity.location[0], entity.location[1], 'green'),
-            points = ((e.location[0], e.location[1], 'red') for e in stop_entities),
+            points = [(e.location[0], e.location[1], 'red') for e in stop_entities],
             min_points = len(stop_entities),
             zoom = None,
             width = request.map_width,

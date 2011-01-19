@@ -1,6 +1,7 @@
 from urllib import urlencode
 
 from molly.maps.osm.utils import fit_to_map
+from molly.maps.models import GeneratedMap
 
 class Map:
     """
@@ -42,14 +43,41 @@ class Map:
         self.width = width
         self.height = height
         
-        self.static_map_hash, (self.points, self.zoom) = fit_to_map(
-            centre_point = centre_point,
-            points = points,
-            min_points = min_points,
-            zoom = zoom,
-            width = width,
-            height = height,
-        )
+        try:
+            self.static_map_hash, \
+                (self.points, self.zoom, lon_center, lat_center) = fit_to_map(
+                    centre_point = centre_point,
+                    points = points,
+                    min_points = min_points,
+                    zoom = zoom,
+                    width = width,
+                    height = height,
+                )
+        except ValueError:
+            print "Value Error!"
+            # Old style metadata, which didn't store lon_center and lat_center
+            # was stored, so we need to regenerate the map
+            static_map_hash, metadata = fit_to_map(
+                    centre_point = centre_point,
+                    points = points,
+                    min_points = min_points,
+                    zoom = zoom,
+                    width = width,
+                    height = height,
+                )
+            print metadata
+            print static_map_hash
+            GeneratedMap.objects.get(hash=static_map_hash).delete()
+            self.static_map_hash, (self.points, self.zoom, lon_center, lat_center) = fit_to_map(
+                    centre_point = centre_point,
+                    points = points,
+                    min_points = min_points,
+                    zoom = zoom,
+                    width = width,
+                    height = height,
+                )
+            print self.static_map_hash
+            print (self.points, self.zoom, lon_center, lat_center)
         
         markers = [
             (str(centre_point[1]), str(centre_point[0]),
@@ -63,8 +91,8 @@ class Map:
                 )
         
         self.slippy_map_parameters = urlencode({
-            'lon': self.centre_point[0],
-            'lat': self.centre_point[1],
+            'lon': lon_center,
+            'lat': lat_center,
             'zoom': self.zoom,
             'markers': '|'.join(map(','.join, markers))
         })

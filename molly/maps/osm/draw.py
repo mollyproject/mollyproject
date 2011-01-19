@@ -175,8 +175,8 @@ def get_map(points, width, height, filename, zoom=None, lon_center=None, lat_cen
     image.save(filename, 'png')
     
     if malformed:
-        raise MapGenerationError()
-    return
+        raise MapGenerationError((lon_center, lat_center))
+    return lon_center, lat_center
 
 class PointSet(set):
     
@@ -342,12 +342,12 @@ def get_fitted_map(centre_point, points, min_points, zoom, width, height, filena
         new_points = new_points[:len(point_set)]
     
     try:
-        get_map(points, width, height, filename, zoom)
+        lon_center, lat_center = get_map(points, width, height, filename, zoom)
     except MapGenerationError as e:
-        e.metadata = (new_points, zoom)
+        e.metadata = (new_points, zoom, e.metadata[0], e.metadata[1])
         raise
     
-    return new_points, zoom
+    return new_points, zoom, lon_center, lat_center
 
 class MapGenerationError(Exception):
     """
@@ -356,8 +356,8 @@ class MapGenerationError(Exception):
     be attached to this.
     """
     
-    def __init__(self):
-        self.metadata = None
+    def __init__(self, metadata=None):
+        self.metadata = metadata
 
 if __name__ == '__main__':
     RED, GREEN, BLUE = (1, 0, 0), (0, 0.5, 0), (0.25, 0.25, 1)
