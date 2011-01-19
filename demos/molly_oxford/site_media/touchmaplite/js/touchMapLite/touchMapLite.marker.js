@@ -18,7 +18,7 @@ touchMapLite.prototype.getMarkersFormUrlParams = function(){
 			for(index=0; index<params.length; index++) {  
 				keyValue = params[index].split('=');
 				if(keyValue[0]=='markers'){
-					markers = keyValue[1].split('|');
+					markers = unescape(keyValue[1]).split('|');
 					for(markersIndex=0; markersIndex < markers.length; markersIndex++) {  
 						markerParams = markers[markersIndex].split(',');
 							this.MARKERS[markersIndex] = new this.marker(markerParams[2], parseFloat(markerParams[0]), parseFloat(markerParams[1]),this);
@@ -64,7 +64,7 @@ touchMapLite.prototype.marker = function(title, lat, lon, map, live, radius) {
 	this.viewer.addViewerZoomedListener(marker);
 	this.title = title;
 	this.isVisible = false;
-	this.markerSrc = "images/markers/lightblue"+map.MARKERS.length+".png";
+	this.markerSrc = mediaUrl + "markers/"+title+".png";
 	if(title != "GPS"){
 		this.createDOMelement();
 	} else {

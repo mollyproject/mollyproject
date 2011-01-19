@@ -1,3 +1,5 @@
+from urllib import urlencode
+
 from molly.maps.osm.utils import fit_to_map
 
 class Map:
@@ -48,6 +50,24 @@ class Map:
             width = width,
             height = height,
         )
+        
+        markers = [
+            (str(centre_point[0]), str(centre_point[1]),
+             centre_point[2] + '-star'),
+        ]
+        
+        for point in self.points:
+            markers.append(
+                    (str(point[0][1]), str(point[0][0]),
+                     point[0][2] + '-' + str(point[1][0] + 1))
+                )
+        
+        self.slippy_map_parameters = urlencode({
+            'lon': self.centre_point[0],
+            'lat': self.centre_point[1],
+            'zoom': self.zoom,
+            'markers': '|'.join(map(','.join, markers))
+        })
 
 def map_from_point(point, width, height, colour='green', zoom=16):
     """
