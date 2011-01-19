@@ -52,7 +52,7 @@ class Map:
         )
         
         markers = [
-            (str(centre_point[0]), str(centre_point[1]),
+            (str(centre_point[1]), str(centre_point[0]),
              centre_point[2] + '-star'),
         ]
         
