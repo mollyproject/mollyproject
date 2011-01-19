@@ -984,3 +984,9 @@ small {
     background-position: center center;
     margin-right: 5px;
 }
+
+.slippy-map
+{
+    text-align: center;
+    padding-right: 40px;
+}

@@ -1,8 +1,10 @@
 {% load portal_misc %}
 {% ifnotequal style_group "groups-dumb" %}
     {% if device|device_has_parent:"generic_web_browser" or device.pointing_method == "touchscreen" and use_javascript %}
-        <iframe width="{{ map.width }}" height="{{ map.height }}" frameborder="0"
-                src="{% url maps:touchmaplite %}?{{ map.slippy_map_parameters }}"></iframe>
+        <div class="slippy-map">
+            <iframe width="{{ map.width|add:"-40" }}" height="{{ map.height }}" frameborder="0"
+                    src="{% url maps:touchmaplite %}?{{ map.slippy_map_parameters }}"></iframe>
+        </div>
     {% else %}
         <div class="backgrounded-image" style="background-image:url('{% url maps:osm-generated_map map.static_map_hash %}'); height:{{ map.height }}px">
             {% include "maps/map_elements.html" %}
