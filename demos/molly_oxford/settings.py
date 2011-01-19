@@ -4,6 +4,7 @@ from oauth.oauth import OAuthSignatureMethod_PLAINTEXT
 import os, os.path, imp
 from molly.conf.settings import Application, extract_installed_apps, Authentication, ExtraBase, Provider
 from molly.utils.media import get_compress_groups
+from molly.maps.osm.models import get_marker_dir
 from secrets import SECRETS
 
 molly_root = imp.find_module('molly')[1]
@@ -461,9 +462,11 @@ ADMIN_MEDIA_PREFIX = MEDIA_URL + 'admin/'
 # Example: "/home/media/media.lawrence.com/"
 MEDIA_ROOT = STATIC_ROOT = os.path.join(project_root, 'media')
 
+MARKER_DIR = os.path.join(CACHE_DIR, 'markers')
 STATICFILES_DIRS = (
     ('', os.path.join(project_root, 'site_media')),
     ('', os.path.join(molly_root, 'media')),
+    ('markers', MARKER_DIR),
 )
 STATIC_URL = '/media/'
 STATICFILES_PREPEND_LABEL_APPS = ('django.contrib.admin',) #+ extract_installed_apps(APPLICATIONS)
