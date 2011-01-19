@@ -54,7 +54,6 @@ class Map:
                     height = height,
                 )
         except ValueError:
-            print "Value Error!"
             # Old style metadata, which didn't store lon_center and lat_center
             # was stored, so we need to regenerate the map
             static_map_hash, metadata = fit_to_map(
