@@ -2,7 +2,7 @@
 {% ifnotequal style_group "groups-dumb" %}
     {% if device|device_has_parent:"generic_web_browser" or device.pointing_method == "touchscreen" and use_javascript %}
         <div class="slippy-map">
-            <iframe width="{{ map.width|add:"-40" }}" height="{{ map.height }}" frameborder="0"
+            <iframe width="{{ map.width|add:"-60" }}" height="{{ map.height }}" frameborder="0"
                     src="{% url maps:touchmaplite %}?{{ map.slippy_map_parameters }}"></iframe>
         </div>
     {% else %}

@@ -988,5 +988,6 @@ small {
 .slippy-map
 {
     text-align: center;
-    padding-right: 40px;
+    padding-right: 60px;
+    background-image: url('../../../maps/png/scroll-texture.png');
 }
