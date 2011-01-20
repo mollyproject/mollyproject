@@ -42,7 +42,7 @@ class GeolocationView(BaseView):
         except KeyError:
             distance_moved = float('inf')
 
-        if method in ('other', 'manual', 'geocoded') or \
+        if method in ('other', 'manual', 'geocoded', 'html5request') or \
            not 'geolocation:location' in request.session or \
            (last_updated > datetime.utcnow() - timedelta(seconds=3600) and distance_moved > 250):
             cls.add_to_history(request, name, location, accuracy, method)

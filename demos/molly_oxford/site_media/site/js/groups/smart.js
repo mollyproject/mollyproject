@@ -1,17 +1,24 @@
 // Molly Geolocation code
-function automaticLocation(position) {
-  // Geocode a callback from geolocation API
+function submitAutomaticLocation(position, method) {
   $('.location').html('Location found; please wait while we put a name to it.')
   $('.location-accuracy').hide()
   $.post(base+'geolocation/', {
     longitude: position.coords.longitude,
     latitude: position.coords.latitude,
     accuracy: position.coords.accuracy,
-    method: 'html5',
+    method: method,
     format: 'json',
     return_url: $('#return_url').val(),
     force: 'True'
   }, locationFound, 'json');
+}
+
+function automaticLocation(position) {
+  submitAutomaticLocation(position, 'html5')
+}
+
+function automaticLocationAndSave(position) {
+  submitAutomaticLocation(position, 'html5request')
 }
 
 function locationFailure(d) {
@@ -53,7 +60,7 @@ $(function(){
       $('.alternate-location-box').slideUp();
       $('.location').html('Please wait while we attempt to determine your location&hellip;')    
       $('.location-accuracy').hide()
-      geo_position_js.getCurrentPosition(automaticLocation, locationFailure, {
+      geo_position_js.getCurrentPosition(automaticLocationAndSave, locationFailure, {
         enableHighAccuracy: true,
         maximumAge: 30000
       });
