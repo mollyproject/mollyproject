@@ -11,18 +11,18 @@ class Map:
     
     def __init__(self, centre_point, points, min_points, zoom, width, height):
         """
-        @param centre_point: A tuple of longitude, latitude and colour
+        @param centre_point: A tuple of longitude, latitude, colour and title
                              corresponding to the "centre" of the map. This is
                              NOT necessarily the central latitude/longitude of
                              the generated image, but simply a special marker
                              which is indicated with a star.
-        @type centre_point: (float, float, str) or None
+        @type centre_point: (float, float, str, str) or None
         @param points: An (ordered) list of points to be plotted on the map.
                        These are indicated on the map with numbered markers.
-                       This list consists of tuples of longitude, latitude and a
+                       This list consists of tuples of longitude, latitude, a
                        string indicating the colours of the markers to be
-                       rendered.
-        @type points: [(float, float, str)]
+                       rendered and a title of the point to be plotted
+        @type points: [(float, float, str, str)]
         @param min_points: The minimum number of points to be displayed on the
                            resulting map
         @type min_points: int
@@ -53,6 +53,11 @@ class Map:
                     width = width,
                     height = height,
                 )
+            # Check if this uses the old format of self.points
+            if len(self.points) > 0:
+                # this will throw a ValueError if it can't unpack, triggering a
+                # regeneration of the map
+                (lon, lat, colour, title), indices = self.points[0]
         except ValueError:
             # Old style metadata, which didn't store lon_center and lat_center
             # was stored, so we need to regenerate the map
@@ -65,7 +70,8 @@ class Map:
                     height = height,
                 )
             GeneratedMap.objects.get(hash=static_map_hash).delete()
-            self.static_map_hash, (self.points, self.zoom, lon_center, lat_center) = fit_to_map(
+            self.static_map_hash, \
+                (self.points, self.zoom, lon_center, lat_center) = fit_to_map(
                     centre_point = centre_point,
                     points = points,
                     min_points = min_points,
@@ -76,25 +82,25 @@ class Map:
         
         markers = [
             (str(centre_point[1]), str(centre_point[0]),
-             centre_point[2] + '-star'),
+             centre_point[2] + '-star', centre_point[3]),
         ]
         
         for point in self.points:
             markers.append(
                     (str(point[0][1]), str(point[0][0]),
-                     point[0][2] + '-' + str(point[1][0] + 1))
+                     point[0][2] + '-' + str(point[1][0] + 1), point[0][3])
                 )
         
         self.slippy_map_parameters = urlencode({
             'lon': lon_center,
             'lat': lat_center,
             'zoom': self.zoom,
-            'markers': '|'.join(map(','.join, markers))
+            'markers': '~'.join(map('|'.join, markers))
         })
 
-def map_from_point(point, width, height, colour='green', zoom=16):
+def map_from_point(point, width, height, colour='green', title='', zoom=16):
     """
     A shortcut which renders a simple map containing only one point rendered as
     a star
     """
-    return Map((point[0], point[1], colour), [], 1, zoom, width, height)
+    return Map((point[0], point[1], colour, title), [], 1, zoom, width, height)

@@ -18,10 +18,10 @@ touchMapLite.prototype.getMarkersFormUrlParams = function(){
 			for(index=0; index<params.length; index++) {  
 				keyValue = params[index].split('=');
 				if(keyValue[0]=='markers'){
-					markers = unescape(keyValue[1]).split('|');
+					markers = unescape(keyValue[1]).split('~');
 					for(markersIndex=0; markersIndex < markers.length; markersIndex++) {  
-						markerParams = markers[markersIndex].split(',');
-							this.MARKERS[markersIndex] = new this.marker(markerParams[2], parseFloat(markerParams[0]), parseFloat(markerParams[1]),this);
+						markerParams = markers[markersIndex].split('|');
+							this.MARKERS[markersIndex] = new this.marker(markerParams[3].replace(/\+/g, ' '), parseFloat(markerParams[0]), parseFloat(markerParams[1]), markerParams[2], this);
 					}
 				}
 			}
@@ -29,7 +29,7 @@ touchMapLite.prototype.getMarkersFormUrlParams = function(){
 }
 		
 
-touchMapLite.prototype.marker = function(title, lat, lon, map, live, radius) {
+touchMapLite.prototype.marker = function(title, lat, lon, image, map, live, radius) {
 	if(live){
 		this.id = 0;
 		found = false;
@@ -64,7 +64,7 @@ touchMapLite.prototype.marker = function(title, lat, lon, map, live, radius) {
 	this.viewer.addViewerZoomedListener(marker);
 	this.title = title;
 	this.isVisible = false;
-	this.markerSrc = mediaUrl + "markers/"+title+".png";
+	this.markerSrc = mediaUrl + "markers/"+image+".png";
 	if(title != "GPS"){
 		this.createDOMelement();
 	} else {
@@ -134,7 +134,7 @@ touchMapLite.prototype.marker.prototype = {
 			var bubble = document.createElement("div");
 			this.appendChild(bubble);
 
-			bubble.innerHTML = "#"+this.marker.id+": "+this.marker.title+"<br />"+this.marker.lat+",<br />"+this.marker.lon;
+			bubble.innerHTML = this.marker.title;
 			bubble.setAttribute("class","bubble");
 			bubble.onmouseup = function(e){
 				this.parentNode.marker.hideBubbles();

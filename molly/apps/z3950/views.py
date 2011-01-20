@@ -239,10 +239,11 @@ class ItemDetailView(BaseView):
                     library.oxpoints_entity.location[0],
                     library.oxpoints_entity.location[1],
                     color,
+                    library.oxpoints_entity.title,
                 ) )
 
             map = Map(
-                centre_point = (location[0], location[1], 'green') if location else None,
+                centre_point = (location[0], location[1], 'green', '') if location else None,
                 points = points,
                 min_points = 0 if context['zoom'] else len(points),
                 zoom = context['zoom'],
