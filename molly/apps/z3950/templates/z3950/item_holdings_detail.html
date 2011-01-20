@@ -3,7 +3,9 @@
 {% block content %}
 
 <div class="section">
+<div class="header">
     <h2>{{ item.title }}</h2>
+</div>
     <div class="article"><div class="bubble pad-5">
     <table>
 {% if item.author %}
@@ -54,10 +56,13 @@
 {% endif %}
     </table>
     </div></div>
+
 </div>
 
 <div class="section">
+<div class="header">
     <h2>{{ library.location|join:" - " }}</h2>
+</div>
 {% if library.oxpoints_id and library.oxpoints_location %}
     {% ifnotequal style_group "groups-dumb" %}
     	<div class="backgrounded-image" style="background-image:url('{% map_url library.oxpoints_location %}'); height:{{ map_height }}px">
@@ -68,7 +73,7 @@
         {% include "places/map_elements.html" %}
     {% endifnotequal %}
 {% endif %}
-
+  
     <ul class="content-list">
 {% for book in books %}
     {# non-link-item #}
@@ -77,6 +82,7 @@
     </li>
 {% endfor %}
     </ul>
+
 </div>
 
 {% endblock %}

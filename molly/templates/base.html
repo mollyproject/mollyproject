@@ -19,7 +19,7 @@
   {% compressed_css 'svg' %}
 {% endif %}
 
-{% if device|device_has_parent:"apple_generic" or device.device_os == "Android %}
+{% if device|device_has_parent:"apple_generic" or device.device_os == "Android" %}
     <link rel="apple-touch-icon" href="{{ MEDIA_URL}}site/png/apple-touch-icon.png"/>
     <link rel="apple-touch-icon" sizes="72x72" href="{{ MEDIA_URL}}site/png/apple-touch-icon-72px.png"/>
     <link rel="apple-touch-icon" sizes="114x114" href="{{ MEDIA_URL}}site/png/apple-touch-icon-114px.png"/>

@@ -10,13 +10,15 @@
 
 {% if form.is_valid %}
 <div class="section">
+<div class="header">
   <h2>Results</h2>
+</div>
   {% if message %}
   <div class="note"><div class="bubble pad-10">
     {{ message }}
   </div></div>
   {% endif %}
-
+  <div class="header">
   {% if page %}
   <div class="note"><div class="bubble pad-10">
     {% if results.num_pages|gte:4 %}
@@ -25,7 +27,6 @@
     Your search returned {{ results.count }} item{{ results.count|pluralize }}.
     {% endif %}
   </div></div>
-
   {% if results.count %}
   {% ifnotequal 1 page_count %}
   <div class="note">
@@ -35,7 +36,6 @@
     {% endfor %}
   </div>
   {% endifnotequal %}
-
   <ul class="link-list" id="people">
     {% for person in page.object_list %}
       <li class="contact-person{% if forloop.last %} round-bottom{% endif %}">
@@ -53,13 +53,15 @@
   </div>
   {% endifnotequal %}
   {% endif %}
-
+  </div>
 {% else %}
+   <div class="header">
   {% if not message %}
   <div class="note"><div class="bubble pad-10">
     Your search didn't return any results.
   </div></div>
   {% endif %}
+  </div>
 {% endif %}
 </div>
 

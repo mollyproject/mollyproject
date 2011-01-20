@@ -8,6 +8,7 @@
 {% block content %}
 
 <div class="section">
+<div class="header">
 	<h2>Oxfordshire <small>- RAF Benson at {{ observation.observed_date|date:"H:i" }}</small></h2>
 	<div class="note">
 		<div class="weather-icon">
@@ -22,8 +23,10 @@
 		</div>
 	</div>
 </div>
+</div>
 	
 <div class="section">
+<div class="header">
     <h2>Forecast</h2>
     <table class="weather-forecast">
         <tbody>
@@ -37,5 +40,6 @@
 {% endfor %}
         </tbody>
     </table>
+</div>
 </div>
 {% endblock %}

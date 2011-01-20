@@ -148,7 +148,7 @@ div#bc-title h1 {
     text-align:left;
     color:#ffffff;
     white-space: nowrap;
-	text-shadow: 1px 1px 0px #111;
+	/*text-shadow: 1px 1px 0px #111;*/
 }
 div#bc-title h1.with-icon {
     background-repeat: no-repeat;
@@ -179,6 +179,7 @@ ul.content-list, ul.link-list, ol.search-results {
     border-left: 1px solid rgba(255, 255, 255, 0.33);
     list-style: none;
     padding: 0; margin: 0;
+
     -webkit-border-bottom-left-radius: 8px; -moz-border-radius-bottomleft: 8px; border-bottom-left-radius: 8px;
     -webkit-border-bottom-right-radius: 8px;    -moz-border-radius-bottomright: 8px;    border-bottom-right-radius: 8px;
 }
@@ -302,14 +303,14 @@ div.weather-live-info {
     background-color: transparent;
     border-left:0;
     font-size:10pt;
-    color:#ffffff;
+    color:#000000;
     text-align: left;
 }
 
 table.weather-forecast {
     padding: 20px;
     width: 100%;
-    color:#ffffff;
+    color:#000000;
 }
 /* End Weather */
 
@@ -455,7 +456,7 @@ button, input[type="submit"], input[type="reset"] {
     background: #838791 url(../../site/png/new/buttons/btn.bg.png) repeat-x 0px 0px;
     padding:5px 10px 6px 10px;
     font-weight:bold;
-    text-shadow: 1px 1px 1px #111;
+    /*text-shadow: 1px 1px 1px #111;*/
     border:1px solid rgba(0,0,0,0.4);
     -moz-border-radius: 5px;
     -moz-box-shadow: 0px 0px 2px rgba(0,0,0,0.5);
@@ -476,10 +477,10 @@ h2 {
 }
 
 h3 {
-    color:white;
+    color:#222;
     padding: 5px 5px; margin: 0;
     text-align: center;
-    text-shadow:2px 2px 2px #ccc; 
+    /*text-shadow:2px 2px 2px #ccc;*/ 
 }
 
 div.bubble {
@@ -520,7 +521,7 @@ div.note a{
 div.pad-10{padding: 10px;}
 div.pad-5 {padding:5px;}
 
-div.no-round-bottom, ul.no-round-bottom,
+div.no-round-bottom, ul.no-round-bottom,li.no-round-bottom,
 table.no-round-bottom > *:last-child > tr:last-child > *:last-child,
 table.no-round-bottom > *:last-child > tr:last-child > *:first-child {
     -webkit-border-bottom-left-radius: 0px !important;   -moz-border-radius-bottomleft: 0px !important;     border-bottom-left-radius: 0px !important;
@@ -545,7 +546,7 @@ div.form-section {
     -moz-box-shadow: 2px 2px 2px #333; -webkit-box-shadow: 2px 2px 2px #333; box-shadow: 2px 2px 2px #333;
 
     color: #333;
-    text-shadow: 1px 1px 1px #ccc;
+    /*text-shadow: 1px 1px 1px #ccc;*/
 }
 
 div.form-section h2 {
@@ -588,7 +589,7 @@ div.form-section ul.errorlist + input , div.form-section ul.errorlist + textarea
 div.form-section dl dt {
     font-size: 1.2em;
     color: #333;
-    text-shadow: 1px 1px 1px #aaa;
+    /*text-shadow: 1px 1px 1px #aaa;*/
     margin-top:4px;
 }
 
@@ -655,7 +656,9 @@ ul.content-list li.superuser-comment {
 
 /* div.section is now 'legacy' - it should be replaced by div.section and one of the above */
 div.section {
-    background:#B88C54 url('../../site/png/new/gradients/gradient-50-nrWhite-Transparent.png') repeat-x;
+    background:-moz-linear-gradient(top, #fff, #cfcfcf);
+    background:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#dfdfdf));
+    /* background:transparent #B88C54 url('../../site/png/new/gradients/gradient-50-nrWhite-Transparent.png') repeat-x */;
     margin:10px;
     -webkit-border-radius:8px; -moz-border-radius: 8px; border-radius: 8px;
     -moz-box-shadow: 2px 2px 2px #333; -webkit-box-shadow: 2px 2px 2px #333; box-shadow: 2px 2px 2px #333;
@@ -671,12 +674,16 @@ div.header {
     background:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#dfdfdf));
     -webkit-border-top-right-radius:5px;-moz-border-radius-topright: 5px; border-top-right-radius: 5px;
     -webkit-border-top-left-radius:5px; -moz-border-radius-topleft: 5px;  border-top-left-radius: 5px;
+/*
+    -webkit-border-bottom-right-radius:5px;-moz-border-radius-bottomright: 5px; border-bottom-right-radius: 5px;
+    -webkit-border-bottom-left-radius:5px; -moz-border-radius-bottomleft: 5px;  border-bottom-left-radius: 5px;
+*/
 }
 
 div.header h2 {
     color: rgb(34, 34, 34);
-    text-shadow: 2px 2px 2px rgb(204, 204, 204);
-    text-align: center;
+    /*text-shadow: 2px 2px 2px rgb(204, 204, 204);*/
+    text-align: left;
     font-size: 11pt;
     padding-top: 3px;
 }
@@ -706,7 +713,7 @@ div.form-section dt.sakai-validation-error {
     font-style: italic;
     background-color:#400000;
     color:#ffffff;
-    text-shadow: none;
+    /*text-shadow: none;*/
     padding:3px 8px;
     margin-bottom: 8px;
 }
@@ -751,7 +758,7 @@ table.content {
     width: 100%;
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
-    text-shadow: 0px 1px 1px #fff;
+    /*text-shadow: 0px 1px 1px #fff;*/
 }
 
 table.content > * > tr.sub-section-divider > th, table.content > thead > tr > th  {
@@ -807,7 +814,7 @@ div.button > a {
     height: 2em;
     line-height: 2em;
     vertical-align: middle;
-    text-shadow: 0 -1px 1px #000;
+    /*text-shadow: 0 -1px 1px #000;*/
 }
 
 
