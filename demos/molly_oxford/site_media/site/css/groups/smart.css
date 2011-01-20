@@ -989,5 +989,9 @@ small {
 {
     text-align: center;
     padding-right: 60px;
-    background-image: url('../../../maps/png/scroll-texture.png');
+}
+
+.map
+{
+    border: 1px solid #000000;
 }
