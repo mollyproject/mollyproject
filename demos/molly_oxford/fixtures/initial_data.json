@@ -12,30 +12,6 @@
         }
     },
     {
-        "pk": "2",
-        "model": "webcams.Webcam",
-        "fields": {
-            "slug": "earth-sciences-one",
-            "url": "http://www.earth.ox.ac.uk/~tmlapse/camera1.jpg",
-            "fetch_period": 1,
-            "title": "Earth Sciences Camera One",
-            "description": "Overlooking the new Earth Sciences building site.",
-            "credit": "&copy; Earth Sciences Department"
-        }
-    },
-    {
-        "pk": "3",
-        "model": "webcams.Webcam",
-        "fields": {
-            "slug": "earth-sciences-two",
-            "url": "http://www.earth.ox.ac.uk/~tmlapse/camera2.jpg",
-            "fetch_period": 1,
-            "title": "Earth Sciences Camera Two",
-            "description": "Overlooking the new Earth Sciences building site.",
-            "credit": "&copy; Earth Sciences Department"
-        }
-    },
-    {
         "pk": "4",
         "model": "webcams.Webcam",
         "fields": {
