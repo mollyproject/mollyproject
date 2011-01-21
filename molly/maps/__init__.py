@@ -81,14 +81,18 @@ class Map:
                 )
         
         markers = [
-            (str(centre_point[1]), str(centre_point[0]),
-             centre_point[2] + '-star', centre_point[3]),
+            (str(centre_point[1]),
+             str(centre_point[0]),
+             centre_point[2] + '-star',
+             centre_point[3].encode('ascii', 'xmlcharrefreplace'))
         ]
         
         for point in self.points:
             markers.append(
-                    (str(point[0][1]), str(point[0][0]),
-                     point[0][2] + '-' + str(point[1][0] + 1), point[0][3])
+                    (str(point[0][1]),
+                     str(point[0][0]),
+                     point[0][2] + '-' + str(point[1][0] + 1),
+                     point[0][3].encode('ascii', 'xmlcharrefreplace'))
                 )
         
         self.slippy_map_parameters = urlencode({
