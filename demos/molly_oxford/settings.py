@@ -416,6 +416,9 @@ APPLICATIONS = [
     Application('molly.favourites', 'favourites', 'Favourite pages',
         display_to_user = False,
     ),
+    
+    Application('molly_oxford.utils', 'mox', 'Mobile Oxford',
+                display_to_user = False),
 ]
 
 API_KEYS = {
