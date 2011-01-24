@@ -4,7 +4,6 @@ from oauth.oauth import OAuthSignatureMethod_PLAINTEXT
 import os, os.path, imp
 from molly.conf.settings import Application, extract_installed_apps, Authentication, ExtraBase, Provider
 from molly.utils.media import get_compress_groups
-from molly.maps.osm.models import get_marker_dir
 from secrets import SECRETS
 
 molly_root = imp.find_module('molly')[1]
