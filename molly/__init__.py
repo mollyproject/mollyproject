@@ -7,4 +7,4 @@ Originally as deployed by the University of Oxford as 'Mobile Oxford' at http://
 
 import init_logging
 
-__version__ = '0.4.1'
+__version__ = '0.5'
