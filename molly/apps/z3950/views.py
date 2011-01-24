@@ -9,7 +9,7 @@ from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
 
 from molly.apps.places.models import Entity
-from molly.osm.utils import fit_to_map
+from molly.maps import Map
 
 from PyZ3950.zoom import ConnectionError
 
@@ -239,10 +239,11 @@ class ItemDetailView(BaseView):
                     library.oxpoints_entity.location[0],
                     library.oxpoints_entity.location[1],
                     color,
+                    library.oxpoints_entity.title,
                 ) )
 
-            map_hash, (new_points, zoom) = fit_to_map(
-                centre_point = (location[0], location[1], 'green') if location else None,
+            map = Map(
+                centre_point = (location[0], location[1], 'green', '') if location else None,
                 points = points,
                 min_points = 0 if context['zoom'] else len(points),
                 zoom = context['zoom'],
@@ -254,7 +255,7 @@ class ItemDetailView(BaseView):
             # so here we add a marker_number to each library to display in the
             # template.
             lib_iter = iter(libraries)
-            for i, (a,b) in enumerate(new_points):
+            for i, (a,b) in enumerate(map.points):
                 for j in range(len(b)):
                     lib_iter.next()[0].marker_number = i + 1
             # Finish off by adding a marker_number for those that aren't on the map.
@@ -262,13 +263,11 @@ class ItemDetailView(BaseView):
             # next() ).
             for library in lib_iter:
                 library[0].marker_number = None
-
-            context['zoom'] = zoom
-            context['map_hash'] = map_hash
-
+        
         context.update({
             'libraries': libraries,
-            'stacks': stacks
+            'stacks': stacks,
+            'map': map,
         })
 
         return cls.render(request, context, 'z3950/item_detail')

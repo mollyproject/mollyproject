@@ -7,6 +7,8 @@ import dateutil.parser
 from django.http import Http404, HttpResponse, HttpResponseForbidden
 from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied
+from django.shortcuts import render_to_response
+from django.template import RequestContext
 
 from molly.auth.models import UserIdentifier
 from molly.auth.oauth.clients import OAuthHTTPError
@@ -260,12 +262,21 @@ class PollIndexView(SakaiView):
 class PollDetailView(SakaiView):
     def initial_context(self, request, id):
         
-        url = self.build_url('direct/poll/%s.json' % id)
-        poll = simplejson.load(request.urlopen(url))
-
-        url = self.build_url('direct/poll/%s/option.json' % id)
-        options = simplejson.load(request.urlopen(url))
-        options = options['poll-option_collection']
+        try:
+            url = self.build_url('direct/poll/%s.json' % id)
+            poll = simplejson.load(request.urlopen(url))
+    
+            url = self.build_url('direct/poll/%s/option.json' % id)
+            options = simplejson.load(request.urlopen(url))
+            options = options['poll-option_collection']
+        except PermissionDenied:
+            context = {
+                'poll': {
+                    'permission_denied': True,
+                    'text': 'Permission Denied'
+                }
+            }
+            return context
 
         try:
             url = self.build_url('direct/poll/%s/vote.json' % id)
@@ -310,6 +321,11 @@ class PollDetailView(SakaiView):
         )
 
     def handle_GET(self, request, context, id):
+        if 'permission_denied' in context['poll']:
+            response = render_to_response('sakai/poll/permission_denied.html',
+                                          RequestContext(request, context))
+            response.status_code = 403
+            return response
         return self.render(request, context, 'sakai/poll/detail')
 
     def handle_POST(self, request, context, id):

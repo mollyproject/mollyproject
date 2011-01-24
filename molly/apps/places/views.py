@@ -16,8 +16,8 @@ from molly.utils.breadcrumbs import *
 from molly.favourites.views import FavouritableView
 from molly.geolocation.views import LocationRequiredView
 
-from molly.osm.utils import fit_to_map
-from molly.osm.models import OSMUpdate
+from molly.maps import Map
+from molly.maps.osm.models import OSMUpdate
 
 from models import Entity, EntityType
 from utils import get_entity, get_point
@@ -194,16 +194,17 @@ class NearbyDetailView(LocationRequiredView, ZoomableView):
         else:
             min_points = 0
 
-        map_hash, (new_points, zoom) = fit_to_map(
-            centre_point = (point[0], point[1], 'green'),
-            points = ((e.location[0], e.location[1], 'red') for e in entities),
+        entity_map = Map(
+            centre_point = (point[0], point[1], 'green', ''),
+            points = [(e.location[0], e.location[1], 'red', e.title)
+                for e in entities],
             min_points = min_points,
             zoom = context['zoom'],
             width = request.map_width,
             height = request.map_height,
         )
 
-        entities = [[entities[i] for i in b] for a,b in new_points]
+        entities = [[entities[i] for i in b] for a,b in entity_map.points]
 
         found_entity_types = set()
         for e in chain(*entities):
@@ -214,13 +215,11 @@ class NearbyDetailView(LocationRequiredView, ZoomableView):
 
         context.update({
             'entities': entities,
-            'zoom': zoom,
-            'map_hash': map_hash,
+            'map': entity_map,
             'count': sum(map(len, entities)),
             'entity_types': entity_types,
             'found_entity_types': found_entity_types,
         })
-        #raise Exception(context)
         return self.render(request, context, 'places/nearby_detail')
 
 class EntityDetailView(ZoomableView, FavouritableView):
@@ -602,9 +601,11 @@ class ServiceDetailView(BaseView):
                 'zoom_controls': False,
             })
         
-        map_hash, (new_points, zoom) = fit_to_map(
-            centre_point = (entity.location[0], entity.location[1], 'green'),
-            points = ((e.location[0], e.location[1], 'red') for e in stop_entities),
+        map = Map(
+            centre_point = (entity.location[0], entity.location[1],
+                            'green', entity.title),
+            points = [(e.location[0], e.location[1], 'red', e.title)
+                for e in stop_entities],
             min_points = len(stop_entities),
             zoom = None,
             width = request.map_width,
@@ -612,8 +613,7 @@ class ServiceDetailView(BaseView):
         )
         
         context.update({
-            'zoom': zoom,
-            'map_hash': map_hash
+            'map': map
         })
         
         return context

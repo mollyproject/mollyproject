@@ -64,14 +64,7 @@
     <h2>{{ library.location|join:" - " }}</h2>
 </div>
 {% if library.oxpoints_id and library.oxpoints_location %}
-    {% ifnotequal style_group "groups-dumb" %}
-    	<div class="backgrounded-image" style="background-image:url('{% map_url library.oxpoints_location %}'); height:{{ map_height }}px">
-            {% include "places/map_elements.html" %}
-        </div>
-    {% else %}
-        <img src="{% map_url library.oxpoints_location %}" alt="Map"><br />
-        {% include "places/map_elements.html" %}
-    {% endifnotequal %}
+    {% render_location_map library.oxpoints_location %}
 {% endif %}
   
     <ul class="content-list">

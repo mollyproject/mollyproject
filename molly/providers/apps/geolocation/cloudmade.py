@@ -66,8 +66,8 @@ class CloudmadeGeolocationProvider(BaseGeolocationProvider):
                 logger.error("Request to %s returned response code %d" % (request_url, response.code))
                 return []
             json = simplejson.loads(response.read().replace('&apos;', "'"), 'utf8')
-        except Exception,e:
-            raise
+        except urllib2.HTTPError, e:
+            logger.error("Cloudmade returned a non-OK response code %d", e.code)
             return []
 
         if not json:

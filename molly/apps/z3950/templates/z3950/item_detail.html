@@ -1,5 +1,5 @@
 {% extends "z3950/base.html" %}
-
+{% load maps %}
 {% block content %}
 
 <div class="section">
@@ -74,14 +74,8 @@
         Please note that all libraries have admission and borrowing policies; inclusion in this list does not imply access.{% if map_hash %} Closest results are not necessarily best.{% endif %}
     </div></div> 
 
-{% if map_hash %}
-    {% ifnotequal style_group "groups-dumb" %}
-        <div class="backgrounded-image" style="background-image:url('{% url osm:generated_map map_hash %}'); height:{{ map_height }}px;"> </div>
-    {% else %}
-        <img src="{% url osm:generated_map map_hash %}" alt="Map">
-    {% endifnotequal %}
-
-
+{% if map %}
+    {% render_map map %}
 {% endif %}
 
     <ul class="link-list">
