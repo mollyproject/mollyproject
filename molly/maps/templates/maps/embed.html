@@ -1,6 +1,6 @@
 {% load portal_misc %}
 {% ifnotequal style_group "groups-dumb" %}
-    {% if device|device_has_parent:"generic_web_browser" or device.pointing_method == "touchscreen" and use_javascript %}
+    {% if device|device_has_parent:"generic_web_browser" or device.pointing_method == "touchscreen" and use_javascript and device.device_os != "Symbian" and device.device_os != "Symbian OS" %}
         <div class="slippy-map">
             <iframe width="{{ map.width|add:"-60" }}" height="{{ map.height }}" frameborder="0" class="map"
                     src="{% url maps:touchmaplite %}?{{ map.slippy_map_parameters }}"></iframe>
