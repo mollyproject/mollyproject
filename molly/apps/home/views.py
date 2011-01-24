@@ -17,16 +17,23 @@ from models import UserMessage
 from forms import UserMessageFormSet
 
 class IndexView(BaseView):
+    """
+    Renders the portal home page
+    """
 
     @BreadcrumbFactory
     def breadcrumb(self, request, context):
-        return Breadcrumb(self.conf.local_name, None, 'Home', lazy_reverse('index'))
+        return Breadcrumb(self.conf.local_name,
+                          None,
+                          'Home',
+                          lazy_reverse('index'))
 
     def handle_GET(self, request, context):
         # Check whether the referer header is from the same host as the server
         # is responding as
         try:
-            internal_referer = request.META.get('HTTP_REFERER', '').split('/')[2] == request.META.get('HTTP_HOST')
+            referer_host = request.META.get('HTTP_REFERER', '').split('/')[2]
+            internal_referer = referer_host == request.META.get('HTTP_HOST')
         except IndexError:
             internal_referer = False
 
@@ -43,20 +50,27 @@ class IndexView(BaseView):
         # Add any one-off messages to be shown to this user
         messages = []
         
-        if not request.session.get('opera_mini_warning', False) and request.browser.mobile_browser == u'Opera Mini':
-            messages.append('Please note that the "Mobile View" on Opera Mini does not display this site correctly. To ensure correct operation of this site, ensure "Mobile View" is set to Off in Opera settings')
-            request.session['opera_mini_warning'] = True
+        if not request.session.get('home:opera_mini_warning', False) \
+          and request.browser.mobile_browser == u'Opera Mini':
+            messages.append("""Please note that the "Mobile View" on Opera Mini
+                            does not display this site correctly. To ensure
+                            correct operation of this site, ensure "Mobile View"
+                            is set to Off in Opera settings""")
+            request.session['home:opera_mini_warning'] = True
 
         applications = [{
             'application_name': app.application_name,
             'local_name': app.local_name,
             'title': app.title,
-            'url': reverse('%s:index' % app.local_name) if app.has_urlconf else None,
+            'url': reverse('%s:index' % app.local_name) \
+                    if app.has_urlconf else None,
             'display_to_user': app.display_to_user,
         } for app in conf.all_apps()]
 
         # Add accesskeys to the first 9 apps to be displayed to the user
-        for i, app in enumerate([app for app in applications if app['display_to_user']][:9]):
+        for i, app in enumerate(
+                [app for app in applications if app['display_to_user']][:9]
+            ):
             app['accesskey'] = i + 1
 
         context = {
@@ -66,7 +80,8 @@ class IndexView(BaseView):
             'messages': messages,
             'favourites': get_favourites(request),
         }
-        return self.render(request, context, 'home/index', expires=timedelta(minutes=10))
+        return self.render(request, context, 'home/index',
+                           expires=timedelta(minutes=10))
 
     def get_metadata(self, request):
         return {
@@ -74,9 +89,11 @@ class IndexView(BaseView):
         }
 
     def handle_POST(self, request, context):
-        no_desktop_about = {'true':True, 'false':False}.get(request.POST.get('no_desktop_about'))
-        if not no_desktop_about is None:
-            request.session['home:desktop_about_shown'] = no_desktop_about
+        no_desktop_about = request.POST.get('no_desktop_about')
+        if no_desktop_about  == 'true':
+            request.session['home:desktop_about_shown'] = True
+        elif no_desktop_about  == 'false':
+            request.session['home:desktop_about_shown'] = False
 
         return HttpResponseRedirect(reverse('home:index'))
 
@@ -143,7 +160,10 @@ class UserMessageView(BaseView):
         }
 
     def handle_GET(self, request, context):
-        UserMessage.objects.filter(session_key=request.session.session_key).update(read=True)
+        messages = UserMessage.objects.filter(
+                session_key=request.session.session_key
+            )
+        messages.update(read=True)
         return self.render(request, context, 'home/messages')
 
     def handle_POST(self, request, context):
