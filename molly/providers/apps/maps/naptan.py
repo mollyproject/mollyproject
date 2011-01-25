@@ -209,7 +209,7 @@ class NaptanMapsProvider(BaseMapsProvider):
             self._password,
         )
         
-        files = []
+        files = {}
 
         # Create a mapping from ATCO codes to CRS codes.
         f, filename =  tempfile.mkstemp()
@@ -221,7 +221,7 @@ class NaptanMapsProvider(BaseMapsProvider):
 
         for area in self._areas:
             f, filename = tempfile.mkstemp()
-            files.append(filename)
+            files[area] = filename
             
             ftp.cwd("/V2/%s/" % area)
             ftp.retrbinary('RETR NaPTAN%sxml.zip' % area, data_chomper(f))
@@ -229,7 +229,7 @@ class NaptanMapsProvider(BaseMapsProvider):
         
         ftp.quit()
         
-        for filename in files:
+        for (area, filename) in files.items():
             archive = zipfile.ZipFile(filename)
             if hasattr(archive, 'open'):
                 f = archive.open('NaPTAN%d.xml' % int(area))
