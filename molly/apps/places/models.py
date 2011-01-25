@@ -54,6 +54,9 @@ class EntityType(models.Model):
 class Identifier(models.Model):
     scheme = models.CharField(max_length=32)
     value = models.CharField(max_length=256)
+    
+    def __unicode__(self):
+        return self.scheme + ': ' + self.value
 
 class Entity(models.Model):
     title = models.TextField(blank=True)
