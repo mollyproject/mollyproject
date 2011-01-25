@@ -12,9 +12,9 @@ def run_batch(modeladmin, request, queryset):
         if not batch.currently_running:
             batch.pending = True
             batch.save()
-    thread = threading.Thread(target=run, args=[queryset])
-    thread.daemon = True
-    thread.start()
+        thread = threading.Thread(target=run, args=[(batch,)])
+        thread.daemon = True
+        thread.start()
 run_batch.short__description = "Run selected batch jobs"
 
 class BatchAdmin(admin.ModelAdmin):

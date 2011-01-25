@@ -1,0 +1,16 @@
+{% load portal_misc %}
+{% ifnotequal style_group "groups-dumb" %}
+    {% if device|device_has_parent:"generic_web_browser" or device.pointing_method == "touchscreen" and use_javascript and device.device_os != "Symbian" and device.device_os != "Symbian OS" %}
+        <div class="slippy-map">
+            <iframe width="{{ map.width|add:"-60" }}" height="{{ map.height }}" frameborder="0" class="map"
+                    src="{% url maps:touchmaplite %}?{{ map.slippy_map_parameters }}"></iframe>
+        </div>
+    {% else %}
+        <div class="backgrounded-image map" style="background-image:url('{% url maps:osm-generated_map map.static_map_hash %}'); height:{{ map.height }}px">
+            {% include "maps/map_elements.html" %}
+        </div>
+    {% endif %}
+{% else %}
+    <img src="{% url maps:osm-generated_map map.static_map_hash %}" alt="Map" class="map"><br />
+    {% include "maps/map_elements.html" %}
+{% endifnotequal %}

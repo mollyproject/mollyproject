@@ -27,7 +27,7 @@ urlpatterns = patterns('',
     (r'^news/', applications.news.urls),
     (r'^external-media/', applications.external_media.urls),
     (r'^device-detection/', applications.device_detection.urls),
-    (r'^osm/', applications.osm.urls),
+    (r'^maps/', applications.maps.urls),
     (r'^desktop/', applications.desktop.urls),
     (r'^url-shortener/', applications.url_shortener.urls),
     (r'^feature-suggestions/', applications.feature_vote.urls),
@@ -54,6 +54,7 @@ urlpatterns += patterns('django.views.generic.simple',
     (r'^maps/[a-z]\-+:(?P<id>\d{8})/(?P<remain>.*)$', 'redirect_to', {'url': '/places/oxpoints:%(id)s/%(remain)s'}),
     (r'^maps/[a-z]\-+:(?P<id>[NW]\d{8})/(?P<remain>.*)$', 'redirect_to', {'url': '/places/osm:%(id)s/%(remain)s'}),
     (r'^maps/(?P<remain>.*)$', 'redirect_to', {'url': '/places/%(remain)s'}),
+    (r'^osm/(?P<remain>.*)$', 'redirect_to', {'url': '/maps/osm/%(remain)s'}),
 )
 
 

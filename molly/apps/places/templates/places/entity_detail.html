@@ -34,14 +34,7 @@
  <div class="section-content no-round-bottom">
     {% if entity.location %}
 	
-	{% ifnotequal style_group "groups-dumb" %}
-    	<div class="backgrounded-image" style="background-image:url('{% map_url entity.location %}'); height:{{ map_height }}px">
-    		{% include "places/map_elements.html" %}
-    	</div>
-    {% else %}
-        <img src="{% map_url entity.location %}" alt="Map"><br />
-        {% include "places/map_elements.html" %}
-    {% endifnotequal %}
+	{% render_location_map entity.location %}
  </div>
 	<ul class="link-list">
 	    <li class="round-bottom"><a href="{% url places:entity-nearby-list entity.identifier_scheme entity.identifier_value %}" rel="nofollow">Find things near here</a></li>

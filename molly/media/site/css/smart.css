@@ -274,6 +274,7 @@ div.osm-license {
     padding: 2px;
     background: #ffffff;
     background-opacity: 0.5;
+    color: #000000;
 }
 /* End Webcams/Maps */
 
@@ -849,12 +850,12 @@ small {
 
 #favourite, .favourite
 {
-    background-image: url('../../../favourites/png/star-grey.png') !important;
+    background-image: url('../../favourites/png/star-grey.png') !important;
 }
 
 #unfavourite, .unfavourite
 {
-    background-image: url('../../../favourites/png/star.png') !important;
+    background-image: url('../../favourites/png/star.png') !important;
 }
 
 .with-favourite
@@ -905,7 +906,7 @@ small {
 .location-automatic-list li
 {
     padding-left: 35px !important;
-    background-image: url('../../../site/png/location-white.png');
+    background-image: url('../../site/png/location-white.png');
     background-repeat: no-repeat;
     background-position: 5px center;
 }
@@ -985,8 +986,19 @@ small {
     width: 25px !important;
     cursor: pointer !important;
     text-indent:-999em; /* Hack to not show the text on a button when we're showing the image */
-    background-image: url('../../../site/png/location.png') !important;
+    background-image: url('../../site/png/location.png') !important;
     float: right;
     background-position: center center;
     margin-right: 5px;
+}
+
+.slippy-map
+{
+    text-align: center;
+    padding-right: 60px;
+}
+
+.map
+{
+    border: 1px solid #000000;
 }

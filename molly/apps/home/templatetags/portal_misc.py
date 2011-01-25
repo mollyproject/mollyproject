@@ -7,7 +7,6 @@ from django.utils.safestring import mark_safe
 from molly.apps.places.models import Entity
 from molly.wurfl import device_parents
 from molly.apps.places.utils import get_entity
-from molly.utils.ox_dates import format_today, ox_date_dict
 
 register = template.Library()
 
@@ -115,11 +114,3 @@ def header_width(value):
 @register.filter('get_entity')
 def get_entity_filter(value):
     return get_entity(*value)
-
-@register.simple_tag
-def oxford_date_today():
-    return format_today()
-
-@register.filter('oxdate')
-def oxdate(value, arg):
-    return arg % ox_date_dict(value)

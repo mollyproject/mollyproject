@@ -48,11 +48,14 @@ def device_specific_media(request):
         style_group = 'smart'
 
     # Opera Mini/Mobile Browsers
-    elif browser.brand_name == 'Opera':
+    elif browser.brand_name == 'Opera' or browser.mobile_browser == 'Opera':
         style_group = 'smart'
+        # Opera Mini 4 doesn't properly support JS
+        if browser.mobile_browser == 'Opera Mini' and parse_version(browser.mobile_browser_version) <= (5,):
+            use_javascript = False
 
     # Windows Mobile 7
-    elif (device.device_os, device.device_os_version) == (u'Windows Mobile OS', u'7'):
+    elif (device.device_os, parse_version(device.device_os_version)) == (u'Windows Mobile OS', (7,)):
         style_group = 'smart'
 
     # Desktop browsers

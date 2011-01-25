@@ -11,7 +11,10 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import sys, os
+import sys
+import os
+import os.path
+from datetime import datetime
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -38,14 +41,12 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'molly'
-copyright = u'2010, Molly Project and contributors'
+copyright = u'%d, Molly Project and contributors' % datetime.now().year
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
-import sys
-import os.path
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 from molly import __version__ as molly_version
 

@@ -1,7 +1,9 @@
 {% extends "home/base.html" %}
+{% load molly_utils %}
 {% load molly_apps_weather %}
-{% load portal_misc %}{% load maps %}{% load molly_apps_search %}
+{% load portal_misc %}{% load molly_apps_search %}
 
+{% block site_title %}{% endblock %}
 {% block extrahead %}{% include "geolocation/js.html" %}{% endblock extrahead %}
 
 {% block title %}Mobile Oxford{% endblock %}
@@ -10,9 +12,13 @@
 <div id="index-header">
     <div id="index-title">
 		{% ifequal style_group "groups-dumb" %}
-		    <img src="{{ MEDIA_URL }}site/png/new/logos/logo-90x55.jpg" alt="Mobile Oxford">
+		    <img width="90" height="55" src="{{ MEDIA_URL }}site/png/new/logos/logo-90x55.jpg" alt="Mobile Oxford">
 		{% else %}
-            <img src="{{ MEDIA_URL }}site/png/new/logos/logo-128x51-TRMargin-5px.png" alt="Mobile Oxford"/>
+		{% if is_christmas %}
+            <img width="128" height="51" src="{{ MEDIA_URL }}site/png/new/logos/logo-128x51-TRMargin-5px-christmas.png" alt="Mobile Oxford"/>
+		{% else %}
+	    <img width="128" height="51" src="{{ MEDIA_URL }}site/png/new/logos/logo-128x51-TRMargin-5px.png" alt="Mobile Oxford"/>
+		{% endif %}
         {% endifequal %}
     </div>
     <div id="index-search">
@@ -23,20 +29,28 @@
 		{% ifequal style_group "groups-dumb" %}
 		    <input type="button" value="Search" />
 		{% else %}
-			<input type="image" src="{{ MEDIA_URL }}png/new/buttons/search-button.png" title="Search" alt="Search"/>
+			<input type="image" src="{{ MEDIA_URL }}site/png/new/buttons/search-button.png" title="Search" alt="Search"/>
 		{% endifequal %}
 		 </p>
 		 </form>
 	</div>
-</div>	
+</div>
 {% endblock %}
 
-
 {% block content %}
+    {% if messages %}
+    <div class="section">
+      <ul class="content-list">
+        {% for message in messages %}
+	  <li>{{ message|sanitize_html }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
     <div class="bubble">
 	<div class="center">
     	<ol class="icon-menu">
-	      {% for application in applications %}{% if application.display_to_user %}
+		  {% for application in applications %}{% if application.display_to_user %}
 	          <li id="menu-{{ application.local_name }}">
 	              <a {% if application.accesskey %} accesskey="{{ application.accesskey }}"{% endif %} href="{{ application.url }}">{{ application.title }}</a>
 	          </li>
@@ -46,23 +60,22 @@
         {# <div class="clearhidden"> </div> #}
     </div>
     </div>
-    
+
     <div class="bubble pad-5">
         <table style="width:100%; text-align:center;">
             <tbody>
                 <tr>
-                    <td style="width:50%">
-      {% oxford_date_today %}
-                    </td>
-                    <td style="width:50%;">
-                        
-      {% weather %}<big>Oxford: {{ weather.temperature }}&deg;C</big><img src="{{ MEDIA_URL }}weather/png/{{ weather.icon }}_small.png" alt="{{ weather.get_outlook_display|capfirst }}" height="30" width="30" style="vertical-align:middle;"/>
-      
+                    <td style="width:50%">{% block date %}
+      {% now "l, jS F, Y" %}
+                    {% endblock %}</td>
+                    <td style="width:50%; font-size:1.2em">
+
+      {% weather %}{{ weather.name }}: {{ weather.temperature }}&deg;C<img src="{{ MEDIA_URL }}weather/png/{{ weather.icon }}_small.png" alt="{{ weather.get_outlook_display|capfirst }}" height="30" width="30" style="vertical-align:middle;"/>
+
                     </td>
                 </tr>
-                <tr colspan="2">
-
-                </tr>    
+                <tr><td colspan="2"><hr/></td></tr>
+	{% block below-weather %}{% endblock %}
             </tbody>
         </table>
     </div>
@@ -72,19 +85,18 @@
       <div class="header">
 	<h2>Favourites</h2>
       </div>
-      <ul class="content-list">
+      <ul class="link-list">
       {% for favourite in favourites %}
 	<li><a href="{{ favourite.url }}">{{ favourite.metadata.title }}</a></li>
       {% endfor %}
-      </ul>
-      <ul class="link-list">
-	<li><a href="{% url favourites:index %}">Manage Favourites</a></li>
+	<li><a href="{% url favourites:index %}"><strong>Manage Favourites</strong></a></li>
       </ul>
     </div>
     {% endif %}
-    
-    <ul class="stand-alone">
-            <li class="round-top"><a href="{% url home:static_about %}">About this site</a></li>
+
+    <ul class="stand-alone link-list round-top">
+            <li class="round-top"><a href="{% url feature_vote:index %}">Suggest a feature</a></li>
+			<li><a href="{% url home:static_about %}">About this site</a></li>
 			{% if has_user_messages %}
             <li><a href="{% url home:messages %}">Read messages from the developers</a></li>
 			{% endif %}
@@ -96,7 +108,6 @@
             Produced by Oxford University Computing Services <br /><a href="http://www.oucs.ox.ac.uk">www.oucs.ox.ac.uk</a>
         {% else %}
     <div class="content" style="margin:8px;">
-    
         <img width="140" height="46" src="{{ MEDIA_URL }}site/png/oucs-logo-small.png" alt="Oxford University Computing Services"/>
         <img width="141" height="46" src="{{ MEDIA_URL }}site/gif/brandmark.gif" alt="University of Oxford" />
     </div>
@@ -113,7 +124,6 @@
 			</div>
         </div>
         </div>
-
         <hr/>
         <div class="section">
         <div class="header">
@@ -131,7 +141,6 @@
 			</div>
         </div>
         </div>
-    
         <hr/>
         <div class="section">
         <div class="header">
@@ -146,7 +155,7 @@
 		    </div>
         </div>
         </div>
-    
+
         <div class="section">
         <div class="header">
             <h2>Preferences</h2>
@@ -156,7 +165,5 @@
         </div>
         </div>        
 {% endif %}
-
-
 
 {% endblock %}
