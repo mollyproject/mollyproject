@@ -31,7 +31,10 @@ class ACISLiveMapsProvider(BaseMapsProvider):
                 lambda entity: entity.identifiers.get('atco')[:3] + entity.identifiers.get('atco')[4:],
                 ), # South Yorkshire
         # 440: Wessex
-        # 450: West Yorkshire
+        '450': ('http://wymetro.acislive.com/',
+                lambda entity: entity.identifiers.get('plate'),
+                lambda entity: entity.identifiers.get('plate'),
+               ), #West Yorkshire
         # 571: Cardiff
     }
     
