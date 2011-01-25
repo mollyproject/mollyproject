@@ -120,6 +120,7 @@ class NaptanContentHandler(ContentHandler):
         if locality != None:
             title += ', ' + locality
         
+        print title
         entity.title = title
         entity.primary_type = entity_type
 

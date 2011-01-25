@@ -1,4 +1,5 @@
 import threading, urllib
+from datetime import datetime
 from lxml import etree
 import re
 
@@ -122,20 +123,30 @@ class ACISLiveMapsProvider(BaseMapsProvider):
         for row in rows:
             service, destination, proximity = [row[i].text.encode('utf8').replace('\xc2\xa0', '') for i in range(3)]
 
-            if not service in services:
-                services[service] = (destination, proximity, [])
+            # Handle scheduled departures (non-realtime)
+            if ':' in proximity:
+                now = datetime.now()
+                hour, minute = map(int, proximity.split(':'))
+                diff = (datetime(now.year, now.month, now.day, hour, minute) - datetime.now()).seconds / 60
+            elif proximity == 'Due':
+                diff = 0
             else:
-                services[service][2].append(proximity)
+                diff = int(proximity.split(' ')[0])
+
+            if not service in services:
+                services[service] = (destination, (proximity, diff), [])
+            else:
+                services[service][2].append((proximity, diff))
 
         services = [(s[0], s[1][0], s[1][1], s[1][2]) for s in services.items()]
         services.sort(key= lambda x: ( ' '*(5-len(x[0]) + (1 if x[0][-1].isalpha() else 0)) + x[0] ))
-        services.sort(key= lambda x: 0 if x[2]=='DUE' else int(x[2].split(' ')[0]))
+        services.sort(key= lambda x: x[2][1])
         
         services = [{
             'service': s[0],
             'destination': s[1],
-            'next': s[2],
-            'following': s[3],
+            'next': s[2][0],
+            'following': [f[0] for f in s[3]],
         } for s in services]
         
         entity.metadata['real_time_information'] = {
