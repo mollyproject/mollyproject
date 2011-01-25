@@ -8,6 +8,7 @@
 {# Results Page #}
 {% if search_form.is_valid %}
 <div class="section">
+<div class="header">
   <h2>Results</h2>
 {% if results %}
   	<ol class="search-results">
@@ -28,6 +29,7 @@
 	  </ol>
 	</div>
 </div>
+</div>
 {% else %}
 	<div class="note"><div class="bubble pad-10">Sorry, your search returned no results.</div></div>
 </div>
@@ -35,17 +37,19 @@
 
 	{# Search Elsewhere #}
 	<div class="section">
+        <div class="header">
 	  <h2>Search elsewhere <small>for<em> {{ search_form.data.query }}</em></small></h2> 
-<h3>Contact search</h3>
+<h2>Contact search</h2>
 	  <ul class="link-list">
 	    <li><a href="{% url contact:result_list %}?query={{ search_form.data.query }}&amp;method=email">E-mail</a></li>
 	    <li><a href="{% url contact:result_list %}?query={{ search_form.data.query }}&amp;method=phone">Phone</a></li>
 	 </ul>
-<h3>Library search</h3>
+<h2>Library search</h2>
 	 <ul class="link-list">
 	    <li><a href="{% url z3950:search %}?title={{ search_form.data.query }}">Title</a></li>
 	    <li class="round-bottom"><a href="{% url z3950:search %}?author={{ search_form.data.query }}">Author</a></li>
 	  </ul>
+        </div>
 	</div>
 	{# End Search Elsewhere #}
 
@@ -54,6 +58,7 @@
 
 {# Universal Search Form #}
 <div class="section">
+<div class="header">
 	<div class="form">
   <form method="get" action="">
     <h2>
@@ -65,6 +70,7 @@
 	  <p><input type="submit" value="Go!"/></p>
   </form>
 	</div>
+</div>
 </div>
 {# End Universal Search Form #}
 

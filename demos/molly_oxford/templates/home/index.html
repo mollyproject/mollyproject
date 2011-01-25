@@ -126,13 +126,16 @@
 {% if user.is_superuser %}
         <hr/>
         <div class="section">
+        <div class="header">
             <h2>Session</h2>
 			<div class="bubble pad-10">
             <p>{{ session }}</p>
 			</div>
         </div>
+        </div>
         <hr/>
         <div class="section">
+        <div class="header">
             <h2>Device</h2>
 			<div class="bubble pad-10">
             <p>{{ device.brand_name }} {{ device.model_name }} ({{ device.devid }})</p>
@@ -146,8 +149,10 @@
             <p>{{ browser.devua }}</p>
 			</div>
         </div>
+        </div>
         <hr/>
         <div class="section">
+        <div class="header">
             <h2>Meta</h2>
 			<div class="bubble pad-10">
             <dl>
@@ -158,12 +163,15 @@
             </dl>
 		    </div>
         </div>
+        </div>
 
         <div class="section">
+        <div class="header">
             <h2>Preferences</h2>
 			<div class="bubble pad-10">
             <p>{{ preferences }}</p>
 			</div>
+        </div>
         </div>        
 {% endif %}
 

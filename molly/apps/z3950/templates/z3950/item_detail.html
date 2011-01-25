@@ -3,7 +3,9 @@
 {% block content %}
 
 <div class="section">
+<div class="header">
     <h2>{{ item.title }}</h2>
+</div>
     <div class="article"><div class="bubble pad-5">
     <table>
 {% if item.author %}
@@ -60,11 +62,14 @@
 
     </table>
     </div></div>
+
 </div>
 
 {% if libraries %}
 <div class="section">
+<div class="header">
     <h2>Library holdings{% if map_hash %} by proximity{% endif %}</h2>
+</div>
     <div class="note"><div class="bubble pad-10">
         Please note that all libraries have admission and borrowing policies; inclusion in this list does not imply access.{% if map_hash %} Closest results are not necessarily best.{% endif %}
     </div></div> 
@@ -96,13 +101,16 @@
     {% endifequal %}
 {% endfor %}
     </ul>
+
 </div>
 {% endif %}
 
 
 {% if stacks %}
 <div class="section">
+<div class="header">
     <h2>Holdings in stacks</h2>
+</div>
     <ul class="link-list">
 {% for library, books in stacks %}
 {% if library.oxpoints_id %}
@@ -119,6 +127,7 @@
         {% endfor %}
 {% endfor %}
     </ul>
+
 </div>
 {% endif %}
 

@@ -4,17 +4,20 @@
 
 {% if error_message %}
 <div class="section">
+<div class="header">
 <div class="bubble pad-10">
 <p>There was an error with your search:</p>
 <p><strong>{{ error_message }}</strong></p>
-</div></div>
+</div></div></div>
 {% endif %}
 
 {% if search_form %}{% include "z3950/search_form.html" %}{% endif %}
 
 {% if page %}
 <div class="section">
+<div class="header">
 <h2>Result list <small>(unsorted)</small></h2>
+</div>
 {% if removed %}
 <div class="note"><div class="bubble pad-10">
     The following common word{{ removed|length|pluralize:" was,s were" }} not included in your query:
@@ -36,11 +39,12 @@
         Next
     </a>
 {% endif %}
+
 </div>
 
-<ul class="link-list">
+<ul class="link-list no-round-bottom">
 {% for item in page.object_list %}
-<li{% if forloop.last %} class="round-bottom"{% endif %}>
+<li{% if forloop.last %} class="no-round-bottom"{% endif %}>
     <a href="{% url z3950:item-detail item.control_number %}">
         {{ item  }}{% if item.author %}
         <br/><small><strong>Author:</strong> {{ item.author }}</small>{% endif %}
@@ -66,7 +70,6 @@
 {% endif %}
 </div>
 </div>
-
 {% endif %}
 
 {% endblock %}
