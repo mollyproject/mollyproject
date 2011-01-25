@@ -2,11 +2,13 @@
 
 <div class="section">
 <div class="header">
-  <div class="form">
-  <form method="get" action="{% url contact:result_list %}">
     <h2>
       <label for="id_query">Search</label>
     </h2>
+</div>
+  <div class="form">
+  <form method="get" action="{% url contact:result_list %}">
+
     <p>
       {{ form.query }}
     </p>
@@ -17,7 +19,7 @@
     </p>
   </form>
   </div>
-</div>
+
 </div>
 
 

@@ -10,6 +10,7 @@
 <div class="section">
 <div class="header">
 	<h2>Oxfordshire <small>- RAF Benson at {{ observation.observed_date|date:"H:i" }}</small></h2>
+</div>
 	<div class="note">
 		<div class="weather-icon">
 	    <img src="{{ MEDIA_URL }}weather/png/{{ observation.icon }}.png" alt="{{ observation.get_outlook_display|capfirst }}"/><br/>
@@ -22,7 +23,7 @@
           {{ observation.get_visibility_display|capfirst }}
 		</div>
 	</div>
-</div>
+
 </div>
 	
 <div class="section">
