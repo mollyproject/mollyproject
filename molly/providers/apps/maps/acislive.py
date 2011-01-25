@@ -15,6 +15,13 @@ class ACISLiveMapsProvider(BaseMapsProvider):
         # of the base URL for the ACIS Live instance, a function to determine
         # the identifier to use for the live bus times board, and a function to
         # determine the identifier to use for the bus stop messages board
+        # 010: Bristol
+        # 040: Buckinghamshire
+        # 050: Cambridgeshire
+        # 160: Gloucestershire
+        # 240: Kent
+        # 250: Lancashire
+        # 
         '340': ('http://www.oxontime.com/',
                 lambda entity: entity.identifiers.get('naptan'),
                 lambda entity: entity.identifiers.get('atco'),
@@ -23,6 +30,9 @@ class ACISLiveMapsProvider(BaseMapsProvider):
                 lambda entity: entity.identifiers.get('atco')[:3] + entity.identifiers.get('atco')[4:],
                 lambda entity: entity.identifiers.get('atco')[:3] + entity.identifiers.get('atco')[4:],
                 ), # South Yorkshire
+        # 440: Wessex
+        # 450: West Yorkshire
+        # 571: Cardiff
     }
     
     def get_acislive_base(self, entity):
@@ -78,12 +88,9 @@ class ACISLiveMapsProvider(BaseMapsProvider):
 
         try:
             realtime_url = self.get_realtime_url(entity)
-            if realtime_url is None:
-                # If we don't know a board URL for this stop
-                raise IOError
             xml = etree.parse(urllib.urlopen(realtime_url),
                               parser = etree.HTMLParser())
-        except (TypeError, IOError):
+        except (TypeError, IOError, NoACISLiveInstanceException):
             rows = []
             pip_info = None
         else:
