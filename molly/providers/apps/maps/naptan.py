@@ -16,6 +16,7 @@ class NaptanContentHandler(ContentHandler):
     meta_names = {
         ('AtcoCode',): 'atco-code',
         ('NaptanCode',): 'naptan-code',
+        ('PlateCode',): 'plate-code',
         ('Descriptor','CommonName'): 'common-name',
         ('Descriptor','Landmark'): 'landmark',
         ('Descriptor','Street'): 'street',
@@ -124,6 +125,8 @@ class NaptanContentHandler(ContentHandler):
         if 'naptan-code' in meta:
             meta['naptan-code'] = ''.join(map(self.naptan_dial, meta['naptan-code']))
             identifiers['naptan'] = meta['naptan-code']
+        if 'plate-code' in meta:
+            identifiers['plate'] = meta['plate-code']
         if ind and re.match('Stop [A-Z]\d\d?', ind):
             identifiers['stop'] = ind[5:]
 
