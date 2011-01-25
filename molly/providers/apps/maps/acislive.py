@@ -93,9 +93,11 @@ class ACISLiveMapsProvider(BaseMapsProvider):
             realtime_url = self.get_realtime_url(entity)
             xml = etree.parse(urllib.urlopen(realtime_url),
                               parser = etree.HTMLParser())
-        except (TypeError, IOError, NoACISLiveInstanceException):
+        except (TypeError, IOError):
             rows = []
             pip_info = None
+        except NoACISLiveInstanceException:
+            return
         else:
             try:
                 cells = xml.find('.//table').findall('td')
