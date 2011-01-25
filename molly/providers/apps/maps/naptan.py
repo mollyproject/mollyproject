@@ -28,6 +28,10 @@ class NaptanContentHandler(ContentHandler):
 
     @staticmethod
     def naptan_dial(c):
+        """
+        Convert a alphabetical NaPTAN code in the database to the numerical code
+        used on bus stops
+        """
         return unicode(min(9, (ord(c)-91)//3))
 
     def __init__(self, entity_types, source):

@@ -1,0 +1,140 @@
+import threading, urllib
+from lxml import etree
+import re
+
+from molly.apps.places.providers import BaseMapsProvider
+
+class ACISLiveMapsProvider(BaseMapsProvider):
+    """
+    Populates bus stop entities with real time departure metadata using the ACIS
+    Live interface
+    """
+    
+    ACISLIVE_URLS = {
+        # The key is the atco regional prefix - the value is a tuple consisting
+        # of the base URL for the ACIS Live instance, a function to determine
+        # the identifier to use for the live bus times board, and a function to
+        # determine the identifier to use for the bus stop messages board
+        '340': ('http://www.oxontime.com/',
+                lambda entity: entity.identifiers.get('naptan'),
+                lambda entity: entity.identifiers.get('atco'),
+               ), # Oxfordshire
+        '370': ('http://sypte.acislive.com/',
+                lambda entity: entity.identifiers.get('atco')[:3] + entity.identifiers.get('atco')[4:],
+                lambda entity: entity.identifiers.get('atco')[:3] + entity.identifiers.get('atco')[4:],
+                ), # South Yorkshire
+    }
+    
+    def get_acislive_base(self, entity):
+        """
+        Gets the ACIS live information for this entity
+        
+        @return: A tuple of base URL, identifier for realtime info, identifier
+                 for messages
+        """
+        if entity.identifiers['atco'][:3] in self.ACISLIVE_URLS:
+            base, departures, messages = self.ACISLIVE_URLS[entity.identifiers['atco'][:3]]
+            return base, departures(entity), messages(entity)
+        else:
+            raise NoACISLiveInstanceException
+    
+    def get_realtime_url(self, entity):
+        """
+        Gets the appropriate URL for the realtime departure board for that
+        entity.
+        
+        @return: A string of the URL for that stop departure board, or None if
+                 there is no known departure board for that stop
+        """
+        base, departures, messages = self.get_acislive_base(entity)
+        return base + 'pip/stop.asp?naptan=%s&textonly=1' % departures
+    
+    def get_messages_url(self, entity):
+        """
+        Gets the URL for the bus stop messages associated for that entity
+        
+        @return: A string of the URL for that stop departure board, or None if
+                 there is no known messages URL for that stop
+        """
+        base, departures, messages = self.get_acislive_base(entity)
+        return base + 'pip/stop_simulator_message.asp?NaPTAN=%s' % messages
+        
+    
+    def augment_metadata(self, entities):
+        threads = []
+        for entity in entities:
+            # Ignore non-bus stop entities
+            if entity.identifiers.get('atco') is None:
+                continue
+                
+            thread = threading.Thread(target=self.get_times, args=[entity])
+            thread.start()
+            threads.append(thread)
+        
+        for thread in threads:
+            thread.join()
+    
+    def get_times(self, entity):
+
+        try:
+            realtime_url = self.get_realtime_url(entity)
+            if realtime_url is None:
+                # If we don't know a board URL for this stop
+                raise IOError
+            xml = etree.parse(urllib.urlopen(realtime_url),
+                              parser = etree.HTMLParser())
+        except (TypeError, IOError):
+            rows = []
+            pip_info = None
+        else:
+            try:
+                cells = xml.find('.//table').findall('td')
+                rows = [cells[i:i+4] for i in range(0, len(cells), 4)]
+            except AttributeError:
+                rows = []
+            
+            # Get the messages associated with that bus stop
+            try:
+                messages_url = self.get_messages_url(entity)
+                if messages_url != None:
+                    messages_page = urllib.urlopen(messages_url).read()
+                    pip_info = re.findall(r'msgs\[\d+\] = "(?P<message>[^"]+)"',
+                                          messages_page)
+                    pip_info = filter(lambda pip: pip != '&nbsp;', pip_info)
+                else:
+                    pip_info = None
+            except:
+                pip_info = None
+
+        services = {}
+        for row in rows:
+            service, destination, proximity = [row[i].text.encode('utf8').replace('\xc2\xa0', '') for i in range(3)]
+
+            if not service in services:
+                services[service] = (destination, proximity, [])
+            else:
+                services[service][2].append(proximity)
+
+        services = [(s[0], s[1][0], s[1][1], s[1][2]) for s in services.items()]
+        services.sort(key= lambda x: ( ' '*(5-len(x[0]) + (1 if x[0][-1].isalpha() else 0)) + x[0] ))
+        services.sort(key= lambda x: 0 if x[2]=='DUE' else int(x[2].split(' ')[0]))
+        
+        services = [{
+            'service': s[0],
+            'destination': s[1],
+            'next': s[2],
+            'following': s[3],
+        } for s in services]
+        
+        entity.metadata['real_time_information'] = {
+            'services': services,
+            'pip_info': pip_info,
+        }
+        entity.metadata['meta_refresh'] = 60
+
+class NoACISLiveInstanceException(Exception):
+    """
+    An exception to indicate that there is no ACIS Live instance to determine
+    real-time bus information for the passed in entity
+    """
+    pass

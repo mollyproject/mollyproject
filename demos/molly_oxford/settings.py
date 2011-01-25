@@ -126,7 +126,7 @@ APPLICATIONS = [
                 codepoint_path = CACHE_DIR + '/codepo_gb.zip',
                 import_areas = ('OX',),
             ),
-            'molly.providers.apps.maps.OxontimeMapsProvider',
+            'molly.providers.apps.maps.ACISLiveMapsProvider',
             'molly.providers.apps.maps.OxpointsMapsProvider',
             'molly.providers.apps.maps.OSMMapsProvider',
             'molly_oxford.providers.apps.places.OxfordParkAndRidePlacesProvider',
