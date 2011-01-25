@@ -18,9 +18,9 @@ class NaptanContentHandler(ContentHandler):
         ('NaptanCode',): 'naptan-code',
         ('PlateCode',): 'plate-code',
         ('Descriptor','CommonName'): 'common-name',
-        ('Descriptor','Landmark'): 'landmark',
-        ('Descriptor','Street'): 'street',
         ('Descriptor','Indicator'): 'indicator',
+        ('Descriptor','Street'): 'street',
+        ('Place','NptgLocalityRef'): 'locality-ref',
         ('Place','Location','Translation','Longitude'): 'longitude',
         ('Place','Location','Translation','Latitude'): 'latitude',
         ('AdministrativeAreaRef',): 'area',
@@ -35,10 +35,11 @@ class NaptanContentHandler(ContentHandler):
         """
         return unicode(min(9, (ord(c)-91)//3))
 
-    def __init__(self, entity_types, source):
+    def __init__(self, entity_types, source, nptg_localities = None):
         self.name_stack = []
         self.entity_types, self.source = entity_types, source
         self.entities = set()
+        self.nptg_localities = {} if nptg_localities is None else nptg_localities
 
     def startElement(self, name, attrs):
         self.name_stack.append(name)
@@ -71,45 +72,54 @@ class NaptanContentHandler(ContentHandler):
             pass
 
     def add_stop(self, meta, entity_type, source):
+        
+        # See if we're updating an existing object, or creating a new one
         try:
-            entity = Entity.objects.get(source=source, _identifiers__scheme='atco', _identifiers__value=meta['atco-code'])
+            entity = Entity.objects.get(source=source,
+                                        _identifiers__scheme='atco',
+                                        _identifiers__value=meta['atco-code'])
         except Entity.DoesNotExist:
             entity = Entity(source=source)
         except Entity.MultipleObjectsReturned:
-            Entity.objects.filter(source=source, _identifiers__scheme='atco', _identifiers__value=meta['atco-code']).delete()
+            # Handle clashes
+            Entity.objects.filter(source=source,
+                                 _identifiers__scheme='atco',
+                                 _identifiers__value=meta['atco-code']).delete()
             entity = Entity(source=source)
-
-        cnm, lmk, ind, str = [meta.get(k) for k in ['common-name', 'landmark', 'indicator', 'street']]
-
-        if (cnm or '').endswith(' DEL') or (ind or '').lower() == 'not in use':
+        
+        common_name, indicator, locality, street = [meta.get(k) for k in
+                    ('common-name', 'indicator', 'locality-ref', 'street')]
+        
+        if (common_name or '').endswith(' DEL') or \
+          (indicator or '').lower() == 'not in use':
+            # In the NaPTAN list, but indicates it's an unused stop
             return
-
-        if lmk and ind and ind.endswith(lmk) and len(ind) > len(lmk):
-            ind = ind[:-len(lmk)]
-
-        ind = {
-            'opp': 'Opposite', 'opposite': 'Opposite', 'adj': 'Adjacent to',
-            'outside': 'Outside', 'o/s': 'Outside', 'nr': 'Near', 'inside': 'Inside',
-        }.get(ind, ind)
-
-        if meta['stop-type'] == 'RSE':
-            title = cnm
-        elif (ind or '').lower() == 'corner':
-            title = "Corner of %s and %s" % (str, lmk)
-        elif cnm == str:
-            if ind in ('Opposite','Adjacent to','Outside','Near'):
-                title = "%s %s" % (ind, cnm)
-            else:
-                title = "%s, %s" % (ind, cnm)
-        elif ind == lmk:
-            title = "%s, %s" % (lmk, str)
-        elif lmk is None:
-            title = "%s on %s" % (ind, str)
-        elif lmk != str:
-            title = "%s %s, on %s" % (ind, lmk, str)
-        else:
-            title = "%s %s, %s" % (ind, lmk, cnm)
-
+        
+        # Convert indicator to a friendlier format
+        indicator = {
+            'opp': 'Opposite',
+            'opposite': 'Opposite',
+            'adj': 'Adjacent',
+            'outside': 'Outside',
+            'o/s': 'Outside',
+            'nr': 'Near',
+            'inside': 'Inside',
+        }.get(indicator, indicator)
+        
+        title = ''
+        
+        if indicator != None:
+            title += indicator + ' '
+        
+        title += common_name
+        
+        if street != None and not common_name.startswith(street):
+            title += ', ' + street
+        
+        locality = self.nptg_localities.get(locality)
+        if locality != None:
+            title += ', ' + locality
+        
         entity.title = title
         entity.primary_type = entity_type
 
@@ -127,8 +137,8 @@ class NaptanContentHandler(ContentHandler):
             identifiers['naptan'] = meta['naptan-code']
         if 'plate-code' in meta:
             identifiers['plate'] = meta['plate-code']
-        if ind and re.match('Stop [A-Z]\d\d?', ind):
-            identifiers['stop'] = ind[5:]
+        if indicator != None and re.match('Stop [A-Z]\d\d?', indicator):
+            identifiers['stop'] = indicator[5:]
 
         entity.save(identifiers=identifiers)
         entity.all_types.add(entity_type)
@@ -217,7 +227,20 @@ class NaptanMapsProvider(BaseMapsProvider):
         )
         
         files = {}
-
+        
+        # Get NPTG localities
+        f, filename =  tempfile.mkstemp()
+        ftp.cwd("/V2/NPTG/")
+        ftp.retrbinary('RETR nptgcsv.zip', data_chomper(f))
+        os.close(f)
+        archive = zipfile.ZipFile(filename)
+        if hasattr(archive, 'open'):
+            f = archive.open('Localities.csv')
+        else:
+            f = StringIO(archive.read('Localities.csv'))
+        localities = self._get_nptg(f)
+        os.unlink(filename)
+        
         # Create a mapping from ATCO codes to CRS codes.
         f, filename =  tempfile.mkstemp()
         ftp.cwd("/V2/010/")
@@ -242,12 +265,13 @@ class NaptanMapsProvider(BaseMapsProvider):
                 f = archive.open('NaPTAN%d.xml' % int(area))
             else:
                 f = StringIO(archive.read('NaPTAN%d.xml' % int(area)))
-            self._import_from_pipe(f)
+            self._import_from_pipe(f, localities)
             archive.close()
             os.unlink(filename)
 
     def _import_from_http(self):
         # TODO Pull data from RailReferences.csv pulled over HTTP
+        # TODO: Same with NptgLocalities
         
         f, filename = tempfile.mkstemp()
         os.close(f)
@@ -261,9 +285,9 @@ class NaptanMapsProvider(BaseMapsProvider):
         archive.close()
         os.unlink(filename)
 
-    def _import_from_pipe(self, pipe_r):
+    def _import_from_pipe(self, pipe_r, localities):
         parser = make_parser()
-        parser.setContentHandler(NaptanContentHandler(self._entity_types, self._source))
+        parser.setContentHandler(NaptanContentHandler(self._entity_types, self._source, localities))
         parser.parse(pipe_r)
 
     def _import_stations(self, f, source, entity_type):
@@ -299,6 +323,14 @@ class NaptanMapsProvider(BaseMapsProvider):
             })
             entity.all_types.add(entity_type)
             entity.update_all_types_completion()
+
+    def _get_nptg(self, f):
+        localities = {}
+        csvfile = csv.reader(f)
+        csvfile.next()
+        for line in csvfile:
+            localities[line[0]] = line[1]
+        return localities
 
     def _get_entity_types(self):
 
