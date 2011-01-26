@@ -224,7 +224,6 @@ class NearbyDetailView(LocationRequiredView, ZoomableView):
 
 class EntityDetailView(ZoomableView, FavouritableView):
     default_zoom = 16
-    OXPOINTS_URL = 'http://m.ox.ac.uk/oxpoints/id/%s.json'
 
     def get_metadata(self, request, scheme, value):
         entity = get_entity(scheme, value)
@@ -641,16 +640,6 @@ def entity_favourite(request, type_slug, id):
         return HttpResponseRedirect(request.POST['return_url'])
     else:
         return HttpResponseRedirect(entity.get_absolute_url())
-
-
-def without_location(request):
-    entities = Entity.objects.filter(entity_type__source='oxpoints', location__isnull=True)
-
-    data = (
-        '%d,"%s","%s"\n' % (e.oxpoints_id, e.title.replace('"', r'\"'), e.entity_type.slug) for e in entities
-    )
-
-    return HttpResponse(data, mimetype='text/csv')
 
 class APIView(BaseView):
     """
