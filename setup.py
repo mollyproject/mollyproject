@@ -81,7 +81,6 @@ setup(
         "feedparser",
         "simplejson",
         "rdflib",
-        "pytz",
         "python-dateutil",
         "Django",
         "oauth==1.0.1",

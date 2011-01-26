@@ -23,7 +23,7 @@
                 {{ item.title }}<br />
                 <small><em>
                 {% if not item.last_modified_local|this_year %}
-                    {{ item.last_modified_local|date:"j M Y \a\t H:m" }}
+                    {{ item.last_modified_local|date:"j M Y" }}
                 {% else %}
                     {{ item.last_modified_local|date:"j M"}}
                 {% endif %}

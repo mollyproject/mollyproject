@@ -1,7 +1,8 @@
 from datetime import datetime
 
-import urllib, urllib2, pytz, simplejson, urlparse, StringIO
+import urllib, urllib2, simplejson, urlparse, StringIO
 from lxml import etree
+from dateutil.tz import tzutc
 import dateutil.parser
 
 from django.http import Http404, HttpResponse, HttpResponseForbidden
@@ -18,7 +19,7 @@ from molly.utils.http import HttpResponseSeeOther
 from molly.utils.xslt import transform, add_children_to_context
 
 def parse_iso_8601(s):
-    return dateutil.parser.parse(s).replace(tzinfo=pytz.utc)
+    return dateutil.parser.parse(s).replace(tzinfo=tzutc())
 
 
 class SakaiView(BaseView):
@@ -117,7 +118,7 @@ class SignupSiteView(SakaiView):
                 'id': event_et.find('id').text,
                 'permission': dict((p.tag, p.text=='true') for p in event_et.findall('permission/*'))
             }
-            if event['end'] >= datetime.utcnow().replace(tzinfo=pytz.utc):
+            if event['end'] >= datetime.utcnow().replace(tzinfo=tzutc()):
                 events.append(event)     
         return {
             'site': site,

@@ -1,5 +1,4 @@
-from pytz import utc, timezone
-
+from dateutil.tz import tzutc, tzlocal
 from lxml import etree
 
 from django.core.urlresolvers import reverse
@@ -127,7 +126,7 @@ class Item(models.Model):
     @property
     def last_modified_local(self):
         try:
-            return utc.localize(self.last_modified).astimezone(timezone('Europe/London'))
+            return self.last_modified.replace(tzinfo=tzutc()).astimezone(tzlocal())
         except Exception, e:
             return repr(e)
     

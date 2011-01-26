@@ -69,7 +69,6 @@ packages manually (from PyPI unless otherwise listed):
  * feedparser
  * simplejson
  * rdflib
- * pytz
  * python-dateutil
  * Django
  * oauth (version 1.0.1)
