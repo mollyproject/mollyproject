@@ -1,7 +1,8 @@
 from __future__ import division
 
 from itertools import chain
-import simplejson, copy
+import simplejson
+import copy
 
 from suds import WebFault
 
@@ -25,11 +26,12 @@ from molly.apps.places.forms import UpdateOSMForm
 
 
 class IndexView(BaseView):
+
     def get_metadata(self, request):
         return {
             'title': 'places',
-            'additional': 'Find University buildings and units, along with bus stops and local amenities',
-        }
+            'additional': 'Find University buildings and units, along with' \
+                          + ' bus stops and local amenities', }
 
     @BreadcrumbFactory
     def breadcrumb(self, request, context):
@@ -37,8 +39,7 @@ class IndexView(BaseView):
             'places',
             None,
             'Places',
-            lazy_reverse('index')
-        )
+            lazy_reverse('index'))
 
     def initial_context(self, request):
         return {
@@ -48,7 +49,9 @@ class IndexView(BaseView):
     def handle_GET(self, request, context):
         return self.render(request, context, 'places/index')
 
+
 class NearbyListView(LocationRequiredView):
+
     def get_metadata(self, request, entity=None):
         return {
             'title': 'Find things nearby',
@@ -63,7 +66,6 @@ class NearbyListView(LocationRequiredView):
             'Things nearby',
             url = lazy_reverse('nearby-list'),
         )
-
 
     def handle_GET(self, request, context, entity=None):
         point = get_point(request, entity)
@@ -112,6 +114,7 @@ class NearbyListView(LocationRequiredView):
 
 
 class NearbyDetailView(LocationRequiredView, ZoomableView):
+
     def initial_context(self, request, ptypes, entity=None):
         point = get_point(request, entity)
 
@@ -151,13 +154,13 @@ class NearbyDetailView(LocationRequiredView, ZoomableView):
 
         if len(context['entity_types']) == 0:
             return {
-                'exclude_from_search':True,
+                'exclude_from_search': True,
                 'title': 'Things near %s' % entity.title,
             }
 
         if len(context['entity_types']) > 1:
             return {
-                'exclude_from_search':True,
+                'exclude_from_search': True,
                 'title': '%s near%s%s' % (
                     capfirst(context['entity_types'][0].verbose_name_plural),
                     entity and ' ' or '',
@@ -204,14 +207,13 @@ class NearbyDetailView(LocationRequiredView, ZoomableView):
             height = request.map_height,
         )
 
-        entities = [[entities[i] for i in b] for a,b in entity_map.points]
+        entities = [[entities[i] for i in b] for a, b in entity_map.points]
 
         found_entity_types = set()
         for e in chain(*entities):
             e.bearing = e.get_bearing(point)
             found_entity_types |= set(e.all_types.all())
         found_entity_types -= set(entity_types)
-
 
         context.update({
             'entities': entities,
@@ -221,6 +223,7 @@ class NearbyDetailView(LocationRequiredView, ZoomableView):
             'found_entity_types': found_entity_types,
         })
         return self.render(request, context, 'places/nearby_detail')
+
 
 class EntityDetailView(ZoomableView, FavouritableView):
     default_zoom = 16
@@ -249,7 +252,7 @@ class EntityDetailView(ZoomableView, FavouritableView):
                     associations += [{'type': type, 'entities': [get_entity(ns, value) for ns, value in es]} for type, es in associated_entities]
             except (KeyError, Http404):
                 pass
-        
+
         context.update({
             'entity': entity,
             'train_station': entity, # This allows the ldb metadata to be portable
@@ -269,16 +272,16 @@ class EntityDetailView(ZoomableView, FavouritableView):
             'places',
             lazy_parent(parent_view, ptypes=entity.primary_type.slug),
             context['entity'].title,
-            lazy_reverse('entity', args=[scheme,value]),
+            lazy_reverse('entity', args=[scheme, value]),
         )
 
     def handle_GET(self, request, context, scheme, value):
         entity = context['entity']
         if entity.absolute_url != request.path:
             return HttpResponsePermanentRedirect(entity.absolute_url)
-        
+
         for provider in reversed(self.conf.providers):
-            provider.augment_metadata((entity,))
+            provider.augment_metadata((entity, ))
             provider.augment_metadata([e for atypes in context['associations'] for e in atypes['entities']])
 
         return self.render(request, context, 'places/entity_detail')
@@ -289,7 +292,7 @@ class EntityUpdateView(ZoomableView):
 
     def get_metadata(self, request, scheme, value):
         return {
-            'exclude_from_search':True,
+            'exclude_from_search': True,
         }
 
     def initial_context(self, request, scheme, value):
@@ -304,8 +307,7 @@ class EntityUpdateView(ZoomableView):
             'places',
             lazy_parent('entity', scheme=scheme, value=value),
             'Update place',
-            lazy_reverse('entity-update', args=[scheme, value])
-        )
+            lazy_reverse('entity-update', args=[scheme, value]))
 
     def handle_GET(self, request, context, scheme, value):
         entity = context['entity']
@@ -315,7 +317,7 @@ class EntityUpdateView(ZoomableView):
         if request.GET.get('submitted') == 'true':
             return self.render(request, context, 'places/update_osm_done')
 
-        data = dict((k.replace(':','__'), v) for (k,v) in entity.metadata['osm']['tags'].items())
+        data = dict((k.replace(':', '__'), v) for (k, v) in entity.metadata['osm']['tags'].items())
 
         form = UpdateOSMForm(data)
 
@@ -357,6 +359,7 @@ class EntityUpdateView(ZoomableView):
 
 
 class NearbyEntityListView(NearbyListView):
+
     def is_location_required(self, request, scheme, value):
         return False
 
@@ -375,14 +378,15 @@ class NearbyEntityListView(NearbyListView):
             'places',
             lazy_parent('entity', scheme=scheme, value=value),
             'Things near %s' % context['entity'].title,
-            lazy_reverse('entity-nearby-list', args=[scheme, value])
-        )
+            lazy_reverse('entity-nearby-list', args=[scheme, value]))
 
     def handle_GET(self, request, context, scheme, value):
         entity = get_entity(scheme, value)
         return super(NearbyEntityListView, self).handle_GET(request, context, entity)
 
+
 class NearbyEntityDetailView(NearbyDetailView):
+
     def is_location_required(self, request, scheme, value, ptype):
         return False
 
@@ -400,10 +404,8 @@ class NearbyEntityDetailView(NearbyDetailView):
             lazy_parent('entity-nearby-list', scheme=scheme, value=value),
             '%s near %s' % (
                 capfirst(entity_type.verbose_name_plural),
-                context['entity'].title,
-            ),
-            lazy_reverse('places:entity_nearby_detail', args=[scheme, value,ptype])
-        )
+                context['entity'].title, ),
+            lazy_reverse('places:entity_nearby_detail', args=[scheme, value, ptype]))
 
     def get_metadata(self, request, scheme, value, ptype):
         entity = get_entity(type_slug, id)
@@ -413,7 +415,9 @@ class NearbyEntityDetailView(NearbyDetailView):
         entity = get_entity(scheme, value)
         return super(NearbyEntityDetailView, self).handle_GET(request, context, ptype, entity)
 
+
 class CategoryListView(BaseView):
+
     def initial_context(self, request):
         entity_types = EntityType.objects.filter(show_in_category_list=True)
 
@@ -434,7 +438,9 @@ class CategoryListView(BaseView):
     def handle_GET(self, request, context):
         return self.render(request, context, 'places/category_list')
 
+
 class CategoryDetailView(BaseView):
+
     def initial_context(self, request, ptypes):
         entity_types = tuple(get_object_or_404(EntityType, slug=t) for t in ptypes.split(';'))
 
@@ -469,7 +475,7 @@ class CategoryDetailView(BaseView):
 
         if len(context['entity_types']) > 1:
             return {
-                'exclude_from_search':True,
+                'exclude_from_search': True,
                 'title': 'All %s' % context['entity_types'][0].verbose_name_plural,
             }
 
@@ -484,43 +490,43 @@ class CategoryDetailView(BaseView):
     def handle_GET(self, request, context, ptypes):
         return self.render(request, context, 'places/category_detail')
 
+
 class ServiceDetailView(BaseView):
     """
     A view showing details of a particular transport service leaving from a place
     """
-    
+
     @BreadcrumbFactory
     def breadcrumb(self, request, context, scheme, value):
         return Breadcrumb(
             'places',
             lazy_parent('entity', scheme=scheme, value=value),
             context['title'],
-            lazy_reverse('service-detail', args=[scheme, value])
-        )
-    
+            lazy_reverse('service-detail', args=[scheme, value]))
+
     def get_metadata(self, request, scheme, value):
         return {}
 
     def initial_context(self, request, scheme, value):
-        
+
         try:
             service_id = request.GET['id']
         except KeyError:
             raise Http404
-        
+
         context = super(ServiceDetailView, self).initial_context(request)
         entity = get_entity(scheme, value)
-        
+
         # Add live information from the providers
         for provider in reversed(self.conf.providers):
-            provider.augment_metadata((entity,))
-        
+            provider.augment_metadata((entity, ))
+
         # If we have no way of getting further journey details, 404
         if 'service_details' not in entity.metadata:
             raise Http404
-        
+
         stop_entities = []
-        
+
         # Deal with train service data
         if entity.metadata['service_type'] == 'ldb':
             try:
@@ -532,9 +538,9 @@ class ServiceDetailView(BaseView):
                     raise
             if service is None:
                 raise Http404
-            
+
             destinations = [points['callingPoint'][-1]['locationName'] for points in service['subsequentCallingPoints']['callingPointList']]
-            
+
             # Trains can split and join, which makes figuring out the list of
             # calling points a bit difficult. The LiveDepartureBoards documentation
             # details how these should be handled. First, we build a list of all
@@ -548,7 +554,7 @@ class ServiceDetailView(BaseView):
                 'at': service['atd'] if 'atd' in service else '',
             }]
             calling_points += service['subsequentCallingPoints']['callingPointList'][0]['callingPoint']
-            
+
             # Then attach joining services to our thorough route in the correct
             # point, but only if there is a list of previous calling points
             if len(service['previousCallingPoints']):
@@ -556,17 +562,17 @@ class ServiceDetailView(BaseView):
                     for point in calling_points:
                         if points['callingPoint'][-1]['crs'] == point['crs']:
                             point['joining'] = points['callingPoint']
-            
+
             # And do the same with splitting services
             for points in service['subsequentCallingPoints']['callingPointList'][1:]:
                 for point in calling_points:
                     if points['callingPoint'][0]['crs'] == point['crs']:
-                        point['splitting'] = { 'destination': points['callingPoint'][-1]['locationName'], 'list': points['callingPoint'] }
-            
+                        point['splitting'] = {'destination': points['callingPoint'][-1]['locationName'], 'list': points['callingPoint']}
+
             # Now get a list of the entities for the stations (if they exist)
             # to plot on a map
             for point in calling_points:
-                
+
                 if 'joining' in point:
                     for jpoint in point['joining']:
                         point_entity = Entity.objects.filter(_identifiers__scheme='crs', _identifiers__value=str(jpoint['crs']))
@@ -575,14 +581,14 @@ class ServiceDetailView(BaseView):
                             jpoint['entity'] = point_entity
                             stop_entities.append(point_entity)
                             jpoint['stop_num'] = len(stop_entities)
-                
+
                 point_entity = Entity.objects.filter(_identifiers__scheme='crs', _identifiers__value=str(point['crs']))
                 if len(point_entity):
                     point_entity = point_entity[0]
                     point['entity'] = point_entity
                     stop_entities.append(point_entity)
                     point['stop_num'] = len(stop_entities)
-                
+
                 if 'splitting' in point:
                     for spoint in point['splitting']['list']:
                         point_entity = Entity.objects.filter(_identifiers__scheme='crs', _identifiers__value=str(spoint['crs']))
@@ -591,7 +597,7 @@ class ServiceDetailView(BaseView):
                             spoint['entity'] = point_entity
                             stop_entities.append(point_entity)
                             spoint['stop_num'] = len(stop_entities)
-                        
+
             context.update({
                 'entity': entity,
                 'train_service': service,
@@ -610,7 +616,7 @@ class ServiceDetailView(BaseView):
             width = request.map_width,
             height = request.map_height,
         )
-        
+
         context.update({
             'map': map
         })
@@ -737,4 +743,3 @@ class APIView(BaseView):
         }
 
         return self.render(request, out, None)
-

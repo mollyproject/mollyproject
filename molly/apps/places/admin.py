@@ -1,7 +1,6 @@
 from django.contrib.gis import admin
-
-
 from models import Entity, EntityType
+
 
 class EntityAdmin(admin.GeoModelAdmin):
     list_display = ('title', 'absolute_url', 'primary_type')
