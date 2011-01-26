@@ -220,9 +220,7 @@ class Command(BaseCommand):
                 manufacturer, model = model
                 
             sig = (manufacturer, model, operating_system)
-            if sig not in platforms:
-                platforms[sig] = 0, set()
-            count, device_ids = platforms[sig]
+            count, device_ids = platforms.get(sig, (0, set()))
             device_ids.add(id_)
             platforms[sig] = count + row[1], device_ids
 
