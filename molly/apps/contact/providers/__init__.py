@@ -1,5 +1,4 @@
-from forms import GenericContactForm
-
+from molly.apps.contact.forms import GenericContactForm
 
 class BaseContactProvider(object):
 
@@ -26,3 +25,13 @@ class BaseContactProvider(object):
 
     def fetch_result(self, id):
         raise BaseContactProvider.NoSuchResult
+
+try:
+    import ldap
+except ImportError:
+    pass
+else:
+    del ldap
+    from mit import LDAPContactProvider
+
+from oxford import ContactProvider, ScrapingContactProvider
