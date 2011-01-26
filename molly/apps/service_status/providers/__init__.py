@@ -1,2 +1,1 @@
 from rss_module import RSSModuleServiceStatusProvider
-from oxford import OUCSStatusProvider

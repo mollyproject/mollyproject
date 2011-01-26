@@ -33,5 +33,3 @@ except ImportError:
 else:
     del ldap
     from mit import LDAPContactProvider
-
-from oxford import ContactProvider, ScrapingContactProvider
