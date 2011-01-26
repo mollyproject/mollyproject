@@ -20,6 +20,7 @@ Debian packages or their equivalents for your distribution or OS:
  * libxslt-dev
  * libldap2-dev
  * libsasl2-dev
+ * imagemagick
 
 Unfortunately, pip isn't yet in Debian stable, so you'll need to install it
 using easy_install:

@@ -501,7 +501,7 @@ div.section {
     
     -moz-box-shadow: 2px 2px 2px #333; -webkit-box-shadow: 2px 2px 2px #333; box-shadow: 2px 2px 2px #333;
 }
-h2 {
+div.section > h2 {
     text-align:center;
     color:white;
     padding: 5px 0; margin: 0;

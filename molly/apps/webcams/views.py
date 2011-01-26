@@ -8,7 +8,7 @@ from django.http import Http404
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
 
-from molly.apps.external_media.utils import resize_external_image
+from molly.external_media.utils import resize_external_image
 from models import Webcam, WEBCAM_WIDTHS
 
 import datetime

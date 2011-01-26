@@ -6,7 +6,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.gis.db import models
 from django.conf import settings
 
-from molly.apps.external_media.utils import resize_external_image
+from molly.external_media.utils import resize_external_image
 from molly.apps.places.models import Entity
 
 FEED_TYPE_CHOICES = (
@@ -142,9 +142,10 @@ class Item(models.Model):
         html = etree.fromstring('<div>%s</div>' % self.description, parser=etree.HTMLParser())
         for img in html.findall('.//img'):
             eis = resize_external_image(img.attrib['src'], device.max_image_width-40)
-            img.attrib['src'] = eis.get_absolute_url()
-            img.attrib['width'] = '%d' % eis.width
-            img.attrib['height'] = '%d' % eis.height
+            if eis != None:
+                img.attrib['src'] = eis.get_absolute_url()
+                img.attrib['width'] = '%d' % eis.width
+                img.attrib['height'] = '%d' % eis.height
         return etree.tostring(html.find('.//div'), method="html")[5:-6]
     
     def save(self, *args, **kwargs):

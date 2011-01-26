@@ -47,6 +47,7 @@
   <h2>Suggest a feature</h2>
   </div>
   <form method="post" action=".">
+    {% csrf_token %}
     <input type="hidden" name="csrf" value="{{ csrf }}"/>
     <dl>
       <dt>{{ form.user_name.label_tag }}:</dt>

@@ -274,6 +274,9 @@ class ZoomableView(BaseView):
         else:
             zoom = min(max(10, zoom), 18)
         context['zoom'] = zoom
+        context.update({
+            'zoom_controls': True,
+        })
         return context
 
 # FIXME:

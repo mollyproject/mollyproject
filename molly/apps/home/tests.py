@@ -6,12 +6,12 @@ from django.core.urlresolvers import reverse
 
 #from molly.core.utils import OXFORD_EMAIL_RE
 
-from molly import geolocation
+from molly.geolocation.utils import reverse_geocode
 
 class AjaxSetLocationTestCase(unittest.TestCase):
     def setUp(self):
         self.client = Client()
-        self.test_url = reverse('core_ajax_update_location')
+        self.test_url = reverse('geolocation:index')
         
     def testGET(self):
         "GET should return a 405 Method Not Acceptable"
@@ -78,7 +78,7 @@ class CoreTestCase(unittest.TestCase):
         
         location = random.choice(test_locations)
         
-        response = self.client.get('/update_location/', {
+        response = self.client.get('/geolocation/', {
             'location': location
         })
         
@@ -97,15 +97,15 @@ class CoreTestCase(unittest.TestCase):
             'accuracy': option[2],
         }
         
-        response = self.client.post('/update_location/', dict(base_args,
+        response = self.client.post('/geolocation/', dict(base_args,
             no_redirect='true',
         ))
         self.assertEqual(response.status_code, 200)
         
-        response = self.client.post('/update_location/', base_args, follow=True)
+        response = self.client.post('/geolocation/', base_args, follow=True)
         self.assertEqual(response.redirect_chain, [(u'http://testserver/', 303)])
         
-        response = self.client.post('/update_location/', dict(base_args,
+        response = self.client.post('/geolocation/', dict(base_args,
             return_url='http://foo.bar/',
         ), follow=True)
         self.assertEqual(response.redirect_chain, [(u'http://foo.bar/', 303)])
@@ -135,4 +135,4 @@ class GeocodingTestCase(unittest.TestCase):
     def testReverseGeocode(self):
         points = [(51.758504,-1.256055)]
         for point in points:
-            geolocation.reverse_geocode(*point)
+            reverse_geocode(*point)

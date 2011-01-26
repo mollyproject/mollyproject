@@ -47,18 +47,13 @@ if [ -n "$1" ] ; then
     cp -f $DIR/../local/* $1/demos/molly_oxford/
     cd $1/demos/molly_oxford/
     
-    # Update batch jobs
-    if [ -z "$no_cron" ] ; then
-        PYTHONPATH=.. python manage.py create_crontab | python $DIR/merge-cron.py | crontab
-    fi
-    
     # Build Media
     python manage.py build_static --noinput
     python manage.py synccompress
     python manage.py generate_markers
     python manage.py update_wurfl
     
-    # Start server
+    # Sync database
     if [ -n "$first_migrate" ] ; then
         python manage.py syncdb --all
         python manage.py migrate --fake
@@ -66,6 +61,12 @@ if [ -n "$1" ] ; then
         python manage.py syncdb
         python manage.py migrate
     fi
+
+    # Update batch jobs
+    if [ -z "$no_cron" ] ; then
+        PYTHONPATH=.. python manage.py create_crontab | python $DIR/merge-cron.py | crontab
+    fi
+  
     if [ -n "$start_dev_server" ] ; then
         python manage.py runserver
     fi

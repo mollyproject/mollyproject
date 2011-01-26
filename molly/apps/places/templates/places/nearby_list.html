@@ -1,7 +1,8 @@
 {% extends "places/base.html" %}
 
 {% block extrahead %}{{ block.super }}{% if entity %}
-<meta name="robots" content="noindex" />{% endif %}{% endblock %}
+<meta name="robots" content="noindex" />{% endif %}
+{% include "geolocation/js.html" %}{% endblock %}
 
 {% block content %}
 

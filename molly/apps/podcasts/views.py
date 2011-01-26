@@ -10,8 +10,7 @@ from molly.utils.breadcrumbs import *
 
 from molly.wurfl import device_parents
 
-from .models import Podcast, PodcastCategory
-from . import TOP_DOWNLOADS_RSS_URL
+from molly.apps.podcasts.models import Podcast, PodcastCategory
 
 
 class IndexView(BaseView):
@@ -83,7 +82,12 @@ class PodcastDetailView(BaseView):
             
     def get_metadata(self, request, slug=None, podcast=None):
         if not podcast:
-            podcast = get_object_or_404(Podcast, slug=slug)
+            try:
+                podcast = get_object_or_404(Podcast, slug=slug)
+            except Podcast.MultipleObjectsReturned:
+                for podcast in Podcast.objects.filter(slug=slug)[1:]:
+                    podcast.delete()
+                podcast = get_object_or_404(Podcast, slug=slug)
         
         return {
             'title': podcast.title,
@@ -95,7 +99,12 @@ class PodcastDetailView(BaseView):
         
     def initial_context(self, request, slug=None, podcast=None):
         if not podcast:
-            podcast = get_object_or_404(Podcast, slug=slug)
+            try:
+                podcast = get_object_or_404(Podcast, slug=slug)
+            except Podcast.MultipleObjectsReturned:
+                for podcast in Podcast.objects.filter(slug=slug)[1:]:
+                    podcast.delete()
+                podcast = get_object_or_404(Podcast, slug=slug)
         return {
             'podcast': podcast,
             'category': podcast.category,

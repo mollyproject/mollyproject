@@ -1,0 +1,5 @@
+#viewer .copyright,
+#viewer .controls span.mark,
+#viewer .controls span.permaLink {
+	display: none;
+}

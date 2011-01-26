@@ -1,13 +1,11 @@
-import simplejson, urllib
-from simplejson.decoder import JSONDecodeError
 from datetime import datetime
+
 from django import template
 from django.utils.safestring import mark_safe
 
 from molly.apps.places.models import Entity
 from molly.wurfl import device_parents
 from molly.apps.places.utils import get_entity
-from molly.utils.ox_dates import format_today, ox_date_dict
 
 register = template.Library()
 
@@ -28,31 +26,6 @@ def this_year(value, arg=None):
     if not arg:
         arg = datetime.now()
     return value.year == arg.year
-
-@register.filter(name="oxp_id")
-def oxp_id(value):
-    prefix = 'http://oxpoints.oucs.ox.ac.uk/id/'
-    try:
-        if value['uri'].startswith(prefix):
-            return value['uri'][len(prefix):]
-        else:
-            return ""
-    except:
-        return ""
-
-@register.filter(name="load_oxp_json")
-def load_oxp_json(value):
-    try:
-        return simplejson.load(urllib.urlopen(value['uri']+'.json'))[0]
-    except JSONDecodeError:
-        return {}
-
-@register.filter(name="oxp_portal_url")
-def oxp_portal_url(value):
-    try:
-        return Entity.objects.get(_identifiers__scheme='oxpoints', _identifiers__value=oxp_id(value)).get_absolute_url()
-    except Entity.DoesNotExist:
-        return ""
 
 UNUSUAL_NUMBERS = {
     '+448454647': '0845 46 47',
@@ -115,11 +88,3 @@ def header_width(value):
 @register.filter('get_entity')
 def get_entity_filter(value):
     return get_entity(*value)
-
-@register.simple_tag
-def oxford_date_today():
-    return format_today()
-
-@register.filter('oxdate')
-def oxdate(value, arg):
-    return arg % ox_date_dict(value)

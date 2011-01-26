@@ -1,7 +1,6 @@
 from django.db import models
 from django.core.urlresolvers import reverse
-from molly.apps.podcasts import TOP_DOWNLOADS_RSS_URL
-from molly.data import licenses
+from molly.apps.podcasts.data import licenses
 
 MEDIUM_CHOICES = (
     ('audio', 'audio'),
@@ -25,7 +24,7 @@ class PodcastCategory(models.Model):
         ordering = ('order','name',)
 
 class Podcast(models.Model):
-    slug = models.SlugField()
+    slug = models.SlugField(unique=True)
     title = models.TextField(null=True)
     description = models.TextField(null=True)
     rss_url = models.URLField()

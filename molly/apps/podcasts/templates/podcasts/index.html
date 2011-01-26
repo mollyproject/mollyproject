@@ -3,12 +3,13 @@
 
 {% block content %}
 
-{% if device|device_has_parent:"apple_iphone_ver1" and show_itunesu_link %}
+{% if device|device_has_parent:"apple_generic" and show_itunesu_link %}
 <div class="help-bubble" id="itunesu_link_div">
-    <p>It looks like you're using an iPod/iPhone! You can also get all the University's podcasts via your iTunes U app, which gives you extra features like downloads for later listening/viewing.</p>
+    <p>It looks like you're using an Apple device! You can also get all the University's podcasts via your iTunes U app, which gives you extra features like downloads for later listening/viewing.</p>
     
     <p>Please note that this will close Safari.</p>
     <form method="post" action="{% url podcasts:itunesu-redirect %}">
+	{% csrf_token %}
     {% comment %}<p><input type="checkbox" name="remember" id="remember"/>
        <label for="remember">
        Remember this preference in future.

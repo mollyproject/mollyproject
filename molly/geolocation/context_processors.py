@@ -29,12 +29,15 @@ def geolocation(request):
         request.session['geolocation:requested'] = datetime.now()
     else:
         require_location = False
-    
     return {
         'require_location': require_location,
         'geolocation': {
             'location': request.session.get('geolocation:location'),
             'name': request.session.get('geolocation:name'),
             'accuracy': request.session.get('geolocation:accuracy'),
+            'history': request.session.get('geolocation:history'),
+            'favourites': request.session.get('geolocation:favourites'),
+            'method': request.session.get('geolocation:method'),
         },
+        'location_error': request.GET.get('location_error'),
     }

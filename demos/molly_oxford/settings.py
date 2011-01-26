@@ -1,9 +1,10 @@
 # Django settings for oxford project.
 
 from oauth.oauth import OAuthSignatureMethod_PLAINTEXT
-import os.path, imp
+import os, os.path, imp
 from molly.conf.settings import Application, extract_installed_apps, Authentication, ExtraBase, Provider
 from molly.utils.media import get_compress_groups
+from molly.maps.osm.models import get_marker_dir
 from secrets import SECRETS
 
 molly_root = imp.find_module('molly')[1]
@@ -68,8 +69,8 @@ MIDDLEWARE_CLASSES = (
     'molly.utils.middleware.ErrorHandlingMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'molly.auth.middleware.SecureSessionMiddleware',
-    'molly.stats.middleware.StatisticsMiddleware',
-    'molly.apps.url_shortener.middleware.URLShortenerMiddleware',
+    'molly.apps.stats.middleware.StatisticsMiddleware',
+    'molly.url_shortener.middleware.URLShortenerMiddleware',
 #    'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
@@ -110,29 +111,29 @@ APPLICATIONS = [
     ),
 
     Application('molly.apps.contact', 'contact', 'Contact search',
-        provider = 'molly.providers.apps.contact.ScrapingContactProvider',
+        provider = 'molly_oxford.providers.contact.ScrapingContactProvider',
     ),
 
     Application('molly.apps.places', 'places', 'Places',
         providers = [
-            Provider('molly.providers.apps.maps.NaptanMapsProvider',
+            Provider('molly.apps.places.providers.NaptanMapsProvider',
                 method='ftp',
                 username=SECRETS.journeyweb[0],
                 password=SECRETS.journeyweb[1],
                 areas=('340',),
             ),
-            Provider('molly.providers.apps.maps.PostcodesMapsProvider',
+            Provider('molly.apps.places.providers.PostcodesMapsProvider',
                 codepoint_path = CACHE_DIR + '/codepo_gb.zip',
                 import_areas = ('OX',),
             ),
-            'molly.providers.apps.maps.OxontimeMapsProvider',
-            'molly.providers.apps.maps.OxpointsMapsProvider',
-            'molly.providers.apps.maps.OSMMapsProvider',
-            'molly_oxford.providers.apps.places.OxfordParkAndRidePlacesProvider',
-            Provider('molly.providers.apps.maps.LiveDepartureBoardPlacesProvider',
+            'molly.apps.places.providers.ACISLiveMapsProvider',
+            'molly_oxford.providers.places.OxpointsMapsProvider',
+            'molly.apps.places.providers.OSMMapsProvider',
+            'molly_oxford.providers.places.OxfordParkAndRidePlacesProvider',
+            Provider('molly.apps.places.providers.LiveDepartureBoardPlacesProvider',
                 token = SECRETS.ldb
             ),
-            Provider('molly.providers.apps.maps.BBCTPEGPlacesProvider',
+            Provider('molly.apps.places.providers.BBCTPEGPlacesProvider',
                 url='http://www.bbc.co.uk/travelnews/tpeg/en/local/rtm/oxford_tpeg.xml',
             ),
         ],
@@ -267,10 +268,10 @@ APPLICATIONS = [
 
     Application('molly.apps.podcasts', 'podcasts', 'Podcasts',
         providers = [
-            Provider('molly.providers.apps.podcasts.OPMLPodcastsProvider',
+            Provider('molly_oxford.providers.podcasts.OPMLPodcastsProvider',
                 url = 'http://rss.oucs.ox.ac.uk/metafeeds/podcastingnewsfeeds.opml',
             ),
-            #Provider('molly.providers.apps.podcasts.RSSPodcastsProvider',
+            #Provider('molly.apps.podcasts.providers.RSSPodcastsProvider',
             #    podcasts = [
             #        ('top-downloads', 'http://rss.oucs.ox.ac.uk/oxitems/topdownloads.xml'),
             #    ],
@@ -284,15 +285,15 @@ APPLICATIONS = [
 
     Application('molly.apps.weather', 'weather', 'Weather',
         location_id = 'bbc/25',
-        provider = Provider('molly.providers.apps.weather.BBCWeatherProvider',
+        provider = Provider('molly.apps.weather.providers.BBCWeatherProvider',
             location_id = 25,
         ),
     ),
 
     Application('molly.apps.service_status', 'service_status', 'Service status',
         providers = [
-            'molly.providers.apps.service_status.OUCSStatusProvider',
-            Provider('molly.providers.apps.service_status.RSSModuleServiceStatusProvider',
+            'molly_oxford.providers.service_status.OUCSStatusProvider',
+            Provider('molly.apps.service_status.providers.RSSModuleServiceStatusProvider',
                 name='Oxford Library Information Services',
                 slug='olis',
                 url='http://www.lib.ox.ac.uk/olis/status/olis-opac.rss')
@@ -301,8 +302,8 @@ APPLICATIONS = [
 
     Application('molly.apps.search', 'search', 'Search',
         providers = [
-            Provider('molly.providers.apps.search.ApplicationSearchProvider'),
-            Provider('molly.providers.apps.search.GSASearchProvider',
+            Provider('molly.apps.search.providers.ApplicationSearchProvider'),
+            Provider('molly.apps.search.providers.GSASearchProvider',
                 search_url = 'http://googlesearch.oucs.ox.ac.uk/search',
                 domain = 'm.ox.ac.uk',
                 params = {
@@ -318,22 +319,22 @@ APPLICATIONS = [
 
     Application('molly.apps.feeds', 'feeds', 'Feeds',
         providers = [
-            Provider('molly.providers.apps.feeds.RSSFeedsProvider'),
+            Provider('molly.apps.feeds.providers.RSSFeedsProvider'),
         ],
         display_to_user = False,
     ),
 
     Application('molly.apps.feeds.news', 'news', 'News'),
 
-    Application('molly.osm', 'osm', 'OpenStreetMap',
+    Application('molly.maps', 'maps', 'Maps',
         display_to_user = False,
     ),
 
     Application('molly.geolocation', 'geolocation', 'Geolocation',
         prefer_results_near = (-1.25821, 51.75216, 5000),
         providers = [
-            Provider('molly.providers.apps.geolocation.PlacesGeolocationProvider'),
-            Provider('molly.providers.apps.geolocation.CloudmadeGeolocationProvider',
+            Provider('molly.geolocation.providers.PlacesGeolocationProvider'),
+            Provider('molly.geolocation.providers.CloudmadeGeolocationProvider',
                 search_locality = 'Oxford',
             ),
         ],
@@ -342,14 +343,14 @@ APPLICATIONS = [
     ),
 
     Application('molly_oxford.apps.river_status', 'river_status', 'River status',
-        provider = Provider('molly_oxford.providers.apps.river_status.RiverStatusProvider'),
+        provider = Provider('molly_oxford.apps.river_status.providers.RiverStatusProvider'),
     ),
 
     Application('molly.apps.feedback', 'feedback', 'Feedback',
         display_to_user = False,
     ),
 
-    Application('molly.apps.external_media', 'external_media', 'External Media',
+    Application('molly.external_media', 'external_media', 'External Media',
         display_to_user = False,
     ),
 
@@ -358,9 +359,11 @@ APPLICATIONS = [
         expose_view = True,
     ),
 
-    Application('molly.stats', 'stats', 'Statistics', display_to_user = False),
+    Application('molly.apps.stats', 'stats', 'Statistics',
+        display_to_user = False,
+    ),
 
-    Application('molly.apps.url_shortener', 'url_shortener', 'URL Shortener',
+    Application('molly.url_shortener', 'url_shortener', 'URL Shortener',
         display_to_user = False,
     ),
 
@@ -408,14 +411,16 @@ APPLICATIONS = [
             ('weblearn:email', ('email',)),
         ),
     ),
-
-#    Application('molly.apps.feeds.events', 'events', 'Events',
-#    ),
-
+    
     Application('molly.favourites', 'favourites', 'Favourite pages',
         display_to_user = False,
     ),
+    
+    Application('molly_oxford.utils', 'mox', 'Mobile Oxford',
+                display_to_user = False),
 ]
+
+IDENTIFIER_SCHEME_PREFERENCE = ('atco', 'oxpoints', 'osm', 'naptan', 'postcode', 'bbc-tpeg')
 
 API_KEYS = {
     'cloudmade': SECRETS.cloudmade,
@@ -439,9 +444,11 @@ INSTALLED_APPS = extract_installed_apps(APPLICATIONS) + (
     
     'staticfiles',
     'compress',
-    'south',
 #    'debug_toolbar',
 )
+
+if 'NO_SOUTH' not in os.environ:
+    INSTALLED_APPS += ('south',)
 
 
 # Media handling using django-staticfiles and django-compress
@@ -460,9 +467,11 @@ ADMIN_MEDIA_PREFIX = MEDIA_URL + 'admin/'
 # Example: "/home/media/media.lawrence.com/"
 MEDIA_ROOT = STATIC_ROOT = os.path.join(project_root, 'media')
 
+MARKER_DIR = os.path.join(CACHE_DIR, 'markers')
 STATICFILES_DIRS = (
     ('', os.path.join(project_root, 'site_media')),
     ('', os.path.join(molly_root, 'media')),
+    ('markers', MARKER_DIR),
 )
 STATIC_URL = '/media/'
 STATICFILES_PREPEND_LABEL_APPS = ('django.contrib.admin',) #+ extract_installed_apps(APPLICATIONS)

@@ -195,6 +195,7 @@ div.button {
         
         
 <form method="post" action=".">
+    {% csrf_token %}
           <input type="hidden" name="timeslot_id" value="{{ ts.id }}"/>
 {% comment %}
     If meeting has

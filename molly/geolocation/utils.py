@@ -40,8 +40,13 @@ def _cached(getargsfunc):
                 if filtered_results:
                     results = filtered_results
 
-            geocode, _ = Geocode.objects.get_or_create(local_name = app.local_name,
-                                                       **args)
+            try:
+                geocode, _ = Geocode.objects.get_or_create(local_name = app.local_name,
+                                                            **args)
+            except Geocode.MultipleObjectsReturned:
+                Geocode.objects.filter(local_name = app.local_name, **args).delete()
+                geocode, _ = Geocode.objects.get_or_create(local_name = app.local_name,
+                                                            **args)
             geocode.results = results
             geocode.save()
             
@@ -62,4 +67,4 @@ def reverse_geocode(lon, lat, providers):
     for provider in providers:
         results += provider.reverse_geocode(lon, lat)
     return results
-    
+

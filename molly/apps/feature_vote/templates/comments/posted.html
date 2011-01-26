@@ -6,10 +6,10 @@
     <div id="bc-header">
       <ol id="bc">
         <li><a href="{% url home:index %}">
-          <img src="{{ MEDIA_URL }}png/logo.png" width="57" height="30" alt="Home"/>
+          <img src="{{ MEDIA_URL }}site/png/logo.png" width="57" height="30" alt="Home"/>
         </a></li>
         <li><a href="{% url feature_vote:index %}" title="Feature suggestions">
-          <img src="{{ MEDIA_URL }}png/index-icons/feature_vote-bc.png" alt="Feature suggestions"/>
+          <img src="{{ MEDIA_URL }}site/png/index-icons/feature_vote-bc.png" alt="Feature suggestions"/>
         </a></li>
         <li><a href="{% url feature_vote:feature-detail comment.content_object.id %}" title="{{ comment.content_object.title }}">
           &hellip;
