@@ -16,13 +16,30 @@ class ACISLiveMapsProvider(BaseMapsProvider):
         # of the base URL for the ACIS Live instance, a function to determine
         # the identifier to use for the live bus times board, and a function to
         # determine the identifier to use for the bus stop messages board
-        # 010: Bristol
-        # 040: Buckinghamshire
-        # 050: Cambridgeshire
-        # 160: Gloucestershire
-        # 240: Kent
-        # 250: Lancashire
-        # 
+        '010': ('http://bristol.acislive.com/',
+                lambda entity: entity.identifiers.get('atco'),
+                lambda entity: entity.identifiers.get('atco'),
+               ), # Bristol
+        '040': ('http://bucks.acislive.com/',
+                lambda entity: entity.identifiers.get('atco'),
+                lambda entity: entity.identifiers.get('atco'),
+               ), # Cambridgeshire
+        '050': ('http://www.cambridgeshirebus.info/',
+                lambda entity: entity.identifiers.get('atco'),
+                lambda entity: entity.identifiers.get('atco'),
+               ), # Cambridgeshire
+        '160': ('http://gloucestershire.acislive.com/',
+                lambda entity: entity.identifiers.get('atco'),
+                lambda entity: entity.identifiers.get('atco'),
+                ), # Gloucestershire
+        '240': ('http://kent.acislive.com/',
+                lambda entity: entity.identifiers.get('atco'),
+                lambda entity: entity.identifiers.get('atco'),
+                ), # Kent
+        '250': ('http://lancashire.acislive.com/',
+                lambda entity: entity.identifiers.get('atco'),
+                lambda entity: entity.identifiers.get('atco'),
+                ), # Lancashire
         '340': ('http://www.oxontime.com/',
                 lambda entity: entity.identifiers.get('naptan'),
                 lambda entity: entity.identifiers.get('atco'),
@@ -31,12 +48,18 @@ class ACISLiveMapsProvider(BaseMapsProvider):
                 lambda entity: entity.identifiers.get('atco')[:3] + entity.identifiers.get('atco')[4:],
                 lambda entity: entity.identifiers.get('atco')[:3] + entity.identifiers.get('atco')[4:],
                 ), # South Yorkshire
-        # 440: Wessex
+        '440': ('http://westsussex.acislive.com/',
+                lambda entity: entity.identifiers.get('atco'),
+                lambda entity: entity.identifiers.get('atco'),
+                ), # Wessex
         '450': ('http://wymetro.acislive.com/',
                 lambda entity: entity.identifiers.get('plate'),
                 lambda entity: entity.identifiers.get('plate'),
                ), #West Yorkshire
-        # 571: Cardiff
+        '571': ('http://cardiff.acislive.com/',
+                lambda entity: entity.identifiers.get('atco'),
+                lambda entity: entity.identifiers.get('atco'),
+               ), # Cardiff
     }
     
     def get_acislive_base(self, entity):
@@ -92,6 +115,7 @@ class ACISLiveMapsProvider(BaseMapsProvider):
 
         try:
             realtime_url = self.get_realtime_url(entity)
+            print realtime_url
             xml = etree.parse(urllib.urlopen(realtime_url),
                               parser = etree.HTMLParser())
         except (TypeError, IOError):
