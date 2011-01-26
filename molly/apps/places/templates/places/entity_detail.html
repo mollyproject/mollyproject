@@ -46,9 +46,10 @@
 	{% endif %}
 </div>
 
-{% include "places/metadata/oxpoints.html" %}
+{% block metadata %}
 {% include "places/metadata/osm.html" %}
 {% include "places/metadata/park_and_ride.html" %}
+{% endblock %}
 
 {% for associated_type in associations %}
 
