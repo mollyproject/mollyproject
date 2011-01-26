@@ -420,6 +420,8 @@ APPLICATIONS = [
                 display_to_user = False),
 ]
 
+IDENTIFIER_SCHEME_PREFERENCE = ('atco', 'oxpoints', 'osm', 'naptan', 'postcode', 'bbc-tpeg')
+
 API_KEYS = {
     'cloudmade': SECRETS.cloudmade,
     'google': SECRETS.google,

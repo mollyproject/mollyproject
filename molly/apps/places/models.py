@@ -2,8 +2,9 @@ import simplejson
 
 from math import atan2, degrees
 
+from django.conf import settings
 from django.contrib.gis.db import models
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, NoReverseMatch
 from django.contrib.gis.geos import Point
 
 class Source(models.Model):
@@ -13,8 +14,10 @@ class Source(models.Model):
     
     def __unicode__(self):
         return self.name
-    
-IDENTIFIER_SCHEME_PREFERENCE = ('atco', 'oxpoints', 'osm', 'naptan', 'postcode', 'bbc-tpeg')
+
+IDENTIFIER_SCHEME_PREFERENCE = getattr(settings,
+                                       'IDENTIFIER_SCHEME_PREFERENCE',
+                                       ('atco', 'osm', 'naptan', 'postcode', 'bbc-tpeg'))
 
 class EntityType(models.Model):
     slug = models.SlugField()
@@ -170,6 +173,15 @@ class Entity(models.Model):
             if scheme in identifiers:
                 self.identifier_scheme, self.identifier_value = scheme, identifiers[scheme]
                 return reverse('places:entity', args=[scheme, identifiers[scheme]])
+        if len(identifiers) > 0:
+            for scheme, identifier in identifiers.items():
+                try:
+                    url = reverse('places:entity', args=[scheme, identifier])
+                except NoReverseMatch:
+                    continue
+                else:
+                    self.identifier_scheme, self.identifier_value = scheme, identifier
+                    return url
         raise AssertionError
     
     def get_absolute_url(self):
