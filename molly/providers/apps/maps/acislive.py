@@ -115,7 +115,6 @@ class ACISLiveMapsProvider(BaseMapsProvider):
 
         try:
             realtime_url = self.get_realtime_url(entity)
-            print realtime_url
             xml = etree.parse(urllib.urlopen(realtime_url),
                               parser = etree.HTMLParser())
         except (TypeError, IOError):
