@@ -111,7 +111,7 @@ APPLICATIONS = [
     ),
 
     Application('molly.apps.contact', 'contact', 'Contact search',
-        provider = 'molly.providers.apps.contact.ScrapingContactProvider',
+        provider = 'molly_oxford.providers.contact.ScrapingContactProvider',
     ),
 
     Application('molly.apps.places', 'places', 'Places',
@@ -122,18 +122,18 @@ APPLICATIONS = [
                 password=SECRETS.journeyweb[1],
                 areas=('340',),
             ),
-            Provider('molly.providers.apps.maps.PostcodesMapsProvider',
+            Provider('molly.apps.places.providers.PostcodesMapsProvider',
                 codepoint_path = CACHE_DIR + '/codepo_gb.zip',
                 import_areas = ('OX',),
             ),
-            'molly.providers.apps.maps.ACISLiveMapsProvider',
-            'molly.providers.apps.maps.OxpointsMapsProvider',
-            'molly.providers.apps.maps.OSMMapsProvider',
-            'molly_oxford.providers.apps.places.OxfordParkAndRidePlacesProvider',
-            Provider('molly.providers.apps.maps.LiveDepartureBoardPlacesProvider',
+            'molly.apps.places.providers.ACISLiveMapsProvider',
+            'molly_oxford.providers.places.OxpointsMapsProvider',
+            'molly.apps.places.providers.OSMMapsProvider',
+            'molly_oxford.providers.places.OxfordParkAndRidePlacesProvider',
+            Provider('molly.apps.places.providers.LiveDepartureBoardPlacesProvider',
                 token = SECRETS.ldb
             ),
-            Provider('molly.providers.apps.maps.BBCTPEGPlacesProvider',
+            Provider('molly.apps.places.providers.BBCTPEGPlacesProvider',
                 url='http://www.bbc.co.uk/travelnews/tpeg/en/local/rtm/oxford_tpeg.xml',
             ),
         ],
@@ -268,10 +268,10 @@ APPLICATIONS = [
 
     Application('molly.apps.podcasts', 'podcasts', 'Podcasts',
         providers = [
-            Provider('molly.providers.apps.podcasts.OPMLPodcastsProvider',
+            Provider('molly.apps.podcasts.providers.OPMLPodcastsProvider',
                 url = 'http://rss.oucs.ox.ac.uk/metafeeds/podcastingnewsfeeds.opml',
             ),
-            #Provider('molly.providers.apps.podcasts.RSSPodcastsProvider',
+            #Provider('molly.apps.podcasts.providers.RSSPodcastsProvider',
             #    podcasts = [
             #        ('top-downloads', 'http://rss.oucs.ox.ac.uk/oxitems/topdownloads.xml'),
             #    ],
@@ -285,15 +285,15 @@ APPLICATIONS = [
 
     Application('molly.apps.weather', 'weather', 'Weather',
         location_id = 'bbc/25',
-        provider = Provider('molly.providers.apps.weather.BBCWeatherProvider',
+        provider = Provider('molly.apps.weather.providers.BBCWeatherProvider',
             location_id = 25,
         ),
     ),
 
     Application('molly.apps.service_status', 'service_status', 'Service status',
         providers = [
-            'molly.providers.apps.service_status.OUCSStatusProvider',
-            Provider('molly.providers.apps.service_status.RSSModuleServiceStatusProvider',
+            'molly_oxford.providers.service_status.OUCSStatusProvider',
+            Provider('molly.apps.service_status.providers.RSSModuleServiceStatusProvider',
                 name='Oxford Library Information Services',
                 slug='olis',
                 url='http://www.lib.ox.ac.uk/olis/status/olis-opac.rss')
@@ -302,8 +302,8 @@ APPLICATIONS = [
 
     Application('molly.apps.search', 'search', 'Search',
         providers = [
-            Provider('molly.providers.apps.search.ApplicationSearchProvider'),
-            Provider('molly.providers.apps.search.GSASearchProvider',
+            Provider('molly.apps.search.providers.ApplicationSearchProvider'),
+            Provider('molly.apps.search.providers.GSASearchProvider',
                 search_url = 'http://googlesearch.oucs.ox.ac.uk/search',
                 domain = 'm.ox.ac.uk',
                 params = {
@@ -319,7 +319,7 @@ APPLICATIONS = [
 
     Application('molly.apps.feeds', 'feeds', 'Feeds',
         providers = [
-            Provider('molly.providers.apps.feeds.RSSFeedsProvider'),
+            Provider('molly.apps.feeds.providers.RSSFeedsProvider'),
         ],
         display_to_user = False,
     ),
@@ -333,8 +333,8 @@ APPLICATIONS = [
     Application('molly.geolocation', 'geolocation', 'Geolocation',
         prefer_results_near = (-1.25821, 51.75216, 5000),
         providers = [
-            Provider('molly.providers.apps.geolocation.PlacesGeolocationProvider'),
-            Provider('molly.providers.apps.geolocation.CloudmadeGeolocationProvider',
+            Provider('molly.geolocation.providers.PlacesGeolocationProvider'),
+            Provider('molly.providers.CloudmadeGeolocationProvider',
                 search_locality = 'Oxford',
             ),
         ],
@@ -343,7 +343,7 @@ APPLICATIONS = [
     ),
 
     Application('molly_oxford.apps.river_status', 'river_status', 'River status',
-        provider = Provider('molly_oxford.providers.apps.river_status.RiverStatusProvider'),
+        provider = Provider('molly_oxford.apps.river_status.providers.RiverStatusProvider'),
     ),
 
     Application('molly.apps.feedback', 'feedback', 'Feedback',
@@ -359,7 +359,9 @@ APPLICATIONS = [
         expose_view = True,
     ),
 
-    Application('molly.stats', 'stats', 'Statistics', display_to_user = False),
+    Application('molly.stats', 'stats', 'Statistics',
+        display_to_user = False,
+    ),
 
     Application('molly.apps.url_shortener', 'url_shortener', 'URL Shortener',
         display_to_user = False,
@@ -409,10 +411,7 @@ APPLICATIONS = [
             ('weblearn:email', ('email',)),
         ),
     ),
-
-#    Application('molly.apps.feeds.events', 'events', 'Events',
-#    ),
-
+    
     Application('molly.favourites', 'favourites', 'Favourite pages',
         display_to_user = False,
     ),
