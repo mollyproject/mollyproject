@@ -127,7 +127,7 @@ APPLICATIONS = [
                 import_areas = ('OX',),
             ),
             'molly.apps.places.providers.ACISLiveMapsProvider',
-            'molly_oxford.providers.places.OxpointsMapsProvider',
+            'molly_oxford.apps.oxpoints.providers.OxpointsMapsProvider',
             'molly.apps.places.providers.OSMMapsProvider',
             'molly_oxford.providers.places.OxfordParkAndRidePlacesProvider',
             Provider('molly.apps.places.providers.LiveDepartureBoardPlacesProvider',
@@ -416,7 +416,10 @@ APPLICATIONS = [
         display_to_user = False,
     ),
     
-    Application('molly_oxford.utils', 'mox', 'Mobile Oxford',
+    Application('molly_oxford.apps.oxford_term_dates', 'oxford_term_dates', 'Oxford Term Dates',
+                display_to_user = False),
+    
+    Application('molly_oxford.apps.oxpoints', 'oxpoints', 'Oxpoints',
                 display_to_user = False),
 ]
 
