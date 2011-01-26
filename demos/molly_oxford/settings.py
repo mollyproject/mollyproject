@@ -268,7 +268,7 @@ APPLICATIONS = [
 
     Application('molly.apps.podcasts', 'podcasts', 'Podcasts',
         providers = [
-            Provider('molly.apps.podcasts.providers.OPMLPodcastsProvider',
+            Provider('molly_oxford.providers.podcasts.OPMLPodcastsProvider',
                 url = 'http://rss.oucs.ox.ac.uk/metafeeds/podcastingnewsfeeds.opml',
             ),
             #Provider('molly.apps.podcasts.providers.RSSPodcastsProvider',

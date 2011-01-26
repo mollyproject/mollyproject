@@ -6,7 +6,7 @@ from molly.conf.settings import batch
 from molly.apps.podcasts.providers import BasePodcastsProvider
 from molly.apps.podcasts.models import Podcast, PodcastItem, PodcastCategory, PodcastEnclosure
 
-from rss import RSSPodcastsProvider
+from molly.apps.podcasts.providers.rss import RSSPodcastsProvider
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +19,6 @@ class OPMLPodcastsProvider(RSSPodcastsProvider):
 
     CATEGORY_RE = re.compile('/([^\/]+)/([^,]+)')
     RSS_RE = re.compile('http://rss.oucs.ox.ac.uk/(.+-(.+?))/rss20.xml')
-
     
     def decode_category(self, category):
         category = dict(self.CATEGORY_RE.match(s).groups() for s in category.split(','))

@@ -1,6 +1,5 @@
 from django.db import models
 from django.core.urlresolvers import reverse
-from molly.apps.podcasts import TOP_DOWNLOADS_RSS_URL
 from molly.data import licenses
 
 MEDIUM_CHOICES = (

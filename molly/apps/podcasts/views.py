@@ -10,8 +10,7 @@ from molly.utils.breadcrumbs import *
 
 from molly.wurfl import device_parents
 
-from .models import Podcast, PodcastCategory
-from . import TOP_DOWNLOADS_RSS_URL
+from molly.apps.podcasts.models import Podcast, PodcastCategory
 
 
 class IndexView(BaseView):
