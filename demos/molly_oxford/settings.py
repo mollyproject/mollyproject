@@ -116,7 +116,7 @@ APPLICATIONS = [
 
     Application('molly.apps.places', 'places', 'Places',
         providers = [
-            Provider('molly.providers.apps.maps.NaptanMapsProvider',
+            Provider('molly.apps.places.providers.NaptanMapsProvider',
                 method='ftp',
                 username=SECRETS.journeyweb[0],
                 password=SECRETS.journeyweb[1],
@@ -334,7 +334,7 @@ APPLICATIONS = [
         prefer_results_near = (-1.25821, 51.75216, 5000),
         providers = [
             Provider('molly.geolocation.providers.PlacesGeolocationProvider'),
-            Provider('molly.providers.CloudmadeGeolocationProvider',
+            Provider('molly.geolocation.providers.CloudmadeGeolocationProvider',
                 search_locality = 'Oxford',
             ),
         ],

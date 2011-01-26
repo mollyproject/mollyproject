@@ -66,3 +66,5 @@ class OxfordParkAndRidePlacesProvider(BaseMapsProvider):
                         'percentage': 0,
                         'unavailable': True,
                     }
+
+from oxpoints import OxpointsMapsProvider
