@@ -91,15 +91,40 @@ class OSMTile(models.Model):
             os.mkdir(osm_tile_dir)
         return os.path.join(osm_tile_dir, "%d-%d-%d.png" % (self.xtile, self.ytile, self.zoom))
 
+    def refresh_data(self, retry=True):
+            
+        # Try to get the file from the OSM tile server
+        try:
+            response = urllib.urlopen(get_tile_url(self.xtile, self.ytile, self.zoom))
+        except IOError:
+            # If it fails... try again, but only once
+            if retry:
+                return self.refresh_data(retry=False)
+            else:
+                raise
+        
+        s = StringIO()
+        s.write(response.read())
+        f = open(self.get_filename(), 'w')
+        f.write(s.getvalue())
+        f.close()
+        s.seek(0)
+        return s
+
     @staticmethod
-    def get_data(xtile, ytile, zoom, retry=True):
+    def get_data(xtile, ytile, zoom):
         """
         Fetch an OSM tile from the OSM tile server, and cache it if necessary.
-        If the last argument is True, then a retry to get data from the tile
-        server is attempted if the first attempt fails.
         """
         try:
             osm_tile = OSMTile.objects.get(xtile=xtile, ytile=ytile, zoom=zoom, last_fetched__gt = datetime.now() - timedelta(1))
+            if osm_tile.last_fetched < datetime.now() - timedelta(weeks=1):
+                try:
+                    return osm_tile.refresh_data()
+                except IOError:
+                    # Ignore IOErrors, because we already have some data, so
+                    # just use that
+                    pass
             return open(osm_tile.get_filename())
         except (OSMTile.DoesNotExist, IOError):
             try:
@@ -107,23 +132,7 @@ class OSMTile(models.Model):
             except IntegrityError:
                 return OSMTile.get_data(xtile, ytile, zoom)
             
-            # Try to get the file from the OSM tile server
-            try:
-                response = urllib.urlopen(get_tile_url(xtile, ytile, zoom))
-            except IOError:
-                # If it fails... try again, but only once
-                if retry:
-                    return OSMTile.get_data(xtile, ytile, zoom, retry=False)
-                else:
-                    raise
-            
-            s = StringIO()
-            s.write(response.read())
-            f = open(osm_tile.get_filename(), 'w')
-            f.write(s.getvalue())
-            f.close()
-            s.seek(0)
-            return s
+            return osm_tile.refresh_data()
     
 class OSMUpdate(models.Model):
     """

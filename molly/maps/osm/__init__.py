@@ -7,7 +7,7 @@ import os
 import os.path
 import logging
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django.db import IntegrityError
 
@@ -121,11 +121,12 @@ def get_or_create_map(generator, args):
             logger.debug("Map generated: %s, took %.5f seconds",
                          (hash, time.time()-start_time)) 
         
-        # If there are more than 25000 generated maps, then clear it up
-        if GeneratedMap.objects.all().count() > 25000:
+        # If there are any maps older than a week, regenerate them
+        to_delete = GeneratedMap.objects.filter(generated__lt=datetime.now()-timedelta(weeks=1))
+        if to_delete.count() > 0:
             # But only clear up 50 at a time
             youngest = None
-            to_delete = GeneratedMap.objects.order_by('last_accessed')[:50]
+            to_delete = to_delete[:50]
             for generated_map in to_delete:
                 if not youngest:
                     youngest = generated_map.last_accessed
