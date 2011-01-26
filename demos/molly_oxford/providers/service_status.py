@@ -1,6 +1,5 @@
 import feedparser
-
-from molly.utils.date_parsing import rfc_2822_datetime
+import dateutil.parser
 
 class OUCSStatusProvider(object):
     name = 'Computing Services'
@@ -11,7 +10,7 @@ class OUCSStatusProvider(object):
     
     def parse_date(self, s):
         try:
-            return rfc_2822_datetime(s)
+            return dateutil.parser.parse(s)
         except (TypeError, ValueError):
             return None
             
