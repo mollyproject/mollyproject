@@ -5,7 +5,7 @@ from django.conf import settings
 from molly.apps.places.models import Entity, EntityType, Source
 from molly.apps.places.providers import BaseMapsProvider
 from molly.utils.misc import AnyMethodRequest
-from molly.geolocation.utils import reverse_geocode
+from molly.geolocation import reverse_geocode
 from molly.conf.settings import batch
 
 from xml.sax import saxutils, handler, make_parser

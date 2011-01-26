@@ -15,7 +15,7 @@ from django.core.exceptions import PermissionDenied, ImproperlyConfigured
 from molly.utils.http import HttpResponseSeeOther
 from molly.utils.views import BaseView
 
-from molly.auth.utils import unify_users
+from molly.auth import unify_users
 from molly.auth.models import ExternalServiceToken
 from molly.auth.oauth.clients import OAuthClient, OAuthHTTPError
 

@@ -9,7 +9,7 @@ from django.shortcuts import render_to_response
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
-from molly.favourites.utils import get_favourites
+from molly.favourites import get_favourites
 from molly.wurfl import device_parents
 from molly import conf
 

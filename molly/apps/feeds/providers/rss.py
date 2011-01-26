@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 import urllib, re, email, feedparser, time, random, traceback, logging
 
-from molly.external_media.sanitiser import sanitise_html
+from molly.external_media import sanitise_html
 from molly.conf.settings import batch
 
 from molly.apps.feeds.providers import BaseFeedsProvider

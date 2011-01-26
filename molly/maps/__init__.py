@@ -1,6 +1,6 @@
 from urllib import urlencode
 
-from molly.maps.osm.utils import fit_to_map
+from molly.maps.osm import fit_to_map
 from molly.maps.models import GeneratedMap
 
 class Map:

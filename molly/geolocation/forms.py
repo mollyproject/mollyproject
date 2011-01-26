@@ -3,7 +3,7 @@ from django.forms.util import ErrorList
 
 from molly.conf import applications
 
-from utils import geocode, reverse_geocode
+from molly.geolocation import geocode, reverse_geocode
 
 METHOD_CHOICES = (
     ('html5', 'HTML5'),

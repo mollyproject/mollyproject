@@ -19,9 +19,9 @@ from molly.geolocation.views import LocationRequiredView
 from molly.maps import Map
 from molly.maps.osm.models import OSMUpdate
 
-from models import Entity, EntityType
-from utils import get_entity, get_point
-from forms import UpdateOSMForm
+from molly.apps.places.models import Entity, EntityType
+from molly.apps.places import get_entity, get_point
+from molly.apps.places.forms import UpdateOSMForm
 
 
 class IndexView(BaseView):
@@ -619,27 +619,6 @@ class ServiceDetailView(BaseView):
 
     def handle_GET(self, request, context, scheme, value):
         return self.render(request, context, 'places/service_details')
-
-def entity_favourite(request, type_slug, id):
-    entity = get_entity(type_slug, id)
-
-    if request.method != 'POST':
-        return HttpResponse('', mimetype='text/plain', status=405)
-
-    try:
-        value = request.POST['is_favourite'] == 'true'
-    except KeyError:
-        return HttpResponse('', mimetype='text/plain', status=400)
-
-    make_favourite(request, entity, value)
-
-    if 'no_redirect' in request.POST:
-        return HttpResponse('', mimetype='text/plain', status=400)
-
-    if 'return_url' in request.POST:
-        return HttpResponseRedirect(request.POST['return_url'])
-    else:
-        return HttpResponseRedirect(entity.get_absolute_url())
 
 class APIView(BaseView):
     """

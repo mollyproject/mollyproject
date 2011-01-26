@@ -6,7 +6,7 @@ from django.core.urlresolvers import reverse
 
 #from molly.core.utils import OXFORD_EMAIL_RE
 
-from molly.geolocation.utils import reverse_geocode
+from molly.geolocation import reverse_geocode
 
 class AjaxSetLocationTestCase(unittest.TestCase):
     def setUp(self):

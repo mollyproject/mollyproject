@@ -2,7 +2,7 @@ import sys
 
 from django.core.management.base import NoArgsCommand
 
-from molly.batch_processing.utils import create_crontab
+from molly.batch_processing import create_crontab
 
 class Command(NoArgsCommand):
     help = "Generates a crontab"

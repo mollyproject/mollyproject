@@ -4,7 +4,7 @@ from django.core.urlresolvers import resolve
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import lazy_reverse, Breadcrumb, BreadcrumbFactory
 
-from molly.favourites.utils import get_favourites
+from molly.favourites import get_favourites
 
 class FavouritableView(BaseView):
     """

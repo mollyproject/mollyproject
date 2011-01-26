@@ -6,7 +6,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.gis.db import models
 from django.conf import settings
 
-from molly.external_media.utils import resize_external_image
+from molly.external_media import resize_external_image
 from molly.apps.places.models import Entity
 
 FEED_TYPE_CHOICES = (

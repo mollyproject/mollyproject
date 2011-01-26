@@ -4,7 +4,7 @@ from molly.conf import app_by_application_name
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
-from molly.favourites.utils import get_favourites
+from molly.favourites import get_favourites
 
 from molly.apps.places.models import Entity, EntityType
 

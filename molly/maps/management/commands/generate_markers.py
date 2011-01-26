@@ -2,7 +2,7 @@ import itertools, subprocess, os.path, tempfile, os
 from django.core.management.base import NoArgsCommand
 from django.conf import settings
 
-from molly.maps.osm.utils import MARKER_COLORS, MARKER_RANGE
+from molly.maps.osm import MARKER_COLORS, MARKER_RANGE
 from molly.maps.osm.models import get_marker_dir
 
     

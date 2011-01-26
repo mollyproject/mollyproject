@@ -2,7 +2,7 @@ import sys
 
 from django.core.management.base import NoArgsCommand
 
-from molly.batch_processing.utils import run_batch
+from molly.batch_processing import run_batch
 
 class Command(NoArgsCommand):
     help = "Runs a batch job"

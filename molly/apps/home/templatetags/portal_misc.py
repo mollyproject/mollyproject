@@ -5,7 +5,7 @@ from django.utils.safestring import mark_safe
 
 from molly.apps.places.models import Entity
 from molly.wurfl import device_parents
-from molly.apps.places.utils import get_entity
+from molly.apps.places import get_entity
 
 register = template.Library()
 
