@@ -69,8 +69,8 @@ MIDDLEWARE_CLASSES = (
     'molly.utils.middleware.ErrorHandlingMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'molly.auth.middleware.SecureSessionMiddleware',
-    'molly.stats.middleware.StatisticsMiddleware',
-    'molly.apps.url_shortener.middleware.URLShortenerMiddleware',
+    'molly.apps.stats.middleware.StatisticsMiddleware',
+    'molly.url_shortener.middleware.URLShortenerMiddleware',
 #    'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
@@ -350,7 +350,7 @@ APPLICATIONS = [
         display_to_user = False,
     ),
 
-    Application('molly.apps.external_media', 'external_media', 'External Media',
+    Application('molly.external_media', 'external_media', 'External Media',
         display_to_user = False,
     ),
 
@@ -359,11 +359,11 @@ APPLICATIONS = [
         expose_view = True,
     ),
 
-    Application('molly.stats', 'stats', 'Statistics',
+    Application('molly.apps.stats', 'stats', 'Statistics',
         display_to_user = False,
     ),
 
-    Application('molly.apps.url_shortener', 'url_shortener', 'URL Shortener',
+    Application('molly.url_shortener', 'url_shortener', 'URL Shortener',
         display_to_user = False,
     ),
 

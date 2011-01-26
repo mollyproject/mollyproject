@@ -1,6 +1,6 @@
 from django import template
 
-from molly.apps.external_media.utils import resize_external_image
+from molly.external_media.utils import resize_external_image
 
 register = template.Library()
 

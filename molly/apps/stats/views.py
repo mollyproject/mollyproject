@@ -3,7 +3,7 @@ from django.db.models import Avg, Count
 
 from molly.utils.breadcrumbs import lazy_reverse, Breadcrumb, BreadcrumbFactory
 from molly.utils.views import BaseView
-from molly.stats.models import Hit
+from molly.apps.stats.models import Hit
 
 LIST_LIMIT = 50
 
