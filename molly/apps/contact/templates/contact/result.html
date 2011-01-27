@@ -1,6 +1,6 @@
 {# Subset of result_list.html #}
 
-{% load portal_misc %}
+{% load molly_utils %}
 
 <h3 class="contact-cn">{% if person.id %}
     <a href="{% url contact:result_detail person.id %}">{{ person.cn }}</a>

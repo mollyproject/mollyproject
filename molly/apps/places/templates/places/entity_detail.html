@@ -1,4 +1,4 @@
-{% extends "places/base.html" %}{% load maps %}{% load portal_misc %}
+{% extends "places/base.html" %}{% load molly_maps %}{% load molly_utils %}
 
 {% block extrahead %}{% if entity.metadata.meta_refresh %}
 <meta http-equiv="refresh" content="{{ entity.metadata.meta_refresh }}" />{% endif %}{% endblock %}
