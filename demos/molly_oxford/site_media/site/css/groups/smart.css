@@ -666,9 +666,9 @@ div.header {
     padding:5px;
     border-top:1px solid rgba(255, 255, 255, 0.33);
     border-left:1px solid rgba(255, 255, 255, 0.33);
+    background:#f2f2f2;
     background:-moz-linear-gradient(top, #fff, #f2f2f2);
     background:-webkit-gradient(linear, left top, left bottom, from(#fff), to(#f2f2f2));
-    background:#f2f2f2;
     -webkit-border-top-right-radius:5px;-moz-border-radius-topright: 5px; border-top-right-radius: 5px;
     -webkit-border-top-left-radius:5px; -moz-border-radius-topleft: 5px;  border-top-left-radius: 5px;
 }
