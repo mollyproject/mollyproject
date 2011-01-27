@@ -350,3 +350,21 @@ def ReverseView(request):
         raise Http404
     except KeyError:
         return HttpResponseBadRequest()
+
+def handler500(request):
+    context = {
+        'request': request,
+        'MEDIA_URL': settings.MEDIA_URL,
+    }
+
+    # This will make things prettier if we can manage it.
+    # No worries if we can't.
+    try:
+        from molly.wurfl.context_processors import device_specific_media
+        context.update(device_specific_media(request))
+    except Exception, e:
+        pass
+
+    response = render_to_response('500.html', context)
+    response.status_code = 500
+    return response

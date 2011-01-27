@@ -58,7 +58,7 @@ urlpatterns += patterns('django.views.generic.simple',
 )
 
 
-handler500 = 'molly.apps.home.views.handler500'
+handler500 = 'molly.utils.views.handler500'
 
 if settings.DEBUG:
     urlpatterns += patterns('',
