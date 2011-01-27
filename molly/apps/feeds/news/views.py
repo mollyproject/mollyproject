@@ -24,7 +24,7 @@ class IndexView(BaseView):
     def handle_GET(cls, request, context):
         feeds = Feed.news.all()
         context['feeds'] = feeds
-        return cls.render(request, context, 'rss/news/index')
+        return cls.render(request, context, 'feeds/news/index')
 
 class ItemListView(BaseView):
     def get_metadata(cls, request, slug):
@@ -49,7 +49,7 @@ class ItemListView(BaseView):
     def handle_GET(cls, request, context, slug):
         feed = get_object_or_404(Feed.news, slug=slug)
         context['feed'] = feed
-        return cls.render(request, context, 'rss/news/item_list')
+        return cls.render(request, context, 'feeds/news/item_list')
 
 class ItemDetailView(BaseView):
     def get_metadata(cls, request, slug, id):
@@ -77,4 +77,4 @@ class ItemDetailView(BaseView):
             'item': item,
             'description': item.get_description_display(request.device)
         })
-        return cls.render(request, context, 'rss/news/item_detail')
+        return cls.render(request, context, 'feeds/news/item_detail')

@@ -25,7 +25,7 @@ class IndexView(BaseView):
     def handle_GET(cls, request, context):
         feeds = Feed.events.all()
         context['feeds'] = feeds
-        return cls.render(request, context, 'rss/events/index')
+        return cls.render(request, context, 'feeds/events/index')
 
 class ItemListView(BaseView):
     def get_metadata(cls, request, slug):
@@ -54,7 +54,7 @@ class ItemListView(BaseView):
         )
         
     def handle_GET(cls, request, context, slug):
-        return cls.render(request, context, 'rss/events/item_list')
+        return cls.render(request, context, 'feeds/events/item_list')
 
 class ItemDetailView(BaseView):
     def get_metadata(cls, request, slug, id):
@@ -87,4 +87,4 @@ class ItemDetailView(BaseView):
         context.update({
             'description': context['item'].get_description_display(request.device)
         })
-        return cls.render(request, context, 'rss/events/item_detail')
+        return cls.render(request, context, 'feeds/events/item_detail')
