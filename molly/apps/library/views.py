@@ -1,168 +1,115 @@
-from itertools import chain
-import logging
-
-from django.http import Http404
 from django.core.paginator import Paginator
-from django.contrib.gis.geos import Point
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
 
-from molly.apps.places.models import Entity
-from molly.maps import Map
-
-from PyZ3950.zoom import ConnectionError
-
-from . import search
-from .forms import SearchForm
-
-STOP_WORDS = frozenset( (
-    "a,able,about,across,after,all,almost,also,am,among,an,and,any,are,as,at,"
-  + "be,because,been,but,by,can,cannot,could,dear,did,do,does,either,else,"
-  + "ever,every,for,from,get,got,had,has,have,he,her,hers,him,his,how,however,"
-  + "i,if,in,into,is,it,its,just,least,let,like,likely,may,me,might,most,must,"
-  + "my,neither,no,nor,not,of,off,often,on,only,or,other,our,own,rather,said,"
-  + "say,says,she,should,since,so,some,than,that,the,their,them,then,there,"
-  + "these,they,this,tis,to,too,twas,us,wants,was,we,were,what,when,where,"
-  + "which,while,who,whom,why,will,with,would,yet,you,your" ).split(',') )
-
-search_logger = logging.getLogger('molly.z3950.searches')
-logger = logging.getLogger('molly.z3950')
+from molly.apps.library.forms import SearchForm
+from molly.apps.library.models import LibrarySearchQuery
 
 class IndexView(BaseView):
-    def get_metadata(cls, request):
+    """
+    Index page of the library app
+    """
+    
+    def get_metadata(self, request):
         return {
             'title': 'Library search',
             'additional': "View libraries' contact information and find library items.",
         }
-
-    def initial_context(cls, request):
+    
+    def initial_context(self, request):
         return {
             'search_form': SearchForm()
         }
-
+    
     @BreadcrumbFactory
-    def breadcrumb(cls, request, context):
-        return Breadcrumb(cls.conf.local_name, None, 'Library search', lazy_reverse('index'))
-
-    def handle_GET(cls, request, context):
-        return cls.render(request, context, 'z3950/index')
+    def breadcrumb(self, request, context):
+        return Breadcrumb(self.conf.local_name, None, 'Library search', lazy_reverse('index'))
+    
+    def handle_GET(self, request, context):
+        return self.render(request, context, 'library/index')
 
 class SearchDetailView(BaseView):
-    def get_metadata(cls, request):
+    """
+    Search results page
+    """
+    
+    def get_metadata(self, request):
         return {
             'show_in_results': False,
         }
-
-    def initial_context(cls, request):
+    
+    def initial_context(self, request):
         return {
             'search_form': SearchForm(request.GET),
         }
-
+    
     @BreadcrumbFactory
-    def breadcrumb(cls, request, context):
-        x = 'item' in context or context['search_form'].is_valid()
+    def breadcrumb(self, request, context):
+        if 'item' in context or context['search_form'].is_valid():
+            title = 'Search Results'
+        else:
+            title = 'Library search'
         return Breadcrumb(
-            cls.conf.local_name,
+            self.conf.local_name,
             lazy_parent('index'),
-            'Search results' if x else 'Library search',
+            title,
             lazy_reverse('search'),
         )
-
-    class InconsistentQuery(ValueError):
-        def __init__(self, msg):
-            self.msg = msg
-
-    def clean_input(cls, s):
-        s = s.replace('"', '').lower()
-        removed = frozenset(w for w in s.split(' ') if (w in STOP_WORDS))
-        s = ' '.join(w for w in s.split(' ') if (not w in STOP_WORDS))
-        return s, removed
-
-    def clean_isbn(cls, s):
-        s = s.replace('*', 'X')
-        s = ''.join(c for c in s if (c in '0123456789X'))
-        return s
-
-    def handle_GET(cls, request, context):
+    
+    def handle_GET(self, request, context):
         search_form = context['search_form']
-
+        
         if not (request.GET and search_form.is_valid()):
-            return cls.handle_no_search(request, context)
-
+            # No form data received
+            return self.render(request, context, 'library/item_list')
+        
+        # Build a query object to pass to providers here
         try:
-            query, removed = cls.construct_query(request, search_form)
-        except cls.InconsistentQuery, e:
-            return cls.handle_error(request, context, e.msg)
-
-        try:
-            results = search.OLISSearch(query, conf=cls.conf)
-        except ConnectionError:
-            logger.warning("Library connection error")
-            return cls.handle_error(request, context, 'An error occured communicating with the library - the database may be down, please try again later.')
-        except Exception, e:
-            logger.exception("Library query error")
-            return cls.handle_error(request, context, 'An error occurred: %s' % e)
-
+            query = LibrarySearchQuery(
+                search_form.cleaned_data['title'],
+                search_form.cleaned_data['author'],
+                search_form.cleaned_data['isbn']
+            )
+        except LibrarySearchQuery.InconsistentQuery, e:
+            return self.handle_error(request, context, e.msg)
+        
+        # Call providers
+        results = []
+        for provider in reversed(self.conf.providers):
+            results.append(provider.library_search(query))
+        
+        # Paginate results
         paginator = Paginator(results, 10)
-
+        
         try:
             page_index = int(request.GET['page'])
         except (ValueError, KeyError):
             page_index = 1
         else:
             page_index = min(max(1, page_index), paginator.num_pages)
-
+        
         page = paginator.page(page_index)
-
+        
+        # Render results page
         context.update({
-            'removed': removed,
+            'removed': query.removed,
             'results': paginator,
             'page': page,
         })
-        return cls.render(request, context, 'z3950/item_list')
-
-    def handle_no_search(cls, request, context):
-        return cls.render(request, context, 'z3950/item_list')
-
-    def handle_error(cls, request, context, message):
+        return self.render(request, context, 'library/item_list')
+    
+    def handle_error(self, request, context, message):
         context['error_message'] = message
-        return cls.render(request, context, 'z3950/item_list')
-
-    def construct_query(cls, request, search_form):
-        query, removed = [], set()
-        title, author, isbn = '', '', ''
-        if search_form.cleaned_data['author']:
-            author, new_removed = cls.clean_input(search_form.cleaned_data['author'])
-            removed |= new_removed
-            query.append('(au="%s")' % author)
-        if search_form.cleaned_data['title']:
-            title, new_removed = cls.clean_input(search_form.cleaned_data['title'])
-            removed |= new_removed
-            query.append('(ti="%s")' % title)
-        if search_form.cleaned_data['isbn']:
-            isbn = cls.clean_isbn(search_form.cleaned_data['isbn'])
-            query.append('(isbn=%s)' % isbn)
-
-        if (title or author) and isbn:
-            raise cls.InconsistentQuery("You cannot specify both an ISBN and a title or author.")
-
-        if not (title or author or isbn):
-            raise cls.InconsistentQuery("You must supply some subset of title or author, and ISBN.")
-
-        search_logger.info("Library query", extra={
-            'session_key': request.session.session_key,
-            'title': title,
-            'author': author,
-            'isbn': isbn,
-        })
-
-        return "and".join(query), removed
-
+        return self.render(request, context, 'library/item_list')
 
 AVAIL_COLORS = ['red', 'amber', 'purple', 'blue', 'green']
 
 class ItemDetailView(BaseView):
+    """
+    More detail about the item page
+    """
+    
     def initial_context(cls, request, control_number):
         items = search.ControlNumberSearch(control_number, cls.conf)
         if len(items) == 0:
@@ -281,6 +228,10 @@ class ItemDetailView(BaseView):
         return cls.render(request, context, 'z3950/item_detail')
 
 class ItemHoldingsView(BaseView):
+    """
+    Specific details of holdings of a particular item
+    """
+    
     def initial_context(cls, request, control_number, sublocation):
         items = search.ControlNumberSearch(control_number, cls.conf)
         if len(items) == 0:

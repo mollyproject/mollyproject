@@ -330,6 +330,7 @@ def validate_isxn(s):
             return None, None
         return encode(s), ('issn' if len(s) == 8 else 'isbn')
 
+# Application Search
 class SiteSearch(object):
     def __new__(cls, query, only_app, request):
         number, number_type = validate_isxn(query)
