@@ -92,3 +92,84 @@ class LibrarySearchQuery:
             self.isbn = self._clean_isbn(isbn)
         else:
             self.isbn = None
+
+class LibrarySearchResult(object):
+    
+    id = ''
+    """
+    @ivar id: A unique ID to reference this item in the database
+    @type id: str
+    """
+    
+    title = ''
+    """
+    @ivar title: The title of this book
+    @type title: str
+    """
+    
+    publisher = ''
+    """
+    @ivar publisher: The publisher of this book
+    @type publisher: str
+    """
+    
+    author = ''
+    """
+    @ivar author: The author(s) of this book
+    @type author: str
+    """
+    
+    description = ''
+    """
+    @ivar description: A description of this book
+    @type description: str
+    """
+    
+    edition = ''
+    """
+    @ivar edition: The edition of this book
+    @type edition: str
+    """
+    
+    copies = 0
+    """
+    @ivar copies: The number of copies of this book held
+    @type copies: int
+    """
+    
+    holding_libraries = 0
+    """
+    @ivar holding_libraries: The number of libraries which hold copies of this
+                             book
+    @type holding_libraries: int
+    """
+    
+    isbns = []
+    """
+    @ivar isbns: The ISBNs associated with this item
+    @type isbns: list of strings
+    """
+    
+    issns = []
+    """
+    @ivar isbns: The ISSNs associated with this item
+    @type isbns: list of strings
+    """
+    
+    holdings = {}
+    """
+    @ivar holdings: A dictionary where library names are keys and the value is
+                    a list of dictionaries, one for each copy of the item held.
+                    This dictionary has the following keys: due (the due date),
+                    availability (one of the AVAIL_ keys below),
+                    availability_display (the display text for availability
+                    status) and materials_specified (an additional value
+                    typically indicating what issue of a copy this is)
+    @type holdings: dict
+    """
+    
+    AVAIL_UNAVAILABLE, AVAIL_UNKNOWN, AVAIL_STACK, AVAIL_REFERENCE, \
+    AVAIL_AVAILABLE = range(5)
+
+    def __unicode__(self):
+        return self.title

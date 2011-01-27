@@ -1,6 +1,5 @@
 import re, urllib, simplejson, traceback
 from datetime import datetime
-from PyZ3950 import zoom
 from itertools import cycle
 
 from PyZ3950.zmarc import MARC, MARC8_to_Unicode
@@ -240,34 +239,6 @@ def marc_to_unicode(x):
             else:
                 return y.decode('ascii').replace(u'\x1b', u'\xa0')
     return f(x)
-
-class OLISSearch(object):
-    def __init__(self, query, conf):
-        self.connection = zoom.Connection(
-            getattr(conf, 'host'),
-            getattr(conf, 'port', 210),
-            charset = 'UTF-8',
-        )
-        self.connection.databaseName = getattr(conf, 'database')
-        self.connection.preferredRecordSyntax = getattr(conf, 'syntax', 'USMARC')
-
-        self.query = zoom.Query('CCL', query)
-
-        self.results = self.connection.search(self.query)
-
-    def __iter__(self):
-        for r in self.results:
-            yield OLISResult(r)
-
-    def __len__(self):
-        return len(self.results)
-
-    def __getitem__(self, key):
-        if isinstance(key, slice):
-            if key.step:
-                raise NotImplementedError("Stepping not supported")
-            return map(OLISResult, self.results.__getslice__(key.start, key.stop))
-        return OLISResult(self.results[key])
 
 class ISBNOrISSNSearch(OLISSearch):
     def __init__(self, number, conf, number_type=None):
