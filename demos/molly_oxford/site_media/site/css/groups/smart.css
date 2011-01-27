@@ -148,7 +148,7 @@ div#bc-title h1 {
     text-align:left;
     color:#ffffff;
     white-space: nowrap;
-	/*text-shadow: 1px 1px 0px #111;*/
+	text-shadow: 1px 1px 0px #111;
 }
 div#bc-title h1.with-icon {
     background-repeat: no-repeat;
@@ -457,7 +457,7 @@ button, input[type="submit"], input[type="reset"] {
     background: #838791 url(../../../site/png/new/buttons/btn.bg.png) repeat-x 0px 0px;
     padding:5px 10px 6px 10px;
     font-weight:bold;
-    /*text-shadow: 1px 1px 1px #111;*/
+    text-shadow: 1px 1px 1px #111;
     border:1px solid rgba(0,0,0,0.4);
     -moz-border-radius: 5px;
     -moz-box-shadow: 0px 0px 2px rgba(0,0,0,0.5);
@@ -481,7 +481,7 @@ h3 {
     color:#222;
     padding: 5px 5px; margin: 0;
     text-align: center;
-    /*text-shadow:2px 2px 2px #ccc;*/ 
+    text-shadow:2px 2px 2px #ccc;
 }
 
 div.bubble {
@@ -547,7 +547,6 @@ div.form-section {
     -moz-box-shadow: 2px 2px 2px #333; -webkit-box-shadow: 2px 2px 2px #333; box-shadow: 2px 2px 2px #333;
 
     color: #333;
-    /*text-shadow: 1px 1px 1px #ccc;*/
 }
 
 div.form-section h2 {
@@ -590,7 +589,6 @@ div.form-section ul.errorlist + input , div.form-section ul.errorlist + textarea
 div.form-section dl dt {
     font-size: 1.2em;
     color: #333;
-    /*text-shadow: 1px 1px 1px #aaa;*/
     margin-top:4px;
 }
 
@@ -654,13 +652,11 @@ ul.content-list li.superuser-comment {
 			div.section-content
 			div.form-section
 */
-
-/* div.section is now 'legacy' - it should be replaced by div.section and one of the above */
 div.section {
-    background:-moz-linear-gradient(top, #fff, #cfcfcf);
-    background:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#dfdfdf));
-    /* background:transparent #B88C54 url('../../site/png/new/gradients/gradient-50-nrWhite-Transparent.png') repeat-x */;
-    margin:10px;
+    background:-moz-linear-gradient(top, #fff, #f2f2f2);
+    background:-webkit-gradient(linear, left top, left bottom, from(#fff), to(#f2f2f2));
+    background:transparent #f2f2f2 url('../../site/png/new/gradients/gradient-50-nrWhite-Transparent.png') repeat-x */;
+    margin: 10px;
     -webkit-border-radius:8px; -moz-border-radius: 8px; border-radius: 8px;
     -moz-box-shadow: 2px 2px 2px #333; -webkit-box-shadow: 2px 2px 2px #333; box-shadow: 2px 2px 2px #333;
 }
@@ -670,20 +666,16 @@ div.header {
     padding:5px;
     border-top:1px solid rgba(255, 255, 255, 0.33);
     border-left:1px solid rgba(255, 255, 255, 0.33);
-	background:#dfdfdf;
-    background:-moz-linear-gradient(top, #fff, #cfcfcf);
-    background:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#dfdfdf));
+    background:-moz-linear-gradient(top, #fff, #f2f2f2);
+    background:-webkit-gradient(linear, left top, left bottom, from(#fff), to(#f2f2f2));
+    background:#f2f2f2;
     -webkit-border-top-right-radius:5px;-moz-border-radius-topright: 5px; border-top-right-radius: 5px;
     -webkit-border-top-left-radius:5px; -moz-border-radius-topleft: 5px;  border-top-left-radius: 5px;
-/*
-    -webkit-border-bottom-right-radius:5px;-moz-border-radius-bottomright: 5px; border-bottom-right-radius: 5px;
-    -webkit-border-bottom-left-radius:5px; -moz-border-radius-bottomleft: 5px;  border-bottom-left-radius: 5px;
-*/
 }
 
 div.header h2 {
     color: rgb(34, 34, 34);
-    /*text-shadow: 2px 2px 2px rgb(204, 204, 204);*/
+    text-shadow: 2px 2px 2px #ccc;
     text-align: left;
     font-size: 11pt;
     padding-top: 3px;
@@ -714,11 +706,10 @@ div.form-section dt.sakai-validation-error {
     font-style: italic;
     background-color:#400000;
     color:#ffffff;
-    /*text-shadow: none;*/
     padding:3px 8px;
     margin-bottom: 8px;
 }
-
+ 
 div.form-section dl dd ul {
     list-style: none;
     padding-left:0;
@@ -795,7 +786,7 @@ div.button {
     background:#002147 url('../../../site/png/icons/list-arrow.png') no-repeat;
     background-position: right center;
 
-	 margin: 4px 2px 4px auto;
+	margin: 4px 2px 4px auto;
     min-width: 70px;
     max-width: 100px;
     padding: 3px;
@@ -815,7 +806,7 @@ div.button > a {
     height: 2em;
     line-height: 2em;
     vertical-align: middle;
-    /*text-shadow: 0 -1px 1px #000;*/
+    text-shadow: 0 -1px 1px #000;
 }
 
 
