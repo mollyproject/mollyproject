@@ -1,11 +1,14 @@
-from PyZ3950 import zoom
+from datetime import datetime
 
-from molly.apps.library.models import LibrarySearchResult
+from PyZ3950 import zoom
+from PyZ3950.zmarc import MARC, MARC8_to_Unicode
+
+from molly.apps.library.models import LibrarySearchResult, Library
 from molly.apps.library.providers import BaseLibrarySearchProvider
 
 class Z3950(BaseLibrarySearchProvider):
     
-    class Z3950SearchResult(LibrarySearchResult):
+    class SearchResult(LibrarySearchResult):
         USM_CONTROL_NUMBER = 1
         USM_ISBN = 20
         USM_ISSN = 22
@@ -67,18 +70,19 @@ class Z3950(BaseLibrarySearchProvider):
             for datum in self.metadata[self.USM_LOCATION]:
                 library = Library(datum['b'])
                 if not 'p' in datum:
-                    availability = AVAIL_UNKNOWN
+                    availability = LibrarySearchResult.AVAIL_UNKNOWN
                     datum['y'] = ['Check web OPAC']
                     due_date = None
                 elif not 'y' in datum:
-                    due_date, availability = None, AVAIL_UNKNOWN
+                    due_date = None
+                    availability = LibrarySearchResult.AVAIL_UNKNOWN
                 elif datum['y'][0].startswith('DUE BACK: '):
                     due_date = datetime.strptime(datum['y'][0][10:], '%d/%m/%y')
-                    availability = AVAIL_UNAVAILABLE
+                    availability = LibrarySearchResult.AVAIL_UNAVAILABLE
                 else:
                     due_date = None
-                    availability = AVAILABILITIES.get(datum['y'][0],
-                                                      AVAIL_UNAVAILABLE)
+                    availability = self.AVAILABILITIES.get(datum['y'][0],
+                                        LibrarySearchResult.AVAIL_UNAVAILABLE)
     
                 if 'h' in datum:
                     shelfmark = datum['h'][0]
@@ -148,7 +152,7 @@ class Z3950(BaseLibrarySearchProvider):
             else:
                 return []
     
-    class Z3950Results:
+    class Results:
         """
         A thing that pretends to be a list for lazy parsing of search results
         """
@@ -158,7 +162,7 @@ class Z3950(BaseLibrarySearchProvider):
         
         def __iter__(self):
             for result in self.results:
-                yield Z3950Result(result)
+                yield Z3950.SearchResult(result)
         
         def __len__(self):
             return len(self.results)
@@ -167,7 +171,7 @@ class Z3950(BaseLibrarySearchProvider):
             if isinstance(key, slice):
                 if key.step:
                     raise NotImplementedError("Stepping not supported")
-                return map(Z3950Result,
+                return map(Z3950.SearchResult,
                            self.results.__getslice__(key.start, key.stop))
     
     def __init__(self, host, database, port=210, syntax='USMARC', charset='UTF-8'):
@@ -210,7 +214,7 @@ class Z3950(BaseLibrarySearchProvider):
         
         # Convert Query object into a Z39.50 query
         z3950_query = []
-        if query.title != None:
+        if query.author != None:
             z3950_query.append('(au="%s")' % query.author)
         if query.title != None:
             z3950_query.append('(ti="%s")' % query.title)
@@ -219,4 +223,24 @@ class Z3950(BaseLibrarySearchProvider):
         
         z3950_query = zoom.Query('CCL', 'and'.join(z3950_query))
         
-        return self.Z3950Results(connection.search(z3950_query))
+        results = self.Results(connection.search(z3950_query))
+        return results
+
+def marc_to_unicode(x):
+    translator = MARC8_to_Unicode()
+    def f(y):
+        if isinstance(y, dict):
+            return dict((k,f(y[k])) for k in y)
+        elif isinstance(y, tuple):
+            return tuple(f(e) for e in y)
+        elif isinstance(y, list):
+            return [f(e) for e in y]
+        elif isinstance(y, str):
+            if any((ord(c) > 127) for c in y):
+                # "The ESC character 0x1B is mapped to the no-break space
+                #  character, unless it is part of a valid ESC sequence"
+                #      -- http://unicode.org/Public/MAPPINGS/ETSI/GSM0338.TXT
+                return translator.translate(y).replace(u'\x1b', u'\xa0')
+            else:
+                return y.decode('ascii').replace(u'\x1b', u'\xa0')
+    return f(x)

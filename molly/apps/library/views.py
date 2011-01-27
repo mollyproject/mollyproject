@@ -74,10 +74,8 @@ class SearchDetailView(BaseView):
         except LibrarySearchQuery.InconsistentQuery, e:
             return self.handle_error(request, context, e.msg)
         
-        # Call providers
-        results = []
-        for provider in reversed(self.conf.providers):
-            results.append(provider.library_search(query))
+        # Call provider
+        results = self.conf.provider.library_search(query)
         
         # Paginate results
         paginator = Paginator(results, 10)

@@ -173,3 +173,23 @@ class LibrarySearchResult(object):
 
     def __unicode__(self):
         return self.title
+
+
+class Library(object):
+    def __init__(self, location):
+        self.location = tuple(location)
+    
+    def __unicode__(self):
+        return " - ".join(self.location)
+    __repr__ = __unicode__
+
+    def __hash__(self):
+        return hash((type(self), self.location))
+
+    def __eq__(self, other):
+        return self.location == other.location
+
+    def availability_display(self):
+        return [
+            'unavailable', 'unknown', 'stack', 'reference', 'available'
+        ][self.availability]

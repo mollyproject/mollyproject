@@ -45,7 +45,7 @@
 <ul class="link-list no-round-bottom">
 {% for item in page.object_list %}
 <li{% if forloop.last %} class="no-round-bottom"{% endif %}>
-    <a href="{% url z3950:item-detail item.control_number %}">
+    <a href="{% url library:item-detail item.control_number %}">
         {{ item  }}{% if item.author %}
         <br/><small><strong>Author:</strong> {{ item.author }}</small>{% endif %}
         <br/><small><strong>Publisher:</strong> {{ item.publisher }}</small>{% if item.edition %}

@@ -1,4 +1,4 @@
-{% extends "z3950/base.html" %}
+{% extends "library/base.html" %}
 {% load molly_maps %}
 {% block content %}
 
@@ -95,7 +95,7 @@
     {% else %}
         {# Sub item #}
         <li>
-          <a href="{% url z3950:item-holdings-detail control_number,library.location.1 %}">
+          <a href="{% url library:item-holdings-detail control_number,library.location.1 %}">
             {{ books|length }} items with availability at most <em>{{ library.availability_display }}</em>
           </a>
     {% endifequal %}
