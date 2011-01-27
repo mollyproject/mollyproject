@@ -3,7 +3,6 @@ from xml.etree import ElementTree as ET
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
-from molly.utils.renderers import mobile_render
 
 logger = logging.getLogger('molly_oxford.results')
 
