@@ -176,12 +176,12 @@ class NaptanMapsProvider(BaseMapsProvider):
             'uri-local': 'TaxiRank',
         },
         TRAIN_STATION: { # We want to add this as an entity_type, but not have it match when parsing the main naptan file
-            'slug': 'train-station',
+            'slug': 'rail-station',
             'article': 'a',
-            'verbose-name': 'train station',
-            'verbose-name-plural': 'train stations',
+            'verbose-name': 'rail station',
+            'verbose-name-plural': 'rail stations',
             'nearby': True, 'category': False,
-            'uri-local': 'TrainStation',
+            'uri-local': 'RailStation',
         },
         None: {
             'slug': 'public-transport-access-node',
