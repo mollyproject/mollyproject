@@ -57,17 +57,13 @@
 	{# Search Elsewhere #}
 	<div class="section">
         <div class="header">
-	  <h2>Search elsewhere <small>for<em> {{ search_form.data.query }}</em></small></h2> 
+	  <h2>Specific searches</h2> 
 	   </div>
-<h2>Contact search</h2>
 	  <ul class="link-list">
-	    <li><a href="{% url contact:result_list %}?query={{ search_form.data.query }}&amp;method=email">E-mail</a></li>
-	    <li><a href="{% url contact:result_list %}?query={{ search_form.data.query }}&amp;method=phone">Phone</a></li>
-	 </ul>
-<h2>Library search</h2>
-	 <ul class="link-list">
-	    <li><a href="{% url z3950:search %}?title={{ search_form.data.query }}">Title</a></li>
-	    <li class="round-bottom"><a href="{% url z3950:search %}?author={{ search_form.data.query }}">Author</a></li>
+	    <li><a href="{% url contact:result_list %}?query={{ search_form.data.query }}&amp;method=email">E-mail addresses associated with name <em>'{{ search_form.data.query }}'</em></a></li>
+	    <li><a href="{% url contact:result_list %}?query={{ search_form.data.query }}&amp;method=phone">Phone numbers associated with name <em>'{{ search_form.data.query }}'</em></a></li>
+	    <li><a href="{% url z3950:search %}?title={{ search_form.data.query }}">Library books titled with <em>'{{ search_form.data.query }}'</em></a></li>
+	    <li class="round-bottom"><a href="{% url z3950:search %}?author={{ search_form.data.query }}">Library books authored by <em>'{{ search_form.data.query }}'</em> </a></li>
 	  </ul>
         </div>
 	</div>
