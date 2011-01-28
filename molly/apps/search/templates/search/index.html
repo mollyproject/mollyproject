@@ -1,11 +1,10 @@
-{% extends "search/base.html" %}{% load molly_apps_search %}
+{% extends "search/base.html" %}
 
 {% block pagetitle %}Search{% endblock %}
 {% block title %}m.ox | Search{% if results %}: {{ search_form.data.query }}{% endif %}{% endblock %}
 
 {% block content %}
 
-{% search_form %}
 <form method="get" action="{% url search:index %}">
     <!-- Doing the devil's work below: couldn't get a CSS design to work with Blackberry 8900 so using Tables as a last resort. Tim F -->
 <h2 class="invisible">Search</h2>    
