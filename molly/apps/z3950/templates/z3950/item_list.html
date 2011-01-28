@@ -4,11 +4,13 @@
 
 {% if error_message %}
 <div class="section">
-<div class="header">
-<div class="bubble pad-10">
-<p>There was an error with your search:</p>
-<p><strong>{{ error_message }}</strong></p>
-</div></div></div>
+    <div class="header">
+        <h2>There was an error with your search</h2>
+    </div>
+    <div class="section-content">
+        <p><strong>{{ error_message }}</strong></p>
+    </div>
+</div>
 {% endif %}
 
 {% if search_form %}{% include "z3950/search_form.html" %}{% endif %}
