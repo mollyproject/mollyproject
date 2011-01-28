@@ -549,10 +549,6 @@ div.form-section {
     color: #333;
 }
 
-div.form-section h2 {
-    color:#002147;
-}
-
 div.form-section dl {
     padding-top:4px;
 }
@@ -666,14 +662,14 @@ div.header {
     padding:5px;
     border-top:1px solid rgba(255, 255, 255, 0.33);
     border-left:1px solid rgba(255, 255, 255, 0.33);
-    background:#dfdfdf;
+    background-color: #dfdfdf;
     background:-moz-linear-gradient(top, #fff, #dfdfdf);
     background:-webkit-gradient(linear, left top, left bottom, from(#fff), to(#dfdfdf));
     -webkit-border-top-right-radius:5px;-moz-border-radius-topright: 5px; border-top-right-radius: 5px;
     -webkit-border-top-left-radius:5px; -moz-border-radius-topleft: 5px;  border-top-left-radius: 5px;
 }
 
-div.header h2 {
+div.header h2, div.form-section h2 {
     color: #222;
     text-shadow: 2px 2px 2px #ccc;
     text-align: left;
@@ -704,7 +700,9 @@ span.sakai-compulsory-question {
 
 div.form-section dt.sakai-validation-error {
     font-style: italic;
-    background-color:#400000;
+    background-color: #dfdfdf;
+    background:-moz-linear-gradient(top, #fff, #dfdfdf);
+    background:-webkit-gradient(linear, left top, left bottom, from(#fff), to(#dfdfdf));
     color:#ffffff;
     padding:3px 8px;
     margin-bottom: 8px;
