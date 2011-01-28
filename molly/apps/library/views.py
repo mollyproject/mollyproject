@@ -137,6 +137,7 @@ class ItemDetailView(ZoomableView):
         # corresponding to colours
         
         points = []
+        point_libraries = []
         for library, books in context['item'].libraries.items():
             entity = library.get_entity()
             if entity != None and entity.location != None:
@@ -145,6 +146,7 @@ class ItemDetailView(ZoomableView):
                                entity.location[1],
                                colour,
                                entity.title))
+                point_libraries.append(library)
         
         if len(points) > 0:
             user_location = request.session.get('geolocation:location')
@@ -161,7 +163,7 @@ class ItemDetailView(ZoomableView):
             # Yes, this is weird. fit_to_map() groups libraries with the same
             # location so here we add a marker_number to each library to display
             # in the template.
-            lib_iter = iter(context['item'].libraries.keys())
+            lib_iter = iter(point_libraries)
             for i, (a,b) in enumerate(context['map'].points):
                 for j in range(len(b)):
                     lib_iter.next().marker_number = i + 1
