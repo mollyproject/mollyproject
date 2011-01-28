@@ -10,6 +10,7 @@
 <div class="section">
 <div class="header">
   <h2>Results</h2>
+</div>
 {% if results %}
   	<ol class="search-results">
 	{% for result in results %}
@@ -29,7 +30,6 @@
 	  </ol>
 	</div>
 </div>
-</div>
 {% else %}
 	<div class="note"><div class="bubble pad-10">Sorry, your search returned no results.</div></div>
 </div>
@@ -39,6 +39,7 @@
 	<div class="section">
         <div class="header">
 	  <h2>Search elsewhere <small>for<em> {{ search_form.data.query }}</em></small></h2> 
+	   </div>
 <h2>Contact search</h2>
 	  <ul class="link-list">
 	    <li><a href="{% url contact:result_list %}?query={{ search_form.data.query }}&amp;method=email">E-mail</a></li>
@@ -59,19 +60,22 @@
 {# Universal Search Form #}
 <div class="section">
 <div class="header">
-	<div class="form">
-  <form method="get" action="">
+<div class="form">
+  
     <h2>
       {{ search_form.query.label }}{% if search_form.application %} {{ search_form.cleaned_data.application }}{% endif %}
     </h2>
+
+  <form method="get" action="">
       <p>
         {{ search_form.query }}{{ search_form.application }}
       </p>
 	  <p><input type="submit" value="Go!"/></p>
   </form>
-	</div>
 </div>
 </div>
+</div>
+
 {# End Universal Search Form #}
 
 
