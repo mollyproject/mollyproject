@@ -37,7 +37,7 @@
           {% endfor %}
         </div></div>
         {% endifnotequal %}
-        <ul class="link-list{% ifnotequal 1 page_count %} no-round-bottom{% endif %}" id="people">
+        <ul class="link-list{% ifnotequal 1 page_count %} no-round-bottom{% endifnotequal %}" id="people">
           {% for person in page.object_list %}
             <li class="contact-person">
               {% include "contact/result.html" %}
