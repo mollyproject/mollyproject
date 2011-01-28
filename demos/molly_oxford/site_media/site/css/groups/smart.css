@@ -549,10 +549,6 @@ div.form-section {
     color: #333;
 }
 
-div.form-section h2 {
-    color:#002147;
-}
-
 div.form-section dl {
     padding-top:4px;
 }
@@ -673,7 +669,7 @@ div.header {
     -webkit-border-top-left-radius:5px; -moz-border-radius-topleft: 5px;  border-top-left-radius: 5px;
 }
 
-div.header h2 {
+div.header h2, div.form-section h2 {
     color: #222;
     text-shadow: 2px 2px 2px #ccc;
     text-align: left;
