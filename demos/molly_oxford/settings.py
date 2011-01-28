@@ -260,10 +260,12 @@ APPLICATIONS = [
         travel_alerts = True,
     ),
 
-    Application('molly.apps.z3950', 'library', 'Library search',
+    Application('molly.apps.library', 'library', 'Library search',
         verbose_name = 'Oxford Library Information System',
-        host = 'library.ox.ac.uk',
-        database = 'MAIN*BIBMAST',
+        library_identifier = 'olis',
+        provider = Provider('molly.apps.library.providers.Z3950',
+                            host = 'library.ox.ac.uk',
+                            database = 'MAIN*BIBMAST'),
     ),
 
     Application('molly.apps.podcasts', 'podcasts', 'Podcasts',
