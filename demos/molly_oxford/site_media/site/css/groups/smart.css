@@ -666,7 +666,7 @@ div.header {
     padding:5px;
     border-top:1px solid rgba(255, 255, 255, 0.33);
     border-left:1px solid rgba(255, 255, 255, 0.33);
-    background:#dfdfdf;
+    background-color: #dfdfdf;
     background:-moz-linear-gradient(top, #fff, #dfdfdf);
     background:-webkit-gradient(linear, left top, left bottom, from(#fff), to(#dfdfdf));
     -webkit-border-top-right-radius:5px;-moz-border-radius-topright: 5px; border-top-right-radius: 5px;
@@ -704,7 +704,9 @@ span.sakai-compulsory-question {
 
 div.form-section dt.sakai-validation-error {
     font-style: italic;
-    background-color:#400000;
+    background-color: #dfdfdf;
+    background:-moz-linear-gradient(top, #fff, #dfdfdf);
+    background:-webkit-gradient(linear, left top, left bottom, from(#fff), to(#dfdfdf));
     color:#ffffff;
     padding:3px 8px;
     margin-bottom: 8px;
