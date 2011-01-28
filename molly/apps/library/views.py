@@ -111,7 +111,6 @@ class ItemDetailView(BaseView):
     
     def initial_context(self, request, control_number):
         item = self.conf.provider.control_number_search(control_number)
-        print item
         if item is None:
             raise Http404
 
@@ -137,38 +136,42 @@ class ItemHoldingsView(BaseView):
     Specific details of holdings of a particular item
     """
     
-    def initial_context(cls, request, control_number, sublocation):
-        items = search.ControlNumberSearch(control_number, cls.conf)
-        if len(items) == 0:
-             raise Http404
-        item = items[0]
-
-        try:
-            library = [l for l in item.libraries if l.location[1] == sublocation][0]
-        except IndexError:
+    def initial_context(self, request, control_number, sublocation):
+        
+        # Get item from database
+        item = self.conf.provider.control_number_search(control_number)
+        if item is None:
+            raise Http404
+        
+        # Find which particular library we're interested in
+        library = None
+        for item_library in item.libraries:
+            if item_library.location[1] == sublocation:
+                library = item_library
+        
+        if library is None:
             raise Http404
 
         return {
-            'zoom': cls.get_zoom(request),
             'item': item,
             'library': library,
             'control_number': control_number,
             'books': item.libraries[library],
         }
 
-    def get_metadata(cls, request, control_number, sublocation):
+    def get_metadata(self, request, control_number, sublocation):
         return {
             'show_in_results': False,
         }
 
     @BreadcrumbFactory
-    def breadcrumb(cls, request, context, control_number, sublocation):
+    def breadcrumb(self, request, context, control_number, sublocation):
         return Breadcrumb(
-            cls.conf.local_name,
+            self.conf.local_name,
             lazy_parent('item-detail', control_number=control_number),
             'Item holdings information',
             lazy_reverse('item-holdings-detail', args=[control_number,sublocation]),
         )
 
-    def handle_GET(cls, request, context, control_number, sublocation):
-        return cls.render(request, context, 'z3950/item_holdings_detail')
+    def handle_GET(self, request, context, control_number, sublocation):
+        return self.render(request, context, 'library/item_holdings_detail')

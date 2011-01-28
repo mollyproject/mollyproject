@@ -63,8 +63,8 @@
 <div class="header">
     <h2>{{ library.location|join:" - " }}</h2>
 </div>
-{% if library.oxpoints_id and library.oxpoints_location %}
-    {% render_location_map library.oxpoints_location %}
+{% if library.get_entity %}
+    {% render_location_map library.get_entity.location %}
 {% endif %}
   
     <ul class="content-list">

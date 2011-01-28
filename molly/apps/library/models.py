@@ -1,3 +1,8 @@
+from django.http import Http404
+
+from molly.conf.applications import app_by_local_name
+from molly.apps.places import get_entity
+
 class LibrarySearchQuery:
     """
     An object which gets passed to library search providers containing a library
@@ -201,3 +206,18 @@ class Library(object):
         return [
             'unavailable', 'unknown', 'stack', 'reference', 'available'
         ][self.availability]
+    
+    def get_entity(self):
+        """
+        Gets the entity for this library. This look up is done using the
+        identifier namespace defined in the config. Returns None if no
+        identifier can be found.
+        """
+        if hasattr(app_by_local_name('library'), 'library_identifier'):
+            library_identifier = app_by_local_name('library').library_identifier
+            try:
+                return get_entity(library_identifier, self.location[1])
+            except Http404:
+                return None
+        else:
+            return None
