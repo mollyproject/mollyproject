@@ -145,7 +145,7 @@ class ItemDetailView(ZoomableView):
                 points.append((entity.location[0],
                                entity.location[1],
                                colour,
-                               entity.title))
+                               ' - '.join(library.location)))
                 point_libraries.append(library)
         
         if len(points) > 0:

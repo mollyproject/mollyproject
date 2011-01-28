@@ -23,7 +23,7 @@ class LibrarySearchQuery:
     class InconsistentQuery(ValueError):
         def __init__(self, msg):
             self.msg = msg
-    
+        
     @staticmethod
     def _clean_isbn(isbn):
         """
@@ -58,24 +58,30 @@ class LibrarySearchQuery:
                 cleaned.append(word)
         return ' '.join(cleaned), frozenset(removed)
     
-    def __init__(self, title, author, isbn):
+    def __init__(self, title=None, author=None, isbn=None, issn=None):
         """
         @param title: The title of the book to search for
         @type title: str or None
         @param author: The author of the book to search for
         @type author: str or None
-        @param isbn: an ISBN number to search for - can contain * in place of X
+        @param isbn: an ISBN number to search for - can contain * in place of X.
         @type isbn: str or None
+        @param issn: an ISSN number to search for - can contain * in place of X.
+        @type issn: str or None
         @raise LibrarySearchQuery.InconsistentQuery: If the query parameters are
             inconsistent (e.g., isbn specified alongside title and author, or no
             queries present)
         """
-
-        if (title or author) and isbn:
+        
+        if isbn and issn:
+            raise self.InconsistentQuery(
+                "You cannot specify both an ISBN and an ISSN.")
+        
+        if (title or author) and (isbn or issn):
             raise self.InconsistentQuery(
                 "You cannot specify both an ISBN and a title or author.")
-
-        if not (title or author or isbn):
+        
+        if not (title or author or isbn or issn):
             raise self.InconsistentQuery(
                 "You must supply some subset of title or author, and ISBN.")
         
@@ -97,6 +103,11 @@ class LibrarySearchQuery:
             self.isbn = self._clean_isbn(isbn)
         else:
             self.isbn = None
+        
+        if issn:
+            self.issn = self._clean_isbn(issn)
+        else:
+            self.issn = None
 
 class LibrarySearchResult(object):
     """

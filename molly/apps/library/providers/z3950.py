@@ -231,6 +231,8 @@ class Z3950(BaseLibrarySearchProvider):
             z3950_query.append('(ti="%s")' % query.title.replace('"', ''))
         if query.isbn != None:
             z3950_query.append('(isbn="%s")' % query.isbn.replace('"', ''))
+        if query.issn != None:
+            z3950_query.append('((1,8)="%s")' % query.issn.replace('"', ''))
         
         z3950_query = zoom.Query('CCL', 'and'.join(z3950_query))
         

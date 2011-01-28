@@ -25,7 +25,7 @@ class ApplicationSearchProvider(BaseSearchProvider):
         results = []
         for app in apps:
             try:
-                results += app.perform_search(request, query, application is not None)
+                results += app.perform_search(request, query, application != None)
             except Exception, e:
                 logger.exception("Application search provider raised exception: %r", e)
 

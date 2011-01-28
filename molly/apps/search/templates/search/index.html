@@ -46,8 +46,8 @@
 	 </ul>
 <h2>Library search</h2>
 	 <ul class="link-list">
-	    <li><a href="{% url z3950:search %}?title={{ search_form.data.query }}">Title</a></li>
-	    <li class="round-bottom"><a href="{% url z3950:search %}?author={{ search_form.data.query }}">Author</a></li>
+	    <li><a href="{% url library:search %}?title={{ search_form.data.query }}">Title</a></li>
+	    <li class="round-bottom"><a href="{% url library:search %}?author={{ search_form.data.query }}">Author</a></li>
 	  </ul>
         </div>
 	</div>

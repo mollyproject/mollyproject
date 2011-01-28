@@ -1,34 +1,10 @@
-import re, urllib, simplejson, traceback
-from datetime import datetime
+import simplejson
+import re
 from itertools import cycle
 
-
-from django.conf import settings
 from django.core.urlresolvers import reverse
 
-from molly.apps.places.models import Entity
-
-ITEM_RE = re.compile(r'(?P<heading>\d{1,3}) (..(\$(?P<sub>.)(?P<entry>[^\$]+) )+|(?P<raw>[^\$]+))')
-
-
-class ISBNOrISSNSearch(OLISSearch):
-    def __init__(self, number, conf, number_type=None):
-        if not number_type:
-            number, number_type = validate_isxn(number)
-        if number_type == 'issn':
-            # It's actually an ISSN
-            query = '(1,8)=%s' % number
-        else:
-            query = 'isbn=%s' % number
-        super(ISBNOrISSNSearch, self).__init__(query, conf)
-
-def isxn_checksum(s, initial=None):
-    if not initial:
-        initial = len(s)
-    cs = 0
-    for d in s:
-        cs, initial = (cs + (d*initial)) % 11, initial - 1
-    return cs
+from molly.apps.library.models import LibrarySearchQuery
 
 def validate_isxn(s):
 
@@ -68,21 +44,33 @@ def validate_isxn(s):
         return encode(s), ('issn' if len(s) == 8 else 'isbn')
 
 # Application Search
-class SiteSearch(object):
-    def __new__(cls, query, only_app, request):
+class ApplicationSearch(object):
+    
+    def __init__(self, application):
+        self.conf = application
+    
+    def perform_search(self, request, query, only_app):
         number, number_type = validate_isxn(query)
         if not number_type:
-            return [], False, None
-
-        results, items = [], ISBNOrISSNSearch(number, number_type)
-        for item in items:
+            return []
+        else:
+            query = {
+                number_type: number
+            }
+        
+        query = LibrarySearchQuery(**query)
+        
+        results = []
+        for item in self.conf.provider.library_search(query):
             results.append({
                 'title': item.title,
                 'redirect_if_sole_result': True,
-                'application': 'z3950',
+                'application': 'library',
                 'excerpt': '',
                 'additional': '<strong>Library item</strong>, Publisher: %s' % item.publisher,
-                'url': reverse('z3950_item_detail', args=[item.control_number]),
+                'url': reverse('library:item-detail', args=[item.control_number]),
             })
-
-        return results, False, None
+        
+        print results
+        
+        return results
