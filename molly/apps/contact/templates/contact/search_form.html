@@ -2,21 +2,23 @@
 
 <div class="section">
 <div class="header">
-  <div class="form">
   <form method="get" action="{% url contact:result_list %}">
-    <h2>
-      <label for="id_query">Search</label>
-    </h2>
-    <p>
-      {{ form.query }}
-    </p>
-    <p>
-{% for medium in medium_choices %}
-      <button type="submit" name="medium" value="{{ medium.0 }}">{{ medium.1|capfirst }}</button>
-{% endfor %}
-    </p>
+    <div class="form">
+      <h2>
+        <label for="id_query">Search</label>
+      </h2>
+    </div>
+    <div class="section-content">
+      <p>
+        {{ form.query }}
+      </p>
+      <p>
+  {% for medium in medium_choices %}
+        <button type="submit" name="medium" value="{{ medium.0 }}">{{ medium.1|capfirst }}</button>
+  {% endfor %}
+      </p>
+    </div>
   </form>
-  </div>
 </div>
 </div>
 
