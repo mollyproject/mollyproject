@@ -1,8 +1,9 @@
 from django.core.paginator import Paginator
 from django.http import Http404
 
-from molly.utils.views import BaseView
+from molly.utils.views import BaseView, ZoomableView
 from molly.utils.breadcrumbs import *
+from molly.maps import Map
 
 from molly.apps.library.forms import SearchForm
 from molly.apps.library.models import LibrarySearchQuery
@@ -104,20 +105,22 @@ class SearchDetailView(BaseView):
 
 AVAIL_COLORS = ['red', 'amber', 'purple', 'blue', 'green']
 
-class ItemDetailView(BaseView):
+class ItemDetailView(ZoomableView):
     """
     More detail about the item page
     """
     
     def initial_context(self, request, control_number):
+        context = super(ItemDetailView, self).initial_context(request)
         item = self.conf.provider.control_number_search(control_number)
         if item is None:
             raise Http404
-
-        return {
+        
+        context.update({
             'item': item,
             'control_number': control_number,
-        }
+        })
+        return context
 
     @BreadcrumbFactory
     def breadcrumb(self, request, context, control_number):
@@ -129,14 +132,50 @@ class ItemDetailView(BaseView):
         )
 
     def handle_GET(self, request, context, control_number):
+        
+        # Build a map of all the libraries that have this book, with markers
+        # corresponding to colours
+        
+        points = []
+        for library, books in context['item'].libraries.items():
+            entity = library.get_entity()
+            if entity != None and entity.location != None:
+                colour = AVAIL_COLORS[max(b['availability'] for b in books)]
+                points.append((entity.location[0],
+                               entity.location[1],
+                               colour,
+                               entity.title))
+        
+        if len(points) > 0:
+            user_location = request.session.get('geolocation:location')
+            context['map'] = Map(
+                centre_point = (user_location[0], user_location[1], 'green', '')
+                                if user_location != None else None,
+                points = points,
+                min_points = 0 if context['zoom'] else len(points),
+                zoom = context['zoom'],
+                width = request.map_width,
+                height = request.map_height,
+            )
+            
+            # Yes, this is weird. fit_to_map() groups libraries with the same
+            # location so here we add a marker_number to each library to display
+            # in the template.
+            lib_iter = iter(context['item'].libraries.keys())
+            for i, (a,b) in enumerate(context['map'].points):
+                for j in range(len(b)):
+                    lib_iter.next().marker_number = i + 1
+        
         return self.render(request, context, 'library/item_detail')
 
-class ItemHoldingsView(BaseView):
+class ItemHoldingsView(ZoomableView):
     """
     Specific details of holdings of a particular item
     """
     
     def initial_context(self, request, control_number, sublocation):
+        
+        context = super(ItemHoldingsView, self).initial_context(request)
         
         # Get item from database
         item = self.conf.provider.control_number_search(control_number)
@@ -152,12 +191,13 @@ class ItemHoldingsView(BaseView):
         if library is None:
             raise Http404
 
-        return {
+        context.update({
             'item': item,
             'library': library,
             'control_number': control_number,
             'books': item.libraries[library],
-        }
+        })
+        return context
 
     def get_metadata(self, request, control_number, sublocation):
         return {

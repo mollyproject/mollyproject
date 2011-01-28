@@ -2,6 +2,7 @@ from django.http import Http404
 
 from molly.conf.applications import app_by_local_name
 from molly.apps.places import get_entity
+from molly.apps.places.models import Entity
 
 class LibrarySearchQuery:
     """
@@ -217,7 +218,7 @@ class Library(object):
             library_identifier = app_by_local_name('library').library_identifier
             try:
                 return get_entity(library_identifier, self.location[1])
-            except Http404:
+            except (Http404, Entity.MultipleObjectsReturned):
                 return None
         else:
             return None

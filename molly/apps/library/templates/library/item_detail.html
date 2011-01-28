@@ -68,16 +68,22 @@
 {% if item.libraries %}
 <div class="section">
 <div class="header">
-    <h2>Library holdings{% if map_hash %} by proximity{% endif %}</h2>
+    <h2>Library holdings</h2>
 </div>
+<div class="section-content no-round-bottom">
+    {% if map %}{% render_map map %}{% endif %}
     <div class="note"><div class="bubble pad-10">
         Please note that all libraries have admission and borrowing policies; inclusion in this list does not imply access.{% if map_hash %} Closest results are not necessarily best.{% endif %}
     </div></div>
+</div>
 <table class="content">
     <tbody>
 {% for library, books in item.libraries.items %}
         <tr class="sub-section-divider">
-            <th colspan="2"><a href="{% url library:item-holdings-detail control_number,library.location.1 %}">{{ library.location|join:" - " }}</a></td>
+            <th colspan="2">
+                {% if library.marker_number %}{{ library.marker_number }}. {% endif %}
+                <a href="{% url library:item-holdings-detail control_number,library.location.1 %}">{{ library.location|join:" - " }}</a>
+            </td>
         </tr>
 
     {% for book in books %}
