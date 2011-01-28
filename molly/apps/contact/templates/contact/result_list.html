@@ -30,7 +30,7 @@
       </div></div></div>
       {% if results.count %}
         {% ifnotequal 1 page_count %}
-        <div class="section-content"><div class="note">
+        <div class="section-content no-round-bottom"><div class="note">
           Pages:
           {% for page_number in results.page_range %}
             <a href="?page={{ page_number }}&amp;medium={{ form.cleaned_data.medium }}&amp;query={{ form.cleaned_data.query|urlencode }}" style="padding:0 7px 0 0;">{{ page_number }}</a>
