@@ -128,6 +128,8 @@
         <div class="section">
         <div class="header">
             <h2>Session</h2>
+	</div>
+	<div class="section-content">
 			<div class="bubble pad-10">
             <p>{{ session }}</p>
 			</div>
@@ -135,15 +137,19 @@
         </div>
         <hr/>
         <div class="section">
-        <div class="header">
             <h2>Device</h2>
+	</div>
+	<div class="section-content no-round-bottom">
 			<div class="bubble pad-10">
             <p>{{ device.brand_name }} {{ device.model_name }} ({{ device.devid }})</p>
             <p>{{ device.devua }}</p>
             <p>{{ ua }}</p>
 			<p>{{ parents }}</p>
 			</div>
+        <div class="header">
             <h2>Browser</h2>
+	</div>
+	<div class="section-content">
 			<div class="bubble pad-10">
             <p>{{ browser.brand_name }} {{ browser.model_name }} ({{ browser.devid }})</p>
             <p>{{ browser.devua }}</p>
@@ -154,6 +160,8 @@
         <div class="section">
         <div class="header">
             <h2>Meta</h2>
+	</div>
+	<div class="section-content">
 			<div class="bubble pad-10">
             <dl>
     {% for a,b in meta.items %}
@@ -168,6 +176,8 @@
         <div class="section">
         <div class="header">
             <h2>Preferences</h2>
+	</div>
+	<div class="section-content">
 			<div class="bubble pad-10">
             <p>{{ preferences }}</p>
 			</div>
