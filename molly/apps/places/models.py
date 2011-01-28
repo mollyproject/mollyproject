@@ -133,9 +133,16 @@ class Entity(models.Model):
             self._identifiers.all().delete()
             id_objs = []
             for scheme, value in identifiers.items():
-                id_obj = Identifier(scheme=scheme, value=value)
-                id_obj.save()
-                id_objs.append(id_obj)
+                if getattr(value, '__iter__', False) and not isinstance(value, basestring):
+                    # Is an iterable, but not a string
+                    for val in value:
+                        id_obj = Identifier(scheme=scheme, value=val)
+                        id_obj.save()
+                        id_objs.append(id_obj)
+                else:
+                    id_obj = Identifier(scheme=scheme, value=value)
+                    id_obj.save()
+                    id_objs.append(id_obj)
             self._identifiers.add(*id_objs)
         
         self.update_all_types_completion()
