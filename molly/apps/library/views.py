@@ -1,4 +1,5 @@
 from django.core.paginator import Paginator
+from django.http import Http404
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
@@ -108,122 +109,28 @@ class ItemDetailView(BaseView):
     More detail about the item page
     """
     
-    def initial_context(cls, request, control_number):
-        items = search.ControlNumberSearch(control_number, cls.conf)
-        if len(items) == 0:
-                raise Http404
-
-        display_map = {
-            'true':True, 'false':False
-        }.get(request.GET.get('with_map'))
-        if display_map is None:
-            display_map = (not request.session.get('geolocation:location') is None)
+    def initial_context(self, request, control_number):
+        item = self.conf.provider.control_number_search(control_number)
+        print item
+        if item is None:
+            raise Http404
 
         return {
-            'zoom': cls.get_zoom(request, None),
-            'item': items[0],
+            'item': item,
             'control_number': control_number,
-            'display_map': display_map,
-            'complex_shorten': True,
         }
 
     @BreadcrumbFactory
-    def breadcrumb(cls, request, context, control_number):
+    def breadcrumb(self, request, context, control_number):
         return Breadcrumb(
-            cls.conf.local_name,
+            self.conf.local_name,
             lazy_parent('search'),
             'Search result',
             lazy_reverse('item-detail', args=[control_number]),
         )
 
-    def handle_GET(cls, request, context, control_number):
-        return (cls.handle_with_location if context['display_map'] else cls.handle_without_location)(request, context)
-
-    def handle_with_location(cls, request, context):
-        points = []
-        location = request.session.get('geolocation:location')
-
-        all_libraries = context['item'].libraries.items()
-        libraries, stacks = [], []
-        for library, items in all_libraries:
-            if library.oxpoints_id and library.oxpoints_entity.is_stack:
-                stacks.append( (library, items) )
-            else:
-                libraries.append( (library, items) )
-
-        if libraries:
-            entity_ids = set(l.oxpoints_id for l in context['item'].libraries if l.oxpoints_id)
-            entities = Entity.objects.filter(_identifiers__scheme='oxpoints', _identifiers__value__in = entity_ids)
-            if location:
-                point = Point(location[1], location[0], srid=4326)
-
-                with_location = entities.filter(location__isnull=False)
-                without_location = entities.filter(location__isnull=True)
-
-                if with_location.count() == 0:
-                    return cls.handle_without_location(request, context)
-
-                entities = chain(
-                    with_location.distance(point).order_by('distance'),
-                    without_location.order_by('title'),
-                )
-
-                ordering = dict((e.identifiers['oxpoints'], i) for i, e in enumerate(entities))
-
-                libraries.sort(key=lambda l:(ordering[l[0].oxpoints_id] if l[0].oxpoints_id else float('inf')))
-
-            else:
-                entities.order_by('title')
-
-            for library, books in libraries:
-                if not (library.oxpoints_id and library.oxpoints_entity.location):
-                    library.has_location = False
-                    continue
-                color = AVAIL_COLORS[max(b['availability'] for b in books)]
-                points.append( (
-                    library.oxpoints_entity.location[0],
-                    library.oxpoints_entity.location[1],
-                    color,
-                    library.oxpoints_entity.title,
-                ) )
-
-            map = Map(
-                centre_point = (location[0], location[1], 'green', '') if location else None,
-                points = points,
-                min_points = 0 if context['zoom'] else len(points),
-                zoom = context['zoom'],
-                width = request.map_width,
-                height = request.map_height,
-            )
-
-            # Yes, this is weird. fit_to_map() groups libraries with the same location
-            # so here we add a marker_number to each library to display in the
-            # template.
-            lib_iter = iter(libraries)
-            for i, (a,b) in enumerate(map.points):
-                for j in range(len(b)):
-                    lib_iter.next()[0].marker_number = i + 1
-            # Finish off by adding a marker_number for those that aren't on the map.
-            # (lib_iter still contains the remaining items after the above calls to
-            # next() ).
-            for library in lib_iter:
-                library[0].marker_number = None
-        
-        context.update({
-            'libraries': libraries,
-            'stacks': stacks,
-            'map': map,
-        })
-
-        return cls.render(request, context, 'z3950/item_detail')
-
-    def handle_without_location(cls, request, context):
-        libraries = context['item'].libraries.items()
-        libraries.sort(key=lambda (l,i):l.location)
-
-        context['libraries'] = libraries
-
-        return cls.render(request, context, 'z3950/item_detail')
+    def handle_GET(self, request, context, control_number):
+        return self.render(request, context, 'library/item_detail')
 
 class ItemHoldingsView(BaseView):
     """

@@ -36,13 +36,12 @@ class LibrarySearchQuery:
     @staticmethod
     def _clean_input(input):
         """
-        Remove quotes and stop words from the input
+        Remove stop words from the input
         
         @return: The cleaned string and a set of removed stop words
         @rtype: str, frozenset
         """
         
-        input = input.replace('"', '').lower()
         # Cheap and nasty tokenisation
         cleaned = []
         removed = set()
@@ -94,6 +93,9 @@ class LibrarySearchQuery:
             self.isbn = None
 
 class LibrarySearchResult(object):
+    """
+    An object holding an individual result from a search
+    """
     
     id = ''
     """
@@ -176,6 +178,12 @@ class LibrarySearchResult(object):
 
 
 class Library(object):
+    """
+    An object representing a library (used in holdings)
+    
+    @ivar location: an identifier for this library
+    """
+    
     def __init__(self, location):
         self.location = tuple(location)
     

@@ -65,68 +65,34 @@
 
 </div>
 
-{% if libraries %}
+{% if item.libraries %}
 <div class="section">
 <div class="header">
     <h2>Library holdings{% if map_hash %} by proximity{% endif %}</h2>
 </div>
     <div class="note"><div class="bubble pad-10">
         Please note that all libraries have admission and borrowing policies; inclusion in this list does not imply access.{% if map_hash %} Closest results are not necessarily best.{% endif %}
-    </div></div> 
+    </div></div>
+<table class="content">
+    <tbody>
+{% for library, books in item.libraries.items %}
+        <tr class="sub-section-divider">
+            <th colspan="2"><a href="{% url library:item-holdings-detail control_number,library.location.1 %}">{{ library.location|join:" - " }}</a></td>
+        </tr>
 
-{% if map %}
-    {% render_map map %}
-{% endif %}
-
-    <ul class="link-list">
-{% for library, books in libraries %}
-    {% if library.oxpoints_id %}
-            <li><a href="{{ library.oxpoints_entity.get_absolute_url }}">{% if map_hash %}{{ library.marker_number|default_if_none:"Not on map" }}. {% endif %}{{ library.location|join:" - " }}</a></li>
-    {% else %}
-            {# Non-link-item #}
-            <li>{% if map_hash %}{{ library.marker_number|default_if_none:"Not on map" }}. {% endif %}{{ library.location|join:" - " }}</li>
-    {% endif %}
-
-    {% ifequal books|length 1 %}
-        {# subitem non-link-item #}
-        <li>
-        Shelfmark: <em>{{ books.0.shelfmark }}</em>, availability: <em>{{ books.0.availability_display }}</em>{% if books.0.materials_specified %}, issue: <em>{{ books.0.materials_specified }}</em>{% endif %}
-        </li>
-    {% else %}
-        {# Sub item #}
-        <li>
-          <a href="{% url library:item-holdings-detail control_number,library.location.1 %}">
-            {{ books|length }} items with availability at most <em>{{ library.availability_display }}</em>
-          </a>
-    {% endifequal %}
+    {% for book in books %}
+        <tr>
+            <td>
+                Shelfmark: <em>{{ book.shelfmark }}</em>
+                {% if book.materials_specified %} ,issue: <em>{{ books.0.materials_specified }}</em>{% endif %}    
+            </td>
+            <td><em>{{ book.availability_display }}</em></td>
+            
+        </tr>
+    {% endfor %}
 {% endfor %}
-    </ul>
-
-</div>
-{% endif %}
-
-
-{% if stacks %}
-<div class="section">
-<div class="header">
-    <h2>Holdings in stacks</h2>
-</div>
-    <ul class="link-list">
-{% for library, books in stacks %}
-{% if library.oxpoints_id %}
-        <li><a href="{{ library.oxpoints_entity.get_absolute_url }}">{{ forloop.counter }}. {{ library.location|join:" - " }}</a></li>
-{% else %}
-        {# Non Link #}
-        <li>{{ forloop.counter }}. {{ library.location|join:" - " }}</li>
-{% endif %}
-        {% for book in books %}
-        {# Subitem non-link-item #}
-        <li>
-        Shelfmark: <em>{{ book.shelfmark }}</em>, availability: <em>{{ book.availability_display }}</em>{% if book.materials_specified %}, issue: <em>{{ book.materials_specified }}</em>{% endif %}
-        </li>
-        {% endfor %}
-{% endfor %}
-    </ul>
+    </tbody>
+</table>
 
 </div>
 {% endif %}

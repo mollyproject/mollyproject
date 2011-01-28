@@ -147,7 +147,7 @@ class Z3950(BaseLibrarySearchProvider):
                 return []
     
         def issns(self):
-            if OLISResult.USM_ISSN in self.metadata:
+            if self.USM_ISSN in self.metadata:
                 return [a['a'][0] for a in self.metadata[self.USM_ISSN]]
             else:
                 return []
@@ -173,6 +173,8 @@ class Z3950(BaseLibrarySearchProvider):
                     raise NotImplementedError("Stepping not supported")
                 return map(Z3950.SearchResult,
                            self.results.__getslice__(key.start, key.stop))
+            else:
+                return Z3950.SearchResult(self.results[key])
     
     def __init__(self, host, database, port=210, syntax='USMARC', charset='UTF-8'):
         """
@@ -195,14 +197,10 @@ class Z3950(BaseLibrarySearchProvider):
         self._syntax = syntax
         self._charset = charset
     
-    def library_search(self, query):
+    def _make_connection(self):
         """
-        @param query: The query to be performed
-        @type query: molly.apps.library.models.LibrarySearchQuery
-        @return: A list of results
-        @rtype: [LibrarySearchResult]
+        Returns a connection to the Z39.50 server
         """
-        
         # Create connection to database
         connection = zoom.Connection(
             self._host,
@@ -212,19 +210,51 @@ class Z3950(BaseLibrarySearchProvider):
         connection.databaseName = self._database
         connection.preferredRecordSyntax = self._syntax
         
-        # Convert Query object into a Z39.50 query
+        return connection
+    
+    def library_search(self, query):
+        """
+        @param query: The query to be performed
+        @type query: molly.apps.library.models.LibrarySearchQuery
+        @return: A list of results
+        @rtype: [LibrarySearchResult]
+        """
+        
+        connection = self._make_connection()
+        
+        # Convert Query object into a Z39.50 query - we escape for the query by
+        # removing quotation marks
         z3950_query = []
         if query.author != None:
-            z3950_query.append('(au="%s")' % query.author)
+            z3950_query.append('(au="%s")' % query.author.replace('"', ''))
         if query.title != None:
-            z3950_query.append('(ti="%s")' % query.title)
+            z3950_query.append('(ti="%s")' % query.title.replace('"', ''))
         if query.isbn != None:
-            z3950_query.append('(isbn="%s")' % query.isbn)
+            z3950_query.append('(isbn="%s")' % query.isbn.replace('"', ''))
         
         z3950_query = zoom.Query('CCL', 'and'.join(z3950_query))
         
         results = self.Results(connection.search(z3950_query))
         return results
+    
+    def control_number_search(self, control_number):
+        """
+        @param control_number: The unique ID of the item to be looked up
+        @type control_number: str
+        @return: The item with this control ID, or None if none can be found
+        @rtype: LibrarySearchResult
+        """
+        
+        # Escape input
+        control_number = control_number.replace('"', '')
+        
+        z3950_query = zoom.Query('CCL', '(1,1032)="%s"' % control_number)
+        connection = self._make_connection()
+        results = self.Results(connection.search(z3950_query))
+        if len(results) > 0:
+            return results[0]
+        else:
+            return None
 
 def marc_to_unicode(x):
     translator = MARC8_to_Unicode()

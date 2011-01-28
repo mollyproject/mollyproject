@@ -22,11 +22,6 @@ class ISBNOrISSNSearch(OLISSearch):
             query = 'isbn=%s' % number
         super(ISBNOrISSNSearch, self).__init__(query, conf)
 
-class ControlNumberSearch(OLISSearch):
-    def __init__(self, control_number, conf):
-        query = '(1,1032)="%s"' % control_number
-        super(ControlNumberSearch, self).__init__(query, conf)
-
 def isxn_checksum(s, initial=None):
     if not initial:
         initial = len(s)
