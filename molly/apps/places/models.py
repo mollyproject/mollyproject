@@ -88,7 +88,25 @@ class Entity(models.Model):
         try:
             return self.__identifiers
         except AttributeError:
-            self.__identifiers = dict((i.scheme, i.value) for i in self._identifiers.all())
+            self.__identifiers = dict()
+            for identifier in self._identifiers.all():
+                scheme, value = identifier.scheme, identifier.value
+                if scheme in self.__identifiers:
+                    # Multi-valued list - first check if we've converted this
+                    # key to a list already
+                    if getattr(self.__identifiers[scheme], '__iter__', False) \
+                     and not isinstance(self.__identifiers[scheme], basestring):
+                        # We have, so just add it to the current list
+                        self.__identifiers[scheme].append(value)
+                    else:
+                        # convert this into a list
+                        self.__identifiers[scheme] = [
+                            self.__identifiers[scheme],
+                            value
+                        ]
+                else:
+                    self.__identifiers[scheme] = value
+            
             return self.__identifiers
 
     def get_metadata(self):
