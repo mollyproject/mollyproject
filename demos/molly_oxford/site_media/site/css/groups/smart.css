@@ -547,6 +547,13 @@ div.form-section {
 
     color: #333;
 }
+div.form-section h2 {
+    color: #222;
+    text-shadow: 2px 2px 2px #ccc;
+    text-align: center;
+    font-size: 11pt;
+    padding-top: 3px;
+}
 
 div.form-section dl {
     padding-top:4px;
@@ -668,13 +675,15 @@ div.header {
     -webkit-border-top-left-radius:5px; -moz-border-radius-topleft: 5px;  border-top-left-radius: 5px;
 }
 
-div.header h2, div.form-section h2 {
+div.header h2 {
     color: #222;
     text-shadow: 2px 2px 2px #ccc;
     text-align: left;
     font-size: 11pt;
     padding-top: 3px;
 }
+
+
 
 /* CSS 2.1 */
 div.header + ul.content-list, div.header + form, div.header + div.section-content {
