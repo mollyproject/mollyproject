@@ -653,8 +653,8 @@ ul.content-list li.superuser-comment {
 			div.form-section
 */
 div.section {
-    background:-moz-linear-gradient(top, #fff, #f2f2f2);
-    background:-webkit-gradient(linear, left top, left bottom, from(#fff), to(#f2f2f2));
+    background:-moz-linear-gradient(top, #fff, #dfdfdf);
+    background:-webkit-gradient(linear, left top, left bottom, from(#fff), to(#dfdfdf));
     background:transparent #f2f2f2 url('../../site/png/new/gradients/gradient-50-nrWhite-Transparent.png') repeat-x */;
     margin: 10px;
     -webkit-border-radius:8px; -moz-border-radius: 8px; border-radius: 8px;
@@ -666,15 +666,15 @@ div.header {
     padding:5px;
     border-top:1px solid rgba(255, 255, 255, 0.33);
     border-left:1px solid rgba(255, 255, 255, 0.33);
-    background:#f2f2f2;
-    background:-moz-linear-gradient(top, #fff, #f2f2f2);
-    background:-webkit-gradient(linear, left top, left bottom, from(#fff), to(#f2f2f2));
+    background:#dfdfdf;
+    background:-moz-linear-gradient(top, #fff, #dfdfdf);
+    background:-webkit-gradient(linear, left top, left bottom, from(#fff), to(#dfdfdf));
     -webkit-border-top-right-radius:5px;-moz-border-radius-topright: 5px; border-top-right-radius: 5px;
     -webkit-border-top-left-radius:5px; -moz-border-radius-topleft: 5px;  border-top-left-radius: 5px;
 }
 
 div.header h2 {
-    color: rgb(34, 34, 34);
+    color: #222;
     text-shadow: 2px 2px 2px #ccc;
     text-align: left;
     font-size: 11pt;
