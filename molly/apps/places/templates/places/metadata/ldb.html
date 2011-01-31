@@ -2,7 +2,7 @@
 
 <div class="section" id="ldb">
   <div class="header">
-    <h2>{{ train_station.title }} (departures) - {{ train_station.metadata.ldb.generatedAt|date:"H:i:s" }}</h2>
+    <h2>{{ train_station.title }} ({{ board }}) - {{ train_station.metadata.ldb.generatedAt|date:"H:i:s" }}</h2>
   </div>
   
   {% if train_station.metadata.ldb.nrccMessages.message %}
@@ -56,12 +56,17 @@
             {% if train_station.metadata.ldb.platformAvailable %} 
             <td>{{ service.platform }}</td>
             {% endif %}
-            <td>{{ service.std }}</td>
-            <td>{{ service.etd }}</td>
+            {% ifequal board "arrivals" %}
+              <td>{{ service.sta }}</td>
+              <td>{{ service.eta }}</td>
+            {% else %}
+              <td>{{ service.std }}</td>
+              <td>{{ service.etd }}</td>
+            {% endifequal %}
           </tr>
         {% empty %}
           <tr>
-            <td colspan="4">There are currently no scheduled departures.</td>
+            <td colspan="4">There are currently no scheduled {{ board }}.</td>
           </tr>
         {% endfor %}
       {% endif %}

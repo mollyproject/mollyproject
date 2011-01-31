@@ -15,7 +15,7 @@ class LiveDepartureBoardPlacesProvider(BaseMapsProvider):
         self._max_results = max_results
         self._token = token
 
-    def augment_metadata(self, entities):
+    def augment_metadata(self, entities, board='departures', **kwargs):
         station_entities = []
         for entity in entities:
             if not entity.identifiers.get('crs'):
@@ -35,7 +35,10 @@ class LiveDepartureBoardPlacesProvider(BaseMapsProvider):
         
         for entity in station_entities:
             try:
-                db = ldb.service.GetDepartureBoard(self._max_services, entity.identifiers['crs'])
+                if board == 'arrivals':
+                    db = ldb.service.GetArrivalBoard(self._max_services, entity.identifiers['crs'])
+                else:
+                    db = ldb.service.GetDepartureBoard(self._max_services, entity.identifiers['crs'])
                 entity.metadata['ldb'] = self.transform_suds(db)
                 entity.metadata['service_details'] = lambda s: self.transform_suds(ldb.service.GetServiceDetails(s))
                 entity.metadata['service_type'] = 'ldb'

@@ -252,10 +252,15 @@ class EntityDetailView(ZoomableView, FavouritableView):
                     associations += [{'type': type, 'entities': [get_entity(ns, value) for ns, value in es]} for type, es in associated_entities]
             except (KeyError, Http404):
                 pass
-
+        
+        board = request.GET.get('board', 'departures')
+        if board != 'departures':
+            board = 'arrivals'
+        
         context.update({
             'entity': entity,
             'train_station': entity, # This allows the ldb metadata to be portable
+            'board': board,
             'entity_types': entity.all_types.all(),
             'associations': associations,
         })
@@ -281,8 +286,8 @@ class EntityDetailView(ZoomableView, FavouritableView):
             return HttpResponsePermanentRedirect(entity.absolute_url)
 
         for provider in reversed(self.conf.providers):
-            provider.augment_metadata((entity, ))
-            provider.augment_metadata([e for atypes in context['associations'] for e in atypes['entities']])
+            provider.augment_metadata((entity, ), board=context['board'])
+            provider.augment_metadata([e for atypes in context['associations'] for e in atypes['entities']], board=context['board'])
 
         return self.render(request, context, 'places/entity_detail')
 
@@ -539,7 +544,15 @@ class ServiceDetailView(BaseView):
             if service is None:
                 raise Http404
 
-            destinations = [points['callingPoint'][-1]['locationName'] for points in service['subsequentCallingPoints']['callingPointList']]
+            if len(service['previousCallingPoints']):
+                sources = [points['callingPoint'][0]['locationName'] for points in service['previousCallingPoints']['callingPointList']]
+            else:
+                sources = [service['locationName']]
+
+            if len(service['subsequentCallingPoints']):
+                destinations = [points['callingPoint'][-1]['locationName'] for points in service['subsequentCallingPoints']['callingPointList']]
+            else:
+                destinations = [service['locationName']]
 
             # Trains can split and join, which makes figuring out the list of
             # calling points a bit difficult. The LiveDepartureBoards documentation
@@ -549,11 +562,12 @@ class ServiceDetailView(BaseView):
             calling_points += [{
                 'locationName': service['locationName'],
                 'crs': service['crs'],
-                'st': service['std'],
-                'et': service['etd'] if 'etd' in service else '',
+                'st': service['std'] if 'std' in service else service['sta'],
+                'et': service['etd'] if 'etd' in service else service['eta'],
                 'at': service['atd'] if 'atd' in service else '',
             }]
-            calling_points += service['subsequentCallingPoints']['callingPointList'][0]['callingPoint']
+            if len(service['subsequentCallingPoints']):
+                calling_points += service['subsequentCallingPoints']['callingPointList'][0]['callingPoint']
 
             # Then attach joining services to our thorough route in the correct
             # point, but only if there is a list of previous calling points
@@ -564,10 +578,11 @@ class ServiceDetailView(BaseView):
                             point['joining'] = points['callingPoint']
 
             # And do the same with splitting services
-            for points in service['subsequentCallingPoints']['callingPointList'][1:]:
-                for point in calling_points:
-                    if points['callingPoint'][0]['crs'] == point['crs']:
-                        point['splitting'] = {'destination': points['callingPoint'][-1]['locationName'], 'list': points['callingPoint']}
+            if len(service['subsequentCallingPoints']):
+                for points in service['subsequentCallingPoints']['callingPointList'][1:]:
+                    for point in calling_points:
+                        if points['callingPoint'][0]['crs'] == point['crs']:
+                            point['splitting'] = {'destination': points['callingPoint'][-1]['locationName'], 'list': points['callingPoint']}
 
             # Now get a list of the entities for the stations (if they exist)
             # to plot on a map
@@ -597,12 +612,18 @@ class ServiceDetailView(BaseView):
                             spoint['entity'] = point_entity
                             stop_entities.append(point_entity)
                             spoint['stop_num'] = len(stop_entities)
-
+            
+            if 'std' in service:
+                title = service['std'] + ' ' + service['locationName'] + ' to ' + ' and '.join(destinations)
+            else:
+                # This service arrives here
+                title = service['sta'] + ' from ' + ' and '.join(sources)
+            
             context.update({
                 'entity': entity,
                 'train_service': service,
                 'train_calling_points': calling_points,
-                'title': service['std'] + ' ' + service['locationName'] + ' to ' + ' and '.join(destinations),
+                'title': title,
                 'zoom_controls': False,
             })
         

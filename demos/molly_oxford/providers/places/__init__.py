@@ -18,7 +18,7 @@ class OxfordParkAndRidePlacesProvider(BaseMapsProvider):
     }
     _CARPARK_IDS = _CARPARKS.values()
 
-    def augment_metadata(self, entities):
+    def augment_metadata(self, entities, **kwargs):
         carparks = {}
 
         for entity in entities:

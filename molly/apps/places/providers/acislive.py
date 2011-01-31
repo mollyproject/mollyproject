@@ -101,7 +101,7 @@ class ACISLiveMapsProvider(BaseMapsProvider):
         return base + 'pip/stop_simulator_message.asp?NaPTAN=%s' % messages
         
     
-    def augment_metadata(self, entities):
+    def augment_metadata(self, entities, **kwargs):
         threads = []
         for entity in entities:
             # Ignore non-bus stop entities

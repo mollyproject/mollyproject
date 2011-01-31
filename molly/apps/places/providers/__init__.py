@@ -5,7 +5,7 @@ class BaseMapsProvider(object):
     def real_time_information(self, entity):
         return None
     
-    def augment_metadata(self, entities):
+    def augment_metadata(self, entities, **kwargs):
         pass
 
 from naptan import NaptanMapsProvider
