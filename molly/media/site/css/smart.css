@@ -7,25 +7,6 @@ body {
     margin: 0;
 }
 
-/* Async Loading */
-div#loading-bg {
-    display:none;
-    position:fixed;
-    height:100%;
-    width:100%;
-    padding-top:20%;
-    margin:0 auto;
-    background:#FFFFFF;
-    opacity: 0;
-}
-
-div#loading_img {
-    position: fixed;
-    margin:0 20%;
-    text-align: center;
-}
-/* End Async Loading */
-
 /* Index Page Specific
     - 1 CSS 2.1 Selector
     - 4 Webkit Only Tags
@@ -473,7 +454,6 @@ button, input[type="submit"], input[type="reset"] {
 
 h2 {
     text-align:center;
-    color:white;
     padding: 5px 0; margin: 0;
 }
 
@@ -481,7 +461,7 @@ h3 {
     color:#222;
     padding: 5px 5px; margin: 0;
     text-align: center;
-    /*text-shadow:2px 2px 2px #ccc;*/ 
+    text-shadow:2px 2px 2px #ccc;
 }
 
 div.bubble {
@@ -547,11 +527,13 @@ div.form-section {
     -moz-box-shadow: 2px 2px 2px #333; -webkit-box-shadow: 2px 2px 2px #333; box-shadow: 2px 2px 2px #333;
 
     color: #333;
-    /*text-shadow: 1px 1px 1px #ccc;*/
 }
-
 div.form-section h2 {
-    color:#002147;
+    color: #222;
+    text-shadow: 2px 2px 2px #ccc;
+    text-align: center;
+    font-size: 11pt;
+    padding-top: 8px;
 }
 
 div.form-section dl {
@@ -590,7 +572,6 @@ div.form-section ul.errorlist + input , div.form-section ul.errorlist + textarea
 div.form-section dl dt {
     font-size: 1.2em;
     color: #333;
-    /*text-shadow: 1px 1px 1px #aaa;*/
     margin-top:4px;
 }
 
@@ -654,13 +635,11 @@ ul.content-list li.superuser-comment {
 			div.section-content
 			div.form-section
 */
-
-/* div.section is now 'legacy' - it should be replaced by div.section and one of the above */
 div.section {
-    background:-moz-linear-gradient(top, #fff, #cfcfcf);
-    background:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#dfdfdf));
-    /* background:transparent #B88C54 url('../../site/png/new/gradients/gradient-50-nrWhite-Transparent.png') repeat-x */;
-    margin:10px;
+    background:-moz-linear-gradient(top, #fff, #dfdfdf);
+    background:-webkit-gradient(linear, left top, left bottom, from(#fff), to(#dfdfdf));
+    background:transparent #f2f2f2 url('../../site/png/new/gradients/gradient-50-nrWhite-Transparent.png') repeat-x */;
+    margin: 10px;
     -webkit-border-radius:8px; -moz-border-radius: 8px; border-radius: 8px;
     -moz-box-shadow: 2px 2px 2px #333; -webkit-box-shadow: 2px 2px 2px #333; box-shadow: 2px 2px 2px #333;
 }
@@ -670,9 +649,9 @@ div.header {
     padding:5px;
     border-top:1px solid rgba(255, 255, 255, 0.33);
     border-left:1px solid rgba(255, 255, 255, 0.33);
-	background:#dfdfdf;
-    background:-moz-linear-gradient(top, #fff, #cfcfcf);
-    background:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#dfdfdf));
+    background-color: #dfdfdf;
+    background:-moz-linear-gradient(top, #fff, #dfdfdf);
+    background:-webkit-gradient(linear, left top, left bottom, from(#fff), to(#dfdfdf));
     -webkit-border-top-right-radius:5px;-moz-border-radius-topright: 5px; border-top-right-radius: 5px;
     -webkit-border-top-left-radius:5px; -moz-border-radius-topleft: 5px;  border-top-left-radius: 5px;
 /*
@@ -682,12 +661,14 @@ div.header {
 }
 
 div.header h2 {
-    color: rgb(34, 34, 34);
-    /*text-shadow: 2px 2px 2px rgb(204, 204, 204);*/
+    color: #222;
+    text-shadow: 2px 2px 2px #ccc;
     text-align: left;
     font-size: 11pt;
     padding-top: 3px;
 }
+
+
 
 /* CSS 2.1 */
 div.header + ul.content-list, div.header + form, div.header + div.section-content {
@@ -712,13 +693,14 @@ span.sakai-compulsory-question {
 
 div.form-section dt.sakai-validation-error {
     font-style: italic;
-    background-color:#400000;
+    background-color: #dfdfdf;
+    background:-moz-linear-gradient(top, #fff, #dfdfdf);
+    background:-webkit-gradient(linear, left top, left bottom, from(#fff), to(#dfdfdf));
     color:#ffffff;
-    /*text-shadow: none;*/
     padding:3px 8px;
     margin-bottom: 8px;
 }
-
+ 
 div.form-section dl dd ul {
     list-style: none;
     padding-left:0;
@@ -795,7 +777,7 @@ div.button {
     background:#002147 url('../../site/png/icons/list-arrow.png') no-repeat;
     background-position: right center;
 
-	 margin: 4px 2px 4px auto;
+	margin: 4px 2px 4px auto;
     min-width: 70px;
     max-width: 100px;
     padding: 3px;

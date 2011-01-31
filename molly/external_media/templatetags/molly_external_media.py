@@ -37,12 +37,15 @@ class ExternalImageNode(template.Node):
             width = float('inf')
 
         url, width = self.url.resolve(context), min(width, context['device'].max_image_width)
+        
+        try:
+            eis = resize_external_image(url, width)
+        except IOError:
+            eis = None
 
-        eis = resize_external_image(url, width)
-
-        if not eis:
-            return ''
-        elif self.just_url:
-            return eis.get_absolute_url()
+        if self.just_url:
+            return eis.get_absolute_url() if eis != None else url
+        elif eis is None:
+            return """<div class="backgrounded-image" style="background-image:url('%s');"> </div>""" % (eis.get_absolute_url() if eis != None else url)
         else:
             return """<div class="backgrounded-image" style="background-image:url('%s'); height:%dpx"> </div>""" % (eis.get_absolute_url(), eis.height)

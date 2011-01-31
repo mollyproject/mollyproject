@@ -63,7 +63,8 @@ class LocationDisplayNode(template.Node):
         context.update({
            'map': map_from_point(template.Variable(self.place).resolve(context),
                                  context['request'].map_width,
-                                 context['request'].map_height)
+                                 context['request'].map_height,
+                                 zoom=context.get('zoom', 16))
            })
         return get_template('maps/embed.html').render(context)
 

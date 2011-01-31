@@ -25,7 +25,8 @@ class PlacesGeolocationProvider(BaseGeolocationProvider):
             )
 
         entities = chain(
-            Entity.objects.filter(title__iexact = query),
+            Entity.objects.filter(title__iexact = query,
+                                  location__isnull = False),
             entities,
         )
 

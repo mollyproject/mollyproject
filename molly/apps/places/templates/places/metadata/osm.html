@@ -3,49 +3,51 @@
 {% if entity|osm_tags or entity.metadata.osm.tags.phone or entity.metadata.osm.tags.wikipedia or entity.metadata.osm.tags.url %}
 
 <div class="section">
-<div class="header">
-  <h2>Information from OpenStreetMap</h2>
-{% if entity|osm_tags %}
-  <div class="article"><div class="bubble pad-5">
-    <dl>
-{% for k,v in entity|osm_tags %}
-      <dt>{{ k|capfirst }}:</dt>
-      <dd>{{ v }}</dd>
-{% endfor %}
-    </dl>
-  </div></div>
-{% endif %}
+  <div class="header">
+    <h2>Information from OpenStreetMap</h2>
+  </div>
+  {% if entity|osm_tags %}
+  <div class="section-content no-round-bottom">
+    <div class="article"><div class="bubble pad-5">
+      <dl>
+        {% for tag,content in entity|osm_tags %}
+          <dt>{{ tag|capfirst }}:</dt>
+          <dd>{{ content }}</dd>
+        {% endfor %}
+      </dl>
+    </div></div>
+  </div>
+  {% endif %}
 
-<ul class="link-list">
-{% if entity.metadata.osm.tags.phone %}
+  <ul class="link-list">
+    {% if entity.metadata.osm.tags.phone %}
+      <li>
+          <a class="phone" href="{{ entity.metadata.osm.tags.phone|telephone_uri }}">
+              Call <em>{{ entity.title }}</em><br/>
+              <small>{{ entity.metadata.tags.phone|telephone:"nolink" }}</small>
+          </a>
+      </li>
+    {% endif %}
+    {% if entity.metadata.osm.tags.wikipedia %}
+      <li>
+          <a class="external-mobile" href="{{ entity.metadata.osm.tags.wikipedia|osm_tag_wikipedia_uri|urlencode }}">
+              Wikipedia article
+          </a>
+      </li>
+    {% endif %}
+    {% if entity.metadata.osm.tags.url %}
+      <li>
+          <a class="external" href="{{ entity.metadata.osm.tags.url|escape }}">
+              Website
+          </a>
+      </li>
+    {% endif %}
     <li>
-        <a class="phone" href="{{ entity.metadata.osm.tags.phone|telephone_uri }}">
-            Call <em>{{ entity.title }}</em><br/>
-            <small>{{ entity.metadata.tags.phone|telephone:"nolink" }}</small>
-        </a>
+      <a href="{% url places:entity-update entity.identifier_scheme entity.identifier_value %}">
+        Suggest a correction
+      </a>
     </li>
-{% endif %}
-{% if entity.metadata.osm.tags.wikipedia %}
-    <li>
-        <a class="external-mobile" href="{{ entity.metadata.osm.tags.wikipedia|osm_tag_wikipedia_uri|urlencode }}">
-            Wikipedia article
-        </a>
-    </li>
-{% endif %}
-{% if entity.metadata.osm.tags.url %}
-    <li>
-        <a class="external" href="{{ entity.metadata.osm.tags.url|escape }}">
-            Website
-        </a>
-    </li>
-{% endif %}
-  <li class="round-bottom">
-    <a href="{% url places:entity-update entity.identifier_scheme entity.identifier_value %}">
-      Suggest a correction
-    </a>
-  </li>
-</ul>
-</div>
+  </ul>
 </div>
 
 {% endif %}

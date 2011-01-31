@@ -91,5 +91,10 @@ class ExternalImageSized(models.Model):
         super(ExternalImageSized, self).save(force_insert=False, force_update=False, **kwargs)
 
     def delete(self):
-        os.unlink(self.get_filename())
+        try:
+            os.unlink(self.get_filename())
+        except OSError:
+            # Ignore errors where we're trying to delete a file that's already
+            # been deleted
+            pass
         super(ExternalImageSized, self).delete()

@@ -5,11 +5,30 @@
 
 {% block content %}
 
+<form method="get" action="{% url search:index %}">
+    <!-- Doing the devil's work below: couldn't get a CSS design to work with Blackberry 8900 so using Tables as a last resort. Tim F -->
+<h2 class="invisible">Search</h2>    
+<table class="search"><tbody>
+        <tr><td>
+                <label style="display:none;" for="id_query">Search Box</label>
+                {{ search_form.query }}
+        </td><td>
+                {% ifequal style_group "groups-dumb" %}
+                    <button type="submit">Go!</button>
+                {% else %}
+                	<input type="image" src="{{ MEDIA_URL }}site/png/new/buttons/search-button.png" title="Search" alt="Search" />
+                {% endifequal %}
+        </td></tr>    
+        </tbody>
+</table>
+</form>
+
 {# Results Page #}
 {% if search_form.is_valid %}
 <div class="section">
 <div class="header">
   <h2>Results</h2>
+</div>
 {% if results %}
   	<ol class="search-results">
 	{% for result in results %}
@@ -38,16 +57,13 @@
 	{# Search Elsewhere #}
 	<div class="section">
         <div class="header">
-	  <h2>Search elsewhere <small>for<em> {{ search_form.data.query }}</em></small></h2> 
-<h2>Contact search</h2>
+	  <h2>Specific searches</h2> 
+	   </div>
 	  <ul class="link-list">
-	    <li><a href="{% url contact:result_list %}?query={{ search_form.data.query }}&amp;method=email">E-mail</a></li>
-	    <li><a href="{% url contact:result_list %}?query={{ search_form.data.query }}&amp;method=phone">Phone</a></li>
-	 </ul>
-<h2>Library search</h2>
-	 <ul class="link-list">
-	    <li><a href="{% url library:search %}?title={{ search_form.data.query }}">Title</a></li>
-	    <li class="round-bottom"><a href="{% url library:search %}?author={{ search_form.data.query }}">Author</a></li>
+	    <li><a href="{% url contact:result_list %}?query={{ search_form.data.query }}&amp;medium=email">E-mail addresses associated with name <em>'{{ search_form.data.query }}'</em></a></li>
+	    <li><a href="{% url contact:result_list %}?query={{ search_form.data.query }}&amp;medium=phone">Phone numbers associated with name <em>'{{ search_form.data.query }}'</em></a></li>
+	    <li><a href="{% url library:search %}?title={{ search_form.data.query }}">Library books titled with <em>'{{ search_form.data.query }}'</em></a></li>
+	    <li class="round-bottom"><a href="{% url library:search %}?author={{ search_form.data.query }}">Library books authored by <em>'{{ search_form.data.query }}'</em> </a></li>
 	  </ul>
         </div>
 	</div>
@@ -55,24 +71,4 @@
 
 {% endif %}
 {# End Results Page #}
-
-{# Universal Search Form #}
-<div class="section">
-<div class="header">
-	<div class="form">
-  <form method="get" action="">
-    <h2>
-      {{ search_form.query.label }}{% if search_form.application %} {{ search_form.cleaned_data.application }}{% endif %}
-    </h2>
-      <p>
-        {{ search_form.query }}{{ search_form.application }}
-      </p>
-	  <p><input type="submit" value="Go!"/></p>
-  </form>
-	</div>
-</div>
-</div>
-{# End Universal Search Form #}
-
-
 {% endblock %}

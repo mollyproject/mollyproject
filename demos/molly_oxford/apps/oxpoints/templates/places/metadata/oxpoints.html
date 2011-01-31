@@ -2,94 +2,94 @@
 
 {% with entity.metadata.oxpoints as oxp %}
 <div class="section">
-<div class="header">
-	<h2>{{ oxp.dc_title }}</h2>
-
-<div class="article"><div class="bubble pad-5">
-	<dl>
-	{% if oxp.foaf_homepage or oxp.oxp_hasITHomepage or oxp.oxp_hasWeblearn or oxp.oxp_hasLibraryHomepage %}
-		<dt>Websites</dt>
-		{% if oxp.foaf_homepage %}
-		    <dd><a href="{{ oxp.foaf_homepage.uri }}">Homepage</a></dd>
-		{% endif %}
-		{% if oxp.oxp_hasITHomepage %}
-		    <dd><a href="{{ oxp.oxp_hasITHomepage.uri }}">IT Homepage</a></dd>
-		{% endif %}
-		{% if oxp.oxp_hasWeblearn %}
-		    <dd><a href="{{ oxp.oxp_hasWeblearn.uri }}">Weblearn</a></dd>
-		{% endif %}
-		{% if oxp.oxp_hasLibraryHomepage %}
-		    <dd><a href="{{ oxp.oxp_hasLibraryHomepage.uri }}">Library</a></dd>
-		{% endif %}
-	{% endif %}
-
-
-	{% if oxp.oxp_occupies %}
-		<dt>Occupies</dt>
-		{% for place in oxp.oxp_occupies %}
-		{% with place|load_oxp_json as place_json %}
-		    <dd><a href="{{ place_json|oxp_portal_url }}">{{ place_json.dc_title }}</a></dd>
-		{% endwith %}
-		{% endfor %}
-	{% endif %}
-
-	{% if oxp.passiveProperties.oxp_occupies %}
-		<dt>Occupied by</dt>
-		{% for place in oxp.passiveProperties.oxp_occupies %}
-		{% with place|load_oxp_json as place_json %}
-		    <dd><a href="{{ place_json|oxp_portal_url }}">{{ place_json.dc_title }}</a></dd>
-		{% endwith %}
-		{% endfor %}
-	{% endif %}
-
-	{% if oxp.dct_isPartOf %}
-		<dt>Parent unit</dt>
-		{% with oxp.dct_isPartOf|load_oxp_json as place_json %}
-		<dd><a href="{{ place_json|oxp_portal_url }}">{{ place_json.dc_title }}</a></dd>
-		{% endwith %}
-	{% endif %}
-
-	{% if oxp.passiveProperties.dct_isPartOf %}
-		<dt>Sub-units</dt>
-		{% for place in oxp.passiveProperties.dct_isPartOf %}
-		{% with place|load_oxp_json as place_json %}
-		    <dd><a href="{{ place_json|oxp_portal_url }}">{{ place_json.dc_title }}</a></dd>
-		{% endwith %}
-		{% endfor %}
-	{% endif %}
-
-	{% if oxp.oxp_physicallyContainedWithin %}
-		<dt>Contained within</dt>
-		{% with oxp.oxp_physicallyContainedWithin|load_oxp_json as place_json %}
-		    <dd><a href="{{ place_json|oxp_portal_url }}">{{ place_json.dc_title }}</a></dd>
-		{% endwith %}
-	{% endif %}
-
-	{% if oxp.passiveProperties.oxp_physicallyContainedWithin %}
-		<dt>Contains</dt>
-		{% for place in oxp.passiveProperties.oxp_physicallyContainedWithin %}
-		{% with place|load_oxp_json as place_json %}
-		    <dd><a href="{{ place_json|oxp_portal_url }}">{{ place_json.dc_title }}</a></dd>
-		{% endwith %}
-		{% endfor %}
-	{% endif %}
-	</dl>
-	</div></div>
+    <div class="header">
+        <h2>{{ oxp.dc_title }}</h2>
+    </div>
+    <div class="section-content">
+        <div class="bubble pad-5">
+        <dl>
+            {% if oxp.foaf_homepage or oxp.oxp_hasITHomepage or oxp.oxp_hasWeblearn or oxp.oxp_hasLibraryHomepage %}
+                <dt>Websites</dt>
+                {% if oxp.foaf_homepage %}
+                    <dd><a href="{{ oxp.foaf_homepage.uri }}">Homepage</a></dd>
+                {% endif %}
+                {% if oxp.oxp_hasITHomepage %}
+                    <dd><a href="{{ oxp.oxp_hasITHomepage.uri }}">IT Homepage</a></dd>
+                {% endif %}
+                {% if oxp.oxp_hasWeblearn %}
+                    <dd><a href="{{ oxp.oxp_hasWeblearn.uri }}">Weblearn</a></dd>
+                {% endif %}
+                {% if oxp.oxp_hasLibraryHomepage %}
+                    <dd><a href="{{ oxp.oxp_hasLibraryHomepage.uri }}">Library</a></dd>
+                {% endif %}
+            {% endif %}
+            {% if oxp.oxp_occupies %}
+                <dt>Occupies</dt>
+                {% for place in oxp.oxp_occupies %}
+                    {% with place|load_oxp_json as place_json %}
+                        <dd><a href="{{ place_json|oxp_portal_url }}">{{ place_json.dc_title }}</a></dd>
+                    {% endwith %}
+                {% endfor %}
+            {% endif %}
+            
+            {% if oxp.passiveProperties.oxp_occupies %}
+                <dt>Occupied by</dt>
+                {% for place in oxp.passiveProperties.oxp_occupies %}
+                    {% with place|load_oxp_json as place_json %}
+                        <dd><a href="{{ place_json|oxp_portal_url }}">{{ place_json.dc_title }}</a></dd>
+                    {% endwith %}
+                {% endfor %}
+            {% endif %}
+            
+            {% if oxp.dct_isPartOf %}
+                <dt>Parent unit</dt>
+                {% with oxp.dct_isPartOf|load_oxp_json as place_json %}
+                    <dd><a href="{{ place_json|oxp_portal_url }}">{{ place_json.dc_title }}</a></dd>
+                {% endwith %}
+            {% endif %}
+            
+            {% if oxp.passiveProperties.dct_isPartOf %}
+                <dt>Sub-units</dt>
+                {% for place in oxp.passiveProperties.dct_isPartOf %}
+                    {% with place|load_oxp_json as place_json %}
+                        <dd><a href="{{ place_json|oxp_portal_url }}">{{ place_json.dc_title }}</a></dd>
+                    {% endwith %}
+                {% endfor %}
+            {% endif %}
+            
+            {% if oxp.oxp_physicallyContainedWithin %}
+                <dt>Contained within</dt>
+                {% with oxp.oxp_physicallyContainedWithin|load_oxp_json as place_json %}
+                    <dd><a href="{{ place_json|oxp_portal_url }}">{{ place_json.dc_title }}</a></dd>
+                {% endwith %}
+            {% endif %}
+            
+            {% if oxp.passiveProperties.oxp_physicallyContainedWithin %}
+                <dt>Contains</dt>
+                {% for place in oxp.passiveProperties.oxp_physicallyContainedWithin %}
+                    {% with place|load_oxp_json as place_json %}
+                        <dd><a href="{{ place_json|oxp_portal_url }}">{{ place_json.dc_title }}</a></dd>
+                    {% endwith %}
+                {% endfor %}
+            {% endif %}
+        </dl>
+        </div>
+    </div>
+>>>>>>> master:molly/apps/places/templates/places/metadata/oxpoints.html
 </div>
 </div>
 
 {% if oxp.foaf_depiction %}
-<div class="section">
-<div class="header">
-	<h2>Images</h2>
-</div>
-	{% for image in oxp.foaf_depiction %}
-		{% external_image image.uri asdiv %}
-	{% endfor %}
-</div>
+    <div class="section">
+        <div class="header">
+            <h2>Images</h2>
+        </div>
+        {% for image in oxp.foaf_depiction %}
+            {% external_image image.uri asdiv %}
+        {% endfor %}
+    </div>
 {% endif %}
 
 {% endwith %}
-
 
 {% endif %}
