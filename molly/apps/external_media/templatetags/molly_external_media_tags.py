@@ -43,7 +43,9 @@ class ExternalImageNode(template.Node):
 
         if self.just_url:
             return eis.get_absolute_url() if eis != None else url
+        elif eis is None:
+            return """<div class="backgrounded-image" style="background-image:url('%s');"> </div>""" % (eis.get_absolute_url() if eis != None else url)
         else:
-            return """<div class="backgrounded-image" style="background-image:url('%s'); height:%dpx"> </div>""" % (eis.get_absolute_url() if eis != None else url, eis.height)
+            return """<div class="backgrounded-image" style="background-image:url('%s'); height:%dpx"> </div>""" % (eis.get_absolute_url(), eis.height)
 
 
