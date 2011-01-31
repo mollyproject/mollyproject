@@ -48,7 +48,7 @@ if [ -n "$1" ] ; then
     cd $1/demos/molly_oxford/
     
     # Build Media
-    python manage.py build_static --noinput
+    python manage.py collectstatic --noinput
     python manage.py synccompress
     python manage.py generate_markers
     python manage.py update_wurfl

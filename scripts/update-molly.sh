@@ -41,7 +41,7 @@ if [ -n "$1" ] ; then
     fi
 
     # Build Media
-    python manage.py build_static --noinput
+    python manage.py collectstatic --noinput
     python manage.py synccompress &
     
     # Start server
