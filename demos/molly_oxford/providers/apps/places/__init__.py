@@ -42,12 +42,16 @@ class OxfordParkAndRidePlacesProvider(BaseMapsProvider):
                 if not self._CARPARKS[name] in carparks:
                     continue
                 
-                unavailable = False
-                try:
-                    spaces = int(tr[2].text)
-                except ValueError:
+                if tr[5].text == 'Faulty':
                     spaces = 0
                     unavailable = True
+                else:
+                    try:
+                        spaces = int(tr[2].text)
+                        unavailable = False
+                    except ValueError:
+                        spaces = 0
+                        unavailable = True
 
                 carparks[self._CARPARKS[name]].metadata['park_and_ride'] = {
                     'spaces': spaces,
