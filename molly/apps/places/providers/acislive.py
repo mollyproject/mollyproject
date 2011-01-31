@@ -155,7 +155,7 @@ class ACISLiveMapsProvider(BaseMapsProvider):
                 now = datetime.now()
                 hour, minute = map(int, proximity.split(':'))
                 diff = (datetime(now.year, now.month, now.day, hour, minute) - datetime.now()).seconds / 60
-            elif proximity == 'Due':
+            elif proximity.lower() == 'due':
                 diff = 0
             else:
                 diff = int(proximity.split(' ')[0])
