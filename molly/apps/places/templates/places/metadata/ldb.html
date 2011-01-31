@@ -2,7 +2,7 @@
 
 <div class="section" id="ldb">
   <div class="header">
-    <h2>{{ train_station.title }} ({{ board }}) - {{ train_station.metadata.ldb.generatedAt|date:"H:i:s" }}</h2>
+    <h2>{{ train_station.title }} ({% if board %}{{ board }}{% else %}departures{% endif %}) - {{ train_station.metadata.ldb.generatedAt|date:"H:i:s" }}</h2>
   </div>
   
   {% if train_station.metadata.ldb.nrccMessages.message %}
@@ -13,7 +13,7 @@
   </ul>
   {% endif %}
 
-  <table class="content">
+  <table class="content no-round-bottom">
     <thead>
       <tr>
         <th>Destination</th>
@@ -72,7 +72,17 @@
       {% endif %}
     </tbody>
   </table>
-        
+  <ul class="link-list">
+    {% if board %}
+      {% ifequal board "departures" %}
+        <li><a href="{{ train_station.get_absolute_url }}?board=arrivals">View arrivals board</a></li>
+      {% else %}
+        <li><a href="{{ train_station.get_absolute_url }}?board=departures">View departures board</a></li>
+      {% endifequal %}
+    {% else %}
+      <li><a href="{{ train_station.get_absolute_url }}?board=arrivals">View arrivals board</a></li>
+    {% endif %}
+  </ul>
 </div>
 
 {% endif %}
