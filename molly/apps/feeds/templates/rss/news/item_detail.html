@@ -17,6 +17,7 @@
 <div class="section">
   <div class="header">
     <h2>{{ item.title }}</h2>
+  </div>
     <div style="font-size:1em; line-height:1.1em;">
     {{ description|safe }}
     <br />
@@ -25,7 +26,5 @@
             Link: <a href="{{ item.link }}" title="{{ item.title }}">{{ item.link }}</a>
         </em></small>
     </div>
-    <div style="clear:both;"> </div>
-  </div>
 </div>
 {% endblock %}
