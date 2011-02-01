@@ -4,7 +4,8 @@ while getopts dc o
 do	case "$o" in
 	d)	start_dev_server=yes;;
 	c)	no_cron=yes;;
-	[?])	print >&2 "Usage: $0 [--dev] [--no-cron] path-to-deployment"
+        w)      update_wurfl=yes;;
+	[?])	print >&2 "Usage: $0 [-d] [-n] [-w] path-to-deployment"
 		exit 1;;
 	esac
 done
@@ -35,6 +36,10 @@ if [ -n "$1" ] ; then
     cp -f $DIR/../local/* $1/demos/molly_oxford/
     cd $1/demos/molly_oxford/
     
+    if [ -n "$update_wurfl" ] ; then
+        python manage.py update_wurfl
+    fi
+    
     # Update batch jobs
     if [ -z "$no_cron" ] ; then
         PYTHONPATH=.. python manage.py create_crontab | python $DIR/merge-cron.py | crontab
@@ -54,4 +59,5 @@ else
     echo "$0 [--dev] [--no-cron] path-to-deployment"
     echo "    -d: starts the development server afterwards"
     echo "    -c: doesn't alter the crontab"
+    echo "    -w: update the wurfl"
 fi
