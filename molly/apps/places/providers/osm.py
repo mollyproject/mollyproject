@@ -22,11 +22,15 @@ def way_id(id):
     return "W%d" % int(id)
 
 class OSMHandler(handler.ContentHandler):
-    def __init__(self, source, entity_types, find_types, output):
+    def __init__(self, source, entity_types, find_types, output, lat_north=None, lat_south=None, lon_west=None, lon_east=None):
         self.source = source
         self.entity_types = entity_types
         self.find_types = find_types
         self.output = output
+        self._lat_north = lat_north
+        self._lat_south = lat_south
+        self._lon_west = lon_west
+        self._lon_east = lon_east
 
     def startDocument(self):
         self.ids = set()
@@ -42,9 +46,11 @@ class OSMHandler(handler.ContentHandler):
     def startElement(self, name, attrs):
         if name == 'node':
             lon, lat = float(attrs['lon']), float(attrs['lat'])
-            self.valid = (51.5 < lat < 52.1 and -1.6 < lon < -1.0)
-            if not self.valid:
-                return
+            if self.lat_north != None:
+                self.valid = (self._lat_south < lat < self._lat_north and self._lon_west < lon < self._lon_east)
+                self.valid = (51.5 < lat < 52.1 and -1.6 < lon < -1.0)
+                if not self.valid:
+                    return
 
             id = node_id(attrs['id'])
             self.node_location = lon, lat
@@ -170,14 +176,29 @@ Complete
             self.ignore_count,
         ))
 
-
-
 class OSMMapsProvider(BaseMapsProvider):
-    ENGLAND_OSM_BZ2_URL = 'http://download.geofabrik.de/osm/europe/great_britain/england.osm.bz2'
-    #ENGLAND_OSM_BZ2_URL = 'http://download.geofabrik.de/osm/europe/great_britain/england/shropshire.osm.bz2'
+    SHELL_CMD = "wget -O- %s --quiet | bunzip2"
 
-    SHELL_CMD = "wget -O- %s --quiet | bunzip2" % ENGLAND_OSM_BZ2_URL
-#    SHELL_CMD = "cat /home/alex/gpsmid/england.osm.bz2 | bunzip2"
+    def __init__(self, lat_north=None, lat_south=None, lon_west=None, lon_east=None, url='http://download.geofabrik.de/osm/europe/great_britain/england.osm.bz2'):
+        """
+        @param lat_north: A limit of the northern-most latitude to import points
+                          for
+        @type lat_north: float
+        @param lat_south: A limit of the southern-most latitude to import points
+                          for
+        @type lat_south: float
+        @param lon_west: A limit of the western-most longitude to import points
+                          for
+        @type lon_west: float
+        @param lon_east: A limit of the eastern-most longitude to import points
+                          for
+        @type lon_east: float
+        """
+        self._lat_north = lat_north
+        self._lat_south = lat_south
+        self._lon_west = lon_west
+        self._lon_east = lon_east
+        self._url = url
 
     @batch('%d 9 * * mon' % random.randint(0, 59))
     def import_data(self, metadata, output):
@@ -185,7 +206,7 @@ class OSMMapsProvider(BaseMapsProvider):
 
         old_etag = metadata.get('etag', '')
 
-        request = AnyMethodRequest(self.ENGLAND_OSM_BZ2_URL, method='HEAD')
+        request = AnyMethodRequest(self._url, method='HEAD')
         response = urllib2.urlopen(request)
         new_etag = response.headers['ETag'][1:-1]
 
@@ -193,10 +214,17 @@ class OSMMapsProvider(BaseMapsProvider):
             output.write('OSM data not updated. Not updating.\n')
             return
 
-        p = subprocess.Popen([self.SHELL_CMD], shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, close_fds=True)
+        p = subprocess.Popen([self.SHELL_CMD % self._url], shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, close_fds=True)
 
         parser = make_parser()
-        parser.setContentHandler(OSMHandler(self._get_source(), self._get_entity_types(), self._find_types, output))
+        parser.setContentHandler(OSMHandler(self._get_source(),
+                                            self._get_entity_types(),
+                                            self._find_types,
+                                            output,
+                                            self._lat_north,
+                                            self._lat_south,
+                                            self._lon_west,
+                                            self._lon_east))
         parser.parse(p.stdout)
         
         self.disambiguate_titles(self._get_source())

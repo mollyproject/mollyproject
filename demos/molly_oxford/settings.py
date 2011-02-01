@@ -127,7 +127,9 @@ APPLICATIONS = [
             ),
             'molly.apps.places.providers.ACISLiveMapsProvider',
             'molly_oxford.apps.oxpoints.providers.OxpointsMapsProvider',
-            'molly.apps.places.providers.OSMMapsProvider',
+            Provider('molly.apps.places.providers.OSMMapsProvider',
+                     52.1, 51.5, -1.6, -1.0
+            ),
             'molly_oxford.providers.places.OxfordParkAndRidePlacesProvider',
             Provider('molly.apps.places.providers.LiveDepartureBoardPlacesProvider',
                 token = SECRETS.ldb
@@ -479,6 +481,9 @@ STATICFILES_DIRS = (
 )
 STATIC_URL = '/media/'
 STATICFILES_PREPEND_LABEL_APPS = ('django.contrib.admin',) #+ extract_installed_apps(APPLICATIONS)
+
+COMPRESS_SOURCE = STATIC_ROOT
+COMPRESS_ROOT = STATIC_ROOT
 
 COMPRESS_CSS, COMPRESS_JS = get_compress_groups(STATIC_ROOT)
 
