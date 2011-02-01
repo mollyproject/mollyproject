@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 {% extends "molly_default/home/index.html" %}
 {% load oxford_term_dates %}
 {% load oxford_apps_river_status %}
@@ -6,6 +5,7 @@
 {% block date %}{% oxford_date_today %}{% endblock %}
 
 {% block below-weather %}
+        <tr><td colspan="2"><hr/></td></tr>
 	<tr>
 	{% flag_status %}
 	{% for flag in flag_status %}
