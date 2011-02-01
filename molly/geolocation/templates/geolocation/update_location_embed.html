@@ -124,7 +124,7 @@
                         </li>
                       {% endfor %}
                         <li>
-                            <form class="location-history-form" method="post" action="{% url geolocation:clear %}">
+                            <form class="specific-location-form" method="post" action="{% url geolocation:clear %}">
                               {% csrf_token %}
                               <input name="return_url" type="hidden" value="{% if return_url %}{{ return_url }}{% else %}{% url geolocation:index %}{% endif %}"/>
                               <input class="as-text-link" type="submit" value="Clear history" />

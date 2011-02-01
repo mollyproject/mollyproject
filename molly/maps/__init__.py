@@ -98,7 +98,7 @@ class Map:
         self.slippy_map_parameters = urlencode({
             'lon': lon_center,
             'lat': lat_center,
-            'zoom': self.zoom,
+            'zoom': (self.zoom - 1) if len(self.points) > 0 else self.zoom,
             'markers': '~'.join(map('|'.join, markers))
         })
 

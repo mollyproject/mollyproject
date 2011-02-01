@@ -18,7 +18,7 @@ class OUCSStatusProvider(object):
         services_feed = feedparser.parse(self._STATUS_URL)
 
         services = []
-        lastBuildDate = self.parse_date(services_feed.feed.lastbuilddate)
+        lastBuildDate = self.parse_date(services_feed.feed.updated)
         
         for service in services_feed.entries:
 

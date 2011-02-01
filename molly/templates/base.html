@@ -1,7 +1,7 @@
 {% load molly_utils %}{% load compressed %}<!DOCTYPE HTML>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-GB" lang="en-GB">
 <head>
-        <title>{% block site_title %}molly | {% endblock %}{% block title %}{{ breadcrumbs.4 }}{% endblock %}</title>
+    <title>{% block site_title %}molly | {% endblock %}{% block title %}{{ breadcrumbs.4 }}{% endblock %}</title>
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1"/>
     <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
     <meta name="format-detection" content="telephone=no" />
@@ -23,9 +23,8 @@
     <link rel="apple-touch-icon" href="{{ MEDIA_URL}}site/png/apple-touch-icon.png"/>
     <link rel="apple-touch-icon" sizes="72x72" href="{{ MEDIA_URL}}site/png/apple-touch-icon-72px.png"/>
     <link rel="apple-touch-icon" sizes="114x114" href="{{ MEDIA_URL}}site/png/apple-touch-icon-114px.png"/>
+    <link rel="apple-touch-icon-precomposed" href="{{ MEDIA_URL}}site/png/apple-touch-icon.png"/>
     <link rel="apple-touch-startup-image" href="{{ MEDIA_URL}}site/png/apple-touch-startup-image.jpg">
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
 {% endif %}
 
 {% if use_javascript %}{% endif %}

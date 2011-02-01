@@ -214,7 +214,9 @@ function locationFound(data) {
       $('.alternate-location-box').slideUp();
     }
     $('.update-location-lists').empty()
+    $('.location-automatic-list').removeClass('no-round-bottom')
     if (data.favourites.length > 0) {
+      $('.location-automatic-list').addClass('no-round-bottom')
       $('.update-location-lists').append( '<div class="header">'
                                         + '  <h2>Or select a favourite location</h2>'
                                         + '</div>'
@@ -225,13 +227,14 @@ function locationFound(data) {
       }
     }
     if (data.history.length > 0) {
+      $('.location-automatic-list').addClass('no-round-bottom')
       $('.favourite-locations-list').addClass('no-round-bottom')
       $('.update-location-lists').append( '<div class="header">'
                                         + '  <h2>Or select from history</h2>'
                                         + '</div>'
                                         + '<ul class="historic-locations-list link-list">'
                                         + '<li>'
-                                        + '    <form class="specific-location-form" method="post" action="'+base+'geolocation/clear">'
+                                        + '    <form class="specific-location-form" method="post" action="'+base+'geolocation/clear/">'
                                         +        csrfToken
                                         + '      <input type="submit" value="Clear history" class="as-text-link" />'
                                         + '    </form>'
