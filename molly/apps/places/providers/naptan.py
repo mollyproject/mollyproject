@@ -248,26 +248,39 @@ class NaptanMapsProvider(BaseMapsProvider):
         os.close(f)
         self._import_stations(open(filename, 'r'), self._source, self._entity_types[self.TRAIN_STATION])
         os.unlink(filename)
-
-        for area in self._areas:
+        
+        if self._areas is None:
             f, filename = tempfile.mkstemp()
-            files[area] = filename
-            
-            ftp.cwd("/V2/%s/" % area)
-            ftp.retrbinary('RETR NaPTAN%sxml.zip' % area, data_chomper(f))
+                
+            ftp.cwd("/V2/complete/")
+            ftp.retrbinary('RETR NaPTAN.xml', data_chomper(f))
+            ftp.quit()
             os.close(f)
-        
-        ftp.quit()
-        
-        for (area, filename) in files.items():
-            archive = zipfile.ZipFile(filename)
-            if hasattr(archive, 'open'):
-                f = archive.open('NaPTAN%d.xml' % int(area))
-            else:
-                f = StringIO(archive.read('NaPTAN%d.xml' % int(area)))
+            
+            f = open(filename)
             self._import_from_pipe(f, localities)
-            archive.close()
             os.unlink(filename)
+            
+        else:
+            for area in self._areas:
+                f, filename = tempfile.mkstemp()
+                files[area] = filename
+                
+                ftp.cwd("/V2/%s/" % area)
+                ftp.retrbinary('RETR NaPTAN%sxml.zip' % area, data_chomper(f))
+                os.close(f)
+            
+            ftp.quit()
+            
+            for (area, filename) in files.items():
+                archive = zipfile.ZipFile(filename)
+                if hasattr(archive, 'open'):
+                    f = archive.open('NaPTAN%d.xml' % int(area))
+                else:
+                    f = StringIO(archive.read('NaPTAN%d.xml' % int(area)))
+                self._import_from_pipe(f, localities)
+                archive.close()
+                os.unlink(filename)
 
     def _import_from_http(self):
         # TODO Pull data from RailReferences.csv pulled over HTTP
