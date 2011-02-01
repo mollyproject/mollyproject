@@ -1,4 +1,12 @@
-import simplejson, urllib, random, csv, zipfile, tempfile, urllib2, os.path
+import simplejson
+import urllib
+import random
+import csv
+import zipfile
+import tempfile
+import urllib2
+import os.path
+import re
 
 from django.contrib.gis.geos import Point
 
