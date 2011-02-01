@@ -46,9 +46,12 @@ class OSMHandler(handler.ContentHandler):
     def startElement(self, name, attrs):
         if name == 'node':
             lon, lat = float(attrs['lon']), float(attrs['lat'])
-            if self.lat_north != None:
+            
+            # Always import if restrictions aren't set
+            if self._lat_north is None:
+                self.valid = True
+            else:
                 self.valid = (self._lat_south < lat < self._lat_north and self._lon_west < lon < self._lon_east)
-                self.valid = (51.5 < lat < 52.1 and -1.6 < lon < -1.0)
                 if not self.valid:
                     return
 

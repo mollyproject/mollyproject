@@ -128,7 +128,8 @@ APPLICATIONS = [
             'molly.apps.places.providers.ACISLiveMapsProvider',
             'molly_oxford.apps.oxpoints.providers.OxpointsMapsProvider',
             Provider('molly.apps.places.providers.OSMMapsProvider',
-                     52.1, 51.5, -1.6, -1.0
+                     lat_north=52.1, lat_south=51.5,
+                     lon_west=-1.6, lon_east=-1.0
             ),
             'molly_oxford.providers.places.OxfordParkAndRidePlacesProvider',
             Provider('molly.apps.places.providers.LiveDepartureBoardPlacesProvider',
