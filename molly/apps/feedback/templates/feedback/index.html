@@ -7,9 +7,9 @@
 	  <h2>Thank you for your feedback!</h2>
 	  <div class="note"><div class="bubble pad-10">
 	{% if referer %}
-	  <p>You may wish to go <a href="{{ referer }}">go back</a>.</p>
+	  <p>You may wish to <a href="{{ referer }}">go back</a>.</p>
 	{% else %}
-	  <p>You may wish to go <a href="{% url home:index %}">back to the home page</a>.</p>
+	  <p>You may wish to <a href="{% url home:index %}">go back to the home page</a>.</p>
 	{% endif %}
 	</div></div>
 	</div>
