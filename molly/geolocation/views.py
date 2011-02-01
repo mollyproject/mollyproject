@@ -248,7 +248,7 @@ class FavouritesView(GeolocationView):
 class ClearHistoryView(GeolocationView):
     breadcrumb = NullBreadcrumb
 
-    def handle_POST(cls, request, context):
+    def handle_POST(self, request, context):
         keys_to_delete = set()
         for key in request.session._session:
             if key.startswith('geolocation:history'):
@@ -256,7 +256,8 @@ class ClearHistoryView(GeolocationView):
         for key in keys_to_delete:
             del request.session[key]
         request.session.modified = True
-        return HttpResponseSeeOther(request.POST.get('return_url', reverse('home:index')))
+        context['return_url'] = request.POST.get('return_url', reverse('home:index'))
+        return self.get_location_response(request, context)
 
 class LocationRequiredView(BaseView):
     def is_location_required(cls, request, *args, **kwargs):
