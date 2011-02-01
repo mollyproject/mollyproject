@@ -28,7 +28,7 @@ class PostcodesMapsProvider(BaseMapsProvider):
         if self.import_areas:
             filenames = ['Code-Point Open/data/CSV/%s.csv' % code.lower() for code in self.import_areas]
         else:
-            filenames = [path for path in archive.listnames() if re.match(r'Code\-Point Open\/data\/CSV\/[a-z]{1,2}.csv', path)]
+            filenames = [path for path in archive.namelist() if re.match(r'Code\-Point Open\/data\/CSV\/[a-z]{1,2}.csv', path)]
 
         for filename in filenames:
             if hasattr(archive, 'open'):
