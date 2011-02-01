@@ -1,6 +1,6 @@
 #!/bin/bash
 
-while getopts dc o
+while getopts dcw o
 do	case "$o" in
 	d)	start_dev_server=yes;;
 	c)	no_cron=yes;;
