@@ -231,7 +231,7 @@ function locationFound(data) {
                                         + '</div>'
                                         + '<ul class="historic-locations-list link-list">'
                                         + '<li>'
-                                        + '    <form class="specific-location-form" method="post" action="'+base+'geolocation/clear">'
+                                        + '    <form class="specific-location-form" method="post" action="'+base+'geolocation/clear/">'
                                         +        csrfToken
                                         + '      <input type="submit" value="Clear history" class="as-text-link" />'
                                         + '    </form>'
