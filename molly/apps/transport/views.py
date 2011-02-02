@@ -50,7 +50,7 @@ class IndexView(BaseView):
             else:
                 es = favourites
             
-            if context_key == 'park_and_rides' and getattr(cls.conf, 'park_and_ride_sort') is not None:
+            if context_key == 'park_and_rides' and getattr(cls.conf, 'park_and_ride_sort', None) is not None:
                 sorted_es = []
                 for key, id in [s.split(':') for s in cls.conf.park_and_ride_sort]:
                     for e in es:
