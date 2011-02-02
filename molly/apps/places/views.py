@@ -11,6 +11,7 @@ from django.http import Http404, HttpResponse, HttpResponseRedirect, HttpRespons
 from django.shortcuts import get_object_or_404
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import capfirst
+from django.core.paginator import Paginator, InvalidPage, EmptyPage
 
 from molly.utils.views import BaseView, ZoomableView
 from molly.utils.breadcrumbs import *
@@ -425,8 +426,6 @@ class CategoryListView(BaseView):
 
     def initial_context(self, request):
         entity_types = EntityType.objects.filter(show_in_category_list=True)
-
-
         return {
             'entity_types': entity_types,
         }
@@ -453,7 +452,19 @@ class CategoryDetailView(BaseView):
         for entity_type in entity_types:
             entities = entities.filter(all_types_completion=entity_type)
         entities = entities.order_by('title')
-
+        
+        paginator = Paginator(entities, 100)
+        
+        try:
+            page = int(request.GET.get('page', '1'))
+        except ValueError:
+            page = 1
+        
+        try:
+            paged_entities = paginator.page(page)
+        except (EmptyPage, InvalidPage):
+            paged_entities = paginator.page(1)
+        
         found_entity_types = set()
         for e in entities:
             found_entity_types |= set(e.all_types.all())
@@ -462,7 +473,7 @@ class CategoryDetailView(BaseView):
         return {
             'entity_types': entity_types,
             'count': len(entities),
-            'entities': entities,
+            'entities': paged_entities,
             'found_entity_types': found_entity_types,
         }
 
