@@ -79,7 +79,7 @@ class OPMLPodcastsProvider(RSSPodcastsProvider):
                     self.parse_outline(outline)
                 except Exception, e:
                     if not failure_logged:
-                        logger.exception("Update of podcast %r failed.", attrib['xmlUrl'])
+                        logger.exception("Update of podcast %r failed.", outline.attrib['xmlUrl'])
                         failure_logged = True
             else:
                 self._category = outline.attrib['text']
@@ -90,7 +90,7 @@ class OPMLPodcastsProvider(RSSPodcastsProvider):
                             self.parse_outline(outline)
                         except Exception, e:
                             if not failure_logged:
-                                logger.exception("Update of podcast %r failed.", attrib['xmlUrl'])
+                                logger.exception("Update of podcast %r failed.", outline.attrib['xmlUrl'])
                         failure_logged = True
                 self._category = None
 
