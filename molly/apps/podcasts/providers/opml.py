@@ -46,6 +46,8 @@ class OPMLPodcastsProvider(RSSPodcastsProvider):
         except KeyError:
             self.CATEGORY_ORDERS[slug] = len(self.CATEGORY_ORDERS)
             podcast_category.order = self.CATEGORY_ORDERS[slug]
+        
+        return podcast_category
 
     def parse_outline(self, outline):
         attrib = outline.attrib
