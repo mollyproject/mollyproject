@@ -13,10 +13,10 @@ urlpatterns = patterns('',
         SearchDetailView, {},
         'search'),
 
-    (r'^item:(?P<control_number>\d{8})/$',
+    (r'^item:(?P<control_number>[^/]+)/$',
         ItemDetailView, {},
         'item-detail'),
-    (r'^item:(?P<control_number>\d{8})/(?P<sublocation>.+)/$',
+    (r'^item:(?P<control_number>[^/]+)/(?P<sublocation>.+)/$',
         ItemHoldingsView, {},
         'item-holdings-detail'),
 )
