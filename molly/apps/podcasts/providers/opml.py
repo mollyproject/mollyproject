@@ -47,6 +47,7 @@ class OPMLPodcastsProvider(RSSPodcastsProvider):
             self.CATEGORY_ORDERS[slug] = len(self.CATEGORY_ORDERS)
             podcast_category.order = self.CATEGORY_ORDERS[slug]
         
+        podcast_category.save()
         return podcast_category
 
     def parse_outline(self, outline):
