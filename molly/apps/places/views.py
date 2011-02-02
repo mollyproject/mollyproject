@@ -246,13 +246,14 @@ class EntityDetailView(ZoomableView, FavouritableView):
         context = super(EntityDetailView, self).initial_context(request)
         entity = get_entity(scheme, value)
         associations = []
-        for association in self.conf.associations:
-            id_type, id, associated_entities = association
-            try:
-                if id in entity.identifiers[id_type]:
-                    associations += [{'type': type, 'entities': [get_entity(ns, value) for ns, value in es]} for type, es in associated_entities]
-            except (KeyError, Http404):
-                pass
+        if hasattr(self.conf, 'associations'):
+            for association in self.conf.associations:
+                id_type, id, associated_entities = association
+                try:
+                    if id in entity.identifiers[id_type]:
+                        associations += [{'type': type, 'entities': [get_entity(ns, value) for ns, value in es]} for type, es in associated_entities]
+                except (KeyError, Http404):
+                    pass
         
         board = request.GET.get('board', 'departures')
         if board != 'departures':
