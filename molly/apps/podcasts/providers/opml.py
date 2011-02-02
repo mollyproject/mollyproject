@@ -56,22 +56,23 @@ class OPMLPodcastsProvider(RSSPodcastsProvider):
 
         for outline in podcast_elems:
             attrib = outline.attrib
-            try:
-                podcast, created = Podcast.objects.get_or_create(
-                    provider=self.class_path,
-                    rss_url=attrib['xmlUrl'])
-                
-                podcast.medium = self.extract_medium(attrib['xmlUrl'])
-                podcast.category = self.decode_category(attrib['category'])
-                podcast.slug = self.extract_slug(attrib['xmlUrl'])
-    
-                rss_urls.append(attrib['xmlUrl'])
-    
-                self.update_podcast(podcast)
-            except Exception, e:
-                if not failure_logged:
-                    logger.exception("Update of podcast %r failed.", attrib['xmlUrl'])
-                    failure_logged = True
+            if 'xmlUrl' in attrib:
+                try:
+                    podcast, created = Podcast.objects.get_or_create(
+                        provider=self.class_path,
+                        rss_url=attrib['xmlUrl'])
+                    
+                    podcast.medium = self.extract_medium(attrib['xmlUrl'])
+                    podcast.category = self.decode_category(attrib['category'])
+                    podcast.slug = self.extract_slug(attrib['xmlUrl'])
+        
+                    rss_urls.append(attrib['xmlUrl'])
+        
+                    self.update_podcast(podcast)
+                except Exception, e:
+                    if not failure_logged:
+                        logger.exception("Update of podcast %r failed.", attrib['xmlUrl'])
+                        failure_logged = True
 
         for podcast in Podcast.objects.filter(provider=self.class_path):
             if not podcast.rss_url in rss_urls:
