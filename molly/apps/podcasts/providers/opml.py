@@ -48,7 +48,6 @@ class OPMLPodcastsProvider(RSSPodcastsProvider):
 
     def parse_outline(self, outline):
         attrib = outline.attrib
-        try:
             podcast, created = Podcast.objects.get_or_create(
                 provider=self.class_path,
                 rss_url=attrib['xmlUrl'])
@@ -60,10 +59,6 @@ class OPMLPodcastsProvider(RSSPodcastsProvider):
             rss_urls.append(attrib['xmlUrl'])
 
             self.update_podcast(podcast)
-        except Exception, e:
-            if not failure_logged:
-                logger.exception("Update of podcast %r failed.", attrib['xmlUrl'])
-                failure_logged = True
 
     @batch('%d * * * *' % random.randint(0, 59))
     def import_data(self, metadata, output):
@@ -80,13 +75,23 @@ class OPMLPodcastsProvider(RSSPodcastsProvider):
 
         for outline in podcast_elems:
             if 'xmlUrl' in outline.attrib:
-                self.parse_outline(outline)
+                try:
+                    self.parse_outline(outline)
+                except Exception, e:
+                    if not failure_logged:
+                        logger.exception("Update of podcast %r failed.", attrib['xmlUrl'])
+                        failure_logged = True
             else:
                 self._category = outline.attrib['text']
                 # Assume this is an outline which contains other outlines
                 for outline in outline.findall('./outline'):
                     if 'xmlUrl' in outline.attrib:
-                        self.parse_outline(outline)
+                        try:
+                            self.parse_outline(outline)
+                        except Exception, e:
+                            if not failure_logged:
+                                logger.exception("Update of podcast %r failed.", attrib['xmlUrl'])
+                        failure_logged = True
                 self._category = None
 
         for podcast in Podcast.objects.filter(provider=self.class_path):
