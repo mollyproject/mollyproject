@@ -48,17 +48,17 @@ class OPMLPodcastsProvider(RSSPodcastsProvider):
 
     def parse_outline(self, outline):
         attrib = outline.attrib
-            podcast, created = Podcast.objects.get_or_create(
-                provider=self.class_path,
-                rss_url=attrib['xmlUrl'])
-            
-            podcast.medium = self.extract_medium(attrib['xmlUrl'])
-            podcast.category = self.decode_category(attrib)
-            podcast.slug = self.extract_slug(attrib['xmlUrl'])
+        podcast, created = Podcast.objects.get_or_create(
+            provider=self.class_path,
+            rss_url=attrib['xmlUrl'])
+        
+        podcast.medium = self.extract_medium(attrib['xmlUrl'])
+        podcast.category = self.decode_category(attrib)
+        podcast.slug = self.extract_slug(attrib['xmlUrl'])
 
-            rss_urls.append(attrib['xmlUrl'])
+        rss_urls.append(attrib['xmlUrl'])
 
-            self.update_podcast(podcast)
+        self.update_podcast(podcast)
 
     @batch('%d * * * *' % random.randint(0, 59))
     def import_data(self, metadata, output):
