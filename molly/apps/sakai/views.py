@@ -141,24 +141,24 @@ class SignupSiteView(SakaiView):
 
 class SignupEventView(SakaiView):
     def initial_context(self, request, site, event_id):
-        # This request does absolutely nothing, except force some cache to be
-        # reset, making sure the data we receive subsequently is up-to-date.
-        # This should be reported as a bug in Sakai.
         try:
-            request.opener.open(
+            # This request does absolutely nothing, except force some cache to be
+            # reset, making sure the data we receive subsequently is up-to-date.
+            # This should be reported as a bug in Sakai.
+            request.urlopen(
                 self.build_url('direct/signupEvent/%s/edit' % event_id),
                 data = urllib.urlencode({
                 'siteId': site,
                 'allocToTSid': '0',
                 'userActionType': 'invalidAction',
             }))
-        except urllib2.HTTPError, e:
-            # 204 really shouldn't be considered an error code.
-            if e.code != 204:
-                raise
-
-        url = self.build_url('direct/signupEvent/%s.json?siteId=%s' % (event_id, site))
-        event = simplejson.load(request.urlopen(url))
+    
+            url = self.build_url('direct/signupEvent/%s.json?siteId=%s' % (event_id, site))
+            event = simplejson.load(request.urlopen(url))
+        except PermissionDenied:
+            return {
+                'permission_denied': True
+            }
     
         return {
             'event': event,
@@ -175,6 +175,11 @@ class SignupEventView(SakaiView):
         )
 
     def handle_GET(self, request, context, site, event_id):
+        if 'permission_denied' in context:
+            response = render_to_response('sakai/permission_denied.html',
+                                          RequestContext(request, context))
+            response.status_code = 403
+            return response
         return self.render(request, context, 'sakai/signup/detail')
 
     def handle_POST(self, request, context, site, event_id):
@@ -322,7 +327,7 @@ class PollDetailView(SakaiView):
 
     def handle_GET(self, request, context, id):
         if 'permission_denied' in context['poll']:
-            response = render_to_response('sakai/poll/permission_denied.html',
+            response = render_to_response('sakai/permission_denied.html',
                                           RequestContext(request, context))
             response.status_code = 403
             return response
