@@ -14,7 +14,7 @@ class CloudmadeGeolocationProvider(BaseGeolocationProvider):
     REVERSE_GEOCODE_URL = 'http://geocoding.cloudmade.com/%(api_key)s/geocoding/closest/%(type)s/%(lat)f,%(lon)f.js'
     GEOCODE_URL = 'http://geocoding.cloudmade.com/%(api_key)s/geocoding/find/%(query)s.js'
 
-    def __init__(self, search_locality):
+    def __init__(self, search_locality=None):
         self.search_locality = search_locality
 
     def reverse_geocode(self, lon, lat):
