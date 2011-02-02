@@ -56,9 +56,7 @@ class OPMLPodcastsProvider(RSSPodcastsProvider):
         podcast.medium = self.extract_medium(attrib['xmlUrl'])
         podcast.category = self.decode_category(attrib)
         podcast.slug = self.extract_slug(attrib['xmlUrl'])
-
-        rss_urls.append(attrib['xmlUrl'])
-
+        
         self.update_podcast(podcast)
 
     @batch('%d * * * *' % random.randint(0, 59))
@@ -78,6 +76,7 @@ class OPMLPodcastsProvider(RSSPodcastsProvider):
             if 'xmlUrl' in outline.attrib:
                 try:
                     self.parse_outline(outline)
+                    rss_urls.append(outline.attrib['xmlUrl'])
                 except Exception, e:
                     output.write("Update of podcast %r failed." % outline.attrib['xmlUrl'])
                     traceback.print_exc(file=output)
@@ -91,6 +90,7 @@ class OPMLPodcastsProvider(RSSPodcastsProvider):
                     if 'xmlUrl' in outline.attrib:
                         try:
                             self.parse_outline(outline)
+                            rss_urls.append(outline.attrib['xmlUrl'])
                         except Exception, e:
                             output.write("Update of podcast %r failed." % outline.attrib['xmlUrl'])
                             traceback.print_exc(file=output)
