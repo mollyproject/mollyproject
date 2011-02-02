@@ -274,6 +274,7 @@ APPLICATIONS = [
         providers = [
             Provider('molly_oxford.providers.podcasts.OPMLPodcastsProvider',
                 url = 'http://rss.oucs.ox.ac.uk/metafeeds/podcastingnewsfeeds.opml',
+                rss_re = r'http://rss.oucs.ox.ac.uk/(.+-(.+?))/rss20.xml'
             ),
             #Provider('molly.apps.podcasts.providers.RSSPodcastsProvider',
             #    podcasts = [
@@ -514,7 +515,7 @@ COMPRESS_JS_FILTERS = ('compress.filters.jsmin.JSMinFilter',)
 COMPRESS = not DEBUG     # Only enable on production (to help debugging)
 COMPRESS_VERSION = True  # Add a version number to compressed files.
 
-
+ROOT_URLCONF="molly.urls"
 
 SRID = 27700
 
