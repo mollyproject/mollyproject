@@ -1,6 +1,7 @@
 from xml.etree import ElementTree as ET
 from datetime import datetime
 import urllib, re, email, random, logging
+import traceback
 
 from django.template.defaultfilters import slugify
 
@@ -78,6 +79,8 @@ class OPMLPodcastsProvider(RSSPodcastsProvider):
                 try:
                     self.parse_outline(outline)
                 except Exception, e:
+                    output.write("Update of podcast %r failed.", outline.attrib['xmlUrl'])
+                    traceback.print_exc(file=output)
                     if not failure_logged:
                         logger.exception("Update of podcast %r failed.", outline.attrib['xmlUrl'])
                         failure_logged = True
@@ -89,9 +92,11 @@ class OPMLPodcastsProvider(RSSPodcastsProvider):
                         try:
                             self.parse_outline(outline)
                         except Exception, e:
+                            output.write("Update of podcast %r failed.", outline.attrib['xmlUrl'])
+                            traceback.print_exc(file=output)
                             if not failure_logged:
                                 logger.exception("Update of podcast %r failed.", outline.attrib['xmlUrl'])
-                        failure_logged = True
+                                failure_logged = True
                 self._category = None
 
         for podcast in Podcast.objects.filter(provider=self.class_path):
