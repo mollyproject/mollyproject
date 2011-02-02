@@ -56,7 +56,7 @@ class BBCTPEGPlacesProvider(BaseMapsProvider):
         xml = etree.parse(urllib.urlopen(self._tpeg_url), parser=parser)
         
         entities, seen = {}, set()
-        for entity in Entity.objects.filter(primary_type=entity_type):
+        for entity in Entity.objects.filter(source=source):
             entities[entity.identifiers['bbc-tpeg']] = entity
         
         for message in xml.getroot().findall('tpeg_message'):
@@ -97,10 +97,8 @@ class BBCTPEGPlacesProvider(BaseMapsProvider):
             entity.all_types = [entity_type]
             entity.update_all_types_completion()
             seen.add(entity.pk)
-            
-            print message.find('summary').text
         
-        for entity in Entity.objects.filter(primary_type=entity_type):
+        for entity in Entity.objects.filter(source=source):
             if not entity.pk in seen:
                 entity.delete()
     
