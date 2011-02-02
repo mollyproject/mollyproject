@@ -2,6 +2,8 @@ from xml.etree import ElementTree as ET
 from datetime import datetime
 import urllib, re, email, random, logging
 
+from django.template.defaultfilters import slugify
+
 from molly.conf.settings import batch
 from molly.apps.podcasts.providers import BasePodcastsProvider
 from molly.apps.podcasts.models import Podcast, PodcastItem, PodcastCategory, PodcastEnclosure
@@ -30,9 +32,19 @@ class OPMLPodcastsProvider(RSSPodcastsProvider):
     
     def decode_category(self, attrib):
         if self._category is None:
-            return 'Uncategorised'
+            cat = 'Uncategorised'
         else:
-            return self._category
+            cat = self._category
+        
+        slug = slugify(cat)
+        
+        podcast_category, created = PodcastCategory.objects.get_or_create(slug=slug,name=cat)
+        
+        try:
+            podcast_category.order = self.CATEGORY_ORDERS[slug]
+        except KeyError:
+            self.CATEGORY_ORDERS[slug] = len(self.CATEGORY_ORDERS)
+            podcast_category.order = self.CATEGORY_ORDERS[slug]
 
     def parse_outline(self, outline):
         attrib = outline.attrib
