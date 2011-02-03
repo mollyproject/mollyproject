@@ -13,7 +13,7 @@ urlpatterns = patterns('',
     (r'', applications.home.urls)) # Home default
 
 # Dynamically add apps
-for app in (app for app in all_apps() if app.has_urlconf):
+for app in (app for app in all_apps() if app.has_urlconf and app.local_name != 'home'):
     urlpatterns += patterns('',
         (r'^' + app.local_name + '/', include(app.urls)))
 
