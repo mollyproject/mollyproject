@@ -48,7 +48,7 @@ class ItemListView(BaseView):
     def breadcrumb(cls, request, context, slug):
         return Breadcrumb(
             cls.conf.local_name,
-            lazy_parent(IndexView),
+            lazy_parent('index'),
             context['feed'].title,
             lazy_reverse('events:item_list', args=[slug])
         )
@@ -78,7 +78,7 @@ class ItemDetailView(BaseView):
     def breadcrumb(cls, request, context, slug, id):
         return Breadcrumb(
             cls.conf.local_name,
-            lazy_parent(ItemListView, slug=slug),
+            lazy_parent('item-list', slug=slug),
             context['item'].title,
             lazy_reverse('events:item_detail', args=[slug,id])
         )
