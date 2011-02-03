@@ -13,7 +13,7 @@
 </div>
 	<div class="note">
 		<div class="weather-icon">
-	    <img src="{{ MEDIA_URL }}weather/png/{{ observation.icon }}.png" alt="{{ observation.get_outlook_display|capfirst }}"/><br/>
+	    <img src="{{ STATIC_URL }}weather/png/{{ observation.icon }}.png" alt="{{ observation.get_outlook_display|capfirst }}"/><br/>
 	    </div>
 		<div class="weather-live-info">
           <span style="font-size: 36pt;">{{ observation.temperature }}&deg;C</span><br/>
@@ -35,7 +35,7 @@
 {% for forecast in forecasts %}
             <tr>
                 <td style="font-size:12pt">{{ forecast.observed_date|date:"l" }}</td>
-                <td><img src="{{ MEDIA_URL }}weather/png/{{ forecast.icon }}_small.png" alt="{{ forecast.get_outlook_display|capfirst }}" style="height:2.5em; width:2.5em;"/></td>
+                <td><img src="{{ STATIC_URL }}weather/png/{{ forecast.icon }}_small.png" alt="{{ forecast.get_outlook_display|capfirst }}" style="height:2.5em; width:2.5em;"/></td>
                 <td style="font-size:12pt">{{ forecast.max_temperature }}&deg;C</td>
                 <td>{{ forecast.min_temperature }}&deg;C</td>
             </tr>

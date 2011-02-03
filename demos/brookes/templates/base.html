@@ -1,5 +1,5 @@
 {% load molly_utils %}<!DOCTYPE HTML>
-{# <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-GB" lang="en-GB" manifest="{{ MEDIA_URL }}cache/devices/iphone.manifest" > #}
+{# <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-GB" lang="en-GB" manifest="{{ STATIC_URL }}cache/devices/iphone.manifest" > #}
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-GB" lang="en-GB" >
 <head>
@@ -16,19 +16,19 @@
     </script>
 {% endif %} 
 
-    <link rel="stylesheet" href="{{ MEDIA_URL }}css/groups/{{ style_group }}.css" type="text/css" />
-    <link rel="icon" type="image/png" href="{{ MEDIA_URL }}png/favicon.png"/>
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/groups/{{ style_group }}.css" type="text/css" />
+    <link rel="icon" type="image/png" href="{{ STATIC_URL }}png/favicon.png"/>
 
 {% if device|device_has_parent:"apple_iphone_ver1" %}
-    <link rel="apple-touch-icon" href="{{ MEDIA_URL}}png/apple-touch-icon.png"/>
-    <link rel="apple-touch-startup-image" href="{{ MEDIA_URL}}png/apple-touch-startup-image.jpg">
+    <link rel="apple-touch-icon" href="{{ STATIC_URL}}png/apple-touch-icon.png"/>
+    <link rel="apple-touch-startup-image" href="{{ STATIC_URL}}png/apple-touch-startup-image.jpg">
     <meta name="apple-mobile-web-app-capable" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
 {% endif %}
 
 {% if use_javascript %}
-    <script src="{{ MEDIA_URL }}js/jquery-1.4.2.js"  type="text/javascript"> </script>
-    <script src="{{ MEDIA_URL }}js/groups/{{ style_group }}.js"  type="text/javascript"> </script>
+    <script src="{{ STATIC_URL }}js/jquery-1.4.2.js"  type="text/javascript"> </script>
+    <script src="{{ STATIC_URL }}js/groups/{{ style_group }}.js"  type="text/javascript"> </script>
 {% endif %}
 {% block extrahead %}{% endblock %}
 </head>
@@ -42,11 +42,11 @@
     <div id="bc-header">
       <ol id="bc">
         <li><a href="{% url home:index %}">
-          <img src="{{ MEDIA_URL }}png/logo.png" width="66" height="30" alt="Home"/>
+          <img src="{{ STATIC_URL }}png/logo.png" width="66" height="30" alt="Home"/>
         </a></li>
     {% if breadcrumbs.2 %}
         <li><a href="{{ breadcrumbs.1.1 }}" title="{{ breadcrumbs.1.0 }}">
-          <img src="{{ MEDIA_URL }}png/index-icons/{{ breadcrumbs.0 }}-bc.png" alt="{{ breadcrumb.1.0 }}"/>
+          <img src="{{ STATIC_URL }}png/index-icons/{{ breadcrumbs.0 }}-bc.png" alt="{{ breadcrumb.1.0 }}"/>
         </a></li>
     {% if not breadcrumbs.3 %}
         <li><a href="{{ breadcrumbs.2.1 }}" title="{{ breadcrumbs.2.0 }}">

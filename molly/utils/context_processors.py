@@ -18,8 +18,8 @@ def ssl_media(request):
     """
 
     if request.is_secure():
-        ssl_media_url = settings.MEDIA_URL.replace('http://', 'https://')
+        ssl_media_url = settings.STATIC_URL.replace('http://', 'https://')
     else:
-        ssl_media_url = settings.MEDIA_URL
+        ssl_media_url = settings.STATIC_URL
   
-    return {'MEDIA_URL': ssl_media_url}
+    return {'STATIC_URL': ssl_media_url}

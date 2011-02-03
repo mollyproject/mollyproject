@@ -3,7 +3,7 @@
 {% block breadcrumbs %}
 {{ block.super }}
             <li><a href="{% url podcasts_index %}">
-                <img src="{{ MEDIA_URL }}png/index-icons/podcasts-bc.png" alt="Podcasts"/>
+                <img src="{{ STATIC_URL }}png/index-icons/podcasts-bc.png" alt="Podcasts"/>
             </a></li>
 {% if podcast.category %}
     <li><a href="{{ podcast.category.get_absolute_url }}">...</a></li>

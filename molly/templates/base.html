@@ -15,20 +15,20 @@
 {% endif %}
 
   {% compressed_css style_group %}
-  <link rel="icon" type="image/png" href="{{ MEDIA_URL }}png/favicon.png"/>{% if device|device_has_parent:"apple_iphone_ver4" or browser.svgt_1_1 %}
+  <link rel="icon" type="image/png" href="{{ STATIC_URL }}png/favicon.png"/>{% if device|device_has_parent:"apple_iphone_ver4" or browser.svgt_1_1 %}
   {% compressed_css 'svg' %}
 {% endif %}
 
 {% if device|device_has_parent:"apple_generic" or device.device_os == "Android" %}
-    <link rel="apple-touch-icon" href="{{ MEDIA_URL}}site/png/apple-touch-icon.png"/>
-    <link rel="apple-touch-icon" sizes="72x72" href="{{ MEDIA_URL}}site/png/apple-touch-icon-72px.png"/>
-    <link rel="apple-touch-icon" sizes="114x114" href="{{ MEDIA_URL}}site/png/apple-touch-icon-114px.png"/>
-    <link rel="apple-touch-icon-precomposed" href="{{ MEDIA_URL}}site/png/apple-touch-icon.png"/>
-    <link rel="apple-touch-startup-image" href="{{ MEDIA_URL}}site/png/apple-touch-startup-image.jpg">
+    <link rel="apple-touch-icon" href="{{ STATIC_URL}}site/png/apple-touch-icon.png"/>
+    <link rel="apple-touch-icon" sizes="72x72" href="{{ STATIC_URL}}site/png/apple-touch-icon-72px.png"/>
+    <link rel="apple-touch-icon" sizes="114x114" href="{{ STATIC_URL}}site/png/apple-touch-icon-114px.png"/>
+    <link rel="apple-touch-icon-precomposed" href="{{ STATIC_URL}}site/png/apple-touch-icon.png"/>
+    <link rel="apple-touch-startup-image" href="{{ STATIC_URL}}site/png/apple-touch-startup-image.jpg">
 {% endif %}
 
 {% if use_javascript %}{% endif %}
-    <link rel="icon" type="image/png" href="{{ MEDIA_URL }}site/png/favicon.png"/>
+    <link rel="icon" type="image/png" href="{{ STATIC_URL }}site/png/favicon.png"/>
 {% block extrahead %}{% endblock extrahead %}
 </head>
 
@@ -42,11 +42,11 @@
     <div id="bc-header">
       <ol id="bc">
         <li><a href="{% url home:index %}">
-          <img src="{{ MEDIA_URL }}site/png/logo.png" width="57" height="30" alt="Home"/>
+          <img src="{{ STATIC_URL }}site/png/logo.png" width="57" height="30" alt="Home"/>
         </a></li>
     {% if breadcrumbs.2 %}
         <li><a href="{{ breadcrumbs.1.1 }}" title="{{ breadcrumbs.1.0 }}">
-          <img src="{{ MEDIA_URL }}site/png/index-icons/{{ breadcrumbs.0 }}-bc.png" alt="{{ breadcrumb.1.0 }}"/>
+          <img src="{{ STATIC_URL }}site/png/index-icons/{{ breadcrumbs.0 }}-bc.png" alt="{{ breadcrumb.1.0 }}"/>
         </a></li>
     {% if not breadcrumbs.3 %}
         <li><a href="{{ breadcrumbs.2.1 }}" title="{{ breadcrumbs.2.0 }}">

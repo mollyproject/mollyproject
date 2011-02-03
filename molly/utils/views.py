@@ -354,7 +354,7 @@ def ReverseView(request):
 def handler500(request):
     context = {
         'request': request,
-        'MEDIA_URL': settings.MEDIA_URL,
+        'STATIC_URL': settings.STATIC_URL,
     }
 
     # This will make things prettier if we can manage it.
