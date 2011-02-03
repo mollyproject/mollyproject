@@ -1,4 +1,13 @@
+#!/usr/bin/env python
 import re, sys, os, os.path
+
+"""
+Quick and dirty script to try and figure out unused templates - it's used
+something like this:
+
+    find .. -name \*.pyc -exec cat {} \; | python scripts/findtemplates.py
+
+"""
 
 templates = ''
 temps = set()
