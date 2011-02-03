@@ -31,5 +31,5 @@ handler500 = 'molly.utils.views.handler500'
 if settings.DEBUG:
     urlpatterns += patterns('',
         (r'^media/(?P<path>.*)$', 'django.views.static.serve',
-            {'document_root': settings.SITE_MEDIA_PATH})
+            {'document_root': settings.STATIC_ROOT})
     )
