@@ -107,4 +107,4 @@ class ResultDetailView(BaseView):
         except BaseContactProvider.NoSuchResult:
             raise Http404
 
-        return self.render(request, context, 'context/result_detail')
+        return self.render(request, context, 'contact/result_detail')
