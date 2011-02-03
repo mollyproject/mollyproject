@@ -90,7 +90,7 @@ setup(
         "python-ldap",
         "django-compress",
         "python-memcached",
-        "django-staticfiles",
+        "django-staticfiles>=0.9",
         "South",
         "suds",
     ],
