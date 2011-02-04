@@ -64,11 +64,9 @@ def ask(question, default=None, compulsory=False, restrict=None):
 
 def ask_yes_no(to_ask, default):
     return {
-        'y': 'True',
-        'n': 'False',
+        'y': True,
+        'n': False,
     }[ask(to_ask + ' (y/n)', default, False, ['y', 'n'])]
-
-# Show startup image here
 
 #if os.path.exists('settings.py'):
 #    print "Cannot continue - a settings.py file already exists"
@@ -230,62 +228,335 @@ print """
 --------------------------------------------------------------------------------
 
 Now we're going to ask you some questions relating to the configuration of the
-applications in Molly."""
+applications in Molly.
+
+Some questions can be skipped by leaving the blank. If this is done, then it
+will disable the feature that is being asked about, or some sensible default is
+used.
+"""
+
+config += """
+
+# The meat of Molly - application configuration
+APPLICATIONS = [
+"""
 
 # Home application - always
+config += """
+    Application('molly.apps.home', 'home', 'Home',
+        display_to_user = False,
+    ),
+"""
 
 # Desktop application - ask for settings - blog feed, Twitter, blog URL (to ignore)
-# need to check which of these are optional or not tbh
 # optional
+if ask_yes_no('Would you like to enable the desktop application?', 'y'):
+    config += """
+    Application('molly.apps.desktop', 'desktop', 'Desktop',
+        display_to_user = False,"""
+    twitter_username = ask('Please enter your Twitter username')
+    if twitter_username != None:
+        config += "\n        twitter_username = '%s'," % twitter_username
+        twitter_ignore_urls = ask('Please enter a URL prefix to ignore in the Twitter feed')
+        if twitter_ignore_urls != None:
+            config += "\n        twitter_ignore_urls = 'http://post.ly/'," % twitter_ignore_urls
+    blog_rss_url = ask('Please enter your blog RSS URL')
+    if blog_rss_url != None:
+        config += "\n        blog_rss_url = 'http://feeds.feedburner.com/mobileoxford',"
+    config += """
+    ),
+"""
 
 # Contact Search (with MIT's LDAP provider) - optional
+if ask_yes_no('Would you like to enable the contact search application?', 'y'):
+    config += """
+    Application('molly.apps.contact', 'contact', 'Contact search',
+        provider = 'molly.apps.contact.providers.LDAPContactProvider',
+    ),
+"""
+    print "\nAt present this is just a demo, using MIT's LDAP database to do the search\n"
 
 # Library search - optional
-# Need: Z39.50 host, database, syntax, port (210), charset(UTF-8)
+# Need: Z39.50 host, database, syntax, port (210)
+if ask_yes_no('Would you like to enable the library search application?', 'y'):
+    config += """
+    Application('molly.apps.library', 'library', 'Library search',
+        provider = Provider('molly.apps.library.providers.Z3950',
+                            host = '%s',
+                            port = %s,
+                            database = '%s',
+                            syntax = %s),
+    ),
+""" % (ask('Please enter the hostname of your Z39.50 catalogue', compulsory = True),
+       ask('Please enter the port number of the Z39.50 catalogue', default='210', compulsory = True),
+       ask('Please enter the name of the database to search on', compulsory=True),
+       ask('Please enter the syntax your server uses for results', default='USMARC', compulsory=True)
+      )
 
 # Podcasts - optional
 # URL to OPML (optional)
 # URLs of RSS feed (optional)
 # URLs of podcast producer feeds (optional)
+def get_opml_data():
+    print "Leave blank to skip adding an OPML feed"
+    url = ask('Enter the URL of an OPML feed to add')
+    if url is None:
+        return None
+    else:
+        rss_re = ask('Enter a regular expression to extract the feed slug from the RSS URL\n')
+        if rss_re is None:
+            return None
+        else:
+            return (url, rss_re)
+
+def get_rss_data():
+    print "Leave blank to skip adding an RSS feed"
+    slug = ask('Enter the slug for this RSS feed')
+    if slug is None:
+        return None
+    else:
+        url = ask('Enter the URL for this RSS feed')
+        if url is None:
+            return None
+        else:
+            return (slug, url)
+
+if ask_yes_no('Would you like to enable the podcasts application?', 'y'):
+    config += """
+    Application('molly.apps.podcasts', 'podcasts', 'Podcasts',
+        providers = ["""
+    opml = get_opml_data()
+    while opml != None:
+        url, rss_re = opml
+        config += """
+            Provider('molly.apps.podcasts.providers.OPMLPodcastsProvider',
+                url = '%s',
+                rss_re = r'%s'
+            ),
+""" % (url, rss_re)
+        opml = get_opml_data()
+    rss = get_rss_data()
+    if rss != None:
+        config += """
+            Provider('molly.apps.podcasts.providers.RSSPodcastsProvider',
+                podcasts = ["""
+        while rss != None:
+            slug, url = rss
+            config += "                    ('%s', '%s'),\n" % (slug, url)
+            rss = get_rss_data()
+        config += """                ],
+        ),"""
+    print "Leave blank to skip adding Podcast Producer feeds"
+    pp = ask('Please enter the URL for this Podcast Producer feed')
+    while pp != None:
+        config += """
+            Provider('molly.apps.podcasts.providers.PodcastProducerPodcastsProvider',
+                url = '%s',
+            ),
+""" % pp
+        pp = ask('Please enter the URL for this Podcast Producer feed')
+    config += """        ]
+    ),
+"""
 
 # Webcams - optional
+if ask_yes_no('Would you like to enable the webcam application?', 'y'):
+    config += """
+    Application('molly.apps.webcams', 'webcams', 'Webcams'),
+"""
 
 # Weather - optional, BBC location ID
+if ask_yes_no('Would you like to enable the weather application?', 'y'):
+    id = ask('What is the BBC Weather ID to use?', compulsory=True)
+    config += """
+    Application('molly.apps.weather', 'weather', 'Weather',
+        location_id = 'bbc/%s',
+        provider = Provider('molly.apps.weather.providers.BBCWeatherProvider',
+            location_id = %s,
+        ),
+    ),
+""" % (id, id)
 
 # Service status - optional, RSS feeds
+def get_service_status_rss():
+    print "Leave blank to skip adding a service status feed"
+    url = ask('Enter the URL of an RSS feed to add')
+    if url is None:
+        return None
+    else:
+        name = ask('Enter the name of this RSS feed')
+        if name is None:
+            return None
+        else:
+            slug = ask('Enter the slug for this RSS feed')
+            return (url, name, slug)
+
+if ask_yes_no('Would you like to enable the service status application?', 'y'):
+    config += """
+    Application('molly.apps.service_status', 'service_status', 'Service status',
+        providers = ["""
+    feed = get_service_status_rss()
+    while feed != None:
+        url, name, slug = feed
+        config += """
+            Provider('molly.apps.service_status.providers.RSSModuleServiceStatusProvider',
+                name='University of Example IT Services',
+                slug='it',
+                url='http://www.example.ac.uk/it/status.rss')
+""" % (url, name, slug)
+        feed = get_service_status_rss()
+    config += """        ],
+    ),
+"""
 
 # Search - always - GSA Provider = optional
 
+
+
+
+
+
+
+
+
+
+
+
+
 # Feeds always
+config += """
+    Application('molly.apps.feeds', 'feeds', 'Feeds',
+        providers = [
+            Provider('molly.apps.feeds.providers.RSSFeedsProvider'),
+        ],
+        display_to_user = False,
+    ),
+"""
 
 # News - optional
+if ask_yes_no('Would you like to enable the news application?', 'y'):
+    config += """
+    Application('molly.apps.feeds.news', 'news', 'News'),
+"""
 
 # Events - optional
+if ask_yes_no('Would you like to enable the events application?', 'n'):
+    config += """
+    Application('molly.apps.feeds.events', 'events', 'Events'),
+"""
 
 # Maps - always
+config += """
+    Application('molly.maps', 'maps', 'Maps',
+        display_to_user = False,
+    ),
+"""
 
 # Geolocation - always
 # ask if there's a longitude, latitude, distance preference
 # Cloudmade (only if API key set earlier) - limit to locality?
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Feedback - always
+config += """
+    Application('molly.apps.feedback', 'feedback', 'Feedback',
+        display_to_user = False,
+    ),
+"""
 
 # Feature suggestions - always
+config += """
+    Application('molly.apps.feature_vote', 'feature_vote', 'Feature suggestions',
+        display_to_user = False,
+    ),
+"""
 
 # External media - always
+config += """
+    Application('molly.external_media', 'external_media', 'External Media',
+        display_to_user = False,
+    ),
+"""
 
 # WURFL - always (expose view)
+config += """
+    Application('molly.wurfl', 'device_detection', 'Device detection',
+        display_to_user = False,
+        expose_view = True,
+    ),
+"""
 
 # Stats (ask)
+enable_stats = ask_yes_no('Would you like to enable hit logging?', 'y')
+if enable_stats:
+    config += """
+   Application('molly.apps.stats', 'stats', 'Statistics',
+        display_to_user = False,
+    ), 
+"""
 
 # Molly utilities - always
-
-# Feature Vote - always
+config += """
+    Application('molly.utils', 'utils', 'Molly utility services',
+        display_to_user = False,
+    ),
+"""
 
 # Auth - always
+config += """
+    Application('molly.auth', 'auth', 'Authentication',
+        display_to_user = False,
+        secure = True,
+        unify_identifiers = ('weblearn:id',),
+    ),
+"""
 
 # Sakai - ask (including simplied OAuth config) - ask for host, service_name,
 # which tools to be enabled (signup, poll)
+if ask_yes_no('Would you like to enable Sakai integration?', 'n'):
+    url = ask('What is the URL to your Sakai instance?', compulsory=True)
+    service_name = ask('What is the name of your Sakai deployment?', default='WebLearn', compulsory='True')
+    config += """
+    Application('molly.apps.sakai', 'sakai', '%s',
+        host = '%s',
+        service_name = '%s',
+        secure = True,
+        tools = [
+""" % (service_name, url, service_name)
+    if ask_yes_no('Would you like to enable signups in Sakai?', 'y'):
+        config += "            ('signup', 'Sign-ups'),\n"
+    if ask_yes_no('Would you like to enable polls in Sakai?', 'y'):
+        config += "            ('poll', 'Polls'),\n"
+    config += """        ],
+        extra_bases = (
+            ExtraBase('molly.auth.oauth.views.OAuthView',
+                secret = %s,
+                signature_method = OAuthSignatureMethod_PLAINTEXT(),
+                base_url = '%s/oauth-tool/',
+                request_token_url = 'request_token',
+                access_token_url = 'access_token',
+                authorize_url = 'authorize',
+            ),
+        ),
+        enforce_timeouts = False,
+        identifiers = (
+            ('weblearn:id', ('id',)),
+            ('weblearn:email', ('email',)),
+        ),
+    ),
+""" % (ask('What is your Sakai OAuth secret?', compulsory=True), url)
 
 # Places - always, start with some default nearby-entity-types, configure more
 # later, no associations, configure more later
@@ -296,19 +567,82 @@ applications in Molly."""
 # OSM - longitude/latitude (compute +/- automatically)
 # Postcodes (postal region)
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Transport y/n
 #  train station CRS code?
-#  show nearby bus stops? (how many?)
-#  show travel alerts?
+if ask_yes_no('Would you like to enable the transport application?', 'y'):
+    config += """
+    Application('molly.apps.transport', 'transport', 'Transport',
+"""
+    print "You can find CRS codes at http://www.nationalrail.co.uk/stations/codes/"
+    config += "        train_station = 'crs:%s'," % ask('What is the CRS code of the rail station to show?', compulsory=True)
+    config += """
+        nearby = {
+            'park_and_rides': ('park-and-ride', 5, True, False),
+            'bus_stops': ('bus-stop', 5, False, True),
+        },
+"""
+    if ask_yes_no('Would you like to show BBC travel alerts?', 'y'):
+        config += "        travel_alerts = True,"
+    config += """
+    ),
+"""
+
+config += """
+]
+"""
 
 # Middleware - will need to know if stats app is enabled, as this changes if the
 # middleware is included or not, also, need to ask if we want Molly to handle
 # errors (E-mail errors)
 
+config += """
+
+# Middleware classes alter requests and responses before/after they get
+# handled by the view. They're useful in providing high-level global
+# functionality
+MIDDLEWARE_CLASSES = (
+    'molly.wurfl.middleware.WurflMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'molly.utils.middleware.ErrorHandlingMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'molly.auth.middleware.SecureSessionMiddleware',
+"""
+if enable_stats:
+    config += "    'molly.apps.stats.middleware.StatisticsMiddleware',"
+else:
+    config += "    #'molly.apps.stats.middleware.StatisticsMiddleware',"
+config += """
+    'molly.url_shortener.middleware.URLShortenerMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+)
+"""
+
 # Template context processors - will need to know if Google Analytics is used
 # earlier
 
 config += """
+# Each entity has a primary identifier which is used to generate the absolute
+# URL of the entity page. We can define a list of identifier preferences, so
+# that when an entity is imported, these identifier namespaces are looked at in
+# order until a value in that namespace is chosen. This is then used as the
+# primary identifer.
+#IDENTIFIER_SCHEME_PREFERENCE = ('atco', 'osm', 'naptan', 'postcode', 'bbc-tpeg')
+
 # This setting defines which context processors are used - this can affect what
 # is available in the context of a view
 TEMPLATE_CONTEXT_PROCESSORS = (
