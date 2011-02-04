@@ -214,17 +214,20 @@ class NaptanMapsProvider(BaseMapsProvider):
             self._import_from_ftp()
         
         return metadata
-
+    
+    def _connect_to_ftp(self):
+        return ftplib.FTP(self.FTP_SERVER,
+            self._username,
+            self._password,
+        )
+    
     def _import_from_ftp(self):
         def data_chomper(f):
             def chomp(data):
                 os.write(f, data)
             return chomp
 
-        ftp = ftplib.FTP(self.FTP_SERVER,
-            self._username,
-            self._password,
-        )
+        ftp = self._connect_to_ftp()
         
         files = {}
         
@@ -243,17 +246,29 @@ class NaptanMapsProvider(BaseMapsProvider):
         
         # Create a mapping from ATCO codes to CRS codes.
         f, filename =  tempfile.mkstemp()
-        ftp.cwd("/V2/010/")
-        ftp.retrbinary('RETR RailReferences.csv', data_chomper(f))
+        try:
+            ftp.cwd("/V2/010/")
+            ftp.retrbinary('RETR RailReferences.csv', data_chomper(f))
+        except ftplib.error_temp:
+            ftp = self._connect_to_ftp()
+            ftp.cwd("/V2/010/")
+            ftp.retrbinary('RETR RailReferences.csv', data_chomper(f))
+        
         os.close(f)
         self._import_stations(open(filename, 'r'), self._source, self._entity_types[self.TRAIN_STATION])
         os.unlink(filename)
         
         if self._areas is None:
             f, filename = tempfile.mkstemp()
-                
-            ftp.cwd("/V2/complete/")
-            ftp.retrbinary('RETR NaPTAN.xml', data_chomper(f))
+            
+            try:
+                ftp.cwd("/V2/complete/")
+                ftp.retrbinary('RETR NaPTAN.xml', data_chomper(f))
+            except ftplib.error_temp:
+                ftp = self._connect_to_ftp()
+                ftp.cwd("/V2/complete/")
+                ftp.retrbinary('RETR NaPTAN.xml', data_chomper(f))
+            
             ftp.quit()
             os.close(f)
             
@@ -265,12 +280,20 @@ class NaptanMapsProvider(BaseMapsProvider):
             for area in self._areas:
                 f, filename = tempfile.mkstemp()
                 files[area] = filename
-                
-                ftp.cwd("/V2/%s/" % area)
-                ftp.retrbinary('RETR NaPTAN%sxml.zip' % area, data_chomper(f))
+            
+                try:
+                    ftp.cwd("/V2/%s/" % area)
+                    ftp.retrbinary('RETR NaPTAN%sxml.zip' % area, data_chomper(f))
+                except ftplib.error_temp:
+                    ftp = self._connect_to_ftp()
+                    ftp.cwd("/V2/%s/" % area)
+                    ftp.retrbinary('RETR NaPTAN%sxml.zip' % area, data_chomper(f))
                 os.close(f)
             
-            ftp.quit()
+            try:
+                ftp.quit()
+            except ftplib.error_temp:
+                pass
             
             for (area, filename) in files.items():
                 archive = zipfile.ZipFile(filename)
