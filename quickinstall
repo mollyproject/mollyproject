@@ -1,0 +1,292 @@
+#!/usr/bin/env python
+
+import platform
+import sys
+import os
+import os.path
+from subprocess import Popen, PIPE
+import string
+from random import choice
+
+def generate_password():
+    return ''.join([choice(string.letters + string.digits) for i in range(18)])
+
+def reload_postgres(distribution):
+    postgres_init_path = {
+        'Ubuntu': '/etc/init.d/postgresql-8.4',
+        'Fedora': '/etc/init.d/postgresql'
+    }.get(distribution)
+    Popen([postgres_init_path, 'restart'], stdout=PIPE).communicate()
+
+print """
+                                 ;Ok;                                         
+                                 lMM:                                         
+                                .0MX.                                         
+                                ;WMx                                          
+                 .xx,           dMW;                                          
+                 .oWWd.        .XM0.                                          
+                   ,0M0,       ;MMo          .;xKx.                           
+                    .oWWl      oMN'       .,dXMNx;.                           
+                      ,0Wx.    ,dc.    .;dXMNk:.                              
+   ;KX0d:.             .d0:           .XMNk:.                                 
+   ;OXMMMK;  ..',..                   .;;.              ...   ...             
+     .,0MMNx0NMMMMN0l.  .;ok000xc.                     dWWk. :NMK'            
+       .KMMMMXkddONMMXllKMMWXKNMMNo.    .:ooc:;'..     xMMW, cMMMl            
+      ;KMMMMd.    .OMMMMMXo'. .oMMMd.   .oOKXWMMMK.   .OMMN. lMMMc            
+    .xWMMWMMx      :WMMMd.     .kMMW;       ...,;.    ;WMMx .KMMX.            
+   .KMMWlkMM0    .lWMMMMc       :MMMd                .kMMW, :MMMo             
+  .OMMX; dMM0    lMMMMMMd       ,MMMx     'ldkxo:.   ,WMMx  kMMX..cl'    .cl' 
+ .xMMN,  xMM0   ;WMMkNMMd       ;MMMd    lWMMMMMMK,  dMMW, 'WMMl xMM0.   dMMO 
+ :WMW:  .0MMx  'XMMx,WMMo       oMMMc 'oxWMMK,;XMMK..KMMk. dMMX..NMMo   .OMMk 
+;0MMx   ,WMMc  xMMK.cMMM:      .KMMX. OMMMMMMWKKMMW';MMM: .KMMd :MMM,   :WMMx 
+dMMM;  .kMM0. 'WMMc.0MMN.      :MMMo .NMMd:dkOOWMMK.dMMK. :MMM; oMMN.  ,XMMMo 
+xMMW, .dMMW,  :MMW'oMMMo      .KMM0. .XMMk.  .xMMW: OMMx  oMMX. lMMN..:NMMMM: 
+cXMMOl0MMWc   ;MMM0WMWd.     .0MMX'   oMMMOodKMMX:..0MMx  dMMX. 'NMM0KMMMMMW' 
+ 'OMMMMWO,    .oNMMM0:.      cWM0'    .cKWMMMMKl.   lWMx  ,XMX.  'OWMMXxXMMO. 
+  .'::;.        .,,..         ...       ..,;,..      ...   ... .':lkK0kkWMM:  
+                                                            .,xXMMMMMWMMMMM0, 
+                                                           .dWMMKdc,.:XMMWMMNo
+                                                           cMMWc.  .xWMMK;xXOc
+                                                           cMMWkoxOWMMKl.     
+                                                           .oNMMMMWKd,.       
+                                                             :dOOxl           
+
+Welcome to the Molly Installer!
+
+http://mollyproject.org/
+"""
+
+# This doesn't appear to be Linux
+if not hasattr(platform, 'linux_distribution'):
+    print "At the moment, this installer only supports installation on Linux"
+    print "distributions. Exiting..."
+    sys.exit(1)
+
+try:
+    path = sys.argv[1]
+except IndexError:
+    print "Usage:"
+    print "   ", sys.argv[0], "PATH-TO-INSTALL"
+    sys.exit(1)
+
+# Error if not root
+if os.geteuid() != 0:
+    print "Please run this as root"
+    sys.exit(1)
+
+# Check if upgrading or installing
+if os.path.exists(path) and not os.path.exists(os.path.join(path, 'bin', 'activate')):
+    # Path exists - but not a Virtualenv
+    print "The path specified exists, but does not appear to be an install of Molly."
+    print
+    print "Cannot continue upgrade - exiting"
+    sys.exit(1)
+
+elif os.path.exists(os.path.join(path, 'bin', 'activate')):
+    upgrading = True
+    print "An installation has been detected - this will update your existing installation"
+
+else:
+    upgrading = False
+
+# Attempt to detect which distro this is and install appropriately
+distribution, distribution_version, distribution_id = platform.linux_distribution()
+print "Detected Linux: %s %s (%s)" % (distribution, distribution_version, distribution_id)
+print
+
+packagekit_packages = {
+    'Fedora': [
+            'python-virtualenv',
+            'python-pip',
+            'libxml-devel',
+            'libxslt-devel',
+            'python-devel',
+            'postgresql-devel',
+            'openldap-devel',
+            'openssl-devel',
+            'postgis',
+            'gdal-python',
+            'proj',
+            'postgresql-server',
+            'geos',
+            'httpd',
+            'libjpeg-devel',
+            'imagemagick',
+            'gcc',
+            'make'
+        ],
+}
+
+apt_packages = {
+    'Ubuntu': [
+            'build-essential',
+        ],
+}
+
+# Install prerequisites - can do this using PackageKit
+if distribution in packagekit_packages.keys():
+
+    print "Ensuring that the system prerequisites are satisfied"
+
+    # Use PackageKit to install packages
+    import packagekit.client
+    from packagekit.enums import FILTER_INSTALLED
+    pk = packagekit.client.PackageKitClient()
+    packages = pk.resolve(packagekit_packages[distribution])
+    all_packages = [package.id for package in pk.get_packages(filters=FILTER_INSTALLED)]
+    to_install = [package for package in packages if package.id not in all_packages]
+    
+    if len(to_install) == 0:
+        print "All prerequisites satisfied! Continuing..."
+    else:
+        print "The following packages must be installed to satisfy Molly's prerequisites:"
+        enable_postgres = False
+        for package in to_install:
+            print " * ", package
+            if str(package).startswith('postgresql-server'):
+                enable_postgres = True
+        raw_input('Press Enter to install these packages, or Ctrl+C to exit')
+        
+        pk.install_packages(to_install)
+        
+        if enable_postgres:
+            Popen(['chkconfig', 'postgresql', 'on'], stdout=PIPE, stderr=PIPE).communicate()
+
+else:
+    print "At present, this installer does not support fully automatic installation"
+    print "on this platform. Before continuing, you should ensure that you have all"
+    print "pre-requisites installed and the database set up as documented at"
+    print "http://docs.mollyproject.org/"
+    print
+    raw_input('Press Enter to continue, or Ctrl+C to abort')
+
+# Create Molly user - silently ignore failures (probably means the user already exists)
+print "Creating 'molly' user...",
+sys.stdout.flush()
+Popen(['useradd', '-r', 'molly'], stdout=PIPE, stderr=PIPE).communicate()
+print "DONE!"
+
+# Set up a Virtualenv
+if not upgrading:
+    print
+    print "Creating a virtualenv for Molly...",
+    Popen(['sudo', '-u', 'molly', 'virtualenv', '--distribute', '--no-site-packages', path], stdout=PIPE, stderr=PIPE).communicate()
+    print "DONE!"
+
+# Install our packages
+print "Installing Python dependencies:"
+as_molly = ['sudo', '-u', 'molly']
+pip = os.path.join(path, 'bin', 'pip')
+for name, package in [('PyZ3950', 'git+http://github.com/oucs/PyZ3950.git'), # Custom PyZ3950, contains some bug fixes
+                      ('django-compress', 'git+git://github.com/mikelim/django-compress.git#egg=django-compress'), # Fork of django-compress contains some extra features we need
+                      ('PIL', 'PIL'), # Because it doesn't work when installed using setuptools
+                     ]:
+    print " * ", package, '...',
+    sys.stdout.flush()
+    Popen(as_molly + [pip, 'install', '-U', package], stdout=PIPE).communicate()
+    print "DONE!"
+print
+
+# Install Molly
+print "Installing Molly (this may take some time)...",
+sys.stdout.flush()
+python = os.path.join(path, 'bin', 'python')
+molly_setup = os.path.join(os.path.normpath(os.path.dirname(__file__)), 'setup.py')
+Popen(as_molly + [python, molly_setup, 'install'], stdout=PIPE, stderr=PIPE).communicate()
+print "DONE!"
+
+# Do DB setup
+if not upgrading:
+    if distribution in ('Fedora', 'Ubuntu'):
+        print
+        print "Molly can install and set up your database for you, if you would like."
+        print "Please note that this only works on fresh databases (empty ones), and can"
+        print "lead to data loss if done on an installed database. Only do this on a new"
+        print "install!"
+        print
+        do_db_install = {'y': True, 'n': False}.get(raw_input('Would you like Molly to configure your database for you? (y/n)'))
+        while do_db_install is None:
+            print "Please answer with either y (for yes) or n (for no)"
+            do_db_install = {'y': True, 'n': False}.get(raw_input('Would you like Molly to configure your database for you? (y/n)'))
+        
+        if do_db_install:
+            
+            if distribution == 'Fedora':
+                print "Initialising Postgres...",
+                sys.stdout.flush()
+                Popen(['service', 'postgresql', 'initdb'], stdout=PIPE, stderr=PIPE).communicate()
+                Popen(['service', 'postgresql', 'start'], stdout=PIPE, stderr=PIPE).communicate()
+                print "DONE!"
+            
+            # Setup PostGIS
+            postgis_paths = {
+                'Fedora': '/usr/share/pgsql/contrib/postgis-1.5',
+                'Ubuntu': '/usr/share/postgresql/8.4/contrib/postgis-1.5'
+            }
+            
+            as_postgres = ['sudo', '-u', 'molly']
+            
+            print "Configuring PostGIS...",
+            sys.stdout.flush()
+            
+            # Create the template spatial database.
+            Popen(as_postgres + ['createdb','-E','UTF8','template_postgis'], stdout=PIPE, stderr=PIPE).communicate()
+            
+            # Adding PLPGSQL language support.
+            Popen(as_postgres + ['createlang','-d','template_postgis','plpgsql'], stdout=PIPE, stderr=PIPE).communicate()
+            
+            # Loading the PostGIS SQL routines
+            Popen(as_postgres + ['psql','-d','template_postgis','-f',os.path.join(postgis_paths[distribution], 'postgis.sql')], stdout=PIPE, stderr=PIPE).communicate()
+            Popen(as_postgres + ['psql','-d','template_postgis','-f',os.path.join(postgis_paths[distribution], 'spatial_ref_sys.sql')], stdout=PIPE, stderr=PIPE).communicate()
+            Popen(as_postgres + ['psql','-d','postgres','-c',"UPDATE pg_database SET datistemplate='true' WHERE datname='template_postgis';"], stdout=PIPE, stderr=PIPE).communicate()
+            
+            # Enabling users to alter spatial tables.
+            Popen(as_postgres + ['psql','-d','template_postgis','-c','GRANT ALL ON geometry_columns TO PUBLIC;'], stdout=PIPE, stderr=PIPE).communicate()
+            Popen(as_postgres + ['psql','-d','template_postgis','-c','GRANT ALL ON spatial_ref_sys TO PUBLIC;'], stdout=PIPE, stderr=PIPE).communicate()
+            print "DONE!"
+            
+            print "Configuring database security...",
+            sys.stdout.flush()
+            postgres_password = generate_password()
+            Popen(as_postgres + ['psql','-c',"CREATE USER molly WITH PASSWORD '%s';" % postgres_password], stdout=PIPE, stderr=PIPE).communicate()
+            Popen(as_postgres + ['createdb','-T','template_postgis','molly'], stdout=PIPE, stderr=PIPE).communicate()
+            Popen(as_postgres + ['psql','-c',"GRANT ALL ON DATABASE molly TO molly;"], stdout=PIPE, stderr=PIPE).communicate()
+            
+            pg_hba_paths  = {
+                'Fedora': '/usr/share/pgsql/contrib/postgis-1.5',
+                'Ubuntu': '/etc/postgresql/8.3/main/pg_hba.conf'
+            }
+            with open(pg_hba_paths[distribution]) as pg_hba:
+                pg_hba.write("""
+# This file was written by the Molly installer
+local   all         molly                             md5
+host    all         molly       127.0.0.1/32          md5
+
+# "local" is for Unix domain socket connections only
+local   all         all                               ident
+# IPv4 local connections:
+host    all         all         127.0.0.1/32          ident
+# IPv6 local connections:
+host    all         all         ::1/128               ident
+                             """)
+            reload_postgres(distribution)
+            print "DONE!"
+    
+    else:
+        
+        print "Molly can not automatically set up your database on this platform. Please read"
+        print "http://docs.mollyproject.org/ to ensure your database is set up correctly"
+        print
+        raw_input("Press Enter to continue or Ctrl+C to quit.")
+
+# Create site
+site = os.path.join(path, 'site')
+Popen(as_molly + [python, os.path.join(path, 'bin', 'django-admin.py'), 'startproject', site], stdout=PIPE, stderr=PIPE).communicate()
+
+# Remove settings.py as we're going to generate this ourselves
+os.unlink(os.path.join(site, 'settings.py'))
+
+# Add default directories
+os.makedirs(os.path.join(site, 'templates'))
+os.makedirs(os.path.join(site, 'media'))
+os.makedirs(os.path.join(site, 'site_media'))
