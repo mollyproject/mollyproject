@@ -411,17 +411,27 @@ if ask_yes_no('Would you like to enable the service status application?', 'y'):
 
 # Search - always - GSA Provider = optional
 
-
-
-
-
-
-
-
-
-
-
-
+config += """
+    Application('molly.apps.search', 'search', 'Search',
+        providers = [
+            Provider('molly.apps.search.providers.ApplicationSearchProvider'), """
+if ask_yes_no('Would you like to enable searching using a Google Search Applicance', 'n'):
+    config += """
+            Provider('molly.apps.search.providers.GSASearchProvider',
+                search_url = '%s',
+                domain = '%s',
+                # Set a regular expression below here to clear up the title of
+                # returned pages
+                #title_clean_re = r'molly \| (.*)',
+            ),""" % (ask('What is the URL of your Google Search Appliance?', compulsory=True),
+                     ask('What is the URL of the site to restrict searches to?', compulsory=True))
+config += """
+        ],
+        # Uncomment if you're using a query expansion file
+        #query_expansion_file = os.path.join(project_root, 'data', 'query_expansion.txt'),
+        display_to_user = False,
+    ),
+"""
 
 # Feeds always
 config += """
@@ -456,18 +466,36 @@ config += """
 # ask if there's a longitude, latitude, distance preference
 # Cloudmade (only if API key set earlier) - limit to locality?
 
+config += """
+Application('molly.geolocation', 'geolocation', 'Geolocation',
+"""
 
+print "http://itouchmap.com/latlong.html can help you find the latitude and longitude"
+lon = ask('What is the longitude of your location?', compulsory=True)
+lat = ask('What is the latitude of the centre of your area?', compulsory=True),
 
-
-
-
-
-
-
-
-
-
-
+print "By default, Molly searches the entire planet for addresses entered when"
+print "manually specifying your current location, but often this is undesirable",
+if ask_yes_no('Would you like to limit geocoding searches?', 'y'):
+    print "of a point"
+    config += """
+    prefer_results_near = (%s, %s, %s),""" % (lon, lat,
+                                              ask('How far around your location should geocoding results be considered for?', compulsory=True, default='10000'))
+config += """
+    providers = [
+        Provider('molly.geolocation.providers.PlacesGeolocationProvider'),"""
+if cloudmade != None:
+    config += """
+        Provider('molly.geolocation.providers.CloudmadeGeolocationProvider', """
+    locality = ask('Which placename would you like Cloudmade geocoding requests to be restricted to?\n')
+    if locality != None:
+        config += "\n            search_locality = 'Oxford',"
+config += """
+        ),
+    ],
+    display_to_user = False,
+),
+"""
 
 # Feedback - always
 config += """
@@ -567,19 +595,104 @@ if ask_yes_no('Would you like to enable Sakai integration?', 'n'):
 # OSM - longitude/latitude (compute +/- automatically)
 # Postcodes (postal region)
 
+config += """
+    Application('molly.apps.places', 'places', 'Places',
+        providers = ["""
 
+print "The NaPTAN is a database of public transport 'access nodes' in the UK"
+print "We use this to find bus stops and train stations near you. The NaPTAN is"
+print "split up into areas by ATCO code. You can find a list of area codes at"
+print "http://www.dft.gov.uk/naptan/smsPrefixes.htm (please note it is the column"
+print "header ATCO that is used here). All area codes must be three digits long"
+print "and padded with 0s. e.g., Bedfordshire is listed in the table as 20, but"
+print "in the database is stored as 020 - please prefix with 0s to make it up to"
+print "3 digits long"
+print
+print "To import multiple areas, please answer the questions multiple times, and"
+print "leave blank to finish. Entering no areas will mean you will not have any"
+print "bus stops or train stations in your database."
 
+area = ask('What is the ATCO area code you would like to import?')
+if area != None:
+    areas = []
+    while area != None:
+        areas += area
+        area = ask('What is the ATCO area code you would like to import?')
+    config += """
+            Provider('molly.apps.places.providers.NaptanMapsProvider',
+                method='http',
+                areas=('%s',),
+            ),""" % "','".join(areas)
 
+print "Please note that a postcode prefix is the letters at the start of a postcode"
+print "e.g., YO for YO10 5DD or OX for OX2 6NN. You can enter multiple prefixes here"
+print "(one at a time), or leave blank to not use postcodes"
 
+postcode = ask('What postcode area prefix would you like to import?')
+if postcode != None:
+    postcodes = []
+    while postcode != None:
+        postcodes += postcode
+        postcode = ask('What postcode area prefix would you like to import?')
+    config += """
+            Provider('molly.apps.places.providers.PostcodesMapsProvider',
+                codepoint_path = CACHE_DIR + '/codepo_gb.zip',
+                import_areas = ('%s',),
+            ),""" % "','".join(postcodes)
+if ask_yes_no('Would you like to display real time bus information? (where supported)', 'y'):
+    config += """
+            'molly.apps.places.providers.ACISLiveMapsProvider',"""
 
+if ask_yes_no('Would you like to display points of interest from OpenStreetMap?', 'y'):
+    config += """
+            Provider('molly.apps.places.providers.OSMMapsProvider',
+                     lat_north=%f, lat_south=%f,
+                     lon_west=%f, lon_east=%f
+            ),""" % (float(lat) + 0.2, float(lat) - 0.2,
+                     float(lon) - 0.2, float(lon) + 0.2)
 
+print "You can obtain tokens for the LDB API from National Rail Enquiries"
+ldb_token = ask('In order to use the National Rail Live Departure Board API, please\nenter your token')
+if ldb_token != None:
+    config += """
+            Provider('molly.apps.places.providers.LiveDepartureBoardPlacesProvider',
+                token = '%s'
+            ),""" % ldb_token
 
+print "We can import travel alert data from the BBC to show on the transport page."
+print "Unfortunately the BBC don't publish a single list of all of their feeds, so"
+print "you have to guess the URL. If you get the URL for your local transport page"
+print "from http://www.bbc.co.uk/travelnews/, then the last part of the URL is what"
+print "is needed below. Please use 'rtm' for national roads."
+print
+print "e.g., for 'Braford & West Yorkshire', the URL is"
+print "http://www.bbc.co.uk/travelnews/bradford/, so 'bradford' should be entered"
+print "below. Leave blank to skip."
+tpeg_zone = ask('Which travel news area would you like to import?')
+use_tpeg = False
+while tpeg_zone != None:
+    use_tpeg = True
+    config += """
+            Provider('molly.apps.places.providers.BBCTPEGPlacesProvider',
+                url='http://www.bbc.co.uk/travelnews/tpeg/en/local/rtm/%s_tpeg.xml',
+            ),""" % tpeg_zone
+    tpeg_zone = ask('Which travel news area would you like to import?')
+config += """
+        ],
+        nearby_entity_types = (
+            ('Transport', (
+                'bicycle-parking', 'bus-stop', 'car-park', 'park-and-ride',
+                'taxi-rank', 'train-station')),
+            ('Amenities', (
+                'atm', 'bank', 'bench', 'medical', 'post-box', 'post-office',
+                'public-library', 'recycling', 'bar', 'food', 'pub')),
+            ('Leisure', (
+                'cinema', 'theatre', 'museum', 'park', 'swimming-pool',
+                'sports-centre', 'punt-hire')),
+        ),
 
-
-
-
-
-
+    ),
+"""
 
 # Transport y/n
 #  train station CRS code?
@@ -595,7 +708,7 @@ if ask_yes_no('Would you like to enable the transport application?', 'y'):
             'bus_stops': ('bus-stop', 5, False, True),
         },
 """
-    if ask_yes_no('Would you like to show BBC travel alerts?', 'y'):
+    if use_tpeg:
         config += "        travel_alerts = True,"
     config += """
     ),
