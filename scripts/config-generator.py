@@ -68,11 +68,11 @@ def ask_yes_no(to_ask, default):
         'n': False,
     }[ask(to_ask + ' (y/n)', default, False, ['y', 'n'])]
 
-#if os.path.exists('settings.py'):
-#    print "Cannot continue - a settings.py file already exists"
-#    sys.exit()
-#else:
-settings_fd = open('settings.py', 'w')
+if os.path.exists('settings.py'):
+    print "Cannot continue - a settings.py file already exists"
+    sys.exit()
+else:
+    settings_fd = open('settings.py', 'w')
     
 print """
 Welcome to the Molly configuration generator
@@ -232,8 +232,7 @@ applications in Molly.
 
 Some questions can be skipped by leaving the blank. If this is done, then it
 will disable the feature that is being asked about, or some sensible default is
-used.
-"""
+used."""
 
 config += """
 
@@ -298,7 +297,7 @@ if ask_yes_no('Would you like to enable the library search application?', 'y'):
 # URLs of RSS feed (optional)
 # URLs of podcast producer feeds (optional)
 def get_opml_data():
-    print "Leave blank to skip adding an OPML feed"
+    print "\nLeave blank to skip adding an OPML feed"
     url = ask('Enter the URL of an OPML feed to add')
     if url is None:
         return None
@@ -310,7 +309,7 @@ def get_opml_data():
             return (url, rss_re)
 
 def get_rss_data():
-    print "Leave blank to skip adding an RSS feed"
+    print "\nLeave blank to skip adding an RSS feed"
     slug = ask('Enter the slug for this RSS feed')
     if slug is None:
         return None
@@ -346,7 +345,7 @@ if ask_yes_no('Would you like to enable the podcasts application?', 'y'):
             rss = get_rss_data()
         config += """                ],
         ),"""
-    print "Leave blank to skip adding Podcast Producer feeds"
+    print "\nLeave blank to skip adding Podcast Producer feeds"
     pp = ask('Please enter the URL for this Podcast Producer feed')
     while pp != None:
         config += """
@@ -379,7 +378,6 @@ if ask_yes_no('Would you like to enable the weather application?', 'y'):
 
 # Service status - optional, RSS feeds
 def get_service_status_rss():
-    print "Leave blank to skip adding a service status feed"
     url = ask('Enter the URL of an RSS feed to add')
     if url is None:
         return None
@@ -395,6 +393,7 @@ if ask_yes_no('Would you like to enable the service status application?', 'y'):
     config += """
     Application('molly.apps.service_status', 'service_status', 'Service status',
         providers = ["""
+    print "\nLeave blank to skip adding a service status feed"
     feed = get_service_status_rss()
     while feed != None:
         url, name, slug = feed
@@ -467,31 +466,33 @@ config += """
 # Cloudmade (only if API key set earlier) - limit to locality?
 
 config += """
-Application('molly.geolocation', 'geolocation', 'Geolocation',
+    Application('molly.geolocation', 'geolocation', 'Geolocation',
 """
 
 print "http://itouchmap.com/latlong.html can help you find the latitude and longitude"
+print "of a point"
 lon = ask('What is the longitude of your location?', compulsory=True)
-lat = ask('What is the latitude of the centre of your area?', compulsory=True),
+lat = ask('What is the latitude of your location?', compulsory=True)
 
+print
 print "By default, Molly searches the entire planet for addresses entered when"
 print "manually specifying your current location, but often this is undesirable",
 if ask_yes_no('Would you like to limit geocoding searches?', 'y'):
-    print "of a point"
     config += """
-    prefer_results_near = (%s, %s, %s),""" % (lon, lat,
-                                              ask('How far around your location should geocoding results be considered for?', compulsory=True, default='10000'))
+        prefer_results_near = (%s, %s, %s),""" % (lon, lat,
+                                                  ask('How far around your location should geocoding results be considered for?', compulsory=True, default='10000'))
 config += """
-    providers = [
-        Provider('molly.geolocation.providers.PlacesGeolocationProvider'),"""
+        providers = [
+            Provider('molly.geolocation.providers.PlacesGeolocationProvider'),"""
 if cloudmade != None:
     config += """
-        Provider('molly.geolocation.providers.CloudmadeGeolocationProvider', """
+            Provider('molly.geolocation.providers.CloudmadeGeolocationProvider', """
     locality = ask('Which placename would you like Cloudmade geocoding requests to be restricted to?\n')
     if locality != None:
-        config += "\n            search_locality = 'Oxford',"
+        config += "\n                search_locality = 'Oxford',"
+    config += """
+        ),"""
 config += """
-        ),
     ],
     display_to_user = False,
 ),
@@ -599,6 +600,7 @@ config += """
     Application('molly.apps.places', 'places', 'Places',
         providers = ["""
 
+print
 print "The NaPTAN is a database of public transport 'access nodes' in the UK"
 print "We use this to find bus stops and train stations near you. The NaPTAN is"
 print "split up into areas by ATCO code. You can find a list of area codes at"
