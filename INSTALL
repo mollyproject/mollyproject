@@ -84,6 +84,7 @@ You'll then need to set up the database as below, and configure a deployment
 of Molly. A simple deployment is provided in demo/. You'll need to give
 settings.py a once over, and then build the media for the site:
 
+ $ python manage.py update_wurfl
  $ python manage.py build_static --noinput
  $ python manage.py synccompress
  $ python manage.py generate_markers
