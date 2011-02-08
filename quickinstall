@@ -9,6 +9,8 @@ from subprocess import Popen, PIPE
 import string
 from random import choice
 from optparse import OptionParser
+import tempfile
+import shutil
 
 def generate_password():
     return ''.join([choice(string.letters + string.digits) for i in range(18)])
@@ -226,9 +228,24 @@ if not upgrading:
 # Install Molly
 print "Installing Molly (this may take some time)...",
 sys.stdout.flush()
+
 python = os.path.join(path, 'bin', 'python')
-molly_setup = os.path.join(os.path.normpath(os.path.dirname(__file__)), 'setup.py')
+if not options.develop:
+    # Copy to a temporary directory to work around permission issues
+    temp_dir = tempfile.mkdtemp()
+    os.chown(temp_dir, molly_uid, molly_gid)
+    molly_temp = os.path.join(temp_dir, 'molly_install')
+    shutil.copytree(os.path.normpath(os.path.dirname(__file__)), molly_temp)
+    for root, dirs, files in os.walk(temp_dir):
+        for file in files + dirs:
+            os.chown(os.path.join(root, file), molly_uid, molly_gid)
+    molly_setup = os.path.join(molly_temp, 'setup.py')
+else:
+    molly_setup = os.path.join(os.path.normpath(os.path.dirname(__file__)), 'setup.py')
 Popen(as_molly + [python, molly_setup, 'install' if not options.develop else 'develop'], stdout=PIPE, stderr=PIPE).communicate()
+
+if not options.develop:
+    shutil.rmtree(temp_dir)
 print "DONE!"
 
 site = os.path.join(path, 'deploy')
@@ -322,6 +339,7 @@ if options.site_path is None and not os.path.exists(site):
     
     # Create site
     Popen(as_molly + [python, os.path.join(path, 'bin', 'django-admin.py'), 'startproject', site], stdout=PIPE, stderr=PIPE).communicate()
+    Popen(as_molly + [python, os.path.join(path, 'bin', 'django-admin.py'), 'startproject', 'deploy'], cwd=os.path.normpath(os.path.join(site, '..'))).wait()
     
     # Remove settings.py as we're going to generate this ourselves
     os.unlink(os.path.join(site, 'settings.py'))
@@ -380,14 +398,15 @@ application = django.core.handlers.wsgi.WSGIHandler()""")
     #Alias /robots.txt /path/to/robots.txt
     #Alias /favicon.ico /path/to/favicon.ico
 
-</VirtualHost>""" % (site, site, site))
+</VirtualHost>""" % (site, site, site, site))
     if not options.develop: os.chown(os.path.join(site, 'apache', 'molly.conf'), molly_uid, molly_gid)
     
     # Now generate settings
-    Popen(as_molly + ['python', os.path.join(os.path.normpath(os.path.dirname(__file__)), 'scripts', 'config-generator.py')] + 
-                      ['-n', 'molly', '-u', 'molly', '-p', postgres_password] if postgres_password != None else []).wait()
+    call(as_molly + ['python', os.path.join(os.path.abspath(os.path.dirname(__file__)), 'scripts', 'config-generator.py')] + 
+                    ['-n', 'molly', '-u', 'molly', '-p', postgres_password] if postgres_password != None else [],
+                    cwd=site).wait()
 
-else:
+elif options.site_path != None:
     print "Using", options.site_path, "as site to deploy"
     os.symlink(options.site_path, site)
     
