@@ -7,6 +7,7 @@ import os.path
 from subprocess import Popen, PIPE
 import string
 from random import choice
+from optparse import OptionParser
 
 def generate_password():
     return ''.join([choice(string.letters + string.digits) for i in range(18)])
@@ -62,24 +63,31 @@ if not hasattr(platform, 'linux_distribution'):
     print "distributions. Exiting..."
     sys.exit(1)
 
-try:
-    path = sys.argv[1]
-except IndexError:
-    print "Usage:"
-    print "   ", sys.argv[0], "PATH-TO-INSTALL"
-    sys.exit(1)
+parser = OptionParser()
+parser.add_option("-s", "--site-path", dest="site_path",
+                  help="use the Molly site at site_path when installing, instead of the existing one", metavar="PATH")
+
+parser.add_option("-d", "--develop", dest="develop",
+                  help="do a development installation of Molly (advanced users only)", action="store_true")
+
+(options, args) = parser.parse_args()
+
+if len(args) < 1:
+    parser.error('Install destination not specified')
+
+if options.site_path != None and (not os.path.exists(options.site_path) or not os.path.isdir(options.site_path)):
+    parser.error("Specified site path does not exist")
 
 # Error if not root
-if os.geteuid() != 0:
-    print "Please run this as root"
-    sys.exit(1)
+if os.geteuid() != 0 and not options.develop:
+    parser.error("Please run this as root")
 
 # Check if upgrading or installing
 if os.path.exists(path) and not os.path.exists(os.path.join(path, 'bin', 'activate')):
     # Path exists - but not a Virtualenv
-    print "The path specified exists, but does not appear to be an install of Molly."
-    print
-    print "Cannot continue upgrade - exiting"
+    print >>sys.stderr, "The path specified exists, but does not appear to be an install of Molly."
+    print >>sys.stderr, ""
+    print >>sys.stderr, "Cannot continue upgrade - exiting"
     sys.exit(1)
 
 elif os.path.exists(os.path.join(path, 'bin', 'activate')):
@@ -124,58 +132,60 @@ apt_packages = {
 }
 
 # Install prerequisites - can do this using PackageKit
-if distribution in packagekit_packages.keys():
-
-    print "Ensuring that the system prerequisites are satisfied"
-
-    # Use PackageKit to install packages
-    import packagekit.client
-    from packagekit.enums import FILTER_INSTALLED
-    pk = packagekit.client.PackageKitClient()
-    packages = pk.resolve(packagekit_packages[distribution])
-    all_packages = [package.id for package in pk.get_packages(filters=FILTER_INSTALLED)]
-    to_install = [package for package in packages if package.id not in all_packages]
+if not options.develop:
+    if distribution in packagekit_packages.keys():
     
-    if len(to_install) == 0:
-        print "All prerequisites satisfied! Continuing..."
+        print "Ensuring that the system prerequisites are satisfied"
+    
+        # Use PackageKit to install packages
+        import packagekit.client
+        from packagekit.enums import FILTER_INSTALLED
+        pk = packagekit.client.PackageKitClient()
+        packages = pk.resolve(packagekit_packages[distribution])
+        all_packages = [package.id for package in pk.get_packages(filters=FILTER_INSTALLED)]
+        to_install = [package for package in packages if package.id not in all_packages]
+        
+        if len(to_install) == 0:
+            print "All prerequisites satisfied! Continuing..."
+        else:
+            print "The following packages must be installed to satisfy Molly's prerequisites:"
+            enable_postgres = False
+            for package in to_install:
+                print " * ", package
+                if str(package).startswith('postgresql-server'):
+                    enable_postgres = True
+            raw_input('Press Enter to install these packages, or Ctrl+C to exit')
+            
+            pk.install_packages(to_install)
+            
+            if enable_postgres:
+                Popen(['chkconfig', 'postgresql', 'on'], stdout=PIPE, stderr=PIPE).communicate()
+    
     else:
-        print "The following packages must be installed to satisfy Molly's prerequisites:"
-        enable_postgres = False
-        for package in to_install:
-            print " * ", package
-            if str(package).startswith('postgresql-server'):
-                enable_postgres = True
-        raw_input('Press Enter to install these packages, or Ctrl+C to exit')
-        
-        pk.install_packages(to_install)
-        
-        if enable_postgres:
-            Popen(['chkconfig', 'postgresql', 'on'], stdout=PIPE, stderr=PIPE).communicate()
+        print "At present, this installer does not support fully automatic installation"
+        print "on this platform. Before continuing, you should ensure that you have all"
+        print "pre-requisites installed and the database set up as documented at"
+        print "http://docs.mollyproject.org/"
+        print
+        raw_input('Press Enter to continue, or Ctrl+C to abort')
+    
+    # Create Molly user - silently ignore failures (probably means the user already exists)
+    print "Creating 'molly' user...",
+    sys.stdout.flush()
+    Popen(['useradd', '-r', 'molly'], stdout=PIPE, stderr=PIPE).communicate()
+    print "DONE!"
 
-else:
-    print "At present, this installer does not support fully automatic installation"
-    print "on this platform. Before continuing, you should ensure that you have all"
-    print "pre-requisites installed and the database set up as documented at"
-    print "http://docs.mollyproject.org/"
-    print
-    raw_input('Press Enter to continue, or Ctrl+C to abort')
-
-# Create Molly user - silently ignore failures (probably means the user already exists)
-print "Creating 'molly' user...",
-sys.stdout.flush()
-Popen(['useradd', '-r', 'molly'], stdout=PIPE, stderr=PIPE).communicate()
-print "DONE!"
+as_molly = ['sudo', '-u', 'molly'] if not options.develop else []
 
 # Set up a Virtualenv
 if not upgrading:
     print
     print "Creating a virtualenv for Molly...",
-    Popen(['sudo', '-u', 'molly', 'virtualenv', '--distribute', '--no-site-packages', path], stdout=PIPE, stderr=PIPE).communicate()
+    Popen(as_molly + ['virtualenv', '--distribute', '--no-site-packages', path], stdout=PIPE, stderr=PIPE).communicate()
     print "DONE!"
 
 # Install our packages
 print "Installing Python dependencies:"
-as_molly = ['sudo', '-u', 'molly']
 pip = os.path.join(path, 'bin', 'pip')
 for name, package in [('PyZ3950', 'git+http://github.com/oucs/PyZ3950.git'), # Custom PyZ3950, contains some bug fixes
                       ('django-compress', 'git+git://github.com/mikelim/django-compress.git#egg=django-compress'), # Fork of django-compress contains some extra features we need
@@ -192,11 +202,13 @@ print "Installing Molly (this may take some time)...",
 sys.stdout.flush()
 python = os.path.join(path, 'bin', 'python')
 molly_setup = os.path.join(os.path.normpath(os.path.dirname(__file__)), 'setup.py')
-Popen(as_molly + [python, molly_setup, 'install'], stdout=PIPE, stderr=PIPE).communicate()
+Popen(as_molly + [python, molly_setup, 'install' if not options.develop else 'develop'], stdout=PIPE, stderr=PIPE).communicate()
 print "DONE!"
 
 # Do DB setup
-if not upgrading:
+if not upgrading:    
+    postgres_password = None
+    as_postgres = ['sudo', '-u', 'postgres']
     if distribution in ('Fedora', 'Ubuntu'):
         print
         print "Molly can install and set up your database for you, if you would like."
@@ -223,8 +235,6 @@ if not upgrading:
                 'Fedora': '/usr/share/pgsql/contrib/postgis-1.5',
                 'Ubuntu': '/usr/share/postgresql/8.4/contrib/postgis-1.5'
             }
-            
-            as_postgres = ['sudo', '-u', 'molly']
             
             print "Configuring PostGIS...",
             sys.stdout.flush()
@@ -279,14 +289,138 @@ host    all         all         ::1/128               ident
         print
         raw_input("Press Enter to continue or Ctrl+C to quit.")
 
-# Create site
-site = os.path.join(path, 'site')
-Popen(as_molly + [python, os.path.join(path, 'bin', 'django-admin.py'), 'startproject', site], stdout=PIPE, stderr=PIPE).communicate()
+    site = os.path.join(path, 'deploy')
+    if options.site_path is None:
+        print "No site specified, creating a new one..."
+        
+        # Create site
+        Popen(as_molly + [python, os.path.join(path, 'bin', 'django-admin.py'), 'startproject', site], stdout=PIPE, stderr=PIPE).communicate()
+        
+        # Get UID and GID of this
+        if not options.develop:
+            site_stat = os.stat(site)
+            uid = site_stat[stat.ST_UID]
+            gid = site_stat[stat.ST_GID]
+        
+        # Remove settings.py as we're going to generate this ourselves
+        os.unlink(os.path.join(site, 'settings.py'))
+        
+        # Add default directories
+        os.mkdir(os.path.join(site, 'templates'))
+        os.mkdir(os.path.join(site, 'media'))
+        os.mkdir(os.path.join(site, 'site_media'))
+        os.mkdir(os.path.join(site, 'apache'))
+        
+        # Create Apache mod_wsgi file
+        with open(os.path.join(site, 'apache', 'molly.wsgi')) as fd:
+            fd.write("""#!/usr/bin/env python
 
-# Remove settings.py as we're going to generate this ourselves
-os.unlink(os.path.join(site, 'settings.py'))
+import os, os.path
+import sys
 
-# Add default directories
-os.makedirs(os.path.join(site, 'templates'))
-os.makedirs(os.path.join(site, 'media'))
-os.makedirs(os.path.join(site, 'site_media'))
+os.environ['DJANGO_SETTINGS_MODULE'] = 'deploy.settings'
+sys.path.insert(0, os.path.abspath(os.path.join(
+    os.path.dirname(__file__), '..', '..',
+)))
+
+import django.core.handlers.wsgi
+application = django.core.handlers.wsgi.WSGIHandler()""")
+        
+        # Create dummy httpd.conf
+        with open(os.path.join(site, 'apache', 'molly.conf')) as fd:
+            fd.write("""
+# This file contains a sample file for Apache to serve Molly using mod_wsgi
+# It will need altering according to your specific configuration.
+<VirtualHost *:80>
+        # Change the following settings as appropriate
+        ServerName m.uni.ac.uk
+        ServerAdmin molly@example.com
+
+        WSGIDaemonProcess mox user=molly group=molly
+        WSGIProcessGroup mox
+        WSGIScriptAlias / %s/apache/molly.wsgi
+
+        ErrorLog %s/apache/error.log
+
+        # Possible values include: debug, info, notice, warn, error, crit,
+        # alert, emerg.
+        LogLevel warn
+
+        CustomLog %s/apache/access.log combined
+        
+        Alias /media %s/media
+        # It is recommended you create these two files and then set up the links
+        # as appropriate
+        #Alias /robots.txt /path/to/robots.txt
+        #Alias /favicon.ico /path/to/favicon.ico
+
+</VirtualHost>""" % (site, site, site))
+        
+        # Now generate settings
+        Popen(as_molly + ['python', os.path.join(os.path.normpath(os.path.dirname(__file__)), 'scripts', 'config-generator.py')] + 
+                          ['-n', 'molly', '-u', 'molly', '-p', postgres_password] if postgres_password != None else []).wait()
+    
+    else:
+        print "Using", options.site_path, "as site to deploy"
+        os.symlink(options.site_path, site)
+    
+# Determine if we need to do the first migration or not
+if postgres_password is None:
+    database = raw_input('What is the name of the database Molly uses?')
+else:
+    database = 'molly'
+
+def call_in_virtualenv(path, command, wait=True, devnull=True):
+    if wait:
+        command = as_molly + ['bash','-c','source %s/bin/activate; %s' % (path, command)]
+        if devnull:
+            Popen(command, stdout=PIPE, stderr=PIPE).communicate()
+        else:
+            Popen(command).wait()
+    else:
+        command = as_molly + ['bash','-c','source %s/bin/activate; %s %s' % (path, command, '>/dev/null' if devnull else '')]
+        Popen(command)
+
+if not options.develop and Popen(as_postgres + ['psql',database,'-c',"SELECT id FROM south_migrationhistory LIMIT 1;"], stdout=PIPE, stderr=PIPE).wait() > 0:
+    # It errored, which probably means the table doesn't exist
+    print "Doing first syncdb...",
+    sys.stdout.flush()
+    call_in_virtualenv(path, "python %s/manage.py syncdb --all" % site, devnull=False)
+    call_in_virtualenv(path, "python %s/manage.py migrate --fake;" % site)
+    print "DONE!"
+    
+else:
+    # Do a normal sync
+    print "Doing syncdb...",
+    sys.stdout.flush()
+    call_in_virtualenv(path, "python %s/manage.py syncdb; python %s/manage.py migrate;" % (site, site))
+    print "DONE!"
+
+print "Building media... (this may take some time)",
+sys.stdout.flush()
+call_in_virtualenv(path, "python %s/manage.py update_wurfl", wait=False)
+call_in_virtualenv(path, "python %s/manage.py generate_markers")
+call_in_virtualenv(path, "python %s/manage.py collectstatic --noinput")
+call_in_virtualenv(path, "python %s/manage.py synccompress", wait=False)
+call_in_virtualenv(path, "python %s/manage.py create_crontab | crontab", wait=False)
+print "DONE!"
+
+if options.develop():
+    call_in_virtualenv('python %s/manage.py runserver', wait=True, devnull=False)
+
+elif options.site_path is None:
+    print
+    print "A sample configuration for Molly with Apache has been created in"
+    print "%s/apache/molly.conf. The next step is to configure Apache to serve" % site
+    print "Molly. The Django deployment guide may be useful to accomplish this"
+    print "(http://docs.djangoproject.com/en/dev/howto/deployment/modwsgi/)"
+
+if not upgrading:
+    print
+    print "Molly will not work correctly until some data has been imported."
+    print "To start importing data, go to http://yourdomain/adm/ and log in"
+    print "using your admin username and password, go to 'Batches' and then"
+    print "select all the batches, and choose 'Run Batch' from the actions menu."
+
+print
+print "Molly installation is complete"
