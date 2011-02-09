@@ -13,7 +13,7 @@
                 <label style="display:none;" for="id_query">Search Box</label>
                 {{ search_form.query }}
         </td><td>
-                {% ifequal style_group "groups-dumb" %}
+                {% ifequal style_group "dumb" %}
                     <button type="submit">Go!</button>
                 {% else %}
                 	<input type="image" src="{{ STATIC_URL }}site/png/new/buttons/search-button.png" title="Search" alt="Search" />

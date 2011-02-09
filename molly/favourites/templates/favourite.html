@@ -1,5 +1,5 @@
 {% if is_favouritable %}
-  {% ifnotequal style_group "groups-dumb" %}
+  {% ifnotequal style_group "dumb" %}
     <div id="favourite-bit">
         <form action="{% url favourites:index %}" method="post">
             <input type="hidden" name="URL" value="{{ favourite_url|escape }}" />
