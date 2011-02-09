@@ -57,7 +57,12 @@ def device_specific_media(request):
     # Windows Mobile 7
     elif (device.device_os, parse_version(device.device_os_version)) == (u'Windows Mobile OS', (7,)):
         style_group = 'smart'
-
+    
+    # Kindle - but only the Mobile Safari based ones... unfortunately Wurfl seems
+    # to think that version 3 still uses Netfront, so can't be clever here
+    elif device.devid == 'amazon_kindle3_ver1' or 'amazon_kindle3_ver1' in device_parents[device.devid]:
+        style_group = 'smart'
+    
     # Desktop browsers
     elif 'generic_web_browser' in device_parents[browser.devid]:
         style_group = 'smart'
