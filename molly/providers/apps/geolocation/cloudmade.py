@@ -69,6 +69,9 @@ class CloudmadeGeolocationProvider(BaseGeolocationProvider):
         except urllib2.HTTPError, e:
             logger.error("Cloudmade returned a non-OK response code %d", e.code)
             return []
+        except urllib2.URLError, e:
+            logger.error("Encountered an error reaching Cloudmade: %s", str(e))
+            return []
 
         if not json:
             return []
