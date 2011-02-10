@@ -79,7 +79,7 @@ parser.add_option("-d", "--develop", dest="develop",
 if len(args) < 1:
     parser.error('Install destination not specified')
 else:
-    path = args[0]
+    path = os.path.abspath(args[0])
 
 if options.site_path != None and (not os.path.exists(options.site_path) or not os.path.isdir(options.site_path)):
     parser.error("Specified site path does not exist")
@@ -135,6 +135,22 @@ packagekit_packages = {
 apt_packages = {
     'Ubuntu': [
             'build-essential',
+            'postgis',
+            'python-gdal',
+            'proj',
+            'libgeos-3.1.0',
+            'binutils',
+            'libgdal1-1.6.0',
+            'postgresql-8.4',
+            'postgresql-8.4-postgis',
+            'postgresql-server-dev-8.4',
+            'python-virtualenv',
+            'python-setuptools',
+            'python-dev',
+            'libxslt-dev',
+            'libldap2-dev',
+            'libsasl2-dev',
+            'imagemagick'
         ],
 }
 
@@ -172,6 +188,16 @@ if not options.develop:
             
             if enable_postgres:
                 Popen(['chkconfig', 'postgresql', 'on'], stdout=PIPE, stderr=PIPE).communicate()
+        
+        print "DONE!"
+    
+    elif distribution in apt_packages.keys():
+        
+        print "Ensuring that the system prerequisites are satisfied...",
+        sys.stdout.flush()
+        
+        Popen(['apt-get', '-y', 'update'], stdout=PIPE, stderr=PIPE).communicate()
+        Popen(['apt-get', '-y', 'install'] + apt_packages[distribution], stdout=PIPE, stderr=PIPE).communicate()
         
         print "DONE!"
     
@@ -218,7 +244,7 @@ if not upgrading:
             # Setup PostGIS
             postgis_paths = {
                 'Fedora': '/usr/share/pgsql/contrib/postgis-1.5',
-                'Ubuntu': '/usr/share/postgresql/8.4/contrib/postgis-1.5'
+                'Ubuntu': '/usr/share/postgresql/8.4/contrib'
             }
             
             print "Configuring PostGIS...",
@@ -250,7 +276,7 @@ if not upgrading:
             
             pg_hba_paths  = {
                 'Fedora': '/var/lib/pgsql/data/pg_hba.conf',
-                'Ubuntu': '/etc/postgresql/8.3/main/pg_hba.conf'
+                'Ubuntu': '/etc/postgresql/8.4/main/pg_hba.conf'
             }
             with open(pg_hba_paths[distribution], 'w') as pg_hba:
                 pg_hba.write("""
@@ -303,6 +329,7 @@ if not upgrading:
     pip = os.path.join(path, 'bin', 'pip')
     for name, package in [('PyZ3950', 'git+http://github.com/oucs/PyZ3950.git'), # Custom PyZ3950, contains some bug fixes
                           ('django-compress', 'git+git://github.com/mikelim/django-compress.git#egg=django-compress'), # Fork of django-compress contains some extra features we need
+                          ('Django', 'Django'), # Because setuptools on Ubuntu picks the wrong one to install
                           ('PIL', 'PIL'), # Because it doesn't work when installed using setuptools
                          ]:
         print " * " + name + '...',
@@ -457,11 +484,12 @@ print "DONE!"
 if options.develop:
     call_in_virtualenv('python %s/manage.py runserver' % site, wait=True, devnull=False)
 
-elif options.site_path is None:
+elif options.site_path is None and not upgrading:
     print
     print "A sample configuration for Molly with Apache has been created in"
-    print "%s/apache/molly.conf. The next step is to configure Apache to serve" % site
-    print "Molly. The Django deployment guide may be useful to accomplish this"
+    print "%s/apache/molly.conf." % site
+    print "The next step is to configure Apache to serve Molly. The Django deployment"
+    print "guide may be useful to accomplish this"
     print "(http://docs.djangoproject.com/en/dev/howto/deployment/modwsgi/)"
 
 if not upgrading:
