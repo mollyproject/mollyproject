@@ -11,6 +11,7 @@ from random import choice
 from optparse import OptionParser
 import tempfile
 import shutil
+from scripts import config_generator
 
 def generate_password():
     return ''.join([choice(string.letters + string.digits) for i in range(18)])
@@ -180,7 +181,7 @@ if not options.develop:
         print "pre-requisites installed and the database set up as documented at"
         print "http://docs.mollyproject.org/"
         print
-        raw_input('Press Enter to continue, or Ctrl+C to abort')
+        raw_input('Press Enter to continue, or Ctrl+C to exit')
     
     # Create Molly user - silently ignore failures (probably means the user already exists)
     print "Creating 'molly' user...",
@@ -193,63 +194,6 @@ if not options.develop:
 
 as_molly = ['sudo', '-u', 'molly'] if not options.develop else []
 
-# Set up a Virtualenv
-if not upgrading:
-    print "Creating a virtualenv for Molly...",
-    if not options.develop:
-        os.makedirs(path)
-        os.chown(path, molly_uid, molly_gid)
-    (stdoutdata, stderrdata) = Popen(as_molly + ['virtualenv', '--distribute', '--no-site-packages', path], stdout=PIPE, stderr=PIPE).communicate()
-    if not os.path.exists(os.path.join(path, 'bin', 'activate')):
-        print >>sys.stderr, "Failed"
-        print
-        print "STDOUT:"
-        print stdoutdata
-        print
-        print "STDERR:"
-        print stderrdata
-        sys.exit(1)
-    print "DONE!"
-
-# Install our packages
-if not upgrading:
-    print "Installing Python dependencies:"
-    pip = os.path.join(path, 'bin', 'pip')
-    for name, package in [('PyZ3950', 'git+http://github.com/oucs/PyZ3950.git'), # Custom PyZ3950, contains some bug fixes
-                          ('django-compress', 'git+git://github.com/mikelim/django-compress.git#egg=django-compress'), # Fork of django-compress contains some extra features we need
-                          ('PIL', 'PIL'), # Because it doesn't work when installed using setuptools
-                         ]:
-        print " * " + name + '...',
-        sys.stdout.flush()
-        Popen(as_molly + [pip, 'install', '-U', package], stdout=PIPE).communicate()
-        print "DONE!"
-    print
-
-# Install Molly
-print "Installing Molly (this may take some time)...",
-sys.stdout.flush()
-
-python = os.path.join(path, 'bin', 'python')
-if not options.develop:
-    # Copy to a temporary directory to work around permission issues
-    temp_dir = tempfile.mkdtemp()
-    os.chown(temp_dir, molly_uid, molly_gid)
-    molly_temp = os.path.join(temp_dir, 'molly_install')
-    shutil.copytree(os.path.normpath(os.path.dirname(__file__)), molly_temp)
-    for root, dirs, files in os.walk(temp_dir):
-        for file in files + dirs:
-            os.chown(os.path.join(root, file), molly_uid, molly_gid)
-    molly_setup = os.path.join(molly_temp, 'setup.py')
-else:
-    molly_setup = os.path.join(os.path.normpath(os.path.dirname(__file__)), 'setup.py')
-Popen(as_molly + [python, molly_setup, 'install' if not options.develop else 'develop'], stdout=PIPE, stderr=PIPE).communicate()
-
-if not options.develop:
-    shutil.rmtree(temp_dir)
-print "DONE!"
-
-site = os.path.join(path, 'deploy')
-
 # Do DB setup
 postgres_password = None
 as_postgres = ['sudo', '-u', 'postgres']
@@ -260,11 +204,7 @@ if not upgrading:
         print "Please note that this only works on fresh databases (empty ones), and can"
         print "lead to data loss if done on an installed database. Only do this on a new"
         print "install!"
-        print
-        do_db_install = {'y': True, 'n': False}.get(raw_input('Would you like Molly to configure your database for you? (y/n): '))
-        while do_db_install is None:
-            print "Please answer with either y (for yes) or n (for no)"
-            do_db_install = {'y': True, 'n': False}.get(raw_input('Would you like Molly to configure your database for you? (y/n): '))
+        do_db_install = config_generator.ask_yes_no('Would you like Molly to configure your database for you?', 'n')
         
         if do_db_install:
             
@@ -304,6 +244,7 @@ if not upgrading:
             sys.stdout.flush()
             postgres_password = generate_password()
             Popen(as_postgres + ['psql','-c',"CREATE USER molly WITH PASSWORD '%s';" % postgres_password], stdout=PIPE, stderr=PIPE).communicate()
+            Popen(as_postgres + ['psql','-c',"ALTER ROLE molly WITH PASSWORD '%s';" % postgres_password], stdout=PIPE, stderr=PIPE).communicate()
             Popen(as_postgres + ['createdb','-T','template_postgis','molly'], stdout=PIPE, stderr=PIPE).communicate()
             Popen(as_postgres + ['psql','-c',"GRANT ALL ON DATABASE molly TO molly;"], stdout=PIPE, stderr=PIPE).communicate()
             
@@ -314,8 +255,9 @@ if not upgrading:
             with open(pg_hba_paths[distribution], 'w') as pg_hba:
                 pg_hba.write("""
 # This file was written by the Molly installer
-local   all         molly                             md5
-host    all         molly       127.0.0.1/32          md5
+local   molly       molly                             md5
+host    molly       molly       127.0.0.1/32          md5
+host    molly       molly       ::1/128               md5
 
 # "local" is for Unix domain socket connections only
 local   all         all                               ident
@@ -333,6 +275,63 @@ host    all         all         ::1/128               ident
         print "http://docs.mollyproject.org/ to ensure your database is set up correctly"
         print
         raw_input("Press Enter to continue or Ctrl+C to quit.")
+
+# Set up a Virtualenv
+if not upgrading:
+    print "Creating a virtualenv for Molly...",
+    if not options.develop:
+        os.makedirs(path)
+        os.chown(path, molly_uid, molly_gid)
+    (stdoutdata, stderrdata) = Popen(as_molly + ['virtualenv', '--distribute', '--no-site-packages', path], stdout=PIPE, stderr=PIPE).communicate()
+    if not os.path.exists(os.path.join(path, 'bin', 'activate')):
+        print >>sys.stderr, "Failed"
+        print
+        print "STDOUT:"
+        print stdoutdata
+        print
+        print "STDERR:"
+        print stderrdata
+        sys.exit(1)
+    print "DONE!"
+
+site = os.path.join(path, 'deploy')
+python = os.path.join(path, 'bin', 'python')
+
+# Install our packages
+if not upgrading:
+    print "Installing Python dependencies:"
+    pip = os.path.join(path, 'bin', 'pip')
+    for name, package in [('PyZ3950', 'git+http://github.com/oucs/PyZ3950.git'), # Custom PyZ3950, contains some bug fixes
+                          ('django-compress', 'git+git://github.com/mikelim/django-compress.git#egg=django-compress'), # Fork of django-compress contains some extra features we need
+                          ('PIL', 'PIL'), # Because it doesn't work when installed using setuptools
+                         ]:
+        print " * " + name + '...',
+        sys.stdout.flush()
+        Popen(as_molly + [pip, 'install', '-U', package], stdout=PIPE).communicate()
+        print "DONE!"
+    print
+
+# Install Molly
+print "Installing Molly (this may take some time)...",
+sys.stdout.flush()
+
+if not options.develop:
+    # Copy to a temporary directory to work around permission issues
+    temp_dir = tempfile.mkdtemp()
+    os.chown(temp_dir, molly_uid, molly_gid)
+    molly_temp = os.path.join(temp_dir, 'molly_install')
+    shutil.copytree(os.path.normpath(os.path.dirname(__file__)), molly_temp)
+    for root, dirs, files in os.walk(temp_dir):
+        for file in files + dirs:
+            os.chown(os.path.join(root, file), molly_uid, molly_gid)
+    molly_setup = os.path.join(molly_temp, 'setup.py')
+else:
+    molly_setup = os.path.join(os.path.normpath(os.path.dirname(__file__)), 'setup.py')
+Popen(as_molly + [python, molly_setup, 'install' if not options.develop else 'develop'], stdout=PIPE, stderr=PIPE).communicate()
+
+if not options.develop:
+    shutil.rmtree(temp_dir)
+print "DONE!"
 
 if options.site_path is None and not os.path.exists(site):
     print "No site specified, creating a new one..."
@@ -401,10 +400,14 @@ application = django.core.handlers.wsgi.WSGIHandler()""")
 </VirtualHost>""" % (site, site, site, site))
     if not options.develop: os.chown(os.path.join(site, 'apache', 'molly.conf'), molly_uid, molly_gid)
     
-    # Now generate settings
-    call(as_molly + ['python', os.path.join(os.path.abspath(os.path.dirname(__file__)), 'scripts', 'config-generator.py')] + 
-                    ['-n', 'molly', '-u', 'molly', '-p', postgres_password] if postgres_password != None else [],
-                    cwd=site).wait()
+    # Generate settings
+    with open(os.path.join(site, 'settings.py'), 'w') as settings_fd:
+        if postgres_password != None:
+            config_generator.main(settings_fd, 'molly', 'molly', postgres_password)
+        else:
+            config_generator.main(settings_fd)
+    
+    if not options.develop: os.chown(os.path.join(site, 'settings.py'), molly_uid, molly_gid)
 
 elif options.site_path != None:
     print "Using", options.site_path, "as site to deploy"
@@ -412,7 +415,7 @@ elif options.site_path != None:
     
 # Determine if we need to do the first migration or not
 if postgres_password is None:
-    database = raw_input('What is the name of the database Molly uses?: ')
+    database = config_generator.ask('What is the name of the database Molly uses?', compulsory=True)
 else:
     database = 'molly'
 
