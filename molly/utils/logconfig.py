@@ -13,6 +13,9 @@ class EmailHandler(logging.Handler):
         'relativeCreated', 'thread', 'threadName'
     )
     
+    class conf:
+        from_email = settings.SERVER_EMAIL if hasattr(settings, 'SERVER_EMAIL') else 'molly@localhost'
+    
     def emit(self, record):
         if record.name == 'molly.stats.requests':
             return
@@ -61,7 +64,7 @@ class EmailHandler(logging.Handler):
 
         context['hash'] = hash.hexdigest()[:8]
 
-        send_email(request, context, 'utils/log_record.eml')
+        send_email(request, context, 'utils/log_record.eml', cls=self)
 
 def configure_logging(conf):
     if settings.DEBUG:

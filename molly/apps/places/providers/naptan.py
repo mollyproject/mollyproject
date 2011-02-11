@@ -35,11 +35,12 @@ class NaptanContentHandler(ContentHandler):
         """
         return unicode(min(9, (ord(c)-91)//3))
 
-    def __init__(self, entity_types, source, nptg_localities = None):
+    def __init__(self, entity_types, source, nptg_localities = None, areas=None):
         self.name_stack = []
         self.entity_types, self.source = entity_types, source
         self.entities = set()
         self.nptg_localities = {} if nptg_localities is None else nptg_localities
+        self.areas = areas
 
     def startElement(self, name, attrs):
         self.name_stack.append(name)
@@ -72,6 +73,15 @@ class NaptanContentHandler(ContentHandler):
             pass
 
     def add_stop(self, meta, entity_type, source):
+        
+        # Check this entity is in an area
+        if self.areas != None:
+            in_area = False
+            for area in self.areas:
+                if meta['atco-code'].startswith(area):
+                    in_area = True
+            if not in_area:
+                return
         
         # See if we're updating an existing object, or creating a new one
         try:
@@ -151,6 +161,8 @@ class NaptanContentHandler(ContentHandler):
 class NaptanMapsProvider(BaseMapsProvider):
 
     HTTP_URL = "http://www.dft.gov.uk/NaPTAN/snapshot/NaPTANxml.zip"
+    HTTP_CSV_URL = "http://www.dft.gov.uk/NaPTAN/snapshot/NaPTANcsv.zip"
+    HTTP_NTPG_URL = "http://www.dft.gov.uk/nptg/snapshot/nptgcsv.zip"
     FTP_SERVER = 'journeyweb.org.uk'
     TRAIN_STATION = object()
     BUS_STOP_DEFINITION = {
@@ -306,8 +318,31 @@ class NaptanMapsProvider(BaseMapsProvider):
                 os.unlink(filename)
 
     def _import_from_http(self):
-        # TODO Pull data from RailReferences.csv pulled over HTTP
-        # TODO: Same with NptgLocalities
+        
+        # Get NPTG localities
+        f, filename =  tempfile.mkstemp()
+        os.close(f)
+        urllib.urlretrieve(self.HTTP_NTPG_URL, filename)
+        archive = zipfile.ZipFile(filename)
+        if hasattr(archive, 'open'):
+            f = archive.open('Localities.csv')
+        else:
+            f = StringIO(archive.read('Localities.csv'))
+        localities = self._get_nptg(f)
+        os.unlink(filename)
+        
+        # Create a mapping from ATCO codes to CRS codes.
+        f, filename =  tempfile.mkstemp()
+        os.close(f)
+        urllib.urlretrieve(self.HTTP_CSV_URL, filename)
+        archive = zipfile.ZipFile(filename)
+        if hasattr(archive, 'open'):
+            f = archive.open('RailReferences.csv')
+        else:
+            f = StringIO(archive.read('RailReferences.csv'))
+        
+        self._import_stations(f, self._source, self._entity_types[self.TRAIN_STATION])
+        os.unlink(filename)
         
         f, filename = tempfile.mkstemp()
         os.close(f)
@@ -317,13 +352,13 @@ class NaptanMapsProvider(BaseMapsProvider):
             f = archive.open('NaPTAN.xml')
         else:
             f = StringIO(archive.read('NaPTAN.xml'))
-        self._import_from_pipe(f)
+        self._import_from_pipe(f, localities, areas=self._areas)
         archive.close()
         os.unlink(filename)
 
-    def _import_from_pipe(self, pipe_r, localities):
+    def _import_from_pipe(self, pipe_r, localities, areas=None):
         parser = make_parser()
-        parser.setContentHandler(NaptanContentHandler(self._entity_types, self._source, localities))
+        parser.setContentHandler(NaptanContentHandler(self._entity_types, self._source, localities, areas))
         parser.parse(pipe_r)
 
     def _import_stations(self, f, source, entity_type):
