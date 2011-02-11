@@ -1,12 +1,12 @@
 {% if zoom_controls %}
     {% ifnotequal zoom 10 %}
         <a class="no-icon zoom-out zoomOut" href="?zoom={{ map.zoom|add:"-1" }}" rel="nofollow">
-            <img src="{{ STATIC_URL }}site/png/icons/zoom-out.png" alt="Zoom out"/>
+            <img src="{{ STATIC_URL }}site/images/icons/zoom-out.png" alt="Zoom out"/>
         </a>
     {% endifnotequal %}
     {% ifnotequal zoom 18 %}
         <a class="no-icon zoom-in zoomIn" href="?zoom={{ map.zoom|add:"1" }}" rel="nofollow">
-            <img src="{{ STATIC_URL }}site/png/icons/zoom-in.png" alt="Zoom in"/>
+            <img src="{{ STATIC_URL }}site/images/icons/zoom-in.png" alt="Zoom in"/>
         </a>
     {% endifnotequal %}
 {% endif %}

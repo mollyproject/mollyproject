@@ -3,7 +3,7 @@
 {% block breadcrumbs %}
 {{ block.super }}
             <li><a href="{% url podcasts_index %}">
-                <img src="{{ STATIC_URL }}png/index-icons/podcasts-bc.png" alt="Podcasts"/>
+                <img src="{{ STATIC_URL }}images/index-icons/podcasts-bc.png" alt="Podcasts"/>
             </a></li>
 {% if podcast.category %}
     <li><a href="{{ podcast.category.get_absolute_url }}">...</a></li>
@@ -56,7 +56,7 @@
     {% for enc in item.podcastenclosure_set.all %}
       <li style="vertical-align:middle;">
         <a href="{{ enc.url }}?CAMEFROM=moxacuk" style="vertical-align:middle; font-size:11px">
-        <img src="{{ STATIC_URL }}site/png/icons/list-{{ enc.medium }}.png" style="vertical-align:middle; margin:2px;" alt="({{ enc.medium }})"/>
+        <img src="{{ STATIC_URL }}site/images/icons/list-{{ enc.medium }}.png" style="vertical-align:middle; margin:2px;" alt="({{ enc.medium }})"/>
           {% if item.duration %}{{ item.duration|humanize_seconds }}, {% endif %}{{ enc.get_mimetype_display|capfirst }}, {{ enc.length|filesizeformat }}
           </a>
         </li>

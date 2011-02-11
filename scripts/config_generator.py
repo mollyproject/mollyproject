@@ -127,11 +127,15 @@ TIME_ZONE = 'Europe/London'
 USE_I18N = True
 SITE_ID = 1
 
+# Site name is used extensively in templates to name the site
+SITE_NAME = '%s'
+
 # Molly can automatically generate the urlpatterns, so it's recommended by
 # default to use Molly's urls.py. This doesn't work if you have non-Molly apps
 # and may require a custom urls.py to be written
 ROOT_URLCONF = 'molly.urls'
-"""
+""" % ask ('What would you like to call your site?',
+           compulsory=True)
     
     # Databases - assume PostGIS
     def write_database(name, user, pw):
@@ -757,7 +761,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'molly.wurfl.context_processors.wurfl_device',
     'molly.wurfl.context_processors.device_specific_media',
     'molly.geolocation.context_processors.geolocation',
-    'molly.utils.context_processors.full_path',"""
+    'molly.utils.context_processors.full_path',
+    'molly.utils.context_processors.service_name',"""
     if google_analytics != None:
         config += """\n    'molly.utils.context_processors.google_analytics',"""
     else:

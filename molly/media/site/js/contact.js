@@ -12,7 +12,7 @@ $(document).ready(function () {
     html += '<input type="hidden" id="h_query" value="'+query+'"/>';
     html += '<input type="hidden" id="h_method" value="'+method+'"/>';
     html += '<a id="contacts_more" href="?page='+(page+1)+'&amp;method='+method+'&amp;q='+query_enc+'">More&hellip;</a>';
-    html += '<img src="'+site_media+'gif/wait24trans.gif" width="24px" height="24px" style="display:none" id="wait_spinner"/>';
+    html += '<img src="'+site_media+'images/wait24trans.gif" width="24px" height="24px" style="display:none" id="wait_spinner"/>';
 
     $('#more_contact_results').html(html);
     

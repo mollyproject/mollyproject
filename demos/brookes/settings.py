@@ -7,7 +7,7 @@ from secrets import SECRETS
 
 project_root = os.path.normpath(os.path.dirname(__file__))
 
-SERVICE_NAME = 'Mobile Brookes'
+SITE_NAME = 'Mobile Brookes'
 DEBUG = True
 DEBUG_SECURE = True
 TEMPLATE_DEBUG = DEBUG

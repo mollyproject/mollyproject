@@ -16,7 +16,7 @@
                 {% ifequal style_group "dumb" %}
                     <button type="submit">Go!</button>
                 {% else %}
-                	<input type="image" src="{{ STATIC_URL }}site/png/new/buttons/search-button.png" title="Search" alt="Search" />
+                	<input type="image" src="{{ STATIC_URL }}site/images/new/buttons/search-button.png" title="Search" alt="Search" />
                 {% endifequal %}
         </td></tr>    
         </tbody>
@@ -35,7 +35,7 @@
 	    <li{% if forloop.last %} class="round-bottom"{% endif %}>
 	      <a href="{{ result.url }}">
 	      {% if result.application %}
-	        <img src="{{ STATIC_URL }}site/png/index-icons/{{ result.application }}-bc.png" style="float:left; border:0; margin-right: 5px; margin-bottom: 5px;"/>
+	        <img src="{{ STATIC_URL }}site/images/index-icons/{{ result.application }}-bc.png" style="float:left; border:0; margin-right: 5px; margin-bottom: 5px;"/>
 	      {% endif %}
 	        {{ result.title|safe }}<br/>
 	{% if result.additional %}
