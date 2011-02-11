@@ -464,16 +464,12 @@ if 'NO_SOUTH' not in os.environ:
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = '/media/'
-
-# URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
-# trailing slash.
-# Examples: "http://foo.com/media/", "/media/".
-ADMIN_MEDIA_PREFIX = MEDIA_URL + 'admin/' 
+MEDIA_URL = '/site-media/'
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = STATIC_ROOT = os.path.join(project_root, 'media')
+MEDIA_ROOT = os.path.join(project_root, 'site_media')
+STATIC_ROOT = os.path.join(project_root, 'media')
 
 MARKER_DIR = os.path.join(CACHE_DIR, 'markers')
 STATICFILES_DIRS = (
@@ -484,8 +480,14 @@ STATICFILES_DIRS = (
 STATIC_URL = '/media/'
 STATICFILES_PREPEND_LABEL_APPS = ('django.contrib.admin',) #+ extract_installed_apps(APPLICATIONS)
 
+# URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
+# trailing slash.
+# Examples: "http://foo.com/media/", "/media/".
+ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/' 
+
 COMPRESS_SOURCE = STATIC_ROOT
 COMPRESS_ROOT = STATIC_ROOT
+COMPRESS_URL = STATIC_URL
 
 COMPRESS_CSS, COMPRESS_JS = get_compress_groups(STATIC_ROOT)
 
