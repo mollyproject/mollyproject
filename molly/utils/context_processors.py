@@ -1,5 +1,10 @@
 from django.conf import settings
 
+def service_name(request):
+    return {
+        'service_name': settings.SERVICE_NAME if hasattr(settings, 'SERVICE_NAME') else 'Molly Project'
+    }
+    
 def full_path(request):
     return {
         'full_path': request.get_full_path(),

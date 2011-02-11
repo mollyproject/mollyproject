@@ -47,8 +47,8 @@ DEFINITION = """
   a scv:Dataset;
   a void:Dataset;
   a dcat:Dataset;
-  dct:title "Usage statistics for Mobile Oxford";
-  dct:description "Contains collated statistics of unique devices and user-agents accesing the home page of Mobile Oxford for each month.".
+  dct:title "Usage statistics for {{ service_name }}";
+  dct:description "Contains collated statistics of unique devices and user-agents accesing the home page of {{ service_name }} for each month.".
 
 mox:manufacturer rdfs:subPropertyOf scv:dimension;
   rdfs:label "manufacturer";
