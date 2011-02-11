@@ -101,18 +101,7 @@
             <li class="round-bottom"><a href="{% url feedback:index %}?referer={% url home:index %}">Provide feedback</a></li>
     </ul>
 
-    <div class="center">
-        {% ifequal style_group "dumb" %}
-            Produced by Oxford University Computing Services <br /><a href="http://www.oucs.ox.ac.uk">www.oucs.ox.ac.uk</a>
-        {% else %}
-    <div class="content" style="margin:8px;">
-        <img width="140" height="46" src="{{ STATIC_URL }}site/png/oucs-logo-small.png" alt="Oxford University Computing Services"/>
-        <img width="141" height="46" src="{{ STATIC_URL }}site/gif/brandmark.gif" alt="University of Oxford" />
-    </div>
-        {% endifequal %}
-    </div>
-
-
+	{% block below-about %} {% endblock %} 
 
 {% if user.is_superuser %}
         <hr/>
