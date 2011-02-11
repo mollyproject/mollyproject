@@ -13,8 +13,7 @@ import tempfile
 import shutil
 from scripts import config_generator
 
-
-
+# Dependencies and distro support basically relies on these - can tweak them here
 packagekit_packages = {
     'Fedora': [
             'python-virtualenv',
@@ -41,6 +40,7 @@ packagekit_packages = {
 
 apt_packages = {
     'Ubuntu': [
+            'python-pip',
             'build-essential',
             'postgis',
             'python-gdal',
@@ -56,7 +56,8 @@ apt_packages = {
             'libxslt-dev',
             'libldap2-dev',
             'libsasl2-dev',
-            'imagemagick'
+            'imagemagick',
+            'git-core',
         ],
 }
 
@@ -342,7 +343,7 @@ if not upgrading:
     for name, package in pip_packages:
         print " * " + name + '...',
         sys.stdout.flush()
-        Popen(as_molly + [pip, 'install', '-U', package], stdout=PIPE).communicate()
+        Popen(as_molly + [pip, 'install', '-U', package], stdout=PIPE, cwd=path).communicate()
         print "DONE!"
     print
 
@@ -361,8 +362,8 @@ if not options.develop:
             os.chown(os.path.join(root, file), molly_uid, molly_gid)
     molly_setup = os.path.join(molly_temp, 'setup.py')
 else:
-    molly_setup = os.path.join(os.path.normpath(os.path.dirname(__file__)), 'setup.py')
-Popen(as_molly + [python, molly_setup, 'install' if not options.develop else 'develop'], stdout=PIPE, stderr=PIPE).communicate()
+    molly_setup = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'setup.py')
+Popen(as_molly + [python, molly_setup, 'install' if not options.develop else 'develop'], stdout=PIPE, stderr=PIPE, cwd=path).communicate()
 
 if not options.develop:
     shutil.rmtree(temp_dir)
@@ -463,12 +464,12 @@ def call_in_virtualenv(path, command, wait=True, devnull=True):
     if wait:
         command = as_molly + ['bash','-c','source %s/bin/activate; %s' % (path, command)]
         if devnull:
-            Popen(command, stdout=PIPE, stderr=PIPE).communicate()
+            Popen(command, stdout=PIPE, stderr=PIPE, cwd=path).communicate()
         else:
-            Popen(command).wait()
+            Popen(command, cwd=path).wait()
     else:
         command = as_molly + ['bash','-c','source %s/bin/activate; %s %s' % (path, command, '>/dev/null' if devnull else '')]
-        Popen(command)
+        Popen(command, cwd=path)
 
 if not options.develop and Popen(as_postgres + ['psql',database,'-c',"SELECT id FROM south_migrationhistory LIMIT 1;"], stdout=PIPE, stderr=PIPE).wait() > 0:
     # It errored, which probably means the table doesn't exist
