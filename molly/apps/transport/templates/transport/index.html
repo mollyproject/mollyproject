@@ -84,7 +84,7 @@ ul li.transport-link a img { border: 0; }
   </div>
   <div class="section-content" style="color:#000;">
     {% for entity in park_and_rides.entities %}
-    <div style="width: 50%;{% if not forloop.last or forloop.counter|divisibleby:2 %} float: left;{% endif %} margin: 3px auto 3px auto;">
+    <div style="width: 50%;{% if not forloop.last or forloop.counter|divisibleby:2 %} float: left;{% endif %} margin: 3px auto 3px auto;{% if not forloop.counter|divisibleby:2 %} clear: left;{% endif %}">
       <h3><a href="{{ entity.get_absolute_url}}" style="color:#000;">{{ entity.title|slice:":-14" }}</a></h3>
       {{ entity.metadata.unavailable }}
       {% if not entity.metadata.park_and_ride.unavailable %}
