@@ -11,12 +11,12 @@
 <div id="index-header">
     <div id="index-title">
 		{% ifequal style_group "dumb" %}
-		    <img width="90" height="55" src="{{ STATIC_URL }}site/png/new/logos/logo-90x55.jpg" alt="{{ service_name }}">
+		    <img width="90" height="55" src="{{ STATIC_URL }}site/images/new/logos/logo-90x55.jpg" alt="{{ service_name }}">
 		{% else %}
 		{% if is_christmas %}
-            <img width="128" height="51" src="{{ STATIC_URL }}site/png/new/logos/logo-128x51-TRMargin-5px-christmas.png" alt="{{ service_name }}"/>
+            <img width="128" height="51" src="{{ STATIC_URL }}site/images/new/logos/logo-128x51-TRMargin-5px-christmas.png" alt="{{ service_name }}"/>
 		{% else %}
-	    <img width="128" height="51" src="{{ STATIC_URL }}site/png/new/logos/logo-128x51-TRMargin-5px.png" alt="{{ service_name }}"/>
+	    <img width="128" height="51" src="{{ STATIC_URL }}site/images/new/logos/logo-128x51-TRMargin-5px.png" alt="{{ service_name }}"/>
 		{% endif %}
         {% endifequal %}
     </div>
@@ -28,7 +28,7 @@
 		{% ifequal style_group "dumb" %}
 		    <input type="button" value="Search" />
 		{% else %}
-			<input type="image" src="{{ STATIC_URL }}site/png/new/buttons/search-button.png" title="Search" alt="Search"/>
+			<input type="image" src="{{ STATIC_URL }}site/images/new/buttons/search-button.png" title="Search" alt="Search"/>
 		{% endifequal %}
 		 </p>
 		 </form>
@@ -69,7 +69,7 @@
                     {% endblock %}</td>
                     <td style="width:50%; font-size:1.2em">
 
-      {% weather %}{{ weather.name }}: {{ weather.temperature }}&deg;C<img src="{{ STATIC_URL }}weather/png/{{ weather.icon }}_small.png" alt="{{ weather.get_outlook_display|capfirst }}" height="30" width="30" style="vertical-align:middle;"/>
+      {% weather %}{{ weather.name }}: {{ weather.temperature }}&deg;C<img src="{{ STATIC_URL }}weather/images/{{ weather.icon }}_small.png" alt="{{ weather.get_outlook_display|capfirst }}" height="30" width="30" style="vertical-align:middle;"/>
 
                     </td>
                 </tr>
@@ -106,8 +106,8 @@
             Produced by Oxford University Computing Services <br /><a href="http://www.oucs.ox.ac.uk">www.oucs.ox.ac.uk</a>
         {% else %}
     <div class="content" style="margin:8px;">
-        <img width="140" height="46" src="{{ STATIC_URL }}site/png/oucs-logo-small.png" alt="Oxford University Computing Services"/>
-        <img width="141" height="46" src="{{ STATIC_URL }}site/gif/brandmark.gif" alt="University of Oxford" />
+        <img width="140" height="46" src="{{ STATIC_URL }}site/images/oucs-logo-small.png" alt="Oxford University Computing Services"/>
+        <img width="141" height="46" src="{{ STATIC_URL }}site/images/brandmark.gif" alt="University of Oxford" />
     </div>
         {% endifequal %}
     </div>

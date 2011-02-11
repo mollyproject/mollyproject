@@ -24,7 +24,7 @@ name of the application that uses them. For example::
             [...]
           js/
             [...]
-          png/
+          images/
             [...]
     
     molly/
@@ -37,7 +37,7 @@ name of the application that uses them. For example::
     your_site/
       site_media/
         contact/
-          png/
+          images/
             override_some_icon.png
         base/
           css/
