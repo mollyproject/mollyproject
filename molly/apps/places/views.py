@@ -546,13 +546,21 @@ class ServiceDetailView(BaseView):
 
         # Deal with train service data
         if entity.metadata['service_type'] == 'ldb':
+            
             try:
-                service = entity.metadata['service_details'](service_id)
+                # LDB has + in URLs, but Django converts that to space
+                service = entity.metadata['service_details'](service_id.replace(' ', '+'))
             except WebFault as f:
                 if f.fault['faultstring'] == 'Unexpected server error: Invalid length for a Base-64 char array.':
                     raise Http404
                 else:
-                    raise
+                    context.update({
+                        'title': 'An error occurred',
+                        'entity': entity,
+                        #'error': 'National Rail Enquiries gave us an error when trying to look up this service. Please try again later.'
+                        'error': service_id.replace(' ', '+')
+                    })
+                    return context
             if service is None:
                 raise Http404
 

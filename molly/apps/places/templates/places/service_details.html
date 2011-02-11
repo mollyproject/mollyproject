@@ -3,6 +3,17 @@
 
 {% block content %}
 
+{% if error %}
+<div class="section">
+  <div class="header">
+    <h2>An error occurred</h2>
+  </div>
+  <div class="section-content">
+    {{ error }}
+  </div>
+</div>
+{% endif %}
+
 {% if train_service %}
 <div class="section">
   <div class="header">
@@ -106,6 +117,7 @@
 
 {% endif %}
 
+{% if map %}
 <div class="section">
     <div class="header">
         <h2>Map</h2>
@@ -114,5 +126,6 @@
     {% render_map map %}
     </div>
 </div>
+{% endif %}
 
 {% endblock %}
