@@ -10,27 +10,27 @@
   <div class="section-content">
 {% ifequal error "oauth_problem" %}
   {% ifequal oauth_problem "permission_denied" %}
-    You did not give Mobile Oxford permission to access your data held with
+    You did not give {{ site_name }} permission to access your data held with
     {{ service_name }}. You may <a href=".?skip_interstitial=true">try again</a>, go
     <a href="{{ breadcrumbs.1.1 }}" title="{{ breadcrumbs.1.0 }}">back to the
     {{ service_name }} page</a>, or back to the
-    <a href="{% url home:index %}">Mobile Oxford homepage</a>.
+    <a href="{% url home:index %}">{{ site_name }} homepage</a>.
   {% else %}
     {% ifequal oauth_problem "token_expired" %}
       {% ifequal token_type "access" %}
-      Mobile Oxford was unable to access your data held with {{ service_name }},
+      {{ site_name }} was unable to access your data held with {{ service_name }},
       most likely because you have revoked permission from within
       {{ service_name }}. If you'd still like to access {{ service_name }} from
-      Mobile Oxford <a href=".?skip_interstitial=true">renew Mobile Oxford's permissions</a>.
+      {{ site_name }} <a href=".?skip_interstitial=true">renew {{ site_name }}'s permissions</a>.
       Alternatively, you can go
       <a href="{{ breadcrumbs.1.1 }}" title="{{ breadcrumbs.1.0 }}">back to the
       {{ service_name }} page</a>, or back to the
-      <a href="{% url home:index %}">Mobile Oxford homepage</a>.
+      <a href="{% url home:index %}">{{ site_name }} homepage</a>.
       {% else %}
       There was an unexpected error. You can <a href=".?skip_interstitial=true">try again</a>, go
       <a href="{{ breadcrumbs.1.1 }}" title="{{ breadcrumbs.1.0 }}">back to the
       {{ service_name }} page</a>, or back to the
-      <a href="{% url home:index %}">Mobile Oxford homepage</a>.
+      <a href="{% url home:index %}">{{ site_name }} homepage</a>.
       {% endifequal %}
     {% else %}
       
@@ -40,7 +40,7 @@
     There was an unexpected error. You can <a href=".?skip_interstitial=true">try again</a>, go
     <a href="{{ breadcrumbs.1.1 }}" title="{{ breadcrumbs.1.0 }}">back to the
     {{ service_name }} page</a>, or back to the
-    <a href="{% url home:index %}">Mobile Oxford homepage</a>.
+    <a href="{% url home:index %}">{{ site_name }} homepage</a>.
 {% endifequal %}
   </div>
 </div>
