@@ -26,6 +26,9 @@ class BaseContactProvider(object):
     def fetch_result(self, id):
         raise BaseContactProvider.NoSuchResult
 
+class TooManyResults(Exception):
+    pass
+
 try:
     import ldap
 except ImportError:

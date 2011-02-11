@@ -1,25 +1,21 @@
 import ldap, ldap.filter
 
-from molly.apps.contact.providers import BaseContactProvider
+from molly.apps.contact.providers import BaseContactProvider, TooManyResults
 
 class LDAPContactProvider(BaseContactProvider):
-    """
-    Connects to MIT's LDAP server to request contact information.
-    """
 
     # See http://en.wikipedia.org/wiki/Nobility_particle for more information.
     _NOBILITY_PARTICLES = set([
         'de', 'van der', 'te', 'von', 'van', 'du', 'di'
     ])
 
-    # URL for the contact search API. Speak to sysdev for access.
-    _LDAP_URL = 'ldap://ldap.mit.edu:389'
-    _BASE_DN = "dc=mit,dc=edu"
-
     handles_pagination = False
 
-    @classmethod
-    def normalize_query(cls, cleaned_data, medium):
+    def __init__(self, url, base_dn):
+        self._url = url
+        self._base_dn = base_dn
+
+    def normalize_query(self, cleaned_data, medium):
         # Examples of initial / surname splitting
         # William Bloggs is W, Bloggs
         # Bloggs         is  , Bloggs
@@ -51,25 +47,28 @@ class LDAPContactProvider(BaseContactProvider):
             'forename': forename,
         }
 
-    @classmethod
-    def first_or_none(cls, result, name):
+    def first_or_none(self, result, name):
         try:
             return result[1][name][0]
         except (KeyError, IndexError):
             return None
 
-    @classmethod
-    def perform_query(cls, surname, forename):
+    def perform_query(self, surname, forename):
 
-        mitldap = ldap.initialize(cls._LDAP_URL)
-        ldap_results = mitldap.search_ext_s(cls._BASE_DN, ldap.SCOPE_SUBTREE, "(sn=%s)" % 
-            ldap.filter.escape_filter_chars(surname),
-        )
+        ldap_server = ldap.initialize(self._url)
+        try:
+            ldap_results = ldap_server.search_ext_s(self._base_dn, ldap.SCOPE_SUBTREE, "(sn=%s)" % 
+                ldap.filter.escape_filter_chars(surname)
+            )
+        except ldap.NO_SUCH_OBJECT:
+            return []
+        except ldap.SIZELIMIT_EXCEEDED:
+            raise TooManyResults()
 
         results = []
         for ldap_result in ldap_results:
             results.append({
-                'cn': cls.first_or_none(ldap_result, 'cn'),
+                'cn': self.first_or_none(ldap_result, 'cn'),
 
                 'sn': ldap_result[1].get('sn', []),
                 'givenName': ldap_result[1].get('givenName', []),
