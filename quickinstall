@@ -438,10 +438,15 @@ application = django.core.handlers.wsgi.WSGIHandler()""")
 
 elif options.site_path != None:
     print "Using", options.site_path, "as site to deploy"
-    os.symlink(options.site_path, site)
+    if os.path.exists(site):
+        if not os.path.islink(site):
+            print "Deploying from an external site, but the deploy/ isn't a symlink"
+            sys.exit(1)
+        os.unlink(site)
+    os.symlink(os.path.abspath(options.site_path), site)
     
 # Determine if we need to do the first migration or not
-if postgres_password is None:
+if postgres_password is None and not options.develop:
     database = config_generator.ask('What is the name of the database Molly uses?', compulsory=True)
 else:
     database = 'molly'
@@ -474,15 +479,16 @@ else:
 
 print "Building media... (this may take some time)",
 sys.stdout.flush()
-call_in_virtualenv(path, "python %s/manage.py update_wurfl" % site, wait=False)
-call_in_virtualenv(path, "python %s/manage.py generate_markers" % site)
+if not upgrading:
+    call_in_virtualenv(path, "python %s/manage.py update_wurfl" % site, wait=False)
+    call_in_virtualenv(path, "python %s/manage.py generate_markers" % site)
 call_in_virtualenv(path, "python %s/manage.py collectstatic --noinput" % site)
 call_in_virtualenv(path, "python %s/manage.py synccompress" % site, wait=False)
-call_in_virtualenv(path, "python %s/manage.py create_crontab | crontab" % site, wait=False)
+call_in_virtualenv(path, "python %s/manage.py create_crontab | crontab" % site)
 print "DONE!"
 
 if options.develop:
-    call_in_virtualenv('python %s/manage.py runserver' % site, wait=True, devnull=False)
+    call_in_virtualenv(path, 'python %s/manage.py runserver' % site, wait=True, devnull=False)
 
 elif options.site_path is None and not upgrading:
     print
