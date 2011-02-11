@@ -258,12 +258,16 @@ APPLICATIONS = [
     
     # Contact Search (with MIT's LDAP provider) - optional
     if ask_yes_no('Would you like to enable the contact search application?', 'y'):
-        config += """
+        ldap_url = ask('What is the URL of the LDAP server to use for contact searching?')
+        if ldap_url != None:
+            config += """
     Application('molly.apps.contact', 'contact', 'Contact search',
-        provider = 'molly.apps.contact.providers.LDAPContactProvider',
+        provider = Provider('molly.apps.contact.providers.LDAPContactProvider',
+                             url='%s', base_dn='%s'),
     ),
-    """
-        print "\nAt present this is just a demo, using MIT's LDAP database to do the search\n"
+    """ % (ldap_url, ask('What is the base DN to use for searching the LDAP tree?'))
+        else:
+            print "Skipping LDAP configuration, no URL specified...\n"
     
     # Library search - optional
     # Need: Z39.50 host, database, syntax, port (210)
