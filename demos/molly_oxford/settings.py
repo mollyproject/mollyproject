@@ -9,6 +9,7 @@ from secrets import SECRETS
 molly_root = imp.find_module('molly')[1]
 project_root = os.path.normpath(os.path.dirname(__file__))
 
+SERVICE_NAME = 'Mobile Oxford'
 CACHE_DIR = '/var/cache/molly'
 
 DEBUG = True
@@ -85,6 +86,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'molly.geolocation.context_processors.geolocation',
     'molly.utils.context_processors.full_path',
     'molly.utils.context_processors.google_analytics',
+    'molly.utils.context_processors.service_name',
     'django.core.context_processors.csrf',
 )
 
