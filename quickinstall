@@ -373,8 +373,7 @@ if options.site_path is None and not os.path.exists(site):
     print "No site specified, creating a new one..."
     
     # Create site
-    Popen(as_molly + [python, os.path.join(path, 'bin', 'django-admin.py'), 'startproject', site], stdout=PIPE, stderr=PIPE).communicate()
-    Popen(as_molly + [python, os.path.join(path, 'bin', 'django-admin.py'), 'startproject', 'deploy'], cwd=os.path.normpath(os.path.join(site, '..'))).wait()
+    Popen(as_molly + [python, os.path.join(path, 'bin', 'django-admin.py'), 'startproject', 'deploy'], cwd=os.path.normpath(os.path.join(site, '..')), stdout=PIPE, stderr=PIPE).communicate()
     
     # Remove settings.py as we're going to generate this ourselves
     os.unlink(os.path.join(site, 'settings.py'))
@@ -448,11 +447,8 @@ application = django.core.handlers.wsgi.WSGIHandler()""")
 elif options.site_path != None:
     print "Using", options.site_path, "as site to deploy"
     if os.path.exists(site):
-        if not os.path.islink(site):
-            print "Deploying from an external site, but the deploy/ isn't a symlink"
-            sys.exit(1)
-        os.unlink(site)
-    os.symlink(os.path.abspath(options.site_path), site)
+        shutil.rmtree(site)
+    shutil.copytree(options.site_path, site)
     
 # Determine if we need to do the first migration or not
 if postgres_password is None and not options.develop:
