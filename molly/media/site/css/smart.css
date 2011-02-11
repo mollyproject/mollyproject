@@ -1,5 +1,5 @@
 body {
-    background:#bbc4ce url('../../site/images/new/gradients/backdrop-iphone.png') repeat-x top;
+    background:#bbc4ce url('../../site/images/gradients/backdrop-iphone.png') repeat-x top;
     font-family: "Liberation Sans", sans-serif;
     font-size:9pt;
     -webkit-text-size-adjust: none;
@@ -83,7 +83,7 @@ li#menu-transport {background-image:url('../../site/images/index-icons/transport
 div#bc-header {
     height:34px;
     width: 100%;
-    background:url('../../site/images/new/gradients/bc-gradient.png') repeat-x top;
+    background:url('../../site/images/gradients/bc-gradient.png') repeat-x top;
     overflow:hidden;
 }
 ol#bc {
@@ -435,7 +435,7 @@ table.real-time-information tr {
 button, input[type="submit"], input[type="reset"] {
     display: inline-block;
     color: #fff;
-    background: #838791 url(../../site/images/new/buttons/btn.bg.png) repeat-x 0px 0px;
+    background: #838791 url(../../site/images/buttons/btn.bg.png) repeat-x 0px 0px;
     padding:5px 10px 6px 10px;
     font-weight:bold;
     /*text-shadow: 1px 1px 1px #111;*/
@@ -638,7 +638,7 @@ ul.content-list li.superuser-comment {
 div.section {
     background:-moz-linear-gradient(top, #fff, #dfdfdf);
     background:-webkit-gradient(linear, left top, left bottom, from(#fff), to(#dfdfdf));
-    background:transparent #f2f2f2 url('../../site/images/new/gradients/gradient-50-nrWhite-Transparent.png') repeat-x */;
+    background:transparent #f2f2f2 url('../../site/images/gradients/gradient-50-nrWhite-Transparent.png') repeat-x */;
     margin: 10px;
     -webkit-border-radius:8px; -moz-border-radius: 8px; border-radius: 8px;
     -moz-box-shadow: 2px 2px 2px #333; -webkit-box-shadow: 2px 2px 2px #333; box-shadow: 2px 2px 2px #333;
