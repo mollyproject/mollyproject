@@ -7,6 +7,7 @@ from django.core.paginator import Paginator
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
+from molly.apps.contact.providers import TooManyResults
 
 from .forms import GenericContactForm
 
@@ -60,11 +61,15 @@ class ResultListView(IndexView):
 
             query = provider.normalize_query(form.cleaned_data, medium)
 
-            if provider.handles_pagination:
-                paginator = provider.perform_query(page=page, **query)
-            else:
-                people = provider.perform_query(**query)
-                paginator = Paginator(people, 10)
+            try:
+                if provider.handles_pagination:
+                    paginator = provider.perform_query(page=page, **query)
+                else:
+                    people = provider.perform_query(**query)
+                    paginator = Paginator(people, 10)
+            except TooManyResults:
+                return self.handle_error(request, context,
+                                         "Your search returned too many results.")
 
             if not (1 <= page <= paginator.num_pages):
                 return self.handle_error(
