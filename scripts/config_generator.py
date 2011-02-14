@@ -530,6 +530,13 @@ APPLICATIONS = [
      ), 
     """
     
+    # URL shortener - always
+    config += """
+    Application('molly.url_shortener', 'url_shortener', 'URL Shortener',
+        display_to_user = False,
+    ),
+    """
+    
     # Molly utilities - always
     config += """
     Application('molly.utils', 'utils', 'Molly utility services',
