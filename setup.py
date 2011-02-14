@@ -78,7 +78,7 @@ setup(
         "PyZ3950", # The one in PyPI is broken! You should install the one from
                    # https://github.com/alexdutton/PyZ3950/ *BEFORE* running
                    # this script
-        "feedparser",
+        "feedparser>=5.0",
         "simplejson",
         "rdflib",
         "python-dateutil",
