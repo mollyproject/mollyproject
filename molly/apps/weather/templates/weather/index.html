@@ -8,7 +8,11 @@
 {% block content %}
 
 <div class="section">
-{% block weatherloc %}{% endblock %}
+{% block weatherloc %}
+<div class="header">
+	<h2>{{ weather.name }} <small>at {{ observation.observed_date|date:"H:i" }}</small></h2>
+</div>
+{% endblock %}
 	<div class="note">
 		<div class="weather-icon">
 	    <img src="{{ STATIC_URL }}weather/images/{{ observation.icon }}.png" alt="{{ observation.get_outlook_display|capfirst }}"/><br/>
