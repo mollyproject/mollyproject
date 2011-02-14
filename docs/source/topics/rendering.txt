@@ -1,3 +1,0 @@
-Renderers and rendering
-=======================
-

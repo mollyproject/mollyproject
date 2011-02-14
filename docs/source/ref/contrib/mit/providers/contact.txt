@@ -1,9 +1,0 @@
-:class:`molly.contrib.mit.providers.LDAPContactProvider` -- LDAP-based contact provider
-=======================================================================================
-
-.. class :: molly.contrib.mit.providers.LDAPContactProvider
-
-.. index ::
-    pair: LDAP (Lightweight Directory Access Protocol); contact provider
-
-This contact provider queries MIT's public :abbr:`LDAP` server.
