@@ -644,7 +644,7 @@ APPLICATIONS = [
     if postcode != None:
         postcodes = []
         while postcode != None:
-            postcodes += postcode
+            postcodes.append(postcode)
             postcode = ask('What postcode area prefix would you like to import?')
         config += """
             Provider('molly.apps.places.providers.PostcodesMapsProvider',
