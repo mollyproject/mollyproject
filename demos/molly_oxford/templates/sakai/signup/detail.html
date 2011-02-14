@@ -106,7 +106,7 @@ div.button {
 {# Time and Date #} 
     {% ifequal event.start|date:"dMY" event.end|date:"dMY" %}
       {# Display Term Week + Name, Date + Time start -> end #}
-        {{ event.startTime|from_sakai_timestamp|date:"d M Y" }} 
+        {{ event.startTime|from_sakai_timestamp|oxdate:"%(week)s%(ordinal)s Week %(term_long)s Term" }}, {{ event.startTime|from_sakai_timestamp|date:"d M Y" }} 
         {{ event.startTime|from_sakai_timestamp|date:"g:iA" }} - {{ event.endTime|from_sakai_timestamp|date:"g:iA" }}
       {% else %}
       {# Display startTime + startDate - endTime + endDate #}
