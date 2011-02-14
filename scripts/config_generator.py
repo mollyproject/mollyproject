@@ -5,6 +5,7 @@
 import sys
 import os
 import os.path
+import pwd
 
 try:
     import readline
@@ -172,7 +173,7 @@ must alter settings.py later."""
     
     def get_cache(default='/var/cache/molly'):
         cache = ask('Where would you like cache files to be stored?', default=default, compulsory=True)
-        if cache[-1] == '/':
+        if cache[-1] == '/': # strip trailing /
             cache = cache[:-1]
         if not os.path.isdir(cache):
             create = ask_yes_no('That path does not seem to exist, would you like to create it?', 'y')
@@ -185,7 +186,14 @@ must alter settings.py later."""
             else:
                 print "The cache directory must exist for installation to continue"
                 return get_cache(default=cache)
-        return cache
+        else:
+            try:
+                if os.geteuid() == 0:
+                    molly_uid, molly_gid = pwd.getpwnam('molly')[2:4]
+                    os.chown(cache, molly_uid, molly_gid)
+            except Exception:
+                pass
+            return cache
     
     config += """
 # The CACHE_DIR is used by default to store cached map tiles, generated static
@@ -528,6 +536,13 @@ APPLICATIONS = [
     Application('molly.apps.stats', 'stats', 'Statistics',
          display_to_user = False,
      ), 
+    """
+    
+    # URL shortener - always
+    config += """
+    Application('molly.url_shortener', 'url_shortener', 'URL Shortener',
+        display_to_user = False,
+    ),
     """
     
     # Molly utilities - always
