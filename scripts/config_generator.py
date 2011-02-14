@@ -473,8 +473,8 @@ APPLICATIONS = [
     
     print "http://itouchmap.com/latlong.html can help you find the latitude and longitude"
     print "of a point"
-    lon = ask('What is the longitude of your location?', compulsory=True)
     lat = ask('What is the latitude of your location?', compulsory=True)
+    lon = ask('What is the longitude of your location?', compulsory=True)
     
     print
     print "By default, Molly searches the entire planet for addresses entered when"
