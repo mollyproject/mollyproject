@@ -17,7 +17,7 @@
   <ul class="content-list">
 {% for comment in comments %}
     <li{% if comment.user.is_superuser %} class="superuser-comment"{% endif %}>
-      <h3>Posted by {{ comment.user_name }}{% if comment.user.is_superuser %} ({{ service_name }} team member){% endif %}; {{ comment.submit_date|timesince }} ago</h3>
+      <h3>Posted by {{ comment.user_name }}{% if comment.user.is_superuser %} ({{ site_name }} team member){% endif %}; {{ comment.submit_date|timesince }} ago</h3>
       
       
 

@@ -766,7 +766,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'molly.wurfl.context_processors.device_specific_media',
     'molly.geolocation.context_processors.geolocation',
     'molly.utils.context_processors.full_path',
-    'molly.utils.context_processors.service_name',"""
+    'molly.utils.context_processors.site_name',"""
     if google_analytics != None:
         config += """\n    'molly.utils.context_processors.google_analytics',"""
     else:
