@@ -484,7 +484,7 @@ else:
 
 print "Building media... (this may take some time)",
 sys.stdout.flush()
-if not upgrading:
+if not upgrading and options.develop:
     call_in_virtualenv(path, "python %s/manage.py update_wurfl" % site, wait=False)
     call_in_virtualenv(path, "python %s/manage.py generate_markers" % site)
 call_in_virtualenv(path, "python %s/manage.py collectstatic --noinput" % site)
@@ -506,8 +506,9 @@ elif options.site_path is None and not upgrading:
 if not upgrading:
     print
     print "Molly will not work correctly until some data has been imported."
-    print "To start importing data, go to http://yourdomain/adm/ and log in"
-    print "using your admin username and password, go to 'Batches' and then"
+    print "Run your Apache or development server and then to start importing"
+    print "data, go to http://yourdomain:yourport/adm/ and log in."
+    print "Using your admin username and password, go to 'Batches' and then"
     print "select all the batches, and choose 'Run Batch' from the actions menu."
 
 print
