@@ -627,7 +627,7 @@ APPLICATIONS = [
     if area != None:
         areas = []
         while area != None:
-            areas += area
+            areas.append(area)
             area = ask('What is the ATCO area code you would like to import?')
         config += """
             Provider('molly.apps.places.providers.NaptanMapsProvider',
