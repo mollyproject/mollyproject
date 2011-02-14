@@ -17,7 +17,7 @@
     </p>{% endcomment %}
     <p style="text-align:center; margin-bottom:0;">
         <button type="submit" name="use_itunesu" value="yes">Go to iTunes U</button>
-        <button type="submit" name="cancel" id="hide_itunesu_link" value="no">Stay on m.ox</button>
+        <button type="submit" name="cancel" id="hide_itunesu_link" value="no">Stay here</button>
     </p>
     </form>
 </div>
@@ -47,9 +47,14 @@
 {# End Podcasts Search #}
 
 <div class="section" >
+{% block listdef %}
   <div class="header">
-	<h2>By division</h2>
+	<h2>By category</h2>
   </div>
+{% endblock %}
+
+
+
 <ul class="link-list">
 {% for category in categories %}
     <li {% if forloop.last %}class="round-bottom" {% endif %}>

@@ -485,7 +485,7 @@ else:
 
 print "Building media... (this may take some time)",
 sys.stdout.flush()
-if not upgrading and options.develop:
+if not (upgrading and options.develop):
     call_in_virtualenv(path, "python %s/manage.py update_wurfl" % site, wait=False)
     call_in_virtualenv(path, "python %s/manage.py generate_markers" % site)
 call_in_virtualenv(path, "python %s/manage.py collectstatic --noinput" % site)
