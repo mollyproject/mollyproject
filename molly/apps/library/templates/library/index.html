@@ -1,4 +1,6 @@
 {% extends "library/base.html" %}
+{% extends "library/index.html" %}
+
 
 {% block extrahead %}{% include "geolocation/js.html" %}{% endblock extrahead %}
 
@@ -6,21 +8,9 @@
 
 {% include "library/search_form.html" %}
 
-<div class="section">
-<div class="header">
-    <h2>Library Services Info</h2>
-</div>
-    <ul class="link-list">
-        <li><a href="{% url places:category-detail "university-library" %}">List of libraries</a></li>
-        <li><a href="{% url places:nearby-detail "university-library" %}">Libraries nearby</a></li>
-        <li><a class="email" href="mailto:reader.services@ouls.ox.ac.uk">E-mail<br/>
-	        <small>reader.services@ouls.ox.ac.uk</small></a></li>
-        <li><a class="phone" href="tel:+441865277162">Telephone<br/><small>01865 (2)77162</small></a></li>
-        <li><a class="external" href="http://www.bodleian.ox.ac.uk/">Bodleian Libraries</a></li>
-        <li><a class="external" href="http://solo.bodleian.ox.ac.uk/m.html">SOLO <small>(Search Oxford Libraries Online)</small></a></li>
-        <li class="round-bottom"><a class="external" href="http://library.ox.ac.uk/">OLIS <small>(Oxford Library Information System)</small></a></li>
-    </ul>
+{% block libraryinfo %}{% endblock %}
 
-</div>
+
+
 
 {% endblock %}
