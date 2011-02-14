@@ -41,7 +41,8 @@ class GeneratedMap(models.Model):
     faulty = models.BooleanField(default=False)
     
     class Meta:
-        app_label = 'osm'
+        app_label = 'maps'
+        db_table = 'osm_generatedmap'
 
     def _get_metadata(self):
         return simplejson.loads(self._metadata)
@@ -83,7 +84,8 @@ class OSMTile(models.Model):
 
     class Meta:
         unique_together = (('xtile', 'ytile', 'zoom'),)
-        app_label = 'osm'
+        app_label = 'maps'
+        db_table = 'osm_osmtile'
 
     def get_filename(self):
         osm_tile_dir = get_osm_tile_dir()
@@ -155,5 +157,6 @@ class OSMUpdate(models.Model):
     approved = models.BooleanField(default=False)
     
     class Meta:
-        app_label = 'osm'
+        app_label = 'maps'
+        db_table = 'osm_osmupdate'
     

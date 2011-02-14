@@ -20,7 +20,7 @@ class Migration(SchemaMigration):
                 ('_metadata', self.gf('django.db.models.fields.TextField')(blank=True)),
                 ('faulty', self.gf('django.db.models.fields.BooleanField')(default=False)),
             ))
-            db.send_create_signal('osm', ['GeneratedMap'])
+            db.send_create_signal('maps', ['GeneratedMap'])
     
             # Adding model 'OSMTile'
             db.create_table('osm_osmtile', (
@@ -30,7 +30,7 @@ class Migration(SchemaMigration):
                 ('zoom', self.gf('django.db.models.fields.IntegerField')()),
                 ('last_fetched', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
             ))
-            db.send_create_signal('osm', ['OSMTile'])
+            db.send_create_signal('maps', ['OSMTile'])
     
             # Adding unique constraint on 'OSMTile', fields ['xtile', 'ytile', 'zoom']
             db.create_unique('osm_osmtile', ['xtile', 'ytile', 'zoom'])
@@ -48,7 +48,7 @@ class Migration(SchemaMigration):
                 ('notes', self.gf('django.db.models.fields.TextField')(blank=True)),
                 ('approved', self.gf('django.db.models.fields.BooleanField')(default=False)),
             ))
-            db.send_create_signal('osm', ['OSMUpdate'])
+            db.send_create_signal('maps', ['OSMUpdate'])
 
 
     def backwards(self, orm):
