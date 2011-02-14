@@ -377,6 +377,7 @@ if options.site_path is None and not os.path.exists(site):
     
     # Remove settings.py as we're going to generate this ourselves
     os.unlink(os.path.join(site, 'settings.py'))
+    os.unlink(os.path.join(site, 'urls.py'))
     
     # Add default directories
     os.mkdir(os.path.join(site, 'templates'))
