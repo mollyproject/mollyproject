@@ -198,8 +198,8 @@ CACHE_DIR = '%s'
 --------------------------------------------------------------------------------
 
 Now we'll need to know your API keys for some applications. If you don't have
-a key, then you can simply skip the question - however this will mean you will
-not be able to select that functionality later on."""
+a key, then you can simply skip the question - however this means that the
+corresponding functionality will be disabled until you manually override it."""
     
     cloudmade = ask('What is your Cloudmade API key?')
     google_analytics = ask('What is your Google Analytics API key?')
@@ -292,7 +292,7 @@ APPLICATIONS = [
     # URLs of podcast producer feeds (optional)
     def get_opml_data():
         print "\nLeave blank to skip adding an OPML feed"
-        url = ask('Enter the URL of an OPML feed to add')
+        url = ask('Enter the URL of a podcast OPML feed to add')
         if url is None:
             return None
         else:
@@ -304,7 +304,7 @@ APPLICATIONS = [
     
     def get_rss_data():
         print "\nLeave blank to skip adding an RSS feed"
-        slug = ask('Enter the slug for this RSS feed')
+        slug = ask('Enter the slug for a podcast RSS feed')
         if slug is None:
             return None
         else:
@@ -474,7 +474,7 @@ APPLICATIONS = [
     if ask_yes_no('Would you like to limit geocoding searches?', 'y'):
         config += """
         prefer_results_near = (%s, %s, %s),""" % (lon, lat,
-                                                  ask('How far around your location should geocoding results be considered for?', compulsory=True, default='10000'))
+                                                  ask('How far around your location (in metres) should geocoding results be considered for?', compulsory=True, default='10000'))
     config += """
         providers = [
             Provider('molly.geolocation.providers.PlacesGeolocationProvider'),"""
