@@ -56,6 +56,7 @@ apt_packages = {
             'libxslt-dev',
             'libldap2-dev',
             'libsasl2-dev',
+            'libjpeg-dev',
             'imagemagick',
             'git-core',
         ],
@@ -64,7 +65,7 @@ apt_packages = {
 pip_packages = [
     ('PyZ3950', 'git+http://github.com/oucs/PyZ3950.git'), # Custom PyZ3950, contains some bug fixes
     ('django-compress', 'git+git://github.com/mikelim/django-compress.git#egg=django-compress'), # Fork of django-compress contains some extra features we need
-    ('PIL', 'PIL==1.1.7'), # Because it doesn't install properly when called using setuptools...
+    ('PIL', 'PIL'), # Because it doesn't install properly when called using setuptools...
 ]
 
 postgis_paths = {

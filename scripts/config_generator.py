@@ -694,7 +694,7 @@ APPLICATIONS = [
         nearby_entity_types = (
             ('Transport', (
                 'bicycle-parking', 'bus-stop', 'car-park', 'park-and-ride',
-                'taxi-rank', 'train-station')),
+                'taxi-rank', 'rail-station')),
             ('Amenities', (
                 'atm', 'bank', 'bench', 'medical', 'post-box', 'post-office',
                 'public-library', 'recycling', 'bar', 'food', 'pub')),
