@@ -1,4 +1,9 @@
 {% extends "molly_default/base.html" %}
 
 {% block site_title %}m.ox | {% endblock %}
+{% block site-small-logo %}
+   <li><a href="{% url home:index %}">
+   <img src="{{ STATIC_URL }}site/images/logo.png" width="57" height="30" alt="Home"/>
+   </a></li>
+{% endblock %}
 {% block breadcrumb_0 %}m.ox{% endblock %}

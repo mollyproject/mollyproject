@@ -41,9 +41,11 @@
 {% ifnotequal style_group "dumb" %}
     <div id="bc-header">
       <ol id="bc">
+      {% block site-small-logo %}
         <li><a href="{% url home:index %}">
           <img src="{{ STATIC_URL }}site/images/logo.png" width="42" height="30" alt="Home"/>
         </a></li>
+      {% endblock %}
     {% if breadcrumbs.2 %}
         <li><a href="{{ breadcrumbs.1.1 }}" title="{{ breadcrumbs.1.0 }}">
           <img src="{{ STATIC_URL }}site/images/index-icons/{{ breadcrumbs.0 }}-bc.png" alt="{{ breadcrumb.1.0 }}"/>
