@@ -8,14 +8,21 @@ from lxml import etree
 from datetime import datetime
 
 from django import template
+from django.template.defaultfilters import stringfilter
 from django.utils.safestring import SafeUnicode, mark_safe
 
 from molly.utils.xslt import transform
 from molly.wurfl import device_parents
 from molly.apps.places import get_entity
 from molly.apps.places.models import Entity
+from molly.conf.applications import has_app_by_local_name
 
 register = template.Library()
+
+@register.filter
+@stringfilter
+def app_is_loaded(app):
+    return has_app_by_local_name(app)
 
 @register.filter
 def sanitize_html(value, args=''):

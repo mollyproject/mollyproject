@@ -1,4 +1,4 @@
-{% extends "search/base.html" %}
+{% extends "search/base.html" %}{% load molly_utils %}
 
 {% block pagetitle %}Search{% endblock %}
 {% block title %}Search{% if results %}: {{ search_form.data.query }}{% endif %}{% endblock %}
@@ -60,10 +60,14 @@
 	  <h2>Specific searches</h2> 
 	   </div>
 	  <ul class="link-list">
-	    <li><a href="{% url contact:result_list %}?query={{ search_form.data.query }}&amp;medium=email">E-mail addresses associated with name <em>'{{ search_form.data.query }}'</em></a></li>
-	    <li><a href="{% url contact:result_list %}?query={{ search_form.data.query }}&amp;medium=phone">Phone numbers associated with name <em>'{{ search_form.data.query }}'</em></a></li>
-	    <li><a href="{% url library:search %}?title={{ search_form.data.query }}">Library books titled with <em>'{{ search_form.data.query }}'</em></a></li>
-	    <li class="round-bottom"><a href="{% url library:search %}?author={{ search_form.data.query }}">Library books authored by <em>'{{ search_form.data.query }}'</em> </a></li>
+	    {% if "contact"|app_is_loaded %}
+		<li><a href="{% url contact:result_list %}?query={{ search_form.data.query }}&amp;medium=email">E-mail addresses associated with name <em>'{{ search_form.data.query }}'</em></a></li>
+		<li><a href="{% url contact:result_list %}?query={{ search_form.data.query }}&amp;medium=phone">Phone numbers associated with name <em>'{{ search_form.data.query }}'</em></a></li>
+	    {% endif %}
+	    {% if "library"|app_is_loaded %}
+		<li><a href="{% url library:search %}?title={{ search_form.data.query }}">Library books titled with <em>'{{ search_form.data.query }}'</em></a></li>
+		<li class="round-bottom"><a href="{% url library:search %}?author={{ search_form.data.query }}">Library books authored by <em>'{{ search_form.data.query }}'</em> </a></li>
+	    {% endif %}
 	  </ul>
         </div>
 	</div>
