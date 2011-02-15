@@ -1,17 +1,25 @@
 = The Molly Project =
+http://mollyproject.org/
 
-As seen at http://mollyproject.org
+The Molly Project is a Django-based Python application which provides a
+framework for creating a mobile web portal for higher education institutions.
 
 Please do Fork our code! We're looking for more contributors to the project. 
 
-We're aiming for a 0.9 release in January based on 'thebigcleanup' branch. We recommend you deploy/develop against this branch rather than master at this stage.
+== Get Started ==
 
-== Intro ==
-The Molly Project is a Django based Python application which provides a framework for creating a mobile web portal for higher education institutions.
+The 'quickinstall' script will automate the whole process of deploying Molly for
+you on Linux (particularly Fedora and Ubuntu), including configuring Postgres
+as needed.
 
-== Comms ==
-At the time of writing there are a few primary  methods of getting (free, best effort) support for the Molly Project:
+For more information, please read the docs: http://docs.mollyproject.org/
+
+== Get in Touch ==
+
+At the time of writing there are a few primary  methods of getting (free, best
+effort) support for the Molly Project:
 
  * Mailing lists: https://sourceforge.net/mail/?group_id=309230
  * IRC: irc://irc.freenode.net/#molly
- * Email the main contributing team (Mobile Oxford at Oxford University Computing Services): mobileoxford@oucs.ox.ac.uk
+ * Email the main contributing team (Mobile Oxford at Oxford University
+   Computing Services): mobileoxford@oucs.ox.ac.uk

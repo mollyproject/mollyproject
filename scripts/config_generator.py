@@ -473,8 +473,8 @@ APPLICATIONS = [
     
     print "http://itouchmap.com/latlong.html can help you find the latitude and longitude"
     print "of a point"
-    lon = ask('What is the longitude of your location?', compulsory=True)
     lat = ask('What is the latitude of your location?', compulsory=True)
+    lon = ask('What is the longitude of your location?', compulsory=True)
     
     print
     print "By default, Molly searches the entire planet for addresses entered when"
@@ -627,7 +627,7 @@ APPLICATIONS = [
     if area != None:
         areas = []
         while area != None:
-            areas += area
+            areas.append(area)
             area = ask('What is the ATCO area code you would like to import?')
         config += """
             Provider('molly.apps.places.providers.NaptanMapsProvider',
@@ -644,7 +644,7 @@ APPLICATIONS = [
     if postcode != None:
         postcodes = []
         while postcode != None:
-            postcodes += postcode
+            postcodes.append(postcode)
             postcode = ask('What postcode area prefix would you like to import?')
         config += """
             Provider('molly.apps.places.providers.PostcodesMapsProvider',
