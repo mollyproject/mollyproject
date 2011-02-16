@@ -11,16 +11,16 @@
             {% if oxp.foaf_homepage or oxp.oxp_hasITHomepage or oxp.oxp_hasWeblearn or oxp.oxp_hasLibraryHomepage %}
                 <dt>Websites</dt>
                 {% if oxp.foaf_homepage %}
-                    <dd><a href="{{ oxp.foaf_homepage.uri }}">Homepage</a></dd>
+                    <dd><a href="{{ oxp.foaf_homepage }}">Homepage</a></dd>
                 {% endif %}
                 {% if oxp.oxp_hasITHomepage %}
-                    <dd><a href="{{ oxp.oxp_hasITHomepage.uri }}">IT Homepage</a></dd>
+                    <dd><a href="{{ oxp.oxp_hasITHomepage }}">IT Homepage</a></dd>
                 {% endif %}
                 {% if oxp.oxp_hasWeblearn %}
-                    <dd><a href="{{ oxp.oxp_hasWeblearn.uri }}">Weblearn</a></dd>
+                    <dd><a href="{{ oxp.oxp_hasWeblearn }}">Weblearn</a></dd>
                 {% endif %}
                 {% if oxp.oxp_hasLibraryHomepage %}
-                    <dd><a href="{{ oxp.oxp_hasLibraryHomepage.uri }}">Library</a></dd>
+                    <dd><a href="{{ oxp.oxp_hasLibraryHomepage }}">Library</a></dd>
                 {% endif %}
             {% endif %}
             {% if oxp.oxp_occupies %}
