@@ -1,0 +1,21 @@
+<div class="form-section">
+  <h2 class="invisible">Browse Indexes</h2>
+  <form method="get" action="{% url archives:browse %}">
+
+    {{ browse_form.index}}
+    {{ browse_form.relation }}
+    {{ browse_form.value }}
+
+    <p class="submit-buttons">
+      <input type="submit" value="Browse"/><br />
+      <input type="reset" value="Reset Form"/>
+    </p>
+
+    <p class="help-bubble">
+      Search the Archives Hub indexes by selecting an index from the drop-down
+      and entering some search term(s) in the box to skip to that point in the index.
+    </p>
+
+    <div style="clear:both"></div>
+  </form>
+</div>

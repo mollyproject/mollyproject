@@ -1,0 +1,22 @@
+<div class="form-section">
+  <h2 class="invisible">Search Archives</h2>
+  <form method="get" action="{% url archives:search %}">
+
+    {{ search_form.index}}
+    {{ search_form.relation }}
+    {{ search_form.value }}
+
+    <p class="submit-buttons">
+      <input type="submit" value="Search"/>
+      <input type="reset" value="Reset"/>
+    </p>
+
+    <p class="help-bubble">
+      Search the Archives Hub by selecting an index from the drop-down
+      and entering some search term(s) in the box.
+      You may use wildcard: '*' for multiple characters '?' for single.
+    </p>
+
+    <div style="clear:both"></div>
+  </form>
+</div>
