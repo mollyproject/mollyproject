@@ -370,7 +370,7 @@ else:
     molly_setup = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'setup.py')
 Popen(as_molly + [python, molly_setup, 'install' if not options.develop else 'develop'], stdout=PIPE, stderr=PIPE, cwd=path).communicate()
 
-if not options.develop:
+if not options.develop and not options.no_root:
     shutil.rmtree(temp_dir)
 print "DONE!"
 
