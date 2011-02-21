@@ -166,6 +166,7 @@ elif os.path.exists(os.path.join(path, 'bin', 'activate')):
     print "An installation has been detected - this will update your existing installation"
 
 else:
+    os.makedirs(path)
     upgrading = False
 
 # Attempt to detect which distro this is and install appropriately
@@ -447,10 +448,14 @@ application = django.core.handlers.wsgi.WSGIHandler()""")
     if not options.develop: os.chown(os.path.join(site, 'settings.py'), molly_uid, molly_gid)
 
 elif options.site_path != None:
-    print "Using", options.site_path, "as site to deploy"
-    if os.path.exists(site):
-        shutil.rmtree(site)
-    shutil.copytree(options.site_path, site)
+    
+    if options.develop:
+        site = os.path.abspath(options.site_path)
+    else:
+        print "Using", options.site_path, "as site to deploy"
+        if os.path.exists(site):
+            shutil.rmtree(site)
+        shutil.copytree(options.site_path, site)
     
 # Determine if we need to do the first migration or not
 if postgres_password is None and not options.develop:
