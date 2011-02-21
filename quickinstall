@@ -139,6 +139,9 @@ parser.add_option("-s", "--site-path", dest="site_path",
 parser.add_option("-d", "--develop", dest="develop",
                   help="do a development installation of Molly (advanced users only)", action="store_true")
 
+parser.add_option("-n", "--no-root", dest="no_root",
+                  help="never try to sudo during install (advanced users only)", action="store_true")
+
 (options, args) = parser.parse_args()
 
 if len(args) < 1:
@@ -150,7 +153,7 @@ if options.site_path != None and (not os.path.exists(options.site_path) or not o
     parser.error("Specified site path does not exist")
 
 # Error if not root
-if os.geteuid() != 0 and not options.develop:
+if os.geteuid() != 0 and not options.develop and not options.no_root:
     parser.error("Please run this as root")
 
 # Check if upgrading or installing
@@ -175,7 +178,7 @@ print "Detected Linux: %s %s (%s)" % (distribution, distribution_version, distri
 print
 
 # Install prerequisites - can do this using PackageKit
-if not options.develop:
+if not options.develop and not options.no_root:
     if distribution in packagekit_packages.keys():
     
         print "Ensuring that the system prerequisites are satisfied...",
@@ -239,15 +242,15 @@ if not options.develop:
     Popen(['useradd', '-r', 'molly'], stdout=PIPE, stderr=PIPE).communicate()
     print "DONE!"
     
-if not options.develop:
+if not options.develop and not options.no_root:
     molly_uid, molly_gid = pwd.getpwnam('molly')[2:4]
 
-as_molly = ['sudo', '-u', 'molly'] if not options.develop else []
+as_molly = ['sudo', '-u', 'molly'] if (not options.develop and not options.no_root) else []
 
 # Do DB setup
 postgres_password = None
 as_postgres = ['sudo', '-u', 'postgres']
-if not upgrading:    
+if not upgrading and not options.no_root:    
     if distribution in ('Fedora', 'Ubuntu'):
         print
         print "Molly can install and set up your database for you, if you would like."
@@ -491,7 +494,7 @@ else:
 
 print "Building media... (this may take some time)",
 sys.stdout.flush()
-if not (upgrading and options.develop):
+if not options.develop:
     call_in_virtualenv(path, "python %s/manage.py update_wurfl" % site, wait=False)
     call_in_virtualenv(path, "python %s/manage.py generate_markers" % site)
 call_in_virtualenv(path, "python %s/manage.py collectstatic --noinput" % site)

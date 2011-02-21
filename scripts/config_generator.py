@@ -897,4 +897,4 @@ if __name__ == '__main__':
     parser.add_option("-p", "--database-pass")
     
     (options, args) = parser.parse_args()
-    main(settings, gf, options.database_name, options.database_user, options.database_pass)
+    main(settings_fd, options.database_name, options.database_user, options.database_pass)
