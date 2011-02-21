@@ -461,7 +461,7 @@ elif options.site_path != None:
         shutil.copytree(options.site_path, site)
     
 # Determine if we need to do the first migration or not
-if postgres_password is None and not options.develop:
+if postgres_password is None and not options.develop and not options.no_root:
     database = config_generator.ask('What is the name of the database Molly uses?', compulsory=True)
 else:
     database = 'molly'
