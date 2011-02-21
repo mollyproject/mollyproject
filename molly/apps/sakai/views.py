@@ -156,10 +156,13 @@ class SignupEventView(SakaiView):
     
             url = self.build_url('direct/signupEvent/%s.json?siteId=%s' % (event_id, site))
             event = simplejson.load(request.urlopen(url))
-        except PermissionDenied:
-            return {
-                'permission_denied': True
-            }
+        except PermissionDenied, e:
+            if e.code == 403:
+                return {
+                    'permission_denied': True
+                }
+            else:
+                raise
     
         return {
             'event': event,
