@@ -54,7 +54,7 @@ class BBCWeatherProvider(object):
         r'.+Wind Direction:\s*(?P<wind_direction>[NESW]{0,3}|N\/A),\s*Wind Speed:\s*'
         r'(?P<wind_speed>\d+|N\/A).+Visibility:\s*(?P<visibility>[A-Za-z\/ ]+),\s*'
         r'Pressure:\s*(?P<pressure>\d+|N\/A).+Humidity:\s*(?P<humidity>\d+|N\/A).+'
-        r'UV risk:\s*(?P<uv_risk>[A-Za-z]+|N\/A),\s*Pollution:\s*(?P<pollution>[A-Za-z]+|N\/A),\s*'
+        r'(UV risk:\s*(?P<uv_risk>[A-Za-z]+|N\/A),)?\s*Pollution:\s*(?P<pollution>[A-Za-z]+|N\/A),\s*'
         r'Sunrise:\s*(?P<sunrise>\d\d:\d\d)[A-Z]{3},\s*Sunset:\s*(?P<sunset>\d\d:\d\d)[A-Z]{3}'
     )
 
