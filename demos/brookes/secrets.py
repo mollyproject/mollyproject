@@ -11,6 +11,8 @@ SECRETS = _Secrets({
     'database_password': 'molly',
     'database_host': '',
     'secret_key': 'secret key',
+    'mail_host': 'localhost',
+    'mail_port': 25,
 
     'cloudmade': None,
     'google': None,

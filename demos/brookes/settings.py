@@ -85,7 +85,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'molly.wurfl.context_processors.wurfl_device',
     'molly.wurfl.context_processors.device_specific_media',
     'molly.geolocation.context_processors.geolocation',
-    'molly.apps.feedback.context_processors.full_path',
+    'molly.utils.context_processors.full_path',
 )
 
 
@@ -108,19 +108,18 @@ APPLICATIONS = [
 
     Application('molly.apps.places', 'places', 'Places',
         providers = [
-            Provider('molly.providers.apps.maps.NaptanMapsProvider',
+            Provider('molly.apps.places.providers.NaptanMapsProvider',
                 method='ftp',
                 username=SECRETS.journeyweb[0],
                 password=SECRETS.journeyweb[1],
                 areas=('340',),
             ),
-            Provider('molly.providers.apps.maps.PostcodesMapsProvider',
+            Provider('molly.apps.places.providers.PostcodesMapsProvider',
                 codepoint_path = '/var/cache/molly/codepo_gb.zip',
                 import_areas = ('OX',),
             ),
-            'molly.providers.apps.maps.OxontimeMapsProvider',
-            'molly.providers.apps.maps.OxpointsMapsProvider',
-            'molly.providers.apps.maps.OSMMapsProvider',
+            'molly.apps.places.providers.ACISLiveMapsProvider',
+            'molly.apps.places.providers.OSMMapsProvider',
         ],
         nearby_entity_types = (
             ('Transport', (
@@ -139,7 +138,7 @@ APPLICATIONS = [
 
     ),
 
-    Application('molly.apps.z3950', 'library', 'Library search',
+    Application('molly.apps.library', 'library', 'Library search',
         verbose_name = 'Oxford Library Information System',
         host = 'catalogue.brookes.ac.uk',
         database = 'prod_talis',
@@ -149,10 +148,10 @@ APPLICATIONS = [
 
     Application('molly.apps.podcasts', 'podcasts', 'Brookes Podcasts',
         providers = [
-            Provider('molly.providers.apps.podcasts.PodcastProducerPodcastsProvider',
+            Provider('molly.apps.podcasts.providers.PodcastProducerPodcastsProvider',
 				url = 'http://gwstream.brookes.ac.uk:8171/podcastproducer/catalogs',
             ),
-            Provider('molly.providers.apps.podcasts.RSSPodcastsProvider',
+            Provider('molly.apps.podcasts.providers.RSSPodcastsProvider',
                 podcasts = [
                     ('top-downloads', 'http://rss.oucs.ox.ac.uk/oxitems/topdownloads.xml'),
                 ],
@@ -166,15 +165,14 @@ APPLICATIONS = [
 
     Application('molly.apps.weather', 'weather', 'Weather',
         location_id = 'bbc/25',
-        provider = Provider('molly.providers.apps.weather.BBCWeatherProvider',
+        provider = Provider('molly.apps.weather.providers.BBCWeatherProvider',
             location_id = 25,
         ),
     ),
 
     Application('molly.apps.service_status', 'service_status', 'Service status',
         providers = [
-            'molly.providers.apps.service_status.OUCSStatusProvider',
-            Provider('molly.providers.apps.service_status.RSSModuleServiceStatusProvider',
+            Provider('molly.apps.service_status.providers.RSSModuleServiceStatusProvider',
                 name='Oxford Library Information Services',
                 slug='olis',
                 url='http://newsrss.bbc.co.uk/rss/newsonline_uk_edition/front_page/rss.xml')
@@ -183,8 +181,8 @@ APPLICATIONS = [
 
     Application('molly.apps.search', 'search', 'Search',
         providers = [
-            Provider('molly.providers.apps.search.ApplicationSearchProvider'),
-            Provider('molly.providers.apps.search.GSASearchProvider',
+            Provider('molly.apps.search.providers.ApplicationSearchProvider'),
+            Provider('molly.apps.search.providers.GSASearchProvider',
                 search_url = 'http://googlesearch.oucs.ox.ac.uk/search',
                 domain = 'm.ox.ac.uk',
                 params = {
@@ -198,7 +196,7 @@ APPLICATIONS = [
 
     Application('molly.apps.feeds', 'feeds', 'Feeds',
         providers = [
-            Provider('molly.providers.apps.feeds.RSSFeedsProvider'),
+            Provider('molly.apps.feeds.providers.RSSFeedsProvider'),
         ],
         display_to_user = False,
     ),
@@ -207,15 +205,15 @@ APPLICATIONS = [
 
 #    Application('molly.apps.feeds.news', 'freepc', 'PC Availability'),
 
-    Application('molly.osm', 'osm', 'OpenStreetMap',
+    Application('molly.maps', 'maps', 'Maps',
         display_to_user = False,
     ),
 
     Application('molly.geolocation', 'geolocation', 'Geolocation',
         prefer_results_near = (-1.25821, 51.75216, 5000),
         providers = [
-            Provider('molly.providers.apps.geolocation.PlacesGeolocationProvider'),
-            Provider('molly.providers.apps.geolocation.CloudmadeGeolocationProvider',
+            Provider('molly.geolocation.providers.PlacesGeolocationProvider'),
+            Provider('molly.geolocation.providers.CloudmadeGeolocationProvider',
                 search_locality = 'Oxford',
             ),
         ],
@@ -226,7 +224,7 @@ APPLICATIONS = [
         display_to_user = False,
     ),
 
-    Application('molly.apps.external_media', 'external_media', 'External Media',
+    Application('molly.external_media', 'external_media', 'External Media',
         display_to_user = False,
     ),
 
@@ -266,6 +264,8 @@ INSTALLED_APPS = (
     'molly.batch_processing',
     'django.contrib.gis',
     'molly.utils',
+    'staticfiles',
+    'compress',
 #    'debug_toolbar',
 ) + extract_installed_apps(APPLICATIONS)
 
@@ -280,3 +280,10 @@ INTERNAL_IPS = ('127.0.0.1',)  # for the debug_toolbar
 
 EMAIL_HOST = SECRETS.mail_host
 EMAIL_PORT = SECRETS.mail_port
+
+
+STATIC_ROOT = os.path.join(project_root, 'media')
+STATIC_URL = '/media/'
+COMPRESS_SOURCE = STATIC_ROOT
+COMPRESS_ROOT = STATIC_ROOT
+COMPRESS_URL = STATIC_URL
