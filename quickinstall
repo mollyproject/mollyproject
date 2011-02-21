@@ -323,7 +323,7 @@ host    all         all         ::1/128               ident
 # Set up a Virtualenv
 if not upgrading:
     print "Creating a virtualenv for Molly...",
-    if not options.develop:
+    if not options.develop and not options.no_root:
         os.makedirs(path)
         os.chown(path, molly_uid, molly_gid)
     (stdoutdata, stderrdata) = Popen(as_molly + ['virtualenv', '--distribute', '--no-site-packages', path], stdout=PIPE, stderr=PIPE, cwd=path).communicate()
@@ -356,7 +356,7 @@ if not upgrading:
 print "Installing Molly (this may take some time)...",
 sys.stdout.flush()
 
-if not options.develop:
+if not options.develop and not options.no_root:
     # Copy to a temporary directory to work around permission issues
     temp_dir = tempfile.mkdtemp()
     os.chown(temp_dir, molly_uid, molly_gid)
@@ -386,13 +386,13 @@ if options.site_path is None and not os.path.exists(site):
     
     # Add default directories
     os.mkdir(os.path.join(site, 'templates'))
-    if not options.develop: os.chown(os.path.join(site, 'templates'), molly_uid, molly_gid)
+    if not options.develop and not options.no_root: os.chown(os.path.join(site, 'templates'), molly_uid, molly_gid)
     os.mkdir(os.path.join(site, 'media'))
-    if not options.develop: os.chown(os.path.join(site, 'media'), molly_uid, molly_gid)
+    if not options.develop and not options.no_root: os.chown(os.path.join(site, 'media'), molly_uid, molly_gid)
     os.mkdir(os.path.join(site, 'site_media'))
-    if not options.develop: os.chown(os.path.join(site, 'site_media'), molly_uid, molly_gid)
+    if not options.develop and not options.no_root: os.chown(os.path.join(site, 'site_media'), molly_uid, molly_gid)
     os.mkdir(os.path.join(site, 'apache'))
-    if not options.develop: os.chown(os.path.join(site, 'apache'), molly_uid, molly_gid)
+    if not options.develop and not options.no_root: os.chown(os.path.join(site, 'apache'), molly_uid, molly_gid)
     
     # Create Apache mod_wsgi file
     with open(os.path.join(site, 'apache', 'molly.wsgi'), 'w') as fd:
@@ -408,7 +408,7 @@ os.path.dirname(__file__), '..', '..',
 
 import django.core.handlers.wsgi
 application = django.core.handlers.wsgi.WSGIHandler()""")
-    if not options.develop: os.chown(os.path.join(site, 'apache', 'molly.wsgi'), molly_uid, molly_gid)
+    if not options.develop and not options.no_root: os.chown(os.path.join(site, 'apache', 'molly.wsgi'), molly_uid, molly_gid)
     
     # Create dummy httpd.conf
     with open(os.path.join(site, 'apache', 'molly.conf'), 'w') as fd:
@@ -439,7 +439,7 @@ application = django.core.handlers.wsgi.WSGIHandler()""")
     #Alias /favicon.ico /path/to/favicon.ico
 
 </VirtualHost>""" % (site, site, site, site))
-    if not options.develop: os.chown(os.path.join(site, 'apache', 'molly.conf'), molly_uid, molly_gid)
+    if not options.develop and not options.no_root: os.chown(os.path.join(site, 'apache', 'molly.conf'), molly_uid, molly_gid)
     
     # Generate settings
     with open(os.path.join(site, 'settings.py'), 'w') as settings_fd:
@@ -448,7 +448,7 @@ application = django.core.handlers.wsgi.WSGIHandler()""")
         else:
             config_generator.main(settings_fd)
     
-    if not options.develop: os.chown(os.path.join(site, 'settings.py'), molly_uid, molly_gid)
+    if not options.develop and not options.no_root: os.chown(os.path.join(site, 'settings.py'), molly_uid, molly_gid)
 
 elif options.site_path != None:
     
