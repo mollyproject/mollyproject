@@ -275,14 +275,17 @@ class PollDetailView(SakaiView):
             url = self.build_url('direct/poll/%s/option.json' % id)
             options = simplejson.load(request.urlopen(url))
             options = options['poll-option_collection']
-        except PermissionDenied:
-            context = {
-                'poll': {
-                    'permission_denied': True,
-                    'text': 'Permission Denied'
+        except PermissionDenied, e:
+            if e.code == 403:
+                context = {
+                    'poll': {
+                        'permission_denied': True,
+                        'text': 'Permission Denied'
+                    }
                 }
-            }
-            return context
+                return context
+            else:
+                raise
 
         try:
             url = self.build_url('direct/poll/%s/vote.json' % id)
