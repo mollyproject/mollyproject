@@ -476,7 +476,7 @@ def call_in_virtualenv(path, command, wait=True, devnull=True):
         command = as_molly + ['bash','-c','source %s/bin/activate; %s %s' % (path, command, '>/dev/null' if devnull else '')]
         Popen(command, cwd=path)
 
-if not options.develop and Popen(as_postgres + ['psql',database,'-c',"SELECT id FROM south_migrationhistory LIMIT 1;"], stdout=PIPE, stderr=PIPE).wait() > 0:
+if not options.develop and not options.no_root and Popen(as_postgres + ['psql',database,'-c',"SELECT id FROM south_migrationhistory LIMIT 1;"], stdout=PIPE, stderr=PIPE).wait() > 0:
     # It errored, which probably means the table doesn't exist
     print "Doing first syncdb...",
     sys.stdout.flush()
