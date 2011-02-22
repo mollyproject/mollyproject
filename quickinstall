@@ -324,7 +324,6 @@ host    all         all         ::1/128               ident
 if not upgrading:
     print "Creating a virtualenv for Molly...",
     if not options.develop and not options.no_root:
-        os.makedirs(path)
         os.chown(path, molly_uid, molly_gid)
     (stdoutdata, stderrdata) = Popen(as_molly + ['virtualenv', '--distribute', '--no-site-packages', path], stdout=PIPE, stderr=PIPE, cwd=path).communicate()
     if not os.path.exists(os.path.join(path, 'bin', 'activate')):
