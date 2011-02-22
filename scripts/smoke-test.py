@@ -13,15 +13,61 @@ USER_AGENTS={
 }
 
 URLS=[
-    '/',
     '/contact/',
     '/contact/results/',
-    '/service-status/',
-    '/weather/',
+    '/contact/results/?query=northwood',
     '/desktop/',
     '/feature-suggestions/',
+    '/feature-suggestions/1/',
     '/feedback/',
+    '/news/',
+    '/news/molly/',
+    '/news/molly/272/',
+    '/',
+    '/about/',
+    '/messages/',
     '/library/',
+    '/service-status/',
+    '/weather/',
+    '/library/',
+    '/library/search/',
+    '/library/search/?title=erewhon&author=&isbn=',
+    '/library/item:701036753/',
+    '/library/item:701036753/NLS:0Hall/',
+    '/places/',
+    #'/places/nearby/',
+    #'/places/nearby/bus-stop/',
+    '/places/category/',
+    '/places/category/unit/',
+    '/places/atco:9100OXFD/',
+    '/places/atco:9100OXFD/?board=arrivals',
+    '/places/atco:9100OXFD/nearby/',
+    '/places/atco:9100OXFD/nearby/bus-stop/',
+    '/places/osm:N295953659/update/',
+    '/places/openstreetmap/',
+    #'/places/api/',
+    '/podcasts/',
+    '/podcasts/category:bbc-radio-1/',
+    '/podcasts/radio1/moyles/',
+    #'/podcasts/itunesu_redirect/',
+    '/search/',
+    '/search/?query=molly+project',
+    '/service-status/',
+    '/transport/',
+    '/weather/',
+    '/webcams/',
+    '/webcams/york-minster/',
+    '/auth/',
+    '/auth/clear-session/',
+    '/favourites/',
+    '/geolocation/',
+    #'/geolocation/clear/',
+    #'/geolocation/favourites/',
+    '/maps/touchmaplite/',
+    '/maps/osm/about/',
+    '/maps/osm/gpx/foo/',
+    '/url-shortener/?path=/',
+    '/device-detection/',
 ]
 
 def verify_200(url, ua):
@@ -50,7 +96,9 @@ def smoke_test(base_url):
         for url in URLS:
             tests += 1
             file, code = verify_200(base_url + url, ua)
-            if code != 200:
+            if code == 404:
+                print "SKIP", url
+            elif code != 200:
                 status += 1
                 print "FAIL", code, url
             else:
