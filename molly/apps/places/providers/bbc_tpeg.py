@@ -57,7 +57,8 @@ class BBCTPEGPlacesProvider(BaseMapsProvider):
         
         entities, seen = {}, set()
         for entity in Entity.objects.filter(source=source):
-            entities[entity.identifiers['bbc-tpeg']] = entity
+            if 'bbc-tpeg' in entity.identifiers:
+                entities[entity.identifiers['bbc-tpeg']] = entity
         
         for message in xml.getroot().findall('tpeg_message'):
             id = message.find('road_traffic_message').attrib['message_id']
