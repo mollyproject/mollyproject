@@ -12,10 +12,6 @@ from xml.sax import saxutils, handler, make_parser
 import urllib2, bz2, subprocess, sys, random
 from os import path
 
-
-ENGLAND_OSM_BZ2_XML = 'http://download.geofabrik.de/osm/europe/great_britain/england.osm.bz2'
-OSM_ETAG_FILENAME = path.join(settings.CACHE_DIR, 'osm_england_extract_etag')
-
 def node_id(id):
     return "N%d" % int(id)
 def way_id(id):
