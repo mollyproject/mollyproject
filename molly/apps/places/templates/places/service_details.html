@@ -17,11 +17,12 @@
 {% if train_service %}
 <div class="section">
   <div class="header">
-    <h2>Live Train Information - {{ train_service.generatedAt|date:"H:i:s" }}</h2>
+    <h2>Live Train Information
+    {% if train_service.generatedAt %} - {{ train_service.generatedAt|date:"H:i:s" }}{% endif %}</h2>
   </div>
   {% if train_service.error %}
   
-  <ul class="content-list no-round-bottom">
+  <ul class="content-list">
     <li> There is currently a problem retrieving live departure information from
     the National Rail web site. Departure information may still be accessed
     <a href="http://pda.ojp.nationalrail.co.uk/en/pj/ldbboard/dep/{{ entity.identifiers.crs }}">directly

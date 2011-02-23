@@ -557,8 +557,9 @@ class ServiceDetailView(BaseView):
                     context.update({
                         'title': 'An error occurred',
                         'entity': entity,
-                        #'error': 'National Rail Enquiries gave us an error when trying to look up this service. Please try again later.'
-                        'error': service_id.replace(' ', '+')
+                        'train_service': {
+                            'error': f.fault['faultstring'],
+                        },
                     })
                     return context
             if service is None:
