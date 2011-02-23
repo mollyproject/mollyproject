@@ -102,9 +102,6 @@ ol#bc li {
     height:30px;
     line-height:30px;
     overflow:hidden;
-    -webkit-border-radius: 13px;
-    -moz-border-radius: 13px;
-    border-radius: 13px;
 }
 ol#bc li a {
     font-size:12pt;
