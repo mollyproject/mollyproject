@@ -352,7 +352,9 @@ if not upgrading:
     print
 
 # Install Molly
-print "Installing Molly (this may take some time)...",
+print "Installing Molly...",
+if not upgrading:
+    print "(this may take some time)",
 sys.stdout.flush()
 
 if not options.develop and not options.no_root:
@@ -458,12 +460,6 @@ elif options.site_path != None:
         if os.path.exists(site):
             shutil.rmtree(site)
         shutil.copytree(options.site_path, site)
-    
-# Determine if we need to do the first migration or not
-if postgres_password is None and not options.develop and not options.no_root:
-    database = config_generator.ask('What is the name of the database Molly uses?', compulsory=True)
-else:
-    database = 'molly'
 
 def call_in_virtualenv(path, command, wait=True, devnull=True):
     if wait:
@@ -475,6 +471,19 @@ def call_in_virtualenv(path, command, wait=True, devnull=True):
     else:
         command = as_molly + ['bash','-c','source %s/bin/activate; %s %s' % (path, command, '>/dev/null' if devnull else '')]
         Popen(command, cwd=path)
+
+# Determine if our site defines any additional dependencies
+if os.path.exists(os.path.join(site, 'requirements.txt')):
+    print "Installing site requirements...",
+    sys.stdout.flush()
+    call_in_virtualenv(path, "%s/bin/pip install -r %s/requirements.txt" % (path, site))
+    print "DONE!"
+
+# Determine if we need to do the first migration or not
+if postgres_password is None and not options.develop and not options.no_root:
+    database = config_generator.ask('What is the name of the database Molly uses?', compulsory=True)
+else:
+    database = 'molly'
 
 if not options.develop and not options.no_root and Popen(as_postgres + ['psql',database,'-c',"SELECT id FROM south_migrationhistory LIMIT 1;"], stdout=PIPE, stderr=PIPE).wait() > 0:
     # It errored, which probably means the table doesn't exist
