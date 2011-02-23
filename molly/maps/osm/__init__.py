@@ -9,7 +9,7 @@ import logging
 import time
 from datetime import datetime, timedelta
 
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
 
 from molly.maps.osm.models import GeneratedMap, get_generated_map_dir
 from molly.maps.osm.draw import get_fitted_map, MapGenerationError
@@ -110,16 +110,23 @@ def get_or_create_map(generator, args):
             faulty = faulty,
         )
         generated_map.metadata = metadata
+        
+        # This may fail, so we use a transaction savepoint in case we need to
+        # roll back the transaction - not doing this causes any future database
+        # queries to fail
+        savepoint = transaction.savepoint()
         try:
             generated_map.save()
         except IntegrityError:
             # This means a race error was generated, but because of the
             # functional nature of generator, we can carry on here
             logger.debug("Map generated: %s, took %.5f seconds (with race)",
-                         (hash, time.time()-start_time)) 
+                         (hash, time.time()-start_time))
+            transaction.savepoint_rollback(savepoint)
         else:
             logger.debug("Map generated: %s, took %.5f seconds",
-                         (hash, time.time()-start_time)) 
+                         (hash, time.time()-start_time))
+            transaction.savepoint_commit(savepoint)
         
         # If there are any maps older than a week, regenerate them
         to_delete = GeneratedMap.objects.filter(generated__lt=datetime.now()-timedelta(weeks=1))
