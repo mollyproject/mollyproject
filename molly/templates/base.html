@@ -6,14 +6,6 @@
     <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
     <meta name="format-detection" content="telephone=no" />
 
-{% if use_javascript %}
-    <script type="text/javascript">
-        var require_location = {{ require_location|yesno:"true,false" }};
-        var base = "{% url home:index %}";
-        var positionName = {% if geolocation.name %}"{{ geolocation.name|escapejs }}"{% else %}null{% endif %};
-    </script>
-{% endif %}
-
   {% compressed_css style_group %}
   <link rel="icon" type="image/png" href="{{ STATIC_URL }}images/favicon.png"/>{% if device|device_has_parent:"apple_iphone_ver4" or browser.svgt_1_1 %}
   {% compressed_css 'svg' %}
