@@ -3,7 +3,7 @@ function submitAutomaticLocation(position, method) {
   $('.location').html('Location found; please wait while we put a name to it.')
   $('.location-accuracy').hide()
   $.post(base+'geolocation/', {
-    csrfmiddlewaretoken: $('[name=csrfmiddlewaretoken]').val(),
+    csrfmiddlewaretoken: $(csrfToken).find('[name=csrfmiddlewaretoken]').val(),
     longitude: position.coords.longitude,
     latitude: position.coords.latitude,
     accuracy: position.coords.accuracy,
@@ -28,13 +28,13 @@ function locationFailure(d) {
   if (d.code == 1) { // PERMISSION_DENIED
     $('.location').html('<i>You did not give permission for the site to know your location.</i>');
     $.post(base+'geolocation/', {
-      csrfmiddlewaretoken: $('[name=csrfmiddlewaretoken]').val(),
+      csrfmiddlewaretoken: $(csrfToken).find('[name=csrfmiddlewaretoken]').val(),
       method: 'denied'
     });
   } else if (d.code == 2 || d.code == 3) { // POSITION_UNAVAILABLE / TIMEOUT
     $('.location').html('<i>We couldn\'t get a fix on your location right now</i>')
     $.post(base+'geolocation/', {
-      csrfmiddlewaretoken: $('[name=csrfmiddlewaretoken]').val(),
+      csrfmiddlewaretoken: $(csrfToken).find('[name=csrfmiddlewaretoken]').val(),
       method: 'error'
     });
   } else {
