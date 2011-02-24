@@ -295,6 +295,7 @@ class Z3950(BaseLibrarySearchProvider):
         
         def __init__(self, results, wrapper):
             self.results = results
+            print dir(results)
             self._wrapper = wrapper
         
         def __iter__(self):
@@ -313,7 +314,8 @@ class Z3950(BaseLibrarySearchProvider):
             else:
                 return self._wrapper(self.results[key])
     
-    def __init__(self, host, database, port=210, syntax='USMARC', charset='UTF-8'):
+    def __init__(self, host, database, port=210, syntax='USMARC',
+                 charset='UTF-8', control_number_key='12'):
         """
         @param host: The hostname of the Z39.50 instance to connect to
         @type host: str
@@ -321,10 +323,13 @@ class Z3950(BaseLibrarySearchProvider):
         @type database: str
         @param port: An optional port for the Z39.50 database
         @type port: int
-        @param syntax: The Z39.50 syntax to use
-        @type syntax: str
+        @param syntax: The Z39.50 syntax to use, or an object which does parsing
+                       of the result
+        @type syntax: str or object
         @param charset: The charset to make the connection in
         @type charset: str
+        @param control_number_key: The use attribute for the control number when
+                                   querying
         """
         
         # Could create a persistent connection here
@@ -335,8 +340,8 @@ class Z3950(BaseLibrarySearchProvider):
         self._wrapper = {
             'USMARC': USMARCSearchResult,
             'XML': XMLSearchResult,
-        }.get(syntax)
-        
+        }.get(syntax, syntax)
+        self._control_number_key = control_number_key
         self._charset = charset
     
     def _make_connection(self):
@@ -392,12 +397,15 @@ class Z3950(BaseLibrarySearchProvider):
         # Escape input
         control_number = control_number.replace('"', '')
         
-        z3950_query = zoom.Query('CCL', '(1,12)="%s"' % control_number)
+        z3950_query = zoom.Query(
+            'CCL', '(1,%s)="%s"' % (self._control_number_key, control_number))
         connection = self._make_connection()
         results = self.Results(connection.search(z3950_query), self._wrapper)
         if len(results) > 0:
             return results[0]
         else:
+            for r in results: print r
+            raise Exception
             return None
 
 def marc_to_unicode(x):
