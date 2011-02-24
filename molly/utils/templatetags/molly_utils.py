@@ -56,30 +56,98 @@ def this_year(value, arg=None):
     return value.year == arg.year
 
 UNUSUAL_NUMBERS = {
-    '+448454647': '0845 46 47',
-    '+448457909090': '08457 90 90 90'
+    '+448454647': '0845 46 47', # NHS Direct
+    '+448457909090': '08457 90 90 90' # Samaritans
 }
 
 @register.filter(name="telephone")
 def telephone(value, arg):
+    """
+    Formats UK telephone numbers to E.123 format (national notation)
+    
+    University number ranges are also formatted according to internal guidelines
+    """
+    
+    # Normalise a number
     value = value.replace(" ", "").replace("-", "")
     if value.startswith("0"):
         value = "+44" + value[1:]
-
     normalised = value
-
+    
+    # Check if it's a number which is formatted in a special way
     if normalised in UNUSUAL_NUMBERS:
         value = UNUSUAL_NUMBERS[normalised]
     else:
+        # Figure out how to format that number
+        
+        # Convert UK numbers into national format
         if value.startswith("+44"):
             value = "0" + value[3:]
+        
+        # Now apply rules on how to split up area codes
+        if value[:8] in ('01332050', '01382006'):
+            # Direct dial only
+            value = value[:5] + " " + value[5:]
+        elif value[:7] in ('0141005', '0117101') or value[:6] in ('011800',):
+            # Direct dial only
+            value = value[:4] + " " + value[4:7] + " " + value[7:]
+        elif value[:7] in ('0200003',):
+            # Direct dial only
+            value = value[:3] + " " + value[3:7] + " " + value[7:]
+        elif value.startswith('01'):
+            if value[2] == '1' or value[3] == '1':
+                # 4 digit area codes
+                area_code = value[:4]
+                local_part =  value[4:7] + " " + value[7:]
+            elif value[:6] in (
+                        '013873', # Langholm
+                        '015242', # Hornby
+                        '015394', # Hawkshead
+                        '015395', # Grange-over-Sands
+                        '015396', # Sedbergh
+                        '016973', # Wigton
+                        '016974', # Raughton Head
+                        '016977', # Brampton
+                        '017683', # Appleby
+                        '017684', # Pooley Bridge
+                        '017687', # Keswick
+                        '019467', # Gosforth
+                    ):
+                # 6 digit area codes
+                area_code = value[:4] + " " + value[4:6]
+                local_part = value[6:]
+            else:
+                # 5 digit
+                area_code = value[:5]
+                local_part = value[5:]
+            
+            value = "(%s) %s" % (area_code, local_part)
+        
+        elif value.startswith('02'):
+            # 3 digit area codes
+            value = "(%s) %s %s" % (value[:3], value[3:7], value[7:])
+        
+        elif value.startswith('0500') or value.startswith('0800'):
+            # direct dial - 4 digit prefix, short following
+            value = "%s %s" % (value[:4], value[4:])
+        
+        elif value.startswith('03') or value.startswith('08') or value.startswith('09'):
+            # direct dial - 4 digit prefix
+            value = "%s %s %s" % (value[:4], value[4:7], value[7:])
+        
+        elif value.startswith('05') or value.startswith('070'):
+            # direct dial - 3 digit prefix
+            value = "%s %s %s" % (value[:3], value[3:7], value[7:])
+        
+        elif value.startswith('07'):
+            # direct dial - 5 digit prefix, short following
+            value = "%s %s" % (value[:5], value[5:])
 
-        for dialing_code in ['01865', '0845']:
-            if value.startswith(dialing_code):
-                value = dialing_code + " " + value[len(dialing_code):]
-
-        if value.startswith('01865 2'):
-            value = "01865 (2)" + value[7:]
+    # Now apply University rules:
+    if value[:10] in ('(01865) 27', '(01865) 28', '(01865) 43', '(01865) 61'):
+            # Oxford - list of internal number prefixes here:
+            # http://www.oucs.ox.ac.uk/telecom/directories/intdiraccess.xml
+            value = "(01865 " + value[8] + ")" + value[9:]
 
     if arg == 'nolink':
         return value

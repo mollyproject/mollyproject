@@ -24,7 +24,7 @@
       <li>
           <a class="phone" href="{{ entity.metadata.osm.tags.phone|telephone_uri }}">
               Call <em>{{ entity.title }}</em><br/>
-              <small>{{ entity.metadata.tags.phone|telephone:"nolink" }}</small>
+              <small>{{ entity.metadata.osm.tags.phone|telephone:"nolink" }}</small>
           </a>
       </li>
     {% endif %}
