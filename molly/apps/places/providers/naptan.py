@@ -53,7 +53,14 @@ class NaptanContentHandler(ContentHandler):
 
         if name == 'StopPoint':
             try:
-                entity_type = self.entity_types[self.meta['stop-type']]
+                # Classify metro stops according to their particular system
+                if self.meta['stop-type'] == 'MET':
+                    try:
+                        entity_type = self.entity_types[self.meta['stop-type'] + ':' + self.meta['atco-code'][6:8]]
+                    except KeyError:
+                        entity_type = self.entity_types['MET']
+                else:
+                    entity_type = self.entity_types[self.meta['stop-type']]
             except KeyError:
                 pass
             else:
@@ -105,30 +112,35 @@ class NaptanContentHandler(ContentHandler):
             # In the NaPTAN list, but indicates it's an unused stop
             return
         
-        # Convert indicator to a friendlier format
-        indicator = {
-            'opp': 'Opposite',
-            'opposite': 'Opposite',
-            'adj': 'Adjacent',
-            'outside': 'Outside',
-            'o/s': 'Outside',
-            'nr': 'Near',
-            'inside': 'Inside',
-        }.get(indicator, indicator)
+        if self.meta['stop-type'] in ('MET',):
+            title = common_name
+        else:
         
-        title = ''
-        
-        if indicator != None:
-            title += indicator + ' '
-        
-        title += common_name
-        
-        if street != None and not common_name.startswith(street):
-            title += ', ' + street
-        
-        locality = self.nptg_localities.get(locality)
-        if locality != None:
-            title += ', ' + locality
+            # Convert indicator to a friendlier format
+            indicator = {
+                'opp': 'Opposite',
+                'opposite': 'Opposite',
+                'adj': 'Adjacent',
+                'outside': 'Outside',
+                'o/s': 'Outside',
+                'nr': 'Near',
+                'inside': 'Inside',
+            }.get(indicator, indicator)
+            
+            title = ''
+            
+            if indicator != None:
+                title += indicator + ' '
+            
+            title += common_name
+            
+            if street != None and street != '-' \
+                         and not common_name.startswith(street):
+                title += ', ' + street
+            
+            locality = self.nptg_localities.get(locality)
+            if locality != None:
+                title += ', ' + locality
         
         entity.title = title
         entity.primary_type = entity_type
@@ -173,19 +185,21 @@ class NaptanMapsProvider(BaseMapsProvider):
             'nearby': True, 'category': False,
             'uri-local': 'BusStop',
         }
+    TAXI_RANK_DEFINITION = {
+        'slug': 'taxi-rank',
+        'article': 'a',
+        'verbose-name': 'taxi rank',
+        'verbose-name-plural': 'taxi ranks',
+        'nearby': False, 'category': False,
+        'uri-local': 'TaxiRank',
+    }
 
     entity_type_definitions = {
         'BCT': BUS_STOP_DEFINITION,
         'BCS': BUS_STOP_DEFINITION,
         'BCQ': BUS_STOP_DEFINITION,
-        'TXR': {
-            'slug': 'taxi-rank',
-            'article': 'a',
-            'verbose-name': 'taxi rank',
-            'verbose-name-plural': 'taxi ranks',
-            'nearby': False, 'category': False,
-            'uri-local': 'TaxiRank',
-        },
+        'TXR': TAXI_RANK_DEFINITION,
+        'STR': TAXI_RANK_DEFINITION,
         TRAIN_STATION: { # We want to add this as an entity_type, but not have it match when parsing the main naptan file
             'slug': 'rail-station',
             'article': 'a',
@@ -193,6 +207,102 @@ class NaptanMapsProvider(BaseMapsProvider):
             'verbose-name-plural': 'rail stations',
             'nearby': True, 'category': False,
             'uri-local': 'RailStation',
+        },
+        'MET': {
+            'slug': 'metro-station',
+            'article': 'a',
+            'verbose-name': 'metro station',
+            'verbose-name-plural': 'metro stations',
+            'nearby': True, 'category': False,
+            'uri-local': 'MetroStation',
+        },
+        'MET:CR': {
+            'slug': 'tramlink-stop',
+            'article': 'a',
+            'verbose-name': 'tram stop',
+            'verbose-name-plural': 'tram stops',
+            'nearby': True, 'category': False,
+            'uri-local': 'TramlinkStop',
+        },
+        'MET:DL': {
+            'slug': 'dlr-station',
+            'article': 'a',
+            'verbose-name': 'DLR station',
+            'verbose-name-plural': 'DLR stations',
+            'nearby': True, 'category': False,
+            'uri-local': 'DLRStation',
+        },
+        'MET:GL': {
+            'slug': 'subway-station',
+            'article': 'a',
+            'verbose-name': 'Subway station',
+            'verbose-name-plural': 'Subway stations',
+            'nearby': True, 'category': False,
+            'uri-local': 'SubwayStation',
+        },
+        'MET:LU': {
+            'slug': 'tube-station',
+            'article': 'an',
+            'verbose-name': 'Underground station',
+            'verbose-name-plural': 'Underground stations',
+            'nearby': True, 'category': False,
+            'uri-local': 'TubeStation',
+        },
+        'MET:MA': {
+            'slug': 'metrolink-station',
+            'article': 'a',
+            'verbose-name': 'Metrolink station',
+            'verbose-name-plural': 'Metrolink stations',
+            'nearby': True, 'category': False,
+            'uri-local': 'MetrolinkStation',
+        },
+        'MET:NO': {
+            'slug': 'net-stop',
+            'article': 'a',
+            'verbose-name': 'tram stop',
+            'verbose-name-plural': 'tram stops',
+            'nearby': True, 'category': False,
+            'uri-local': 'NETStop',
+        },
+        'MET:SY': {
+            'slug': 'supertram-stop',
+            'article': 'a',
+            'verbose-name': 'Supertram stop',
+            'verbose-name-plural': 'Supertram stops',
+            'nearby': True, 'category': False,
+            'uri-local': 'SupertramStop',
+        },
+        'MET:TW': {
+            'slug': 'tyne-and-wear-metro-station',
+            'article': 'a',
+            'verbose-name': 'Metro station',
+            'verbose-name-plural': 'Metro stations',
+            'nearby': True, 'category': False,
+            'uri-local': 'TyneAndWearMetroStation',
+        },
+        'MET:WM': {
+            'slug': 'midland-metro-stop',
+            'article': 'a',
+            'verbose-name': 'Midland Metro stop',
+            'verbose-name-plural': 'Midland Metro stops',
+            'nearby': True, 'category': False,
+            'uri-local': 'MidlandMetroStation',
+        },
+        'GAT': {
+            'slug': 'airport',
+            'article': 'an',
+            'verbose-name': 'airport',
+            'verbose-name-plural': 'airports',
+            'nearby': True, 'category': False,
+            'uri-local': 'Airport',
+        },
+        'FER': {
+            'slug': 'ferry-terminal',
+            'article': 'a',
+            'verbose-name': 'ferry terminal',
+            'verbose-name-plural': 'ferry terminals',
+            'nearby': True, 'category': False,
+            'uri-local': 'FerryTerminal',
         },
         None: {
             'slug': 'public-transport-access-node',
@@ -424,10 +534,12 @@ class NaptanMapsProvider(BaseMapsProvider):
 
             entity_types[stop_type] = entity_type
 
-        for entity_type in entity_types.values():
+        for stop_type, entity_type in entity_types.items():
             if entity_type.slug == 'public-transport-access-node':
                 continue
             entity_type.subtype_of.add(entity_types[None])
+            if str(stop_type).startswith('MET') and stop_type != 'MET':
+                entity_type.subtype_of.add(entity_types['MET'])
 
         return entity_types
 
