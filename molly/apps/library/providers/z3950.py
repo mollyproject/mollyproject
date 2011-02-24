@@ -295,7 +295,6 @@ class Z3950(BaseLibrarySearchProvider):
         
         def __init__(self, results, wrapper):
             self.results = results
-            print dir(results)
             self._wrapper = wrapper
         
         def __iter__(self):
@@ -404,8 +403,6 @@ class Z3950(BaseLibrarySearchProvider):
         if len(results) > 0:
             return results[0]
         else:
-            for r in results: print r
-            raise Exception
             return None
 
 def marc_to_unicode(x):
