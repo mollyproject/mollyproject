@@ -69,7 +69,7 @@
                     {% endblock %}</td>
                     <td style="width:50%; font-size:1.2em">
 
-      {% weather %}{{ weather.name }}: {{ weather.temperature }}&deg;C<img src="{{ STATIC_URL }}weather/images/{{ weather.icon }}_small.png" alt="{{ weather.get_outlook_display|capfirst }}" height="30" width="30" style="vertical-align:middle;"/>
+      {% weather %}{% block weather-location %}{{ weather.name }}{% endblock %}: {{ weather.temperature }}&deg;C<img src="{{ STATIC_URL }}weather/images/{{ weather.icon }}_small.png" alt="{{ weather.get_outlook_display|capfirst }}" height="30" width="30" style="vertical-align:middle;"/>
 
                     </td>
                 </tr>
