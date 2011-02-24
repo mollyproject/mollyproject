@@ -161,13 +161,11 @@ class SignupEventView(SakaiView):
                 raise
             else:
                 context = {
-                    'poll': {
-                        'permission_denied': True,
-                        'text': 'Permission Denied'
-                    }
+                    'permission_denied': True,
+                    'text': 'Permission Denied'
                 }
                 return context
-    
+        
         return {
             'event': event,
             'signedUp': any(e['signedUp'] for e in event['signupTimeSlotItems']),

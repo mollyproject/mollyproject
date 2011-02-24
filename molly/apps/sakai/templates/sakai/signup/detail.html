@@ -100,8 +100,10 @@ div.button {
 {% block content %}
 <div class="section">
     <div class="header">
-    <h2>{{ event.title }}</h2>
+        <h2>{{ event.title }}</h2>
 {# Metadata about the sign-up slots #}
+    </div>
+    <div class="section-content no-round-bottom">
 
 {# Time and Date #} 
     {% ifequal event.start|date:"dMY" event.end|date:"dMY" %}
