@@ -60,7 +60,11 @@ class USMARCSearchResult(SearchResult):
             heading = int(heading)
             if heading == self.USM_CONTROL_NUMBER:
                 # We strip the 'UkOxUb' from the front.
-                self.control_number = data[6:]
+                
+                if data.startswith('UkOxUb'):
+                    self.control_number = data[6:]
+                else:
+                    self.control_number = data
 
             # We'll use a slice as data may not contain that many characters.
             # LCN 12110145 is an example where this would otherwise fail.
