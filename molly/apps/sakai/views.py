@@ -157,12 +157,16 @@ class SignupEventView(SakaiView):
             url = self.build_url('direct/signupEvent/%s.json?siteId=%s' % (event_id, site))
             event = simplejson.load(request.urlopen(url))
         except PermissionDenied, e:
-            if e.code == 403:
-                return {
-                    'permission_denied': True
-                }
-            else:
+            if isinstance(e, OAuthHTTPError) and e.code != 403:
                 raise
+            else:
+                context = {
+                    'poll': {
+                        'permission_denied': True,
+                        'text': 'Permission Denied'
+                    }
+                }
+                return context
     
         return {
             'event': event,
@@ -279,7 +283,9 @@ class PollDetailView(SakaiView):
             options = simplejson.load(request.urlopen(url))
             options = options['poll-option_collection']
         except PermissionDenied, e:
-            if e.code == 403:
+            if isinstance(e, OAuthHTTPError) and e.code != 403:
+                raise
+            else:
                 context = {
                     'poll': {
                         'permission_denied': True,
@@ -287,8 +293,6 @@ class PollDetailView(SakaiView):
                     }
                 }
                 return context
-            else:
-                raise
 
         try:
             url = self.build_url('direct/poll/%s/vote.json' % id)

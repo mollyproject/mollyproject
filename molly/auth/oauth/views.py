@@ -45,7 +45,7 @@ class OAuthView(BaseView):
         try:
             return super(OAuthView, self).__call__(request, *args, **kwargs)
         except OAuthHTTPError, e:
-            if e.code in (401, 403) and token_type != 'request':
+            if e.code in (401, 403) and not (token_type == 'request' and 'oauth_token' in request.GET):
                 return self.authorize(request, *args, **kwargs)
             else:
                 return self.handle_error(request, e.exception, *args, **kwargs)
