@@ -56,34 +56,51 @@ ul li.transport-link a img { border: 0; }
 
 {% if device|device_has_parent:"apple_generic" or browser.svgt_1_1 %}
 <ul id="transport-links">
+	{% if park_and_rides %}
 	<li class="transport-link">
 		<a href="#park_and_rides"><img src="{{ STATIC_URL }}transport/images/pride.svg" alt="Park and Rides" width="48" height="48" /></a></li>
+	{% endif %}
+	{% if nearby.bus %}
 	<li class="transport-link">
 		<a href="#bus"><img src="{{ STATIC_URL }}transport/images/bus.svg" alt="Bus Stops" width="48" height="48" /></a></li>
+	{% endif %}
+	{% if train_station %}
 	<li class="transport-link">
 		<a href="#ldb"><img src="{{ STATIC_URL }}transport/images/train.svg" alt="Train Departure Boards" width="48" height="48" /></a></li>
+	{% endif %}
+	{% if travel_alerts %}
 	<li class="transport-link">
 		<a href="#travel_news"><img src="{{ STATIC_URL }}transport/images/warn.svg" alt="Travel News" width="48" height="48" /></a></li>
+	{% endif %}
 </ul>
 {% else %}
 <ul id="transport-links">
+	{% if park_and_rides %}
 	<li class="transport-link">
 		<a href="#park_and_rides"><img src="{{ STATIC_URL }}transport/images/pride.png" alt="Park and Rides" width="48" height="48" /></a></li>
+	{% endif %}
+	{% if nearby.bus %}
 	<li class="transport-link">
 		<a href="#bus"><img src="{{ STATIC_URL }}transport/images/bus.png" alt="Bus Stops" width="48" height="48" /></a></li>
+    {% endif %}
+	{% if train_station %}
 	<li class="transport-link">
 		<a href="#ldb"><img src="{{ STATIC_URL }}transport/images/train.png" alt="Train Departure Boards" width="48" height="48" /></a></li>
+	{% endif %}
+	{% if travel_alerts %}
 	<li class="transport-link">
 		<a href="#travel_news"><img src="{{ STATIC_URL }}transport/images/warn.png" alt="Travel News" width="48" height="48" /></a></li>
+    {% endif %}
 </ul>
 {% endif %}
 
+{% if park_and_rides %}
 <div class="section" id="park_and_rides">
   <div class="header">
     <h2><a href="{% url places:nearby-detail "park-and-ride" %}" style="color:inherit;">Park and Rides</a></h2>
   </div>
   <div class="section-content" style="color:#000;">
-    {% for entity in park_and_rides.entities %}
+    {% for entity in park_and_rides %}
     <div style="width: 50%;{% if not forloop.last or forloop.counter|divisibleby:2 %} float: left;{% endif %} margin: 3px auto 3px auto;{% if not forloop.counter|divisibleby:2 %} clear: left;{% endif %}">
       <h3><a href="{{ entity.get_absolute_url}}" style="color:#000;">{% ifequal entity.title|slice:"-13:" "Park and Ride" %}{{ entity.title|slice:":-14" }}{% else %}{% ifequal entity.title|slice:"-11:" "Park & Ride" %}{{ entity.title|slice:":-12" }}{% else %}{{ entity.title }}{% endifequal %}{% endifequal %}</a></h3>
       {% if entity.metadata.park_and_ride %}
@@ -101,18 +118,20 @@ ul li.transport-link a img { border: 0; }
     {% endfor %}
   </div>
 </div>
+{% endif %}
 
-<div class="section" id="bus">
+{% for type, data in nearby.items %}
+<div class="section" id="{{ type }}">
   <div class="header">
-    <h2>{{ bus_stops.results_type }} bus stops - {% now "G:i:s "%}</h2>
+    <h2>{{ data.results_type }} {{ data.type.verbose_name_plural }} - {% now "G:i:s "%}</h2>
   </div>
-  {% ifnotequal bus_stops.results_type "Favourite" %}
+  {% ifnotequal data.results_type "Favourite" %}
 	<div class="section-content no-round-bottom">{% include "geolocation/update_location_embed.html" %}</div>
   {% endifnotequal %}
   <table class="content">
     <tbody>
 
-{% for entity in bus_stops.entities %}
+{% for entity in data.entities %}
 	<tr class="sub-section-divider"><th colspan="3"><a href="{{ entity.get_absolute_url }}" style="color:inherit;">{{ entity.title }}{% ifnotequal bus_stops.results_type "Favourite" %} <small>({{ entity.distance.km|floatformat:3 }} km{{ entity.bearing }})</small>{% endifnotequal %}</a></th></tr>
 	{% if entity.metadata.real_time_information.pip_info %}
 	  <tr><td colspan="3">{{ entity.metadata.real_time_information.pip_info|join:"<br/>" }}</td></tr>
@@ -133,12 +152,13 @@ ul li.transport-link a img { border: 0; }
 {% endfor %}
 	  </tbody>
 	</table>
-  {% ifequal bus_stops.results_type "Favourite" %}
+  {% ifequal data.results_type "Favourite" %}
   <ul class="link-list">
-    <li><a href="{% url places:nearby-detail "bus-stop" %}">View nearby bus stops</a></li>
+    <li><a href="{% url places:nearby-detail data.type.slug %}">View nearby {{ data.type.verbose_name_plural }}</a></li>
   </ul>
   {% endifequal %}
 </div>
+{% endfor %}
 
 {% if train_station %}
 {% include "places/metadata/ldb.html" %}
