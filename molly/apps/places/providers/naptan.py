@@ -112,7 +112,7 @@ class NaptanContentHandler(ContentHandler):
             # In the NaPTAN list, but indicates it's an unused stop
             return
         
-        if self.meta['stop-type'] in ('MET',):
+        if self.meta['stop-type'] in ('MET','GAT','FER'):
             title = common_name
         else:
         
