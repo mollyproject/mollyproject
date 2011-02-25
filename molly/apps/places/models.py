@@ -19,6 +19,9 @@ IDENTIFIER_SCHEME_PREFERENCE = getattr(settings,
                                        'IDENTIFIER_SCHEME_PREFERENCE',
                                        ('atco', 'osm', 'naptan', 'postcode', 'bbc-tpeg'))
 
+class EntityTypeCategory(models.Model):
+    name = models.TextField(blank=False)
+
 class EntityType(models.Model):
     slug = models.SlugField()
     article = models.CharField(max_length=2)
@@ -27,6 +30,7 @@ class EntityType(models.Model):
     show_in_nearby_list = models.BooleanField()
     show_in_category_list = models.BooleanField()
     note = models.TextField(null=True)
+    category = models.ForeignKey(EntityTypeCategory)
 
     subtype_of = models.ManyToManyField('self', blank=True, symmetrical=False, related_name="subtypes")
     subtype_of_completion = models.ManyToManyField('self', blank=True, symmetrical=False, related_name="subtypes_completion")
