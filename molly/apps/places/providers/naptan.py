@@ -26,10 +26,7 @@ class NaptanContentHandler(ContentHandler):
         ('AdministrativeAreaRef',): 'area',
         ('StopAreas', 'StopAreaRef'): 'stop-area',
         ('StopClassification', 'StopType'): 'stop-type',
-        ('StopClassification', 'OffStreet', 'Rail', 'AnnotatedRailRef', 'CrsRef'): 'crs'
-    }
-    
-    area_meta_names = {
+        ('StopClassification', 'OffStreet', 'Rail', 'AnnotatedRailRef', 'CrsRef'): 'crs',
         ('StopAreaCode',): 'area-code',
         ('Name',): 'name',
     }
@@ -57,10 +54,6 @@ class NaptanContentHandler(ContentHandler):
             self.meta = defaultdict(str)
         elif name == 'StopArea':
             self.meta = defaultdict(str)
-        elif name == 'StopAreaRef':
-            if len(self.meta['stop-area']):
-                self.stop_areas.append(self.meta['stop-area'])
-                del self.meta['stop-area']
 
     def endElement(self, name):
         self.name_stack.pop()
@@ -81,6 +74,9 @@ class NaptanContentHandler(ContentHandler):
                 entity = self.add_stop(self.meta, entity_type, self.source)
                 if entity:
                     self.entities.add(entity)
+        elif name == 'StopAreaRef':
+            self.stop_areas.append(self.meta['stop-area'])
+            del self.meta['stop-area']
         
         elif name == 'StopArea':
             if self.areas != None:
@@ -93,8 +89,8 @@ class NaptanContentHandler(ContentHandler):
             
             sa, created = EntityGroup.objects.get_or_create(
                 source=self.source,
-                ref_code=self.meta['aera_code'])
-            sa.title = meta['name']
+                ref_code=self.meta['area-code'])
+            sa.title = self.meta['name']
             sa.save()
 
     def endDocument(self):
@@ -141,7 +137,7 @@ class NaptanContentHandler(ContentHandler):
             # In the NaPTAN list, but indicates it's an unused stop
             return
         
-        if self.meta['stop-type'] in ('MET','GAT','FER'):
+        if self.meta['stop-type'] in ('MET','GAT','FER', 'RLY'):
             title = common_name
         else:
         
@@ -251,9 +247,49 @@ class NaptanMapsProvider(BaseMapsProvider):
         'BCT': BUS_STOP_DEFINITION,
         'BCS': BUS_STOP_DEFINITION,
         'BCQ': BUS_STOP_DEFINITION,
+        'BSE': {
+            'slug': 'bus-station-entrance',
+            'article': 'a',
+            'verbose-name': 'bus station entrance',
+            'verbose-name-plural': 'bus station entrances',
+            'nearby': False, 'category': False,
+            'uri-local': 'BusStationEntrance',
+        },
         'TXR': TAXI_RANK_DEFINITION,
         'STR': TAXI_RANK_DEFINITION,
         'RLY': RAIL_STATION_DEFINITION,
+        'RSE': {
+            'slug': 'rail-station-entrance',
+            'article': 'a',
+            'verbose-name': 'rail station entrance',
+            'verbose-name-plural': 'rail station entrances',
+            'nearby': False, 'category': False,
+            'uri-local': 'RailStationEntrance',
+        },
+        'RPL': {
+            'slug': 'rail-platform',
+            'article': 'a',
+            'verbose-name': 'rail platform',
+            'verbose-name-plural': 'rail platform',
+            'nearby': False, 'category': False,
+            'uri-local': 'RailPlatform',
+        },
+        'TMU': {
+            'slug': 'metro-entrance',
+            'article': 'a',
+            'verbose-name': 'metro entrance',
+            'verbose-name-plural': 'metro entrances',
+            'nearby': False, 'category': False,
+            'uri-local': 'MetroEntrance',
+        },
+        'PLT': {
+            'slug': 'platform',
+            'article': 'a',
+            'verbose-name': 'platform',
+            'verbose-name-plural': 'platforms',
+            'nearby': False, 'category': False,
+            'uri-local': 'MetroPlatform',
+        },
         'MET': {
             'slug': 'metro-station',
             'article': 'a',
@@ -408,6 +444,14 @@ class NaptanMapsProvider(BaseMapsProvider):
             'nearby': True, 'category': False,
             'uri-local': 'Airport',
         },
+        'AIR': {
+            'slug': 'airport-entrance',
+            'article': 'an',
+            'verbose-name': 'airport entrance',
+            'verbose-name-plural': 'airport entrances',
+            'nearby': False, 'category': False,
+            'uri-local': 'AirportEntrance',
+        },
         'FER': {
             'slug': 'ferry-terminal',
             'article': 'a',
@@ -415,6 +459,22 @@ class NaptanMapsProvider(BaseMapsProvider):
             'verbose-name-plural': 'ferry terminals',
             'nearby': True, 'category': False,
             'uri-local': 'FerryTerminal',
+        },
+        'FTD': {
+            'slug': 'ferry-terminal-entrance',
+            'article': 'a',
+            'verbose-name': 'ferry terminal entrance',
+            'verbose-name-plural': 'ferry terminal entrances',
+            'nearby': False, 'category': False,
+            'uri-local': 'FerryTerminalEntrance',
+        },
+        'FBT': {
+            'slug': 'ferry-berth',
+            'article': 'a',
+            'verbose-name': 'ferry berth',
+            'verbose-name-plural': 'ferry berths',
+            'nearby': False, 'category': False,
+            'uri-local': 'FerryBerth',
         },
         None: {
             'slug': 'public-transport-access-node',

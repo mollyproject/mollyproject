@@ -258,6 +258,7 @@ class EntityDetailView(ZoomableView, FavouritableView):
         for entity_group in entity.groups.all():
             group_entities = filter(lambda e: e != entity,
                                    Entity.objects.filter(groups=entity_group))
+            
             if len(group_entities) > 0:
                 associations.append({
                     'type': entity_group.title,
