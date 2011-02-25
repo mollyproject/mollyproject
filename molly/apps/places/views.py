@@ -1,5 +1,6 @@
 from __future__ import division
 
+from collections import defaultdict
 from itertools import chain
 import simplejson
 import copy
@@ -72,39 +73,54 @@ class NearbyListView(LocationRequiredView):
         point = get_point(request, entity)
 
         if entity:
-            return_url = reverse('places:entity-nearby-list', args=[entity.identifier_scheme, entity.identifier_value])
+            return_url = reverse('places:entity-nearby-list',args=[entity.identifier_scheme, entity.identifier_value])
         else:
             return_url = reverse('places:nearby-list')
-
-        entity_types_map = dict((e.slug, e) for e in EntityType.objects.all())
-        entity_types = tuple((name, tuple(entity_types_map[t] for t in types)) for (name, types) in self.conf.nearby_entity_types)
-        flat_entity_types = set(chain(*[types for name, types in entity_types]))
-
-        entities = Entity.objects.filter(location__isnull = False, all_types_completion__in = flat_entity_types)
+        
+        # Get entity types to show on nearby page
+        entity_types = EntityType.objects.filter(show_in_nearby_list=True)
+        entity_types_lookup = dict((et, et) for et in entity_types)
+        
+        # Get all nearby entities
+        entities = Entity.objects.filter(location__isnull = False, all_types_completion__in = entity_types)
         entities = entities.distance(point).order_by('distance')
-
-        for et in flat_entity_types:
+        
+        for et in entity_types:
             et.max_distance = 0
             et.entities_found = 0
-
+        
+        # For each entity...
         for e in entities:
-            for et in e.all_types_slugs:
-                et = entity_types_map[et]
-                if not et in flat_entity_types:
-                    continue
-                if (e.distance.m ** 0.75) * (et.entities_found + 1) > 500:
-                    flat_entity_types.remove(et)
-                    continue
-                et.max_distance = e.distance
-                et.entities_found += 1
-
-            if len(flat_entity_types) == 0 or e.distance.m > 5000:
+            for et in e.all_types.all():
+                try:
+                    # Check if this entity is in one of the entity types to show
+                    # if not - throws KeyError
+                    et = entity_types_lookup[et]
+                    
+                    # Check if this entity fits within the selection criteria
+                    # if it doesn't, then remove it from being considered for
+                    # future entities
+                    if (e.distance.m ** 0.75) * (et.entities_found + 1) > 500:
+                        del entity_types_lookup[et]
+                        continue
+                    et.max_distance = e.distance
+                    et.entities_found += 1
+                except KeyError:
+                    pass
+            
+            # Stop when we've considered all entity types, or are more than 5km
+            # away
+            if len(entity_types) == 0 or e.distance.m > 5000:
                 break
-
-        entity_types = tuple((name, tuple(t for t in types if t.entities_found>0)) for name, types in entity_types)
-
+        
+        categorised_entity_types = defaultdict(list)
+        for et in filter(lambda et: et.entities_found > 0, entity_types):
+            categorised_entity_types['Uncategorised'].append(et)
+        # Need to do this other Django evalutes .items as ['items']
+        categorised_entity_types = dict(categorised_entity_types.items())
+        
         context.update({
-            'entity_types': entity_types,
+            'entity_types': categorised_entity_types,
             'entity': entity,
             'return_url': return_url,
             'exposes_user_data': entity is None, # entity is None => we've searched around the user's location
@@ -459,9 +475,13 @@ class NearbyEntityDetailView(NearbyDetailView):
 class CategoryListView(BaseView):
 
     def initial_context(self, request):
-        entity_types = EntityType.objects.filter(show_in_category_list=True)
+        categorised_entity_types = defaultdict(list)
+        for et in EntityType.objects.filter(show_in_category_list=True):
+            categorised_entity_types['Uncategorised'].append(et)
+        # Need to do this other Django evalutes .items as ['items']
+        categorised_entity_types = dict(categorised_entity_types.items())
         return {
-            'entity_types': entity_types,
+            'entity_types': categorised_entity_types,
         }
 
     @BreadcrumbFactory
