@@ -61,6 +61,18 @@ class Identifier(models.Model):
     def __unicode__(self):
         return self.scheme + ': ' + self.value
 
+class EntityGroup(models.Model):
+    """
+    Used to express relationships between entities
+    """
+    
+    title = models.TextField(blank=True)
+    source = models.ForeignKey(Source)
+    ref_code = models.CharField(max_length=256)
+
+    def __unicode__(self):
+        return self.title
+
 class Entity(models.Model):
     title = models.TextField(blank=True)
     source = models.ForeignKey(Source)
@@ -82,6 +94,8 @@ class Entity(models.Model):
     _identifiers = models.ManyToManyField(Identifier)
     identifier_scheme = models.CharField(max_length=32)
     identifier_value = models.CharField(max_length=256)
+    
+    groups = models.ManyToManyField(EntityGroup)
     
     @property
     def identifiers(self):

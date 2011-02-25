@@ -255,6 +255,15 @@ class EntityDetailView(ZoomableView, FavouritableView):
                 except (KeyError, Http404):
                     pass
         
+        for entity_group in entity.groups.all():
+            group_entities = filter(lambda e: e != entity,
+                                   Entity.objects.filter(groups=entity_group))
+            if len(group_entities) > 0:
+                associations.append({
+                    'type': entity_group.title,
+                    'entities': group_entities,
+                })
+        
         board = request.GET.get('board', 'departures')
         if board != 'departures':
             board = 'arrivals'
@@ -284,6 +293,29 @@ class EntityDetailView(ZoomableView, FavouritableView):
 
     def handle_GET(self, request, context, scheme, value):
         entity = context['entity']
+        
+        entities = []
+        for association in context['associations']:
+            entities += association['entities']
+    
+        context['map'] = Map(
+            centre_point = (entity.location[0], entity.location[1], 'green', ''),
+            points = [(e.location[0], e.location[1], 'red', e.title)
+                for e in entities],
+            min_points = len(entities),
+            zoom = context['zoom'],
+            width = request.map_width,
+            height = request.map_height,
+        )
+        
+        # Yes, this is weird. fit_to_map() groups points with the same
+        # location so here we add a marker_number to each point to display
+        # in the template.
+        lib_iter = iter(entities)
+        for i, (a,b) in enumerate(context['map'].points):
+            for j in range(len(b)):
+                lib_iter.next().marker_number = i + 1
+        
         if entity.absolute_url != request.path:
             return HttpResponsePermanentRedirect(entity.absolute_url)
 

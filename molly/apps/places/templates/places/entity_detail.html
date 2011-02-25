@@ -34,7 +34,7 @@
  <div class="section-content no-round-bottom">
     {% if entity.location %}
 	
-	{% render_location_map entity.location %}
+	{% render_map map %}
  </div>
 	<ul class="link-list">
 	    <li class="round-bottom"><a href="{% url places:entity-nearby-list entity.identifier_scheme entity.identifier_value %}" rel="nofollow">Find things near here</a></li>
@@ -60,7 +60,7 @@
   <ul class="content-list">
     {% for entity in associated_type.entities %}
       <li>
-	<h3><a href="{{ entity.get_absolute_url }}">{{ entity.title }}</a></h3>
+	<h3>{{ entity.marker_number }} <a href="{{ entity.get_absolute_url }}">{{ entity.title }}</a></h3>
 	{% include "places/metadata/real_time_information.html" %}
       </li>
     {% endfor %}
