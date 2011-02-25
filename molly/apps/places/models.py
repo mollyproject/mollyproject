@@ -21,6 +21,8 @@ IDENTIFIER_SCHEME_PREFERENCE = getattr(settings,
 
 class EntityTypeCategory(models.Model):
     name = models.TextField(blank=False)
+    def __unicode__(self):
+        return self.name
 
 class EntityType(models.Model):
     slug = models.SlugField()

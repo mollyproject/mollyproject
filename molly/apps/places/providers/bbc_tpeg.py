@@ -5,7 +5,7 @@ from django.contrib.gis.geos import Point, LineString
 from django.conf import settings
 
 from molly.apps.places.providers import BaseMapsProvider
-from molly.apps.places.models import Source, Entity, EntityType
+from molly.apps.places.models import Source, Entity, EntityType, EntityTypeCategory
 from molly.conf.settings import batch
 
 class BBCTPEGResolver(etree.Resolver):
@@ -119,16 +119,13 @@ class BBCTPEGPlacesProvider(BaseMapsProvider):
         return source
     
     def _get_entity_type(self):
-        try:
-            entity_type = EntityType.objects.get(slug='travel-alert')
-        except EntityType.DoesNotExist:
-            entity_type = EntityType(
-                slug = 'travel-alert',
-                verbose_name = 'travel alert',
-                verbose_name_plural = 'travel alerts',
-                article = 'a',
-                show_in_nearby_list = False,
-                show_in_category_list = False,
-            )
-            entity_type.save()
+        entity_type, created = EntityType.objects.get_or_create(slug='travel-alert')
+        category, _ = EntityTypeCategory.objects.get_or_create(name='Transport')
+        entity_type.verbose_name = 'travel alert'
+        entity_type.verbose_name_plural = 'travel alerts'
+        entity_type.article = 'a'
+        entity_type.show_in_nearby_list = False
+        entity_type.show_in_category_list = False
+        entity_type.category = category
+        entity_type.save()
         return entity_type

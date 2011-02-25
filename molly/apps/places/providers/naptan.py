@@ -8,7 +8,7 @@ from xml.sax import ContentHandler, make_parser
 from django.contrib.gis.geos import Point
 
 from molly.apps.places.providers import BaseMapsProvider
-from molly.apps.places.models import EntityType, Entity, EntityGroup, Source
+from molly.apps.places.models import EntityType, Entity, EntityGroup, Source, EntityTypeCategory
 from molly.conf.settings import batch
 
 class NaptanContentHandler(ContentHandler):
@@ -154,6 +154,12 @@ class NaptanContentHandler(ContentHandler):
             
             if indicator is None and self.meta['stop-type'] in ('AIR', 'FTD', 'RSE', 'TMU', 'BCE'):
                 indicator = 'Entrance to'
+            
+            if indicator is None and self.meta['stop-type'] in ('FBT',):
+                indicator = 'Berth at'
+            
+            if indicator is None and self.meta['stop-type'] in ('RPL','PLT'):
+                indicator = 'Platform at'
             
             title = ''
             
@@ -631,14 +637,16 @@ class NaptanMapsProvider(BaseMapsProvider):
     def _get_entity_types(self):
 
         entity_types = {}
+        category, _ = EntityTypeCategory.objects.get_or_create(name='Transport')
         for stop_type in self.entity_type_definitions:
             et = self.entity_type_definitions[stop_type]
-
+            
             try:
                 entity_type = EntityType.objects.get(slug=et['slug'])
             except EntityType.DoesNotExist:
                 entity_type = EntityType(slug=et['slug'])
-
+            
+            entity_type.category = category
             entity_type.uri = "http://mollyproject.org/schema/maps#%s" % et['uri-local']
             entity_type.article = et['article']
             entity_type.verbose_name = et['verbose-name']
@@ -655,6 +663,7 @@ class NaptanMapsProvider(BaseMapsProvider):
             entity_type.subtype_of.add(entity_types[None])
             if stop_type.startswith('MET') and stop_type != 'MET' and entity_type.slug != self.RAIL_STATION_DEFINITION['slug']:
                 entity_type.subtype_of.add(entity_types['MET'])
+        
 
         return entity_types
 
