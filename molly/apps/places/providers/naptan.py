@@ -152,6 +152,9 @@ class NaptanContentHandler(ContentHandler):
                 'inside': 'Inside',
             }.get(indicator, indicator)
             
+            if indicator is None and self.meta['stop-type'] in ('AIR', 'FTD', 'RSE', 'TMU', 'BCE'):
+                indicator = 'Entrance to'
+            
             title = ''
             
             if indicator != None:
