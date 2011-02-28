@@ -2,7 +2,7 @@
 from django.contrib.gis.geos import Point, LineString, LinearRing
 from django.conf import settings
 
-from molly.apps.places.models import Entity, EntityType, Source
+from molly.apps.places.models import Entity, EntityType, Source, EntityTypeCategory
 from molly.apps.places.providers import BaseMapsProvider
 from molly.utils.misc import AnyMethodRequest
 from molly.geolocation import reverse_geocode
