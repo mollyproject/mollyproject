@@ -1,6 +1,8 @@
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
 
+logger = logging.getLogger("molly.apps.service_status.views")
+
 class IndexView(BaseView):
     """
     View to display the OUCS service status information.
@@ -21,12 +23,16 @@ class IndexView(BaseView):
     def handle_GET(cls, request, context):
         services = []
         for provider in cls.conf.providers:
-            status = provider.get_status()
-            services.append((
-                provider.slug, provider.name,
-                status['lastBuildDate'], status['services'],
-                provider.get_announcements(),
-            ))
+            try:
+                status = provider.get_status()
+            except Exception, e:
+                logger.warn("Failed to load service status", exc_info=True)
+            else:
+                services.append((
+                    provider.slug, provider.name,
+                    status['lastBuildDate'], status['services'],
+                    provider.get_announcements(),
+                ))
 
         
         context['services'] = services
