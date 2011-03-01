@@ -595,109 +595,27 @@ class ServiceDetailView(BaseView):
         if 'service_details' not in entity.metadata:
             raise Http404
 
-        stop_entities = []
-
         # Deal with train service data
         if entity.metadata['service_type'] == 'ldb':
             
-            try:
-                # LDB has + in URLs, but Django converts that to space
-                service = entity.metadata['service_details'](service_id.replace(' ', '+'))
-            except WebFault as f:
-                if f.fault['faultstring'] == 'Unexpected server error: Invalid length for a Base-64 char array.':
-                    raise Http404
-                else:
-                    context.update({
-                        'title': 'An error occurred',
-                        'entity': entity,
-                        'train_service': {
-                            'error': f.fault['faultstring'],
-                        },
-                    })
-                    return context
+            # LDB has + in URLs, but Django converts that to space
+            service = entity.metadata['service_details'](service_id.replace(' ', '+'))
             if service is None:
                 raise Http404
-
-            if len(service['previousCallingPoints']):
-                sources = [points['callingPoint'][0]['locationName'] for points in service['previousCallingPoints']['callingPointList']]
-            else:
-                sources = [service['locationName']]
-
-            if len(service['subsequentCallingPoints']):
-                destinations = [points['callingPoint'][-1]['locationName'] for points in service['subsequentCallingPoints']['callingPointList']]
-            else:
-                destinations = [service['locationName']]
-
-            # Trains can split and join, which makes figuring out the list of
-            # calling points a bit difficult. The LiveDepartureBoards documentation
-            # details how these should be handled. First, we build a list of all
-            # the calling points on the "through" train.
-            calling_points = service['previousCallingPoints']['callingPointList'][0]['callingPoint'] if len(service['previousCallingPoints']) else []
-            calling_points += [{
-                'locationName': service['locationName'],
-                'crs': service['crs'],
-                'st': service['std'] if 'std' in service else service['sta'],
-                'et': service['etd'] if 'etd' in service else service['eta'],
-                'at': service['atd'] if 'atd' in service else '',
-            }]
-            if len(service['subsequentCallingPoints']):
-                calling_points += service['subsequentCallingPoints']['callingPointList'][0]['callingPoint']
-
-            # Then attach joining services to our thorough route in the correct
-            # point, but only if there is a list of previous calling points
-            if len(service['previousCallingPoints']):
-                for points in service['previousCallingPoints']['callingPointList'][1:]:
-                    for point in calling_points:
-                        if points['callingPoint'][-1]['crs'] == point['crs']:
-                            point['joining'] = points['callingPoint']
-
-            # And do the same with splitting services
-            if len(service['subsequentCallingPoints']):
-                for points in service['subsequentCallingPoints']['callingPointList'][1:]:
-                    for point in calling_points:
-                        if points['callingPoint'][0]['crs'] == point['crs']:
-                            point['splitting'] = {'destination': points['callingPoint'][-1]['locationName'], 'list': points['callingPoint']}
-
-            # Now get a list of the entities for the stations (if they exist)
-            # to plot on a map
-            for point in calling_points:
-
-                if 'joining' in point:
-                    for jpoint in point['joining']:
-                        point_entity = Entity.objects.filter(_identifiers__scheme='crs', _identifiers__value=str(jpoint['crs']))
-                        if len(point_entity):
-                            point_entity = point_entity[0]
-                            jpoint['entity'] = point_entity
-                            stop_entities.append(point_entity)
-                            jpoint['stop_num'] = len(stop_entities)
-
-                point_entity = Entity.objects.filter(_identifiers__scheme='crs', _identifiers__value=str(point['crs']))
-                if len(point_entity):
-                    point_entity = point_entity[0]
-                    point['entity'] = point_entity
-                    stop_entities.append(point_entity)
-                    point['stop_num'] = len(stop_entities)
-
-                if 'splitting' in point:
-                    for spoint in point['splitting']['list']:
-                        point_entity = Entity.objects.filter(_identifiers__scheme='crs', _identifiers__value=str(spoint['crs']))
-                        if len(point_entity):
-                            point_entity = point_entity[0]
-                            spoint['entity'] = point_entity
-                            stop_entities.append(point_entity)
-                            spoint['stop_num'] = len(stop_entities)
-            
-            if 'std' in service:
-                title = service['std'] + ' ' + service['locationName'] + ' to ' + ' and '.join(destinations)
-            else:
-                # This service arrives here
-                title = service['sta'] + ' from ' + ' and '.join(sources)
+            if 'error' in service:
+                context.update({
+                    'title': 'An error occurred',
+                    'entity': entity,
+                    'train_service': {
+                        'error': service['error'],
+                    },
+                })
+                return context
             
             context.update({
                 'entity': entity,
                 'train_service': service,
-                'train_calling_points': calling_points,
-                'title': title,
+                'title': service['title'],
                 'zoom_controls': False,
             })
         
@@ -705,8 +623,8 @@ class ServiceDetailView(BaseView):
             centre_point = (entity.location[0], entity.location[1],
                             'green', entity.title),
             points = [(e.location[0], e.location[1], 'red', e.title)
-                for e in stop_entities],
-            min_points = len(stop_entities),
+                for e in service['entities']],
+            min_points = len(service['entities']),
             zoom = None,
             width = request.map_width,
             height = request.map_height,

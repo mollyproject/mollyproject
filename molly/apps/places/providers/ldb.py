@@ -1,5 +1,7 @@
 import logging
 
+from molly.apps.places.models import Entity
+
 import suds, suds.sudsobject
 from suds.sax.element import Element
 
@@ -40,13 +42,109 @@ class LiveDepartureBoardPlacesProvider(BaseMapsProvider):
                 else:
                     db = ldb.service.GetDepartureBoard(self._max_services, entity.identifiers['crs'])
                 entity.metadata['ldb'] = self.transform_suds(db)
-                entity.metadata['service_details'] = lambda s: self.transform_suds(ldb.service.GetServiceDetails(s))
+                entity.metadata['service_details'] = lambda s: LiveDepartureBoardPlacesProvider.service_details(s, entity)
+                entity.metadata['ldb_service'] = lambda s: self.transform_suds(ldb.service.GetServiceDetails(s))
                 entity.metadata['service_type'] = 'ldb'
             except Exception, e:
                 logger.warning("Could not retrieve departure board for station: %r", entity.identifiers.get('crs'))
                 self._add_error((entity,))
+    
+    @staticmethod
+    def service_details(service, entity):
+        try:
+            service = entity.metadata['ldb_service'](service)
+        except WebFault as f:
+            if f.fault['faultstring'] == 'Unexpected server error: Invalid length for a Base-64 char array.':
+                raise Http404
+            else:
+                return({'error': f.fault['faultstring']})
+        if service is None:
+            return None
+        
+        # Trains can split and join, which makes figuring out the list of
+        # calling points a bit difficult. The LiveDepartureBoards documentation
+        # details how these should be handled. First, we build a list of all
+        # the calling points on the "through" train.
+        calling_points = service['previousCallingPoints']['callingPointList'][0]['callingPoint'] if len(service['previousCallingPoints']) else []
+        calling_points += [{
+            'locationName': service['locationName'],
+            'crs': service['crs'],
+            'st': service['std'] if 'std' in service else service['sta'],
+            'et': service['etd'] if 'etd' in service else service['eta'],
+            'at': service['atd'] if 'atd' in service else '',
+        }]
+        if len(service['subsequentCallingPoints']):
+            calling_points += service['subsequentCallingPoints']['callingPointList'][0]['callingPoint']
+
+        # Then attach joining services to our thorough route in the correct
+        # point, but only if there is a list of previous calling points
+        if len(service['previousCallingPoints']):
+            for points in service['previousCallingPoints']['callingPointList'][1:]:
+                for point in calling_points:
+                    if points['callingPoint'][-1]['crs'] == point['crs']:
+                        point['joining'] = points['callingPoint']
+
+        # And do the same with splitting services
+        if len(service['subsequentCallingPoints']):
+            for points in service['subsequentCallingPoints']['callingPointList'][1:]:
+                for point in calling_points:
+                    if points['callingPoint'][0]['crs'] == point['crs']:
+                        point['splitting'] = {'destination': points['callingPoint'][-1]['locationName'], 'list': points['callingPoint']}
             
-            
+        if len(service['previousCallingPoints']):
+            sources = [points['callingPoint'][0]['locationName'] for points in service['previousCallingPoints']['callingPointList']]
+        else:
+            sources = [service['locationName']]
+        
+        if len(service['subsequentCallingPoints']):
+            destinations = [points['callingPoint'][-1]['locationName'] for points in service['subsequentCallingPoints']['callingPointList']]
+        else:
+            destinations = [service['locationName']]
+        
+        stop_entities = []
+        
+        # Now get a list of the entities for the stations (if they exist)
+        # to plot on a map
+        for point in calling_points:
+        
+            if 'joining' in point:
+                for jpoint in point['joining']:
+                    point_entity = Entity.objects.filter(_identifiers__scheme='crs', _identifiers__value=str(jpoint['crs']))
+                    if len(point_entity):
+                        point_entity = point_entity[0]
+                        jpoint['entity'] = point_entity
+                        stop_entities.append(point_entity)
+                        jpoint['stop_num'] = len(stop_entities)
+
+            point_entity = Entity.objects.filter(_identifiers__scheme='crs', _identifiers__value=str(point['crs']))
+            if len(point_entity):
+                point_entity = point_entity[0]
+                point['entity'] = point_entity
+                stop_entities.append(point_entity)
+                point['stop_num'] = len(stop_entities)
+
+            if 'splitting' in point:
+                for spoint in point['splitting']['list']:
+                    point_entity = Entity.objects.filter(_identifiers__scheme='crs', _identifiers__value=str(spoint['crs']))
+                    if len(point_entity):
+                        point_entity = point_entity[0]
+                        spoint['entity'] = point_entity
+                        stop_entities.append(point_entity)
+                        spoint['stop_num'] = len(stop_entities)
+        
+        if 'std' in service:
+            title = service['std'] + ' ' + service['locationName'] + ' to ' + ' and '.join(destinations)
+        else:
+            # This service arrives here
+            title = service['sta'] + ' from ' + ' and '.join(sources)
+        
+        return {
+            'title': title,
+            'entities': stop_entities,
+            'ldb': service,
+            'calling_points': calling_points
+        }
+    
     def transform_suds(self, o):
         if isinstance(o, suds.sudsobject.Object):
             return dict((k, self.transform_suds(v)) for k,v in o)
