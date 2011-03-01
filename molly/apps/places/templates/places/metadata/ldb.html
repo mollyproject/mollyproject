@@ -16,7 +16,7 @@
   <table class="content no-round-bottom">
     <thead>
       <tr>
-        <th>Destination</th>
+        <th>{% ifequal board "arrivals" %}Origin{% else %}Destination{% endifequal %}</th>
         {% if train_station.metadata.ldb.platformAvailable %}
         <th>Plat.</th>
         {% endif %}
@@ -44,13 +44,23 @@
             <td>
               <a href="{{ train_station.get_absolute_url }}service?id={{ service.serviceID|urlencode }}" style="color: inherit;" rel="nofollow">
                 {# This isn't that straight-forward - trains can split and go to multiple destinations #}
-                {% for location in service.destination.location %}
-                  {% if not forloop.first and not forloop.last %}, {% endif %}
-                  {% if not forloop.first and forloop.last %} &amp; {% endif %}
-                  {% if not forloop.first %}<br />{% endif %}
-                  {{ location.locationName }}
-                  {% if location.via %}<br /><small>{{ location.via }}</small>{% if not forloop.last %}<br />{% endif %}{% endif %}
-                {% endfor %}
+                {% ifequal board "arrivals" %}
+                  {% for location in service.origin.location %}
+                    {% if not forloop.first and not forloop.last %}, {% endif %}
+                    {% if not forloop.first and forloop.last %} &amp; {% endif %}
+                    {% if not forloop.first %}<br />{% endif %}
+                    {{ location.locationName }}
+                    {% if location.via %}<br /><small>{{ location.via }}</small>{% if not forloop.last %}<br />{% endif %}{% endif %}
+                  {% endfor %}
+                {% else %}
+                  {% for location in service.destination.location %}
+                    {% if not forloop.first and not forloop.last %}, {% endif %}
+                    {% if not forloop.first and forloop.last %} &amp; {% endif %}
+                    {% if not forloop.first %}<br />{% endif %}
+                    {{ location.locationName }}
+                    {% if location.via %}<br /><small>{{ location.via }}</small>{% if not forloop.last %}<br />{% endif %}{% endif %}
+                  {% endfor %}
+                {% endifequal %}
                 {% if service.isCircularRoute %}<br /><small>(Circular Route)</small>{% endif %}</a>
             </td>
             {% if train_station.metadata.ldb.platformAvailable %} 
