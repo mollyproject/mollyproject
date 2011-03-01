@@ -1,3 +1,5 @@
+import logging
+
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
 
