@@ -23,7 +23,7 @@
   <ul class="content-list no-round-bottom">
     <li>Operated by {{ train_service.ldb.operator }}</li>
     {% if train_service.ldb.platform %}
-      <li>Departing from platform {{ train_service.ldb.platform }}</li>
+      <li>Calling at platform {{ train_service.ldb.platform }}</li>
     {% endif %}
     {% if train_service.ldb.disruptionReason %}
       <li>{{ train_service.ldb.disruptionReason|sanitize_html }}</li>
