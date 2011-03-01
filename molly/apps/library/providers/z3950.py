@@ -386,8 +386,16 @@ class Z3950(BaseLibrarySearchProvider):
         
         z3950_query = zoom.Query('CCL', 'and'.join(z3950_query))
         
-        results = self.Results(connection.search(z3950_query), self._wrapper)
-        return results
+        try:
+            results = self.Results(connection.search(z3950_query), self._wrapper)
+        except zoom.Bib1Err as e:
+            # 31 = Resources exhausted - no results available 
+            if e.condition == 31:
+                return []
+            else:
+                raise
+        else:
+            return results
     
     def control_number_search(self, control_number):
         """
