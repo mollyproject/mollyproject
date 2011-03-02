@@ -311,30 +311,12 @@ class EntityDetailView(ZoomableView, FavouritableView):
     def handle_GET(self, request, context, scheme, value):
         entity = context['entity']
         
+        if entity.absolute_url != request.path:
+            return HttpResponsePermanentRedirect(entity.absolute_url)
+        
         entities = []
         for association in context['associations']:
             entities += association['entities']
-    
-        context['map'] = Map(
-            centre_point = (entity.location[0], entity.location[1], 'green', ''),
-            points = [(e.location[0], e.location[1], 'red', e.title)
-                for e in entities],
-            min_points = len(entities),
-            zoom = context['zoom'],
-            width = request.map_width,
-            height = request.map_height,
-        )
-        
-        # Yes, this is weird. fit_to_map() groups points with the same
-        # location so here we add a marker_number to each point to display
-        # in the template.
-        lib_iter = iter(entities)
-        for i, (a,b) in enumerate(context['map'].points):
-            for j in range(len(b)):
-                lib_iter.next().marker_number = i + 1
-        
-        if entity.absolute_url != request.path:
-            return HttpResponsePermanentRedirect(entity.absolute_url)
 
         for provider in reversed(self.conf.providers):
             provider.augment_metadata((entity, ), board=context['board'])
