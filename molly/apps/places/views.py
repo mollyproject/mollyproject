@@ -103,7 +103,7 @@ class NearbyListView(LocationRequiredView):
                     if (e.distance.m ** 0.75) * (et.entities_found + 1) > 500:
                         del entity_types_lookup[et]
                         continue
-                    et.max_distance = e.distance
+                    et.max_distance = e.distance.m
                     et.entities_found += 1
                 except KeyError:
                     pass
