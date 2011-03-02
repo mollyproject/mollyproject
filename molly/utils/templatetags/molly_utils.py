@@ -60,7 +60,7 @@ def round_up_10(value):
     """
     Rounds a number up to the nearest 10
     """
-    return int(math.ceil(int(value)/10)*10)
+    return '%d' % int(math.ceil(int(value)/10)*10)
 
 UNUSUAL_NUMBERS = {
     '+448454647': '0845 46 47', # NHS Direct
