@@ -19,6 +19,11 @@ IDENTIFIER_SCHEME_PREFERENCE = getattr(settings,
                                        'IDENTIFIER_SCHEME_PREFERENCE',
                                        ('atco', 'osm', 'naptan', 'postcode', 'bbc-tpeg'))
 
+class EntityTypeCategory(models.Model):
+    name = models.TextField(blank=False)
+    def __unicode__(self):
+        return self.name
+
 class EntityType(models.Model):
     slug = models.SlugField()
     article = models.CharField(max_length=2)
@@ -27,6 +32,7 @@ class EntityType(models.Model):
     show_in_nearby_list = models.BooleanField()
     show_in_category_list = models.BooleanField()
     note = models.TextField(null=True)
+    category = models.ForeignKey(EntityTypeCategory)
 
     subtype_of = models.ManyToManyField('self', blank=True, symmetrical=False, related_name="subtypes")
     subtype_of_completion = models.ManyToManyField('self', blank=True, symmetrical=False, related_name="subtypes_completion")
@@ -61,6 +67,18 @@ class Identifier(models.Model):
     def __unicode__(self):
         return self.scheme + ': ' + self.value
 
+class EntityGroup(models.Model):
+    """
+    Used to express relationships between entities
+    """
+    
+    title = models.TextField(blank=True)
+    source = models.ForeignKey(Source)
+    ref_code = models.CharField(max_length=256)
+
+    def __unicode__(self):
+        return self.title
+
 class Entity(models.Model):
     title = models.TextField(blank=True)
     source = models.ForeignKey(Source)
@@ -82,6 +100,8 @@ class Entity(models.Model):
     _identifiers = models.ManyToManyField(Identifier)
     identifier_scheme = models.CharField(max_length=32)
     identifier_value = models.CharField(max_length=256)
+    
+    groups = models.ManyToManyField(EntityGroup)
     
     @property
     def identifiers(self):

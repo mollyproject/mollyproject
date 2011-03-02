@@ -691,17 +691,6 @@ APPLICATIONS = [
         tpeg_zone = ask('Which travel news area would you like to import?')
     config += """
         ],
-        nearby_entity_types = (
-            ('Transport', (
-                'bicycle-parking', 'bus-stop', 'car-park', 'park-and-ride',
-                'taxi-rank', 'rail-station')),
-            ('Amenities', (
-                'atm', 'bank', 'bench', 'medical', 'post-box', 'post-office',
-                'public-library', 'recycling', 'bar', 'food', 'pub')),
-            ('Leisure', (
-                'cinema', 'theatre', 'museum', 'park', 'swimming-pool',
-                'sports-centre', 'punt-hire')),
-        ),
 
     ),
     """

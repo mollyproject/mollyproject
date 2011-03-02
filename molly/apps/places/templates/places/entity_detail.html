@@ -61,7 +61,9 @@
     {% for entity in associated_type.entities %}
       <li>
 	<h3><a href="{{ entity.get_absolute_url }}">{{ entity.title }}</a></h3>
-	{% include "places/metadata/real_time_information.html" %}
+	{% if entity.metadata.real_time_information %}
+	  {% include "places/metadata/real_time_information.html" %}
+	{% endif %}
       </li>
     {% endfor %}
   </ul>

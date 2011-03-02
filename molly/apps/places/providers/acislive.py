@@ -3,6 +3,7 @@ from datetime import datetime
 from lxml import etree
 import re
 
+from molly.apps.places.models import EntityType
 from molly.apps.places.providers import BaseMapsProvider
 
 class ACISLiveMapsProvider(BaseMapsProvider):
@@ -104,8 +105,10 @@ class ACISLiveMapsProvider(BaseMapsProvider):
     def augment_metadata(self, entities, **kwargs):
         threads = []
         for entity in entities:
-            # Ignore non-bus stop entities
-            if entity.identifiers.get('atco') is None:
+            
+            bus_et = EntityType.objects.get(slug='bus-stop')
+            
+            if bus_et not in entity.all_types.all():
                 continue
                 
             thread = threading.Thread(target=self.get_times, args=[entity])

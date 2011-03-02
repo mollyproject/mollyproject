@@ -39,7 +39,7 @@
   </div>
 {% endif %}
 
-<ul class="link-list{% ifnotequal entities.num_pages 1 %} no-round-bottom{% endifnotequal %}">
+<ul class="link-list{% ifnotequal entities.paginator.num_pages 1 %} no-round-bottom{% endifnotequal %}">
 {% for entity in entities.object_list %}{% if entity.title %}
     <li{% if forloop.last %} class="round-bottom"{% endif %}><a href="{{ entity.get_absolute_url }}">
       {{ entity.title|capfirst }}{% if multiple_entity_types %}<br/>
@@ -48,7 +48,7 @@
 {% endif %}{% endfor %}
 </ul>
 
-{% ifnotequal entities.num_pages 1 %}
+{% ifnotequal entities.paginator.num_pages 1 %}
 <div class="section-content no-round-bottom">
    <div class="note"><div class="bubble pad-10">
      Page {{ entities.number }} of {{ entities.paginator.num_pages }}
