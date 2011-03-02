@@ -637,7 +637,7 @@ class NaptanMapsProvider(BaseMapsProvider):
     def _get_entity_types(self):
 
         entity_types = {}
-        category, _ = EntityTypeCategory.objects.get_or_create(name='Transport')
+        category, created = EntityTypeCategory.objects.get_or_create(name='Transport')
         for stop_type in self.entity_type_definitions:
             et = self.entity_type_definitions[stop_type]
             
@@ -651,8 +651,9 @@ class NaptanMapsProvider(BaseMapsProvider):
             entity_type.article = et['article']
             entity_type.verbose_name = et['verbose-name']
             entity_type.verbose_name_plural = et['verbose-name-plural']
-            entity_type.show_in_nearby_list = et['nearby']
-            entity_type.show_in_category_list = et['category']
+            if created:
+                entity_type.show_in_nearby_list = et['nearby']
+                entity_type.show_in_category_list = et['category']
             entity_type.save()
 
             entity_types[stop_type] = entity_type

@@ -124,8 +124,9 @@ class BBCTPEGPlacesProvider(BaseMapsProvider):
         entity_type.verbose_name = 'travel alert'
         entity_type.verbose_name_plural = 'travel alerts'
         entity_type.article = 'a'
-        entity_type.show_in_nearby_list = False
-        entity_type.show_in_category_list = False
+        if created:
+            entity_type.show_in_nearby_list = False
+            entity_type.show_in_category_list = False
         entity_type.category = category
         entity_type.save()
         return entity_type
