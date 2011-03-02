@@ -2,7 +2,7 @@ from django.contrib.gis import admin
 from models import Entity, EntityType
 
 
-class EntityAdmin(admin.GeoModelAdmin):
+class EntityAdmin(admin.OSMGeoAdmin):
     list_display = ('title', 'absolute_url', 'primary_type')
     list_filter = ('source', 'primary_type', )
 
