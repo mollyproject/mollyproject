@@ -68,6 +68,9 @@ class IndexView(BaseView):
             else:
                 es = favourites
             
+            for e in (e for e in es if hasattr(e, 'distance')):
+                _, e.bearing = entity.get_distance_and_bearing_from(location)
+            
             entities |= set(es)
             context['nearby'][context_key] = {
                 'type': et,
