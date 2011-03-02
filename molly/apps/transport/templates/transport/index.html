@@ -1,55 +1,6 @@
 {% extends "transport/base.html" %}{% load molly_utils %}
 {% block extrahead %}
-<style type="text/css">
-ul#transport-links{
-	list-style: none;
-	margin: 5px 0 0 0;
-	padding: 5px;
-	text-align:center;
-}
-
-ul li.transport-link {
-	margin: 0 5px;
-	display: inline-block;
-	background-color: #002B4C;
-	background: -webkit-gradient(linear, left top, left bottom,
-	      from(rgb(105,153,195)), color-stop(0.5, rgb(3,59,113)), to(rgb(27,87,144)));
-	background: -moz-linear-gradient(top, rgb(105,153,195), rgb(3,59,113), rgb(27,87,144));
-	border-radius: 8px; -webkit-border-radius: 8px; -moz-border-radius: 8px; 
-	
-	box-shadow: 3px 3px 3px #333;
-	-webkit-box-shadow: 3px 3px 3px #333;
-	-moz-box-shadow: 3px 3px 3px #333;
-}
-
-ul li.transport-link a img { border: 0; }
-
-.section .header h2 {
-    background-repeat: no-repeat;
-    background-position: top right;
-    min-height: 20px;
-    padding-top: 7px;
-    width: 100%;
-}
-
-#park_and_rides .header h2 {
-    background-image: url('{{ STATIC_URL }}transport/images/pride-small.png');
-}
-
-#bus .header h2 {
-    background-image: url('{{ STATIC_URL }}transport/images/bus-small.png');
-}
-
-#ldb .header h2 {
-    background-image: url('{{ STATIC_URL }}transport/images/train-small.png');
-}
-
-#travel_news .header h2 {
-    background-image: url('{{ STATIC_URL }}transport/images/warn-small.png');
-}
-
-</style>
-{% include "geolocation/js.html" %}
+    {% include "geolocation/js.html" %}
 {% endblock %}
 
 {% block content %}
