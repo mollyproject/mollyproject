@@ -88,6 +88,15 @@ def simplify_model(obj, terse=False):
                 out[field_name] = simplify_value(value)
             except NotImplementedError:
                 pass
+        
+        # Add any non-field attributes
+        for field in list(dir(obj)):
+            if field[0] != '_' and field != 'objects' \
+             and not isinstance(getattr(obj, field), models.Field):
+                try:
+                    out[field] = simplify_value(getattr(obj, field))
+                except NotImplementedError:
+                    pass
     return out
 
 def serialize_to_xml(value):

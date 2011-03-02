@@ -16,7 +16,7 @@
 	    <li{% if forloop.last %} class="round-bottom"{% endif %}><a href="{% url places:entity-nearby-detail entity.identifier_scheme,entity.identifier_value,entity_type.slug %}">
 	{% else %}
 	    <li{% if forloop.last %} class="round-bottom"{% endif %}><a href="{% url places:nearby-detail entity_type.slug %}">
-	{% endif %} {{ entity_type.verbose_name_plural|capfirst }} <small>({{ entity_type.entities_found }} within {{ entity_type.max_distance.m|floatformat:"-0" }}m)</small></a></li>{% endfor %}
+	{% endif %} {{ entity_type.verbose_name_plural|capfirst }} <small>({{ entity_type.entities_found }} within {{ entity_type.max_distance|floatformat:"-0" }}m)</small></a></li>{% endfor %}
 	</ul>
 </div>
 {% endfor %}

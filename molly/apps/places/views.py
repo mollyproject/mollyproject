@@ -95,7 +95,7 @@ class NearbyListView(LocationRequiredView):
                 if (e.distance.m ** 0.75) * (et.entities_found + 1) > 500:
                     flat_entity_types.remove(et)
                     continue
-                et.max_distance = e.distance
+                et.max_distance = e.distance.m
                 et.entities_found += 1
 
             if len(flat_entity_types) == 0 or e.distance.m > 5000:
