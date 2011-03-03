@@ -1,5 +1,7 @@
 {% extends "library/base.html" %}
 
+{% block extrahead %}{% include "geolocation/js.html" %}{% endblock extrahead %}
+
 {% block content %}
 
 {% if error_message %}
@@ -33,7 +35,7 @@
         Previous</a>
 {% endif %}
 
-    Showing results {{ page.start_index }} to {{ page.end_index }} of {{ results.object_list|length }}. Page {{ page.number }} of {{ results.num_pages }}.
+    Showing results {{ page.start_index }} to <span class="result-number">{{ page.end_index }}</span> of {{ results.object_list|length }}. Page <span class="current-page">{{ page.number }}</span> of {{ results.num_pages }}.
 
 {% if page.has_next %}
     <a href="?title={{ search_form.cleaned_data.title|urlencode }}&author={{ search_form.cleaned_data.author|urlencode }}&isbn={{ search_form.cleaned_data.isbn|urlencode }}&page={{ page.next_page_number }}" title="Next page" class="next">
@@ -43,9 +45,9 @@
 
 </div>
 
-<ul class="link-list no-round-bottom">
+<ul class="link-list no-round-bottom" id="item-list">
 {% for item in page.object_list %}
-<li{% if forloop.last %} class="no-round-bottom"{% endif %}>
+<li>
     <a href="{% url library:item-detail item.control_number %}">
         {{ item  }}{% if item.author %}
         <br/><small><strong>Author:</strong> {{ item.author }}</small>{% endif %}
@@ -63,7 +65,7 @@
         Previous</a>
 {% endif %}
 
-    Showing results {{ page.start_index }} to {{ page.end_index }} of {{ results.object_list|length }}. Page {{ page.number }} of {{ results.num_pages }}.
+    Showing results {{ page.start_index }} to <span class="result-number">{{ page.end_index }}</span> of {{ results.object_list|length }}. Page <span class="current-page">{{ page.number }}</span> of {{ results.num_pages }}.
 {% if page.has_next %}
     <a href="?title={{ search_form.cleaned_data.title|urlencode }}&author={{ search_form.cleaned_data.author|urlencode }}&isbn={{ search_form.cleaned_data.isbn|urlencode }}&page={{ page.next_page_number }}" title="Next page" class="next">
         Next
