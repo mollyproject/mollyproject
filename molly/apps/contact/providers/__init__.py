@@ -6,10 +6,6 @@ class BaseContactProvider(object):
         pass
 
     @property
-    def handles_pagination(self):
-        raise NotImplementedError
-
-    @property
     def medium_choices(self):
         return (('all', 'Search'), )
 
