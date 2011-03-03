@@ -3,7 +3,7 @@ import itertools, datetime
 from lxml import etree
 
 from django.contrib.gis.geos import Point
-from django.core.paginator import Paginator
+from django.core.paginator import Page
 from django.db import models
 
 class DateUnicode(unicode): pass
@@ -49,8 +49,15 @@ def simplify_value(value):
         return DateUnicode(value.isoformat())
     elif hasattr(type(value), '__mro__') and models.Model in type(value).__mro__:
         return simplify_model(value)
-    elif isinstance(value, Paginator):
-        return simplify_value(value.object_list)
+    elif isinstance(value, Page):
+        return {
+            'has_next': value.has_next(),
+            'has_previous': value.has_next(),
+            'next_page_number': value.has_next(),
+            'previous_page_number': value.has_next(),
+            'number': value.number,
+            'objects': simplify_value(value.object_list)
+        }
     elif value is None:
         return None
     elif isinstance(value, Point):
