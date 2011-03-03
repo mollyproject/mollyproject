@@ -17,8 +17,9 @@ class Command(NoArgsCommand):
             print >>cache_manifest, "CACHE:"
             for root, dirs, files in os.walk(settings.STATIC_ROOT):
                 if root == settings.STATIC_ROOT:
-                    # Don't cache admin media or markers
+                    # Don't cache admin media, desktop or markers
                     dirs.remove('admin')
+                    dirs.remove('desktop')
                     dirs.remove('markers')
                 url = '/'.join(root.split(os.sep)[static_prefix_length:])
                 for file in files:
