@@ -209,6 +209,9 @@ ul.link-list li a, ol.search-results li a {
     background-repeat: no-repeat;
     background-image:url('../../site/images/icons/list-arrow.png'); /* Default background image */
 }
+ul.link-list li a.go-back, ol.search-results li a.go-back {
+    background-image:url('../../site/images/icons/list-arrow-left.png'); /* Default background image */
+}
 /* End Link-List */
 
 
