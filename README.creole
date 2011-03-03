@@ -19,6 +19,7 @@ For more information, please read the docs: http://docs.mollyproject.org/
 At the time of writing there are a few primary  methods of getting (free, best
 effort) support for the Molly Project:
 
+ * Issue Tracker: http://issues.mollyproject.org/
  * Mailing lists: https://sourceforge.net/mail/?group_id=309230
  * IRC: irc://irc.freenode.net/#molly
  * Email the main contributing team (Mobile Oxford at Oxford University
