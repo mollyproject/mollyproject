@@ -211,7 +211,9 @@ ul.link-list li a, ol.search-results li a {
 }
 /* End Link-List */
 
-
+ul li.page-break {
+    border-top:1px solid #9c0c0a;
+}
 
 ul.stand-alone {
     margin: 10px;
