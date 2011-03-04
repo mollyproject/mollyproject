@@ -5,22 +5,22 @@ from molly.utils.breadcrumbs import *
 
 class IndexView(BaseView):
     @BreadcrumbFactory
-    def breadcrumb(cls, request, context):
+    def breadcrumb(self, request, context):
         return Breadcrumb(
-            cls.conf.local_name,
+            self.conf.local_name,
             None,
             'Maps',
             lazy_reverse('maps:osm-about'),
         )
 
-    def handle_GET(cls, request, context):
+    def handle_GET(self, request, context):
         raise Http404
 
 class TouchMapLiteView(BaseView):
     @BreadcrumbFactory
-    def breadcrumb(cls, request, context):
+    def breadcrumb(self, request, context):
         return Breadcrumb(
-            cls.conf.local_name,
+            self.conf.local_name,
             None,
             'Maps',
             lazy_reverse('maps:touchmaplite'),

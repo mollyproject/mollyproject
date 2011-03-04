@@ -14,15 +14,15 @@ from molly.conf import all_apps
 #     to load the other app again (and fail).
 
 class SearchForm(object):
-    def __new__(cls, *args, **kwargs):
+    def __new__(self, *args, **kwargs):
         try:
-            return cls._search_form_class(*args, **kwargs)
+            return self._search_form_class(*args, **kwargs)
         except AttributeError:
-            cls._search_form_class = cls._get_search_form_class()
-            return cls._search_form_class(*args, **kwargs)
+            self._search_form_class = self._get_search_form_class()
+            return self._search_form_class(*args, **kwargs)
 
     @classmethod
-    def _get_search_form_class(cls):
+    def _get_search_form_class(self):
         APPLICATION_CHOICES = (
             ('', 'Show all'),
         ) + tuple((app.local_name, app.title) for app in all_apps() if app.application_name)

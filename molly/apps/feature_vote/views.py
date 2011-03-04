@@ -24,15 +24,15 @@ class IndexView(BaseView):
     # -      -
     # -    ++
     @BreadcrumbFactory
-    def breadcrumb(cls, request, context):
+    def breadcrumb(self, request, context):
         return Breadcrumb(
-            cls.conf.local_name,
+            self.conf.local_name,
             None,
             'Feature suggestions',
             lazy_reverse('index'),
         )
 
-    def initial_context(cls, request):
+    def initial_context(self, request):
         if not 'feature_vote:csrf' in request.session:
             request.session['feature_vote:csrf'] = ''.join(random.choice('0123456789abcdef') for i in range(8))
         if not 'feature_vote:votes' in request.session:
@@ -49,10 +49,10 @@ class IndexView(BaseView):
             'submitted': request.GET.get('submitted') == 'true',
         }
 
-    def handle_GET(cls, request, context):
-        return cls.render(request, context, 'feature_vote/index')
+    def handle_GET(self, request, context):
+        return self.render(request, context, 'feature_vote/index')
 
-    def handle_POST(cls, request, context):
+    def handle_POST(self, request, context):
         form = context['form']
 
         if request.POST.get('csrf') != request.session['feature_vote:csrf']:
@@ -66,8 +66,8 @@ class IndexView(BaseView):
             request.session['feature_vote:votes'][feature.id] = vote
             request.session.modified = True
 
-            feature.down_vote += cls.vote_transitions[(previous_vote, vote)][0]
-            feature.up_vote += cls.vote_transitions[(previous_vote, vote)][1]
+            feature.down_vote += self.vote_transitions[(previous_vote, vote)][0]
+            feature.up_vote += self.vote_transitions[(previous_vote, vote)][1]
 
             feature.save()
 
@@ -85,25 +85,25 @@ class IndexView(BaseView):
                 'title': form.cleaned_data['title'],
                 'description': form.cleaned_data['description'],
                 'feature': form.instance,
-            }, 'feature_vote/feature_create.eml', cls)
+            }, 'feature_vote/feature_create.eml', self)
 
             return HttpResponseSeeOther(reverse('feature_vote:index') + '?submitted=true')
         else:
-            return cls.handle_GET(request, context)
+            return self.handle_GET(request, context)
 
 
 class FeatureDetailView(BaseView):
 
     @BreadcrumbFactory
-    def breadcrumb(cls, request, context, id):
+    def breadcrumb(self, request, context, id):
         return Breadcrumb(
-            cls.conf.local_name,
+            self.conf.local_name,
             lazy_parent('index'),
             context['feature'].title,
             lazy_reverse('feature-detail'),
         )
 
-    def initial_context(cls, request, id):
+    def initial_context(self, request, id):
         if not 'feature_vote:csrf' in request.session:
             request.session['feature_vote:csrf'] = ''.join(random.choice('0123456789abcdef') for i in range(8))
         if not 'feature_vote:votes' in request.session:
@@ -115,5 +115,5 @@ class FeatureDetailView(BaseView):
             'csrf': request.session['feature_vote:csrf'],
         }
 
-    def handle_GET(cls, request, context, id):
-        return cls.render(request, context, 'feature_vote/feature_detail')
+    def handle_GET(self, request, context, id):
+        return self.render(request, context, 'feature_vote/feature_detail')

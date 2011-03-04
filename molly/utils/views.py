@@ -45,7 +45,7 @@ def renderer(format, mimetypes=(), priority=0):
     return g
 
 class ViewMetaclass(type):
-    def __new__(cls, name, bases, dict):
+    def __new__(mcs, name, bases, attrs):
 
         # Pull the renderers from the bases into a couple of new dicts for
         # this view's renderers
@@ -56,7 +56,7 @@ class ViewMetaclass(type):
                 formats.update(base.FORMATS)
                 formats_by_mimetype.update(base.FORMATS_BY_MIMETYPE)
 
-        for key, value in dict.items():
+        for key, value in attrs.items():
             # If the method is a renderer we add it to our dicts. We can't add
             # the functions right now because we want them bound to the view
             # instance that hasn't yet been created. Instead, add the keys (strs)
@@ -72,13 +72,13 @@ class ViewMetaclass(type):
                     formats_by_mimetype[mimetype] = key
                 formats[value.format] = key
 
-        dict.update({
+        attrs.update({
             'FORMATS': formats,
             'FORMATS_BY_MIMETYPE': formats_by_mimetype,
         })
 
         # Create our view.
-        view = type.__new__(cls, name, bases, dict)
+        view = type.__new__(mcs, name, bases, attrs)
 
         return view
 
@@ -106,11 +106,11 @@ class BaseView(object):
     def initial_context(self, request, *args, **kwargs):
         return {}
     
-    def __new__(cls, conf, *args, **kwargs):
+    def __new__(self, conf, *args, **kwargs):
         if isinstance(conf, HttpRequest):
-            return cls(None)(conf, *args, **kwargs)
+            return self(None)(conf, *args, **kwargs)
         else:
-            return object.__new__(cls, conf, *args, **kwargs)
+            return object.__new__(self, conf, *args, **kwargs)
 
     def __init__(self, conf=None):
         self.conf = conf
@@ -122,8 +122,8 @@ class BaseView(object):
         self.FORMATS_BY_MIMETYPE = tuple((key, getattr(self, value)) for (key, value) in formats_sorted)
     
     def __unicode__(self):
-        cls = type(self)
-        return ".".join((cls.__module__, cls.__name__))
+        self = type(self)
+        return ".".join((self.__module__, self.__name__))
 
     def __call__(self, request, *args, **kwargs):
         method_name = 'handle_%s' % request.method
@@ -201,7 +201,7 @@ Supported ranges are:
             response.status_code = 406 # Not Acceptable
             return response
 
-    def parse_accept_header(cls, accept):
+    def parse_accept_header(self, accept):
         media_types = []
         for media_type in accept.split(','):
             try:

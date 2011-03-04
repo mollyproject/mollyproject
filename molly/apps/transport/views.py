@@ -10,29 +10,29 @@ from molly.apps.places.models import Entity, EntityType
 
 class IndexView(BaseView):
     @BreadcrumbFactory
-    def breadcrumb(cls, request, context):
+    def breadcrumb(self, request, context):
         return Breadcrumb(
-            cls.conf.local_name,
+            self.conf.local_name,
             None,
             'Transport',
-            lazy_reverse('%s:index' % cls.conf.local_name),
+            lazy_reverse('%s:index' % self.conf.local_name),
         )
     
-    def initial_context(cls, request):
+    def initial_context(self, request):
         location = request.session.get('geolocation:location')
         if location:
             location = Point(location, srid=4326)
         
         context, entities = {'location':location}, set()
         
-        if cls.conf.train_station:
-            scheme, value = cls.conf.train_station.split(':')
+        if self.conf.train_station:
+            scheme, value = self.conf.train_station.split(':')
             entity = Entity.objects.get(_identifiers__scheme=scheme, _identifiers__value=value)
             entities.add(entity)
             context['train_station'] = entity
             
-        for context_key in getattr(cls.conf, 'nearby', {}):
-            type_slug, count, without_location, fav_override = cls.conf.nearby[context_key]
+        for context_key in getattr(self.conf, 'nearby', {}):
+            type_slug, count, without_location, fav_override = self.conf.nearby[context_key]
             et = EntityType.objects.get(slug=type_slug)
             if fav_override:
                 favourites = filter(lambda e: e is not None and et in e.all_types_completion.all(), [f['metadata'].get('entity') for f in get_favourites(request)])
@@ -50,9 +50,9 @@ class IndexView(BaseView):
             else:
                 es = favourites
             
-            if context_key == 'park_and_rides' and getattr(cls.conf, 'park_and_ride_sort', None) is not None:
+            if context_key == 'park_and_rides' and getattr(self.conf, 'park_and_ride_sort', None) is not None:
                 sorted_es = []
-                for key, id in [s.split(':') for s in cls.conf.park_and_ride_sort]:
+                for key, id in [s.split(':') for s in self.conf.park_and_ride_sort]:
                     for e in es:
                         if id in e.identifiers[key]:
                             sorted_es.append(e)
@@ -66,7 +66,7 @@ class IndexView(BaseView):
                 'results_type': 'Favourite' if fav_override and len(favourites) > 0 else 'Nearby'
             }
             
-        if getattr(cls.conf, 'travel_alerts', False):
+        if getattr(self.conf, 'travel_alerts', False):
             es = Entity.objects.filter(primary_type__slug='travel-alert')
             if location:
                 es = es.filter(location__isnull=False).distance(location).order_by('distance')
@@ -82,8 +82,8 @@ class IndexView(BaseView):
         
         return context
     
-    def handle_GET(cls, request, context):
+    def handle_GET(self, request, context):
         context.update({
             'reload_after_location_update': True,
         })
-        return cls.render(request, context, 'transport/index')
+        return self.render(request, context, 'transport/index')

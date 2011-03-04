@@ -14,7 +14,7 @@ class IndexView(BaseView):
     AVAILABLE_CHARS = '23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghkmnpqrstuvwxyz'
     has_alpha_re = re.compile(r'[a-zA-Z]')
 
-    def initial_context(cls, request):
+    def initial_context(self, request):
         try:
             path = request.GET['path']
             view, view_args, view_kwargs = resolve(path.split('?')[0])
@@ -40,7 +40,7 @@ class IndexView(BaseView):
             'complex_shorten': ('?' in path) or view_context is None or view_context.get('complex_shorten', False),
         }
 
-    def breadcrumb(cls, request, context):
+    def breadcrumb(self, request, context):
         view, view_context = context['view'], context['view_context']
         view_args, view_kwargs = context['view_args'], context['view_kwargs']
 
@@ -68,11 +68,11 @@ class IndexView(BaseView):
             )
                 
 
-    def handle_GET(cls, request, context):
+    def handle_GET(self, request, context):
         try:
             path = request.GET['path']
         except (KeyError):
-            return cls.invalid_path(request, context)
+            return self.invalid_path(request, context)
 
         if IndexView in getattr(context['view'], '__mro__', ()):
             return HttpResponsePermanentRedirect(path)
@@ -82,8 +82,8 @@ class IndexView(BaseView):
         if created:
             if context['complex_shorten']:
                 slug = None
-                while not (slug and ShortenedURL.objects.filter(slug=slug).count() == 0 and cls.has_alpha_re.search(slug)):
-                    slug = ''.join(random.choice(cls.AVAILABLE_CHARS) for i in range(5))
+                while not (slug and ShortenedURL.objects.filter(slug=slug).count() == 0 and self.has_alpha_re.search(slug)):
+                    slug = ''.join(random.choice(self.AVAILABLE_CHARS) for i in range(5))
             else:
                 slug = unicode(context['shortened_url'].id)
             context['shortened_url'].slug = slug
@@ -91,4 +91,4 @@ class IndexView(BaseView):
 
         context['url'] = request.build_absolute_uri('/' + context['shortened_url'].slug)
 
-        return cls.render(request, context, 'url_shortener/index')
+        return self.render(request, context, 'url_shortener/index')

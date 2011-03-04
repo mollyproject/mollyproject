@@ -14,23 +14,23 @@ from forms import FeedbackForm
 class IndexView(BaseView):
 
     @BreadcrumbFactory
-    def breadcrumb(cls, request, context):
+    def breadcrumb(self, request, context):
         return Breadcrumb(
-            cls.conf.local_name, None, 'Feedback',
+            self.conf.local_name, None, 'Feedback',
             lazy_reverse('index'))
 
-    def initial_context(cls, request):
+    def initial_context(self, request):
         return {
             'feedback_form': FeedbackForm(request.POST or None)}
 
-    def handle_GET(cls, request, context):
+    def handle_GET(self, request, context):
         context.update({
            'sent': request.GET.get('sent') == 'true',
            'referer': request.GET.get('referer', ''),
         })
-        return cls.render(request, context, 'feedback/index')
+        return self.render(request, context, 'feedback/index')
 
-    def handle_POST(cls, request, context):
+    def handle_POST(self, request, context):
         form = context['feedback_form']
         if form.is_valid():
             # Send an e-mail to the managers notifying of feedback.
@@ -38,7 +38,7 @@ class IndexView(BaseView):
                 'email': form.cleaned_data['email'],
                 'referer': request.POST.get('referer', ''),
                 'body': form.cleaned_data['body'],
-            }, 'feedback/email.txt', cls)
+            }, 'feedback/email.txt', self)
 
             qs = urllib.urlencode({
                 'sent': 'true',
@@ -49,4 +49,4 @@ class IndexView(BaseView):
                                         (reverse('feedback:index'), qs))
 
         else:
-            return cls.handle_GET(request, context)
+            return self.handle_GET(request, context)

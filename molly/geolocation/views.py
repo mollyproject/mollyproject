@@ -14,7 +14,11 @@ from molly.geolocation.forms import LocationUpdateForm
 from molly.geolocation import geocode, reverse_geocode
 
 class GeolocationView(BaseView):
-    def initial_context(cls, request):
+    """
+    Deals with setting location using POST requests (either forms or AJAX)
+    """
+    
+    def initial_context(self, request):
         data = dict(request.REQUEST.items())
         return {
             'form': LocationUpdateForm(data),
@@ -23,7 +27,7 @@ class GeolocationView(BaseView):
             'requiring_url': hasattr(request, 'requiring_url'),
         }
 
-    def set_location(cls, request, name, location, accuracy, method, with_history=False):
+    def set_location(self, request, name, location, accuracy, method, with_history=False):
         request.session['geolocation:location'] = location
         request.session['geolocation:updated'] = datetime.utcnow()
         request.session['geolocation:name'] = name
@@ -45,9 +49,9 @@ class GeolocationView(BaseView):
         if method in ('other', 'manual', 'geocoded', 'html5request') or \
            not 'geolocation:location' in request.session or \
            (last_updated > datetime.utcnow() - timedelta(seconds=3600) and distance_moved > 250):
-            cls.add_to_history(request, name, location, accuracy, method)
+            self.add_to_history(request, name, location, accuracy, method)
 
-    def add_to_history(cls, request, name, location, accuracy, method):
+    def add_to_history(self, request, name, location, accuracy, method):
         if not 'geolocation:history' in request.session:
             request.session['geolocation:history'] = []
         request.session['geolocation:history'].insert(0, {
@@ -62,16 +66,16 @@ class GeolocationView(BaseView):
 
         # Chop off the last element if the history is now larger than the
         # maximum allowed length.
-        history_size = getattr(cls.conf, 'history_size', 5)
+        history_size = getattr(self.conf, 'history_size', 5)
         request.session['geolocation:history'][history_size:] = []
 
         request.session.modified = True
 
-    def handle_set_location(cls, request, context):
+    def handle_set_location(self, request, context):
         form = context['form']
 
         if form.is_valid():
-            cls.set_location(request,
+            self.set_location(request,
                              form.cleaned_data['name'],
                              form.cleaned_data['location'],
                              form.cleaned_data['accuracy'],
@@ -86,18 +90,18 @@ class GeolocationView(BaseView):
             redirect = reverse('home:index')
 
     @renderer(format="embed", mimetypes=())
-    def render_embed(cls, request, context, template_name):
-        response = cls.render_html(request, context, template_name)
+    def render_embed(self, request, context, template_name):
+        response = self.render_html(request, context, template_name)
         response['X-Embed'] = 'True'
         return response
 
-    def get_location_response(cls, request, context, form = None):
+    def get_location_response(self, request, context, form = None):
         if context.get('return_url').startswith('/'):
             redirect = context['return_url']
         else:
             redirect = reverse('home:index')
         if context['format'] == 'json':
-            return cls.render(request, {
+            return self.render(request, {
                 'name': request.session['geolocation:name'],
                 'redirect': redirect,
                 'accuracy': request.session['geolocation:accuracy'],
@@ -121,16 +125,16 @@ class GeolocationView(BaseView):
                 context.update({
                     'geolocation_alternatives': form.cleaned_data.get('alternatives')
                 })
-                return cls.handle_GET(request, context)
+                return self.handle_GET(request, context)
             else:
                 return HttpResponseSeeOther(redirect)
 
 class IndexView(GeolocationView):
     @BreadcrumbFactory
-    def breadcrumb(cls, request, context):
+    def breadcrumb(self, request, context):
         if not request.REQUEST.get('return_url'):
             return Breadcrumb(
-                cls.conf.local_name,
+                self.conf.local_name,
                 None,
                 'Update location',
                 lazy_reverse('geolocation:index'),
@@ -138,8 +142,8 @@ class IndexView(GeolocationView):
 
         try:
             parent_view, args, kwargs = resolve(request.REQUEST['return_url'])
-            parent_data = parent_view.breadcrumb.data(cls, request, context, *args, **kwargs)
-            parent_data = parent_data.parent(cls, parent_view.conf.local_name, request, context)
+            parent_data = parent_view.breadcrumb.data(self, request, context, *args, **kwargs)
+            parent_data = parent_data.parent(self, parent_view.conf.local_name, request, context)
 
             parent = lambda _1, _2, _3, _4: parent_data
             application = parent_data.application
@@ -159,30 +163,30 @@ class IndexView(GeolocationView):
             lazy_reverse('index'),
         )
 
-    def handle_GET(cls, request, context):
+    def handle_GET(self, request, context):
         if context['format'] == 'embed':
-            return cls.render(request, context, 'geolocation/update_location_embed')
+            return self.render(request, context, 'geolocation/update_location_embed')
         else:
             if request.session.get('geolocation:location') \
               and context.get('return_url') \
               and not request.REQUEST.get('update', False) \
               and not 'geolocation_alternatives' in context:
                 return HttpResponseSeeOther(context.get('return_url'))
-            return cls.render(request, context, 'geolocation/update_location')
+            return self.render(request, context, 'geolocation/update_location')
 
-    def handle_POST(cls, request, context):
+    def handle_POST(self, request, context):
         form = context['form']
 
         if form.is_valid():
             context['return_url'] = update_url(context['return_url'], {'location_error': None}, None)
-            cls.handle_set_location(request, context)
-            return cls.get_location_response(request, context, form)
+            self.handle_set_location(request, context)
+            return self.get_location_response(request, context, form)
         else:
             if context['format'] == 'json':
                 context = {
                     'error': form.errors.popitem()[1].pop(),
                 }
-                return cls.render(request, context, None)
+                return self.render(request, context, None)
             else:
                 return_url = update_url(
                     context['return_url'],
@@ -196,33 +200,33 @@ class FavouritesView(GeolocationView):
 
     actions = frozenset(['add', 'remove', 'set'])
 
-    def new_id(cls, request):
+    def new_id(self, request):
         while True:
             id = ''.join(random.choice('0123456789abcdef') for i in range(8))
             if id in request.session['geolocation:favourites']:
                 continue
             return id
 
-    def handle_POST(cls, request, context):
+    def handle_POST(self, request, context):
         if not 'geolocation:favourites' in request.session:
             request.session['geolocation:favourites'] = {}
 
         action = request.POST.get('action')
 
-        if action not in cls.actions:
+        if action not in self.actions:
             return HttpResponseBadRequest()
 
-        handler = getattr(cls, 'do_%s' % action)
+        handler = getattr(self, 'do_%s' % action)
 
         try:
             handler(request, context)
         except (ValueError, KeyError):
             return HttpResponseBadRequest()
 
-        return cls.get_location_response(request, context)
+        return self.get_location_response(request, context)
 
-    def do_add(cls, request, context):
-        id = cls.new_id(request)
+    def do_add(self, request, context):
+        id = self.new_id(request)
 
         if any(f['name'] == request.POST['name'] for f in request.session['geolocation:favourites'].values()):
             return
@@ -234,14 +238,14 @@ class FavouritesView(GeolocationView):
         }
         request.session.modified = True
 
-    def do_remove(cls, request, context):
+    def do_remove(self, request, context):
         request.session['geolocation:favourites'].pop(request.POST['id'], None)
         request.session.modified = True
 
-    def do_set(cls, request, context):
+    def do_set(self, request, context):
         loc = request.session['geolocation:favourites'][request.POST['id']]
         if context['form'].is_valid():
-            cls.handle_set_location(request, context)
+            self.handle_set_location(request, context)
         else:
             raise ValueError
 
@@ -260,7 +264,7 @@ class ClearHistoryView(GeolocationView):
         return self.get_location_response(request, context)
 
 class LocationRequiredView(BaseView):
-    def is_location_required(cls, request, *args, **kwargs):
+    def is_location_required(self, request, *args, **kwargs):
         return True
 
     def __call__(self, request, *args, **kwargs):

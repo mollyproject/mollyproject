@@ -10,21 +10,21 @@ class IndexView(BaseView):
     View to display the OUCS service status information.
     """
 
-    def get_metadata(cls, request):
+    def get_metadata(self, request):
         return {
             'title': 'Service Status',
             'additional': 'Check whether OUCS and OLIS services are available',
         }
 
     @BreadcrumbFactory
-    def breadcrumb(cls, request, context):
+    def breadcrumb(self, request, context):
         return Breadcrumb('service_status', None,
                           'Service Status',
                           lazy_reverse('index'))
 
-    def handle_GET(cls, request, context):
+    def handle_GET(self, request, context):
         services = []
-        for provider in cls.conf.providers:
+        for provider in self.conf.providers:
             try:
                 status = provider.get_status()
             except Exception, e:
@@ -39,5 +39,5 @@ class IndexView(BaseView):
         
         context['services'] = services
 
-        return cls.render(request, context, 'service_status/index')
+        return self.render(request, context, 'service_status/index')
 
