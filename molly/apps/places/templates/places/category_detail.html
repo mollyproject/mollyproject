@@ -1,6 +1,6 @@
 {% extends "places/base.html" %}
 {% load molly_utils %}
-
+{% block extrahead %}{% include "geolocation/js.html" %}{% endblock extrahead %}
 {% block pagetitle %}{{ entity_types.0.verbose_name_plural|capfirst }}{% endblock %}
 {% block title %}{{ entity_types.0.verbose_name_plural|capfirst }}{% endblock %}
 
@@ -39,11 +39,10 @@
   </div>
 {% endif %}
 
-<ul class="link-list{% ifnotequal entities.paginator.num_pages 1 %} no-round-bottom{% endifnotequal %}">
+<ul class="link-list{% ifnotequal entities.paginator.num_pages 1 %} no-round-bottom{% endifnotequal %}" id="category-list">
 {% for entity in entities.object_list %}{% if entity.title %}
     <li{% if forloop.last %} class="round-bottom"{% endif %}><a href="{{ entity.get_absolute_url }}">
-      {{ entity.title|capfirst }}{% if multiple_entity_types %}<br/>
-      <small>{{ entity.primary_type.verbose_name|capfirst }}</small>{% endif %}
+      {{ entity.title|capfirst }}
     </a></li>
 {% endif %}{% endfor %}
 </ul>
@@ -51,12 +50,12 @@
 {% ifnotequal entities.paginator.num_pages 1 %}
 <div class="section-content no-round-bottom">
    <div class="note"><div class="bubble pad-10">
-     Page {{ entities.number }} of {{ entities.paginator.num_pages }}
+     Page <span class="current-page">{{ entities.number }}</span> of {{ entities.paginator.num_pages }}
    </div></div>
 </div>
 <ul class="link-list">
   {% if entities.has_previous %}<li><a href="?page={{ entities.previous_page_number }}">Previous page</a></li>{% endif %}
-  {% if entities.has_next %}<li><a href="?page={{ entities.next_page_number }}">Next page</a></li>{% endif %}
+  {% if entities.has_next %}<li class="next"><a href="?page={{ entities.next_page_number }}">Next page</a></li>{% endif %}
 </ul>
 {% endifnotequal %}
 

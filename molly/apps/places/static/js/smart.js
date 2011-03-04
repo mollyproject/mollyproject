@@ -50,4 +50,31 @@ $(function(){
         return false;
     })
     
+    $('li.next a').click(function(){
+        $.ajax({
+            url: $(this).attr('href'),
+            data: { format: 'json' },
+            dataType: 'json',
+            success: function(data){
+                $('.current-page').html(data.entities.number)
+                
+                if (data.entities.has_next) {
+                    $('li.next a').attr('href', '?page=' + (data.entities.number + 1).toString(10))
+                } else {
+                    $('li.next').remove()
+                }
+                for (i in data.entities.objects) {
+                    item = data.entities.objects[i]
+                    $('#category-list').append('<li><a href="' + item._url + '">' +
+                                                item.title + 
+                                                '</a></li>')
+                    if (i == 0) {
+                        $('#category-list li:last').addClass('page-break')
+                    }
+                }
+            }
+        })
+        return false;
+    })
+    
 })
