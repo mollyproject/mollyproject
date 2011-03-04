@@ -255,6 +255,8 @@ class Entity(models.Model):
             'metadata': self.metadata,
             'title': self.title,
             'identifiers': self.identifiers,
+            'identifier_scheme': self.identifier_scheme,
+            'identifier_value': self.identifier_value
         })
             
 

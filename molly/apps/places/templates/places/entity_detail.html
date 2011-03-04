@@ -2,9 +2,23 @@
 
 {% block extrahead %}
   {% if entity.metadata.meta_refresh %}
-    <meta http-equiv="refresh" content="{{ entity.metadata.meta_refresh }}" />
+    {% if use_javascript %}
+      {% include "geolocation/js.html" %}
+    <script type="text/javascript">
+        var refreshFrequency = {{ entity.metadata.meta_refresh }};
+	setTimeout(function(){
+	    $.ajax({
+		url: window.location.href,
+		data: { format: 'json' },
+		dataType: 'json',
+		success: refreshRTI
+	    })
+	}, refreshFrequency * 1000)
+    </script>
+    {% else %}
+      <meta http-equiv="refresh" content="{{ entity.metadata.meta_refresh }}" />
+    {% endif %}
   {% endif %}
-  {% include "geolocation/js.html" %}
 {% endblock %}
 
 {% block content %}
@@ -28,9 +42,9 @@
       <h2>Map</h2>
     {% else %}
       {% if entity.identifiers.naptan %}
-	<h2><small>Real-time information from bus stop {{entity.identifiers.naptan}} - {% now "G:i:s "%}</small></h2>
+	<h2><small>Real-time information from bus stop {{entity.identifiers.naptan}} - <span class="update-time">{% now "G:i:s "%}</span></small></h2>
       {% else %}
-	<h2>Real-time information - {% now "G:i:s "%}</h2>
+	<h2>Real-time information - <span class="update-time">{% now "G:i:s "%}</span></h2>
       {% endif %}
     {% endif %}
  </div>

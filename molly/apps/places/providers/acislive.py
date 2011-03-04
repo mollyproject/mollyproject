@@ -183,7 +183,7 @@ class ACISLiveMapsProvider(BaseMapsProvider):
             'services': services,
             'pip_info': pip_info,
         }
-        entity.metadata['meta_refresh'] = 60
+        entity.metadata['meta_refresh'] = 30
 
 class NoACISLiveInstanceException(Exception):
     """
