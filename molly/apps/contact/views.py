@@ -3,7 +3,6 @@ import hashlib
 import urllib2
 
 from django.http import HttpResponse
-from django.core.paginator import Paginator
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
@@ -54,33 +53,16 @@ class ResultListView(IndexView):
 
         if form.is_valid():
 
-            try:
-                page = int(request.GET.get('page', '1'))
-            except ValueError:
-                page = 1
-
             query = provider.normalize_query(form.cleaned_data, medium)
 
             try:
-                if provider.handles_pagination:
-                    paginator = provider.perform_query(page=page, **query)
-                else:
-                    people = provider.perform_query(**query)
-                    paginator = Paginator(people, 10)
+                people = provider.perform_query(**query)
             except TooManyResults:
                 return self.handle_error(request, context,
                                          "Your search returned too many results.")
 
-            if not (1 <= page <= paginator.num_pages):
-                return self.handle_error(
-                    request, context,
-                    'There are no results for this page.',
-                )
-            page = paginator.page(page)
-
             context.update({
-                'page': page,
-                'results': paginator,
+                'results': people,
                 'medium': medium,
             })
 
