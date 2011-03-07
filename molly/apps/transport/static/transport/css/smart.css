@@ -1,22 +1,22 @@
-ul#transport-links{
-	list-style: none;
-	margin: 5px 0 0 0;
-	padding: 5px;
-	text-align:center;
+ul#transport-links {
+    list-style: none;
+    margin: 5px 0 0 0;
+    padding: 5px;
+    text-align:center;
 }
 
 ul li.transport-link {
-	margin: 0 5px;
-	display: inline-block;
-	background-color: #002B4C;
-	background: -webkit-gradient(linear, left top, left bottom,
-	      from(rgb(105,153,195)), color-stop(0.5, rgb(3,59,113)), to(rgb(27,87,144)));
-	background: -moz-linear-gradient(top, rgb(105,153,195), rgb(3,59,113), rgb(27,87,144));
-	border-radius: 8px; -webkit-border-radius: 8px; -moz-border-radius: 8px; 
-	
-	box-shadow: 3px 3px 3px #333;
-	-webkit-box-shadow: 3px 3px 3px #333;
-	-moz-box-shadow: 3px 3px 3px #333;
+    margin: 0 5px;
+    display: inline-block;
+    background-color: #002B4C;
+    background: -webkit-gradient(linear, left top, left bottom,
+          from(rgb(105,153,195)), color-stop(0.5, rgb(3,59,113)), to(rgb(27,87,144)));
+    background: -moz-linear-gradient(top, rgb(105,153,195), rgb(3,59,113), rgb(27,87,144));
+    border-radius: 8px; -webkit-border-radius: 8px; -moz-border-radius: 8px; 
+    
+    box-shadow: 3px 3px 3px #333;
+    -webkit-box-shadow: 3px 3px 3px #333;
+    -moz-box-shadow: 3px 3px 3px #333;
 }
 
 ul li.transport-link a img { border: 0; }
@@ -31,6 +31,35 @@ ul li.transport-link a img { border: 0; }
 
 #park_and_rides .header h2 {
     background-image: url('../../transport/images/pride-small.png');
+}
+
+#park_and_rides .header h2 a {
+    color: inherit;
+}
+
+#park_and_rides .section-content {
+    color: #000;
+}
+
+.park-and-ride {
+    width: 50%;
+    margin: 3px auto 3px auto;
+}
+
+.park-and-ride h3 {
+    color: #000;
+}
+
+.park-and-ride div.capacity-bar {
+    width: 90%;
+    border: 1px solid #7c7c7c;
+    height: 7px;
+    background-color: #39d93c;
+    margin: 5px auto;
+}
+
+.park-and-ride p {
+    text-align: center;
 }
 
 #bus .header h2 {
