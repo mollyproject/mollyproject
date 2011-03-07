@@ -4,7 +4,7 @@
   {% if entity.metadata.meta_refresh %}
     {% if use_javascript %}
       {% include "geolocation/js.html" %}
-    <script type="text/javascript">
+      <script type="text/javascript">
         var refreshFrequency = {{ entity.metadata.meta_refresh }};
 	setTimeout(function(){
 	    $.ajax({
@@ -14,7 +14,19 @@
 		success: refreshRTI
 	    })
 	}, refreshFrequency * 1000)
-    </script>
+	
+	$(function(){
+	    $('.nearby a').click(function(){
+		$.ajax({
+		    url: $(this).attr('href'),
+		    data: { format: 'json' },
+		    dataType: 'json',
+		    success: function(data){parse_results(data, true)}
+		})
+		return false;
+	    })
+	})
+      </script>
     {% else %}
       <meta http-equiv="refresh" content="{{ entity.metadata.meta_refresh }}" />
     {% endif %}
