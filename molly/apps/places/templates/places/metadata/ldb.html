@@ -27,7 +27,7 @@
     <tbody>
       {% if train_station.metadata.ldb.error %}
         <tr>
-          <td colspan="4">
+          <td colspan="{% if train_station.metadata.ldb.platformAvailable %}4{% else %}3{% endif %}">
             <p>
               There is currently a problem retrieving live departure information from the National Rail web site.
             </p>
@@ -76,7 +76,7 @@
           </tr>
         {% empty %}
           <tr>
-            <td colspan="4">There are currently no scheduled {{ board }}.</td>
+            <td colspan="{% if train_station.metadata.ldb.platformAvailable %}4{% else %}3{% endif %}">There are currently no scheduled {{ board }}.</td>
           </tr>
         {% endfor %}
       {% endif %}
@@ -85,12 +85,12 @@
   <ul class="link-list">
     {% if board %}
       {% ifequal board "departures" %}
-        <li><a href="{{ train_station.get_absolute_url }}?board=arrivals">View arrivals board</a></li>
+        <li><a class="ldb-board" href="{{ train_station.get_absolute_url }}?board=arrivals">View arrivals board</a></li>
       {% else %}
-        <li><a href="{{ train_station.get_absolute_url }}?board=departures">View departures board</a></li>
+        <li><a class="ldb-board" href="{{ train_station.get_absolute_url }}?board=departures">View departures board</a></li>
       {% endifequal %}
     {% else %}
-      <li><a href="{{ train_station.get_absolute_url }}?board=arrivals">View arrivals board</a></li>
+      <li><a class="ldb-board" href="{{ train_station.get_absolute_url }}?board=arrivals">View arrivals board</a></li>
     {% endif %}
   </ul>
 </div>

@@ -82,6 +82,8 @@ function refreshTransport(data){
         }
     }
     
+    rebuildLDB($('#ldb'), data)
+    
     ul = $('#travel_news .content-list')
     ul.empty()
     for (var i in data.travel_alerts) {
@@ -92,7 +94,7 @@ function refreshTransport(data){
 function ajaxTransportUpdate(){
     $.ajax({
         url: window.location.href,
-        data: { format: 'json' },
+        data: { format: 'json', board: board },
         dataType: 'json',
         success: refreshTransport
     })

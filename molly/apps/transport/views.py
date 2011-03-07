@@ -90,8 +90,10 @@ class IndexView(BaseView):
         # Get any real-time information for all the places we're about to display
         places_conf = app_by_application_name('molly.apps.places')
         for provider in reversed(places_conf.providers):
-            provider.augment_metadata(entities)
+            provider.augment_metadata(entities,
+                                      board=request.GET.get('board', 'departures'))
         
+        context['board'] = request.GET.get('board', 'departures')
         return context
     
     def handle_GET(self, request, context):

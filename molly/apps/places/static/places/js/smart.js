@@ -37,6 +37,9 @@ function refreshRTI(data){
     if (typeof(data.entity.metadata.real_time_information) != 'undefined') {
         rebuildRTI($('#' + data.entity.identifier_scheme + '-' + data.entity.identifier_value), data.entity.metadata.real_time_information)
     }
+    if (typeof(data.entity.metadata.ldb) != 'undefined') {
+        rebuildLDB($('#' + data.entity.identifier_scheme + '-' + data.entity.identifier_value), data)
+    }
     for (var i in data.entity.associations) {
         for (var j in data.entity.associations[i].entities) {
             var entity = data.entity.associations[i].entities[j]
@@ -48,7 +51,7 @@ function refreshRTI(data){
     setTimeout(function(){
         $.ajax({
             url: window.location.href,
-            data: { format: 'json' },
+            data: { format: 'json', board: board },
             dataType: 'json',
             success: refreshRTI
         })
@@ -97,3 +100,138 @@ function rebuildRTI(elem, metadata){
         }
     }
 }
+
+function rebuildLDB(elem, data){
+    elem.empty()
+    if (data.board) {
+        board = data.board
+    } else {
+        board = 'departures'
+    }
+    elem.append('<div class="header"><h2>' + data.train_station.title + ' (' + board + ') - ' + data.train_station.metadata.ldb.generatedAt.slice(11, 19) + '</h2></div>');
+    
+    if (data.train_station.metadata.ldb.nrccMessages) {
+        elem.append('<ul class="content-list no-round-bottom"></ul>')
+        ul = elem.find('ul:last')
+        for (var i in data.train_station.metadata.ldb.nrccMessages.message) {
+            elem.append('<li>' + data.train_station.metadata.ldb.nrccMessages.message[i] + '</li>')
+        }
+    }
+    
+    elem.append('<table class="content no-round-bottom"><thead><tr></tr></thead><tbody></tbody></table>')
+    tr = elem.find('.content thead tr')
+    if (board == 'arrivals') {
+        tr.append('<th>Origin</th>')
+    } else {
+        tr.append('<th>Destination</th>')
+    }
+    if (data.train_station.metadata.ldb.platformAvailable) {
+        tr.append('<th>Plat.</th>')
+        cols = '4'
+    } else {
+        cols = '3'
+    }
+    tr.append('<th>Scheduled</th><th>Expected</th>')
+    
+    tbody = elem.find('.content tbody')
+    if (data.train_station.metadata.ldb.error) {
+        tbody.append('<tr><td colspan="' + cols + '"><p>There is currently a problem retrieving live departure information from the National Rail web site.</p>' +
+                     '<p>Departure information may still be accessed <a href="http://pda.ojp.nationalrail.co.uk/en/pj/ldbboard/dep/' +  data.train_station.identifiers.crs + '"> directly from their web site</a>.</p></td></tr>')
+    }
+    if (data.train_station.metadata.ldb.trainServices) {
+        for (var i in data.train_station.metadata.ldb.trainServices.service) {
+            service = data.train_station.metadata.ldb.trainServices.service[i]
+            tbody.append('<tr></tr>')
+            tr = tbody.find('tr:last')
+            dest = ''
+            if (board == 'arrivals') {
+                for (var j in service.origin.location) {
+                    if (j > 0 && j < service.origin.location.length - 1) {
+                        dest += ', '
+                    }
+                    if (j > 0 && j == service.origin.location.length - 1) {
+                        dest += ' &amp; '
+                    }
+                    if (j > 0) {
+                        dest += '<br />'
+                    }
+                    dest += service.origin.location[j].locationName
+                    if (service.origin.location[j].via) {
+                        dest += '<br /><small>' + service.origin.location[j].via + '</small>'
+                        if (j < service.origin.location.length - 1) {
+                            dest += '<br />'
+                        }
+                    }
+                }
+            } else {
+                for (var j in service.destination.location) {
+                    if (j > 0 && j < service.destination.location.length - 1) {
+                        dest += ', '
+                    }
+                    if (j > 0 && j == service.destination.location.length - 1) {
+                        dest += ' &amp; '
+                    }
+                    if (j > 0) {
+                        dest += '<br />'
+                    }
+                    dest += service.destination.location[j].locationName
+                    if (service.destination.location[j].via) {
+                        dest += '<br /><small>' + service.destination.location[j].via + '</small>'
+                        if (j < service.destination.location.length - 1) {
+                            dest += '<br />'
+                        }
+                    }
+                }
+            }
+            if (service.isCircularRoute) {
+                dest += '<br /><small>(Circular Route)</small>'
+            }
+            tr.append('<td><a href="' + data.train_station._url + 'service?id=' + encodeURIComponent(service.serviceID) + '" style="color: inherit;" rel="nofollow">' + dest + '</a></td>')
+            if (data.train_station.metadata.ldb.platformAvailable) {
+                if (typeof(service.platform) != 'undefined') {
+                    tr.append('<td>' + service.platform + '</td>')
+                } else {
+                    tr.append('<td>&nbsp;</td>')
+                }
+            }
+            if (board == 'arrivals') {
+                tr.append('<td>' + service.sta + '</td>')
+                tr.append('<td>' + service.eta + '</td>')
+            } else {
+                tr.append('<td>' + service.std + '</td>')
+                tr.append('<td>' + service.etd + '</td>')
+            }
+        }
+        if (data.train_station.metadata.ldb.trainServices.service.length == 0) {
+            tbody.append('<tr><td colspan="' + cols + '">There are currently no scheduled ' + board + '.</td></tr>')
+        }
+    } else {
+        tbody.append('<tr><td colspan="' + cols + '">There are currently no scheduled ' + board + '.</td></tr>')
+    }
+    
+    elem.append('<ul class="link-list"></ul>');
+    ul = elem.find('ul:last')
+    if (board == 'departures') {
+        ul.append('<li><a class="ldb-board" href="' + data.train_station._url + '?board=arrivals">View arrivals board</a></li>')
+    } else {
+        ul.append('<li><a class="ldb-board" href="' + data.train_station._url + '?board=departures">View departures board</a></li>')
+    }
+    setupLDBButtons()
+}
+
+function setupLDBButtons(){
+    $('.ldb-board').click(function(){
+        $.ajax({
+            url: $(this).attr('href'),
+            data: { format: 'json' },
+            dataType: 'json',
+            success: function(data){rebuildLDB($('#ldb'), data)}
+        })
+        return false;
+    })
+}
+
+$(function(){
+    board = getParameterByName( 'board', window.location.href )
+    if (board == '') { board = 'departures'; }
+})

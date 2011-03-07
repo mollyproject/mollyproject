@@ -48,7 +48,7 @@ class LiveDepartureBoardPlacesProvider(BaseMapsProvider):
             except Exception, e:
                 logger.warning("Could not retrieve departure board for station: %r", entity.identifiers.get('crs'))
                 self._add_error((entity,))
-            entity.metadata['meta_refresh'] = 30
+            entity.metadata['meta_refresh'] = 60
     
     @staticmethod
     def service_details(service, entity):
