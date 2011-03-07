@@ -2,7 +2,7 @@
 
 {% block extrahead %}
     {% include "geolocation/js.html" %}
-    
+    {% if use_javascript %}
     <script type="text/javascript">	
 	$(function(){
 	    $('.nearby a').click(function(){
@@ -26,6 +26,7 @@
 	    })
 	})
     </script>
+    {% endif %}
 {% endblock extrahead %}
 
 {% block content %}

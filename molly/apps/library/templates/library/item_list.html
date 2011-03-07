@@ -3,22 +3,23 @@
 {% block extrahead %}
     {% include "geolocation/js.html" %}
     
-
-    <script type="text/javascript">
-        $(function(){
-            
-            $('a.next').click(function(){
-                $.ajax({
-                    url: $(this).attr('href'),
-                    data: { format: 'json' },
-                    dataType: 'json',
-                    success: handleLibraryAJAX
+    {% if use_javascript %}
+        <script type="text/javascript">
+            $(function(){
+                
+                $('a.next').click(function(){
+                    $.ajax({
+                        url: $(this).attr('href'),
+                        data: { format: 'json' },
+                        dataType: 'json',
+                        success: handleLibraryAJAX
+                    })
+                    return false;
                 })
-                return false;
+                
             })
-            
-        })
-    </script>
+        </script>
+    {% endif %}
 {% endblock extrahead %}
 
 {% block content %}

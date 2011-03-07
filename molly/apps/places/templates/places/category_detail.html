@@ -2,6 +2,7 @@
 {% load molly_utils %}
 {% block extrahead %}
   {% include "geolocation/js.html" %}
+  {% if use_javascript %}
   <script type="text/javascript">
     $(function(){
       $('li.next a').click(function(){
@@ -32,6 +33,7 @@
       })
     })
   </script>
+  {% endif %}
 {% endblock extrahead %}
 {% block pagetitle %}{{ entity_types.0.verbose_name_plural|capfirst }}{% endblock %}
 {% block title %}{{ entity_types.0.verbose_name_plural|capfirst }}{% endblock %}
