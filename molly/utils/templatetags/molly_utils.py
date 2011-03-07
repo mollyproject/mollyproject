@@ -4,7 +4,7 @@ except ImportError:
     import StringIO
 
 from lxml import etree
-
+import math
 from datetime import datetime
 
 from django import template
@@ -54,6 +54,13 @@ def this_year(value, arg=None):
     if not arg:
         arg = datetime.now()
     return value.year == arg.year
+
+@register.filter
+def round_up_10(value):
+    """
+    Rounds a number up to the nearest 10
+    """
+    return '%d' % int(math.ceil(int(value)/10)*10)
 
 UNUSUAL_NUMBERS = {
     '+448454647': '0845 46 47', # NHS Direct

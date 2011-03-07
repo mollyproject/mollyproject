@@ -4,6 +4,7 @@ from collections import defaultdict
 from itertools import chain
 import simplejson
 import copy
+import math
 
 from suds import WebFault
 
@@ -251,7 +252,7 @@ class EntityDetailView(ZoomableView, FavouritableView):
         distance, bearing = entity.get_distance_and_bearing_from(user_location)
         additional = '<strong>%s</strong>' % capfirst(entity.primary_type.verbose_name)
         if distance:
-            additional += ', approximately %.3fkm %s' % (distance/1000, bearing)
+            additional += ', about %dm %s' % (int(math.ceil(distance/10)*10), bearing)
         return {
             'title': entity.title,
             'additional': additional,
