@@ -46,8 +46,8 @@ ul li.transport-link a img { border: 0; }
     margin: 3px auto 3px auto;
 }
 
-.park-and-ride h3 {
-    color: #000;
+.park-and-ride h3 a {
+    color: #000
 }
 
 .park-and-ride div.capacity-bar {
