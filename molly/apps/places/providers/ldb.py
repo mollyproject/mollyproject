@@ -12,7 +12,7 @@ from molly.apps.places.providers import BaseMapsProvider
 class LiveDepartureBoardPlacesProvider(BaseMapsProvider):
     _WSDL_URL = "http://realtime.nationalrail.co.uk/ldbws/wsdl.aspx"
     
-    def __init__(self, token, max_services=10, max_results=1):
+    def __init__(self, token, max_services=15, max_results=1):
         self._max_services = max_services
         self._max_results = max_results
         self._token = token
@@ -48,6 +48,7 @@ class LiveDepartureBoardPlacesProvider(BaseMapsProvider):
             except Exception, e:
                 logger.warning("Could not retrieve departure board for station: %r", entity.identifiers.get('crs'))
                 self._add_error((entity,))
+            entity.metadata['meta_refresh'] = 30
     
     @staticmethod
     def service_details(service, entity):
