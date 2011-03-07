@@ -104,9 +104,8 @@ def generate_password():
 
 def reload_postgres(distribution):
     postgres_init_path = {
-        'Ubuntu': '/etc/init.d/postgresql-8.4',
-        'Fedora': '/etc/init.d/postgresql'
-    }.get(distribution)
+        ('Ubuntu', '10.04'): '/etc/init.d/postgresql-8.4',
+    }.get(distribution, '/etc/init.d/postgresql')
     Popen([postgres_init_path, 'restart'], stdout=PIPE).communicate()
 
 print """
@@ -331,7 +330,7 @@ host    all         all         127.0.0.1/32          ident
 # IPv6 local connections:
 host    all         all         ::1/128               ident
                              """)
-            reload_postgres(distribution)
+            reload_postgres((distribution, distribution_version))
             print "DONE!"
     
     else:
