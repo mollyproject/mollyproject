@@ -253,14 +253,13 @@ function locationFound(data) {
     if ($('.favourite-locations-list').length + $('.historic-locations-list').length) {
       $('.location-automatic-list').addClass('no-round-bottom')
     }
+    $(document).trigger('molly-location-update')
   } else {
     locationFailure({message: data.error, code: -1})
   }
   $('.specific-location-form').submit(specificLocationFormSubmit)
   $('.favourite-location-form').submit(favouriteLocationFormSubmit)
-  if (doReloadAfterUpdate) {
-    window.location.reload()
-  }
+  
 }
 
 // Copyright 2007, Google Inc.

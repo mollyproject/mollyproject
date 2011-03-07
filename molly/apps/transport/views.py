@@ -92,7 +92,4 @@ class IndexView(BaseView):
         return context
     
     def handle_GET(self, request, context):
-        context.update({
-            'reload_after_location_update': True,
-        })
         return self.render(request, context, 'transport/index')

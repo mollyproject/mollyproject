@@ -50,6 +50,12 @@ ul li.transport-link a img { border: 0; }
 
 </style>
 {% include "geolocation/js.html" %}
+    <script type="text/javascript">
+        $(function(){
+            setTimeout(function(){ajaxTransportUpdate();setTimeout(ajaxTransportUpdate, 30000)}, 30000)
+            $(document).bind('molly-location-update', ajaxTransportUpdate)
+        })
+    </script>
 {% endblock %}
 
 {% block content %}
