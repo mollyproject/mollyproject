@@ -3,7 +3,11 @@
     {% include "geolocation/js.html" %}
     <script type="text/javascript">
         $(function(){
-            setTimeout(function(){ajaxTransportUpdate();setTimeout(ajaxTransportUpdate, 30000)}, 30000)
+            function refreshTimer(){
+                ajaxTransportUpdate()
+                setTimeout(refreshTimer, 30000)
+            }
+            refreshTimer()
             $(document).bind('molly-location-update', ajaxTransportUpdate)
         })
     </script>
@@ -94,7 +98,7 @@
     {% ifnotequal data.results_type "Favourite" %}
         <div class="section-content no-round-bottom">{% include "geolocation/update_location_embed.html" %}</div>
     {% endifnotequal %}
-    <table class="content">
+    <table class="content{% ifequal data.results_type "Favourite" %} no-round-bottom{% endifequal %}">
         <tbody>
         {% for entity in data.entities %}
             <tr class="sub-section-divider"><th colspan="3"><a href="{{ entity.get_absolute_url }}" style="color:inherit;">
