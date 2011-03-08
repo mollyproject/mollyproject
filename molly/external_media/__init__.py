@@ -6,6 +6,7 @@ Used to import and resize media from external sources e.g. RSS feed images.
 
 from lxml import etree
 import urllib2
+import os.path
 
 from molly.utils.xslt import transform
 from molly.utils.misc import AnyMethodRequest
@@ -55,5 +56,9 @@ def resize_external_image(url, width, timeout=None):
         for eis in ExternalImageSized.objects.filter(external_image=ei, width=width):
             eis.delete()
         eis, created = ExternalImageSized.objects.get_or_create(external_image=ei, width=width)
-
+    
+    if not os.path.exists(eis.get_filename()):
+        eis.delete()
+        eis, created = ExternalImageSized.objects.get_or_create(external_image=ei, width=width)
+    
     return eis
