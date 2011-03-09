@@ -115,6 +115,8 @@ class MediaType(object):
 
         Call as MediaType.resolve([MediaType], [(MediaType, renderer)]).
         """
+        if len(accept) == 0:
+            return []
         accept.sort()
         eq_classes, accept = [[accept[-1]]], accept[:-1]
 
