@@ -484,6 +484,10 @@ elif options.site_path != None:
         if os.path.exists(site):
             shutil.rmtree(site)
         shutil.copytree(options.site_path, site)
+        if not options.no_root:
+            for (dirpath, dirnames, filenames) in os.walk(site):
+                for file in filenames + dirnames:
+                    os.chown(os.path.join(dirpath, file), molly_uid, molly_gid)
 
 def call_in_virtualenv(path, command, wait=True, devnull=True):
     if wait:
