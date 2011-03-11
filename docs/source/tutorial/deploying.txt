@@ -1,274 +1,87 @@
-Installing Molly
-================
+Deploying Molly
+===============
 
-The Quick Way
--------------
+Now you've got your Molly install configured and ready to deploy, there are two
+steps you can follow. The first is to do a local testing deploy using Django's
+built in web server, and the second is to configure Apache to serve the site.
 
-If you're running a recent version of Ubuntu or Fedora, you can use the
-'quickinstall' script to set up a quick Molly instance to play with.
+For development and demonstrations, the local testing install is sufficient,
+however the Django webserver should not be considered as reliable or secure for
+anything other than local testing.
 
-Note that the quickinstall script will override any existing Postgres
-configuration you may have, so you are recommended to run this on a server where
-Postgres only runs Molly (or, you can do it the hard way below).
+Local Testing Installs
+----------------------
 
-First off, you will need a checkout of Molly. You can either grab a tarball from
-the `Downloads part of Github <https://github.com/mollyproject/mollyproject/archives/master>`_,
-and unzip that::
+There are two ways to start up the Django development server. If you do a
+development install of Molly (pass the ``-d`` flag to ``quickinstall``), then
+the development server will automatically start at the end of the install.
 
-    wget https://github.com/mollyproject/mollyproject/tarball/master
-    tar zxvf https://github.com/mollyproject/mollyproject/tarball/master
+The alternative way is to start the server by hand. There are two steps to this,
+the first is to activate the virtualenv, and the second to start the server::
 
-Or clone the Git repository directly::
-
-    git clone git://github.com/mollyproject/mollyproject.git
-
-(note that you may have to install Git for this to work)
-
-The links above will get the latest "unstable" version of Molly, you may wish to
-select a specific version from the
-`download page <https://github.com/mollyproject/mollyproject/archives/master>`_,
-or checkout a specific branch from Git (e.g., git checkout molly1.0).
-
-Once you have a copy of the Molly source on your system, you can just run the
-quickinstaller::
-
-    sudo mollyproject/quickinstall /path/to/whereever
-
-or if you're on a Red Hat-like system::
-
-    su -c "mollyproject/quickinstall /path/to/whereever"
-
-Where /path/to/whereever is where you would like to install Molly (e.g.,
-/srv/molly)
-
-The quick installer will take you through the process of installing and
-configuring Molly, leaving you with a fully functional install in your
-destination. In the destination there will also be a folder called 'deploy' -
-this will contain your site and any customisations to Molly you have. You will
-probably want to copy this somewhere else and keep it under version control. By
-default, it only consists of a settings file, a manage file, a sample Apache
-config and default directories for your customised media (site_media) and
-templates (templates). Please note that the media/ folder is used to contain the
-compiled media, and will be automatically populated by the installer - do not
-edit the files in here!
-
-To start up the development server for Django for your newly installed site,
-then simply run the following::
-
-    cd /path/to/molly
-    source bin/activate
-    cd deploy
+    source /path/to/install/bin/activate
+    cd /path/to/install/deploy
     python manage.py runserver
 
-This will start a default server on localhost, port 8000 (it will give you the
-IP as a startup message), until you press Ctrl+C. You can then use this server
-to start the batch jobs to populate your initial database. Optionally, you can
-start the server to listen to the outside world by altering the last step to::
+Configuring Apache
+------------------
 
-    python manage.py runserver 0.0.0.0:8000
+When a new site is created by the Molly installer, than a sample WSGI and Apache
+configuration file is generated, which can be used to get Molly up and running.
+If you did not create your site using the Molly installer, then sample files
+are included below.
 
-Doing a Production Deployment of Molly
---------------------------------------
+WSGI is an interface between web applications like Molly and a webserver, so
+you must `install the mod_wsgi Apache module <http://code.google.com/p/modwsgi/wiki/InstallationInstructions>`_
+and then configure mod_wsgi in your Apache configuration to serve your site.
 
-The Django webserver is not sufficient to run a production copy of Molly,
-therefore it is recommended that you use Apache and mod_wsgi to host the site.
-The sample site created by the installer consists of a WSGI script and a sample
-Apache config in the apache/ directory of your site.
+.. warning:: Molly by default uses a virtualenv to manage dependencies. mod_wsgi
+             must therefore be set up to use this virtualenv. This can be
+             accomplished by adding ``WSGIPythonHome /path/to/install/`` to your
+             ``httpd.conf`` or mod_wsgi configuration file.
 
-The `mod_wsgi <http://code.google.com/p/modwsgi/wiki/IntegrationWithDjango>`_
-documentation goes into considerable detail about how to deploy a Django
-application.
+You must also set up Apache to serve your site media, as compiled in the
+directory specified by ``STATIC_ROOT`` (this is the ``media`` folder in a default
+install) at the URL specified by the ``STATIC_URL`` setting.
 
-Deploying using an existing site
---------------------------------
+Sample Apache virtualhost config::
 
-Once you have started working on your Molly-based site, you will undoubtedly
-want to keep the code in some sort of version control system, separate from the
-main Molly code. For example, to set up a deployment on a new machine, or
-updating an existing install.
+    <VirtualHost *:80>
+        # Change the following settings as appropriate
+        ServerName m.example.ac.uk
+        ServerAdmin molly@example.ac.uk
+    
+        WSGIDaemonProcess molly user=molly group=molly
+        WSGIProcessGroup molly
+        WSGIScriptAlias / /path/to/my/site/apache/molly.wsgi
+    
+        ErrorLog /var/log/apache2/error.log
+    
+        # Possible values include: debug, info, notice, warn, error, crit,
+        # alert, emerg.
+        LogLevel warn
+    
+        CustomLog /var/log/apache2/access.log combined
+        
+        Alias /media /path/to/my/site/media
+        # It is recommended you create these two files and then set up the links
+        # as appropriate
+        #Alias /robots.txt /path/to/robots.txt
+        #Alias /favicon.ico /path/to/favicon.ico
+    
+    </VirtualHost>
 
-The -s option can be passed to the quickinstall script to tell it to use an
-already existing site, rather than create a new one. For example, if you have a
-Subversion checkout of your site in /home/me/site, and a copy of the Molly code
-at /home/me/mollyproject, and Molly installed at /srv/molly, you can update your
-Molly install to use your site by running::
+Sample WSGI script::
 
-    sudo /home/me/mollyproject/quickinstall -s /home/me/site /srv/molly
-
-Developing Molly
-----------------
-
-To use the quick install script to install Molly in "development mode" (which
-means that installation takes place quicker by missing out some optional steps,
-such as database configuration, and that the code is run directly from your
-source checkout, rather than being installed), simply pass the -d flag to
-quickinstall, e.g.::
-
-    ./quickinstall -d /home/chris/molly/
-
-Note that you do not need to run as root to install Molly in development mode.
-
-Because a development install does not check pre-requisites (or configure the
-database if you need it to do so), you will be required to install Molly's
-system requisites by hand (check 'The Hard Way' below), or to first do a
-non-development installation to ensure the system wide pre-requisites are
-satisfied.
-
-Updating Molly
---------------
-
-To update Molly using the quick-installer, you simply need to run the
-quickinstall script from the new version pointing it to the same location. This
-will recognise that the installation already exists and will update as
-appropriate.
-
-When you are asked for Molly's database name, if you created the database using
-the quick installer, this will default to 'molly'.
-
-The Hard Way
-------------
-
-If you can't, or don't want to, use the Molly quick installer, you can install
-Molly by hand as a standard Python package.
-
-### System Prerequisites
-
-First off, you'll need to install the pre-requisites for Molly and its
-dependencies. On Fedora, this list is:
-
- * python-virtualenv
- * python-pip
- * libxml-devel
- * libxslt-devel
- * python-devel
- * postgresql-devel
- * openldap-devel
- * openssl-devel
- * postgis
- * gdal-python
- * proj
- * postgresql-server
- * geos
- * httpd
- * libjpeg-devel
- * imagemagick
- * gcc
- * make
- * git
-
-On Ubuntu (and Debian), this is:
-
- * python-pip
- * python-virtualenv
- * build-essential
- * postgis
- * python-gdal
- * proj
- * libgeos-3.1.0
- * binutils
- * libgdal1-1.6.0
- * postgresql-8.4
- * postgresql-8.4-postgis
- * postgresql-server-dev-8.4
- * python-setuptools
- * python-dev
- * libxslt-dev
- * libldap2-dev
- * libsasl2-dev
- * imagemagick
- * git-core
-
-Other distributions have similar package names
-
-You need to decide how you would like Molly to be installed - globally on the
-system, or to a directory using a Python virtualenv. If you decide to install it
-into a Python virtualenv, then you can create one like so::
-
-    virtualenv --distribute --no-site-packages PATH-TO-DIRECTORY
-    source PATH-TO-DIRECTORY/bin/activate
-
-(note, if you're installing Molly globally, some systems call "pip"
-"pip-python", so you may need to use that instead)
-
-Molly uses forks of 2 packages in PyPI so these must be manually installed
-first::
-
-    pip install -U git+http://github.com/oucs/PyZ3950.git#egg=PyZ3950
-    pip install -U git+git://github.com/mikelim/django-compress.git#egg=django-compress
-
-And sometimes PIL fails to install when being installed as a dependency, so::
-
-    pip install -U PIL
-
-Now you are ready to install Molly. This can be done by running::
-
-    python setup.py install
-
-in the Molly directory. This will install Molly in your environment, as well as
-pulling in any further dependencies, and you're almost ready to go.
-
-The next step is to prepare the Postgres database for Molly. You will first need
-to create a spatial template
-(`the Django documentation covers how to do this <http://docs.djangoproject.com/en/dev/ref/contrib/gis/install/#spatialdb-template>`_),
-and then use this to create a database for Molly::
-
-    sudo -u postgres createdb -T template_postgis molly
-
-You'll then need to create a user for Molly to connect as::
-
-    sudo -u postgres createuser molly -P
-
-You will be asked to enter a password, and you can choose 'n' for the remaining
-questions. You will also need to configure Postgres for MD5 based
-authentication. This can be done by adding the following line::
-
-    local       molly        molly                md5
-
-to the pg_hba.conf (in /var/lib/pgsql/data on Fedora/Red Hat,
-/etc/postgresql/8.4/main on Ubuntu/Debian) - above the lines ending "ident".
-
-Finally, you'll need to give the molly user access to the molly database::
-
-    sudo -u postgres psql -c "GRANT ALL ON DATABASE molly TO molly;"
-
-Once this is done, you're now ready to configure Molly. If you don't already
-have a Molly site, you will need to create one to do this, this can be done by
-running::
-
-    django-admin createproject site
-
-Which will create a site in a folder called "site". You will then need to
-configure this to use Molly (the :doc:`configuring guide <tutorial/configuring>`
-may help you, or alternatively the config_generator.py script in the scripts/
-folder will generate a typical settings.py).
-
-Once you have a site, you need to update the database. If you're installing into
-a blank database, run the following commands in the site folder::
-
-    python manage.py syncdb --all
-    python manage.py migrate --fake
-
-You should also be asked to create a superuser. Never run those commands on an
-instantiated database though, otherwise it may become out of sync. If your
-database is not blank, then run::
-
-    python manage.py syncdb
-    python manage.py migrate
-
-At this point, you should also make sure that the cache directory exists, and is
-writeable to the user Molly is running as.
-
-You can now build Molly's media::
-
-    python manage.py update_wurfl
-    python manage.py collectstatic
-    python manage.py synccompress
-    python manage.py generate_cache_manifest
-    python manage.py generate_markers
-
-And, if you would like the batch jobs to run when scheduled::
-
-    python manage.py create_crontab | crontab
-
-And tada! Molly is installed and ready to go (so configure Apache, or run the
-development server: python manage.py runserver)
+    #!/usr/bin/env python
+    
+    import os, os.path
+    import sys
+    
+    os.environ['DJANGO_SETTINGS_MODULE'] = 'deploy.settings'
+    sys.path.insert(0, os.path.abspath(os.path.join(
+    os.path.dirname(__file__), '..', '..',
+    )))
+    
+    import django.core.handlers.wsgi
+    application = django.core.handlers.wsgi.WSGIHandler()
