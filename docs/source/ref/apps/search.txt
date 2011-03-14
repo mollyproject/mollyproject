@@ -88,14 +88,14 @@ Providers should extend the
 
 .. autoclass:: molly.apps.search.providers.BaseSearchProvider
 
-    .. automethod :: molly.apps.contact.providers.BaseSearchProvider.perform_search
+    .. automethod :: molly.apps.search.providers.BaseSearchProvider.perform_search
 
 :class:`~molly.apps.search.providers.BaseSearchProvider` also provides the
 following utility methods you may find useful in your implementations:
 
 .. autoclass:: molly.apps.search.providers.BaseSearchProvider
 
-   .. automethod :: molly.apps.contact.providers.BaseSearchProvider.get_metadata
+   .. automethod :: molly.apps.search.providers.BaseSearchProvider.get_metadata
 
 Search results
 """"""""""""""

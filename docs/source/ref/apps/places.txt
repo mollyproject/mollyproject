@@ -14,11 +14,11 @@ Configuration
    type slugs to be included in this category. Used for deciding which category
    is shown on the Nearby page
  * associations: A list of tuples which allow entities to be associated with one
- another, in the form ( ( scheme1, value1, ( heading, ( ( scheme2, value2 ) ,
- ( scheme3, value 3 ) ) ) ), which would associate the entities identified by
- scheme2:value2 and scheme3:value3 with scheme1:value1 (currently this means
- that real time departure information for bus stops are additionally shown on
- the page)
+   another, in the form ( ( scheme1, value1, ( heading, ( ( scheme2, value2 ) ,
+   ( scheme3, value 3 ) ) ) ), which would associate the entities identified by
+   scheme2:value2 and scheme3:value3 with scheme1:value1 (currently this means
+   that real time departure information for bus stops are additionally shown on
+   the page)
  
 Sample::
 

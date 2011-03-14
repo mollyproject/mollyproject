@@ -3,25 +3,11 @@
 
 .. module :: molly.batch_processing
 
-
+This allows for other applications to set up jobs to run on a schedule.
 
 Configuration
 -------------
 
-Sample::
-
-
-Providers
----------
-
-
-
-Writing Your Own Providers
---------------------------
-
-.. todo:: Complete
-
-Views
------
-
-.. todo:: Complete
+This application has no configuration, and is not added as an ``Application``
+to the ``APPLICATIONS`` list in ``settings.py``, it should be added to the
+``INSTALLED_APPS`` list like a standard Django app

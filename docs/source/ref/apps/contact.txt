@@ -73,7 +73,7 @@ This view renders ``contact/result_list.html`` providing the following context:
  * ``form``: The `form <http://docs.djangoproject.com/en/dev/topics/forms/>`_
    used to perform the search
  * ``medium``: The medium selected for this query
- * ``results``: The list of results (as returned by :method:`molly.apps.contact.providers.BaseContactProvider.perform_query`)
+ * ``results``: The list of results (as returned by `molly.apps.contact.providers.BaseContactProvider.perform_query`)
  * ``message``: If set, any error messages generated in the search
 
 There are no overridable blocks provided by this template, but each individual
@@ -88,5 +88,5 @@ The view lives at ``results/:ID:`` in this app, and is handled by
 This view renders ``contact/result_detail.html`` providing the following
 context:
 
- * ``result``: The result object (as returned by :method:`molly.apps.contact.providers.BaseContactProvider.perform_query`
+ * ``result``: The result object (as returned by `molly.apps.contact.providers.BaseContactProvider.perform_query`
    to be rendered)

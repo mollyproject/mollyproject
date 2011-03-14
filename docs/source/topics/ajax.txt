@@ -1,0 +1,19 @@
+AJAX and other Data Formats
+===========================
+
+Molly's approach to views lends itself to a large amount of flexibility. One
+such flexibility is the ability to vary the format of the rendered view based on
+the Accept headers of the client, or a manual override of the data format based
+on an additional GET parameter: format.
+
+To stop this functionality on a particular view (e.g., if the context contains
+data that should not be exposed), you can set ``exposes_user_data`` to True in
+the context.
+
+The data formats supported are:
+
+ * XML
+ * JSON/JSONP
+ * YAML
+
+And in each of these, the is presented as it is in the context.
