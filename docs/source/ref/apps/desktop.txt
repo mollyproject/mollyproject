@@ -1,0 +1,28 @@
+:mod:`molly.apps.desktop` -- Desktop
+====================================
+
+.. module :: molly.apps.desktop
+
+This shows a desktop site to desktop browsers (desktop browsers hitting the main
+page are redirected here)
+
+Configuration
+-------------
+
+ * ``twitter_username`` (optional): If set, this imports a Twitter feed which
+   the desktop templates can display
+ * ``twitter_ignore_urls`` (optional): If set, this filters out tweets in the
+   Twitter feed which contain this URL prefix - this can be used, for example,
+   if you're importing a news blog to your Twitter feed to avoid duplicate
+   content
+ * ``blog_rss_url`` (optional): If set, this imports an RSS news feed which can
+   be displayed to your users
+
+Sample::
+
+    Application('molly.apps.desktop', 'desktop', 'Desktop',
+        display_to_user = False,
+        twitter_username = 'mobileox',
+        twitter_ignore_urls = 'http://post.ly/',
+        blog_rss_url = 'http://feeds.feedburner.com/mobileoxford',
+    ),

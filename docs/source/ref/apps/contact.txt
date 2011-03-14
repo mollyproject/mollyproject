@@ -3,130 +3,90 @@
 
 .. module :: molly.apps.contact
 
-The contact application provides search and pagination of contact-related
-information from any backend.
+This application provides contact search functionality
 
-To use, place the following in your :doc:`settings module </topics/settings>`::
-
-    APPLICATIONS = [
-        # ...
-        Application('molly.apps.contact', 'contact',
-            provider = '...'  # path to contact provider backend
-        ),
-        # ...
-    ]
-
-Contact providers
------------------
-
-A contact provider must inherit :class:`~molly.apps.contact.providers.BaseContactProvider` and expose the following interface:
-
-.. class :: molly.apps.contact.providers.BaseContactProvider
-
-   .. attribute :: handles_pagination
-
-      A boolean specifying whether the contact provider will provide a
-      :class:`~django.core.paginator.Paginator` instance. Useful when an
-      external service determines pagination for the returned results. When
-      this is :const:`True`, an extra :data:`page` argument is passed to
-      :meth:`~molly.apps.contact.providers.ContactProvider.perform_query`.
-
-   .. attribute :: form
-
-      A class object inheriting :class:`~django.forms.Form` to be presented to
-      the user and used for input validation. If not overriden, defaults to
-      :class:`~molly.apps.contact.forms.GenericContactForm`, which presents a
-      single query field.
-
-   .. method :: normalize_query(self, cleaned_data)
-
-      This method is provided the  :attr:`cleaned_data` attribute from the
-      form presented to the user. Must return a dictionary which will be
-      passed as :data:`**kwargs` to :meth:`perform_query`.
-
-   .. method :: perform_query(self, page=None, **kwargs)
-
-      This method performs a contact lookup based on :data:`**kwargs`. If
-      :attr:`handles_pagination` is :const:`True`, the :data:`page` argument
-      must be accepted and a :class:`~django.core.paginator.Paginator`
-      instance returned. Otherwise, no :data:`page` argument will be provided
-      and the method must return a list containing all results.
-
-      Each result must be a dictionary containing some subset of the following
-      keys (taken from :rfc:`4519` which defines standard LDAP attributes):
-
-      * `cn` (common name)
-      * `givenName`
-      * `sn` (surname)
-      * `telephoneNumber`
-      * `facsimileTelephoneNumber`
-      * `mail` (e-mail addresses)
-      * `roomNumber`
-      * `title` (job role, etc.)
-      * `ou` (organisational unit, e.g. department)
-
-      With the exception of `cn`, all should be lists.
-
-      .. note ::
-
-         Yet to be implemented
-
-      Additionally, a result may contain an `id` item, containing a unique
-      identifier which may be passed to :meth:`fetch_result`. `id`\ s must be
-      URI-safe and not contain forward slashes.
-
-   .. method :: fetch_result(self, id):
-
-      .. note ::
-
-         Yet to be implemented
-
-      May optionally be defined to return the full record for a person, where
-      it is decided that :meth:`perform_query` should return a subset of the
-      available fields.
-
-      If defined, the default results template will provide a link to a page
-      for the individual.
-
-Defined views
+Configuration
 -------------
 
-The following views are provided by default:
+ * provider: the provider which provides contact search results
 
-.. class :: molly.apps.contact.views.IndexView(request)
+Sample::
 
-   Static view, rendering :file:`contact/index.html`
+    Application('molly.apps.contact', 'contact', 'Contact search',
+        provider = Provider('molly.apps.contact.providers.LDAPContactProvider'
+                            url='ldap://ldap.mit.edu:389', base_dn='dc=mit,dc=edu'),
+    ),
 
-.. class :: molly.apps.contact.views.ResultListView(request)
+Providers
+---------
 
-   Creates a form from
-   :attr:`~molly.apps.contact.providers.BaseContactProvider.form`, passing the
-   GET parameters from the request; retrieves the results using the form's
-   cleaned data and renders into :file:`contact/result_list.html`.
+:class:`molly.apps.contact.providers.LDAPContactProvider`
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-.. class :: molly.apps.contact.views.ResultDetailView(request, id)
+This queries an LDAP server for contact details. It takes two options:
 
-   :param id: :const:`unicode<types.UnicodeType>` string containing a unique
-              identifier for an individual
+ * url: The URL to the LDAP server to use
+ * base_dn: The base DN to use when searching the LDAP tree
 
-   Takes an identifier as provided by
-   :meth:`~molly.apps.contact.providers.BaseContactProvider.perform_query` and
-   renders the full record into :file:`contact/result_detail.html`.
+Writing Your Own Providers
+--------------------------
 
-Currently implemented providers
--------------------------------
+A contact provider must inherit :class:`~molly.apps.contact.providers.BaseContactProvider`
+and expose the following interface:
 
-Though you will probably want to define your own, Molly currently comes with
-three providers for you to study, each retrieving results using a different
-technique.
+.. autoclass:: molly.apps.contact.providers.BaseContactProvider
 
-:class:`molly.contrib.oxford.providers.ContactProvider`
-    This queries a non-public XML web service run by Oxford University
-    Computing Services. As such, it has no functional use for those without
-    access to the web service.
-:class:`molly.contrib.oxford.providers.ScrapingContactProvider`
-    Scrapes details from the University's public contact search page.
-:class:`molly.contrib.mit.providers.LDAPContactProvider`
-    Retrieves results from MIT's public LDAP server.
+    .. autoattribute :: molly.apps.contact.providers.BaseContactProvider.form
+    .. autoattribute :: molly.apps.contact.providers.BaseContactProvider.medium_choices
+    .. automethod :: molly.apps.contact.providers.BaseContactProvider.normalize_query
+    .. automethod :: molly.apps.contact.providers.BaseContactProvider.perform_query
+    .. automethod :: molly.apps.contact.providers.BaseContactProvider.fetch_result
 
+Views
+-----
 
+``index``
+"""""""""
+
+This view lives at the ``/`` URL of this app and is handled by
+:class:`molly.apps.contact.views.IndexView`.
+
+This view renders ``contact/index.html``, providing the following context:
+
+ * ``form``: A `form <http://docs.djangoproject.com/en/dev/topics/forms/>`_
+   defined by the provider to use as the input for searching
+ * ``medium_choices``: A list of tuples, representing the different media the
+   provider can search (e.g., phone book, e-mail address list), in the format
+   specified by 
+
+There are no overridable blocks provided by this template, but the search form
+is rendered by the separate template ``contact/search_form.html``
+
+``result_list``
+"""""""""""""""
+
+This view lives at ``results/`` in this app and is handled by
+:class:`molly.apps.contact.views.ResultListView`.
+
+This view renders ``contact/result_list.html`` providing the following context:
+
+ * ``form``: The `form <http://docs.djangoproject.com/en/dev/topics/forms/>`_
+   used to perform the search
+ * ``medium``: The medium selected for this query
+ * ``results``: The list of results (as returned by :method:`molly.apps.contact.providers.BaseContactProvider.perform_query`)
+ * ``message``: If set, any error messages generated in the search
+
+There are no overridable blocks provided by this template, but each individual
+result is rendered by ``contact/result.html``
+
+``result_detail``
+"""""""""""""""""
+
+The view lives at ``results/:ID:`` in this app, and is handled by
+:class:`molly.apps.contact.views.ResultDetailView`.
+
+This view renders ``contact/result_detail.html`` providing the following
+context:
+
+ * ``result``: The result object (as returned by :method:`molly.apps.contact.providers.BaseContactProvider.perform_query`
+   to be rendered)

@@ -1,0 +1,17 @@
+:mod:``molly.apps.home`` -- Home Screen
+=======================================
+
+.. module :: molly.apps.home
+
+This application renders the home screen. This app must be included.
+
+Configuration
+-------------
+
+This app takes no additional configuration.
+
+Sample::
+
+    Application('molly.apps.home', 'home', 'Home',
+        display_to_user = False,
+    )

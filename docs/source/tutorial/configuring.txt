@@ -285,13 +285,17 @@ This setting defines your Molly applications and how they are configured. It
 should consists of a list of Molly Application objects, e.g.,::
 
     APPLICATIONS = [
-    
-        Application('molly.application', 'app', 'Application',
-            config = ...
+        Application('molly.apps.app1', 'app1', 'App 1',
+            ... application config 1 ...
         ),
-        
-        ...
-        
+    
+        Application('molly.apps.app2', 'app2', 'App 2',
+            ... application config 2 ...
+        ),
+    
+        Application('molly.apps.app3', 'app3', 'App 3',
+            ... application config 3 ...
+        ),
     ]
 
 Details about configuration of each individual application are on the page for
