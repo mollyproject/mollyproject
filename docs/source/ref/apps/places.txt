@@ -1,0 +1,180 @@
+:mod:`molly.apps.places` -- Places
+==================================
+
+.. module :: molly.apps.places
+
+A database of places with locations
+
+Configuration
+-------------
+
+ * providers: A list of providers of entities and information about entities
+ * nearby_entity_types: A list of tuples of the form
+   (heading, [entity_types...]), where the entity_types are a list of entity
+   type slugs to be included in this category. Used for deciding which category
+   is shown on the Nearby page
+ * associations: A list of tuples which allow entities to be associated with one
+ another, in the form ( ( scheme1, value1, ( heading, ( ( scheme2, value2 ) ,
+ ( scheme3, value 3 ) ) ) ), which would associate the entities identified by
+ scheme2:value2 and scheme3:value3 with scheme1:value1 (currently this means
+ that real time departure information for bus stops are additionally shown on
+ the page)
+ 
+Sample::
+
+    Application('molly.apps.places', 'places', 'Places',
+        providers = [
+            Provider('molly.apps.places.providers.NaptanMapsProvider',
+                method='ftp',
+                username='journeywebusername',
+                password='journeywebpassword',
+                areas=('329',)
+            ),
+            Provider('molly.apps.places.providers.PostcodesMapsProvider',
+                codepoint_path = CACHE_DIR + '/codepo_gb.zip',
+                import_areas = ('OX',),
+            ),
+            'molly.apps.places.providers.ACISLiveMapsProvider',
+            Provider('molly.apps.places.providers.OSMMapsProvider',
+                     lat_north=52.1, lat_south=51.5,
+                     lon_west=-1.6, lon_east=-1.0
+            ),
+            Provider('molly.apps.places.providers.LiveDepartureBoardPlacesProvider',
+                token = 'MyNationalRailToken'
+            ),
+            Provider('molly.apps.places.providers.BBCTPEGPlacesProvider',
+                url='http://www.bbc.co.uk/travelnews/tpeg/en/local/rtm/oxford_tpeg.xml',
+            ),
+        ],
+        nearby_entity_types = (
+            ('Transport', (
+                'bicycle-parking', 'bus-stop', 'car-park', 'park-and-ride',
+                'taxi-rank', 'train-station')),
+            ('Amenities', (
+                'atm', 'bank', 'bench', 'medical', 'post-box', 'post-office',
+                'public-library', 'recycling', 'bar', 'food', 'pub')),
+            ('Leisure', (
+                'cinema', 'theatre', 'museum', 'park', 'swimming-pool',
+                'sports-centre', 'punt-hire')),
+        ),
+        associations = (
+            ('atco', '9100OXFD', ( # Railway station
+                ('Station Forecourt',
+                 (
+                    ('atco', '340000006R1'),
+                    ('atco', '340000006R2'),
+                    ('atco', '340000006R3'),
+                    ('atco', '340000006R4'),
+                    ('atco', '340000006R5'),
+                    ('atco', '340000006R6'),
+                 )
+                ),
+              )
+            ),
+        )
+    ),
+
+Providers
+---------
+
+:class:`molly.apps.places.providers.ACISLiveMapsProvider`
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+ACIS Live provides real time bus information in various UK counties. When
+enabled, this adds real time bus information to those counties (note, it's
+probably a good idea to check with your local council before enabling this!).
+This has no options.
+
+The areas supported by this provider are:
+
+ * Bristol
+ * Buckinghamshire
+ * Cambridgeshire
+ * Gloucestershire
+ * Kent
+ * Lancashire
+ * York/North Yorkshire
+ * Oxfordshire
+ * South Yorkshire
+ * Wessex
+ * West Yorkshire
+ * Cardiff
+
+:class:`molly.apps.places.providers.BBCTPEGPlacesProvider`
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+.. warning:: The BBC appear to have deactivated their TPEG feeds, so this
+             importer may not give useful information
+
+This imports TPEG (travel alert) data from the BBC. This has one optional option:
+
+ * url (optional, defaults to UK wide feed): the TPEG feed to import (the BBC
+   provide individual ones for individual counties)
+
+:class:`molly.apps.places.providers.LiveDepartureBoardPlacesProvider`
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+This gives rail stations live departure (and arrival) boards. This has one
+required and 2 optional options:
+
+ * token: Your National Rail Enquiries token
+ * max_services (optional, defaults to 15): The maximum number of services to fetch
+ * max_results (optional, defaults to 1): How many boards to fetch at once
+
+:class:`molly.apps.places.providers.NaptanMapsProvider`
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+This imports entities from the NaPTAN (bus stops, etc) database. This has the
+following options:
+
+ * method: 'ftp' or 'http' - the method to get the data (FTP is better)
+ * areas (optional): a list of `ATCO area codes <http://www.dft.gov.uk/naptan/smsPrefixes.htm>`_
+   which to import the data from
+ * username (required if using FTP): The FTP username for journeyweb.org.uk
+ * password (required if using FTP): The FTP password for journeyweb.org.uk
+
+:class:`molly.apps.places.providers.OSMMapsProvider`
+""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+This imports points of interest from the OpenStreetMap database. It has the
+following options, all of which are optional:
+
+ * lat_north: A northern bound on latitude which data is imported for (if
+   not set imports all)
+ * lat_south: A southern bound on latitude which data is imported for (if
+   not set imports all)
+ * lon_west: A western bound on longitude which data is imported for (if
+   not set imports all)
+ * lon_east: An eastern bound on longitude which data is imported for (if
+   not set imports all)
+ * url: The URL to the OpenStreetMap dataset to be imported (defaults to the
+   England dataset)
+
+:class:`molly.apps.places.providers.PostcodesMapsProvider`
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+This imports postcodes from the Code-Point Open database. It has the following
+options:
+
+ * codepoint_path: A path to where the Code-Point Open zip file is get on disk.
+   If the file does not exist, it is obtained from freepostcodes.org.uk
+ * import_areas (optional): If set, it is a list of postcode prefixes which
+   limits the area which is imported (this is highly recommended due to the size
+   of the postcode database!)
+
+Writing Your Own Providers
+--------------------------
+
+.. todo:: Complete
+
+Views
+-----
+
+.. todo:: Complete
+
+Entities
+--------
+
+ .. todo:: Document an entity totally
+ .. todo:: Document that supported formats of annotated metadata
+ .. todo:: Document the entity utility functions

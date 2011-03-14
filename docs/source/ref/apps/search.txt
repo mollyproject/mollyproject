@@ -13,20 +13,92 @@ application-specific. An institution may have a `Google Search Appliance
 or alternatively they may wish searches for ISBNs to go straight to a library
 catalogue page.
 
-To use, place the following in your :doc:`settings module </topics/settings>`::
+Configuration
+-------------
 
-    APPLICATIONS = [
-        # ...
-        Application('molly.apps.search', 'search',
-            providers = [
-                '...',  # paths to search provider backends
-            ],
-        ),
-        # ...
-    ]
+ * form (optional, defaults to a built-in form): A Django form to use when
+   searching
+ * query_expansion_file: A file to use for query expansion
+ * providers: A list of providers of search results
+
+Sample::
+
+    Application('molly.apps.search', 'search', 'Search',
+        providers = [
+            Provider('molly.apps.search.providers.ApplicationSearchProvider'),
+            Provider('molly.apps.search.providers.GSASearchProvider',
+                search_url = 'http://googlesearch.oucs.ox.ac.uk/search',
+                domain = 'm.ox.ac.uk',
+                params = {
+                    'client': 'oxford',
+                    'frontend': 'mobile',
+                },
+                title_clean_re = r'm\.ox \| (.*)',
+            ),
+        ],
+        query_expansion_file = os.path.join(project_root, 'data', 'query_expansion.txt'),
+        display_to_user = False,
+    ),
+
+Providers
+---------
+
+:class:`~molly.providers.apps.search.GSASearchProvider`
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+This search provider retrieves results from a :abbr:`GSA (Google Search
+Appliance)` as XML. Results are augmented using
+:meth:`~molly.apps.search.providers.BaseSearchProvider.get_metadata`. 
+
+Options:
+
+ * search_url: The URL of the GSA
+ * domain: The domain of your deployment (used to restrict search results to)
+ * params (optional, defaults to nothing): Optional parameters to pass with the
+   search request
+ * title_clean_re (optional, defaults to nothing): A regular expression to tidy
+   up page titles when returned
+
+:data:`params` are added to the query string of the URL used when fetching
+request from the :abbr:`GSA`. Further information about valid parameters can
+be found in `the Google Seach Appliance documentation
+<http://code.google.com/apis/searchappliance/documentation/>`_.
+
+Where provided, :data:`title_clean_re` is a regular expression containing a
+single group (i.e. paranthesised expression). If the title of a page as
+returned by the :abbr:`GSA` matches the regular expression, it is substituted
+with the matched group. This can be used to remove common elements of titles. 
+
+:class:`~molly.apps.search.providers.ApplicationSearchProvider`
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+This provider allows for Molly apps to return search results (e.g., library
+books, places, etc). It has no options.
+
+Adding Search Capability to your App
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. todo::
+
+Writing Your Own Providers
+--------------------------
+
+Providers should extend the
+:class:`~molly.apps.search.providers.BaseSearchProvider` interface:
+
+.. autoclass:: molly.apps.search.providers.BaseSearchProvider
+
+    .. automethod :: molly.apps.contact.providers.BaseSearchProvider.perform_search
+
+:class:`~molly.apps.search.providers.BaseSearchProvider` also provides the
+following utility methods you may find useful in your implementations:
+
+.. autoclass:: molly.apps.search.providers.BaseSearchProvider
+
+   .. automethod :: molly.apps.contact.providers.BaseSearchProvider.get_metadata
 
 Search results
---------------
+""""""""""""""
 
 Individual search results are represented as dictionaries where the following
 keys have particular meanings:
@@ -53,151 +125,28 @@ keys have particular meanings:
     displayed search results. Can be used to exclude irrelevant results or
     those not intended for mobile devices.
 
-You may define any other keys as you see fit, though these won't be utilised
-in the default templates, requiring you to implement your own. If you believe
-that there's scope for more standardisation, please :doc:`raise a ticket
-</topics/tickets>` or :doc:`start a discussion on the developer list
-</topics/development>`.
-
-Search providers
-----------------
-
-Providers should extend the
-:class:`~molly.apps.search.providers.BaseSearchProvider` interface:
-
-.. class :: molly.apps.search.providers.BaseSearchProvider
-
-   .. method :: perform_search(self, request, query, application=None)
-
-      Takes a :class:`django.http.HttpRequest` object, a :class:`unicode`
-      query and an application name. This method should be overridden to
-      return a list of results as defined above.
-
-:class:`~molly.apps.search.providers.BaseSearchProvider` also provides the
-following utility methods you may find useful in your implementations:
-
-.. class :: molly.apps.search.providers.BaseSearchProvider
-
-   .. method :: get_metadata(self, request, url)
-   
-      Resolves the given :data:`url` to the view that would handle it and
-      returns the result of calling
-      :meth:`~molly.utils.views.BaseView.get_metadata` on that view, passing
-      it the :data:`request`.
-      
-      May raise :exc:`~django.core.urlresolvers.Resolver404` or
-      :exc:`~django.http.Http404`. All other exceptions will be caught and
-      logged.
-
-:class:`~molly.providers.apps.search.GSASearchProvider` -- Google Search Appliance
-----------------------------------------------------------------------------------
-
-This search provider retrieves results from a :abbr:`GSA (Google Search
-Appliance)` as XML. Results are augmented using
-:meth:`~molly.apps.search.providers.BaseSearchProvider.get_metadata`. 
-
-.. class :: molly.providers.apps.search.GSASearchProvider
-   
-   .. method :: __init__(search_url, domain, [params, [title_clean_re]])
-   
-      :param search_url: URL for the search page of the Google Search Appliance
-      :type search_url: :class:`str`
-      :param domain: Domain of the site to be searched (i.e. the portal)
-      :type domain: :class:`str`
-      :param params: Further pairs to be included in the query string
-      :type params: :class:`dict`
-      :param title_clean_re: A regular expression containing a single group
-      :type title_clean_re: :class:`str`
-
-:data:`params` are added to the query string of the URL used when fetching
-request from the :abbr:`GSA`. Further information about valid parameters can
-be found in `the Google Seach Appliance documentation
-<http://code.google.com/apis/searchappliance/documentation/>`_.
-
-Where provided, :data:`title_clean_re` is a regular expression containing a
-single group (i.e. paranthesised expression). If the title of a page as
-returned by the :abbr:`GSA` matches the regular expression, it is substituted
-with the matched group. This can be used to remove common elements of titles. 
-
-Example usage::
-
-    APPLICATIONS = [
-        # ...
-        Application('molly.apps.search', 'search', 'Search',
-            providers = [
-                Provider('molly.providers.apps.search.GSASearchProvider',
-                    search_url = 'http://gsa.daystrom.ac.ufp/search',
-                    domain = 'm.daystrom.ac.ufp',
-                    params = {
-                        'client': 'mobile_frontend',
-                    },
-                    title_clean_re = r'(.*) \- Daystrom Mobile',
-                ),
-                # ...
-            ],
-        ),
-        # ...
-    ]
-    
-
-The search form
----------------
-
-Queries are processed through :class:`~molly.apps.search.forms.SearchForm`:
-
-.. class :: molly.apps.search.forms.SearchForm
-
-   .. attribute :: query
-   
-      A :class:`~django.forms.CharField` taking the search query.
-
-Defined views
--------------
+Views
+-----
 
 This application defines just one view:
 
-.. class :: molly.apps.search.views.IndexView(request)
+``index``
+"""""""""
 
-   Presents a single-field form to the user, and where a query has been
-   submitted retrieves results from all configured search providers.
-   
-   Results from multiple providers are presented in the order they were
-   configured, i.e. the topmost configured provider's results are given
-   precedence. Where more than one provider returns the same result, metadata
-   are combined (with the location given by its first occurance) and only one
-   result is displayed.
-   
-   This view renders to the :file:`search/index.html` template, passing a
-   :class:`~molly.apps.search.forms.SearchForm` instance as :data:`form` and
-   (where a search has been performed) a list of results as :data:`results`.
-   
-Templates
----------
+Presents a single-field form to the user, and where a query has been
+submitted retrieves results from all configured search providers.
 
-:file:`search/base.html`
+Results from multiple providers are presented in the order they were
+configured, i.e. the topmost configured provider's results are given
+precedence. Where more than one provider returns the same result, metadata
+are combined (with the location given by its first occurance) and only one
+result is displayed.
 
-   Extends :file:`base.html`.
+This view renders to the :file:`search/index.html` template, passing a
+:class:`~molly.apps.search.forms.SearchForm` instance as :data:`form` and
+(where a search has been performed) a list of results as :data:`results`.
 
-:file:`search/index.html`
+Query Expansion
+---------------
 
-   Extends :file:`search/base.html` and renders the search form and results.
-   The template presents results in an ordered list (``<ol>``), including
-   :file:`search/result.html` within a list item element (``<li>``) for each
-   for each result in :data:`results`.
-
-   
-:file:`search/result.html`
-
-   By default, renders ``title``, ``additional`` and ``excerpt`` inside a
-   :samp:`<div class="search-result search-result-{appname}">`.
-   
-Currently implemented providers
--------------------------------
-
-:class:`molly.providers.apps.search.GSASearchProvider`
-    Pulls results from a Google Search Appliance.
-:class:`molly.providers.apps.search.ApplicationSearchProvider`
-    For each installed application :samp:`{foo}`, calls
-    :samp:`{foo}.search.perform_search` and catenates the returned results.
-
-    
+.. todo::

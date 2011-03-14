@@ -1,0 +1,23 @@
+:mod:`molly.external_media` -- Batch Processing
+=================================================
+
+.. module :: molly.batch_processing
+
+This is a utility app for handling off-site media, including resizing for mobile
+devices.
+
+Configuration
+-------------
+
+This app has no configuration.
+
+Sample::
+
+    Application('molly.external_media', 'external_media', 'External Media',
+        display_to_user = False,
+    ),
+
+Views
+-----
+
+.. todo:: Complete

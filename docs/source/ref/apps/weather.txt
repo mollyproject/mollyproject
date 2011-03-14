@@ -1,0 +1,44 @@
+:mod:`molly.apps.weather` -- Weather
+====================================
+
+.. module :: molly.apps.weather
+
+This shows weather to users (and by default, is embedded in the home page)
+
+Configuration
+-------------
+
+ * location_id: the code of the weather to use (use 'bbc/ID', where ID is the
+   location ID for the BBC)
+ * provider: the weather information source
+
+Sample::
+
+    Application('molly.apps.weather', 'weather', 'Weather',
+        location_id = 'bbc/25',
+        provider = Provider('molly.apps.weather.providers.BBCWeatherProvider',
+            location_id = 25,
+        ),
+    ),
+
+Providers
+---------
+
+molly.apps.weather.providers.BBCWeatherProvider
+"""""""""""""""""""""""""""""""""""""""""""""""
+
+Uses the BBC Backstage datafeed to get weather information. The ID for the
+weather location can be obtained by looking at the URLs when doing a weather
+search. It has one option:
+
+ * location_id: The BBC ID for this weather location
+
+Writing Your Own Providers
+--------------------------
+
+.. todo:: Complete
+
+Views
+-----
+
+.. todo:: Complete

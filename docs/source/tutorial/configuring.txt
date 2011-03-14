@@ -326,7 +326,7 @@ The following battery-included apps are:
 * :doc:`../ref/apps/events`
 * :doc:`../ref/apps/feature_vote`
 * :doc:`../ref/apps/feedback`
-* :doc:`../ref/apps/feeds` (required by news and events)
+* :doc:`../ref/apps/feeds` (required by news, events and webcams)
 * :doc:`../ref/apps/home` (required)
 * :doc:`../ref/apps/library`
 * :doc:`../ref/apps/news`

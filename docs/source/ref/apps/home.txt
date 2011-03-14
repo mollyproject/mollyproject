@@ -15,3 +15,8 @@ Sample::
     Application('molly.apps.home', 'home', 'Home',
         display_to_user = False,
     )
+
+Views
+-----
+
+.. todo:: Complete

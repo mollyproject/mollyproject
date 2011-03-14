@@ -24,6 +24,7 @@ Getting Started
 Developing with Molly
 ---------------------
 
+* :doc:`topics/ajax`
 * :doc:`topics/application_framework`
 * :doc:`topics/class_based_views`
 * :doc:`topics/app_media`
@@ -71,3 +72,4 @@ Miscellany
 * :ref:`genindex`
 * :ref:`search`
 
+.. todolist::

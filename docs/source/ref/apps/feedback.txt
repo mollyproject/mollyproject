@@ -1,0 +1,22 @@
+:mod:`molly.apps.feedback` -- Feedback
+======================================
+
+.. module :: molly.apps.feedback
+
+This allows for users to e-mail the site admins with feedback.
+
+Configuration
+-------------
+
+This app has no configuration.
+
+Sample::
+
+    Application('molly.apps.feedback', 'feedback', 'Feedback',
+        display_to_user = False,
+    ),
+
+Views
+-----
+
+.. todo:: Complete
