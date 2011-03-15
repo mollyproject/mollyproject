@@ -63,7 +63,7 @@
 <div class="header">
     <h2>{{ library.location|join:" - " }}</h2>
 </div>
-{% if library.get_entity %}
+{% if library.get_entity.location %}
     {% render_location_map library.get_entity.location %}
 {% endif %}
   
