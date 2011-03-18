@@ -122,7 +122,8 @@ pip_packages = [
 postgis_paths = {
     'redhat': '/usr/share/pgsql/postgresql/contrib',
     'Fedora': '/usr/share/pgsql/contrib/postgis-1.5',
-    'Ubuntu': '/usr/share/postgresql/8.4/contrib'
+    'Ubuntu': '/usr/share/postgresql/8.4/contrib',
+    ('Ubuntu', '10.10'): '/usr/share/postgresql/8.4/contrib/postgis-1.5'
 }
 
 pg_hba_paths  = {
@@ -353,12 +354,17 @@ if not upgrading and not options.no_root:
             # Adding PLPGSQL language support.
             Popen(as_postgres + ['createlang','-d','template_postgis','plpgsql'], stdout=PIPE, stderr=PIPE, cwd='/tmp').communicate()
             
+            try:
+                postgis_path = postgis_paths[(distribution, distribution_version)]
+            except KeyError:
+                postgis_path = postgis_paths[distribution]
+            
             # Loading the PostGIS SQL routines
             if distribution == 'redhat':
-                Popen(as_postgres + ['psql','-d','template_postgis','-f',os.path.join(postgis_paths[distribution], 'lwpostgis.sql')], stdout=PIPE, stderr=PIPE, cwd='/tmp').communicate()
+                Popen(as_postgres + ['psql','-d','template_postgis','-f',os.path.join(postgis_path, 'lwpostgis.sql')], stdout=PIPE, stderr=PIPE, cwd='/tmp').communicate()
             else:
-                Popen(as_postgres + ['psql','-d','template_postgis','-f',os.path.join(postgis_paths[distribution], 'postgis.sql')], stdout=PIPE, stderr=PIPE, cwd='/tmp').communicate()
-            Popen(as_postgres + ['psql','-d','template_postgis','-f',os.path.join(postgis_paths[distribution], 'spatial_ref_sys.sql')], stdout=PIPE, stderr=PIPE, cwd='/tmp').communicate()
+                Popen(as_postgres + ['psql','-d','template_postgis','-f',os.path.join(postgis_path, 'postgis.sql')], stdout=PIPE, stderr=PIPE, cwd='/tmp').communicate()
+            Popen(as_postgres + ['psql','-d','template_postgis','-f',os.path.join(postgis_path, 'spatial_ref_sys.sql')], stdout=PIPE, stderr=PIPE, cwd='/tmp').communicate()
             Popen(as_postgres + ['psql','-d','postgres','-c',"UPDATE pg_database SET datistemplate='true' WHERE datname='template_postgis';"], stdout=PIPE, stderr=PIPE, cwd='/tmp').communicate()
             
             # Enabling users to alter spatial tables.
