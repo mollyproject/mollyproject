@@ -3,7 +3,7 @@
 function build_documentation {
     tag=$1
     rm -rf build
-    make html SPHINXBUILD="$PYTHON `which sphinx-build`"
+    make html SPHINXBUILD="$SPHINXBUILD"
     API_TEMP=`mktemp -d`
     rm -rf $OUTPUT_DIR/$tag/
     mkdir -p $OUTPUT_DIR/$tag/
