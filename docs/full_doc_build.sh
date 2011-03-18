@@ -3,7 +3,7 @@
 function build_documentation {
     tag=$1
     rm -rf build
-    make html
+    make html SPHINXBUILD="$PYTHON `which sphinx-build`"
     API_TEMP=`mktemp -d`
     rm -rf $OUTPUT_DIR/$tag/
     mkdir -p $OUTPUT_DIR/$tag/
@@ -17,6 +17,10 @@ function build_documentation {
 }
 
 OUTPUT_DIR=$1
+PYTHON=$2
+if [ -z "$PYTHON" ] ; then
+    PYTHON='python'
+fi
 
 if [ -z "$OUTPUT_DIR" ] ; then
     echo "$0 <path-to-doc-root>"
