@@ -6,7 +6,6 @@ from django.core.urlresolvers import reverse
 
 from molly.apps.places.models import Entity, EntityType
 from molly.apps.places.providers import NaptanMapsProvider
-from secrets import SECRETS
 
 class MapsTestCase(unittest.TestCase):
     def setUp(self):
