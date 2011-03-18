@@ -11,7 +11,10 @@ from random import choice
 from optparse import OptionParser
 import tempfile
 import shutil
+import urllib2
+
 from scripts import config_generator
+from molly.wurfl.context_processors import parse_version
 
 # Dependencies and distro support basically relies on these - can tweak them here
 packagekit_packages = {
@@ -35,6 +38,33 @@ packagekit_packages = {
             'gcc',
             'make',
             'git',
+        ],
+    'redhat': [
+            'python26',
+            'git',
+            'python-setuptools',
+            'python26-devel',
+            'binutils',
+            'libxslt-devel',
+            'cyrus-sasl-devel',
+            'openldap-devel',
+            'ImageMagick',
+            'python-virtualenv',
+            'python-pip',
+            'proj',
+            'proj-devel',
+            'postgresql',
+            'postgresql-server',
+            'postgresql-devel',
+            'postgresql-contrib',
+            'geos-3.1.0',
+            'geos-devel-3.1.0',
+            'postgis',
+            'gdal',
+            'libjpeg-devel',
+            'make',
+            'gcc',
+            'openssl-devel',
         ],
 }
 
@@ -90,11 +120,13 @@ pip_packages = [
 ]
 
 postgis_paths = {
+    'redhat': '/usr/share/pgsql/postgresql/contrib',
     'Fedora': '/usr/share/pgsql/contrib/postgis-1.5',
     'Ubuntu': '/usr/share/postgresql/8.4/contrib'
 }
 
 pg_hba_paths  = {
+    'redhat': '/var/lib/pgsql/data/pg_hba.conf',
     'Fedora': '/var/lib/pgsql/data/pg_hba.conf',
     'Ubuntu': '/etc/postgresql/8.4/main/pg_hba.conf'
 }
@@ -148,9 +180,14 @@ http://mollyproject.org/
 
 # This doesn't appear to be Linux
 if not hasattr(platform, 'linux_distribution'):
-    print "At the moment, this installer only supports installation on Linux"
-    print "distributions. Exiting..."
-    sys.exit(1)
+    if not hasattr(platform, 'dist'):
+        print "At the moment, this installer only supports installation on Linux"
+        print "distributions. Exiting..."
+        sys.exit(1)
+    else:
+        distribution, distribution_version, distribution_id = platform.dist()
+else:
+    distribution, distribution_version, distribution_id = platform.linux_distribution()
 
 parser = OptionParser()
 parser.add_option("-s", "--site-path", dest="site_path",
@@ -193,22 +230,39 @@ else:
     upgrading = False
 
 # Attempt to detect which distro this is and install appropriately
-distribution, distribution_version, distribution_id = platform.linux_distribution()
 print "Detected Linux: %s %s (%s)" % (distribution, distribution_version, distribution_id)
 print
 
+sys_python = sys.executable
+
 # Install prerequisites - can do this using PackageKit
 if not options.develop and not options.no_root:
-    if distribution in packagekit_packages.keys():
     
+    if distribution in packagekit_packages.keys():
+        
         print "Ensuring that the system prerequisites are satisfied...",
         sys.stdout.flush()
-    
+        
+        # Install EPEL
+        if distribution == 'redhat':
+            Popen(['rpm', '-Uvh', 'http://download.fedora.redhat.com/pub/epel/' + str(parse_version(distribution_version)[0]) + '/i386/epel-release-5-4.noarch.rpm'], stdout=PIPE, stderr=PIPE).communicate()
+            rpmforge = tempfile.NamedTemporaryFile()
+            rpm = urllib2.urlopen('http://packages.sw.be/rpmforge-release/rpmforge-release-0.5.2-2.el5.rf.i386.rpm')
+            print >>rpmforge, rpm.read()
+            rpm.close()
+            rpmforge.flush()
+            Popen(['rpm', '-Uvh', rpmforge.name], stdout=PIPE, stderr=PIPE).communicate()
+            rpmforge.close()
+        
+        if 'python26' in packagekit_packages[distribution]:
+            sys_python = '/usr/bin/python26'
+        
         # Use PackageKit to install packages
         try:
             import packagekit.client
         except ImportError:
             Popen(['yum', '-y', 'install'] + packagekit_packages[distribution], stdout=PIPE, stderr=PIPE).communicate()
+            enable_postgres = True
         else:
             from packagekit.enums import FILTER_INSTALLED
             pk = packagekit.client.PackageKitClient()
@@ -223,14 +277,11 @@ if not options.develop and not options.no_root:
                 enable_postgres = False
                 for package in to_install:
                     print " * ", package
-                    if str(package).startswith('postgresql-server'):
-                        enable_postgres = True
                 raw_input('Press Enter to install these packages, or Ctrl+C to exit')
                 
                 pk.install_packages(to_install)
             
-            if enable_postgres:
-                Popen(['chkconfig', 'postgresql', 'on'], stdout=PIPE, stderr=PIPE).communicate()
+        Popen(['chkconfig', 'postgresql', 'on'], stdout=PIPE, stderr=PIPE).communicate()
         
         print "DONE!"
     
@@ -243,7 +294,8 @@ if not options.develop and not options.no_root:
         Popen(['apt-get', '-y', 'install'] + apt_packages[(distribution, distribution_version)], stdout=PIPE, stderr=PIPE).communicate()
         
         # Install Virtualenv
-        Popen(['pip', 'install', '-U', 'virtualenv'], stdout=PIPE, stderr=PIPE).communicate()
+        if distribution == 'Ubuntu':
+            Popen(['easy_install', '-U', 'virtualenv'], stdout=PIPE, stderr=PIPE).communicate()
         
         print "DONE!"
         
@@ -261,17 +313,20 @@ if not options.develop and not options.no_root:
     sys.stdout.flush()
     Popen(['useradd', '-r', 'molly'], stdout=PIPE, stderr=PIPE).communicate()
     print "DONE!"
-    
+
 if not options.develop and not options.no_root:
     molly_uid, molly_gid = pwd.getpwnam('molly')[2:4]
 
-as_molly = ['sudo', '-u', 'molly'] if (not options.develop and not options.no_root) else []
+if (not options.develop and not options.no_root):
+    as_molly = ['sudo', '-u', 'molly']
+else:
+    as_molly = []
 
 # Do DB setup
 postgres_password = None
 as_postgres = ['sudo', '-u', 'postgres']
 if not upgrading and not options.no_root:    
-    if distribution in ('Fedora', 'Ubuntu'):
+    if distribution in ('Fedora', 'Ubuntu', 'redhat'):
         print
         print "Molly can install and set up your database for you, if you would like."
         print "Please note that this only works on fresh databases (empty ones), and can"
@@ -281,7 +336,7 @@ if not upgrading and not options.no_root:
         
         if do_db_install:
             
-            if distribution == 'Fedora':
+            if distribution in ('Fedora', 'redhat'):
                 print "Initialising Postgres...",
                 sys.stdout.flush()
                 Popen(['service', 'postgresql', 'initdb'], stdout=PIPE, stderr=PIPE).communicate()
@@ -293,31 +348,34 @@ if not upgrading and not options.no_root:
             sys.stdout.flush()
             
             # Create the template spatial database.
-            Popen(as_postgres + ['createdb','-E','UTF8','template_postgis'], stdout=PIPE, stderr=PIPE).communicate()
+            Popen(as_postgres + ['createdb','-E','UTF8','template_postgis'], stdout=PIPE, stderr=PIPE, cwd='/tmp').communicate()
             
             # Adding PLPGSQL language support.
-            Popen(as_postgres + ['createlang','-d','template_postgis','plpgsql'], stdout=PIPE, stderr=PIPE).communicate()
+            Popen(as_postgres + ['createlang','-d','template_postgis','plpgsql'], stdout=PIPE, stderr=PIPE, cwd='/tmp').communicate()
             
             # Loading the PostGIS SQL routines
-            Popen(as_postgres + ['psql','-d','template_postgis','-f',os.path.join(postgis_paths[distribution], 'postgis.sql')], stdout=PIPE, stderr=PIPE).communicate()
-            Popen(as_postgres + ['psql','-d','template_postgis','-f',os.path.join(postgis_paths[distribution], 'spatial_ref_sys.sql')], stdout=PIPE, stderr=PIPE).communicate()
-            Popen(as_postgres + ['psql','-d','postgres','-c',"UPDATE pg_database SET datistemplate='true' WHERE datname='template_postgis';"], stdout=PIPE, stderr=PIPE).communicate()
+            if distribution == 'redhat':
+                Popen(as_postgres + ['psql','-d','template_postgis','-f',os.path.join(postgis_paths[distribution], 'lwpostgis.sql')], stdout=PIPE, stderr=PIPE, cwd='/tmp').communicate()
+            else:
+                Popen(as_postgres + ['psql','-d','template_postgis','-f',os.path.join(postgis_paths[distribution], 'postgis.sql')], stdout=PIPE, stderr=PIPE, cwd='/tmp').communicate()
+            Popen(as_postgres + ['psql','-d','template_postgis','-f',os.path.join(postgis_paths[distribution], 'spatial_ref_sys.sql')], stdout=PIPE, stderr=PIPE, cwd='/tmp').communicate()
+            Popen(as_postgres + ['psql','-d','postgres','-c',"UPDATE pg_database SET datistemplate='true' WHERE datname='template_postgis';"], stdout=PIPE, stderr=PIPE, cwd='/tmp').communicate()
             
             # Enabling users to alter spatial tables.
-            Popen(as_postgres + ['psql','-d','template_postgis','-c','GRANT ALL ON geometry_columns TO PUBLIC;'], stdout=PIPE, stderr=PIPE).communicate()
-            Popen(as_postgres + ['psql','-d','template_postgis','-c','GRANT ALL ON spatial_ref_sys TO PUBLIC;'], stdout=PIPE, stderr=PIPE).communicate()
+            Popen(as_postgres + ['psql','-d','template_postgis','-c','GRANT ALL ON geometry_columns TO PUBLIC;'], stdout=PIPE, stderr=PIPE, cwd='/tmp').communicate()
+            Popen(as_postgres + ['psql','-d','template_postgis','-c','GRANT ALL ON spatial_ref_sys TO PUBLIC;'], stdout=PIPE, stderr=PIPE, cwd='/tmp').communicate()
             print "DONE!"
             
             print "Configuring database security...",
             sys.stdout.flush()
             postgres_password = generate_password()
-            Popen(as_postgres + ['psql','-c',"CREATE USER molly WITH PASSWORD '%s';" % postgres_password], stdout=PIPE, stderr=PIPE).communicate()
-            Popen(as_postgres + ['psql','-c',"ALTER ROLE molly WITH PASSWORD '%s';" % postgres_password], stdout=PIPE, stderr=PIPE).communicate()
-            Popen(as_postgres + ['createdb','-T','template_postgis','molly'], stdout=PIPE, stderr=PIPE).communicate()
-            Popen(as_postgres + ['psql','-c',"GRANT ALL ON DATABASE molly TO molly;"], stdout=PIPE, stderr=PIPE).communicate()
+            Popen(as_postgres + ['psql','-c',"CREATE USER molly WITH PASSWORD '%s';" % postgres_password], stdout=PIPE, stderr=PIPE, cwd='/tmp').communicate()
+            Popen(as_postgres + ['psql','-c',"ALTER ROLE molly WITH PASSWORD '%s';" % postgres_password], stdout=PIPE, stderr=PIPE, cwd='/tmp').communicate()
+            Popen(as_postgres + ['createdb','-T','template_postgis','molly'], stdout=PIPE, stderr=PIPE, cwd='/tmp').communicate()
+            Popen(as_postgres + ['psql','-c',"GRANT ALL ON DATABASE molly TO molly;"], stdout=PIPE, stderr=PIPE, cwd='/tmp').communicate()
             
-            with open(pg_hba_paths[distribution], 'w') as pg_hba:
-                pg_hba.write("""
+            pg_hba = open(pg_hba_paths[distribution], 'w')
+            pg_hba.write("""
 # This file was written by the Molly installer
 local   molly       molly                             md5
 host    molly       molly       127.0.0.1/32          md5
@@ -330,6 +388,7 @@ host    all         all         127.0.0.1/32          ident
 # IPv6 local connections:
 host    all         all         ::1/128               ident
                              """)
+            pg_hba.close()
             reload_postgres((distribution, distribution_version))
             print "DONE!"
     
@@ -345,7 +404,7 @@ if not upgrading:
     print "Creating a virtualenv for Molly...",
     if not options.develop and not options.no_root:
         os.chown(path, molly_uid, molly_gid)
-    (stdoutdata, stderrdata) = Popen(as_molly + ['virtualenv', '--distribute', '--no-site-packages', path], stdout=PIPE, stderr=PIPE, cwd=path).communicate()
+    (stdoutdata, stderrdata) = Popen(as_molly + ['virtualenv', '--python=%s' % sys_python, '--distribute', '--no-site-packages', path], stdout=PIPE, stderr=PIPE, cwd=path).communicate()
     if not os.path.exists(os.path.join(path, 'bin', 'activate')):
         print >>sys.stderr, "Failed"
         print
@@ -389,7 +448,11 @@ if not options.develop and not options.no_root:
     molly_setup = os.path.join(molly_temp, 'setup.py')
 else:
     molly_setup = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'setup.py')
-Popen(as_molly + [python, molly_setup, 'install' if not options.develop else 'develop'], stdout=PIPE, stderr=PIPE, cwd=path).communicate()
+
+if options.develop:
+    Popen(as_molly + [python, molly_setup, 'develop'], stdout=PIPE, stderr=PIPE, cwd=path).communicate()
+else:
+    Popen(as_molly + [python, molly_setup, 'install'], stdout=PIPE, stderr=PIPE, cwd=path).communicate()
 
 if not options.develop and not options.no_root:
     shutil.rmtree(temp_dir)
@@ -416,8 +479,8 @@ if options.site_path is None and not os.path.exists(site):
     if not options.develop and not options.no_root: os.chown(os.path.join(site, 'apache'), molly_uid, molly_gid)
     
     # Create Apache mod_wsgi file
-    with open(os.path.join(site, 'apache', 'molly.wsgi'), 'w') as fd:
-        fd.write("""#!/usr/bin/env python
+    fd = open(os.path.join(site, 'apache', 'molly.wsgi'), 'w')
+    fd.write("""#!/usr/bin/env python
 
 import os, os.path
 import sys
@@ -429,11 +492,12 @@ os.path.dirname(__file__), '..', '..',
 
 import django.core.handlers.wsgi
 application = django.core.handlers.wsgi.WSGIHandler()""")
+    fd.close()
     if not options.develop and not options.no_root: os.chown(os.path.join(site, 'apache', 'molly.wsgi'), molly_uid, molly_gid)
     
     # Create dummy httpd.conf
-    with open(os.path.join(site, 'apache', 'molly.conf'), 'w') as fd:
-        fd.write("""
+    fd = open(os.path.join(site, 'apache', 'molly.conf'), 'w')
+    fd.write("""
 # This file contains a sample file for Apache to serve Molly using mod_wsgi
 # It will need altering according to your specific configuration.
 <VirtualHost *:80>
@@ -460,14 +524,16 @@ application = django.core.handlers.wsgi.WSGIHandler()""")
     #Alias /favicon.ico /path/to/favicon.ico
 
 </VirtualHost>""" % (site, site, site, site))
+    fd.close()
     if not options.develop and not options.no_root: os.chown(os.path.join(site, 'apache', 'molly.conf'), molly_uid, molly_gid)
     
     # Generate settings
-    with open(os.path.join(site, 'settings.py'), 'w') as settings_fd:
-        if postgres_password != None:
-            config_generator.main(settings_fd, 'molly', 'molly', postgres_password)
-        else:
-            config_generator.main(settings_fd)
+    settings_fd = open(os.path.join(site, 'settings.py'), 'w')
+    if postgres_password != None:
+        config_generator.main(settings_fd, 'molly', 'molly', postgres_password)
+    else:
+        config_generator.main(settings_fd)
+    settings_fd.close()
     
     if not options.develop and not options.no_root: os.chown(os.path.join(site, 'settings.py'), molly_uid, molly_gid)
 
@@ -494,7 +560,10 @@ def call_in_virtualenv(path, command, wait=True, devnull=True):
         else:
             Popen(command, cwd=path).wait()
     else:
-        command = as_molly + ['bash','-c','source %s/bin/activate; %s %s' % (path, command, '>/dev/null' if devnull else '')]
+        if devnull:
+            command = as_molly + ['bash','-c','source %s/bin/activate; %s >/dev/null' % (path, command)]
+        else:
+            command = as_molly + ['bash','-c','source %s/bin/activate; %s' % (path, command)]
         Popen(command, cwd=path)
 
 # Determine if our site defines any additional dependencies
