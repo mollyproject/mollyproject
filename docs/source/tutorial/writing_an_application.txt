@@ -146,3 +146,5 @@ E.g., for the 'index' view of the contact app, the following template tag will
 generate a URL::
 
    {% url contact:index %}
+
+.. todo :: adding search to your application (link to search app)

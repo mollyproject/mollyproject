@@ -17,3 +17,5 @@ The data formats supported are:
  * YAML
 
 And in each of these, the is presented as it is in the context.
+
+.. todo:: simplify_for_render
