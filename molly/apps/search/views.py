@@ -6,29 +6,29 @@ from molly.utils.breadcrumbs import *
 from forms import SearchForm
 
 class IndexView(BaseView):
-    def initial_context(cls, request):
+    def initial_context(self, request):
         return {
-            'search_form': getattr(cls.conf, 'form', SearchForm(request.GET or None))
+            'search_form': getattr(self.conf, 'form', SearchForm(request.GET or None))
         }
 
     @BreadcrumbFactory
-    def breadcrumb(cls, request, context):
+    def breadcrumb(self, request, context):
         return Breadcrumb(
             'search', None, 'Search', lazy_reverse('index')
         )
 
-    def handle_GET(cls, request, context):
+    def handle_GET(self, request, context):
         if context['search_form'].is_valid():
-            return cls.handle_search(request, context)
+            return self.handle_search(request, context)
 
-        return cls.render(request, context, 'search/index')
+        return self.render(request, context, 'search/index')
 
-    def handle_search(cls, request, context):
+    def handle_search(self, request, context):
         application = context['search_form'].cleaned_data['application'] or None
         query = context['search_form'].cleaned_data['query']
 
         results = []
-        for provider in cls.conf.providers:
+        for provider in self.conf.providers:
             results += provider.perform_search(request, query, application)
 
         seen_urls, i = set(), 0
@@ -50,4 +50,4 @@ class IndexView(BaseView):
             'results': list(results)[:20],
         })
 
-        return cls.render(request, context, 'search/index')
+        return self.render(request, context, 'search/index')

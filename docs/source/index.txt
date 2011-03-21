@@ -15,14 +15,16 @@ Getting Started
 .. hlist::
    :columns: 2
 
-   * :doc:`tutorial/deploying`
+   * :doc:`tutorial/installing`
    * :doc:`tutorial/configuring`
+   * :doc:`tutorial/deploying`
    * :doc:`tutorial/customising`
    * :doc:`tutorial/writing_an_application`
 
 Developing with Molly
 ---------------------
 
+* :doc:`topics/ajax`
 * :doc:`topics/application_framework`
 * :doc:`topics/class_based_views`
 * :doc:`topics/app_media`
@@ -40,6 +42,8 @@ Reference
    * :doc:`ref/geolocation`
    * :doc:`ref/maps`
    * :doc:`ref/url_shortener`
+   * :doc:`ref/utils`
+   * :doc:`ref/wurfl`
 * "Batteries-Included" Apps:
    * :doc:`ref/apps/contact`
    * :doc:`ref/apps/desktop`
@@ -68,3 +72,4 @@ Miscellany
 * :ref:`genindex`
 * :ref:`search`
 
+.. todolist::

@@ -34,7 +34,7 @@ class IndexView(BaseView):
         except (KeyError, DeviceNotFound):
             device = devices.select_id('generic_xhtml')
 
-        accepts = self.parse_accept_header(request.META['HTTP_ACCEPT'])
+        accepts = self.parse_accept_header(request.META.get('HTTP_ACCEPT', ''))
         renderers = MediaType.resolve(accepts, self.FORMATS_BY_MIMETYPE)
         formats = [renderer.format for renderer in renderers]
 

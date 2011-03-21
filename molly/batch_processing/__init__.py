@@ -70,8 +70,9 @@ def create_crontab(filename):
     for batch in Batch.objects.all():
         if not batch.enabled:
             continue
-        f.write('%s %s "%s" "%s" "%s"\n' % (
+        f.write('%s %s %s "%s" "%s" "%s"\n' % (
             batch.cron_stmt.ljust(20),
+            sys.executable,
             os.path.abspath(os.path.join(os.path.dirname(__file__), 'scripts', 'run_batch.py')),
             _escape(batch.local_name),
             _escape(batch.provider_name),

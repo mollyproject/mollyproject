@@ -19,7 +19,16 @@ class BaseSearchProvider(object):
         raise NotImplementedException()
 
     def get_metadata(self, request, url):
-        # This may raise Resolver404 - let the caller deal with it.        
+        """
+        Resolves the given :data:`url` to the view that would handle it and
+        returns the result of calling
+        :meth:`~molly.utils.views.BaseView.get_metadata` on that view, passing
+        it the :data:`request`.
+        
+        May raise :exc:`~django.core.urlresolvers.Resolver404` or
+        :exc:`~django.http.Http404`. All other exceptions will be caught and
+        logged.
+        """
         callback, callback_args, callback_kwargs = resolve(url)
 
         metadata = {}

@@ -1,0 +1,59 @@
+:mod:`molly.auth` -- Auth services
+==================================
+
+.. module :: molly.auth
+
+This is a utility app which provides authentication services to other applications.
+
+Configuration
+-------------
+
+ * unify_identifiers: Which identifier namespaces are guaranteed to contain
+   unique values for a user (used to log a user back in to an old session when
+   they log in with one service)
+ 
+Sample::
+
+    Application('molly.auth', 'auth', 'Authentication',
+        display_to_user = False,
+        secure = True,
+        unify_identifiers = ('oxford:sso', 'oxford:oss', 'weblearn:id', 'oxford_ldap'),
+    ),
+
+Using in your app
+-----------------
+
+Extra configuration
+"""""""""""""""""""
+
+Applications which use the authentication services provided by this app have the
+following additional settings they can set:
+
+ * enforce_timeouts (optional, defaults to True): if true, then authentication
+   times out after a period of inactivity
+ * service_name: The name of the service which requires authentication
+ * oauth_authorize_interstitial (optional, defaults to True): whether or not an
+   institial page should be shown when requesting OAuth authorisation
+
+Extra bases
+"""""""""""
+
+Bases are provided so that other applications can have them as a parent class in
+order to provide authentication.
+
+:class:`molly.auth.oauth.views.OAuthView`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Provides OAuth authentication to an application. It has the following options:
+
+ * secret: The OAuth secret
+ * signature_method: A signature method instance from the `oauth.oauth` package
+ * base_url: The URL for the OAuth provider
+ * request_token_url: The URL (added on to the base) of the request_token service
+ * access_token_url: The URL (added on to the base) of the access_token service
+ * authorize_url: The URL (added on to the base) of the authorisation service
+
+Views
+-----
+
+.. todo:: Complete

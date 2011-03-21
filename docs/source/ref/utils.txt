@@ -1,0 +1,22 @@
+:mod:`molly.utils` -- Molly Utilities
+=====================================
+
+.. module :: molly.utils
+
+This is a utility service containing the core of Molly.
+
+Configuration
+-------------
+
+This app has no extra configuration
+
+Sample::
+
+    Application('molly.utils', 'utils', 'Molly utility services',
+        display_to_user = False,
+    ),
+
+Views
+-----
+
+.. todo:: Complete

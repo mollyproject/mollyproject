@@ -1,0 +1,20 @@
+:mod:`molly.apps.feeds.news` -- News
+====================================
+
+.. module :: molly.apps.feeds.news
+
+Used to display news feeds to the user.
+
+Configuration
+-------------
+
+This module has no configuration
+
+Sample::
+
+    Application('molly.apps.feeds.news', 'news', 'News'),
+
+Views
+-----
+
+.. todo:: Complete

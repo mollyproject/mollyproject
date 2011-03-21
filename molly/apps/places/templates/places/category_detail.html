@@ -55,7 +55,7 @@
    </div></div>
 </div>
 <ul class="link-list">
-  {% if entities.has_previous %}<li><a href="?page={{ entities.previous_page_number }}">Previous page</a></li>{% endif %}
+  {% if entities.has_previous %}<li><a href="?page={{ entities.previous_page_number }}" class="go-back">Previous page</a></li>{% endif %}
   {% if entities.has_next %}<li><a href="?page={{ entities.next_page_number }}">Next page</a></li>{% endif %}
 </ul>
 {% endifnotequal %}

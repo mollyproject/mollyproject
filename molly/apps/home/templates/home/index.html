@@ -93,7 +93,7 @@
     {% endif %}
 
     <ul class="stand-alone link-list round-top">
-	{% if "feature_vote"|app_is_loaded %}
+	{% if "feature_vote"|app_is_loaded or "feature-suggestions"|app_is_loaded %}
             <li class="round-top"><a href="{% url feature_vote:index %}">Suggest a feature</a></li>
 	{% endif %}
 	<li><a href="{% url home:static_about %}">About this site</a></li>

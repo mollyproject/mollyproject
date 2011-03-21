@@ -715,6 +715,13 @@ APPLICATIONS = [
         ),
     """
     
+    # Favourites - always
+    config += """
+    Application('molly.favourites', 'favourites', 'Favourite pages',
+        display_to_user = False,
+    ),
+    """
+
     config += """
 ]
 """

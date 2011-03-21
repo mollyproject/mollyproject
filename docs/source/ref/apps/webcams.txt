@@ -1,0 +1,20 @@
+:mod:`molly.apps.webcams` -- Webcams
+====================================
+
+.. module :: molly.apps.webcams
+
+This shows webcams to users. The webcams to be imported are configured from the admin interface.
+
+Configuration
+-------------
+
+This has no additional configuration
+
+Sample::
+
+    Application('molly.apps.webcams', 'webcams', 'Webcams')
+
+Views
+-----
+
+.. todo:: Complete

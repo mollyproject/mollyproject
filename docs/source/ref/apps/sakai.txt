@@ -1,0 +1,50 @@
+:mod:`molly.apps.sakai` -- Sakai integration
+============================================
+
+.. module :: molly.apps.sakai
+
+Provides a mobile view using the Sakai API. This should be authenticated using
+the `OAuth authentication API <../auth>`_.
+
+Configuration
+-------------
+
+ * host: The host of the Sakai instance
+ * tools: A list of tuples of slugs and names of implemented Sakai tools
+ * identifiers: A list of tuples of (namespace, (search)) of identifiers from
+   Sakai and how they match to Molly user identifier namespaces
+
+Sample::
+
+    Application('molly.apps.sakai', 'weblearn', 'WebLearn',
+        host = 'https://weblearn.ox.ac.uk/',
+        service_name = 'WebLearn',
+        secure = True,
+        tools = [
+            ('signup', 'Sign-ups'),
+            ('poll', 'Polls'),
+        ],
+        extra_bases = (
+            ExtraBase('molly.auth.oauth.views.OAuthView',
+                secret = SECRETS.weblearn,
+                signature_method = OAuthSignatureMethod_PLAINTEXT(),
+                base_url = 'https://weblearn.ox.ac.uk/oauth-tool/',
+                request_token_url = 'request_token',
+                access_token_url = 'access_token',
+                authorize_url = 'authorize',
+            ),
+        ),
+        enforce_timeouts = False,
+        identifiers = (
+            ('oxford:sso', ('props', 'aid',)),
+            ('weblearn:id', ('id',)),
+            ('oxford:oss', ('props', 'oakOSSID',)),
+            ('oxford:ldap', ('props', 'udp.dn',)),
+            ('weblearn:email', ('email',)),
+        ),
+    ),
+
+Views
+-----
+
+.. todo:: Complete

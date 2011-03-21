@@ -1,6 +1,6 @@
 device_parents = {}
 try:
-    from . import wurfl_data
+    from molly.wurfl import wurfl_data
 except ImportError:
     pass
 else:

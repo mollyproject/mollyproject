@@ -85,7 +85,7 @@ class Map:
              str(centre_point[0]),
              centre_point[2] + '-star',
              centre_point[3].encode('ascii', 'xmlcharrefreplace'))
-        ]
+        ] if centre_point != None else []
         
         for point in self.points:
             markers.append(

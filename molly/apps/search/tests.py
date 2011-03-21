@@ -74,8 +74,8 @@ class GenericSearchTestCase(unittest.TestCase):
                 
                 self.assertEqual(
                     fhs.args[:3],
-                    ['cls','request','context'],
-                    "View handler %s.views.%s.%s must take (cls, request, context) as its first three arguments" % (
+                    ['self','request','context'],
+                    "View handler %s.views.%s.%s must take (self, request, context) as its first three arguments" % (
                         app_name, view_name, fhn,
                     )
                 )

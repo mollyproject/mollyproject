@@ -6,9 +6,8 @@ from django.core.management import call_command
 from PyZ3950 import z3950 as z3950_
 from PyZ3950 import zoom
 
-from molly.apps.z3950 import search
-from molly.apps.places.models import Entity
-from molly.providers.apps.maps.oxpoints import OxpointsMapsProvider
+from molly.apps.library.models import LibrarySearchQuery
+from molly.apps.library.providers import z3950
 
 TEST_DATA = [
 "00927nam  2200301 a 4500001001500000003000600015005001700021008004100038010001700079015001900096016001800115020002500133020002200158035002300180035001300203040004900216042001400265050002800279082001500307100003200322245006100354260003300415300003500448500002000483650001800503700001500521852008900536\x1eUkOxUb16686899\x1eUkOxU\x1e20080430135602.0\x1e071012s2007    cc a          001 0 eng d\x1e  \x1fa  2007278140\x1e  \x1faGBA709991\x1f2bnb\x1e7 \x1fa013660805\x1f2Uk\x1e  \x1fa9780596529260 (pbk.)\x1e  \x1fa0596529260 (pbk.)\x1e  \x1fa(OCoLC)ocm82671871\x1e  \x1fa15042568\x1e  \x1faUKM\x1fcUKM\x1fdBAKER\x1fdBTCTA\x1fdYDXCP\x1fdDPL\x1fdIXA\x1fdDLC\x1e  \x1falccopycat\x1e00\x1faTK5105.88813\x1fb.R53 2007\x1e04\x1fa006.76\x1f222\x1e1 \x1faRichardson, Leonard,\x1fd1979-\x1e10\x1faRESTful web services /\x1fcLeonard Richardson and Sam Ruby.\x1e  \x1faFarnham :\x1fbO'Reilly,\x1fcc2007.\x1e  \x1faxxiv, 419 p. :\x1fbill. ;\x1fc24 cm.\x1e  \x1faIncludes index.\x1e 0\x1faWeb services.\x1e1 \x1faRuby, Sam.\x1e  \x1faUkOxU\x1fbRadcl.Science\x1fbRSL Level 2\x1fhTK 5105.88813 RIC\x1f720689922\x1fp306162820\x1fyReference\x1e\x1d",
@@ -29,17 +28,7 @@ TEST_METADATA = [
     },
 ]
 
-TEST_LIBRARY_IDS = [
-    set([32330371]),
-    set([32330119, 32330525, 32330326, 32330381]),
-]
-
-def ensureOxPoints():
-    if Entity.objects.filter(all_types__slug='college').count():
-        return
-    OxpointsMapsProvider().import_data(None, None)
-
-class FakeOLISResult(search.OLISResult):
+class FakeOLISResult(z3950.USMARCSearchResult):
     def __init__(self, data):
         db_name = 'MAIN*BIBMAST'
         super(FakeOLISResult, self).__init__(
@@ -55,22 +44,6 @@ class USMARCTestCase(TestCase):
             for k in metadata:
                 self.assertEqual(getattr(result, k), metadata[k])
 
-    #def perTestDatum(f):
-    #    def g(self):
-    #        for i, data in enumerate(TEST_DATA):
-    #            result = FakeOLISResult(data)
-    #            f(self, result, i)
-    #    return g
-    #
-    #@perTestDatum
-    #def testLocationOxPoints(self, result, i):
-    #    ensureOxPoints()
-    #    
-    #    oxpoints_ids = set()
-    #    for library in result.libraries:
-    #        oxpoints_ids.add(library.oxpoints_entity.oxpoints_id)
-    #        
-    #    self.assertEqual(oxpoints_ids, TEST_LIBRARY_IDS[i])
 
 TEST_ISBNS = [
     '1903402557', '0134841891', '0262041677', '0340811293', '1565925858',
@@ -81,15 +54,12 @@ TEST_AUTHORS = [
     'Jeremy Black', 'Stewart III',
 ]
 
-class _OLISTestConfiguration:
-    
-    host = 'library.ox.ac.uk'
-    database = 'MAIN*BIBMAST'
+TEST_HOST = 'library.ox.ac.uk'
+TEST_DATABASE = 'MAIN*BIBMAST'
 
 class SearchTestCase(TestCase):
     
     def testAuthorSearch(self):
-        ensureOxPoints()
         
         for author in TEST_AUTHORS:
             response = self.client.get('/library/search/?%s' % urllib.urlencode({
@@ -101,11 +71,13 @@ class SearchTestCase(TestCase):
             
     def testOLISSearch(self):
         for author in TEST_AUTHORS:
-            results = search.OLISSearch('au="%s"' % author, _OLISTestConfiguration())
+            q = LibrarySearchQuery(author=author)
+            results = z3950.Z3950(TEST_HOST, TEST_DATABASE).library_search(q)
             self.assert_(len(results) > 0)
 
     def testISBNSearch(self):
         for isbn in TEST_ISBNS:
-            results = search.OLISSearch('isbn="%s"' % isbn, _OLISTestConfiguration())
+            q = LibrarySearchQuery(isbn=isbn)
+            results = z3950.Z3950(TEST_HOST, TEST_DATABASE).library_search(q)
             self.assert_(len(results) > 0, "No results for ISBN %s" % isbn)
     

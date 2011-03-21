@@ -1,0 +1,24 @@
+:mod:`molly.wurfl` -- Device Detection
+======================================
+
+.. module :: molly.wurfl
+
+This is a utility app which provides device detection
+
+Configuration
+-------------
+
+ * expose_view: If defined, this exposes a single page which allows users to see
+   what their device is being identified as.
+
+Sample::
+
+    Application('molly.wurfl', 'device_detection', 'Device detection',
+        display_to_user = False,
+        expose_view = True,
+    ),
+
+Views
+-----
+
+.. todo:: Complete

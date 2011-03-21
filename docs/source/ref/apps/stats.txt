@@ -1,0 +1,22 @@
+:mod:`molly.apps.stats` -- Hit logging and analysis
+===================================================
+
+.. module :: molly.apps.stats
+
+This provides hit logging and statistic analysis.
+
+Configuration
+-------------
+
+This app has no configuration
+
+Sample::
+
+    Application('molly.apps.stats', 'stats', 'Statistics',
+        display_to_user = False,
+    ),
+
+Views
+-----
+
+.. todo:: Complete

@@ -1,0 +1,66 @@
+:mod:`molly.apps.podcasts` -- Podcasts
+======================================
+
+.. module :: molly.apps.podcasts
+
+Provides an interface to browsing different podcast feeds.
+
+Configuration
+-------------
+
+ * providers: a list of providers which can be used to import podcasts
+
+Sample::
+
+    Application('molly.apps.podcasts', 'podcasts', 'Podcasts',
+        providers = [
+            Provider('molly.apps.podcasts.providers.OPMLPodcastsProvider',
+                url = 'http://www.bbc.co.uk/radio/opml/bbc_podcast_opml_v2.xml',
+                rss_re = r'http://downloads.bbc.co.uk/podcasts/(.+)/rss.xml'
+            ),
+            Provider('molly.apps.podcasts.providers.RSSPodcastsProvider',
+                podcasts = [
+                    ('top-downloads', 'http://rss.oucs.ox.ac.uk/oxitems/topdownloads.xml'),
+                ],
+            ),
+        ]
+    ),
+
+Providers
+---------
+
+molly.apps.podcasts.providers.OPMLPodcastsProvider
+""""""""""""""""""""""""""""""""""""""""""""""""""
+
+This imports RSS feeds as defined in a single OPML file. This provider may be
+more useful as a base in which to write a custom parser to correctly get
+metadata, due to the wide variety of methods in which OPML files represent data.
+It supports the following options:
+
+* url: The URL the OPML file lives at
+* rss_re: A regular expression string which extracts the slug
+
+molly.apps.podcasts.providers.RSSPodcastsProvider
+"""""""""""""""""""""""""""""""""""""""""""""""""
+
+This imports individually specified RSS feeds. It supports the following options:
+
+* podcasts: A list of tuples in the form (slug, url) of RSS feeds to import
+* medium: Whether these feeds are audio or video (or undefined)
+
+molly.apps.podcasts.providers.PodcastProducerPodcastsProvider
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+This imports podcast producer feeds. It supports one option:
+
+* url: The URL to import
+
+Writing Your Own Providers
+--------------------------
+
+.. todo:: Complete
+
+Views
+-----
+
+.. todo:: Complete

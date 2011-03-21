@@ -26,7 +26,7 @@
   {% endfor %}
   {% for telephoneNumber in person.telephoneNumber %}
     <p>
-      <a class="phone" href="{{ telephoneNumber|telephone_uri }}">{{ telephoneNumber }}</a>
+      {{ telephoneNumber|telephone }}}</a>
     </p>
   {% endfor %}
 </div>

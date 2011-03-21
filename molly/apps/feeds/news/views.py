@@ -9,25 +9,25 @@ from molly.utils.breadcrumbs import *
 from ..models import Feed, Item
 
 class IndexView(BaseView):
-    def get_metadata(cls, request):
+    def get_metadata(self, request):
         return {
             'title': 'News',
             'additional': 'View news feeds and events from across the University.',
         }
         
     @BreadcrumbFactory
-    def breadcrumb(cls, request, context):
+    def breadcrumb(self, request, context):
         return Breadcrumb(
-            cls.conf.local_name, None, 'News', lazy_reverse('index')
+            self.conf.local_name, None, 'News', lazy_reverse('index')
         )
         
-    def handle_GET(cls, request, context):
+    def handle_GET(self, request, context):
         feeds = Feed.news.all()
         context['feeds'] = feeds
-        return cls.render(request, context, 'feeds/news/index')
+        return self.render(request, context, 'feeds/news/index')
 
 class ItemListView(BaseView):
-    def get_metadata(cls, request, slug):
+    def get_metadata(self, request, slug):
         feed = get_object_or_404(Feed.news, slug=slug)
         
         last_modified = feed.last_modified.strftime('%a, %d %b %Y') if feed.last_modified else 'never updated'
@@ -38,21 +38,21 @@ class ItemListView(BaseView):
         }
 
     @BreadcrumbFactory
-    def breadcrumb(cls, request, context, slug):
+    def breadcrumb(self, request, context, slug):
         return Breadcrumb(
-            cls.conf.local_name,
+            self.conf.local_name,
             lazy_parent('index'),
             'News feed',
             lazy_reverse('item-list', args=[slug])
         )
         
-    def handle_GET(cls, request, context, slug):
+    def handle_GET(self, request, context, slug):
         feed = get_object_or_404(Feed.news, slug=slug)
         context['feed'] = feed
-        return cls.render(request, context, 'feeds/news/item_list')
+        return self.render(request, context, 'feeds/news/item_list')
 
 class ItemDetailView(BaseView):
-    def get_metadata(cls, request, slug, id):
+    def get_metadata(self, request, slug, id):
         item = get_object_or_404(Item, feed__slug=slug, id=id)
         
         last_modified = item.last_modified.strftime('%a, %d %b %Y') if item.last_modified else 'never updated'
@@ -63,18 +63,18 @@ class ItemDetailView(BaseView):
         }
 
     @BreadcrumbFactory
-    def breadcrumb(cls, request, context, slug, id):
+    def breadcrumb(self, request, context, slug, id):
         return Breadcrumb(
-            cls.conf.local_name,
+            self.conf.local_name,
             lazy_parent('item-list', slug=slug),
             'News item',
             lazy_reverse('item-detail', args=[slug,id])
         )
         
-    def handle_GET(cls, request, context, slug, id):
+    def handle_GET(self, request, context, slug, id):
         item = get_object_or_404(Item, feed__slug=slug, id=id)
         context.update({
             'item': item,
             'description': item.get_description_display(request.device)
         })
-        return cls.render(request, context, 'feeds/news/item_detail')
+        return self.render(request, context, 'feeds/news/item_detail')

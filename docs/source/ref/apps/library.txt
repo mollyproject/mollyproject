@@ -1,0 +1,52 @@
+:mod:`molly.apps.library` -- Library Search
+===========================================
+
+.. module :: molly.apps.library
+
+This application provides a front-end to electronic library catalogues.
+
+Configuration
+-------------
+
+ * provider: the provider which provides search results
+ * library_identifier: if set, this is used to look up entities (from the places
+   app) in this identifier namespace which have the value of the library code as
+   returned by the query
+ 
+Sample::
+
+    Application('molly.apps.library', 'library', 'Library search',
+                provider = Provider('molly.apps.library.providers.Z3950',
+                            host = 'z3950.copac.ac.uk',
+                            syntax = 'XML',
+                            database = 'COPAC'),
+    ),
+
+Providers
+---------
+
+molly.apps.library.providers.Z3950
+""""""""""""""""""""""""""""""""""
+
+This provides the library app with the ability to query library catalogues using
+the Z39.50 protocol. It supports the following options:
+
+ * host: The hostname of the Z39.50 server to connect to
+ * database: The name of the database on the server to use
+ * port (optional, defaults to 210): The port on which the Z39.50 server listens
+ * syntax (optional, defaults to USMARC): The syntax which the server uses for
+   responses (currently supported: USMARC and XML)
+ * charset (optional, defaults to UTF-8): The encoding to use when communicating
+   with the server
+ * control_number_key (optional, defaults to 12): The 'use attribute' to query
+   on when doing a control number lookup
+
+Writing Your Own Providers
+--------------------------
+
+.. todo:: Complete
+
+Views
+-----
+
+.. todo:: Complete

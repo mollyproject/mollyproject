@@ -1,5 +1,5 @@
 {% load molly_utils %}{% load compressed %}<!DOCTYPE HTML>
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-GB" lang="en-GB">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-GB" lang="en-GB" manifest="{{ STATIC_URL }}cache.manifest">
 <head>
     <title>{% block site_title %}molly | {% endblock %}{% block title %}{{ breadcrumbs.4 }}{% endblock %}</title>
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1"/>
@@ -97,7 +97,7 @@
        href="{% url url_shortener:index %}?path={{ full_path|urlencode }}">2D barcode and shortened link</a>
   </div>
   
-{% if "feature_vote"|app_is_loaded %}
+{% if "feature_vote"|app_is_loaded or "feature-suggestions"|app_is_loaded %}
   <div style="width:100%; float:left; margin-top: 2px; margin-bottom:10px;">
     <a style="margin:0 10px 0 10px; background-color:white; padding:10px; -webkit-border-radius:6px; -moz-border-radius:6px; text-align:center; display:block"
        href="{% url feature_vote:index %}">Have an idea? Suggest a feature!</a>

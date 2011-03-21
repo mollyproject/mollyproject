@@ -1,0 +1,20 @@
+:mod:`molly.apps.feeds.events` -- Event Listing
+===============================================
+
+.. module :: molly.apps.feeds.events
+
+Used to display event feeds to the user.
+
+Configuration
+-------------
+
+This module has no configuration
+
+Sample::
+
+    Application('molly.apps.feeds.events', 'events', 'Events'),
+
+Views
+-----
+
+.. todo:: Complete
