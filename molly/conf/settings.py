@@ -36,8 +36,9 @@ class Application(object):
         kwargs['display_to_user'] = kwargs.get('display_to_user', True)
 
         self.providers = kwargs.pop('providers', ())
-        if 'provider' in kwargs:
-            self.providers += (kwargs.pop('provider'),)
+        for key in kwargs.copy():
+            if key.endswith('provider'):
+                self.providers += (kwargs.pop(key),)
 
     def get(self):
         if self.conf:
