@@ -1,4 +1,4 @@
-:mod:``molly.apps.home`` -- Home Screen
+:mod:`molly.apps.home` -- Home Screen
 =======================================
 
 .. module :: molly.apps.home
