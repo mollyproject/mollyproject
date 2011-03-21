@@ -55,7 +55,6 @@ class LiveDepartureBoardPlacesProvider(BaseMapsProvider):
                 
                 if 'busServices' in db:
                     for service in db['busServices']['service']:
-                        print service['destination'][0]
                         entity.metadata['real_time_information'] = {
                             'services':
                                 [{
