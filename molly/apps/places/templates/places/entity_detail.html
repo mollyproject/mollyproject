@@ -37,7 +37,8 @@
 	{% render_location_map entity.location %}
  </div>
 	<ul class="link-list">
-	    <li class="round-bottom"><a href="{% url places:entity-nearby-list entity.identifier_scheme entity.identifier_value %}" rel="nofollow">Find things near here</a></li>
+	    <li><a href="{% url places:entity-nearby-list entity.identifier_scheme entity.identifier_value %}" rel="nofollow">Find things near here</a></li>
+	    <li><a href="{% url places:entity-directions entity.identifier_scheme entity.identifier_value %}" rel="nofollow">Get directions to here</a></li>
 	</ul>
 	{% else %}
 	    <div class="note"><div class="bubble">

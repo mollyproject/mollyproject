@@ -21,6 +21,8 @@ from molly.geolocation.views import LocationRequiredView
 from molly.maps import Map
 from molly.maps.osm.models import OSMUpdate
 
+from molly.routing import generate_route
+
 from molly.apps.places.models import Entity, EntityType
 from molly.apps.places import get_entity, get_point
 from molly.apps.places.forms import UpdateOSMForm
@@ -224,7 +226,6 @@ class NearbyDetailView(LocationRequiredView, ZoomableView):
             'found_entity_types': found_entity_types,
         })
         return self.render(request, context, 'places/nearby_detail')
-
 
 class EntityDetailView(ZoomableView, FavouritableView):
     default_zoom = 16
@@ -507,6 +508,54 @@ class CategoryDetailView(BaseView):
     def handle_GET(self, request, context, ptypes):
         return self.render(request, context, 'places/category_detail')
 
+class EntityDirectionsView(LocationRequiredView, ZoomableView):
+    default_zoom = 16
+
+    def get_metadata(self, request, scheme, value):
+        entity = get_entity(scheme, value)
+        return {
+            'title': 'Directions to %s' % entity.title,
+            'entity': entity,
+        }
+
+    def initial_context(self, request, scheme, value):
+        context = super(EntityDirectionsView, self).initial_context(request)
+        entity = get_entity(scheme, value)
+        
+        context.update({
+            'entity': entity,
+        })
+        return context
+
+    @BreadcrumbFactory
+    def breadcrumb(self, request, context, scheme, value):
+        entity = get_entity(scheme, value)
+        return Breadcrumb(
+            'places',
+            lazy_parent('entity', scheme=scheme, value=value),
+            'Directions to %s' % context['entity'].title,
+            lazy_reverse('entity-directions', args=[scheme, value]),
+        )
+
+    def handle_GET(self, request, context, scheme, value):
+        
+        user_location = request.session.get('geolocation:location')
+        if context['entity'].location != None:
+            context['route'] = generate_route(user_location,
+                                              context['entity'].location)
+            if not 'error' in context['route']:
+                context['map'] = Map(
+                    (context['entity'].location[0],
+                        context['entity'].location[1],
+                        'green', context['entity'].title),
+                    [(w['location'][0], w['location'][1], 'red', w['instruction'])
+                        for w in context['route']['waypoints']],
+                    len(context['route']['waypoints']),
+                    None,
+                    request.map_width,
+                    request.map_height)
+
+        return self.render(request, context, 'places/entity_directions')
 
 class ServiceDetailView(BaseView):
     """

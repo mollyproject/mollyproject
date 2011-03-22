@@ -1,0 +1,40 @@
+{% extends "places/base.html" %}{% load molly_maps %}
+
+{% block extrahead %}{% include "geolocation/js.html" %}{% endblock extrahead %}
+
+{% block content %}
+
+<div class="section">
+    <div class="header">
+        <h2>Directions to {{ entity.title }}</h2>
+        {% include "geolocation/update_location_embed.html" %}
+    </div>
+    {% if entity.location %}
+        {% if route.error %}
+        <div class="note"><div class="bubble">
+           An error occurred plotting this route: {{ route.error }}.
+        </div></div>
+        {% else %}
+            <div class="section-content no-round-bottom">
+                {% render_map map %}
+		<div class="note"><div class="bubble">
+		   This route will take {{ route.total_time }} seconds and cover
+		   {{ route.total_distance }} metres.
+		</div></div>
+            </div>
+            <ul class="content-list">
+                {% for waypoint in route.waypoints %}
+                <li>
+                    {{ waypoint.instruction }}
+                </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% else %}
+        <div class="note"><div class="bubble">
+            We do not yet have a location for this {{ entity.entity_type.verbose_name }}.
+        </div></div>
+    {% endif %}
+</div>
+
+{% endblock %}
