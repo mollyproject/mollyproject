@@ -37,6 +37,8 @@ class NaptanContentHandler(ContentHandler):
         Convert a alphabetical NaPTAN code in the database to the numerical code
         used on bus stops
         """
+        if c.isdigit():
+            return c
         return unicode(min(9, (ord(c)-91)//3))
 
     def __init__(self, entity_types, source, nptg_localities = None, areas=None):
