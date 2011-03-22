@@ -6,6 +6,7 @@ Used to import and resize media from external sources e.g. RSS feed images.
 
 from lxml import etree
 import urllib2
+import httplib
 import os.path
 
 from molly.utils.xslt import transform
@@ -35,7 +36,7 @@ def resize_external_image(url, width, timeout=None):
             socket.setdefaulttimeout(timeout)
             response = urllib2.urlopen(request)
             socket.setdefaulttimeout(old_timeout)
-    except (urllib2.HTTPError, urllib2.URLError):
+    except (urllib2.HTTPError, urllib2.URLError, httplib.HTTPException):
         return None
 
     # Check whether the image has changed since last we looked at it
