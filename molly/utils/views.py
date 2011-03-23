@@ -3,25 +3,30 @@ from time import mktime
 from inspect import isfunction
 import logging, itertools
 from datetime import datetime, date
+from slimmer.slimmer import xhtml_slimmer
 
 import simplejson
 from lxml import etree
 
 from django.db import models
-from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest, HttpResponseNotAllowed, HttpResponseForbidden, Http404
-from django.template import RequestContext
+from django.http import (HttpRequest, HttpResponse, HttpResponseBadRequest,
+                         HttpResponseNotAllowed, HttpResponseForbidden, Http404)
+from django.template import loader, Context, RequestContext, TextNode
+from django.template.loader_tags import BlockNode, ExtendsNode
 from django.shortcuts import render_to_response
 from django.core.urlresolvers import reverse, resolve, NoReverseMatch
 from django.conf import settings
 
 logger = logging.getLogger('core.requests')
 
-from .http import MediaType
-from .simplify import simplify_value, simplify_model, serialize_to_xml
+from molly.utils.http import MediaType
+from molly.utils.simplify import (simplify_value, simplify_model,
+                                  serialize_to_xml)
 
 def renderer(format, mimetypes=(), priority=0):
     """
-    Decorates a view method to say that it renders a particular format and mimetypes.
+    Decorates a view method to say that it renders a particular format and
+    mimetypes.
 
     Use as:
         @renderer(format="foo")
@@ -40,7 +45,8 @@ def renderer(format, mimetypes=(), priority=0):
     def g(f):
         f.is_renderer = True
         f.format = format
-        f.mimetypes = set(MediaType(mimetype, priority) for mimetype in mimetypes)
+        f.mimetypes = set(MediaType(mimetype, priority)
+                          for mimetype in mimetypes)
         return f
     return g
 
@@ -59,8 +65,9 @@ class ViewMetaclass(type):
         for key, value in dict.items():
             # If the method is a renderer we add it to our dicts. We can't add
             # the functions right now because we want them bound to the view
-            # instance that hasn't yet been created. Instead, add the keys (strs)
-            # and we'll replace them with the bound instancemethods in BaseView.__init__.
+            # instance that hasn't yet been created. Instead, add the keys
+            # (strs) and we'll replace them with the bound instancemethods in
+            # BaseView.__init__.
             if isfunction(value) and getattr(value, 'is_renderer', False):
                 if value.mimetypes is not None:
                     mimetypes = value.mimetypes
@@ -89,18 +96,20 @@ class BaseView(object):
     ALLOWABLE_METHODS = ('GET', 'POST', 'DELETE', 'HEAD', 'OPTIONS', 'PUT')
 
     def method_not_allowed(self, request):
-        return HttpResponseNotAllowed([m for m in self.ALLOWABLE_METHODS if hasattr(self, 'handle_%s' % m)])
+        return HttpResponseNotAllowed([m for m in self.ALLOWABLE_METHODS
+                                       if hasattr(self, 'handle_%s' % m)])
 
     def not_acceptable(self, request):
-        response = HttpResponse("The desired media type is not supported for this resource.", mimetype="text/plain")
+        response = HttpResponse(
+            "The desired media type is not supported for this resource.",
+            mimetype="text/plain")
         response.status_code = 406
         return response
 
     def bad_request(self, request):
         response = HttpResponse(
             'Your request was malformed.',
-            status=400,
-        )
+            status=400)
         return response
 
     def initial_context(self, request, *args, **kwargs):
@@ -116,10 +125,15 @@ class BaseView(object):
         self.conf = conf
         
         # Resolve renderer names to bound instancemethods. Also turn the
-        # FORMATS_BY_MIMETYPE dict into a list of pairs ordered by descending priority.
-        self.FORMATS = dict((key, getattr(self, value)) for key, value in self.FORMATS.items())
-        formats_sorted = sorted(self.FORMATS_BY_MIMETYPE.items(), key=lambda x: x[0].priority, reverse=True)
-        self.FORMATS_BY_MIMETYPE = tuple((key, getattr(self, value)) for (key, value) in formats_sorted)
+        # FORMATS_BY_MIMETYPE dict into a list of pairs ordered by descending
+        # priority.
+        self.FORMATS = dict((key, getattr(self, value))
+                            for key, value in self.FORMATS.items())
+        formats_sorted = sorted(self.FORMATS_BY_MIMETYPE.items(),
+                                key=lambda x: x[0].priority,
+                                reverse=True)
+        self.FORMATS_BY_MIMETYPE = tuple((key, getattr(self, value))
+                                         for (key, value) in formats_sorted)
     
     def __unicode__(self):
         cls = type(self)
@@ -129,8 +143,10 @@ class BaseView(object):
         method_name = 'handle_%s' % request.method
         if hasattr(self, method_name):
             context = self.initial_context(request, *args, **kwargs)
-            context['breadcrumbs'] = self.breadcrumb(request, context, *args, **kwargs)
-            response = getattr(self, method_name)(request, context, *args, **kwargs)
+            context['breadcrumbs'] = self.breadcrumb(request, context,
+                                                     *args, **kwargs)
+            response = getattr(self, method_name)(request, context,
+                                                  *args, **kwargs)
             return response
         else:
             return self.method_not_allowed(request)
@@ -174,13 +190,17 @@ class BaseView(object):
         # Stop external sites from grabbing JSON representations of pages
         # which contain sensitive user information.
         try:
-            offsite_referrer = 'HTTP_REFERER' in request.META and request.META['HTTP_REFERER'].split('/')[2] != request.META.get('HTTP_HOST')
+            offsite_referrer = 'HTTP_REFERER' in request.META and \
+                request.META['HTTP_REFERER'].split('/')[2] != \
+                                                request.META.get('HTTP_HOST')
         except IndexError:
-            # Malformed referrers (i.e., those not containing a full URL) throw this
+            # Malformed referrers (i.e., those not containing a full URL) throw
+            # this
             offsite_referrer = True
 
         for renderer in renderers:
-            if renderer.format != 'html' and context.get('exposes_user_data') and offsite_referrer:
+            if renderer.format != 'html' and context.get('exposes_user_data') \
+              and offsite_referrer:
                 continue
             try:
                 response = renderer(request, context, template_name)
@@ -188,16 +208,18 @@ class BaseView(object):
                 continue
             else:
                 if expires is not None:
-                    response['Expires'] = formatdate(mktime((datetime.now() + expires).timetuple()))
+                    response['Expires'] = formatdate(
+                        mktime((datetime.now() + expires).timetuple()))
                 return response
         else:
-            tried_mimetypes = list(itertools.chain(*[r.mimetypes for r in renderers]))
-            response = HttpResponse("""\
-Your Accept header didn't contain any supported media ranges.
-
-Supported ranges are:
-
- * %s\n""" % '\n * '.join(sorted('%s (%s)' % (f[0].value, f[1].format) for f in self.FORMATS_BY_MIMETYPE if not f[0] in tried_mimetypes)), mimetype="text/plain")
+            tried_mimetypes = list(itertools.chain(*[r.mimetypes
+                                                     for r in renderers]))
+            response = HttpResponse(
+                "Your Accept header didn't contain any supported media ranges."+
+                "\n\nSupported ranges are:\n\n * %s\n" % '\n * '.join(
+                    sorted('%s (%s)' % (f[0].value, f[1].format) for f in
+                    self.FORMATS_BY_MIMETYPE if not f[0] in tried_mimetypes)),
+            mimetype="text/plain")
             response.status_code = 406 # Not Acceptable
             return response
 
@@ -217,56 +239,72 @@ Supported ranges are:
     @renderer(format="json", mimetypes=('application/json',))
     def render_json(self, request, context, template_name):
         context = simplify_value(context)
-        return HttpResponse(simplejson.dumps(context), mimetype="application/json")
+        return HttpResponse(simplejson.dumps(context),
+                            mimetype="application/json")
 
-    @renderer(format="js", mimetypes=('text/javascript','application/javascript',))
+    @renderer(format="js", mimetypes=('text/javascript',
+                                      'application/javascript',))
     def render_js(self, request, context, template_name):
-        callback = request.GET.get('callback', request.GET.get('jsonp', 'callback'))
+        callback = request.GET.get('callback',
+                                   request.GET.get('jsonp', 'callback'))
         content = simplejson.dumps(simplify_value(context))
         content = "%s(%s);" % (callback, content)
         return HttpResponse(content, mimetype="application/javascript")
 
-    @renderer(format="html", mimetypes=('text/html', 'application/xhtml+xml'), priority=1)
+    @renderer(format="html", mimetypes=('text/html', 'application/xhtml+xml'),
+              priority=1)
     def render_html(self, request, context, template_name):
         if template_name is None:
             raise NotImplementedError
         return render_to_response(template_name+'.html',
-                                  context, context_instance=RequestContext(request),
+                                  context,
+                                  context_instance=RequestContext(request),
                                   mimetype='text/html;charset=UTF-8')
 
     @renderer(format="xml", mimetypes=('application/xml', 'text/xml'))
     def render_xml(self, request, context, template_name):
         context = simplify_value(context)
-        return HttpResponse(etree.tostring(serialize_to_xml(context), encoding='UTF-8'), mimetype="application/xml")
+        return HttpResponse(
+            etree.tostring(serialize_to_xml(context), encoding='UTF-8'),
+            mimetype="application/xml")
 
-    # We don't want to depend on YAML. If it's there offer it as a renderer, otherwise ignore it.
+    # We don't want to depend on YAML. If it's there offer it as a renderer,
+    # otherwise ignore it.
     try:
-        __import__('yaml') # Try importing, but don't stick the result in locals.
+        # Try importing, but don't stick the result in locals.
+        __import__('yaml')
         @renderer(format="yaml", mimetypes=('application/x-yaml',), priority=-1)
         def render_yaml(self, request, context, template_name):
             import yaml
             context = simplify_value(context)
-            return HttpResponse(yaml.safe_dump(context), mimetype="application/x-yaml")
+            return HttpResponse(yaml.safe_dump(context),
+                                mimetype="application/x-yaml")
     except ImportError, e:
         pass
 
     @renderer(format="fragment")
     def render_fragment(self, request, context, template_name):
-        '''Uses block rendering functions, see end of file.'''
+        """
+        Uses block rendering functions, see end of file.
+        """
         if template_name is None:
             raise NotImplementedError
-        body = render_block_to_string(template_name + '.html', 'body', context, RequestContext(request))
-        title = render_block_to_string(template_name + '.html', 'title', context, RequestContext(request))
-        content = render_block_to_string(template_name + '.html', 'content', context, RequestContext(request))
-        return HttpResponse(simplejson.dumps({'body': body, 'title': title, 'content': content}), mimetype="application/json")
-
-
+        body = render_blocks_to_string(template_name + '.html', context,
+                                       RequestContext(request))
+        return HttpResponse(
+            simplejson.dumps({
+                'body': xhtml_slimmer(body['body']),
+                'title': xhtml_slimmer(body['title']),
+                'content': xhtml_slimmer(body['content'])
+            }),
+            mimetype="application/json")
 
 class ZoomableView(BaseView):
     default_zoom = None
 
     def initial_context(self, request, *args, **kwargs):
-        context = super(ZoomableView, self).initial_context(request, *args, **kwargs)
+        context = super(ZoomableView, self).initial_context(request,
+                                                            *args, **kwargs)
         try:
             zoom = int(request.GET['zoom'])
         except (KeyError, ValueError):
@@ -279,48 +317,36 @@ class ZoomableView(BaseView):
         })
         return context
 
-# FIXME:
-#       Block rendering methods, from http://djangosnippets.org/942
-#       Will need tidying up and fitting for the style of annotation we end up with
-#       We need it to render and output multiple blocks in one go, obviously, for
-#       efficiency.
-#       But for the moment, it'll do?
-
-from django.template.loader_tags import BlockNode, ExtendsNode
-from django.template import loader, Context, RequestContext, TextNode
-
-class BlockNotFound(Exception):
-    pass
-
-
-def render_template_block(template, block, context):
+def render_template_blocks(template, context):
     """
-    Renders a single block from a template. This template should have previously been rendered.
+    Renders all the blocks from a template and returns a dictionary of block
+    names and results.
+    
+    This template should have previously been rendered.
     """
-    return render_template_block_nodelist(template.nodelist, block, context)
+    return render_template_nodelist(template.nodelist, context)
 
-def render_template_block_nodelist(nodelist, block, context):
-    for node in nodelist:
-        if isinstance(node, BlockNode) and node.name == block:
-            return node.render(context)
-        for key in ('nodelist', 'nodelist_true', 'nodelist_false'):
-            if hasattr(node, key):
-                try:
-                    return render_template_block_nodelist(getattr(node, key), block, context)
-                except:
-                    pass
+def render_template_nodelist(nodelist, context):
+    blocks = {}
     for node in nodelist:
         if isinstance(node, ExtendsNode):
-            try:
-                return render_template_block(node.get_parent(context), block, context)
-            except BlockNotFound:
-                pass
-    raise BlockNotFound
+            blocks.update(render_template_blocks(node.get_parent(context),
+                                                 context))
+        if isinstance(node, BlockNode):
+            # Render this node and add it to dictionary
+            blocks[node.name] = node.render(context)
+        for key in ('nodelist', 'nodelist_true', 'nodelist_false'):
+            # Descend any recursive nodes
+            if hasattr(node, key):
+                blocks.update(render_template_nodelist(getattr(node, key),
+                                                       context))
+    return blocks
 
-def render_block_to_string(template_name, block, dictionary=None, context_instance=None):
+def render_blocks_to_string(template_name, dictionary=None,
+                            context_instance=None):
     """
-    Loads the given template_name and renders the given block with the given dictionary as
-    context. Returns a string.
+    Loads the given template_name and renders all blocks with the given
+    dictionary as context. Returns a dictionary of blocks to string.
     """
     dictionary = dictionary or {}
     t = loader.get_template(template_name)
@@ -329,7 +355,7 @@ def render_block_to_string(template_name, block, dictionary=None, context_instan
     else:
         context_instance = Context(dictionary)
     t.render(context_instance)
-    return render_template_block(t, block, context_instance)
+    return render_template_blocks(t, context_instance)
 
 def ReverseView(request):
     from molly.auth.views import SecureView
