@@ -1,6 +1,6 @@
 /* Consistent asynchronous page loading */
 
-var current_url = "";
+var current_url = window.location.pathname;
 
 function to_absolute(url) {
     if (url.match(/http\:\/\//)) {
@@ -87,7 +87,7 @@ function capture_outbound()  {
 }
 
 jQuery(document).ready(function() {
-    if (window.location.hash != current_url) {
+    if (window.location.hash && window.location.hash != current_url) {
         console.log("Hash mismatch! " + window.location.hash + " != " + current_url + "! Reloading...");
         async_load(window.location.hash.substr(1), {}, "GET");
     }
