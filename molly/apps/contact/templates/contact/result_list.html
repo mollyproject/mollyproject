@@ -14,55 +14,28 @@
     <h2>Results</h2>
   </div>
     {% if message %}
-      <div class="section-content{% if page %} no-round-bottom{% endif %}">
+      <div class="section-content no-round-bottom">
           <div class="note"><div class="bubble pad-10">
             {{ message }}
           </div></div>
       </div>
     {% endif %}
-    {% if page %}
-    <div class="section-content{% if results.count %} no-round-bottom{% endif %}"><div class="note"><div class="bubble pad-10">
-      {% if results.num_pages|gte:4 %}
-        Your search returned {{ results.count }} item{{ results.count|pluralize }}. Try adding an initial to get more specific results.
-      {% else %}
-        Your search returned {{ results.count }} item{{ results.count|pluralize }}.
-      {% endif %}
-      </div></div></div>
-      {% if results.count %}
-        {% ifnotequal 1 page_count %}
-        <div class="section-content no-round-bottom"><div class="note">
-          Pages:
-          {% for page_number in results.page_range %}
-            <a href="?page={{ page_number }}&amp;medium={{ form.cleaned_data.medium }}&amp;query={{ form.cleaned_data.query|urlencode }}" style="padding:0 7px 0 0;">{{ page_number }}</a>
-          {% endfor %}
-        </div></div>
-        {% endifnotequal %}
-        <ul class="link-list{% ifnotequal 1 page_count %} no-round-bottom{% endifnotequal %}" id="people">
-          {% for person in page.object_list %}
-            <li class="contact-person">
-              {% include "contact/result.html" %}
-            </li>
-          {% endfor %}
-        </ul>
-        
-        {% ifnotequal 1 page_count %}
-          <div class="section-content"><div class="note">
-            Pages:
-            {% for page_number in results.page_range %}
-            <a href="?page={{ page_number }}&amp;medium={{ form.cleaned_data.medium }}&amp;query={{ form.cleaned_data.query|urlencode }}" style="padding:0 7px 0 0;">{{ page_number }}</a>
-            {% endfor %}
-          </div></div>
-        {% endifnotequal %}
-      {% endif %}
-      </div>
-    {% else %}
-       <div class="section-content">
-        {% if not message %}
-          <div class="note"><div class="bubble pad-10">
-            Your search didn't return any results.
-          </div></div>
+    <div class="section-content{% if results %} no-round-bottom{% endif %}">
+      <div class="note"><div class="bubble pad-10">
+        Your search returned {{ results|length }} item{{ results|length|pluralize }}.
+        {% if results|length|gte:40 %}
+          Try adding an initial to get more specific results.
         {% endif %}
-      </div>
+      </div></div>
+    </div>
+    {% if results %}
+      <ul class="link-list" id="people">
+        {% for person in results %}
+          <li class="contact-person">
+            {% include "contact/result.html" %}
+          </li>
+        {% endfor %}
+      </ul>
     {% endif %}
     </div>
 </div>

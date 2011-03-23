@@ -18,19 +18,19 @@ class UserIdentifier(models.Model):
     updated = models.DateTimeField(auto_now_add=True)
 
     @classmethod
-    def get(cls, user, namespace):
+    def get(self, user, namespace):
         try:
-            identifier = cls.objects.get(user=user, namespace=namespace)
+            identifier = self.objects.get(user=user, namespace=namespace)
             return identifier.value
-        except cls.DoesNotExist:
+        except self.DoesNotExist:
             return None
 
     @classmethod
-    def set(cls, user, namespace, value):
+    def set(self, user, namespace, value):
         try:
-            identifer = cls.objects.get(user=user, namespace=namespace)
-        except cls.DoesNotExist:
-            identifer = cls(user=user, namespace=namespace)
+            identifer = self.objects.get(user=user, namespace=namespace)
+        except self.DoesNotExist:
+            identifer = self(user=user, namespace=namespace)
         identifer.value = value
         identifer.save()
 
@@ -59,24 +59,24 @@ class ExternalServiceToken(models.Model):
         return reverse(self.namespace + ':index')
 
     @classmethod
-    def get(cls, user, namespace, default=None):
+    def get(self, user, namespace, default=None):
         try:
-            token = cls.objects.get(user=user, namespace=namespace)
+            token = self.objects.get(user=user, namespace=namespace)
             return pickle.loads(str(token.value))
-        except cls.DoesNotExist:
+        except self.DoesNotExist:
             return default
 
     @classmethod
-    def set(cls, user, namespace, value, authorized = None):
+    def set(self, user, namespace, value, authorized = None):
         try:
-            token = cls.objects.get(user=user, namespace=namespace)
-        except cls.DoesNotExist:
-            token = cls(user=user, namespace=namespace)
+            token = self.objects.get(user=user, namespace=namespace)
+        except self.DoesNotExist:
+            token = self(user=user, namespace=namespace)
         if authorized is not None:
             token.authorized = authorized
         token.value = pickle.dumps(value)
         token.save()
 
     @classmethod
-    def remove(cls, user, namespace):
-        cls.objects.filter(user=user, namespace=namespace).delete()
+    def remove(self, user, namespace):
+        self.objects.filter(user=user, namespace=namespace).delete()

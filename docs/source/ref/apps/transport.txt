@@ -1,0 +1,38 @@
+:mod:`molly.apps.transport` -- Transport dashboard
+==================================================
+
+.. module :: molly.apps.transport
+
+A dashboard page which takes transport related data from the places app and
+displays it in a friendlier way
+
+Configuration
+-------------
+
+ * train_station: A string in the form 'scheme:value' identifying the entity to
+   use as the train station on the page (this is the same form as in
+   /places/scheme:value/)
+ * nearby: A dictionaries of entities where values are in the form:
+   (entity-type-slug, number to show, whether or not to include ones without
+   locations, and whether this list is overridden by favourite entities)
+ * park_and_ride_sort (optional): if specified, then the park and ride entities
+   are sorted into the order specified (scheme:value strings)
+ * travel_alerts: Whether or not to display travel alerts on this page
+ 
+Sample::
+
+    Application('molly.apps.transport', 'transport', 'Transport',
+        train_station = 'crs:OXF',
+        nearby = {
+            'park_and_rides': ('park-and-ride', 5, True, False),
+            'bus_stops': ('bus-stop', 5, False, True),
+        },
+        park_and_ride_sort = ('osm:W4333225', 'osm:W4329908', 'osm:W34425625',
+                              'osm:W24719725', 'osm:W2809915'),
+        travel_alerts = True,
+    ),
+
+Views
+-----
+
+.. todo:: Complete

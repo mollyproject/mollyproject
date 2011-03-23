@@ -19,7 +19,7 @@ from .models import GeneratedMap
 class GeneratedMapView(BaseView):
     breadcrumb = NullBreadcrumb
 
-    def handle_GET(cls, request, context, hash):
+    def handle_GET(self, request, context, hash):
         gm = get_object_or_404(GeneratedMap, hash=hash)
         response = HttpResponse(open(gm.get_filename(), 'r').read(), mimetype='image/png')
 
@@ -31,21 +31,21 @@ class GeneratedMapView(BaseView):
 class AboutView(BaseView):
 
     @BreadcrumbFactory
-    def breadcrumb(cls, request, context):
+    def breadcrumb(self, request, context):
         return Breadcrumb(
-            cls.conf.local_name,
+            self.conf.local_name,
             None,
             'About OpenStreetMap',
             lazy_reverse('maps:osm-about'),
         )
 
-    def handle_GET(cls, request, context):
-        return cls.render(request, context, 'maps/osm/about')
+    def handle_GET(self, request, context):
+        return self.render(request, context, 'maps/osm/about')
 
 class GPXView(BaseView):
     breadcrumb = NullBreadcrumb
 
-    def handle_GET(cls, request, context, ptype):
+    def handle_GET(self, request, context, ptype):
         out = []
         out.append('<?xml version="1.0"?>\n')
         out.append('<gpx version="1.0"')

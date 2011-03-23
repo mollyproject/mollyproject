@@ -1,0 +1,27 @@
+:mod:`molly.favourites` -- Favourites
+=====================================
+
+.. module :: molly.favourites
+
+
+
+Configuration
+-------------
+
+Sample::
+
+
+Providers
+---------
+
+
+
+Writing Your Own Providers
+--------------------------
+
+.. todo:: Complete
+
+Views
+-----
+
+.. todo:: Complete

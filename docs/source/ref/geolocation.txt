@@ -1,0 +1,63 @@
+:mod:`molly.geolocation` -- Geolocation
+=====================================
+
+.. module :: molly.geolocation
+
+This is a utility app that provides geolocation functionality and the user
+experience to other apps and users.
+
+Configuration
+-------------
+
+ * prefer_results_near (optional, defaults to None): If set, it prefers
+   geolocation results near the (latitude, longitude, distance) tuple
+ * providers: providers which provide geocoding
+ * history_size (optional, defaults to 5): How many locations should be stored
+   in the history for each user
+ * location_request_period (optional, defaults to 180): how often to ask for new
+   locations from users which are updating their location automatically, in
+   seconds
+
+Sample::
+
+    Application('molly.geolocation', 'geolocation', 'Geolocation',
+        prefer_results_near = (-1.25821, 51.75216, 5000),
+        providers = [
+            Provider('molly.geolocation.providers.PlacesGeolocationProvider'),
+            Provider('molly.geolocation.providers.CloudmadeGeolocationProvider',
+                search_locality = 'Oxford',
+            ),
+        ],
+        location_request_period = 900,
+        display_to_user = False,
+    ),
+
+Providers
+---------
+
+:class:`molly.geolocation.providers.PlacesGeolocationProvider`
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+This is a provider which matches geocoding requests against entities known in
+the places app and returns the location, if appropriate. It has one, optional,
+option:
+
+ * search_identifiers: A limit on which identifier namespaces are to be searched
+   (list of strings)
+
+:class:`molly.geolocation.providers.CloudmadeGeolocationProvider`
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+This providers asks Cloudmade to geocode results. It has one optional option:
+
+ * search_locality: A string of a location with which to limit searching to
+
+Writing Your Own Providers
+--------------------------
+
+.. todo:: Complete
+
+Views
+-----
+
+.. todo:: Complete

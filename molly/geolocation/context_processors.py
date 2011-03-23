@@ -24,7 +24,8 @@ def geolocation(request):
 
     period = getattr(app_by_application_name('molly.geolocation'), 'location_request_period', 180)    
     
-    if max(requested, updated) + timedelta(0, period) < datetime.now() and method in ('html5', 'gears', None):
+    if max(requested, updated) + timedelta(0, period) < datetime.now() \
+     and method in ('html5', 'gears', 'html5request', None):
         require_location = True
         request.session['geolocation:requested'] = datetime.now()
     else:

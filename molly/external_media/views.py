@@ -14,7 +14,7 @@ from models import ExternalImageSized
 class IndexView(BaseView):
     breadcrumb = NullBreadcrumb
 
-    def handle_GET(cls, request, context):
+    def handle_GET(self, request, context):
         raise Http404
 
 
@@ -22,7 +22,7 @@ class ExternalImageView(BaseView):
 
     breadcrumb = NullBreadcrumb
 
-    def handle_GET(cls, request, context, slug):
+    def handle_GET(self, request, context, slug):
         eis = get_object_or_404(ExternalImageSized, slug=slug)
         response = HttpResponse(open(eis.get_filename(), 'r').read(), mimetype=eis.content_type.encode('ascii'))
 

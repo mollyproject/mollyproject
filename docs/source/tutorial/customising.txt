@@ -1,2 +1,23 @@
 Customising Molly
 =================
+
+The Molly framework contains powerful functionality to allow for customisations
+of the HTML, CSS and images to be displayed to users. Below, we cover the ways
+you can use to customise the look and feel of your Molly install.
+
+Changing Images and CSS
+-----------------------
+
+
+
+Customising Templates
+---------------------
+
+Overriding Whole Templates
+""""""""""""""""""""""""""
+
+Overriding Parts of Templates
+"""""""""""""""""""""""""""""
+
+`base.html` - an example
+""""""""""""""""""""""""

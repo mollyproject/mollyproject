@@ -1,0 +1,23 @@
+:mod:`molly.url_shortener` -- URL shortening
+============================================
+
+.. module :: molly.url_shortener
+
+This is a utility function which allows views to have shortened URLs generated
+and mapping of those URLs when input to their views.
+
+Configuration
+-------------
+
+This app has no extra configuration.
+
+Sample::
+
+    Application('molly.url_shortener', 'url_shortener', 'URL Shortener',
+        display_to_user = False,
+    ),
+
+Views
+-----
+
+.. todo:: Complete

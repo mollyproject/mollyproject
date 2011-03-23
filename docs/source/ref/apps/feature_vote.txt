@@ -1,0 +1,22 @@
+:mod:`molly.apps.feature_vote` -- Feature Suggestions
+=====================================================
+
+.. module :: molly.apps.feature_vote
+
+This allows users to suggest features and then vote on them.
+
+Configuration
+-------------
+
+This app has no additional configuration.
+
+Sample::
+
+    Application('molly.apps.feature_vote', 'feature_vote', 'Feature suggestions',
+        display_to_user = False,
+    ),
+
+Views
+-----
+
+.. todo:: Complete

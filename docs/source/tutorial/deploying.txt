@@ -1,2 +1,87 @@
 Deploying Molly
 ===============
+
+Now you've got your Molly install configured and ready to deploy, there are two
+steps you can follow. The first is to do a local testing deploy using Django's
+built in web server, and the second is to configure Apache to serve the site.
+
+For development and demonstrations, the local testing install is sufficient,
+however the Django webserver should not be considered as reliable or secure for
+anything other than local testing.
+
+Local Testing Installs
+----------------------
+
+There are two ways to start up the Django development server. If you do a
+development install of Molly (pass the ``-d`` flag to ``quickinstall``), then
+the development server will automatically start at the end of the install.
+
+The alternative way is to start the server by hand. There are two steps to this,
+the first is to activate the virtualenv, and the second to start the server::
+
+    source /path/to/install/bin/activate
+    cd /path/to/install/deploy
+    python manage.py runserver
+
+Configuring Apache
+------------------
+
+When a new site is created by the Molly installer, than a sample WSGI and Apache
+configuration file is generated, which can be used to get Molly up and running.
+If you did not create your site using the Molly installer, then sample files
+are included below.
+
+WSGI is an interface between web applications like Molly and a webserver, so
+you must `install the mod_wsgi Apache module <http://code.google.com/p/modwsgi/wiki/InstallationInstructions>`_
+and then configure mod_wsgi in your Apache configuration to serve your site.
+
+.. warning:: Molly by default uses a virtualenv to manage dependencies. mod_wsgi
+             must therefore be set up to use this virtualenv. This can be
+             accomplished by adding ``WSGIPythonHome /path/to/install/`` to your
+             ``httpd.conf`` or mod_wsgi configuration file.
+
+You must also set up Apache to serve your site media, as compiled in the
+directory specified by ``STATIC_ROOT`` (this is the ``media`` folder in a default
+install) at the URL specified by the ``STATIC_URL`` setting.
+
+Sample Apache virtualhost config::
+
+    <VirtualHost *:80>
+        # Change the following settings as appropriate
+        ServerName m.example.ac.uk
+        ServerAdmin molly@example.ac.uk
+    
+        WSGIDaemonProcess molly user=molly group=molly
+        WSGIProcessGroup molly
+        WSGIScriptAlias / /path/to/my/site/apache/molly.wsgi
+    
+        ErrorLog /var/log/apache2/error.log
+    
+        # Possible values include: debug, info, notice, warn, error, crit,
+        # alert, emerg.
+        LogLevel warn
+    
+        CustomLog /var/log/apache2/access.log combined
+        
+        Alias /media /path/to/my/site/media
+        # It is recommended you create these two files and then set up the links
+        # as appropriate
+        #Alias /robots.txt /path/to/robots.txt
+        #Alias /favicon.ico /path/to/favicon.ico
+    
+    </VirtualHost>
+
+Sample WSGI script::
+
+    #!/usr/bin/env python
+    
+    import os, os.path
+    import sys
+    
+    os.environ['DJANGO_SETTINGS_MODULE'] = 'deploy.settings'
+    sys.path.insert(0, os.path.abspath(os.path.join(
+    os.path.dirname(__file__), '..', '..',
+    )))
+    
+    import django.core.handlers.wsgi
+    application = django.core.handlers.wsgi.WSGIHandler()

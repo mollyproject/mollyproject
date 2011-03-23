@@ -109,12 +109,14 @@ class MediaType(object):
         return self.type[:imt.specifity] == imt.type[:imt.specifity]
         
     @classmethod
-    def resolve(cls, accept, provide):
+    def resolve(self, accept, provide):
         """
         Resolves a list of accepted MediaTypes and available renderers to the preferred renderer.
 
         Call as MediaType.resolve([MediaType], [(MediaType, renderer)]).
         """
+        if len(accept) == 0:
+            return []
         accept.sort()
         eq_classes, accept = [[accept[-1]]], accept[:-1]
 

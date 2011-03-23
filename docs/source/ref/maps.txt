@@ -1,0 +1,22 @@
+:mod:`molly.maps` -- Map Generation
+===================================
+
+.. module :: molly.maps
+
+This is a utility app which provides maps to other applications.
+
+Configuration
+-------------
+
+This app has no configuration
+
+Sample::
+
+    Application('molly.maps', 'maps', 'Maps',
+        display_to_user = False,
+    ),
+
+Views
+-----
+
+.. todo:: Complete

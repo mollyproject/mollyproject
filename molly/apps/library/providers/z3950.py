@@ -390,7 +390,7 @@ class Z3950(BaseLibrarySearchProvider):
             results = self.Results(connection.search(z3950_query), self._wrapper)
         except zoom.Bib1Err as e:
             # 31 = Resources exhausted - no results available 
-            if e.condition == 31:
+            if e.condition in (31, 108):
                 return []
             else:
                 raise

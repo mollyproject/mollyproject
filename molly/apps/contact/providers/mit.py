@@ -9,8 +9,6 @@ class LDAPContactProvider(BaseContactProvider):
         'de', 'van der', 'te', 'von', 'van', 'du', 'di'
     ])
 
-    handles_pagination = False
-
     def __init__(self, url, base_dn):
         self._url = url
         self._base_dn = base_dn

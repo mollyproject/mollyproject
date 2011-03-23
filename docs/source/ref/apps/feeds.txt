@@ -1,0 +1,39 @@
+:mod:`molly.apps.feeds` -- Feed Manager
+=======================================
+
+.. module :: molly.apps.feeds
+
+This is a utility app for importing RSS feeds. The feeds to be imported are configured in the admin interface.
+
+Configuration
+-------------
+
+ * providers: A list of providers of feed importers
+
+Sample::
+
+    Application('molly.apps.feeds', 'feeds', 'Feeds',
+        providers = [
+            Provider('molly.apps.feeds.providers.RSSFeedsProvider'),
+        ],
+        display_to_user = False,
+    ),
+
+Providers
+---------
+
+:class:`molly.apps.feeds.providers.RSSFeedsProvider`
+""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+Imports RSS feeds. Has no options.
+
+
+Writing Your Own Providers
+--------------------------
+
+.. todo:: Complete
+
+Views
+-----
+
+.. todo:: Complete
