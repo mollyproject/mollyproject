@@ -1,7 +1,37 @@
 function capfirst(s) {
     return s.substr(0,1).toUpperCase() + s.substr(1)
 }
+
+$(document).bind('molly-page-change', function(event, url){
+    if (url == '/places/') {
+        $('.nearby a').click(function(){
+            $.ajax({
+                url: $(this).attr('href'),
+                data: { format: 'json' },
+                dataType: 'json',
+                success: function(data){parse_results(data, true)}
+            })
+            return false;
+        })
+        
+        $('.nearby a').addClass('has-ajax-handler')
+        
+        $('.categories a').click(function(){
+            $.ajax({
+                url: $(this).attr('href'),
+                data: { format: 'json' },
+                dataType: 'json',
+                success: function(data){parse_results(data, false)}
+            })
+            return false;
+        })
+        
+        $('.categories a').addClass('has-ajax-handler')
+    }
     
+    capture_outbound()
+});
+
 function parse_results(data, nearby){
     $('.category-list').remove()
     for (category in data.entity_types) {

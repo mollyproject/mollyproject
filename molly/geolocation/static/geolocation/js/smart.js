@@ -48,8 +48,7 @@ function locationFailure(d) {
   }, 5000);
 }
 
-$(function(){
-  
+$(document).bind('molly-page-change', function(){
   if(geo_position_js.init()) {
     // Add automatic location buttons if geolocation API is available
     $('.update-location-form').append('<ul class="link-list location-automatic-list"><li><input type="submit" value="Get location automatically" class="automatic-update as-text-link" /></li></ul>');
@@ -69,22 +68,6 @@ $(function(){
       });
       return false;
     });
-    // Attempt to do location if available
-    if (locationRequired) {
-      geo_position_js.getCurrentPosition(automaticLocation, locationFailure, {
-        enableHighAccuracy: true,
-        maximumAge: 30000
-      });
-    }
-    // If this page is open a while, then automatically send geolocation updates back
-    if (autoLocationUpdating) {
-      setTimeout(function(){
-        geo_position_js.getCurrentPosition(automaticLocation, locationFailure, {
-          enableHighAccuracy: true,
-          maximumAge: 30000
-        });
-      }, 600000)
-    }
   }
   
   // Switch to update view from display
@@ -125,6 +108,28 @@ $(function(){
   $('.update-location-name').val('e.g., OX2 6NN, kebl, St Clements')
   $('.update-location-name').css('color', '#a3a3a3')
 
+});
+
+$(function(){
+  
+  if(geo_position_js.init()) {
+    // Attempt to do location if available
+    if (locationRequired) {
+      geo_position_js.getCurrentPosition(automaticLocation, locationFailure, {
+        enableHighAccuracy: true,
+        maximumAge: 30000
+      });
+    }
+    // If this page is open a while, then automatically send geolocation updates back
+    if (autoLocationUpdating) {
+      setTimeout(function(){
+        geo_position_js.getCurrentPosition(automaticLocation, locationFailure, {
+          enableHighAccuracy: true,
+          maximumAge: 30000
+        });
+      }, 600000)
+    }
+  }
 });
 
 function specificLocationForm(location, favourite) {

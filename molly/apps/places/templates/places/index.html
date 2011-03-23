@@ -1,34 +1,5 @@
 {% extends "places/base.html" %}{% load molly_utils %}{% load molly_search %}
 
-{% block extrahead %}
-    {% include "geolocation/js.html" %}
-    {% if use_javascript %}
-    <script type="text/javascript">	
-	$(function(){
-	    $('.nearby a').click(function(){
-		$.ajax({
-		    url: $(this).attr('href'),
-		    data: { format: 'json' },
-		    dataType: 'json',
-		    success: function(data){parse_results(data, true)}
-		})
-		return false;
-	    })
-	    
-	    $('.categories a').click(function(){
-		$.ajax({
-		    url: $(this).attr('href'),
-		    data: { format: 'json' },
-		    dataType: 'json',
-		    success: function(data){parse_results(data, false)}
-		})
-		return false;
-	    })
-	})
-    </script>
-    {% endif %}
-{% endblock extrahead %}
-
 {% block content %}
 
 {# Places Search #}

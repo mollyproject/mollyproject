@@ -19,7 +19,9 @@
     <link rel="apple-touch-startup-image" href="{{ STATIC_URL  }}site/images/apple-touch-startup-image.jpg">
 {% endif %}
     <link rel="icon" type="image/png" href="{{ STATIC_URL }}site/images/favicon.png"/>
-{% block extrahead %}{% endblock extrahead %}
+    
+    {% include "geolocation/js.html" %}
+    {% block extrahead %}{% endblock extrahead %}
 </head>
 
 <body>
