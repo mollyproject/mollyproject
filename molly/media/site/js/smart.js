@@ -70,7 +70,8 @@ function async_load(url, query, meth) {
 
 function capture_outbound()  {
     // Intercept all forms
-    $('form').submit(function(evt) {
+    $('form:not(.has-ajax-handler)').unbind('submit')
+    $('form:not(.has-ajax-handler)').submit(function(evt) {
             var serial = $(this).serializeArray();
             var datamap = {}
             var i = 0;
@@ -80,7 +81,9 @@ function capture_outbound()  {
             return async_load($(this).attr('action'), datamap, $(this).attr('method'));
         });
     console.log("Captured outbound forms");
+    
     // Intercept all links with an href
+    $('a[href]:not(.has-ajax-handler)').unbind('click')
     $('a[href]:not(.has-ajax-handler)').click(function(evt) {
             return async_load($(this).attr('href'), {}, 'GET');
         });
