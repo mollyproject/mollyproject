@@ -1,22 +1,18 @@
 /* Consistent asynchronous page loading */
 
-var current_url = window.location.pathname;
+var current_url = window.location.href;
 
 function to_absolute(url) {
-    if (url.match(/http\:\/\//)) {
-        // console.log("http://");
+    if (url.match(/https?\:\/\//)) {
         return url;
     } else if (url.substr(0, 1) == "/") {
-        // console.log("abs");
-        return base + url.substr(1);
+        return window.location.protocol + '//' + window.location.host + url;
     } else if (url.indexOf('?') != -1) {
-        // console.log("qs");
         if (current_url.lastIndexOf('?') != -1) {
             return current_url.substring(0, current_url.lastIndexOf('?')) + url;
         }
         return current_url + url;
     } else {
-        // console.log("rel, with current " + current_url);
         return current_url + url;
     }
 }
@@ -36,18 +32,27 @@ function async_load_callback(data, textStatus, xhr) {
 }
 
 function async_load(url, query, meth) {
+    
+    /* Don't attempt AJAX for offsite links */
+    var base = window.location.protocol + '//' + window.location.host
+    if (to_absolute(url).substr(0, base.length) != base) {
+        console.log(url.substr(0, base.length))
+        console.log(base)
+        return true;
+    }
+  
     query['format'] = 'fragment';
-    /* console.log("Async loading " + url);
-    console.log("    aka " + to_absolute(url));
-    console.log("    with " + query);
-    console.log("    meth " + meth); */
     var settings = {'url': to_absolute(url), 'data': query, 'type': meth, 'dataType': 'json'};
 
     settings['success'] = function(data, textStatus, xhr) {
         var abs_url = to_absolute(url);
-        current_url = abs_url;
-        console.log("Current URL now " + current_url)
-        window.location.hash = current_url;
+        current_url = abs_url.substr(base.length);
+        // Detect if history API is available - http://diveintohtml5.org/detect.html#history
+        if (!!(window.history && history.pushState)) {
+            history.pushState(null, null, abs_url)
+        } else {
+            window.location.hash = current_url;
+        }
         return async_load_callback(data, textStatus, xhr);
     };
     settings['error'] = function(xhr, textStatus, errorThrown) {
@@ -80,22 +85,27 @@ function capture_outbound()  {
             }
             return async_load($(this).attr('action'), datamap, $(this).attr('method'));
         });
-    console.log("Captured outbound forms");
     
     // Intercept all links with an href
     $('a[href]:not(.has-ajax-handler)').unbind('click')
     $('a[href]:not(.has-ajax-handler)').click(function(evt) {
             return async_load($(this).attr('href'), {}, 'GET');
         });
-    console.log("Captured outbound links");
 }
 
 $(function() {
     if (window.location.hash && window.location.hash != current_url) {
-        console.log("Hash mismatch! " + window.location.hash + " != " + current_url + "! Reloading...");
         async_load(window.location.hash.substr(1), {}, "GET");
     }
     $(document).trigger('molly-page-change', [current_url])
     capture_outbound();
+    
+    if (!!(window.history && history.pushState)) {
+      window.addEventListener('popstate', function(e){
+        if (current_url != window.location.href) {
+          async_load(window.location.href, {}, 'GET');
+        }
+      })
+    }
 });
 
