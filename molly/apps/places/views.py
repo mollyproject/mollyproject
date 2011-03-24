@@ -9,7 +9,7 @@ import math
 from suds import WebFault
 
 from django.contrib.gis.geos import Point
-from django.http import Http404, HttpResponse, HttpResponseRedirect, HttpResponsePermanentRedirect
+from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import capfirst
@@ -313,7 +313,7 @@ class EntityDetailView(ZoomableView, FavouritableView):
         entity = context['entity']
         
         if entity.absolute_url != request.path:
-            return HttpResponsePermanentRedirect(entity.absolute_url)
+            return self.redirect(entity.absolute_url, request, 'perm')
         
         entities = []
         for association in context['associations']:
@@ -391,7 +391,9 @@ class EntityUpdateView(ZoomableView):
             )
             osm_update.save()
 
-            return HttpResponseRedirect(reverse('places:entity-update', args=[scheme, value])+'?submitted=true')
+            return self.redirect(
+                reverse('places:entity-update', args=[scheme, value]) + '?submitted=true',
+                request)
         else:
             context['form'] = form
             return self.render(request, context, 'places/update_osm')

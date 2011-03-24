@@ -1,5 +1,3 @@
-from django.http import HttpResponseRedirect
-
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
 
@@ -44,7 +42,7 @@ class IndexView(BaseView):
         results = [r for r in results if not r.get('exclude_from_search')]
 
         if len(results) == 1 and results[0].get('redirect_if_sole_result'):
-            return HttpResponseRedirect(results[0]['url'])
+            return self.redirect(results[0]['url'], request)
 
         context.update({
             'results': list(results)[:20],

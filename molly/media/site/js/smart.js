@@ -54,11 +54,10 @@ function async_load(url, query, meth) {
             'type': meth,
             'dataType': 'json',
             'success': function(data, textStatus, xhr) {
-                var abs_url = to_absolute(url);
-                current_url = abs_url.substr(base.length - 1);
+                current_url = data.uri;
                 // Detect if history API is available - http://diveintohtml5.org/detect.html#history
                 if (!!(window.history && history.pushState)) {
-                    history.pushState(null, null, abs_url)
+                    history.pushState(null, null, to_absolute(current_url))
                 } else {
                     window.location.hash = current_url;
                 }

@@ -6,7 +6,6 @@ from django.http import HttpResponseForbidden
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
-from molly.utils.http import HttpResponseSeeOther
 from molly.utils import send_email
 
 from .models import Feature
@@ -72,9 +71,11 @@ class IndexView(BaseView):
             feature.save()
 
             if request.POST.get('return_url', '').startswith('/'):
-                return HttpResponseSeeOther(request.POST['return_url'])
+                return self.redirect(request.POST['return_url'], request,
+                                     'seeother')
             else:
-                return HttpResponseSeeOther(reverse('feature_vote:index'))
+                return self.redirect(reverse('feature_vote:index'), request,
+                                     'seeother')
 
         if form.is_valid():
             form.save()
@@ -87,7 +88,8 @@ class IndexView(BaseView):
                 'feature': form.instance,
             }, 'feature_vote/feature_create.eml', self)
 
-            return HttpResponseSeeOther(reverse('feature_vote:index') + '?submitted=true')
+            return self.redirect(reverse('feature_vote:index') + '?submitted=true',
+                                 request, 'seeother')
         else:
             return self.handle_GET(request, context)
 

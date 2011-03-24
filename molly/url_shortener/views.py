@@ -1,6 +1,6 @@
 import random, re
 
-from django.http import HttpResponsePermanentRedirect, Http404
+from django.http import Http404
 from django.core.urlresolvers import resolve, reverse
 from django.shortcuts import get_object_or_404
 
@@ -75,7 +75,7 @@ class IndexView(BaseView):
             return self.invalid_path(request, context)
 
         if IndexView in getattr(context['view'], '__mro__', ()):
-            return HttpResponsePermanentRedirect(path)
+            return self.redirect(path, request, 'perm')
 
         context['shortened_url'], created = ShortenedURL.objects.get_or_create(path=path)
 

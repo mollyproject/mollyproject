@@ -4,13 +4,16 @@ from inspect import isfunction
 import logging, itertools
 from datetime import datetime, date
 from slimmer.slimmer import xhtml_slimmer
+from urlparse import urlparse, urlunparse, parse_qs
+from urllib import urlencode
 
 import simplejson
 from lxml import etree
 
 from django.db import models
 from django.http import (HttpRequest, HttpResponse, HttpResponseBadRequest,
-                         HttpResponseNotAllowed, HttpResponseForbidden, Http404)
+                         HttpResponseNotAllowed, HttpResponseForbidden, Http404,
+                         HttpResponseRedirect, HttpResponsePermanentRedirect)
 from django.template import loader, Context, RequestContext, TextNode
 from django.template.loader_tags import BlockNode, ExtendsNode
 from django.shortcuts import render_to_response
@@ -19,7 +22,7 @@ from django.conf import settings
 
 logger = logging.getLogger('core.requests')
 
-from molly.utils.http import MediaType
+from molly.utils.http import MediaType, HttpResponseSeeOther
 from molly.utils.simplify import (simplify_value, simplify_model,
                                   serialize_to_xml)
 
@@ -172,6 +175,27 @@ class BaseView(object):
             zoom = min(max(10, zoom), 18)
         return zoom
 
+    def redirect(self, uri, request, type='found'):
+        if 'format' in request.REQUEST:
+            uri = urlparse(uri)
+            if (uri.netloc != request.META.get('HTTP_HOST') and \
+                uri.netloc != '') or type == 'secure':
+                # This makes sure we never cross http/https boundaries with AJAX
+                # requests or try to make an off-site AJAX request
+                return self.render(request, {'redirect': uri.geturl()}, None)
+            args = parse_qs(uri.query)
+            args['format'] = request.REQUEST['format']
+            uri = urlunparse((uri.scheme, uri.netloc, uri.path, uri.params,
+                              urlencode(args), uri.fragment))
+        
+        redirect = {
+            'found': HttpResponseRedirect,
+            'perm': HttpResponsePermanentRedirect,   
+            'secure': HttpResponsePermanentRedirect,
+            'seeother': HttpResponseSeeOther,
+        }.get(type)
+        return redirect(uri)
+
     def render(self, request, context, template_name, expires=None):
         context.pop('exposes_user_data', None)
 
@@ -212,6 +236,7 @@ class BaseView(object):
                         mktime((datetime.now() + expires).timetuple()))
                 return response
         else:
+            raise Exception()
             tried_mimetypes = list(itertools.chain(*[r.mimetypes
                                                      for r in renderers]))
             response = HttpResponse(
@@ -288,11 +313,28 @@ class BaseView(object):
         Uses block rendering functions, see end of file.
         """
         if template_name is None:
+            if 'redirect' in context:
+                return HttpResponse(
+                    simplejson.dumps({
+                        'redirect': request.build_absolute_uri(
+                            context['redirect'])
+                    }),
+                    mimetype="application/json")
             raise NotImplementedError
         body = render_blocks_to_string(template_name + '.html', context,
                                        RequestContext(request))
+        
+        scheme, netloc, path, params, query, fragment = \
+            urlparse(request.get_full_path())
+        args = parse_qs(query)
+        if 'format' in args:
+            del args['format']
+        query = urlencode(args)
+        uri = urlunparse((scheme, netloc, path, params, query, fragment))
+        
         return HttpResponse(
             simplejson.dumps({
+                'uri': uri,
                 'body': xhtml_slimmer(body['body']),
                 'title': xhtml_slimmer(body['whole_title']),
             }),
