@@ -1,7 +1,7 @@
 {% load molly_utils %}{% load compressed %}<!DOCTYPE HTML>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-GB" lang="en-GB" manifest="{{ STATIC_URL }}cache.manifest">
 <head>
-    <title>{% block site_title %}molly | {% endblock %}{% block title %}{{ breadcrumbs.4 }}{% endblock %}</title>
+    <title>{% block whole_title %}{% block site_title %}molly | {% endblock %}{% block title %}{{ breadcrumbs.4 }}{% endblock %}{% endblock %}</title>
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1"/>
     <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
     <meta name="format-detection" content="telephone=no" />

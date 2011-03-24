@@ -1,14 +1,16 @@
 // http://stackoverflow.com/questions/901115/get-querystring-values-with-jquery
-function getParameterByName( name, qs )
-{
-  name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
-  var regexS = "[\\?&]"+name+"=([^&#]*)";
-  var regex = new RegExp( regexS );
-  var results = regex.exec( qs );
-  if( results == null )
-    return "";
-  else
-    return results[1].replace(/\+/g, " ");
+function getParameterByName( name, qs ){
+  
+    name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+    var regexS = "[\\?&]"+name+"=([^&#]*)";
+    var regex = new RegExp( regexS );
+    var results = regex.exec( qs );
+    if ( results == null ) {
+        return "";
+    }
+    else {
+        return results[1].replace(/\+/g, " ");
+    }
 }
 
 function handleLibraryAJAX(data){
@@ -37,3 +39,22 @@ function handleLibraryAJAX(data){
     }
     $('.result-number').html($('#item-list li').length)
 }
+
+
+$(document).bind('molly-page-change', function(event, url){
+    
+    if (url == '/library/search/') {
+        $('a.next').click(function(){
+            $.ajax({
+                url: $(this).attr('href'),
+                data: { format: 'json' },
+                dataType: 'json',
+                success: handleLibraryAJAX,
+                error: ajax_failure
+            })
+            return false;
+        })
+        $('a.next').addClass('has-ajax-handler')
+    }
+    
+})

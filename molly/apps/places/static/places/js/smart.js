@@ -5,11 +5,13 @@ function capfirst(s) {
 $(document).bind('molly-page-change', function(event, url){
     if (url == '/places/') {
         $('.nearby a').click(function(){
+            $('body').append('<div id="loading"></div>')
             $.ajax({
                 url: $(this).attr('href'),
                 data: { format: 'json' },
                 dataType: 'json',
-                success: function(data){parse_results(data, true)}
+                success: function(data){parse_results(data, true);$('#loading').remove();},
+                error: ajax_failure
             })
             return false;
         })
@@ -17,17 +19,52 @@ $(document).bind('molly-page-change', function(event, url){
         $('.nearby a').addClass('has-ajax-handler')
         
         $('.categories a').click(function(){
+            $('body').append('<div id="loading"></div>')
             $.ajax({
                 url: $(this).attr('href'),
                 data: { format: 'json' },
                 dataType: 'json',
-                success: function(data){parse_results(data, false)}
+                success: function(data){parse_results(data, false);$('#loading').remove();},
+                error: ajax_failure
             })
             return false;
         })
         
         $('.categories a').addClass('has-ajax-handler')
-        capture_outbound();
+    }
+    
+    if (url.match(/^\/places\/category\/[^\/;]/)) {
+        $('li.next a').click(function(){
+            $('body').append('<div id="loading"></div>')
+            $.ajax({
+                url: $(this).attr('href'),
+                data: { format: 'json' },
+                dataType: 'json',
+                success: function(data){
+                    $('.current-page').html(data.entities.number)
+                    
+                    if (data.entities.has_next) {
+                        $('li.next a').attr('href', '?page=' + (data.entities.number + 1).toString(10))
+                    } else {
+                        $('li.next').remove()
+                        $('.section-content').removeClass('no-round-bottom')
+                    }
+                    for (i in data.entities.objects) {
+                        item = data.entities.objects[i]
+                        $('#category-list').append('<li><a href="' + item._url + '">' +
+                                                    item.title + 
+                                                    '</a></li>')
+                        if (i == 0) {
+                            $('#category-list li:last').addClass('page-break')
+                        }
+                    }
+                    $('#loading').remove();
+                },
+                error: ajax_failure
+            })
+            return false;
+        })
+        $('li.next a').addClass('has-ajax-handler')
     }
 });
 
@@ -83,7 +120,8 @@ function refreshRTI(data){
             url: window.location.href,
             data: { format: 'json', board: board },
             dataType: 'json',
-            success: refreshRTI
+            success: refreshRTI,
+            error: ajax_failure
         })
     }, refreshFrequency * 1000)
 }
@@ -255,7 +293,8 @@ function setupLDBButtons(){
             url: $(this).attr('href'),
             data: { format: 'json' },
             dataType: 'json',
-            success: function(data){rebuildLDB($('#ldb'), data)}
+            success: function(data){rebuildLDB($('#ldb'), data)},
+            error: ajax_failure
         })
         return false;
     })

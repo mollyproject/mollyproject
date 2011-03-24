@@ -294,8 +294,7 @@ class BaseView(object):
         return HttpResponse(
             simplejson.dumps({
                 'body': xhtml_slimmer(body['body']),
-                'title': xhtml_slimmer(body['title']),
-                'content': xhtml_slimmer(body['content'])
+                'title': xhtml_slimmer(body['whole_title']),
             }),
             mimetype="application/json")
 
@@ -317,7 +316,7 @@ class ZoomableView(BaseView):
         })
         return context
 
-def render_template_blocks(template, context):
+def render_template_blocks(template, context, extensions={}):
     """
     Renders all the blocks from a template and returns a dictionary of block
     names and results.
@@ -326,7 +325,7 @@ def render_template_blocks(template, context):
     """
     return render_template_nodelist(template.nodelist, context)
 
-def render_template_nodelist(nodelist, context):
+def render_template_nodelist(nodelist, context, extensions={}):
     blocks = {}
     for node in nodelist:
         if isinstance(node, ExtendsNode):
@@ -354,7 +353,7 @@ def render_blocks_to_string(template_name, dictionary=None,
         context_instance.update(dictionary)
     else:
         context_instance = Context(dictionary)
-    t.render(context_instance)
+    t._render(context_instance)
     return render_template_blocks(t, context_instance)
 
 def ReverseView(request):
