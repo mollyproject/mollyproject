@@ -986,3 +986,7 @@ small {
 {
     border: 1px solid #000000;
 }
+
+.favourite-link .additional {
+    font-size: 0.9em;
+}

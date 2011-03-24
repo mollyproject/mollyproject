@@ -85,7 +85,8 @@
       </div>
       <ul class="link-list">
       {% for favourite in favourites %}
-	<li><a href="{{ favourite.url }}">{{ favourite.metadata.title }}</a></li>
+	<li class="favourite-link"><a href="{{ favourite.url }}">{{ favourite.metadata.title|safe }}
+          {% if favourite.metadata.additional %}<br /><span class="additional">{{ favourite.metadata.additional|safe }}</span>{% endif %}</a></li>
       {% endfor %}
 	<li><a href="{% url favourites:index %}"><strong>Manage Favourites</strong></a></li>
       </ul>
