@@ -68,6 +68,7 @@ $(document).bind('molly-page-change', function(){
       });
       return false;
     });
+    $('.automatic-update, .location-automatic-list').addClass('has-ajax-handler')
   }
   
   // Switch to update view from display
@@ -79,11 +80,13 @@ $(document).bind('molly-page-change', function(){
       $('.alternate-location-box').slideUp();
       $('.current-location-box').slideDown();
     })
+    $('.cancel-update').addClass('has-ajax-handler')
     $('.alternate-location-box').hide();
     $('.update-location-box').slideDown();
     $(window).scrollTop($('#location-box').offset().top)
     return false;
   });
+  $('.current-location-box form input').addClass('has-ajax-handler')
   $('.update-location-form').submit(function() {
     $('.update-location-box').slideUp();
     $('.alternate-location-box').slideUp();
@@ -99,15 +102,20 @@ $(document).bind('molly-page-change', function(){
   })
   $('.specific-location-form').submit(specificLocationFormSubmit)
   $('.favourite-location-form').submit(favouriteLocationFormSubmit)
+  $('.update-location-form, .update-location-form, .favourite-location-form').addClass('has-ajax-handler')
 
-  $('.update-location-name').focus(function(){
-    $(this).val('');
-    $(this).css('color', '#000000')
-    $(this).unbind('focus')
-  });
-  $('.update-location-name').val('e.g., OX2 6NN, kebl, St Clements')
-  $('.update-location-name').css('color', '#a3a3a3')
-
+  // Detect in placeholder tag is supported
+  if ('placeholder' in document.createElement('input')) {
+    $('.update-location-name').attr('placeholder', 'e.g., OX2 6NN, kebl, St Clements')
+  } else {
+    $('.update-location-name').focus(function(){
+      $(this).val('');
+      $(this).css('color', '#000000')
+      $(this).unbind('focus')
+    });
+    $('.update-location-name').val('e.g., OX2 6NN, kebl, St Clements')
+    $('.update-location-name').css('color', '#a3a3a3')
+  }
 });
 
 $(function(){
@@ -121,13 +129,17 @@ $(function(){
       });
     }
     // If this page is open a while, then automatically send geolocation updates back
-    if (autoLocationUpdating) {
+    function periodic_location_update(){
       setTimeout(function(){
         geo_position_js.getCurrentPosition(automaticLocation, locationFailure, {
           enableHighAccuracy: true,
           maximumAge: 30000
         });
+        periodic_location_update();
       }, 600000)
+    }
+    if (autoLocationUpdating) {
+      periodic_location_update();
     }
   }
 });
@@ -264,6 +276,7 @@ function locationFound(data) {
   }
   $('.specific-location-form').submit(specificLocationFormSubmit)
   $('.favourite-location-form').submit(favouriteLocationFormSubmit)
+  $('.update-location-form, .update-location-form, .favourite-location-form').addClass('has-ajax-handler')
   
 }
 

@@ -1,27 +1,5 @@
 {% extends "library/base.html" %}
 
-{% block extrahead %}
-    {% include "geolocation/js.html" %}
-    
-    {% if use_javascript %}
-        <script type="text/javascript">
-            $(function(){
-                
-                $('a.next').click(function(){
-                    $.ajax({
-                        url: $(this).attr('href'),
-                        data: { format: 'json' },
-                        dataType: 'json',
-                        success: handleLibraryAJAX
-                    })
-                    return false;
-                })
-                
-            })
-        </script>
-    {% endif %}
-{% endblock extrahead %}
-
 {% block content %}
 
 {% if error_message %}

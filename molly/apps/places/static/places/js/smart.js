@@ -2,8 +2,14 @@ function capfirst(s) {
     return s.substr(0,1).toUpperCase() + s.substr(1)
 }
 
+entitydetail_ajax_refresh = null;
+
 $(document).bind('molly-page-change', function(event, url){
+    
+    clearTimeout(entitydetail_ajax_refresh)
+    
     if (url == '/places/') {
+        // IndexView
         $('.nearby a').click(function(){
             $('body').append('<div id="loading"></div>')
             $.ajax({
@@ -34,6 +40,7 @@ $(document).bind('molly-page-change', function(event, url){
     }
     
     if (url.match(/^\/places\/category\/[^\/;]/)) {
+        // Category detail view
         $('li.next a').click(function(){
             $('body').append('<div id="loading"></div>')
             $.ajax({
@@ -66,6 +73,35 @@ $(document).bind('molly-page-change', function(event, url){
         })
         $('li.next a').addClass('has-ajax-handler')
     }
+    
+    if (url.match(/^[a-z_\-]+:[\da-zA-Z]+\/$/)) {
+        // Entity detail view
+        
+	entitydetail_ajax_refresh = setTimeout(function(){
+	    $.ajax({
+		url: to_absolute(current_url),
+		data: { format: 'json' },
+		dataType: 'json',
+		success: refreshRTI
+	    })
+	}, 30000) // default to 30 seconds here because we don't actually know
+                  // what the refresh frequency is - future requests will be
+                  // spaced correctly
+	
+        $('.nearby a').click(function(){
+            $.ajax({
+                url: $(this).attr('href'),
+                data: { format: 'json' },
+                dataType: 'json',
+                success: function(data){parse_results(data, true)},
+                error: ajax_failure
+            })
+            return false;
+        })
+        $('.nearby a').addClass('has-ajax-handler')
+        setupLDBButtons();
+    }
+    
 });
 
 function parse_results(data, nearby){
@@ -115,15 +151,15 @@ function refreshRTI(data){
             }
         }
     }
-    setTimeout(function(){
+    entitydetail_ajax_refresh = setTimeout(function(){
         $.ajax({
-            url: window.location.href,
+            url: to_absolute(current_url),
             data: { format: 'json', board: board },
             dataType: 'json',
             success: refreshRTI,
             error: ajax_failure
         })
-    }, refreshFrequency * 1000)
+    }, data.entity.metadata.meta_refresh * 1000)
 }
 
 function rebuildRTI(elem, metadata){
@@ -290,7 +326,7 @@ function rebuildLDB(elem, data){
 function setupLDBButtons(){
     $('.ldb-board').click(function(){
         $.ajax({
-            url: $(this).attr('href'),
+            url: to_absolute(current_url),
             data: { format: 'json' },
             dataType: 'json',
             success: function(data){rebuildLDB($('#ldb'), data)},
@@ -298,6 +334,7 @@ function setupLDBButtons(){
         })
         return false;
     })
+    $('.ldb-board').addClass('has-ajax-handler')
 }
 
 $(function(){

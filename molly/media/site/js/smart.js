@@ -1,7 +1,6 @@
 /* Consistent asynchronous page loading */
 
 var current_url = window.location.pathname;
-var base = window.location.protocol + '//' + window.location.host
 
 function to_absolute(url) {
     if (url.match(/https?\:\/\//)) {
@@ -43,8 +42,6 @@ function async_load(url, query, meth) {
     
     /* Don't attempt AJAX for offsite links */
     if (to_absolute(url).substr(0, base.length) != base) {
-        console.log(url.substr(0, base.length))
-        console.log(base)
         return true;
     }
     
@@ -58,7 +55,7 @@ function async_load(url, query, meth) {
             'dataType': 'json',
             'success': function(data, textStatus, xhr) {
                 var abs_url = to_absolute(url);
-                current_url = abs_url.substr(base.length);
+                current_url = abs_url.substr(base.length - 1);
                 // Detect if history API is available - http://diveintohtml5.org/detect.html#history
                 if (!!(window.history && history.pushState)) {
                     history.pushState(null, null, abs_url)
