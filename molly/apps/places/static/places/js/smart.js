@@ -218,7 +218,7 @@ function rebuildLDB(elem, data){
         elem.append('<ul class="content-list no-round-bottom"></ul>')
         ul = elem.find('ul:last')
         for (var i in data.train_station.metadata.ldb.nrccMessages.message) {
-            elem.append('<li>' + data.train_station.metadata.ldb.nrccMessages.message[i] + '</li>')
+            ul.append('<li>' + data.train_station.metadata.ldb.nrccMessages.message[i] + '</li>')
         }
     }
     
@@ -321,15 +321,17 @@ function rebuildLDB(elem, data){
         ul.append('<li><a class="ldb-board" href="' + data.train_station._url + '?board=departures">View departures board</a></li>')
     }
     setupLDBButtons()
+    capture_outbound();
 }
 
 function setupLDBButtons(){
     $('.ldb-board').click(function(){
+        $('body').append('<div id="loading"></div>')
         $.ajax({
-            url: to_absolute(current_url),
+            url: $(this).attr('href'),
             data: { format: 'json' },
             dataType: 'json',
-            success: function(data){rebuildLDB($('#ldb'), data)},
+            success: function(data){rebuildLDB($('#ldb'), data);$('#loading').remove();},
             error: ajax_failure
         })
         return false;

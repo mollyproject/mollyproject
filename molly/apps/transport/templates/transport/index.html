@@ -1,18 +1,4 @@
 {% extends "transport/base.html" %}{% load molly_utils %}
-{% block extrahead %}
-    {% include "geolocation/js.html" %}
-    <script type="text/javascript">
-        $(function(){
-            function refreshTimer(){
-                ajaxTransportUpdate()
-                setTimeout(refreshTimer, 30000)
-            }
-            refreshTimer()
-            $(document).bind('molly-location-update', ajaxTransportUpdate)
-            setupLDBButtons();
-        })
-    </script>
-{% endblock %}
 
 {% block content %}
 

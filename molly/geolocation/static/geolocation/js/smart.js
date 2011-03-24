@@ -102,7 +102,7 @@ $(document).bind('molly-page-change', function(){
   })
   $('.specific-location-form').submit(specificLocationFormSubmit)
   $('.favourite-location-form').submit(favouriteLocationFormSubmit)
-  $('.update-location-form, .update-location-form, .favourite-location-form').addClass('has-ajax-handler')
+  $('.update-location-form, .specific-location-form, .favourite-location-form').addClass('has-ajax-handler')
 
   // Detect in placeholder tag is supported
   if ('placeholder' in document.createElement('input')) {

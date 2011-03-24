@@ -89,6 +89,8 @@ function refreshTransport(data){
     for (var i in data.travel_alerts) {
         ul.append('<li><a href="' + data.travel_alerts[i]._url + '" style="color: inherit;">' + data.travel_alerts[i].title + '</a></li>')
     }
+    
+    capture_outbound();
 }
 
 function ajaxTransportUpdate(){
@@ -99,3 +101,21 @@ function ajaxTransportUpdate(){
         success: refreshTransport
     })
 }
+
+var transportTimer = null;
+
+function transportRefreshTimer(){
+    ajaxTransportUpdate()
+    transportTimer = setTimeout(transportRefreshTimer, 30000)
+}
+
+$(document).bind('molly-page-change', function(event, url){
+    if (url == '/transport/') {
+        transportRefreshTimer()
+        $(document).bind('molly-location-update', ajaxTransportUpdate)
+        setupLDBButtons();
+    } else {
+        $(document).unbind('molly-location-update', ajaxTransportUpdate)
+        clearTimeout(transportTimer)
+    }
+});
