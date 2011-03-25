@@ -14,3 +14,4 @@ from osm import OSMMapsProvider
 from postcodes import PostcodesMapsProvider
 from ldb import LiveDepartureBoardPlacesProvider
 from bbc_tpeg import BBCTPEGPlacesProvider
+from tfl import TubeRealtimeProvider
