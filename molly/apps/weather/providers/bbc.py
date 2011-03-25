@@ -55,7 +55,7 @@ class BBCWeatherProvider(object):
         r'(?P<wind_speed>\d+|N\/A).+Visibility:\s*(?P<visibility>[A-Za-z\/ ]+),\s*'
         r'Pressure:\s*(?P<pressure>\d+|N\/A).+Humidity:\s*(?P<humidity>\d+|N\/A).+'
         r'(UV risk:\s*(?P<uv_risk>[A-Za-z]+|N\/A),)?\s*Pollution:\s*(?P<pollution>[A-Za-z]+|N\/A),\s*'
-        r'Sunrise:\s*(?P<sunrise>\d\d:\d\d)[A-Z]{3},\s*Sunset:\s*(?P<sunset>\d\d:\d\d)[A-Z]{3}'
+        r'Sunrise:\s*(?P<sunrise>\d\d:\d\d).+,\s*Sunset:\s*(?P<sunset>\d\d:\d\d).+'
     )
 
     _FORECAST_TITLE_RE = re.compile(
