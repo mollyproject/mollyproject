@@ -94,6 +94,9 @@ def tokenise(ua):
     return out
 
 class VectorSpaceAlgorithm(Algorithm):
+    
+    use_normalized_ua = True
+    
     def __init__(self, devices=None):
         
         if devices:
