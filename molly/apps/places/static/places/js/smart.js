@@ -74,7 +74,7 @@ $(document).bind('molly-page-change', function(event, url){
         $('li.next a').addClass('has-ajax-handler')
     }
     
-    if (url.match(/^[a-z_\-]+:[\da-zA-Z]+\/$/)) {
+    if (url.match(/^\/places\/[a-z_\-]+:[\da-zA-Z]+\/$/)) {
         // Entity detail view
         
 	entitydetail_ajax_refresh = setTimeout(function(){
@@ -89,11 +89,12 @@ $(document).bind('molly-page-change', function(event, url){
                   // spaced correctly
 	
         $('.nearby a').click(function(){
+            $('body').append('<div id="loading"></div>')
             $.ajax({
                 url: $(this).attr('href'),
                 data: { format: 'json' },
                 dataType: 'json',
-                success: function(data){parse_results(data, true)},
+                success: function(data){parse_results(data, true);$('#loading').remove();},
                 error: ajax_failure
             })
             return false;
@@ -156,15 +157,14 @@ function refreshRTI(data){
             url: to_absolute(current_url),
             data: { format: 'json', board: board },
             dataType: 'json',
-            success: refreshRTI,
-            error: ajax_failure
+            success: refreshRTI
         })
     }, data.entity.metadata.meta_refresh * 1000)
 }
 
 function rebuildRTI(elem, metadata){
     elem.empty()
-    if (metadata.pip_info.length > 0 || metadata.services.length == 0) {
+    if ((typeof(metadata.pip_info) != 'undefined' && metadata.pip_info.length > 0) || metadata.services.length == 0) {
         elem.append('<ul class="content-list no-round-bottom"></ul>')
         if (metadata.pip_info.length > 0) {
             elem.append('<li></li>')
@@ -177,7 +177,7 @@ function rebuildRTI(elem, metadata){
             }
         }
         if (metadata.services.length == 0) {
-            li.append('Sorry, there is currently no bus time information for this stop.')
+            li.append('Sorry, there is currently no real time information for this stop.')
         }
     }
     if (metadata.services.length > 0) {
