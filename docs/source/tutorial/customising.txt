@@ -39,6 +39,9 @@ place into the site_media folder is 'weather/images/cloudy5.png'. Alternatively,
 looking in 'molly/media/' or 'molly/apps/APP/static/' will also find the media
 associated with a particular app.
 
+.. note:: Any changes to images won't take effect until the media folder is
+          rebuilt, the quickest way to do this is to re-run the installer.
+
 Customising Templates
 ---------------------
 
