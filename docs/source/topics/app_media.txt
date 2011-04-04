@@ -108,3 +108,8 @@ in your settings file:
 .. code-block:: python
 
    COMPRESS = not DEBUG
+
+Using compressed media in your templates
+----------------------------------------
+
+.. todo::

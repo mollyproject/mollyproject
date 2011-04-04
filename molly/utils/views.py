@@ -260,8 +260,6 @@ Supported ranges are:
         content = render_block_to_string(template_name + '.html', 'content', context, RequestContext(request))
         return HttpResponse(simplejson.dumps({'body': body, 'title': title, 'content': content}), mimetype="application/json")
 
-
-
 class ZoomableView(BaseView):
     default_zoom = None
 
