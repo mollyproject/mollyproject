@@ -38,7 +38,7 @@ def load_batches():
         if not batch in batches:
             batch.delete()
 
-def run_batch(local_name, provider_name, method_name):
+def run_batch(local_name, provider_name, method_name, tee_to_stdout=True):
     # This will force the loading of the molly.utils app, attaching its log
     # handler lest the batch logs anything that needs e-mailing.
     app_by_application_name('molly.utils')
@@ -48,7 +48,7 @@ def run_batch(local_name, provider_name, method_name):
         provider_name=provider_name,
         method_name=method_name)
 
-    batch.run(True)
+    batch.run(tee_to_stdout)
 
     return batch.log
 
