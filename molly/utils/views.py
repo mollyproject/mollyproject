@@ -157,6 +157,13 @@ class BaseView(object):
         return zoom
 
     def render(self, request, context, template_name, expires=None):
+        """
+        Given a request, a context dictionary and a template name, this renders
+        the template with the given context according to the capabilities and
+        requested format of the client. An optional final argument is that of
+        a timedelta object, which sets additional caching headers for the
+        content.
+        """
         context.pop('exposes_user_data', None)
 
         if 'format' in request.REQUEST:
