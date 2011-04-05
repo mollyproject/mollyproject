@@ -176,6 +176,21 @@ class BaseView(object):
         return zoom
 
     def redirect(self, uri, request, type='found'):
+        """
+        When called, returns a response which redirects users to the correct
+        locations. It also correctly handles redirects within the AJAX page
+        transition framework. The first argument is the URI to be redirected to,
+        the second the request object and the third is optional, and specifies
+        the type of redirect to be done:
+        
+        * found (the default) is a standard 302 Found redirect
+        * perm is a standard 301 Moved Permanently redirect
+        * seeother is a standard 303 See Other redirect
+        * secure is a 301 Moved Permanently redirect, that has a special meaning
+          when used within the AJAX framework, which causes pages to manually
+          redirect to the new URL, rather than just AJAX transition. This causes
+          transitions to/from secure pages to work as expected.
+        """
         if 'format' in request.REQUEST:
             uri = urlparse(uri)
             if (uri.netloc != request.META.get('HTTP_HOST') and \
