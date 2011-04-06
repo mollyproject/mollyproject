@@ -64,6 +64,7 @@ class IndexView(SakaiView):
     def initial_context(self, request): 
         return {
             'user_details': simplejson.load(request.opener.open(self.build_url('/direct/user/current.json'))),
+            'announcements': simplejson.load(request.opener.open(self.build_url('/direct/announcement/user.json'))),
             'tools': [{
                 'name': tool[0],
                 'title': tool[1],
@@ -459,3 +460,17 @@ class EvaluationDetailView(SakaiView):
             return self.handle_GET(request, context, id)
 
         return HttpResponseSeeOther(reverse('sakai:evaluation-index') + '?submitted=true')
+
+class AnnouncementView(SakaiView):
+    """
+    Displays the detail of an anouncement
+    """
+    
+    def initial_context(self, request, id):
+        response = request.urlopen(self.build_url('direct/announcement/%s.json' % id))
+        context = {
+            'announcement': simplejson.loads(response)
+        }
+    
+    def handle_GET(self, request, context, id):
+        return self.render(request, context, 'sakai/announcement/detail.html')
