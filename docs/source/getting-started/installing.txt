@@ -68,7 +68,7 @@ start the server to listen to the outside world by altering the last step to::
     python manage.py runserver 0.0.0.0:8000
 
 Doing a Production Deployment of Molly
---------------------------------------
+""""""""""""""""""""""""""""""""""""""
 
 The Django webserver is not sufficient to run a production copy of Molly,
 therefore it is recommended that you use Apache and mod_wsgi to host the site.
@@ -80,7 +80,7 @@ documentation goes into considerable detail about how to deploy a Django
 application.
 
 Deploying using an existing site
---------------------------------
+""""""""""""""""""""""""""""""""
 
 Once you have started working on your Molly-based site, you will undoubtedly
 want to keep the code in some sort of version control system, separate from the
@@ -96,7 +96,7 @@ Molly install to use your site by running::
     sudo /home/me/mollyproject/quickinstall -s /home/me/site /srv/molly
 
 Developing Molly
-----------------
+""""""""""""""""
 
 To use the quick install script to install Molly in "development mode" (which
 means that installation takes place quicker by missing out some optional steps,
@@ -115,7 +115,7 @@ non-development installation to ensure the system wide pre-requisites are
 satisfied.
 
 Updating Molly
---------------
+""""""""""""""
 
 To update Molly using the quick-installer, you simply need to run the
 quickinstall script from the new version pointing it to the same location. This
@@ -132,7 +132,7 @@ If you can't, or don't want to, use the Molly quick installer, you can install
 Molly by hand as a standard Python package.
 
 System Prerequisites
-^^^^^^^^^^^^^^^^^^^^
+""""""""""""""""""""
 
 First off, you'll need to install the pre-requisites for Molly and its
 dependencies. On Fedora, this list is:
