@@ -382,30 +382,22 @@ class EvaluationIndexView(SakaiView):
         )
 
     def initial_context(self, request):
-        try:
-            url = self.build_url('direct/eval-evaluation/1/summary')
-            summary = etree.parse(request.opener.open(url), parser = etree.HTMLParser(recover=False))
-        except urllib2.HTTPError, e:
-            if e.code == 404:
-                raise Http404
-            elif e.code == 403:
-                raise PermissionDenied
-            else:
-                raise
-
+        url = self.build_url('direct/eval-evaluation/1/summary')
+        summary = etree.parse(request.opener.open(url), parser = etree.HTMLParser(recover=False))
         summary = transform(summary, 'sakai/evaluation/summary.xslt', {'id': id})
-
+        print summary
         evaluations = []
         for node in summary.findall('evaluation'):
-            evaluations.append({
-                'title': node.find('title').text,
-                'site': node.find('site').text,
-                'start': node.find('start').text,
-                'end': node.find('end').text,
-                'status': node.find('status').text,
-                'id': urlparse.parse_qs(urlparse.urlparse(node.find('url').text).query)['evaluationId'][0] if node.find('url') is not None else None,
-            })
-
+            if not node.find('title').text is None:
+                evaluations.append({
+                    'title': node.find('title').text,
+                    'site': node.find('site').text,
+                    'start': node.find('start').text,
+                    'end': node.find('end').text,
+                    'status': node.find('status').text,
+                    'id': urlparse.parse_qs(urlparse.urlparse(node.find('url').text).query)['evaluationId'][0] if node.find('url') is not None else None,
+                })
+        
         return {
             'evaluations': evaluations,
             'submitted': request.GET.get('submitted') == 'true',
