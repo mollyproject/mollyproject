@@ -160,7 +160,7 @@
     </table>
   </xsl:template>
 
-  <xsl:template match="div[@class='JSevalComment']">e</xsl:template>
+  <xsl:template match="div[@class='JSevalComment']" />
 
   <xsl:template name="comment-field">
     <xsl:if test="div/div[@class='JSevalComment']">
