@@ -68,7 +68,7 @@ UNUSUAL_NUMBERS = {
 }
 
 @register.filter(name="telephone")
-def telephone(value, arg):
+def telephone(value, arg=None):
     """
     Formats UK telephone numbers to E.123 format (national notation)
     

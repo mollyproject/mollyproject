@@ -1002,3 +1002,7 @@ small {
     opacity: 0.75;
     z-index: 100;
 }
+
+.favourite-link .additional {
+    font-size: 0.9em;
+}

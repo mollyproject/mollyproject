@@ -49,8 +49,8 @@ class Batch(models.Model):
         super(Batch, self).save(*args, **kwargs)
 
     def run(self, tee_to_stdout=False):
-        #if self.currently_running:
-        #    return
+        if self.currently_running:
+            return
         
         try:
             output = TeeStringIO(other=sys.stdout) if tee_to_stdout else StringIO()

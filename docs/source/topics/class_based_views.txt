@@ -15,6 +15,48 @@ will find are class or instance methods, or functions. The Django
 documentation only briefly refers to the fact that one can use callables other
 than functions.
 
+The flow of a request
+---------------------
+
+Django despatches an incoming request to the callback given in a urlconf
+which, in Molly, is a class object. Calling a class object is mapped to
+calling it's ``__new__`` method. Ordinarily, this returns an instance of that
+class, but in Molly it returns the response. Specifically:
+
+.. class:: FooView
+
+   .. classmethod:: __new__(request, *args, **kwargs):
+
+      :param request: The request from the client to be processed.
+      :type request: :class:`~django.http.HttpRequest`
+      :rtype: :class:`~django.http.HttpResponse`
+
+Unless overridden, the method called is
+:meth:`molly.utils.views.BaseView.__new__`. This performs the following steps:
+
+ * Checks there is a handler available for the HTTP method specified. If not,
+   it immediately returns a ``405 Method Not Acceptable`` response.
+ * Calls ``cls.initial_context(request, *args, **kwargs)``, which can provide
+   context for all method handlers. A developer can use this to factor out
+   code common between each of the handlers.
+ * Evaluates the breadcrumbs and adds the resulting information to the
+   context.
+ * Calls the relevent handler, the name of which is determined by appending
+   the method name to ``handle_``, e.g. ``handle_GET``. The handler is passed
+   the request, context and any positional and keyword arguments.
+ * The handler will update the context and perform any required actions as
+   necessary.
+ * The handler will generally return a :class:`~django.http.HttpResponse`
+   subclass directly, or call the :meth:`~molly.utils.views.BaseView.render`
+   method on :class:`~molly.utils.views.BaseView`.
+ * In the latter case, :meth:`~molly.utils.views.BaseView.render` will
+   determine which format to serialize to using a ``format`` query parameter
+   or content negotiation, and despatch to a format-specific rendering method
+   (e.g. :meth:`~molly.utils.views.BaseView.render_html`).
+ * The renderer will return a :class:`~django.http.HttpResponse` object, which
+   will then be passed back up the callstack to Django to be sent back to the
+   client.
+
 Class-based views and metaclasses
 ---------------------------------
 

@@ -71,6 +71,4 @@ class ApplicationSearch(object):
                 'url': reverse('library:item-detail', args=[item.control_number]),
             })
         
-        print results
-        
         return results

@@ -50,9 +50,7 @@ class IndexView(BaseView):
             context['park_and_rides'] = park_and_rides
         
         # If service status provider is set, then include those too:
-        print dir(self.conf)
         if hasattr(self.conf, 'transit_status_provider'):
-            print "FOO"
             context['transit_status'] = self.conf.transit_status_provider.get_status()
         
         context['nearby'] = {}
