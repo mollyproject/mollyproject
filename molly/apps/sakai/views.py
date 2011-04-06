@@ -385,7 +385,6 @@ class EvaluationIndexView(SakaiView):
         url = self.build_url('direct/eval-evaluation/1/summary')
         summary = etree.parse(request.opener.open(url), parser = etree.HTMLParser(recover=False))
         summary = transform(summary, 'sakai/evaluation/summary.xslt', {'id': id})
-        print summary
         evaluations = []
         for node in summary.findall('evaluation'):
             if not node.find('title').text is None:
