@@ -70,20 +70,6 @@
                   <xsl:text> </xsl:text><span class="sakai-compulsory-question">*</span>
                 </xsl:if>
               </dt>
-              <dd>
-                <xsl:choose>
-                  <xsl:when test=".//div/table">
-                    <xsl:apply-templates select=".//div/table"/>
-                  </xsl:when>
-                  <xsl:when test="div/div[@class='compulsory'] | div/div[@class='validFail']">
-                    <xsl:apply-templates select="div/div[not(@class='JSevalComment')]/*[not(self::input[@type='hidden'])][last()]"/>
-                  </xsl:when>
-                  <xsl:otherwise>
-                    <xsl:apply-templates select="div/*[not(self::input[@type='hidden'])][last()]"/>
-                  </xsl:otherwise>
-                </xsl:choose>
-                <xsl:call-template name="comment-field"/>
-              </dd>
             </xsl:when>
             <xsl:otherwise>
               <dt>
@@ -91,6 +77,23 @@
               </dt>
             </xsl:otherwise>
           </xsl:choose>
+          <dd>
+            <xsl:choose>
+              <xsl:when test=".//div/table">
+                <xsl:apply-templates select=".//div/table"/>
+              </xsl:when>
+              <xsl:when test="div/div[@class='compulsory'] | div/div[@class='validFail']">
+                <xsl:apply-templates select="div/div[not(@class='JSevalComment')]/*[not(self::input[@type='hidden'])][last()]"/>
+              </xsl:when>
+              <xsl:when test="div/div[not(@class='JSevalComment' or @style='display:inline')]/*[not(self::input[@type='hidden'])][last()]">
+                <xsl:copy-of select="div/div[not(@class='JSevalComment' or @style='display:inline')]/*[not(self::input[@type='hidden'])][last()]"/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:copy-of select="div[not(@style='display:inline')]/*[not(self::input[@type='hidden'])][last()]"/>
+              </xsl:otherwise>
+            </xsl:choose>
+            <xsl:call-template name="comment-field"/>
+          </dd>
         </xsl:for-each>
       </dl>
     </div>
