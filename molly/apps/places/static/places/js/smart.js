@@ -212,7 +212,11 @@ function rebuildLDB(elem, data){
     } else {
         board = 'departures'
     }
-    elem.append('<div class="header"><h2>' + data.train_station.title + ' (' + board + ') - ' + data.train_station.metadata.ldb.generatedAt.slice(11, 19) + '</h2></div>');
+    if (data.train_station.metadata.ldb.error) {
+        elem.append('<div class="header"><h2>' + data.train_station.title + ' (' + board + ')</h2></div>');
+    } else {
+        elem.append('<div class="header"><h2>' + data.train_station.title + ' (' + board + ') - ' + data.train_station.metadata.ldb.generatedAt.slice(11, 19) + '</h2></div>');
+    }
     
     if (data.train_station.metadata.ldb.nrccMessages) {
         elem.append('<ul class="content-list no-round-bottom"></ul>')

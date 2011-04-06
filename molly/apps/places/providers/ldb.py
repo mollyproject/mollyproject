@@ -41,7 +41,7 @@ class LiveDepartureBoardPlacesProvider(BaseMapsProvider):
                     db = ldb.service.GetArrivalBoard(self._max_services, entity.identifiers['crs'])
                 else:
                     db = ldb.service.GetDepartureBoard(self._max_services, entity.identifiers['crs'])
-                self.transform_suds(db)
+                db = self.transform_suds(db)
                 entity.metadata['ldb'] = db
                 entity.metadata['service_details'] = lambda s: LiveDepartureBoardPlacesProvider.service_details(s, entity)
                 entity.metadata['ldb_service'] = lambda s: self.transform_suds(ldb.service.GetServiceDetails(s))
@@ -59,7 +59,7 @@ class LiveDepartureBoardPlacesProvider(BaseMapsProvider):
                             'services':
                                 [{
                                     'service': 'BUS',
-                                    'destination': service['destination'][0][0]['locationName'],
+                                    'destination': service['destination']['location'][0]['locationName'],
                                     'next': service['std'],
                                     'following': [],
                                 }]
