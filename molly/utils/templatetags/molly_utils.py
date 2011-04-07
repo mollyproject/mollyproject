@@ -6,6 +6,7 @@ except ImportError:
 from lxml import etree
 import math
 from datetime import datetime
+from dateutil.tz import tzutc, tzlocal
 
 from django import template
 from django.template.defaultfilters import stringfilter
@@ -191,3 +192,13 @@ def header_width(value):
 @register.filter('get_entity')
 def get_entity_filter(value):
     return get_entity(*value)
+
+@register.filter
+def localize_utc(value):
+    """
+    Localise a UTC datetime
+    """
+    if isinstance(value, datetime):
+        return value.replace(tzinfo=tzutc()).astimezone(tzlocal())
+    else:
+        return value
