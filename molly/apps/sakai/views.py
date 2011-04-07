@@ -465,12 +465,40 @@ class AnnouncementView(SakaiView):
     """
     Displays the detail of an anouncement
     """
+
+    @BreadcrumbFactory
+    def breadcrumb(self, request, context, id):
+        if not 'evaluation' in context:
+            context = self.initial_context(request, id)
+
+        return Breadcrumb(
+            self.conf.local_name,
+            lazy_parent('evaluation-index'),
+            context['announcement']['title'],
+            lazy_reverse('announcement', args=[id]),
+        )
     
     def initial_context(self, request, id):
-        response = request.urlopen(self.build_url('direct/announcement/%s.json' % id))
-        context = {
-            'announcement': simplejson.loads(response)
+        
+        # Sakai's announcement API is currently broken...
+        #
+        #response = request.urlopen(self.build_url('direct/announcement/%s.json' % id))
+        #return {
+        #    'announcement': simplejson.load(response)
+        #}
+        
+        # Hacky workaround
+        response = simplejson.load(request.urlopen(
+            self.build_url('direct/announcement/user.json')))
+        found = None
+        for announcement in response['announcement_collection']:
+            if announcement['id'] == id:
+                found = announcement
+        if found is None:
+            raise Http404()
+        return {
+            'announcement': announcement
         }
     
     def handle_GET(self, request, context, id):
-        return self.render(request, context, 'sakai/announcement/detail.html')
+        return self.render(request, context, 'sakai/announcement/detail')

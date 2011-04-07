@@ -1,5 +1,17 @@
-{% extends "sakai/base.html" %}
+{% extends "sakai/base.html" %}{% load molly_sakai %}
 
-{% block "content" %}
-    {{ announcement }}
+{% block content %}
+
+<div class="section">
+    <div class="header">
+        <h2>{{ announcement.title|safe }}</h2>
+    </div>
+    <div class="section-content">
+        {{ announcement.body|safe }}
+        <p><small><em>{{ announcement.createdByDisplayName }} at
+            {{ announcement.createdOn|from_sakai_timestamp|date:"j M Y \a\t H:m" }}
+        </em></small></p>
+    </div>
+</div>
+    
 {% endblock %}
