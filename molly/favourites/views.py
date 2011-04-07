@@ -5,6 +5,7 @@ from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import lazy_reverse, Breadcrumb, BreadcrumbFactory
 
 from molly.favourites import get_favourites
+from molly.favourites.models import Favourite
 
 class FavouritableView(BaseView):
     """
@@ -19,7 +20,8 @@ class FavouritableView(BaseView):
         context['is_favouritable'] = True
         
         # Also, add whether or not this particular thing already is favourited
-        context['is_favourite'] = request.path_info in (request.session['favourites'] if 'favourites' in request.session else [])
+        context['is_favourite'] = Favourite.objects.filter(user= request.user,
+                                                           url = request.path_info).exists()
         
         # And the URL of this page (so it can be favourited)
         context['favourite_url'] = request.path_info
@@ -57,25 +59,19 @@ class IndexView(BaseView):
         # Alter favourites list
         if 'URL' in request.POST:
             
-            if 'favourites' not in request.session:
-                request.session['favourites'] = set()
-            
             if 'favourite' in request.POST:
                 # Add
                 try:
                     resolve(request.POST['URL'])
-                    request.session['favourites'].add(request.POST['URL'])
-                    request.session.modified = True
                 except Http404:
                     # This means that they tried to save a URL that doesn't exist
                     # or isn't on our site
                     return HttpResponseRedirect(lazy_reverse('favourites:index'))
+                else:
+                    Favourite(user=request.user, url=request.POST['URL']).save()
             
-            elif 'unfavourite' in request.POST and 'favourites' in request.session:
-                # Remove
-                if request.POST['URL'] in request.session['favourites']:
-                    request.session['favourites'].remove(request.POST['URL'])
-                    request.session.modified = True
+            elif 'unfavourite' in request.POST:
+                Favourite.objects.filter(user=request.user, url=request.POST['URL']).delete()
         
             # If the source was the favourites page, redirect back there
             if 'return_to_favourites' in request.POST:

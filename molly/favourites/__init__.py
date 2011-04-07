@@ -4,20 +4,33 @@ Utilities to help handling favourites
 
 from django.http import Http404
 from django.core.urlresolvers import resolve
+from molly.favourites.models import Favourite
 
 def get_favourites(request):
     """
-    Returns a list of favourites, the list is of dictionaries with keys URL and metadata
+    Returns a list of favourites, the list is of objects with attributes url and
+    metadata
     """
     
-    fs = []
-    for url in (request.session['favourites'] if 'favourites' in request.session else []):
-        # Remove broken links from the favourites
-        try:
-            view, args, kwargs = resolve(url)
-            fs.append({'url': url, 'metadata': view.get_metadata(request, *args, **kwargs)})
-        except Http404:
-            request.session['favourites'].remove(url)
-            request.session.modified = True
+    # Handle the old style of favourites first
+    if 'favourites' in request.session:
+        for url in request.session['favourites']:
+            Favourite(user=request.user, url=url).save()
+        del request.session['favourites']
     
-    return fs
+    favourites = Favourite.objects.filter(user=request.user)
+    urls = set()
+    
+    for favourite in favourites:
+        if favourite.url in urls:
+            favourite.delete()
+        else:
+            try:
+                view, args, kwargs = resolve(favourite.url)
+                favourite.metadata = view.get_metadata(request, *args, **kwargs)
+            except Http404:
+                favourite.delete()
+            else:
+                urls.add(favourite.url)
+    
+    return favourites
