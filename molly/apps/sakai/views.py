@@ -74,6 +74,12 @@ class IndexView(SakaiView):
 
     def handle_GET(self, request, context):
         
+        if 'force_login' in request.GET:
+            if len(context['user_details']['id']) == 0:
+                # pretend we got a 401 error, this will force the auth framework
+                # to reauthenticate
+                raise OAuthHTTPError(urllib2.HTTPError('', 401, '', '', open('/dev/null')))
+        
         return self.render(request, context, 'sakai/index')
 
 class SignupIndexView(SakaiView):

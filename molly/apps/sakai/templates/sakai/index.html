@@ -7,7 +7,7 @@
   <div class="header">
     <h2>WebLearn</h2>
   </div>
-  <div class="section-content">
+  <div class="section-content{% if not user_details.firstName %} no-round-bottom{% endif %}">
     {% if user_details.firstName %}
         <p>Hello {{ user_details.firstName }}; welcome to mobile WebLearn!</p>
     {% endif %}
@@ -22,6 +22,11 @@
       bottom of the page.
     </p>
   </div>
+  {% if not user_details.firstName %}
+  <ul class="link-list">
+    <li><a href="{% url sakai:index %}?force_login">Log in to WebLearn</a></li>
+  </ul>
+  {% endif %}
 </div>
 <div class="section">
   <div class="header">
