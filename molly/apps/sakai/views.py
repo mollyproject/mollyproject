@@ -406,13 +406,13 @@ class EvaluationIndexView(SakaiView):
         
         return {
             'evaluations': evaluations,
-            'submitted': request.GET.get('submitted') == 'true',
         }
 
     def handle_GET(self, request, context):
         return self.render(request, context, 'sakai/evaluation/index')
 
 class EvaluationDetailView(SakaiView):
+    
     def initial_context(self, request, id):
         url = self.build_url('direct/eval-evaluation/%s' % id)
         data = request.raw_post_data if request.method == 'POST' else None
@@ -465,7 +465,11 @@ class EvaluationDetailView(SakaiView):
         if context['response_url'].startswith(self.build_url('direct/eval-evaluation/%s/take_eval?' % id)):
             return self.handle_GET(request, context, id)
 
-        return HttpResponseSeeOther(reverse('sakai:evaluation-index') + '?submitted=true')
+        context = {
+            'suppress_evaluations': True,
+            'submitted': True,
+        }
+        return self.render(request, context, 'sakai/evaluation/index')
 
 class AnnouncementView(SakaiView):
     """
