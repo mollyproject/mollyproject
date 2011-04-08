@@ -35,7 +35,7 @@ class IndexView(BaseView):
             type_slug, count, without_location, fav_override = self.conf.nearby[context_key]
             et = EntityType.objects.get(slug=type_slug)
             if fav_override:
-                favourites = filter(lambda e: e is not None and et in e.all_types_completion.all(), [f['metadata'].get('entity') for f in get_favourites(request)])
+                favourites = filter(lambda e: e is not None and et in e.all_types_completion.all(), [f.metadata.get('entity') for f in get_favourites(request)])
             
             if not fav_override or len(favourites) == 0:
                 if without_location:
