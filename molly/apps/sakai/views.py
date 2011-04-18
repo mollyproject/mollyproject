@@ -86,11 +86,12 @@ class SignupIndexView(SakaiView):
     force_auth = True
 
     def initial_context(self, request):
-        sites = etree.parse(request.opener.open(self.build_url('direct/site.xml')))
+        sites = simplejson.load(request.opener.open(self.build_url('direct/site.json')))
+        print sites['site_collection']
         return {
             'sites': [
-                (e.find('id').text, e.find('entityTitle').text)
-                for e in sites.getroot()
+                (e['id'], e['entityTitle'])
+                for e in sites['site_collection']
             ],
             'complex_shorten': True,
         }
