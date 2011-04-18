@@ -372,6 +372,15 @@ if not upgrading and not options.no_root:
             Popen(as_postgres + ['psql','-d','template_postgis','-c','GRANT ALL ON spatial_ref_sys TO PUBLIC;'], stdout=PIPE, stderr=PIPE, cwd='/tmp').communicate()
             print "DONE!"
             
+            print "Molly can overwrite your pg_hba.conf file for you, or display a sample"
+            print "configuration only. If you are using your Postgresql server for any other"
+            print "applications, it is recommended you skip this step and configure your"
+            print "pg_hba.conf manually. If you are not using this database for anything else"
+            print "it's safe to choose 'y' here."
+            print
+            
+            do_pg_hba_write = config_generator.ask_yes_no('Would you like Molly to overwrite pg_hba.conf?', 'n')
+            
             print "Configuring database security...",
             sys.stdout.flush()
             postgres_password = generate_password()
@@ -380,10 +389,7 @@ if not upgrading and not options.no_root:
             Popen(as_postgres + ['createdb','-T','template_postgis','molly'], stdout=PIPE, stderr=PIPE, cwd='/tmp').communicate()
             Popen(as_postgres + ['psql','-c',"GRANT ALL ON DATABASE molly TO molly;"], stdout=PIPE, stderr=PIPE, cwd='/tmp').communicate()
             
-	    print "Molly can overwrite your PostGreSql pg_hba.conf file for you, or display a sample configuration only", 
-	    do_pg_hba_write = config_generator.ask_yes_no('Would you like to overwrite pg_hba.conf?', 'n')
-	
-	    pg_hba_text = """
+            pg_hba_text = """
 # This file was written by the Molly installer
 local   molly       molly                             md5
 host    molly       molly       127.0.0.1/32          md5
@@ -395,16 +401,15 @@ local   all         all                               ident
 host    all         all         127.0.0.1/32          ident
 # IPv6 local connections:
 host    all         all         ::1/128               ident
-                                     """
-	
-
-	    if do_pg_hba_write:
-	            pg_hba = open(pg_hba_paths[distribution], 'w')
-        	    pg_hba.write(pg_hba_text)
-
-        	    pg_hba.close()
-	    else:
-		print pg_hba_text
+"""
+            
+            if do_pg_hba_write:
+                pg_hba = open(pg_hba_paths[distribution], 'w')
+                pg_hba.write(pg_hba_text)
+                pg_hba.close()
+            else:
+                print "\nBelow is a sample configuration for your pg_hba.conf:"
+                print pg_hba_text
 
             reload_postgres((distribution, distribution_version))
             print "DONE!"
