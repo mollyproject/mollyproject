@@ -87,7 +87,6 @@ class SignupIndexView(SakaiView):
 
     def initial_context(self, request):
         sites = simplejson.load(request.opener.open(self.build_url('direct/site.json')))
-        print sites['site_collection']
         return {
             'sites': [
                 (e['id'], e['entityTitle'])
