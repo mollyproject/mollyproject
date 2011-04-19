@@ -11,12 +11,24 @@ available from `mollyproject.org <http://mollyproject.org/>`_.
 
 Getting Started
 ---------------
+   
+.. hlist::
+   :columns: 2
+
+   * :doc:`getting-started/installing`
+   * :doc:`getting-started/configuring`
+   * :doc:`getting-started/deploying`
+   * :doc:`getting-started/customising`
+   * :doc:`getting-started/writing-an-application`
 
 .. toctree::
-   :glob:
-   :maxdepth: 1
-
-   getting-started/*
+   :hidden:
+   
+   getting-started/installing
+   getting-started/configuring
+   getting-started/deploying
+   getting-started/customising
+   getting-started/writing-an-application
 
 Developing with Molly
 ---------------------
