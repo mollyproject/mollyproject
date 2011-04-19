@@ -36,8 +36,11 @@ class Application(object):
         kwargs['display_to_user'] = kwargs.get('display_to_user', True)
 
         self.providers = kwargs.pop('providers', ())
-        if 'provider' in kwargs:
-            self.providers += (kwargs.pop('provider'),)
+        for key in kwargs.copy():
+            if key == 'provider':
+                self.providers += (kwargs.pop(key),)
+            elif key.endswith('provider'):
+                self.providers += (kwargs[key],)
 
     def get(self):
         if self.conf:
@@ -64,6 +67,9 @@ class Application(object):
             'urls': self._get_urls_property(bases),
             'has_urlconf': self._module_exists(self.urlconf),
         })
+        for key in self.kwargs:
+            if key != 'provider' and key.endswith('provider'):
+                self.kwargs[key] = self.kwargs[key]()
         self.conf = type(self.local_name.capitalize()+'Conf', (ApplicationConf,), self.kwargs)()
 
         for provider in self.conf.providers:

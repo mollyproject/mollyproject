@@ -82,7 +82,7 @@ setup(
         "simplejson",
         "rdflib",
         "python-dateutil",
-        "Django",
+        "Django==1.2.5",
         "oauth==1.0.1",
         "psycopg2",
         "PIL",
@@ -93,6 +93,7 @@ setup(
         "django-staticfiles>=0.9",
         "South",
         "suds",
+        "slimmer",
     ],
     dependency_links = [
         'http://pylevenshtein.googlecode.com/files/python-Levenshtein-0.10.1.tar.bz2#egg=python-Levenshtein'

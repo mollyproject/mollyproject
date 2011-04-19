@@ -1,6 +1,10 @@
 Application media
 =================
 
+.. note:: This is information for people developing applications and wanting to
+          use Molly's media framework. If you're just interested in customising
+          the look and feel of Molly, see the :doc:`customising tutorial <../tutorial/customising>`.
+
 Molly uses `django-staticfiles <http://pypi.python.org/pypi/django-staticfiles>`_
 and `django-compress <http://pypi.python.org/pypi/django-compress>`_ to collate
 and merge media files from various sources.
@@ -104,3 +108,8 @@ in your settings file:
 .. code-block:: python
 
    COMPRESS = not DEBUG
+
+Using compressed media in your templates
+----------------------------------------
+
+.. todo::

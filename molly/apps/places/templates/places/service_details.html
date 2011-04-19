@@ -3,22 +3,11 @@
 
 {% block content %}
 
-{% if error %}
-<div class="section">
-  <div class="header">
-    <h2>An error occurred</h2>
-  </div>
-  <div class="section-content">
-    {{ error }}
-  </div>
-</div>
-{% endif %}
-
 {% if train_service %}
 <div class="section">
   <div class="header">
     <h2>Live Train Information
-    {% if train_service.generatedAt %} - {{ train_service.generatedAt|date:"H:i:s" }}{% endif %}</h2>
+    {% if train_service.ldb.generatedAt %} - {{ train_service.ldb.generatedAt|date:"H:i:s" }}{% endif %}</h2>
   </div>
   {% if train_service.error %}
   
@@ -32,15 +21,15 @@
   {% else %}
   
   <ul class="content-list no-round-bottom">
-    <li>Operated by {{ train_service.operator }}</li>
-    {% if train_service.platform %}
-      <li>Departing from platform {{ train_service.platform }}</li>
+    <li>Operated by {{ train_service.ldb.operator }}</li>
+    {% if train_service.ldb.platform %}
+      <li>Calling at platform {{ train_service.ldb.platform }}</li>
     {% endif %}
-    {% if train_service.disruptionReason %}
-      <li>{{ train_service.disruptionReason|sanitize_html }}</li>
+    {% if train_service.ldb.disruptionReason %}
+      <li>{{ train_service.ldb.disruptionReason|sanitize_html }}</li>
     {% endif %}
-    {% if train_service.overdueMessage %}
-      <li>{{ train_service.overdueMessage|sanitize_html }}</li>
+    {% if train_service.ldb.overdueMessage %}
+      <li>{{ train_service.ldb.overdueMessage|sanitize_html }}</li>
     {% endif %}
   </ul>
 
@@ -53,7 +42,7 @@
       </tr>
     </thead>
     <tbody>
-      {% for point in train_calling_points %}
+      {% for point in train_service.calling_points %}
         {% if point.joining %}
           <tr>
             <td colspan="3">

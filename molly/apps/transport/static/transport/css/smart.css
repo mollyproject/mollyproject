@@ -1,0 +1,145 @@
+ul#transport-links {
+    list-style: none;
+    margin: 5px 0 0 0;
+    padding: 5px;
+    text-align:center;
+}
+
+ul li.transport-link {
+    margin: 0 5px;
+    display: inline-block;
+    background-color: #002B4C;
+    background: -webkit-gradient(linear, left top, left bottom,
+          from(rgb(105,153,195)), color-stop(0.5, rgb(3,59,113)), to(rgb(27,87,144)));
+    background: -moz-linear-gradient(top, rgb(105,153,195), rgb(3,59,113), rgb(27,87,144));
+    border-radius: 8px; -webkit-border-radius: 8px; -moz-border-radius: 8px; 
+    
+    box-shadow: 3px 3px 3px #333;
+    -webkit-box-shadow: 3px 3px 3px #333;
+    -moz-box-shadow: 3px 3px 3px #333;
+}
+
+ul li.transport-link a img { border: 0; }
+
+.section .header h2 {
+    background-repeat: no-repeat;
+    background-position: top right;
+    min-height: 20px;
+    padding-top: 7px;
+    width: 100%;
+}
+
+#park_and_rides .header h2 {
+    background-image: url('../../transport/images/pride-small.png');
+}
+
+#park_and_rides .header h2 a {
+    color: inherit;
+}
+
+#park_and_rides .section-content {
+    color: #000;
+}
+
+.park-and-ride {
+    width: 50%;
+    margin: 3px auto 3px auto;
+}
+
+.park-and-ride h3 a {
+    color: #000
+}
+
+.park-and-ride div.capacity-bar {
+    width: 90%;
+    border: 1px solid #7c7c7c;
+    height: 7px;
+    background-color: #39d93c;
+    margin: 5px auto;
+}
+
+.park-and-ride p {
+    text-align: center;
+}
+
+#bus .header h2 {
+    background-image: url('../../transport/images/bus-small.png');
+}
+
+#ldb .header h2 {
+    background-image: url('../../transport/images/train-small.png');
+}
+
+#travel_news .header h2 {
+    background-image: url('../../transport/images/warn-small.png');
+}
+
+.line-name {
+    font-weight: bold;
+}
+
+.tube-1 .line-name {
+    /* Bakerloo */
+    background: #ae6118;
+    color: #fff;
+}
+
+.tube-2 .line-name {
+    /* Central */
+    background: #e41f1f;
+    color: #fff;
+}
+
+.tube-7 .line-name {
+    /* Circle */
+    background: #f8d42d;
+    color: #113c92;
+}
+
+.tube-9 .line-name {
+    /* District */
+    background: #00a575;
+    color: #fff;
+}
+
+.tube-8 .line-name {
+    /* Hammersmith and City */
+    color: #113b92;
+    background: #e899a8;
+}
+
+.tube-4 .line-name {
+    /* Jubilee */
+    background: #8f989e;
+    color:#fff;
+}
+
+.tube-11 .line-name {
+    /* Metropolitan */
+    background: #113b92;
+    color: #fff;
+}
+
+.tube-5 .line-name {
+    /* Northern */
+    background: #000;
+    color: #fff;
+}
+
+.tube-6 .line-name {
+    /* Piccadilly */
+    background: #0450a1;
+    color: #fff;
+}
+
+.tube-3 .line-name {
+    /* Victoria */
+    background: #009fe0;
+    color: #fff;
+}
+
+.tube-12 .line-name {
+    /* Waterloo and City */
+    background: #70c3ce;
+    color: #113b92;
+}

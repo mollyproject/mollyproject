@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 
 from .views import SecureView
 from .models import UserSession
+from molly.utils.views import BaseView
 
 class SecureSessionMiddleware(object):
     def process_request(self, request):
@@ -69,18 +70,17 @@ class SecureSessionMiddleware(object):
         if secure_view and not secure_request:
             uri = request.build_absolute_uri().split(':', 1)
             uri = 'https:' + uri[1]
-            return HttpResponsePermanentRedirect(
-                uri
-            )
+            return view_func.redirect(uri, request, 'secure')
         if not secure_view and secure_request:
             uri = request.build_absolute_uri().split(':', 1)
             uri = 'http:' + uri[1]
             if uri == 'http://%s/' % request.META.get('HTTP_HOST', ''):
                 uri += '?preview=true'
-
-            return HttpResponsePermanentRedirect(
-                uri
-            )
+            
+            if isinstance(view_func, BaseView):
+                return view_func.redirect(uri, request, 'secure')
+            else:
+                return HttpResponsePermanentRedirect(uri)
 
     def process_response(self, request, response):
         """

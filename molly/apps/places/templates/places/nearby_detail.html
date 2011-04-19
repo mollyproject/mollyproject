@@ -1,8 +1,7 @@
 {% extends "places/base.html" %}{% load molly_maps %}{% load molly_utils %}
 
 {% block extrahead %}{{ block.super }}{% if entity %}
-<meta name="robots" content="noindex" />{% endif %}
-{% include "geolocation/js.html" %}{% endblock %}
+<meta name="robots" content="noindex" />{% endif %}{% endblock %}
 
 {% block content %}
 
@@ -57,11 +56,11 @@
 {% for entity_group in entities %}
     {% ifequal entity_group|length 1 %}
     {% with entity_group.0 as entity %}
-        <li{% if forloop.last and map.zoom <= 10 %} class="round-bottom"{% endif %}><a title="{{ entity.title }}" href="{{ entity.get_absolute_url }}">{{ forloop.counter }}. {{ entity.title }}<br /><small>{% if found_entity_types %}{{ entity.primary_type.verbose_name|capfirst }}, {% endif %}{{ entity.distance.km|floatformat:3 }} km {{ entity.bearing }}</small></a></li>
+        <li{% if forloop.last and map.zoom <= 10 %} class="round-bottom"{% endif %}><a title="{{ entity.title }}" href="{{ entity.get_absolute_url }}">{{ forloop.counter }}. {{ entity.title }}<br /><small>{% if found_entity_types %}{{ entity.primary_type.verbose_name|capfirst }}, about {% endif %}{{ entity.distance.m|round_up_10 }}m {{ entity.bearing }}</small></a></li>
     {% endwith %}
     {% else %}
     {% with entity_group.0 as entity %}
-        <li class="non-link-item{% if forloop.last and map.zoom <= 10 %} round-bottom{% endif %}">{{ forloop.counter }}. <em>{{ entity_group|length }} {{ entity_type.0.verbose_name_plural }}</em> {{ entity.distance.km|floatformat:3 }} km {{ entity.bearing }}</li>
+        <li class="non-link-item{% if forloop.last and map.zoom <= 10 %} round-bottom{% endif %}">{{ forloop.counter }}. <em>{{ entity_group|length }} {{ entity_type.0.verbose_name_plural }}</em> {{ entity.distance.m|round_up_10 }}m {{ entity.bearing }}</li>
     {% endwith %}
     {% for entity in entity_group %}
         <li class="subitem{% if forloop.last %} round-bottom last-subitem{% endif %}"><a href="{{ entity.get_absolute_url }}">{{ entity.title }}{% if found_entity_types %}, <small>{{ entity.primary_type.verbose_name }}</small>{% endif %}</a></li>

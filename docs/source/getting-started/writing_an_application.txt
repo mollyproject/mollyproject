@@ -1,0 +1,697 @@
+Writing an application
+======================
+
+A Molly application is just a standard Django application, however, the Molly
+framework provides a few extra features to make applications within Molly
+consistent, and handling mobile browsers easier.
+
+* :doc:`Class-based views <../topics/class_based_views>`, which provide a
+  powerful framework for rendering which targets different devices
+* A consistent :doc:`framework for styling <../topics/styling>`, which provides
+  a consistent look and feel across the site.
+* A :doc:`framework for searching <../ref/apps/search>`, which applications can
+  tie in to.
+
+.. note:: For a more in-depth look at these features of the Molly framework,
+          please see the documentation linked above, this is a simple overview
+          of how to get started writing a Molly app.
+
+Anatomy of a Molly app
+----------------------
+
+.. seealso:: A Molly app is also a Django app. `The Django tutorial <http://docs.djangoproject.com/en/dev/intro/tutorial01/>`_
+             is a good introduction to writing Django apps, and it may be
+             beneficial to familiarise yourself with Django concepts before
+
+On disk, a Molly app may look similar to this:
+
+.. code-block:: none
+
+    myapp/
+    ├ migrations/
+    │  └ [...]
+    ├ providers/
+    │   ├ __init__.py
+    │   └ myprovider.py
+    ├ static/
+    │  └ myapp/
+    │     ├ css/
+    │     │  └ smart.css
+    │     ├ js/
+    │     │  └ smart.js
+    │     └ images/
+    │         ├ icon.png
+    │         └ [...]
+    ├ templates/
+    │   └ myapp/
+    │      ├ base.html
+    │      ├ index.html
+    │      └ [...]
+    ├ templatetags/
+    │  ├ __init__.py
+    │  └ molly_myapp.py
+    ├ __init__.py
+    ├ admin.py
+    ├ forms.py
+    ├ models.py
+    ├ search.py
+    ├ tests.py
+    ├ urls.py
+    └ views.py
+
+.. note:: Not all of these files may exist or are necessary in all apps.
+
+Let's break down the content of this folder. ``migrations`` are used to store
+migrations which are managed by `South <http://south.aeracode.org/>`_. The
+``providers`` folder, unsurprisingly, contains the providers that come bundled
+with the application. ``__init__.py`` normally contains the base provider (i.e.,
+an abstract class which demonstrates the signature expected of providers for
+that class), and then any other subfiles contain the concrete providers,
+following the signature of the base provider.
+
+The ``static`` and ``templates`` folders each have a single folder underneath
+them, with the same name as the application which it provides. This is due to
+the way collating templates and media works, so adding an additional level
+avoids clashes with other applications during the collation process. In this
+folder are the media and templates for the app which are used for rendering. The
+media is exposed to the world under the ``STATIC_URL`` defined in the
+configuration, and can be referenced in your templates. For the apps that ship
+with Molly, we have followed a standard of having 3 subdirectories here:
+``js``, ``css``, and ``images``.
+
+.. note:: JavaScript and CSS is automatically minified during the build process
+          when installation is done in non-development mode.
+
+The files ``css/smart.css``, ``css/dumb.css`` and ``js/smart.js`` in the media
+folders have special meanings, and are included automatically on pages (when
+using the standard base template). ``smart.css`` is served to "smart" phones,
+``dumb.css`` to "dumb" phones and ``smart.js`` to "smart" phones which Molly
+considers to have an acceptable level of JavaScript support.
+
+.. note:: Technically ``js/dumb.js`` also has a special meaning, but "dumb"
+          phones do not get served JavaScript, so the script will never be
+          included by default.
+
+``templatetags`` is a standard implementation of `Django's template tags <http://docs.djangoproject.com/en/dev/howto/custom-template-tags/>`_,
+which Molly gives no special meaning to. Molly applications themselves have
+standardised on a prefix of ``molly_`` to the template tags tag name to prevent
+clashes with any external apps being used.
+
+``__init__.py`` typically provides utility functions within the application,
+and ``admin.py`` provides the functionality (if any) for this application
+in the `Django admin view <http://docs.djangoproject.com/en/dev/ref/contrib/admin/>`_.
+Similarly, ``forms.py`` is where any `Django forms <http://docs.djangoproject.com/en/dev/topics/forms/>`_
+live, ``models.py`` where the Django models are and ``tests.py`` where any unit
+tests for this application stay. This is the same layout as for a typical Django
+app.
+
+``views.py`` is typically where any views for this application are stored,
+however, unlike in typical Django apps, these views follow the Molly view
+format, which is documented below. Similarly, ``urls.py`` is
+`a standard Django URL dispatcher <http://docs.djangoproject.com/en/dev/topics/http/urls/>`_,
+however in most cases an actual reference to the class, rather than a string,
+should be used, e.g.::
+
+    from django.conf.urls.defaults import *
+    
+    from views import IndexView, FooView, BarView
+    
+    urlpatterns = patterns('',
+        (r'^$', IndexView, {}, 'index'),
+        (r'^foo/(?P<arg>.+)$', FooView, {}, 'foo'),
+        (r'^bar/$', BarView, {}, 'bar'),
+    )
+
+The first argument in each pattern is a regular expression. Any match groups in
+the regular expression are then passed to the methods of the view as arguments.
+Molly exclusively uses named match groups (which are passed as keyword
+arguments) to accomplish this.
+
+``search.py`` is a file which has special meaning within Molly. If there is a
+class called ``ApplicationSearch`` in here, then this is used within the
+site-wide search framework.
+
+.. seealso:: :doc:`../ref/apps/search`
+
+Anatomy of a view
+-----------------
+
+.. seealso:: :doc:`../topics/class_based_views`
+
+Molly provides a powerful framework for writing class-based views by providing
+a class called ``BaseView``. Writing a view generally consists of extending this
+class and then providing content for a few methods.
+
+Available on each view is also an attribute ``conf``, which contains the
+configuration of the application which this view belongs to. This contains all
+the configuration arguments specified in the configuration file, as well as:
+
+* ``application_name`` - the name of the application;
+* ``local_name`` - the local name (i.e., first part of the URL) as configured
+  for this application;
+* ``title`` - the human-readable title of this application;
+* ``urls`` - the Django urlconf for this application;
+* ``has_urlconf`` - whether or not the urlconf is set.
+
+``initial_context``
+"""""""""""""""""""
+
+When a view is called, then the ``initial_context`` method is called, along with
+the request object, as well as any arguments defined in the URL pattern. This
+function then sets up the context which is used for rendering.
+
+.. note:: If this class inherits from ``ZoomableView`` or ``FavouritableView``,
+          then you should call the ``super`` function in ``initial_context`` in
+          order to correctly setup the context.
+
+This is done by populating a dictionary with various keys and values depending
+on what needs to be rendered, and then returning this dictionary, e.g.::
+
+    from molly.utils.views import BaseView
+
+    class FooView(BaseView):
+        
+        def initial_context(self, request):
+            
+            context = {}
+            context['rain'] = 'Mainly on the plain'
+            
+            return context
+        
+        ...
+
+When this method is called, then any match groups defined in the URL pattern are
+also presented alongside it, e.g., if the match group was: ``^/(?P<id>\d+)/$``,
+then this is how the ``initial_context`` could be written::
+
+    from molly.utils.views import BaseView
+    from models import Foo
+
+    class FooView(BaseView):
+        
+        def initial_context(self, request, id):
+            
+            context = {}
+            context['thing'] = Foo.objects.get(pk=id)
+            
+            return context
+        
+        ...
+
+Also of note, is the ability to raise ```django.http.Http404`` <http://docs.djangoproject.com/en/dev/topics/http/views/#the-http404-exception>`_,
+which will cause the view to render as a 404 error.
+
+``handle_*``
+""""""""""""
+
+You will have to write a ``handle_*`` method for each HTTP method you wish to
+support. In most cases, this will just be GET, and sometimes POST, although you
+can support some of the rarer requests if you would like (HEAD by default is
+handled by rendering it as a GET and then stripping the content).
+
+For whatever method you write, the method is called along with the request
+object, the context as set up by ``initial_context``, as well as any arguments
+defined in the match group.
+
+This function is expected to return a HttpResponse object, which can be done by
+calling 2 shortcut functions: ``render`` or ``redirect`` which are defined in
+``BaseView``.
+
+.. autoclass:: molly.utils.views.BaseView
+
+    .. automethod:: molly.utils.views.BaseView.render
+    .. automethod:: molly.utils.views.BaseView.redirect
+
+These can be utilised like so::
+
+    from molly.utils.views import BaseView
+
+    class FooView(BaseView):
+        
+        def handle_GET(self, request, context):
+            
+            return self.render(request, context, 'myapp/template')
+        
+        def handle_POST(self, request, context):
+            
+            # Handle a form response, which is available in the request.POST
+            # dictionary
+            
+            return self.redirect(context['uri'], request)
+        
+        ...
+
+As with ``initial_context``, raising ```django.http.Http404`` <http://docs.djangoproject.com/en/dev/topics/http/views/#the-http404-exception>`_,
+will cause the view to render as a 404 error.
+
+Breadcrumbs
+"""""""""""
+
+Molly uses a "breadcrumb trail" approach to navigation across the site. In the
+default template, this is represented at the top of the screen. In order to
+generate a breadcrumb trail, each view defines a ``breadcrumb`` method, which
+returns a function which evaluates to a tuple providing the following members:
+
+* the name of the application;
+* the index view of the application;
+* the parent of this page;
+* whether or not the parent is the index;
+* the title of this page.
+
+In order to simplify this, you can simply return a ``Breadcrumb`` object from
+your method, and then decorate it using the ``BreadcrumbFactory`` decorator.
+
+A Breadcrumb object consists of the name of the application, the URL to the
+parent page, the title of this particular page, and the URL of this particular
+page. A typical example may look like::
+
+    from molly.utils.views import BaseView
+    from molly.utils.breadcrumbs import Breadcrumb, BreadcrumbFactory
+    from django.core.urlresolvers import reverse
+    
+    class FooView(BaseView):
+    
+        @BreadcrumbFactory
+        def breadcrumb(self, request, context, ...):
+            return Breadcrumb(
+                'myapp',
+                reverse('myapp:index'),
+                context['title'],
+                reverse('myapp:foo'),
+            )
+        
+        ...
+
+.. note:: If the view is the top-level page in the app, the second argument
+          should be ``None``.
+
+This assumes that ``initial_context`` adds a ``title`` key to the context. This
+could be static text, or some other method of deducing the name of this page.
+Also, if the pattern for matching this page includes any optional arguments,
+then these are passed as additional arguments at the end of the method.
+
+Metadata
+""""""""
+
+In some circumstances, you will want to get information about a view, without
+actually rendering it. This is done, for example, when rendering a search result
+or displaying information about search results. To provide information for these
+uses, then views can define a ``get_metadata`` function, which returns a
+dictionary with the keys ``title``, containing the title of the page being
+rendered, and an optional ``additional`` line, which contains additional
+information about the view::
+
+
+    from molly.utils.views import BaseView
+    from molly.utils.breadcrumbs import Breadcrumb, BreadcrumbFactory
+    from django.core.urlresolvers import reverse
+    
+    class FooView(BaseView):
+    
+        def get_metadata(self, request):
+            return {
+                'title': 'Foo Checker',
+                'additional': 'Check on the current status of foo',
+              }
+        
+        ...
+
+Also, if the pattern for matching this page includes any optional arguments,
+then these are passed as additional arguments at the end of the function.
+
+``ZoomableView``
+"""""""""""""""""
+
+If you are rendering maps, and want the ability to make static maps zoomable,
+then you can instead inherit from ``molly.utils.views.ZoomableView``, which will
+add the ability to zoom in and out of static maps.
+
+.. warning:: If the device supports slippy maps, then all maps will be zoomable.
+
+To use this, you must also set up the context in ``initial_context`` using a
+``super()`` call. The context will then contain a key called ``zoom`` which can
+be passed to the ``Map`` constructor to build a map at the correct zoom level.
+
+If you would like to specify a default zoom level, you can do this by adding
+an attribute to your class called `default_zoom`, e.g.,::
+
+    from molly.utils.views import ZoomableView
+    
+    class FooView(ZoomableView):
+        
+        default_zoom = 16
+        
+        def initial_context(self, request):
+            context = super(FooView, self).initial_context(request)
+            ...
+            return context
+        
+        ...
+
+``FavouritableView``
+""""""""""""""""""""
+
+If you would like to make it so that a view can be marked as a
+:doc:`favourite <../ref/favourites>`_, then ``molly.favourites.views.FavouritableView``
+is available as a base class, which when used as a base adds values to the
+context which are used to add the ability to add/remove favourites on those
+rendered pages::
+
+    from molly.favourites.views import FavouritableView
+    
+    class BarView(FavouritableView):
+        
+        def initial_context(self, request):
+            context = super(BarView, self).initial_context(request)
+            ...
+            return context
+        
+        ...
+
+``SecureView``
+""""""""""""""
+
+Another view available is ``molly.auth.views.SecureView``. When extending this
+view, then all requests to your view must be made over a HTTPS connection
+(unless ``DEBUG_SECURE`` is true).
+
+Your First App
+--------------
+
+.. note:: This tutorial was first given as a workshop at `Dev8D 2011 <http://dev8d.org/>`_.
+          The code from this workshop has been `made available <https://github.com/cnorthwood/molly-transit>`_,
+          and as of version 1.1 has been incorporated into the transport app.
+
+Now we've covered the basics of a Molly view and the structure of an app, we can
+start building our first app. In this worked example, we will build an
+application to display the status of mass transit systems (particularly the
+London Underground and Glasgow Subway).
+
+Django provides a simple method to start an app, which should be sufficient
+as the first step in making any new app for Molly. It doesn't really matter
+where the code is stored, but it should be on your Python path. In most cases,
+a good place to put it is in your site (the 'deploy' directory by default).
+
+To get started, we can use the ``django-admin`` function in your deploy
+directory to create the framework for your app::
+
+    django-admin.py startapp transit_status
+
+The last argument here is the name of the folder (and subsequentally the app) to
+be created. Inside this folder, we see the structure of an app as described
+above, although with a few files missing. From here, we're ready to start, so
+let's put together a view which does nothing.
+
+The blank view
+""""""""""""""
+
+Creating a simple view in Molly is quite simple, you just need to extend
+``BaseView`` and then provide at least one ``handle_*`` method - typically
+``handle_GET`` for most pages, and ``handle_POST`` if you need to deal with
+forms, and a breadcrumb method.
+
+Open up views.py in your favourite text editor, and then add the following::
+
+    from molly.utils.views import BaseView
+    from molly.utils.breadcrumbs import Breadcrumb, BreadcrumbFactory, lazy_reverse
+
+    class IndexView(BaseView):
+            
+        @BreadcrumbFactory
+        def breadcrumb(self, request, context):
+            return Breadcrumb('transit_status', None, self.conf.title,
+                              lazy_reverse('index'))
+    
+        def handle_GET(self, request, context):
+            return self.render(request, context, 'transit_status/index')
+
+Here, we have two methods: ``handle_GET``, which simply renders the template
+'transit_status/index' ``breadcrumb`` which returns the details for the
+breadcrumb navigation included in the default template.
+
+The breadcrumb method here uses the standard way of generating breadcrumbs in
+Molly:
+
+* the first argument to the ``Breadcrumb`` constructor is the name of the
+  app;
+* the second is the URL for the parent of this page - in this case there is
+  no parent, as this is the root of the app, so this is None;
+* the third is the title of this page - here we're using self.conf.title
+  attribute, which means that the name of the application is also the name of
+  this page. In many pages, this will not necessarily be the case, so the title
+  could be determined from the context, or as a static string;
+* the fourth is the URL of this page, the ``lazy_reverse`` function returns the
+  URL for the ``index`` page in this app (the ``index`` page is defined in the
+  URL conf as described below).
+
+As our ``handle_GET`` method is rendering a template, we will now need to write
+a template to do this. The most minimal thing we can do here is to create new
+folders in your application folder called ``templates/transit_status``, and then
+create a blank file called ``index.html``. We can add some content to this file
+later.
+
+The final step to produce a minimal view is to create a urlconf to requests
+to the view. Urlconf's are standard Django fare, and a fairly standard one
+could be created which looks like::
+
+    from django.conf.urls.defaults import *
+    
+    from views import IndexView
+    
+    urlpatterns = patterns('',
+       (r'^$', IndexView, {}, 'index'),
+    )
+
+With all that done, we now need to add the new app to your ``settings.py``, and
+start up the development server to see our blank page in action.
+
+.. seealso:: :doc:`configuring`
+
+To do this, at the end of the ``APPLICATIONS`` list in ``settings.py``, an
+``Application`` definition needs to be added. In this case, the following will
+suffice::
+
+    Application('transit_status', 'transit_status', 'Tube Status'),
+
+Now, start up a development server and browse to your development instance
+(typically ``http://localhost:8000``). There should be a blank icon on the home
+screen at the end with your new application below it. Clicking on that should
+take you to a blank page.
+
+.. note:: The :doc:`installation guide <installing>` contains information on how
+          to install Molly in development mode, or to start a development
+          server.
+
+.. note:: Not seeing what you expect? Ask the `Molly community <http://mollyproject.org/community.html>`_,
+          who will be able to help you.
+
+Fleshing it out
+"""""""""""""""
+
+Now we have a basic view working, we can start fleshing out our views and
+templates. One thing that needs adding to the templates is a ``get_metadata``
+method, which allows for pages to appear in search results, as well any further
+future use, such as favouriting pages. In most cases, this simply needs to be
+something which returns the title of the current page, as well as any
+additional information about what the page does. On this view, we can simply
+add::
+
+        def get_metadata(self, request):
+            return {
+                'title': self.conf.title,
+                'additional': 'View the status of transit lines'
+            }
+
+The next step is to add something to our template to make it a bit more than
+a blank screen, this can be done by adding::
+
+    {% extends "base.html" %}
+
+to the template, which renders the base style of the site, with any additional
+content to be displayed.
+
+.. note:: Most Molly apps actually extend ``app_name/base.html``, which in turn
+          extend ``base.html``. This structure allows for entire apps to be
+          styled consistently to each other, but different to the core styling,
+          if so desired.
+
+At this point, we need to decide on the format of the context to be presented to
+the template, as well as the format of the data provided by providers.
+
+.. note:: Molly seperates apps into "views" and "providers". Providers should
+          provide abstract interfaces to services which views can call to get
+          the details about the configured services. Views should therefore be
+          service agnostic.
+
+Most applications supply a ``BaseProvider`` which provides a signature for
+concrete providers to follow. For this transit line app, a provider which
+implements a single ``get_status`` method should suffice. This method is then
+responsible for querying the service, and then returning the information. For
+our users, this information is in the form of a list of Python dictionaries,
+where each Python dictionary provides the name of the line (``line_name``), the
+current status (``status``) and an optional reason for disruption
+(``disruption_reason``).
+
+With this decided, we can now define the context. Here, we can simply pass
+the results from the provider into the context. As the title of the app is
+configurable (e.g., a London university may set it to 'Tube status', a Mancunian
+one to 'Metrolink status', etc), we also want this in the context.
+
+Once the context is defined, we can set up the template to render this. To
+display content when extending the base template, you have to define a block
+called content, and place your template code in there. For our template, with
+the context structure defined above, utilising Molly's default CSS structure,
+we can edit ``templates/transit_status/index.html`` to look like so
+
+.. code-block:: html
+
+    {% extends "base.html" %}
+    
+    {% block content %}
+        
+        <div class="section">
+            <div class="header">
+                <h2>{{ title }}</h2>
+            </div>
+            <table class="content">
+                <thead>
+                    <tr>
+                        <th>Line</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for status in statuses %}
+                    <tr>
+                        <td>{{ status.line_name }}</td>
+                        <td>{{ status.status }}
+                        {% if status.disruption_reason %}<br/>{{ status.disruption_reason }}{% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+    {% endblock %}
+
+.. seealso:: :doc:`customising`
+
+We now need to set up the context to actually provide this information to the
+template. We can do this by adding an ``initial_context`` method to
+``IndexView`` which returns our context dictionary. In the context, we need to
+provide two things:
+
+* the title of the page, from ``self.conf.title``;
+* the status of the lines, by calling the provider.
+
+Our ``initial_context`` method should therefore look like this::
+
+        def initial_context(self, request):
+            return {
+                'title': self.conf.title,
+                'statuses': self.conf.provider.get_status()
+            }
+
+At this point, we also need to write our base provider, and also alter the
+configuration of the application to include a ``provider`` attribute.
+
+To create a base provider, then the following can be included in a new file,
+``providers/__init__.py``::
+
+    class BaseTransitLineStatusProvider(object):
+        
+        def get_status(self):
+            # Return a list of dictionaries, where the dictionaries have keys
+            # of "line_name", "status" and optional "disruption_reason"
+            return []
+
+.. seealso:: :doc:`../topics/application_framework`
+
+We can now alter our ``settings.py`` application configuration to point to
+this provider, and our app should now render the page as expected (with no
+line statuses showing quite yet). To do this, an argument to the ``Application``
+contructor called ``provider`` should be added, which is itself is a
+``Provider``, constructed with the classpath of the provider. i.e.::
+
+    Application('transit_status', 'transit_status', 'Tube Status',
+        provider=Provider('transit_status.providers.BaseTransitLineStatusProvider')),
+
+The finishing touches
+"""""""""""""""""""""
+
+Now we have the basis of an app actually working, that's all the Molly specific
+stuff over. All that remains is for us to add an actual provider. In a new file,
+``providers/tfl.py``, the following can be pasted::
+
+    import urllib
+    from xml.dom import minidom
+    
+    from transit_status.providers import BaseTransitLineStatusProvider
+    
+    class TubeStatusProvider(BaseTransitLineStatusProvider):
+        
+        LINESTATUS_URL = 'http://cloud.tfl.gov.uk/TrackerNet/LineStatus'
+        
+        def get_status(self):
+            
+            statuses = []
+            
+            status_xml = minidom.parse(urllib.urlopen(self.LINESTATUS_URL))
+            
+            for node in status_xml.documentElement.childNodes:
+                if node.nodeType == node.ELEMENT_NODE and node.tagName == 'LineStatus':
+                    line_status = {
+                        'disruption_reason': node.getAttribute('StatusDetails'),
+                    }
+                    for child in node.childNodes:
+                        if child.nodeType == child.ELEMENT_NODE and child.tagName == 'Line':
+                            line_status['line_name'] = child.getAttribute('Name')
+                        elif child.nodeType == child.ELEMENT_NODE and child.tagName == 'Status':
+                            line_status['status'] = child.getAttribute('Description')
+                    statuses.append(line_status)
+            
+            return statuses
+
+Then, the provider in the application configuration can be changed as below to
+use this new provider::
+
+    Application('transit_status', 'transit_status', 'Tube Status',
+        provider=Provider('transit_status.providers.tfl.TubeStatusProvider')),
+
+We now have a complete application for displaying the status of the London
+Underground lines!
+
+With this split of views and providers, it makes it very simple to adjust an app
+for use by others, in other contexts. The following provider, if placed in
+``providers/spt.py``, would allow access for status of the Glaswegian subway::
+
+    from transit_status.providers import BaseTransitLineStatusProvider
+    from lxml import etree
+    import urllib2
+    
+    class SubwayStatusProvider(BaseTransitLineStatusProvider):
+        
+        JOURNEYCHECK_URL = 'http://www.spt.co.uk/journeycheck/index.aspx'
+        
+        def get_status(self):
+            statuses = []
+            xml = etree.parse(urllib2.urlopen(self.JOURNEYCHECK_URL), parser = etree.HTMLParser())
+            ul = xml.find(".//ul[@id='jc']")
+            for li in ul:
+                statuses.append({
+                    'line_name': ''.join(li.itertext()).strip(),
+                    'status': li.find(".//img").attrib['alt']
+                })
+            return statuses
+
+And if the configuration of the app was changed as below, this app is now also
+suitable for a Glaswegian university::
+
+    Application('transit_status', 'transit_status', 'Subway Status',
+        provider=Provider('transit_status.providers.spt.SubwayStatusProvider')),
+
+Of course, this is a very simplistic application, it doesn't utilise the
+database, only has one view and doesn't deal with forms, but those features are
+part of Django, which is well-documented, rather than particular to the Molly
+framework.

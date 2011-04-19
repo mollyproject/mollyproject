@@ -11,7 +11,8 @@
       <tbody>
         {% for favourite in favourites %}
         <tr>
-          <td><a href="{{ favourite.url }}">{{ favourite.metadata.title }}</a></td>
+          <td class="favourite-link"><a href="{{ favourite.url }}">{{ favourite.metadata.title|safe }}</a>
+          {% if favourite.metadata.additional %}<br /><span class="additional">{{ favourite.metadata.additional|safe }}</span>{% endif %}</td>
           <td>
             <form action="{% url favourites:index %}" method="post">
                 <input type="hidden" name="URL" value="{{ favourite.url|escape }}" />

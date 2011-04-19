@@ -85,19 +85,18 @@ class PostcodesMapsProvider(BaseMapsProvider):
             entity.update_all_types_completion()
 
     def _get_entity_type(self):
-        try:
-            return EntityType.objects.get(slug='post-code')
-        except EntityType.DoesNotExist:
-            entity_type = EntityType(
-                slug = 'post-code',
-                article = 'a',
-                verbose_name = 'postcode',
-                verbose_name_plural = 'postcodes',
-                show_in_nearby_list = False,
-                show_in_category_list = False,
-            )
-            entity_type.save()
-            return entity_type
+        entity_type, created = EntityType.objects.get_or_create(slug='post-code')
+        category, _ = EntityTypeCategory.objects.get_or_create(name='Uncategorised')
+        entity_type.slug = 'post-code'
+        entity_type.article = 'a'
+        entity_type.verbose_name = 'postcode'
+        entity_type.verbose_name_plural = 'postcodes'
+        if created:
+            entity_type.show_in_nearby_list = False
+            entity_type.show_in_category_list = False
+        entity_type.category = category
+        entity_type.save()
+        return entity_type
 
     def _get_source(self):
         try:

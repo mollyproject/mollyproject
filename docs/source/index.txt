@@ -30,6 +30,7 @@ Developing with Molly
 * :doc:`topics/app_media`
 * :doc:`topics/styling`
 * :doc:`topics/utilities`
+* :doc:`topics/js`
 
 Reference
 ---------

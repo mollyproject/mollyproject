@@ -1,7 +1,7 @@
 import urllib
 from xml.etree import ElementTree as ET
 
-from django.http import HttpResponseRedirect, HttpResponsePermanentRedirect, HttpResponse, Http404
+from django.http import HttpResponse, Http404
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 
@@ -30,8 +30,6 @@ class IndexView(BaseView):
         if 'show_itunesu_link' in request.GET:
             show_itunesu_link = request.GET['show_itunesu_link'] != 'false'
     
-        #if "apple_iphone_ver1" in device_parents[request.device.devid] :
-        #        return HttpResponseRedirect ("http://deimos.apple.com/WebObjects/Core.woa/Browse/ox-ac-uk-public")
         context.update({
             'categories': PodcastCategory.objects.all(),
             'show_itunesu_link': show_itunesu_link,
@@ -147,8 +145,12 @@ class ITunesURedirectView(BaseView):
             return HttpResponse('', mimetype="text/plain")
         elif request.method == 'POST' and not use_itunesu:
             if remember:
-                return HttpResponseRedirect(reverse('podcasts:index'))
+                return self.redirect(reverse('podcasts:index'), request)
             else:
-                return HttpResponseRedirect(reverse('podcasts:index') + '?show_itunesu_link=false')
+                return self.redirect(
+                    reverse('podcasts:index') + '?show_itunesu_link=false',
+                    request)
         else:
-            return HttpResponseRedirect("http://deimos.apple.com/WebObjects/Core.woa/Browse/ox-ac-uk-public")
+            return self.redirect(
+                "http://deimos.apple.com/WebObjects/Core.woa/Browse/ox-ac-uk-public",
+                request)

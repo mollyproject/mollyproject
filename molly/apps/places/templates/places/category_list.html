@@ -2,15 +2,17 @@
 
 {% block content %}
 
+{% for name, types in entity_types.items %}
 <div class="section">
-<div class="header">
-  <h2>Places</h2>
+    <div class="header">
+        <h2>{{ name }}</h2>
+    </div>
+    <ul class="link-list">
+        {% for entity_type in types %}
+            <li><a href="{% url places:category-detail entity_type.slug %}">{{ entity_type.verbose_name_plural|capfirst }}</a></li>
+        {% endfor %}
+    </ul>
 </div>
-	<ul class="link-list">
-	{% for entity_type in entity_types %}
-	    <li{% if forloop.last %} class="round-bottom"{% endif %}><a href="{% url places:category-detail entity_type.slug %}">{{ entity_type.verbose_name_plural|capfirst }}</a></li>
-	{% endfor %}
-	</ul>
-</div>
+{% endfor %}
 
 {% endblock %}
