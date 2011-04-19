@@ -27,7 +27,7 @@ def get_norm_sys_path():
     try:    
         project_path = imp.find_module(os.environ['DJANGO_SETTINGS_MODULE'].split('.')[0])[1]
     except ImportError:
-        project_path = imp.find_module('settings')[1]
+        project_path = os.path.dirname(imp.find_module('settings')[1])
     sys_path.insert(0, os.path.join(project_path, '..'))
 
     sys_path = [os.path.normpath(p) for p in sys_path if p != '']

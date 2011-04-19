@@ -443,7 +443,6 @@ def ReverseView(request):
 def handler500(request):
     context = {
         'request': request,
-        'STATIC_URL': settings.STATIC_URL,
     }
 
     # This will make things prettier if we can manage it.
@@ -453,6 +452,13 @@ def handler500(request):
         context.update(device_specific_media(request))
     except Exception, e:
         pass
+    
+    # This will make stop mixed content warnings if we can manage it
+    try:
+        from molly.utils.context_processors import ssl_media
+        context.update(ssl_media(request))
+    except Exception, e:
+        context.update({'STATIC_URL': settings.STATIC_URL})
 
     response = render_to_response('500.html', context)
     response.status_code = 500

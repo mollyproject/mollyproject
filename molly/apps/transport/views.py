@@ -59,7 +59,7 @@ class IndexView(BaseView):
             et = EntityType.objects.get(slug=type_slug)
             favourites = filter(
                 lambda e: e is not None and et in e.all_types_completion.all(),
-                [f['metadata'].get('entity') for f in get_favourites(request)])
+                [f.metadata.get('entity') for f in get_favourites(request)])
             
             if len(favourites) == 0:
                 if location:
