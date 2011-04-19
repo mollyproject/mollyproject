@@ -1,5 +1,5 @@
 :mod:`molly.geolocation` -- Geolocation
-=====================================
+=======================================
 
 .. module :: molly.geolocation
 

@@ -12,64 +12,47 @@ available from `mollyproject.org <http://mollyproject.org/>`_.
 Getting Started
 ---------------
 
-.. hlist::
-   :columns: 2
+.. toctree::
+   :glob:
+   :maxdepth: 1
 
-   * :doc:`tutorial/installing`
-   * :doc:`tutorial/configuring`
-   * :doc:`tutorial/deploying`
-   * :doc:`tutorial/customising`
-   * :doc:`tutorial/writing_an_application`
+   getting-started/*
 
 Developing with Molly
 ---------------------
 
-* :doc:`topics/ajax`
-* :doc:`topics/application_framework`
-* :doc:`topics/class_based_views`
-* :doc:`topics/app_media`
-* :doc:`topics/styling`
-* :doc:`topics/utilities`
+.. toctree::
+   :glob:
+   :maxdepth: 1
+
+   topics/*
 
 Reference
 ---------
 
-* Utilities:
-   * :doc:`ref/auth`
-   * :doc:`ref/batch_processing`
-   * :doc:`ref/external_media`
-   * :doc:`ref/favourites`
-   * :doc:`ref/geolocation`
-   * :doc:`ref/maps`
-   * :doc:`ref/url_shortener`
-   * :doc:`ref/utils`
-   * :doc:`ref/wurfl`
-* "Batteries-Included" Apps:
-   * :doc:`ref/apps/contact`
-   * :doc:`ref/apps/desktop`
-   * :doc:`ref/apps/events`
-   * :doc:`ref/apps/feature_vote`
-   * :doc:`ref/apps/feedback`
-   * :doc:`ref/apps/feeds`
-   * :doc:`ref/apps/home`
-   * :doc:`ref/apps/library`
-   * :doc:`ref/apps/news`
-   * :doc:`ref/apps/places`
-   * :doc:`ref/apps/podcasts`
-   * :doc:`ref/apps/sakai`
-   * :doc:`ref/apps/search`
-   * :doc:`ref/apps/service_status`
-   * :doc:`ref/apps/stats`
-   * :doc:`ref/apps/transport`
-   * :doc:`ref/apps/weather`
-   * :doc:`ref/apps/webcams`
+Utilities
+"""""""""
 
+.. toctree::
+   :glob:
+   :maxdepth: 1
+
+   ref/*
+
+"Batteries-Included" Apps
+"""""""""""""""""""""""""
+
+.. toctree::
+   :glob:
+   :maxdepth: 1
+
+   ref/apps/*
+   
 Miscellany
 ----------
 
-* :doc:`license`
-* :doc:`cla`
-* :ref:`genindex`
-* :ref:`search`
+.. toctree::
+   :maxdepth: 1
 
-.. todolist::
+   license
+   cla
