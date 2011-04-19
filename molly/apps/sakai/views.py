@@ -78,7 +78,7 @@ class IndexView(SakaiView):
             if len(context['user_details']['id']) == 0:
                 # pretend we got a 401 error, this will force the auth framework
                 # to reauthenticate
-                raise OAuthHTTPError(urllib2.HTTPError('', 401, '', '', open('/dev/null')))
+                raise OAuthHTTPError(urllib2.HTTPError('', 401, '', '', StringIO()))
         
         return self.render(request, context, 'sakai/index')
 
@@ -478,12 +478,12 @@ class AnnouncementView(SakaiView):
 
     @BreadcrumbFactory
     def breadcrumb(self, request, context, id):
-        if not 'evaluation' in context:
+        if not 'announcement' in context:
             context = self.initial_context(request, id)
 
         return Breadcrumb(
             self.conf.local_name,
-            lazy_parent('evaluation-index'),
+            lazy_parent('index'),
             context['announcement']['title'],
             lazy_reverse('announcement', args=[id]),
         )
