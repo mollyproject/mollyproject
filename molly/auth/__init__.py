@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 
 from molly.conf import app_by_application_name
 from molly.auth.models import UserIdentifier, UserSession, ExternalServiceToken
+from molly.favourites.models import Favourite
 
 def unify_users(request):
     user = request.user
@@ -20,6 +21,9 @@ def unify_users(request):
     identifier_namespaces = set(i.namespace for i in user.useridentifier_set.all())
 
     root_user = min(users, key=lambda u:u.date_joined)
+    
+    # Also need to update favourites
+    Favourite.objects.filter(user__in=users).update(user=root_user)
     
     # Need to do the root_user first, otherwise if it's after the current user,
     # tokens get assigned from the current user to the root user, and then

@@ -499,7 +499,7 @@ class CategoryDetailView(BaseView):
         return {
             'title': 'All %s' % context['entity_types'][0].verbose_name_plural,
             'additional': '<strong>%d %s</strong>' % (
-                len(context['entities']),
+                context['entities'].paginator.count,
                 context['entity_types'][0].verbose_name_plural,
             ),
         }
