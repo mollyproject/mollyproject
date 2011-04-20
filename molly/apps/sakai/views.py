@@ -1,9 +1,10 @@
 from datetime import datetime
 
-import urllib, urllib2, simplejson, urlparse, StringIO
+import urllib, urllib2, simplejson, urlparse
 from lxml import etree
 from dateutil.tz import tzutc
 import dateutil.parser
+from StringIO import StringIO
 
 from django.http import Http404, HttpResponse, HttpResponseForbidden
 from django.core.urlresolvers import reverse
@@ -423,7 +424,7 @@ class EvaluationDetailView(SakaiView):
         # The evaluations tool doesn't give us a non-OK status if we need to authenticate. Instead,
         # we need to check for the login box (handily picked out by the XSL stylesheet).
         if evaluation.find('.//require_auth').text == 'true':
-            raise OAuthHTTPError(urllib2.HTTPError(url, 403, 'Authentication required', {}, StringIO.StringIO()))
+            raise OAuthHTTPError(urllib2.HTTPError(url, 403, 'Authentication required', {}, StringIO()))
 
         context = {
             'evaluation': evaluation,
