@@ -7,7 +7,7 @@
        href="{% url feature_vote:index %}">
       <div style="background-image:url('{{ STATIC_URL }}auth/images/padlock.png'); background-repeat:no-repeat; background-position:left center; padding-left:28px"> 
   <a style="padding:5px 1px;" href="{% url auth:index %}">Security preferences</a>
-  <a style="padding:5px 1px;" href="{% url auth:clear-session %}?return_url={{ full_path }}">Clear secure session</a><br/>
+  <a style="padding:5px 1px;" href="{% url auth:clear-session %}?return_url={{ full_path }}" rel="nofollow">Clear secure session</a><br/>
   {{ user|externalservicetoken_count }} service{{ user|externalservicetoken_count|pluralize }} accessible from {{ user.usersession_set.all.count }} device{{ user.usersession_set.all.count|pluralize }}.
   <a style="padding:5px 1px;" href="{% url auth:index %}">Change</a>
   </div></div>
