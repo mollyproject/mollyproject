@@ -13,17 +13,7 @@ ul#transport-links{
 ul li.transport-link {
 	margin: 0 5px;
 	display: inline-block;
-	background-color: #002B4C;
-	background: -webkit-gradient(linear, left top, left bottom,
-	      from(rgb(105,153,195)), color-stop(0.5, rgb(3,59,113)), to(rgb(27,87,144)));
-	background: -moz-linear-gradient(top, rgb(105,153,195), rgb(3,59,113), rgb(27,87,144));
-	border-radius: 8px; -webkit-border-radius: 8px; -moz-border-radius: 8px; 
-	
-	box-shadow: 3px 3px 3px #333;
-	-webkit-box-shadow: 3px 3px 3px #333;
-	-moz-box-shadow: 3px 3px 3px #333;
 }
-
 ul li.transport-link a img { border: 0; }
 </style>
 
@@ -39,7 +29,7 @@ ul li.transport-link a img { border: 0; }
     <img class="qr-code" src="http://chart.apis.google.com/chart?cht=qr&amp;chs=200x200&amp;chld=L|1&amp;chl={{ url|urlencode }}" style="width:100%; max-width:200px" />
   </p>
 
-<!-- Facebook, Twitter, and Email sharing  icons-->
+<!-- Facebook, Twitter, and Email sharing icons-->
 
 <ul id="transport-links">
 <li class="transport-link"><a href="http://www.facebook.com/share.php?u={{ url }}"><img src="{{ STATIC_URL }}site/images/icons/facebook.png" border="0"/></a></li>
