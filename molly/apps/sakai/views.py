@@ -508,7 +508,7 @@ class AnnouncementView(SakaiView):
         if found is None:
             raise Http404()
         return {
-            'announcement': announcement
+            'announcement': found
         }
     
     def handle_GET(self, request, context, id):
