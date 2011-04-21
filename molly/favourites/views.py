@@ -20,8 +20,7 @@ class FavouritableView(BaseView):
         context['is_favouritable'] = True
         
         # Also, add whether or not this particular thing already is favourited
-        context['is_favourite'] = Favourite.objects.filter(user= request.user,
-                                                           url = request.path_info).exists()
+        context['is_favourite'] = request.path_info in [f.url for f in get_favourites(request)]
         
         # And the URL of this page (so it can be favourited)
         context['favourite_url'] = request.path_info
@@ -52,8 +51,10 @@ class IndexView(BaseView):
     def handle_POST(self, request, context):
         """
         Add and remove favourites. Favourites are stored as URLs (the part of
-        them Django is interested in anyway) in the database. This has the
-        downside of breaking favourites if URLs change.
+        them Django is interested in anyway) in the database, if the user is
+        logged in - otherwise, it is stored in the session, and then migrated
+        to the database when the user logs in. This has the downside of breaking
+        favourites if URLs change.
         """
         
         # Alter favourites list
@@ -68,10 +69,32 @@ class IndexView(BaseView):
                     # or isn't on our site
                     return HttpResponseRedirect(lazy_reverse('favourites:index'))
                 else:
-                    Favourite(user=request.user, url=request.POST['URL']).save()
+                    if request.user.is_anonymous():
+                        if 'favourites' not in request.session:
+                            request.session['favourites'] = set()
+                        request.session['favourites'].add(request.POST['URL'])
+                        request.session.modified = True
+                    else:
+                        if request.user.is_anonymous():
+                            if request.POST['URL'] in request.session.get('favourites', set()):
+                                request.session['favourites'].remove(request.POST['URL'])
+                                request.session.modified = True
+                        else:
+                            Favourite(user=request.user, url=request.POST['URL']).save()
             
             elif 'unfavourite' in request.POST:
-                Favourite.objects.filter(user=request.user, url=request.POST['URL']).delete()
+                if not request.user.is_anonymous():
+                    try:
+                        favourite = Favourite.objects.get(user=request.user,
+                                                          url = request.POST['URL'])
+                    except Favourite.DoesNotExist:
+                        pass
+                    else:
+                        favourite.delete()
+                else:
+                    if request.POST['URL'] in request.session.get('favourites', set()):
+                        request.session['favourites'].remove(request.POST['URL'])
+                        request.session.modified = True
         
             # If the source was the favourites page, redirect back there
             if 'return_to_favourites' in request.POST:

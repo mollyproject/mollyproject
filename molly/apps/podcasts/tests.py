@@ -21,5 +21,5 @@ class PodcastsTestCase(unittest.TestCase):
         for podcast in podcasts:
             
             r = c.get('/podcasts/%s/' % podcast.category.slug)
-            r = c.get('/podcasts/%s/%d/' % (podcast.category.slug, podcast.id))
+            r = c.get('/podcasts/%s/%s/' % (podcast.category.slug, podcast.slug))
             self.assertTrue(r.context['podcast'].podcastitem_set.count() > 0)
