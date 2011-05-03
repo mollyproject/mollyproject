@@ -17,6 +17,11 @@ function to_absolute(url) {
     }
 }
 
+function display_loading_screen(){
+    $('body').append('<div id="loading"></div>')
+    $('#loading').height($(window).height())
+}
+
 // Callback method that swaps in the asynchronously loaded bits to the page, and fades it in
 function async_load_callback(data, textStatus, xhr) {
     $('body').html(data.body);
@@ -45,7 +50,7 @@ function async_load(url, query, meth) {
         return true;
     }
     
-    $('body').append('<div id="loading"></div>')
+    display_loading_screen()
   
     query['format'] = 'fragment';
     $.ajax({

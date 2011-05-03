@@ -11,7 +11,7 @@ $(document).bind('molly-page-change', function(event, url){
     if (url == '/places/') {
         // IndexView
         $('.nearby a').click(function(){
-            $('body').append('<div id="loading"></div>')
+            display_loading_screen()
             $.ajax({
                 url: $(this).attr('href'),
                 data: { format: 'json' },
@@ -25,7 +25,7 @@ $(document).bind('molly-page-change', function(event, url){
         $('.nearby a').addClass('has-ajax-handler')
         
         $('.categories a').click(function(){
-            $('body').append('<div id="loading"></div>')
+            display_loading_screen()
             $.ajax({
                 url: $(this).attr('href'),
                 data: { format: 'json' },
@@ -42,7 +42,7 @@ $(document).bind('molly-page-change', function(event, url){
     if (url.match(/^\/places\/category\/[^\/;]/)) {
         // Category detail view
         $('li.next a').click(function(){
-            $('body').append('<div id="loading"></div>')
+            display_loading_screen()
             $.ajax({
                 url: $(this).attr('href'),
                 data: { format: 'json' },
@@ -89,7 +89,7 @@ $(document).bind('molly-page-change', function(event, url){
                   // spaced correctly
 	
         $('.nearby a').click(function(){
-            $('body').append('<div id="loading"></div>')
+            display_loading_screen()
             $.ajax({
                 url: $(this).attr('href'),
                 data: { format: 'json' },
@@ -330,7 +330,7 @@ function rebuildLDB(elem, data){
 
 function setupLDBButtons(){
     $('.ldb-board').click(function(){
-        $('body').append('<div id="loading"></div>')
+        display_loading_screen()
         $.ajax({
             url: $(this).attr('href'),
             data: { format: 'json' },
