@@ -19,7 +19,7 @@ function to_absolute(url) {
 
 function display_loading_screen(){
     $('body').append('<div id="loading"></div>')
-    $('#loading').height($(window).height())
+    $('#loading').height($('html').height())
 }
 
 // Callback method that swaps in the asynchronously loaded bits to the page, and fades it in
@@ -40,7 +40,7 @@ function ajax_failure() {
                     $('#loading').remove();
                 });
             }, 1200);
-    });
+        });
 }
 
 function async_load(url, query, meth) {
