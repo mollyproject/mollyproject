@@ -17,9 +17,18 @@ function to_absolute(url) {
     }
 }
 
+// This is needed because of this: http://stackoverflow.com/questions/743123/fixed-positioning-in-mobile-safari
+function suppress_scrolling(e){
+    e.preventDefault()
+}
+
 function display_loading_screen(){
     $('body').append('<div id="loading"></div>')
     $('#loading').height($('html').height())
+}
+
+function clear_loading_screen(){
+    $('#loading').remove();
 }
 
 // Callback method that swaps in the asynchronously loaded bits to the page, and fades it in
@@ -36,9 +45,7 @@ function ajax_failure() {
         .css({'font-size': '20px', 'font-weight': 'bold'})
         .fadeTo('fast', 0.9, function() {
             setTimeout(function() {
-                $('#loading').fadeTo('fast', 0, function () {
-                    $('#loading').remove();
-                });
+                clear_loading_screen();
             }, 1200);
         });
 }

@@ -16,7 +16,7 @@ $(document).bind('molly-page-change', function(event, url){
                 url: $(this).attr('href'),
                 data: { format: 'json' },
                 dataType: 'json',
-                success: function(data){parse_results(data, true);$('#loading').remove();},
+                success: function(data){parse_results(data, true);clear_loading_screen();},
                 error: ajax_failure
             })
             return false;
@@ -30,7 +30,7 @@ $(document).bind('molly-page-change', function(event, url){
                 url: $(this).attr('href'),
                 data: { format: 'json' },
                 dataType: 'json',
-                success: function(data){parse_results(data, false);$('#loading').remove();},
+                success: function(data){parse_results(data, false);clear_loading_screen();},
                 error: ajax_failure
             })
             return false;
@@ -65,7 +65,7 @@ $(document).bind('molly-page-change', function(event, url){
                             $('#category-list li:last').addClass('page-break')
                         }
                     }
-                    $('#loading').remove();
+                    clear_loading_screen()
                 },
                 error: ajax_failure
             })
@@ -94,7 +94,7 @@ $(document).bind('molly-page-change', function(event, url){
                 url: $(this).attr('href'),
                 data: { format: 'json' },
                 dataType: 'json',
-                success: function(data){parse_results(data, true);$('#loading').remove();},
+                success: function(data){parse_results(data, true);clear_loading_screen();},
                 error: ajax_failure
             })
             return false;
@@ -335,7 +335,7 @@ function setupLDBButtons(){
             url: $(this).attr('href'),
             data: { format: 'json' },
             dataType: 'json',
-            success: function(data){rebuildLDB($('#ldb'), data);$('#loading').remove();},
+            success: function(data){rebuildLDB($('#ldb'), data);clear_loading_screen();},
             error: ajax_failure
         })
         return false;
