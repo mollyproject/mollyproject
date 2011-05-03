@@ -144,7 +144,7 @@ class BaseView(object):
         response returned by the GET handler.
         """
         if hasattr(self, 'handle_GET'):
-            response = self.handle_GET(request, *args, **kwargs)
+            response = self.handle_GET(request, context, *args, **kwargs)
         else:
             response = self.method_not_acceptable(request)
         response.content = ''
