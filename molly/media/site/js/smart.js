@@ -17,15 +17,23 @@ function to_absolute(url) {
     }
 }
 
-// This is needed because of this: http://stackoverflow.com/questions/743123/fixed-positioning-in-mobile-safari
-function suppress_scrolling(e){
-    e.preventDefault()
-}
-
 function display_loading_screen(){
     $('body').append('<div id="loading"></div>')
     $('#loading').height($('html').height())
+    display_spinner()
 }
+
+function display_spinner(){
+    offset = window.innerHeight / 2
+    if (navigator.userAgent.match(/iPhone/i) ||
+        navigator.userAgent.match(/iPod/i) ||
+        navigator.userAgent.match(/iPad/i)) {
+        offset += window.pageYOffset
+    }
+    $('#loading').css('background-position', '50% ' + offset + 'px')
+}
+
+$(window).scroll(display_spinner)
 
 function clear_loading_screen(){
     $('#loading').remove();
