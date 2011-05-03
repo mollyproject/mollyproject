@@ -1,9 +1,10 @@
 from datetime import datetime
 
-import urllib, urllib2, simplejson, urlparse, StringIO
+import urllib, urllib2, simplejson, urlparse
 from lxml import etree
 from dateutil.tz import tzutc
 import dateutil.parser
+from StringIO import StringIO
 
 from django.http import Http404, HttpResponse, HttpResponseForbidden
 from django.core.urlresolvers import reverse
@@ -64,6 +65,7 @@ class IndexView(SakaiView):
     def initial_context(self, request): 
         return {
             'user_details': simplejson.load(request.opener.open(self.build_url('/direct/user/current.json'))),
+            'announcements': simplejson.load(request.opener.open(self.build_url('/direct/announcement/user.json'))),
             'tools': [{
                 'name': tool[0],
                 'title': tool[1],
@@ -73,17 +75,23 @@ class IndexView(SakaiView):
 
     def handle_GET(self, request, context):
         
+        if 'force_login' in request.GET:
+            if len(context['user_details']['id']) == 0:
+                # pretend we got a 401 error, this will force the auth framework
+                # to reauthenticate
+                raise OAuthHTTPError(urllib2.HTTPError('', 401, '', '', StringIO()))
+        
         return self.render(request, context, 'sakai/index')
 
 class SignupIndexView(SakaiView):
     force_auth = True
 
     def initial_context(self, request):
-        sites = etree.parse(request.opener.open(self.build_url('direct/site.xml')))
+        sites = simplejson.load(request.opener.open(self.build_url('direct/site.json')))
         return {
             'sites': [
-                (e.find('id').text, e.find('entityTitle').text)
-                for e in sites.getroot()
+                (e['id'], e['entityTitle'])
+                for e in sites['site_collection']
             ],
             'complex_shorten': True,
         }
@@ -382,39 +390,30 @@ class EvaluationIndexView(SakaiView):
         )
 
     def initial_context(self, request):
-        try:
-            url = self.build_url('direct/eval-evaluation/1/summary')
-            summary = etree.parse(request.opener.open(url), parser = etree.HTMLParser(recover=False))
-        except urllib2.HTTPError, e:
-            if e.code == 404:
-                raise Http404
-            elif e.code == 403:
-                raise PermissionDenied
-            else:
-                raise
-
+        url = self.build_url('direct/eval-evaluation/1/summary')
+        summary = etree.parse(request.opener.open(url), parser = etree.HTMLParser(recover=False))
         summary = transform(summary, 'sakai/evaluation/summary.xslt', {'id': id})
-
         evaluations = []
         for node in summary.findall('evaluation'):
-            evaluations.append({
-                'title': node.find('title').text,
-                'site': node.find('site').text,
-                'start': node.find('start').text,
-                'end': node.find('end').text,
-                'status': node.find('status').text,
-                'id': urlparse.parse_qs(urlparse.urlparse(node.find('url').text).query)['evaluationId'][0] if node.find('url') is not None else None,
-            })
-
+            if not node.find('title').text is None:
+                evaluations.append({
+                    'title': node.find('title').text,
+                    'site': node.find('site').text,
+                    'start': node.find('start').text,
+                    'end': node.find('end').text,
+                    'status': node.find('status').text,
+                    'id': urlparse.parse_qs(urlparse.urlparse(node.find('url').text).query)['evaluationId'][0] if node.find('url') is not None else None,
+                })
+        
         return {
             'evaluations': evaluations,
-            'submitted': request.GET.get('submitted') == 'true',
         }
 
     def handle_GET(self, request, context):
         return self.render(request, context, 'sakai/evaluation/index')
 
 class EvaluationDetailView(SakaiView):
+    
     def initial_context(self, request, id):
         url = self.build_url('direct/eval-evaluation/%s' % id)
         data = request.raw_post_data if request.method == 'POST' else None
@@ -425,7 +424,7 @@ class EvaluationDetailView(SakaiView):
         # The evaluations tool doesn't give us a non-OK status if we need to authenticate. Instead,
         # we need to check for the login box (handily picked out by the XSL stylesheet).
         if evaluation.find('.//require_auth').text == 'true':
-            raise OAuthHTTPError(urllib2.HTTPError(url, 403, 'Authentication required', {}, StringIO.StringIO()))
+            raise OAuthHTTPError(urllib2.HTTPError(url, 403, 'Authentication required', {}, StringIO()))
 
         context = {
             'evaluation': evaluation,
@@ -467,4 +466,50 @@ class EvaluationDetailView(SakaiView):
         if context['response_url'].startswith(self.build_url('direct/eval-evaluation/%s/take_eval?' % id)):
             return self.handle_GET(request, context, id)
 
-        return HttpResponseSeeOther(reverse('sakai:evaluation-index') + '?submitted=true')
+        context = {
+            'suppress_evaluations': True,
+            'submitted': True,
+        }
+        return self.render(request, context, 'sakai/evaluation/index')
+
+class AnnouncementView(SakaiView):
+    """
+    Displays the detail of an anouncement
+    """
+
+    @BreadcrumbFactory
+    def breadcrumb(self, request, context, id):
+        if not 'announcement' in context:
+            context = self.initial_context(request, id)
+
+        return Breadcrumb(
+            self.conf.local_name,
+            lazy_parent('index'),
+            context['announcement']['title'],
+            lazy_reverse('announcement', args=[id]),
+        )
+    
+    def initial_context(self, request, id):
+        
+        # Sakai's announcement API is currently broken...
+        #
+        #response = request.urlopen(self.build_url('direct/announcement/%s.json' % id))
+        #return {
+        #    'announcement': simplejson.load(response)
+        #}
+        
+        # Hacky workaround
+        response = simplejson.load(request.urlopen(
+            self.build_url('direct/announcement/user.json')))
+        found = None
+        for announcement in response['announcement_collection']:
+            if announcement['id'] == id:
+                found = announcement
+        if found is None:
+            raise Http404()
+        return {
+            'announcement': found
+        }
+    
+    def handle_GET(self, request, context, id):
+        return self.render(request, context, 'sakai/announcement/detail')
