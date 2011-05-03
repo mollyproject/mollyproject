@@ -80,12 +80,12 @@ class ResultListView(IndexView):
 class ResultDetailView(BaseView):
 
     @BreadcrumbFactory
-    def breadcrumb(self, request, context):
+    def breadcrumb(self, request, context, id):
         return Breadcrumb(
             self.conf.local_name,
             None,
             'Contact search',
-            lazy_reverse('result_detail'),
+            lazy_reverse('result_detail', id),
         )
 
     def handle_GET(self, request, context, id):

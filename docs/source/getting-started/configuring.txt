@@ -52,30 +52,30 @@ The following settings are all required by the Molly project, but can be
 configured freely for Molly to operate normally
 
 * `ADMINS <http://docs.djangoproject.com/en/dev/ref/settings/#admins>`_
-   by default the people defined here will receive logging e-mails and cronjob output
+  by default the people defined here will receive logging e-mails and cronjob output
 * `ADMIN_MEDIA_PREFIX <http://docs.djangoproject.com/en/dev/ref/settings/#admin-media-prefix>`_
 * `DATABASES <http://docs.djangoproject.com/en/dev/ref/settings/#databases>`_
-   note that the database engine should be set to an engine in
-   ``django.contrib.gis``; PostGIS is recommended: ``django.contrib.gis.db.backends.postgis``
+  note that the database engine should be set to an engine in
+  ``django.contrib.gis``; PostGIS is recommended: ``django.contrib.gis.db.backends.postgis``
 * `DEBUG <http://docs.djangoproject.com/en/dev/ref/settings/#debug>`_
 * `LANGUAGE_CODE <http://docs.djangoproject.com/en/dev/ref/settings/#language-code>`_
 * `MANAGERS <http://docs.djangoproject.com/en/dev/ref/settings/#managers>`_
-   Molly gives this setting no special meaning, so it is recommended you set
-   this to the same as ADMINS
+  Molly gives this setting no special meaning, so it is recommended you set
+  this to the same as ADMINS
 * `SITE_ID <http://docs.djangoproject.com/en/dev/ref/settings/#site-id>`_
-   unused in most situations, so leave at 1
+  unused in most situations, so leave at 1
 * `STATIC_ROOT <http://docs.djangoproject.com/en/dev/ref/settings/#static-root>`_
   this is the path to where on disk media for your site is served from. It
-   should be an empty directory, which is populated during the build process.
+  should be an empty directory, which is populated during the build process.
 * `STATIC_URL <http://docs.djangoproject.com/en/dev/ref/settings/#static-url>`_
-   this is the URL to the location where your media is served from (note that
-   Django does not serve media in non-development mode, but relies on your web
-   server to do it, for more information see :doc:`deploying`).
+  this is the URL to the location where your media is served from (note that
+  Django does not serve media in non-development mode, but relies on your web
+  server to do it, for more information see :doc:`deploying`).
 * `TEMPLATE_DEBUG <http://docs.djangoproject.com/en/dev/ref/settings/#template-debug>`_
 * `TIME_ZONE <http://docs.djangoproject.com/en/dev/ref/settings/#time-zone>`_
 * `USE_18N <http://docs.djangoproject.com/en/dev/ref/settings/#use-i18n>`_
-   at present Molly has no i18n support, so this is only used for built-in
-   Django apps (such as the admin panels)
+  at present Molly has no i18n support, so this is only used for built-in
+  Django apps (such as the admin panels)
 
 Required Settings for Molly
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^

@@ -5,7 +5,6 @@ from django.core.urlresolvers import resolve, reverse
 from django.shortcuts import get_object_or_404
 
 from molly.utils.views import BaseView
-from molly.utils.breadcrumbs import NullBreadcrumb
 
 from models import ShortenedURL
 
@@ -40,7 +39,8 @@ class IndexView(BaseView):
             'complex_shorten': ('?' in path) or view_context is None or view_context.get('complex_shorten', False),
         }
 
-    def breadcrumb(self, request, context):
+    @staticmethod
+    def breadcrumb(request, context):
         view, view_context = context['view'], context['view_context']
         view_args, view_kwargs = context['view_args'], context['view_kwargs']
 
@@ -66,7 +66,6 @@ class IndexView(BaseView):
                 context['path'] == index[1],
                 'Shorten link',
             )
-                
 
     def handle_GET(self, request, context):
         try:

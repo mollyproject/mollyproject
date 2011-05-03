@@ -12,25 +12,39 @@ def get_favourites(request):
     metadata
     """
     
-    # Handle the old style of favourites first
-    if 'favourites' in request.session:
-        for url in request.session['favourites']:
-            Favourite(user=request.user, url=url).save()
-        del request.session['favourites']
+    # If the user is anonymous, use sessions, otherwise associate it with the
+    # user
+    if request.user.is_anonymous():
+        favourites = [Favourite(url=url) for url in request.session.get('favourites', [])]
     
-    favourites = Favourite.objects.filter(user=request.user)
+    else:
+        
+        # Handle the old style of favourites first
+        if 'favourites' in request.session:
+            for url in request.session['favourites']:
+                Favourite(user=request.user, url=url).save()
+            del request.session['favourites']
+        
+        favourites = Favourite.objects.filter(user=request.user)
+    
+    # Dedupe and annotate with metadata
     urls = set()
-    
     for favourite in favourites:
         if favourite.url in urls:
-            favourite.delete()
+            if not request.user.is_anonymous():
+                favourite.delete()
+            else:
+                request.session['favourites'].remove(favourite.url)
         else:
             try:
                 view, args, kwargs = resolve(favourite.url)
                 favourite.metadata = view.get_metadata(request, *args, **kwargs)
             except Http404:
-                favourite.delete()
+                if not request.user.is_anonymous():
+                    favourite.delete()
+                else:
+                    request.session['favourites'].remove(favourite.url)
             else:
                 urls.add(favourite.url)
-    
+        
     return favourites

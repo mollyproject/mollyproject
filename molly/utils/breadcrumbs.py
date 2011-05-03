@@ -44,7 +44,8 @@ def BreadcrumbFactory(breadcrumb_func):
 
     return render
 
-def NullBreadcrumb(self, request, context, *args, **kwargs):
+@staticmethod
+def NullBreadcrumb(request, context, *args, **kwargs):
     return None
 
 def lazy_reverse(view_name, *args, **kwargs):
