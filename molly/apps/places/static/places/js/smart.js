@@ -131,13 +131,17 @@ function parse_results(data, nearby){
     $('#poi-category-selector ul:last').removeClass('no-round-bottom')
     capture_outbound();
 }
-    
-function refreshRTI(data){
+
+function getTimestamp(date){   
     function pad2(number) {
         return (number < 10 ? '0' : '') + number
     }
+    return pad2(date.getHours()) + ':' + pad2(date.getMinutes()) + ':' + pad2(date.getSeconds())
+}
+
+function refreshRTI(data){
     var now = new Date();
-    $('.update-time').html(pad2(now.getHours()) + ':' + pad2(now.getMinutes()) + ':' + pad2(now.getSeconds()))
+    $('.update-time').html(getTimestamp(now))
     if (typeof(data.entity.metadata.real_time_information) != 'undefined') {
         rebuildRTI($('#' + data.entity.identifier_scheme + '-' + data.entity.identifier_value), data.entity.metadata.real_time_information)
     }
@@ -215,7 +219,10 @@ function rebuildLDB(elem, data){
     if (data.train_station.metadata.ldb.error) {
         elem.append('<div class="header"><h2>' + data.train_station.title + ' (' + board + ')</h2></div>');
     } else {
-        elem.append('<div class="header"><h2>' + data.train_station.title + ' (' + board + ') - ' + data.train_station.metadata.ldb.generatedAt.slice(11, 19) + '</h2></div>');
+        var today = new Date();
+        // generatedAt comes from the server in UTC - cast to local time
+        var generated = new Date(Date.parse(data.train_station.metadata.ldb.generatedAt) - (today.getTimezoneOffset() * 60000))
+        elem.append('<div class="header"><h2>' + data.train_station.title + ' (' + board + ') - ' + getTimestamp(generated) + '</h2></div>');
     }
     
     if (data.train_station.metadata.ldb.nrccMessages) {

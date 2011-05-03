@@ -76,10 +76,6 @@ function refreshTransport(data){
                 }
             }
         }
-        if (data.nearby[type].results_type == 'Favourite') {
-            $('#' + type + ' .content').addClass('no-round-bottom')
-            $('#' + type).append('<ul class="link-list"><li><a href="/places/nearby/' + data.nearby[type].type.slug + '">View nearby ' + data.nearby[type].type.verbose_name_plural + '</a></li></ul>')
-        }
     }
     
     rebuildLDB($('#ldb'), data)
