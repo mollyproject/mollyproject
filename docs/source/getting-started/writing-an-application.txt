@@ -352,7 +352,7 @@ an attribute to your class called `default_zoom`, e.g.,::
 """"""""""""""""""""
 
 If you would like to make it so that a view can be marked as a
-:doc:`favourite <../ref/favourites>`_, then ``molly.favourites.views.FavouritableView``
+:doc:`favourite <../ref/favourites>`, then ``molly.favourites.views.FavouritableView``
 is available as a base class, which when used as a base adds values to the
 context which are used to add the ability to add/remove favourites on those
 rendered pages::

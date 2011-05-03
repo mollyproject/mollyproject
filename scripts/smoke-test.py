@@ -65,6 +65,8 @@ URLS=[
     '/maps/osm/gpx/foo/',
     '/url-shortener/?path=/',
     '/device-detection/',
+    '/weblearn/',
+    '/weblearn/?force_login',
 ]
 
 def verify_200(url, ua):

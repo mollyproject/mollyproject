@@ -30,9 +30,15 @@
 {% endfor %}
   </ul>
 {% else %}
-  <div class="section-content">
-    There are currently no surveys available to complete.
-  </div>
+  {% if suppress_evaluations %}
+  <ul class="link-list">
+    <li><a href="{% url sakai:evaluation-index %}">Return to survey list</a></li>
+  </ul>
+  {% else %}
+    <div class="section-content">
+      There are currently no surveys available to complete.
+    </div>
+  {% endif %}
 {% endif %}
 </div>
 

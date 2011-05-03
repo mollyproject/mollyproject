@@ -25,6 +25,7 @@ logger = logging.getLogger('core.requests')
 from molly.utils.http import MediaType, HttpResponseSeeOther
 from molly.utils.simplify import (simplify_value, simplify_model,
                                   serialize_to_xml)
+from molly.utils.breadcrumbs import NullBreadcrumb
 
 def renderer(format, mimetypes=(), priority=0):
     """
@@ -98,6 +99,8 @@ class BaseView(object):
 
     ALLOWABLE_METHODS = ('GET', 'POST', 'DELETE', 'HEAD', 'OPTIONS', 'PUT')
 
+    breadcrumb = NullBreadcrumb
+
     def method_not_allowed(self, request):
         return HttpResponseNotAllowed([m for m in self.ALLOWABLE_METHODS
                                        if hasattr(self, 'handle_%s' % m)])
@@ -154,13 +157,13 @@ class BaseView(object):
         else:
             return self.method_not_allowed(request)
 
-    def handle_HEAD(self, request, *args, **kwargs):
+    def handle_HEAD(self, request, context, *args, **kwargs):
         """
         Provides a default HEAD handler that strips the content from the
         response returned by the GET handler.
         """
         if hasattr(self, 'handle_GET'):
-            response = self.handle_GET(request, *args, **kwargs)
+            response = self.handle_GET(request, context, *args, **kwargs)
         else:
             response = self.method_not_acceptable(request)
         response.content = ''

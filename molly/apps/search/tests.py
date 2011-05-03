@@ -47,21 +47,16 @@ class GenericSearchTestCase(unittest.TestCase):
                     elif func_name.startswith('handle_') and func_name[7:].upper() == func_name[7:]:
                         handler_sigs.append( (func_name, getargspec(func)) )
                     elif func_name == 'breadcrumb':
-                        if func is NullBreadcrumb:
+                        if func is BaseView.breadcrumb:
                             breadcrumb_sig = True
                             continue
+                        # If it's not gone through BreadcrumbFactory
+                        elif type(func) == type(BaseView.breadcrumb):
+                            breadcrumb_sig = getargspec(func)
                         else:
                             breadcrumb_sig = getargspec(func.breadcrumb_func)
                     else:
                         continue
-                    
-                    if func_name in view.__dict__:
-                        self.assert_(
-                            isinstance(view.__dict__[func_name], classmethod),
-                            "%s.%s.%s must be a classmethod, not %s" % (
-                                app_name, view_name, func_name, type(view.__dict__[func_name])
-                            )
-                        )
 
                 if not handler_sigs:
                     continue
@@ -81,24 +76,25 @@ class GenericSearchTestCase(unittest.TestCase):
                 )
 
                 for handler_name, argspec in handler_sigs:
-                    self.assertEqual(
-                        fhs, argspec,
-                        'View handler signatures differ for %s.views.%s: %s and %s' % (
-                            app_name, view_name, fhn, handler_name
-                        ),
-                    )
-                    self.assertEqual(
-                        argspec.varargs, None,
-                        "View handler %s.views.%s.%s takes *%s when it shouldn't" % (
-                            app_name, view_name, handler_name, argspec.varargs
-                        ),
-                    )
-                    self.assertEqual(
-                        argspec.keywords, None,
-                        "View handler %s.views.%s.%s takes **%s when it shouldn't" % (
-                            app_name, view_name, handler_name, argspec.keywords
-                        ),
-                    )
+                    if handler_name != 'handle_HEAD':
+                        self.assertEqual(
+                            fhs.args, argspec.args,
+                            'View handler signatures differ for %s.views.%s: %s and %s' % (
+                                app_name, view_name, fhn, handler_name
+                            ),
+                        )
+                    #self.assertEqual(
+                    #    argspec.varargs, None,
+                    #    "View handler %s.views.%s.%s takes *%s when it shouldn't" % (
+                    #        app_name, view_name, handler_name, argspec.varargs
+                    #    ),
+                    #)
+                    #self.assertEqual(
+                    #    argspec.keywords, None,
+                    #    "View handler %s.views.%s.%s takes **%s when it shouldn't" % (
+                    #        app_name, view_name, handler_name, argspec.keywords
+                    #    ),
+                    #)
 
                 if not (initial_context_sig.varargs or initial_context_sig.keywords):
                     self.assertEqual(
@@ -131,11 +127,18 @@ class GenericSearchTestCase(unittest.TestCase):
                     )
                 
                 if breadcrumb_sig != True:
-                    self.assertEqual(
-                        breadcrumb_sig, fhs,
-                        "breadcrumb signature for %s.%s differs from its view handlers (%s, %s)" % (
-                            app_name, view_name, breadcrumb_sig, fhs
+                    if breadcrumb_sig[0][0] != 'self':
+                        fhs = (fhs[0][1:], fhs[1], fhs[2], fhs[3])
+                        self.assertEqual(
+                            breadcrumb_sig, fhs,
+                            "breadcrumb signature for %s.%s differs from its view handlers (%s, %s)" % (
+                                app_name, view_name, breadcrumb_sig, fhs
+                            )
                         )
-                    )
-
-
+                    else:
+                        self.assertEqual(
+                            breadcrumb_sig, fhs,
+                            "breadcrumb signature for %s.%s differs from its view handlers (%s, %s)" % (
+                                app_name, view_name, breadcrumb_sig, fhs
+                            )
+                        )

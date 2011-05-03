@@ -6,6 +6,7 @@ from views import (
     SignupIndexView, SignupSiteView, SignupEventView,
     PollIndexView, PollDetailView,
     EvaluationIndexView, EvaluationDetailView,
+    AnnouncementView
 )
 
 urlpatterns = patterns('',
@@ -36,6 +37,10 @@ urlpatterns = patterns('',
     (r'^surveys/(?P<id>\d+)/$',
         EvaluationDetailView, {},
         'evaluation-detail'),
+
+    (r'^announcements/(?P<id>[^/]+)/$',
+        AnnouncementView, {},
+        'announcement'),
 
     (r'^sites/$',
         SiteView, {},
