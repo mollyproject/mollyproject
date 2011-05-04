@@ -622,7 +622,8 @@ if not options.develop:
     call_in_virtualenv(path, "python %s/manage.py update_wurfl" % site, wait=False)
     call_in_virtualenv(path, "python %s/manage.py generate_markers" % site)
 call_in_virtualenv(path, "python %s/manage.py collectstatic --noinput" % site)
-call_in_virtualenv(path, "python %s/manage.py synccompress" % site, wait=False)
+call_in_virtualenv(path, "python %s/manage.py synccompress" % site)
+call_in_virtualenv(path, "python %s/manage.py generate_cache_manifest" % site)
 call_in_virtualenv(path, "python %s/manage.py create_crontab | crontab" % site)
 print "DONE!"
 
