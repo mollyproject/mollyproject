@@ -221,7 +221,13 @@ function rebuildLDB(elem, data){
     } else {
         var today = new Date();
         // generatedAt comes from the server in UTC - cast to local time
-        var generated = new Date(Date.parse(data.train_station.metadata.ldb.generatedAt) - (today.getTimezoneOffset() * 60000))
+        var generated = Date.UTC(parseInt(data.train_station.metadata.ldb.generatedAt.slice(0,4)),
+                             parseInt(data.train_station.metadata.ldb.generatedAt.slice(5,7)),
+                             parseInt(data.train_station.metadata.ldb.generatedAt.slice(8,10)),
+                             parseInt(data.train_station.metadata.ldb.generatedAt.slice(11,13)),
+                             parseInt(data.train_station.metadata.ldb.generatedAt.slice(14,16)),
+                             parseInt(data.train_station.metadata.ldb.generatedAt.slice(17,19)))
+        generated = new Date(generated - (today.getTimezoneOffset() * 60000))
         elem.append('<div class="header"><h2>' + data.train_station.title + ' (' + board + ') - ' + getTimestamp(generated) + '</h2></div>');
     }
     
