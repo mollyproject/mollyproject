@@ -2,16 +2,16 @@
 
 {% block breadcrumbs %}
 {{ block.super }}
-            <li><a href="{% url rss_index %}">
+            <li><a href="{% url events:index %}">
                 <img src="{{ STATIC_URL }}images/index-icons/rss-bc.png" alt="News"/>
             </a></li>
-            <li><a href="{% url rss_item_list item.feed.slug %}">
+            <li><a href="{% url events:item-list item.feed.slug %}">
                 &hellip;
             </a></li>
 {% endblock %}
 
-{% block pagetitle %}News item{% endblock %}
-{% block title %}News: {{ item.title }}{% endblock %}
+{% block pagetitle %}Event{% endblock %}
+{% block title %}Event: {{ item.title }}{% endblock %}
 
 {% block content %}
 
