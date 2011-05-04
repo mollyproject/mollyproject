@@ -91,7 +91,7 @@ function refreshTransport(data){
 
 function ajaxTransportUpdate(){
     $.ajax({
-        url: window.location.href,
+        url: current_url,
         data: { format: 'json', board: board },
         dataType: 'json',
         success: refreshTransport
