@@ -1,9 +1,19 @@
-import logging, inspect, traceback, hashlib, pprint, datetime
+import logging
+import inspect
+import traceback
+import hashlib
+import pprint
+import datetime
+import sys
 
 from django.http import HttpRequest
 from django.conf import settings
 
 from . import send_email
+
+class StreamHandler(logging.StreamHandler):
+    def filter(self, record):
+        return record.name != 'molly.stats.requests'
 
 class EmailHandler(logging.Handler):
     _NOT_EXTRA = (
@@ -16,9 +26,10 @@ class EmailHandler(logging.Handler):
     class conf:
         from_email = settings.SERVER_EMAIL if hasattr(settings, 'SERVER_EMAIL') else 'molly@localhost'
     
+    def filter(self, record):
+        return record.name != 'molly.stats.requests'
+    
     def emit(self, record):
-        if record.name == 'molly.stats.requests':
-            return
 
         # Recurse up the call stack to find the request that was being
         # processed when this log message was emitted. If none is found,
@@ -67,11 +78,20 @@ class EmailHandler(logging.Handler):
         send_email(request, context, 'utils/log_record.eml', cls=self)
 
 def configure_logging(conf):
-    if settings.DEBUG:
-        return
-
     logger = logging.getLogger()
     
-    handler = EmailHandler()
-    handler.setLevel(logging.WARNING)
+    if settings.DEBUG:
+        # This checks if we're using the dev server - can't log to stderr
+        # in WSGI, even in debug mode
+        # http://stackoverflow.com/questions/1291755/how-can-i-tell-whether-my-django-application-is-running-on-development-server-or
+        # can't do it the preferred way however, as we don't have access to a
+        # request object here
+        if sys.argv[1] == 'runserver':
+            handler = StreamHandler()
+            logger.setLevel(logging.DEBUG)
+        else:
+            return
+    else:
+        handler = EmailHandler()
+        handler.setLevel(logging.WARNING)
     logger.addHandler(handler)
