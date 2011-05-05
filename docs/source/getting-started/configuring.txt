@@ -378,6 +378,18 @@ Sample::
 
     DEBUG_SECURE = DEBUG # There is no default, but this would set it to the same value as the global DEBUG setting
 
+DISTANCE_UNITS
+""""""""""""""
+
+This setting determines how distances are transformed into human-readable units.
+The valid settings here are 'imperial', which uses yards and miles, 'metric'
+which uses metres and kilometres, and 'british', which uses metres and miles.
+This defaults to 'british'.
+
+Sample::
+
+    DISTANCE_UNITS = 'british'
+
 EXTERNAL_IMAGES_DIR
 """""""""""""""""""
 

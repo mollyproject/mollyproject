@@ -9,6 +9,7 @@ from datetime import datetime
 from dateutil.tz import tzutc, tzlocal
 
 from django import template
+from django.conf import settings
 from django.template.defaultfilters import stringfilter
 from django.utils.safestring import SafeUnicode, mark_safe
 
@@ -62,10 +63,29 @@ def humanise_distance(value):
     Takes a distance in metres and returns it in sensible units
     """
     m = int(math.ceil(int(value)/10)*10)
-    if m > 1000:
-        return '%.1f km' % round(float(m) / 1000, 2)
-    else:
-        return '%d m' % m
+    units = getattr(settings, 'DISTANCE_UNITS', 'british')
+    
+    if units == 'metric':
+    
+        if m >= 1000:
+            return '%.1f km' % round(float(m) / 1000, 2)
+        else:
+            return '%d m' % m
+    
+    elif units == 'imperial':
+        
+        yds = int(math.ceil((int(value) * 1.0936133)/10)*10)
+        if yds >= 1200:
+            return '%.1f miles' % round(float(yds) / 5280, 2)
+        else:
+            return '%d yards' % yds
+        
+    elif units == 'british':
+        
+        if m >= 1000:
+            return '%.1f miles' % round(float(m) / 1609.344, 2)
+        else:
+            return '%d m' % m
 
 @register.filter
 def humanise_seconds(seconds):

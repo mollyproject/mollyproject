@@ -117,7 +117,7 @@ function parse_results(data, nearby){
                 $('#poi-category-selector ul:last').append(
                     '<li><a href="' + current_url + 'nearby/' + entity_type.slug + '/">' + 
                     capfirst(entity_type.verbose_name_plural) +
-                    ' <small>(' + entity_type.entities_found + ' within ' + Math.ceil(entity_type.max_distance/10)*10 + 'm)</small>' +
+                    ' <small>(' + entity_type.entities_found + ' within ' + entity_type.max_distance + ')</small>' +
                     '</a></li>')
             } else {
                 $('#poi-category-selector ul:last').append(

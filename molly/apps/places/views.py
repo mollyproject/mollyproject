@@ -16,6 +16,7 @@ from django.template.defaultfilters import capfirst
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 
 from molly.utils.views import BaseView, ZoomableView
+from molly.utils.templatetags.molly_utils import humanise_distance
 from molly.utils.breadcrumbs import *
 from molly.favourites.views import FavouritableView
 from molly.geolocation.views import LocationRequiredView
@@ -106,7 +107,7 @@ class NearbyListView(LocationRequiredView):
                     if (e.distance.m ** 0.75) * (et.entities_found + 1) > 500:
                         del entity_types_lookup[et]
                         continue
-                    et.max_distance = e.distance.m
+                    et.max_distance = humanise_distance(e.distance.m)
                     et.entities_found += 1
                 except KeyError:
                     pass
@@ -253,7 +254,7 @@ class EntityDetailView(ZoomableView, FavouritableView):
         distance, bearing = entity.get_distance_and_bearing_from(user_location)
         additional = '<strong>%s</strong>' % capfirst(entity.primary_type.verbose_name)
         if distance:
-            additional += ', about %dm %s' % (int(math.ceil(distance/10)*10), bearing)
+            additional += ', about %s %s' % (humanise_distance(distance), bearing)
         return {
             'title': entity.title,
             'additional': additional,
