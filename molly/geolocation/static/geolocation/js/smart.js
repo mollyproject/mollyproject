@@ -487,7 +487,11 @@ var geo_position_js=function() {
                                         }
                                         var positionWatchId = provider.watchPosition(_successCallback,errorCallback,options);
                                         var positionWatchTimeout = setTimeout(function(){
-                                            provider.getCurrentLocation(_successCallback,errorCallback,options);
+                                            provider.getCurrentPosition(function(p, timeout){
+                                              provider.clearWatch(positionWatchId);
+                                              positionWatchId = null;
+                                              successCallback(p);
+                                            },errorCallback,$.extend(options, {timeout: 5000}));
                                         }, 5000);
                                     } else {
                                         errorCallback({message: 'There is already a location request pending', code: -1})

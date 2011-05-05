@@ -65,10 +65,7 @@ class IndexView(BaseView):
                 if location:
                     es = et.entities_completion.filter(location__isnull=False).distance(location).order_by('distance')[:count]
                 else:
-                    context[context_key] = {
-                        'results_type': 'Nearby'
-                    }
-                    continue
+                    es = []
             else:
                 es = favourites
             

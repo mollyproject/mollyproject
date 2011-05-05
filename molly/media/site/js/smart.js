@@ -17,6 +17,28 @@ function to_absolute(url) {
     }
 }
 
+function display_loading_screen(){
+    $('body').append('<div id="loading"></div>')
+    $('#loading').height($('html').height())
+    display_spinner()
+}
+
+function display_spinner(){
+    offset = window.innerHeight / 2
+    if (navigator.userAgent.match(/iPhone/i) ||
+        navigator.userAgent.match(/iPod/i) ||
+        navigator.userAgent.match(/iPad/i)) {
+        offset += window.pageYOffset
+    }
+    $('#loading').css('background-position', '50% ' + offset + 'px')
+}
+
+$(window).scroll(display_spinner)
+
+function clear_loading_screen(){
+    $('#loading').remove();
+}
+
 // Callback method that swaps in the asynchronously loaded bits to the page, and fades it in
 function async_load_callback(data, textStatus, xhr) {
     $('body').html(data.body);
@@ -31,11 +53,9 @@ function ajax_failure() {
         .css({'font-size': '20px', 'font-weight': 'bold'})
         .fadeTo('fast', 0.9, function() {
             setTimeout(function() {
-                $('#loading').fadeTo('fast', 0, function () {
-                    $('#loading').remove();
-                });
+                clear_loading_screen();
             }, 1200);
-    });
+        });
 }
 
 function async_load(url, query, meth) {
@@ -45,7 +65,7 @@ function async_load(url, query, meth) {
         return true;
     }
     
-    $('body').append('<div id="loading"></div>')
+    display_loading_screen()
   
     query['format'] = 'fragment';
     $.ajax({

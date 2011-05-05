@@ -11,12 +11,12 @@ $(document).bind('molly-page-change', function(event, url){
     if (url == '/places/') {
         // IndexView
         $('.nearby a').click(function(){
-            $('body').append('<div id="loading"></div>')
+            display_loading_screen()
             $.ajax({
                 url: $(this).attr('href'),
                 data: { format: 'json' },
                 dataType: 'json',
-                success: function(data){parse_results(data, true);$('#loading').remove();},
+                success: function(data){parse_results(data, true);clear_loading_screen();},
                 error: ajax_failure
             })
             return false;
@@ -25,12 +25,12 @@ $(document).bind('molly-page-change', function(event, url){
         $('.nearby a').addClass('has-ajax-handler')
         
         $('.categories a').click(function(){
-            $('body').append('<div id="loading"></div>')
+            display_loading_screen()
             $.ajax({
                 url: $(this).attr('href'),
                 data: { format: 'json' },
                 dataType: 'json',
-                success: function(data){parse_results(data, false);$('#loading').remove();},
+                success: function(data){parse_results(data, false);clear_loading_screen();},
                 error: ajax_failure
             })
             return false;
@@ -42,7 +42,7 @@ $(document).bind('molly-page-change', function(event, url){
     if (url.match(/^\/places\/category\/[^\/;]/)) {
         // Category detail view
         $('li.next a').click(function(){
-            $('body').append('<div id="loading"></div>')
+            display_loading_screen()
             $.ajax({
                 url: $(this).attr('href'),
                 data: { format: 'json' },
@@ -65,7 +65,7 @@ $(document).bind('molly-page-change', function(event, url){
                             $('#category-list li:last').addClass('page-break')
                         }
                     }
-                    $('#loading').remove();
+                    clear_loading_screen()
                 },
                 error: ajax_failure
             })
@@ -89,12 +89,12 @@ $(document).bind('molly-page-change', function(event, url){
                   // spaced correctly
 	
         $('.nearby a').click(function(){
-            $('body').append('<div id="loading"></div>')
+            display_loading_screen()
             $.ajax({
                 url: $(this).attr('href'),
                 data: { format: 'json' },
                 dataType: 'json',
-                success: function(data){parse_results(data, true);$('#loading').remove();},
+                success: function(data){parse_results(data, true);clear_loading_screen();},
                 error: ajax_failure
             })
             return false;
@@ -131,13 +131,17 @@ function parse_results(data, nearby){
     $('#poi-category-selector ul:last').removeClass('no-round-bottom')
     capture_outbound();
 }
-    
-function refreshRTI(data){
+
+function getTimestamp(date){   
     function pad2(number) {
         return (number < 10 ? '0' : '') + number
     }
+    return pad2(date.getHours()) + ':' + pad2(date.getMinutes()) + ':' + pad2(date.getSeconds())
+}
+
+function refreshRTI(data){
     var now = new Date();
-    $('.update-time').html(pad2(now.getHours()) + ':' + pad2(now.getMinutes()) + ':' + pad2(now.getSeconds()))
+    $('.update-time').html(getTimestamp(now))
     if (typeof(data.entity.metadata.real_time_information) != 'undefined') {
         rebuildRTI($('#' + data.entity.identifier_scheme + '-' + data.entity.identifier_value), data.entity.metadata.real_time_information)
     }
@@ -215,7 +219,16 @@ function rebuildLDB(elem, data){
     if (data.train_station.metadata.ldb.error) {
         elem.append('<div class="header"><h2>' + data.train_station.title + ' (' + board + ')</h2></div>');
     } else {
-        elem.append('<div class="header"><h2>' + data.train_station.title + ' (' + board + ') - ' + data.train_station.metadata.ldb.generatedAt.slice(11, 19) + '</h2></div>');
+        var today = new Date();
+        // generatedAt comes from the server in UTC - cast to local time
+        var generated = Date.UTC(parseInt(data.train_station.metadata.ldb.generatedAt.slice(0,4)),
+                             parseInt(data.train_station.metadata.ldb.generatedAt.slice(5,7)),
+                             parseInt(data.train_station.metadata.ldb.generatedAt.slice(8,10)),
+                             parseInt(data.train_station.metadata.ldb.generatedAt.slice(11,13)),
+                             parseInt(data.train_station.metadata.ldb.generatedAt.slice(14,16)),
+                             parseInt(data.train_station.metadata.ldb.generatedAt.slice(17,19)))
+        generated = new Date(generated - (today.getTimezoneOffset() * 60000))
+        elem.append('<div class="header"><h2>' + data.train_station.title + ' (' + board + ') - ' + getTimestamp(generated) + '</h2></div>');
     }
     
     if (data.train_station.metadata.ldb.nrccMessages) {
@@ -330,12 +343,12 @@ function rebuildLDB(elem, data){
 
 function setupLDBButtons(){
     $('.ldb-board').click(function(){
-        $('body').append('<div id="loading"></div>')
+        display_loading_screen()
         $.ajax({
             url: $(this).attr('href'),
             data: { format: 'json' },
             dataType: 'json',
-            success: function(data){rebuildLDB($('#ldb'), data);$('#loading').remove();},
+            success: function(data){rebuildLDB($('#ldb'), data);clear_loading_screen();},
             error: ajax_failure
         })
         return false;
