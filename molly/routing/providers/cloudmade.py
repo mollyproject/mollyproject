@@ -4,9 +4,11 @@ import simplejson
 from django.conf import settings
 from django.contrib.gis.geos import Point
 
+from molly.utils.templatetags.molly_utils import humanise_seconds
+
 CLOUDMADE_URL = 'http://routes.cloudmade.com/%s/api/0.3/' % settings.API_KEYS['cloudmade']
 
-def generate_route(start, end):
+def generate_route(start, end, type):
     """
     Given 2 Points, this will return a route between them. The route consists
     of a dictionary with the following keys:
@@ -27,6 +29,8 @@ def generate_route(start, end):
     @type start: Point
     @param end: The end of the route
     @type end: Point
+    @param type: The type of route to generate (foot, car or bike)
+    @type type: str
     @return: A dictionary containing the route and metadata associated with it
     @rtype: dict
     """
@@ -35,10 +39,9 @@ def generate_route(start, end):
     url = CLOUDMADE_URL + ','.join(
         (','.join(map(str, reversed(start))), # start_point
          ','.join(map(str, reversed(end)))) # end_point
-    ) + '/foot.js' # route_type.format
+    ) + '/%s.js' % type # route_type.format
     
-    json = simplejson.loads(urlopen(url).read())
-    print json
+    json = simplejson.load(urlopen(url))
     
     if json['status'] != 0:
         return {
@@ -56,8 +59,9 @@ def generate_route(start, end):
                 (instruction, length, position, time, length_caption,
                  earth_direction, azimuth, turn_type, turn_angle) = waypoint
             waypoints.append({
-                'instruction': '%s, heading %s for %s (approximately %d seconds)' % (
-                    instruction, earth_direction, length_caption, time),
+                'instruction': '%s, heading %s for %s (taking approximately %s)' % (
+                    instruction, earth_direction, length_caption,
+                    humanise_seconds(time)),
                 'location': points[position]
             })
         

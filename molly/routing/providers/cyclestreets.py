@@ -1,25 +1,10 @@
-ENGINES = dict()
+from urllib2 import urlopen
+import simplejson
 
-import logging
-logger = logging.getLogger('molly.routing')
+from django.conf import settings
+from django.contrib.gis.geos import Point
 
-try:
-    from molly.routing.providers.cloudmade import generate_route as cloudmade
-except ImportError:
-    logger.info('Failed to import Cloudmade routing engine')
-else:
-    ENGINES['foot'] = cloudmade
-    ENGINES['bicycle'] = cloudmade
-    ENGINES['car'] = cloudmade
-
-try:
-    from molly.routing.providers.cyclestreets import generate_route as cyclestreets
-except ImportError:
-    logger.info('Failed to import Cyclestreets routing engine')
-else:
-    ENGINES['bicycle'] = cyclestreets
-
-ALLOWED_ROUTING_TYPES = ENGINES.keys()
+raise ImportError()
 
 def generate_route(start, end, type):
     """
@@ -48,11 +33,4 @@ def generate_route(start, end, type):
     @rtype: dict
     """
     
-    generate_route = ENGINES.get(type)
-    
-    if generate_route is None:
-        return {
-            'error': 'No provider configured'
-        }
-    else:
-        return generate_route(start, end, type)
+    return {'error': 'Not written yet'}

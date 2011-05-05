@@ -23,7 +23,7 @@ from molly.geolocation.views import LocationRequiredView
 from molly.maps import Map
 from molly.maps.osm.models import OSMUpdate
 
-from molly.routing import generate_route
+from molly.routing import generate_route, ALLOWED_ROUTING_TYPES
 
 from molly.apps.places.models import Entity, EntityType
 from molly.apps.places import get_entity, get_point
@@ -560,8 +560,15 @@ class EntityDirectionsView(LocationRequiredView, ZoomableView):
         context = super(EntityDirectionsView, self).initial_context(request)
         entity = get_entity(scheme, value)
         
+        allowed_types = ALLOWED_ROUTING_TYPES
+        type = request.GET.get('type', 'foot')
+        if type not in allowed_types:
+            type = 'foot'
+        
         context.update({
             'entity': entity,
+            'type': type,
+            'allowed_types': allowed_types,
         })
         return context
 
@@ -580,7 +587,8 @@ class EntityDirectionsView(LocationRequiredView, ZoomableView):
         user_location = request.session.get('geolocation:location')
         if context['entity'].location != None:
             context['route'] = generate_route(user_location,
-                                              context['entity'].location)
+                                              context['entity'].location,
+                                              context['type'])
             if not 'error' in context['route']:
                 context['map'] = Map(
                     (context['entity'].location[0],

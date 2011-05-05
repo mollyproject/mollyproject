@@ -1,26 +1,31 @@
-{% extends "places/base.html" %}{% load molly_maps %}
-
-{% block extrahead %}{% include "geolocation/js.html" %}{% endblock extrahead %}
+{% extends "places/base.html" %}{% load molly_maps %}{% load molly_utils %}
 
 {% block content %}
 
 <div class="section">
     <div class="header">
-        <h2>Directions to {{ entity.title }}</h2>
+        <h2>Directions to {{ entity.title }} (by {{ type }})</h2>
+	Show directions for: 
+        {% for type in allowed_types %}
+	    {% comment %} the non-breaking space is to combat a bug in slimmer,
+	                  where it is over zealous in removing the spaces
+			  between the a tags {% endcomment %}
+	   <a href="{% url places:entity-directions entity.identifier_scheme entity.identifier_value %}?type={{ type }}" rel="nofollow">{{ type }}</a>&nbsp;
+	{% endfor %}
         {% include "geolocation/update_location_embed.html" %}
     </div>
     {% if entity.location %}
         {% if route.error %}
-        <div class="note"><div class="bubble">
+        <div class="note"><div class="bubble"><div class="pad-10">
            An error occurred plotting this route: {{ route.error }}.
-        </div></div>
+        </div></div></div>
         {% else %}
             <div class="section-content no-round-bottom">
                 {% render_map map %}
-		<div class="note"><div class="bubble">
-		   This route will take {{ route.total_time }} seconds and cover
-		   {{ route.total_distance }} metres.
-		</div></div>
+		<div class="note"><div class="bubble"><div class="pad-10">
+		   This route will take {{ route.total_time|humanise_seconds }}
+		   and cover {{ route.total_distance|humanise_distance }}.
+		</div></div></div>
             </div>
             <ul class="content-list">
                 {% for waypoint in route.waypoints %}
@@ -36,5 +41,10 @@
         </div></div>
     {% endif %}
 </div>
+
+<div class="note"><div class="bubble"><div class="pad-10">
+   Please note that the route information provided should be
+   followed at your own risk.
+</div></div></div>
 
 {% endblock %}
