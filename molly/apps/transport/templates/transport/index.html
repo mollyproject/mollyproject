@@ -95,7 +95,7 @@
         {% for entity in data.entities %}
             <tr class="sub-section-divider"><th colspan="3"><a href="{{ entity.get_absolute_url }}" style="color:inherit;">
                     {{ entity.title }}
-                    {% if entity.distance %} <small>(about {{ entity.distance.m|round_up_10 }}m {{ entity.bearing }})</small>{% endif %}
+                    {% if entity.distance %} <small>(about {{ entity.distance.m|humanise_distance }} {{ entity.bearing }})</small>{% endif %}
                 </a></th></tr>
             {% if entity.metadata.real_time_information.pip_info %}
                 <tr><td colspan="3">{{ entity.metadata.real_time_information.pip_info|join:"<br/>" }}</td></tr>
