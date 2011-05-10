@@ -36,7 +36,15 @@ def resize_external_image(url, width, timeout=None):
             socket.setdefaulttimeout(timeout)
             response = urllib2.urlopen(request)
             socket.setdefaulttimeout(old_timeout)
-    except (urllib2.HTTPError, urllib2.URLError, httplib.HTTPException):
+    except urllib2.HTTPError as e:
+        if e.code == 501:
+            try:
+                response = urllib2.urlopen(url, timeout=timeout)
+            except (urllib2.HTTPError, urllib2.URLError, httplib.HTTPException):
+                return None
+        else:
+            return None
+    except (urllib2.URLError, httplib.HTTPException):
         return None
 
     # Check whether the image has changed since last we looked at it
