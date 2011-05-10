@@ -90,6 +90,7 @@
 {% block bottom_links %}
 
 {% if device.brand_name == "RIM" %}
+<!-- Blackberry specific -->
   <div style="width:49%; float:left; margin-top:0.1em; margin-bottom:0.2em;">
     <a style="margin:0 0.2em 0 0.4em; background-color:white; padding:0.6em; -webkit-border-radius:0.4em; -moz-border-radius:0.4em; text-align:center; display:block"
        href="{% url feedback:index %}?referer={{ full_path|urlencode }}">Feedback</a>
