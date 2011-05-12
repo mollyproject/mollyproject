@@ -1053,7 +1053,7 @@ class NaptanContentHandler(ContentHandler):
         
         
         entity.save(identifiers=identifiers)
-        entity.all_types.add(entity_type)
+        entity.all_types = (entity_type,)
         
         entity.update_all_types_completion()
         
