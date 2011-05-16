@@ -2,6 +2,13 @@
 
 var current_url = window.location.pathname;
 
+/* This is a work around for the back button being broken in Opera
+ * http://www.opera.com/support/kb/view/827/
+ */
+if (typeof(history.navigationMode)!='undefined') {
+    history.navigationMode = 'compatible';
+}
+
 function to_absolute(url) {
     if (url.match(/https?\:\/\//)) {
         return url;
