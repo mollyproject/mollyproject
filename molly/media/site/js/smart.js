@@ -5,9 +5,7 @@ var current_url = window.location.pathname;
 /* This is a work around for the back button being broken in Opera
  * http://www.opera.com/support/kb/view/827/
  */
-if (typeof(history.navigationMode)!='undefined') {
-    history.navigationMode = 'compatible';
-}
+history.navigationMode = 'compatible';
 
 function to_absolute(url) {
     if (url.match(/https?\:\/\//)) {
@@ -30,6 +28,7 @@ function display_loading_screen(){
     display_spinner()
 }
 
+/* reposition the spinner when the page is scrolled - on iPhone only */
 function display_spinner(){
     offset = window.innerHeight / 2
     if (navigator.userAgent.match(/iPhone/i) ||
@@ -115,19 +114,25 @@ function capture_outbound()  {
         });
 }
 
-$(function() {
-    if (window.location.hash && window.location.hash != current_url) {
-        async_load(window.location.hash.substr(1), {}, "GET");
+$(window).load(function() {
+    function check_hash_change(){
+        if (window.location.hash && window.location.hash.substr(1) != current_url) {
+            async_load(window.location.hash.substr(1), {}, "GET");
+        }
+        if (typeof(window.opera)!='undefined'){
+            setTimeout(check_hash_change, 100);
+        }
     }
+    check_hash_change();
     $(document).trigger('molly-page-change', [current_url])
     capture_outbound();
     
     if (!!(window.history && history.pushState)) {
-      window.addEventListener('popstate', function(e){
+      window.addEventListener('popstate', function(e, state){
         if (current_url != window.location.pathname) {
           async_load(window.location.href, {}, 'GET');
         }
-      })
+      }, false)
     }
 });
 

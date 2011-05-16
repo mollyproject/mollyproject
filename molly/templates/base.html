@@ -133,8 +133,7 @@
  <script type="text/javascript">
  var _gaq = _gaq || [];
  _gaq.push(['_setAccount', '{{ google_analytics|safe }}']);
- $(document).bind('molly-page-change', function(){
- _gaq.push(['_trackPageview', current_url]);
+ $(document).bind('molly-page-change', function(e, url){_gaq.push(['_trackPageview', url]);});
  (function() {
    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
