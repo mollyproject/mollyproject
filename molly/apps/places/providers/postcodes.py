@@ -11,7 +11,7 @@ import re
 from django.contrib.gis.geos import Point
 
 from molly.apps.places.providers import BaseMapsProvider
-from molly.apps.places.models import Entity, EntityType, Source
+from molly.apps.places.models import Entity, EntityType, Source, EntityTypeCategory
 
 from molly.conf.settings import batch
 
@@ -85,8 +85,9 @@ class PostcodesMapsProvider(BaseMapsProvider):
             entity.update_all_types_completion()
 
     def _get_entity_type(self):
-        entity_type, created = EntityType.objects.get_or_create(slug='post-code')
         category, _ = EntityTypeCategory.objects.get_or_create(name='Uncategorised')
+        entity_type, created = EntityType.objects.get_or_create(
+            slug='post-code', category=category)
         entity_type.slug = 'post-code'
         entity_type.article = 'a'
         entity_type.verbose_name = 'postcode'
@@ -94,7 +95,6 @@ class PostcodesMapsProvider(BaseMapsProvider):
         if created:
             entity_type.show_in_nearby_list = False
             entity_type.show_in_category_list = False
-        entity_type.category = category
         entity_type.save()
         return entity_type
 

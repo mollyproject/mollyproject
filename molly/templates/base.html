@@ -87,24 +87,40 @@
 {% endblock %}
 
 {% if not hide_feedback_link %}
-<div style="margin-top:15px">
+<div style="margin-top:0.9em">
 {% block bottom_links %}
-  <div style="width:50%; float:left; margin-top: 2px; margin-bottom:2px;">
-    <a style="margin:0 2px 0 10px; background-color:white; padding:10px; -webkit-border-radius:6px; -moz-border-radius:6px; text-align:center; display:block"
-       href="{% url feedback:index %}?referer={{ full_path|urlencode }}">Provide feedback for this page</a>
+
+{% if device.brand_name == "RIM" %}
+<!-- Blackberry specific -->
+  <div style="width:49%; float:left; margin-top:0.1em; margin-bottom:0.2em;">
+    <a style="margin:0 0.2em 0 0.4em; background-color:white; padding:0.6em; -webkit-border-radius:0.4em; -moz-border-radius:0.4em; text-align:center; display:block"
+       href="{% url feedback:index %}?referer={{ full_path|urlencode }}">Feedback</a>
   </div>
-  <div style="width:50%; float:left; margin-top: 2px; margin-bottom:2px;">
-    <a style="margin:0 10px 0 2px; background-color:white; padding:10px; -webkit-border-radius:6px; -moz-border-radius:6px; text-align:center; display:block"
-       href="{% url url_shortener:index %}?path={{ full_path|urlencode }}">2D barcode and shortened link</a>
+  <div style="width:49%; float:right; margin-top: 0.1em; margin-bottom:0.2em;">
+    <a style="margin:0 0.2em 0 0.2em; background-color:white; padding:0.6em; -webkit-border-radius:0.4em; -moz-border-radius:0.4em; text-align:center; display:block"
+       href="{% url url_shortener:index %}?path={{ full_path|urlencode }}">Share</a>
   </div>
-  
+{% else %}
+  <div style="width:50%; float:left; margin-top:0.1em; margin-bottom:0.2em;">
+    <a style="margin:0 0.2em 0 0.2em; background-color:white; padding:0.6em; -webkit-border-radius:0.4em; -moz-border-radius:0.4em; text-align:center; display:block"
+       href="{% url feedback:index %}?referer={{ full_path|urlencode }}">Feedback</a>
+  </div>
+  <div style="width:50%; float:left; margin-top: 0.1em; margin-bottom:0.2em;">
+    <a style="margin:0 0.2em 0 0.4em; background-color:white; padding:0.6em; -webkit-border-radius:0.4em; -moz-border-radius:0.4em; text-align:center; display:block"
+       href="{% url url_shortener:index %}?path={{ full_path|urlencode }}">Share</a>
+  </div>
+
+{% endif %}  
+
 {% if "feature_vote"|app_is_loaded or "feature-suggestions"|app_is_loaded %}
-  <div style="width:100%; float:left; margin-top: 2px; margin-bottom:10px;">
-    <a style="margin:0 10px 0 10px; background-color:white; padding:10px; -webkit-border-radius:6px; -moz-border-radius:6px; text-align:center; display:block"
-       href="{% url feature_vote:index %}">Have an idea? Suggest a feature!</a>
+  <div style="width:100%; float:left; margin-top: 0.1em; margin-bottom:0.4em;">
+    <a style="margin:0 0.2em 0 0.2em; background-color:white; padding:0.6em; -webkit-border-radius:0.4em; -moz-border-radius:0.4em; text-align:center; display:block"
+       href="{% url feature_vote:index %}">Suggest a feature</a>
   </div>
 {% endif %}
   <div style="clear:both"> </div>
+
+
 
 {% endblock %}
 </div>
