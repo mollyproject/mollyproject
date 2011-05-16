@@ -1351,8 +1351,12 @@ class NaptanMapsProvider(BaseMapsProvider):
 
     def __init__(self, method, areas=None, username=None, password=None):
         self._username, self._password = username, password
+        self._method = method
+        
         # Add 910 because we always want to import railway stations
-        self._method, self._areas = method, areas + ('910',)
+        if areas is not None:
+            areas += ('910',)
+        self._areas = areas
 
     @batch('%d 10 * * mon' % random.randint(0, 59))
     def import_data(self, metadata, output):
