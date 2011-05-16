@@ -73,11 +73,10 @@ class Application(object):
         for key in self.kwargs:
             if key != 'provider' and key.endswith('provider'):
                 provider = self.kwargs[key]
-                if isinstance(provider, Provider):
-                    providers.append(provider())
-                else:
-                    providers.append(Provider(provider)())
-                self.kwargs[key] = provider
+                if not isinstance(provider, Provider):
+                    provider = Provider(provider)
+                providers.append(provider())
+                self.kwargs[key] = provider()
         self.conf = type(self.local_name.capitalize()+'Conf', (ApplicationConf,), self.kwargs)()
 
         for provider in self.conf.providers:
