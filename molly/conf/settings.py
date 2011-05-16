@@ -67,9 +67,16 @@ class Application(object):
             'urls': self._get_urls_property(bases),
             'has_urlconf': self._module_exists(self.urlconf),
         })
+        
+        # Handle "other" providers - i.e., singletons which end with
+        # 'provider' and perhaps provide specialised providers
         for key in self.kwargs:
             if key != 'provider' and key.endswith('provider'):
-                self.kwargs[key] = self.kwargs[key]()
+                provider = self.kwargs[key]
+                if not isinstance(provider, Provider):
+                    provider = Provider(provider)
+                providers.append(provider())
+                self.kwargs[key] = provider()
         self.conf = type(self.local_name.capitalize()+'Conf', (ApplicationConf,), self.kwargs)()
 
         for provider in self.conf.providers:
