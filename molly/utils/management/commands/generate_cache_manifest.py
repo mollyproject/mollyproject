@@ -22,7 +22,7 @@ class Command(NoArgsCommand):
                     if 'desktop' in dirs: dirs.remove('desktop')
                     if 'markers' in dirs: dirs.remove('markers')
                 
-                if root == os.path.join(setting.STATIC_ROOT, 'touchmaplite', 'images'):
+                if root == os.path.join(settings.STATIC_ROOT, 'touchmaplite', 'images'):
                     # Don't cache touchmaplite markers, we don't use them
                     if 'markers' in dirs: dirs.remove('markers')
                     if 'iui' in dirs: dirs.remove('iui')
@@ -34,5 +34,7 @@ class Command(NoArgsCommand):
                         continue
                     
                     # Don't cache ourselves!
+                    if file == 'cache.manifest':
+                        continue
                     
                     print >>cache_manifest, "%s%s/%s" % (settings.STATIC_URL, url, file)
