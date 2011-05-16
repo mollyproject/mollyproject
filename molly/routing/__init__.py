@@ -1,7 +1,7 @@
 ENGINES = dict()
 
 import logging
-logger = logging.getLogger('molly.routing')
+logger = logging.getLogger(__name__)
 
 try:
     from molly.routing.providers.cloudmade import generate_route as cloudmade

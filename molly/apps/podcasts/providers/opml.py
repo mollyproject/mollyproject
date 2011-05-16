@@ -1,6 +1,10 @@
 from xml.etree import ElementTree as ET
 from datetime import datetime
-import urllib, re, email, random, logging
+import urllib
+import re
+import email
+import random
+import logging
 import traceback
 
 from django.template.defaultfilters import slugify

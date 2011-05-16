@@ -6,7 +6,7 @@ import simplejson
 from molly.geolocation.providers import BaseGeolocationProvider
 from molly.apps.places.models import Entity
 
-logger = logging.getLogger('molly.contrib.oxford.providers.geolocation')
+logger = logging.getLogger(__name__)
 
 class PlacesGeolocationProvider(BaseGeolocationProvider):
     def __init__(self, search_identifiers = None):

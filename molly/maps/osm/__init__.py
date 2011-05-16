@@ -26,7 +26,7 @@ MARKER_COLORS = (
 
 MARKER_RANGE = xrange(1, 100)
 
-logger = logging.getLogger('molly.osm.generation')
+logger = logging.getLogger(__name__)
 
 def get_or_create_map(generator, args):
     """

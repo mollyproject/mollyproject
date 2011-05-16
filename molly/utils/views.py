@@ -1,7 +1,8 @@
 from email.utils import formatdate
 from time import mktime
 from inspect import isfunction
-import logging, itertools
+import logging
+import itertools
 from datetime import datetime, date
 from slimmer.slimmer import xhtml_slimmer
 from urlparse import urlparse, urlunparse, parse_qs
@@ -20,7 +21,7 @@ from django.shortcuts import render_to_response
 from django.core.urlresolvers import reverse, resolve, NoReverseMatch
 from django.conf import settings
 
-logger = logging.getLogger('core.requests')
+logger = logging.getLogger(__name__)
 
 from molly.utils.http import MediaType, HttpResponseSeeOther
 from molly.utils.simplify import (simplify_value, simplify_model,

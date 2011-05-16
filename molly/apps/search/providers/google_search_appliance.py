@@ -1,4 +1,7 @@
-import urllib, urllib2, logging, re
+import urllib
+import urllib2
+import logging
+import re
 
 import xml.etree
 import xml.parsers.expat
@@ -10,7 +13,7 @@ from django.core.urlresolvers import Resolver404, reverse
 
 from molly.apps.search.providers import BaseSearchProvider
 
-logger = logging.getLogger("molly.providers.search.google_search_appliance")
+logger = logging.getLogger(__name__)
 
 class GSASearchProvider(BaseSearchProvider):
 

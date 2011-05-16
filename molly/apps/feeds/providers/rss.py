@@ -1,5 +1,12 @@
 from datetime import datetime, timedelta
-import urllib, re, email, feedparser, time, random, traceback, logging
+import urllib
+import re
+import email
+import feedparser
+import time
+import random
+import traceback
+import logging
 
 from molly.external_media import sanitise_html
 from molly.conf.settings import batch
@@ -13,7 +20,7 @@ def parse_date(s):
 def struct_to_datetime(s):
     return datetime.fromtimestamp(time.mktime(s))
 
-logger = logging.getLogger('molly.apps.providers.feeds.rss')
+logger = logging.getLogger(__name__)
 
 class RSSFeedsProvider(BaseFeedsProvider):
     verbose_name = 'RSS'

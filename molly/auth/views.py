@@ -1,4 +1,7 @@
-import urllib, urllib2, urlparse, logging
+import urllib
+import urllib2
+import urlparse
+import logging
 from datetime import datetime, timedelta
 
 from django.conf import settings

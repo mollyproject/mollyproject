@@ -5,7 +5,7 @@ from molly.apps.places.models import Entity
 import suds, suds.sudsobject
 from suds.sax.element import Element
 
-logger = logging.getLogger('molly.providers.apps.places.ldb')
+logger = logging.getLogger(__name__)
 
 from molly.apps.places.providers import BaseMapsProvider
 

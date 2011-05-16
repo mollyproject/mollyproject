@@ -3,17 +3,17 @@ import logging
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
 
-logger = logging.getLogger("molly.apps.service_status.views")
+logger = logging.getLogger(__name__)
 
 class IndexView(BaseView):
     """
-    View to display the OUCS service status information.
+    View to display the service status information.
     """
 
     def get_metadata(self, request):
         return {
             'title': 'Service Status',
-            'additional': 'Check whether OUCS and OLIS services are available',
+            'additional': 'Check whether IT services are available',
         }
 
     @BreadcrumbFactory
