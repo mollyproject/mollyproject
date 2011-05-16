@@ -1,5 +1,7 @@
 from __future__ import absolute_import
-import urlparse, urllib2
+import urlparse
+import urllib
+import urllib2
 
 if not hasattr(urlparse, 'parse_qs'):
     import cgi
@@ -8,11 +10,10 @@ if not hasattr(urlparse, 'parse_qs'):
 
 from oauth import oauth
 
-from django.http import HttpResponseRedirect, Http404, HttpResponseBadRequest
+from django.http import Http404, HttpResponseBadRequest
 from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied, ImproperlyConfigured
 
-from molly.utils.http import HttpResponseSeeOther
 from molly.utils.views import BaseView
 
 from molly.auth import unify_users
@@ -52,8 +53,13 @@ class OAuthView(BaseView):
 
     def authorize(self, request, *args, **kwargs):
 
-        callback_uri = request.build_absolute_uri()
-
+        scheme, netloc, path, params, query, fragment = urlparse.urlparse(request.build_absolute_uri())
+        args = urlparse.parse_qs(query)
+        if 'format' in args:
+            del args['format']
+        query = urllib.urlencode(args)
+        callback_uri = urlparse.urlunparse((scheme, netloc, path, params, query, fragment))
+        
         oauth_request = oauth.OAuthRequest.from_consumer_and_token(
             request.consumer,
             callback=callback_uri,
@@ -95,7 +101,7 @@ class OAuthView(BaseView):
             }
             return self.render(request, context, 'auth/oauth/authorize')
         else:
-            return HttpResponseSeeOther(oauth_request.to_url())
+            return self.redirect(oauth_request.to_url(), request, 'seeother')
 
     def access_token(self, request, *args, **kwargs):
         token_type, request_token = ExternalServiceToken.get(request.user, self.conf.local_name, (None, None))
@@ -124,7 +130,7 @@ class OAuthView(BaseView):
         self.add_user_identifiers(request)
         unify_users(request)
 
-        return HttpResponseRedirect(request.path)
+        return self.redirect(request.path, request)
 
     def handle_error(self, request, exception, token_type='access', *args, **kwargs):
         body = exception.read()

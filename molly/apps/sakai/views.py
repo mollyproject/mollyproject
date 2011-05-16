@@ -16,7 +16,6 @@ from molly.auth.models import UserIdentifier
 from molly.auth.oauth.clients import OAuthHTTPError
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
-from molly.utils.http import HttpResponseSeeOther
 from molly.utils.xslt import transform, add_children_to_context
 
 def parse_iso_8601(s):
@@ -209,7 +208,7 @@ class SignupEventView(SakaiView):
             if e.code != 204:
                 raise
 
-        return HttpResponseSeeOther(request.path)
+        return self.redirect(request.path, request, 'seeother')
 
 class SiteView(SakaiView):
     force_auth = True
@@ -352,7 +351,7 @@ class PollDetailView(SakaiView):
 
     def handle_POST(self, request, context, id):
         if not context['poll']['mayVote']:
-            return HttpResponseSeeOther(request.path)
+            return self.redirect(request.path, request, 'seeother')
         
         # Check poll boundaries
         if len(request.POST.getlist('pollOption')) > context['poll']['maxOptions'] or \
@@ -375,7 +374,7 @@ class PollDetailView(SakaiView):
             else:
                 raise
 
-        return HttpResponseSeeOther(request.path)
+        return self.redirect(request.path, request, 'seeother')
 
 class EvaluationIndexView(SakaiView):
     force_auth = True
@@ -465,7 +464,6 @@ class EvaluationDetailView(SakaiView):
     def handle_POST(self, request, context, id):
         if context['response_url'].startswith(self.build_url('direct/eval-evaluation/%s/take_eval?' % id)):
             return self.handle_GET(request, context, id)
-
         context = {
             'suppress_evaluations': True,
             'submitted': True,

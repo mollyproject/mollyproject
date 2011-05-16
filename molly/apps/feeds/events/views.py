@@ -1,7 +1,7 @@
 from xml.sax.saxutils import escape
 from datetime import date
 from django.core.paginator import Paginator, EmptyPage, InvalidPage
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 
 from molly.utils.views import BaseView

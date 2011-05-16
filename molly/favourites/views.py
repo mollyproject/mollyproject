@@ -1,4 +1,4 @@
-from django.http import HttpResponseRedirect, Http404
+from django.http import Http404
 from django.core.urlresolvers import resolve
 
 from molly.utils.views import BaseView
@@ -67,7 +67,7 @@ class IndexView(BaseView):
                 except Http404:
                     # This means that they tried to save a URL that doesn't exist
                     # or isn't on our site
-                    return HttpResponseRedirect(lazy_reverse('favourites:index'))
+                    return self.redirect(lazy_reverse('favourites:index'), request)
                 else:
                     if request.user.is_anonymous():
                         if 'favourites' not in request.session:
@@ -102,8 +102,8 @@ class IndexView(BaseView):
             
             # else the source
             else:
-                return HttpResponseRedirect(request.POST['URL'])
+                return self.redirect(request.POST['URL'], request)
             
         else:
             # Missing POST data, probably a bad request
-            return HttpResponseRedirect(lazy_reverse('favourites:index'))
+            return self.redirect(lazy_reverse('favourites:index'), request)

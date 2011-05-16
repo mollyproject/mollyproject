@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse
 from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.template import loader, Context, RequestContext
@@ -45,7 +45,7 @@ class IndexView(BaseView):
             and not internal_referer
             and not settings.DEBUG
             and conf.has_app('molly.apps.desktop')):
-            return HttpResponseRedirect(reverse('desktop:index'))
+            return self.redirect(reverse('desktop:index'), request)
         
         # Add any one-off messages to be shown to this user
         messages = []
@@ -95,7 +95,7 @@ class IndexView(BaseView):
         elif no_desktop_about  == 'false':
             request.session['home:desktop_about_shown'] = False
 
-        return HttpResponseRedirect(reverse('home:index'))
+        return self.redirect(reverse('home:index'), request)
 
 class StaticDetailView(BaseView):
     @BreadcrumbFactory
@@ -152,4 +152,4 @@ class UserMessageView(BaseView):
         if context['formset'].is_valid():
             context['formset'].save()
 
-        return HttpResponseRedirect(reverse('home:messages'))
+        return self.redirect(reverse('home:messages'), request)

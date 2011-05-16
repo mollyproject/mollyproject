@@ -4,15 +4,15 @@
     <h2>Car Park Information</h2>
   </div>
   <div class="section-content">
-    <div class="bubble pad-5">
+    <div class="bubble pad-5 park-and-ride">
       {% if not entity.metadata.park_and_ride.unavailable %}
       Spaces: {{ entity.metadata.park_and_ride.spaces }} / {{ entity.metadata.park_and_ride.capacity }}
-      <div style="width:100%;border: 1px solid #7c7c7c;height: 5px; background-color:#00ff00;">
+      <div class="capacity-bar">
         <div style="width: {{ entity.metadata.park_and_ride.percentage }}%; height:5px;background-color: #ff0000;">&nbsp;</div>
       </div>
       {% else %}
-      <p style="text-align:center;"><em>Space information currently unavailable</em></p>
-      Spaces: ? / {{ entity.metadata.park_and_ride.capacity }}
+      <p><em>Space information currently unavailable</em></p>
+      <p>Spaces: ? / {{ entity.metadata.park_and_ride.capacity }}</p>
       {% endif %}
     </div>
   </div>

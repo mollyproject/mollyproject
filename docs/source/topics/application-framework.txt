@@ -116,7 +116,7 @@ There are a few keyword arguments with special meanings:
 ``providers``
     An iterable of :class:`~molly.conf.settings.Provider` instances to
     load providers from.
-``provider``
+``provider`` (or any keyword ending with provider)
     A shorthand for ``providers = [`provider`]``.
 ``display_to_user``
     A :class:`bool` used by :mod:`molly.apps.home` to determine whether a link

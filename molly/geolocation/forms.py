@@ -1,3 +1,5 @@
+import re
+
 from django import forms
 from django.forms.util import ErrorList
 
@@ -16,6 +18,14 @@ METHOD_CHOICES = (
     ('error', 'Error updating location'),
     ('favourite', 'Manually selected from favourite location list'),
 )
+
+# From http://en.wikipedia.org/wiki/Postcodes_in_the_United_Kingdom
+POSTCODE_RE = r'(((A[BL]|B[ABDHLNRSTX]?|C[ABFHMORTVW]|D[ADEGHLNTY]|E[HNX]?|' + \
+              r'F[KY]|G[LUY]?|H[ADGPRSUX]|I[GMPV]|JE|K[ATWY]|L[ADELNSU]?|M[' + \
+              r'EKL]?|N[EGNPRW]?|O[LX]|P[AEHLOR]|R[GHM]|S[AEGKLMNOPRSTY]?|T' + \
+              r'[ADFNQRSW]|UB|W[ADFNRSV]|YO|ZE)[1-9]?[0-9]|((E|N|NW|SE|SW|W' + \
+              r')1|EC[1-4]|WC[12])[A-HJKMNPR-Y]|(SW|W)([2-9]|[1-9][0-9])|EC' + \
+              r'[1-9][0-9]) [0-9][ABD-HJLNP-UW-Z]{2})'
 
 class LocationUpdateForm(forms.Form):
     latitude = forms.FloatField(required=False)
@@ -45,7 +55,11 @@ class LocationUpdateForm(forms.Form):
                 if len(results) > 0:
                     cleaned_data.update(results[0])
                     cleaned_data['longitude'], cleaned_data['latitude'] = cleaned_data['location']
-                    cleaned_data['alternatives'] = results[1:]
+                    # Ignore alternatives for postcodes
+                    if not re.match(POSTCODE_RE, cleaned_data['name'].upper()):
+                        cleaned_data['alternatives'] = results[1:]
+                    else:
+                        cleaned_data['alternatives'] = []
                 else:
                     raise forms.ValidationError("Unable to find a location that matches '%s'." % cleaned_data['name'])
 

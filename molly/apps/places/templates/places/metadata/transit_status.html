@@ -1,0 +1,25 @@
+{% if transit_status %}    
+    <div class="section">
+        <div class="header">
+            <h2>{{ transit_status.service_name }} line status</h2>
+        </div>
+        <table class="content">
+            <thead>
+                <tr>
+                    <th>Line</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for status in transit_status.line_statuses %}
+                <tr class="{{ status.line_id }}">
+                    <td class="line-name">{{ status.line_name }}</td>
+                    <td class="line-status">{{ status.status }}
+                    {% if status.disruption_reason %}<br/>{{ status.disruption_reason }}{% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endif %}
