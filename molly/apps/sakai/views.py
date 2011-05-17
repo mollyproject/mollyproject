@@ -1,6 +1,8 @@
-from datetime import datetime
-
-import urllib, urllib2, simplejson, urlparse
+from datetime import datetime, timedelta
+import urllib
+import urllib2
+import simplejson
+import urlparse
 from lxml import etree
 from dateutil.tz import tzutc
 import dateutil.parser
@@ -80,7 +82,7 @@ class IndexView(SakaiView):
                 # to reauthenticate
                 raise OAuthHTTPError(urllib2.HTTPError('', 401, '', '', StringIO()))
         
-        return self.render(request, context, 'sakai/index')
+        return self.render(request, context, 'sakai/index', expires=timedelta(days=-1))
 
 class SignupIndexView(SakaiView):
     force_auth = True
@@ -109,7 +111,7 @@ class SignupIndexView(SakaiView):
             request.secure_session['sakai_site_titles'] = {}
         for site_id, title in context['sites']:
             request.secure_session['sakai_site_titles'][site_id] = title
-        return self.render(request, context, 'sakai/signup/index')
+        return self.render(request, context, 'sakai/signup/index', expires=timedelta(days=-1))
 
 class SignupSiteView(SakaiView):
     def initial_context(self, request, site):
@@ -145,7 +147,7 @@ class SignupSiteView(SakaiView):
         )
 
     def handle_GET(self, request, context, site):
-        return self.render(request, context, 'sakai/signup/list')
+        return self.render(request, context, 'sakai/signup/list', expires=timedelta(days=-1))
 
 class SignupEventView(SakaiView):
     def initial_context(self, request, site, event_id):
@@ -193,7 +195,7 @@ class SignupEventView(SakaiView):
                                           RequestContext(request, context))
             response.status_code = 403
             return response
-        return self.render(request, context, 'sakai/signup/detail')
+        return self.render(request, context, 'sakai/signup/detail', expires=timedelta(days=-1))
 
     def handle_POST(self, request, context, site, event_id):
         try:
@@ -216,7 +218,7 @@ class SiteView(SakaiView):
     def handle_GET(self, request, context):
         sites = etree.parse(request.opener.open(self.build_url('direct/site.xml')))
         context['sites'] = [e.find('entityTitle').text for e in sites.getroot()]
-        return self.render(request, context, 'sakai/sites')
+        return self.render(request, context, 'sakai/sites', expires=timedelta(days=-1))
 
 class DirectView(SakaiView):
     @BreadcrumbFactory
@@ -231,7 +233,7 @@ class DirectView(SakaiView):
     def handle_GET(self, request, context):
         context['user_details'] = simplejson.load(
             request.opener.open(self.build_url('/direct/user/current.json')))
-        return self.render(request, context, 'sakai/direct/index')
+        return self.render(request, context, 'sakai/direct/index', expires=timedelta(days=-1))
 
 def annotate_poll(poll):
     """
@@ -275,7 +277,7 @@ class PollIndexView(SakaiView):
         )
 
     def handle_GET(self, request, context):
-        return self.render(request, context, 'sakai/poll/index')
+        return self.render(request, context, 'sakai/poll/index', expires=timedelta(days=-1))
 
 class PollDetailView(SakaiView):
     def initial_context(self, request, id):
@@ -347,7 +349,7 @@ class PollDetailView(SakaiView):
                                           RequestContext(request, context))
             response.status_code = 403
             return response
-        return self.render(request, context, 'sakai/poll/detail')
+        return self.render(request, context, 'sakai/poll/detail', expires=timedelta(days=-1))
 
     def handle_POST(self, request, context, id):
         if not context['poll']['mayVote']:
@@ -409,7 +411,7 @@ class EvaluationIndexView(SakaiView):
         }
 
     def handle_GET(self, request, context):
-        return self.render(request, context, 'sakai/evaluation/index')
+        return self.render(request, context, 'sakai/evaluation/index', expires=timedelta(days=-1))
 
 class EvaluationDetailView(SakaiView):
     
@@ -457,9 +459,9 @@ class EvaluationDetailView(SakaiView):
                 'breadcrumbs': context['breadcrumbs'],
                 'id': id,
             }
-            return self.render(request, context, 'sakai/evaluation/closed')
+            return self.render(request, context, 'sakai/evaluation/closed', expires=timedelta(days=-1))
 
-        return self.render(request, context, 'sakai/evaluation/detail')
+        return self.render(request, context, 'sakai/evaluation/detail', expires=timedelta(days=-1))
 
     def handle_POST(self, request, context, id):
         if context['response_url'].startswith(self.build_url('direct/eval-evaluation/%s/take_eval?' % id)):
@@ -468,7 +470,7 @@ class EvaluationDetailView(SakaiView):
             'suppress_evaluations': True,
             'submitted': True,
         }
-        return self.render(request, context, 'sakai/evaluation/index')
+        return self.render(request, context, 'sakai/evaluation/index', expires=timedelta(days=-1))
 
 class AnnouncementView(SakaiView):
     """
@@ -510,4 +512,4 @@ class AnnouncementView(SakaiView):
         }
     
     def handle_GET(self, request, context, id):
-        return self.render(request, context, 'sakai/announcement/detail')
+        return self.render(request, context, 'sakai/announcement/detail', expires=timedelta(days=-1))

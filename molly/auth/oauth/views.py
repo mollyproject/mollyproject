@@ -2,6 +2,7 @@ from __future__ import absolute_import
 import urlparse
 import urllib
 import urllib2
+from datetime import timedelta
 
 if not hasattr(urlparse, 'parse_qs'):
     import cgi
@@ -99,7 +100,7 @@ class OAuthView(BaseView):
                     'Authorization required',
                 ),
             }
-            return self.render(request, context, 'auth/oauth/authorize')
+            return self.render(request, context, 'auth/oauth/authorize', expires=timedelta(days=-1))
         else:
             return self.redirect(oauth_request.to_url(), request, 'seeother')
 
@@ -163,7 +164,7 @@ class OAuthView(BaseView):
             'token_type': token_type,
             'service_name': self.conf.service_name,
         }
-        return self.render(request, context, 'auth/oauth/error')
+        return self.render(request, context, 'auth/oauth/error', expires=timedelta(days=-1))
 
     def add_consumer_to_request(self, request):
 
