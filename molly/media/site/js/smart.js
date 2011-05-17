@@ -110,6 +110,12 @@ function capture_outbound()  {
             }
             return async_load($(this).attr('action'), datamap, $(this).attr('method'));
         });
+    $('form:not(.has-ajax-handler) button[type="submit"]').click(function(e){
+        var form = $(this).parents('form');
+        $(form).find('input[type="hidden"][name="' + $(this).attr('name') + '"]').remove()
+        $(form).append('<input type="hidden" name="' + $(this).attr('name') + '" value="' + $(this).attr('value') + '" />')
+        return true;
+    })
     
     // Intercept all links with an href
     $('a[href]:not(.has-ajax-handler)').unbind('click')
