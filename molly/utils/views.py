@@ -269,7 +269,6 @@ class BaseView(object):
                         mktime((datetime.now() + expires).timetuple()))
                 return response
         else:
-            raise Exception()
             tried_mimetypes = list(itertools.chain(*[r.mimetypes
                                                      for r in renderers]))
             response = HttpResponse(
