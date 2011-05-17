@@ -93,7 +93,7 @@ setup(
         "django-staticfiles>=0.9",
         "South",
         "suds",
-        "slimmer",
+        "django-slimmer",
     ],
     dependency_links = [
         'http://pylevenshtein.googlecode.com/files/python-Levenshtein-0.10.1.tar.bz2#egg=python-Levenshtein'
