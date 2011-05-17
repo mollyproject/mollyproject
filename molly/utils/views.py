@@ -197,7 +197,7 @@ class BaseView(object):
         if 'format' in request.REQUEST:
             uri = urlparse(uri)
             args = []
-            for k, vs in parse_qs(query).items():
+            for k, vs in parse_qs(uri.query).items():
                 if k == 'format':
                     continue
                 else:
@@ -210,7 +210,7 @@ class BaseView(object):
                 uri = urlunparse((uri.scheme, uri.netloc, uri.path, uri.params,
                                   urlencode(args), uri.fragment))
                 return self.render(request, {'redirect': uri}, None)
-            args.append = ('format', request.REQUEST['format'])
+            args.append(('format', request.REQUEST['format']))
             uri = urlunparse((uri.scheme, uri.netloc, uri.path, uri.params,
                               urlencode(args), uri.fragment))
         
