@@ -196,16 +196,21 @@ class BaseView(object):
         """
         if 'format' in request.REQUEST:
             uri = urlparse(uri)
-            args = parse_qs(uri.query)
+            args = []
+            for k, vs in parse_qs(query).items():
+                if k == 'format':
+                    continue
+                else:
+                    for v in vs:
+                        args.append((k, v))
             if (uri.netloc != request.META.get('HTTP_HOST') and \
                 uri.netloc != '') or type == 'secure':
                 # This makes sure we never cross http/https boundaries with AJAX
                 # requests or try to make an off-site AJAX request
-                if 'format' in args: del args['format']
                 uri = urlunparse((uri.scheme, uri.netloc, uri.path, uri.params,
                                   urlencode(args), uri.fragment))
                 return self.render(request, {'redirect': uri}, None)
-            args['format'] = request.REQUEST['format']
+            args.append = ('format', request.REQUEST['format'])
             uri = urlunparse((uri.scheme, uri.netloc, uri.path, uri.params,
                               urlencode(args), uri.fragment))
         
@@ -354,9 +359,14 @@ class BaseView(object):
         
         scheme, netloc, path, params, query, fragment = \
             urlparse(request.get_full_path())
-        args = parse_qs(query)
-        if 'format' in args:
-            del args['format']
+        args = []
+        for k, vs in parse_qs(query).items():
+            if k == 'format':
+                continue
+            else:
+                for v in vs:
+                    args.append((k, v))
+        
         query = urlencode(args)
         uri = urlunparse((scheme, netloc, path, params, query, fragment))
         
