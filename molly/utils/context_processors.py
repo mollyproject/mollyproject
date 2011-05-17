@@ -1,3 +1,6 @@
+from urlparse import urlparse, urlunparse, parse_qs
+from urllib import urlencode
+
 from django.conf import settings
 
 def site_name(request):
@@ -6,8 +9,19 @@ def site_name(request):
     }
     
 def full_path(request):
+    scheme, netloc, path, params, query, fragment = \
+        urlparse(request.get_full_path())
+    args = []
+    for k, vs in parse_qs(query).items():
+        if k == 'format':
+            continue
+        else:
+            for v in vs:
+                args.append((k, v))
+    query = urlencode(args)
+    uri = urlunparse((scheme, netloc, path, params, query, fragment))
     return {
-        'full_path': request.get_full_path(),
+        'full_path': uri,
     }
 
 def google_analytics(request):

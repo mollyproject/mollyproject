@@ -366,7 +366,6 @@ class BaseView(object):
             else:
                 for v in vs:
                     args.append((k, v))
-        
         query = urlencode(args)
         uri = urlunparse((scheme, netloc, path, params, query, fragment))
         
