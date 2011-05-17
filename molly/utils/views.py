@@ -373,20 +373,18 @@ class BaseView(object):
             title = xhtml_slimmer(body['whole_title'])
         except Exception:
             logger.warn('Slimmer failed to slim title', exc_info=True)
-        else:
             title = body['whole_title']
         
         try:
-            body = xhtml_slimmer(body['body'])
+            pagebody = xhtml_slimmer(body['body'])
         except Exception:
             logger.warn('Slimmer failed to slim body', exc_info=True)
-        else:
-            body = body['body']
+            pagebody = body['body']
         
         return HttpResponse(
             simplejson.dumps({
                 'uri': uri,
-                'body': body,
+                'body': pagebody,
                 'title': title,
             }),
             mimetype="application/json")
