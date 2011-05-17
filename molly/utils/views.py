@@ -369,11 +369,25 @@ class BaseView(object):
         query = urlencode(args)
         uri = urlunparse((scheme, netloc, path, params, query, fragment))
         
+        try:
+            title = xhtml_slimmer(body['whole_title'])
+        except Exception:
+            logger.warn('Slimmer failed to slim title', exc_info=True)
+        else:
+            title = body['whole_title']
+        
+        try:
+            body = xhtml_slimmer(body['body'])
+        except Exception:
+            logger.warn('Slimmer failed to slim body', exc_info=True)
+        else:
+            body = body['body']
+        
         return HttpResponse(
             simplejson.dumps({
                 'uri': uri,
-                'body': xhtml_slimmer(body['body']),
-                'title': xhtml_slimmer(body['whole_title']),
+                'body': body,
+                'title': title,
             }),
             mimetype="application/json")
 
