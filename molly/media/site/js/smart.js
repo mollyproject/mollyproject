@@ -80,6 +80,10 @@ function async_load(url, query, meth) {
             'type': meth,
             'dataType': 'json',
             'success': function(data, textStatus, xhr) {
+                if (data.redirect) {
+                    window.location = data.redirect;
+                    return true;
+                }
                 current_url = data.uri;
                 // Detect if history API is available - http://diveintohtml5.org/detect.html#history
                 if (!!(window.history && history.pushState)) {
