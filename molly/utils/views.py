@@ -269,14 +269,22 @@ class BaseView(object):
                         mktime((datetime.now() + expires).timetuple()))
                 return response
         else:
-            tried_mimetypes = list(itertools.chain(*[r.mimetypes
-                                                     for r in renderers]))
-            response = HttpResponse(
-                "Your Accept header didn't contain any supported media ranges."+
-                "\n\nSupported ranges are:\n\n * %s\n" % '\n * '.join(
-                    sorted('%s (%s)' % (f[0].value, f[1].format) for f in
-                    self.FORMATS_BY_MIMETYPE if not f[0] in tried_mimetypes)),
-            mimetype="text/plain")
+            if 'format' not in request.REQUEST:
+                tried_mimetypes = list(itertools.chain(*[r.mimetypes
+                                                         for r in renderers]))
+                response = HttpResponse(
+                  "Your Accept header didn't contain any supported media " +
+                  "ranges.\n\nSupported ranges are:\n\n * %s\n" % '\n * '.join(
+                      sorted('%s (%s)' % (f[0].value, f[1].format) for f in
+                      self.FORMATS_BY_MIMETYPE if not f[0] in tried_mimetypes)),
+                mimetype="text/plain")
+            else:
+                print self.FORMATS
+                response = HttpResponse(
+                  "Unable to render this document in this format.\n\n"+
+                  "Supported formats are:\n\n * %s\n" \
+                                % '\n * '.join(self.FORMATS.keys()),
+                  mimetype="text/plain")
             response.status_code = 406 # Not Acceptable
             return response
 
