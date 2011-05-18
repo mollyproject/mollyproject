@@ -44,7 +44,8 @@ class IndexView(BaseView):
             and not request.GET.get('preview') == 'true'
             and not internal_referer
             and not settings.DEBUG
-            and conf.has_app('molly.apps.desktop')):
+            and conf.has_app('molly.apps.desktop')
+            and request.REQUEST.get('format') is None):
             return self.redirect(reverse('desktop:index'), request)
         
         # Add any one-off messages to be shown to this user
