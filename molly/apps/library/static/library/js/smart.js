@@ -40,7 +40,6 @@ function handleLibraryAJAX(data){
     $('.result-number').html($('#item-list li').length)
 }
 
-
 $(document).bind('molly-page-change', function(event, url){
     
     if (url == '/library/search/') {
@@ -57,4 +56,4 @@ $(document).bind('molly-page-change', function(event, url){
         $('a.next').addClass('has-ajax-handler')
     }
     
-})
+});

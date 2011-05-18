@@ -197,13 +197,21 @@ class BaseView(object):
         """
         if 'format' in request.REQUEST:
             uri = urlparse(uri)
+            args = []
+            for k, vs in parse_qs(uri.query).items():
+                if k == 'format':
+                    continue
+                else:
+                    for v in vs:
+                        args.append((k, v))
             if (uri.netloc != request.META.get('HTTP_HOST') and \
                 uri.netloc != '') or type == 'secure':
                 # This makes sure we never cross http/https boundaries with AJAX
                 # requests or try to make an off-site AJAX request
-                return self.render(request, {'redirect': uri.geturl()}, None)
-            args = parse_qs(uri.query)
-            args['format'] = request.REQUEST['format']
+                uri = urlunparse((uri.scheme, uri.netloc, uri.path, uri.params,
+                                  urlencode(args), uri.fragment))
+                return self.render(request, {'redirect': uri}, None)
+            args.append(('format', request.REQUEST['format']))
             uri = urlunparse((uri.scheme, uri.netloc, uri.path, uri.params,
                               urlencode(args), uri.fragment))
         
@@ -262,15 +270,22 @@ class BaseView(object):
                         mktime((datetime.now() + expires).timetuple()))
                 return response
         else:
-            raise Exception()
-            tried_mimetypes = list(itertools.chain(*[r.mimetypes
-                                                     for r in renderers]))
-            response = HttpResponse(
-                "Your Accept header didn't contain any supported media ranges."+
-                "\n\nSupported ranges are:\n\n * %s\n" % '\n * '.join(
-                    sorted('%s (%s)' % (f[0].value, f[1].format) for f in
-                    self.FORMATS_BY_MIMETYPE if not f[0] in tried_mimetypes)),
-            mimetype="text/plain")
+            if 'format' not in request.REQUEST:
+                tried_mimetypes = list(itertools.chain(*[r.mimetypes
+                                                         for r in renderers]))
+                response = HttpResponse(
+                  "Your Accept header didn't contain any supported media " +
+                  "ranges.\n\nSupported ranges are:\n\n * %s\n" % '\n * '.join(
+                      sorted('%s (%s)' % (f[0].value, f[1].format) for f in
+                      self.FORMATS_BY_MIMETYPE if not f[0] in tried_mimetypes)),
+                mimetype="text/plain")
+            else:
+                print self.FORMATS
+                response = HttpResponse(
+                  "Unable to render this document in this format.\n\n"+
+                  "Supported formats are:\n\n * %s\n" \
+                                % '\n * '.join(self.FORMATS.keys()),
+                  mimetype="text/plain")
             response.status_code = 406 # Not Acceptable
             return response
 
@@ -352,17 +367,33 @@ class BaseView(object):
         
         scheme, netloc, path, params, query, fragment = \
             urlparse(request.get_full_path())
-        args = parse_qs(query)
-        if 'format' in args:
-            del args['format']
+        args = []
+        for k, vs in parse_qs(query).items():
+            if k == 'format':
+                continue
+            else:
+                for v in vs:
+                    args.append((k, v))
         query = urlencode(args)
         uri = urlunparse((scheme, netloc, path, params, query, fragment))
+        
+        try:
+            title = xhtml_slimmer(body['whole_title'])
+        except Exception:
+            logger.warn('Slimmer failed to slim title', exc_info=True)
+            title = body['whole_title']
+        
+        try:
+            pagebody = xhtml_slimmer(body['body'])
+        except Exception:
+            logger.warn('Slimmer failed to slim body', exc_info=True)
+            pagebody = body['body']
         
         return HttpResponse(
             simplejson.dumps({
                 'uri': uri,
-                'body': xhtml_slimmer(body['body']),
-                'title': xhtml_slimmer(body['whole_title']),
+                'body': pagebody,
+                'title': title,
             }),
             mimetype="application/json")
 

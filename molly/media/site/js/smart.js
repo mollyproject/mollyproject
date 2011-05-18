@@ -2,6 +2,11 @@
 
 var current_url = window.location.pathname;
 
+/* This is a work around for the back button being broken in Opera
+ * http://www.opera.com/support/kb/view/827/
+ */
+history.navigationMode = 'compatible';
+
 function to_absolute(url) {
     if (url.match(/https?\:\/\//)) {
         return url;
@@ -23,6 +28,7 @@ function display_loading_screen(){
     display_spinner()
 }
 
+/* reposition the spinner when the page is scrolled - on iPhone only */
 function display_spinner(){
     offset = window.innerHeight / 2
     if (navigator.userAgent.match(/iPhone/i) ||
@@ -74,6 +80,10 @@ function async_load(url, query, meth) {
             'type': meth,
             'dataType': 'json',
             'success': function(data, textStatus, xhr) {
+                if (data.redirect) {
+                    window.location = data.redirect;
+                    return true;
+                }
                 current_url = data.uri;
                 // Detect if history API is available - http://diveintohtml5.org/detect.html#history
                 if (!!(window.history && history.pushState)) {
@@ -100,6 +110,12 @@ function capture_outbound()  {
             }
             return async_load($(this).attr('action'), datamap, $(this).attr('method'));
         });
+    $('form:not(.has-ajax-handler) button[type="submit"]').click(function(e){
+        var form = $(this).parents('form');
+        $(form).find('input[type="hidden"][name="' + $(this).attr('name') + '"]').remove()
+        $(form).append('<input type="hidden" name="' + $(this).attr('name') + '" value="' + $(this).attr('value') + '" />')
+        return true;
+    })
     
     // Intercept all links with an href
     $('a[href]:not(.has-ajax-handler)').unbind('click')
@@ -108,19 +124,25 @@ function capture_outbound()  {
         });
 }
 
-$(function() {
-    if (window.location.hash && window.location.hash != current_url) {
-        async_load(window.location.hash.substr(1), {}, "GET");
+$(window).load(function() {
+    function check_hash_change(){
+        if (window.location.hash && window.location.hash.substr(1) != current_url) {
+            async_load(window.location.hash.substr(1), {}, "GET");
+        }
+        if (typeof(window.opera)!='undefined'){
+            setTimeout(check_hash_change, 100);
+        }
     }
+    check_hash_change();
     $(document).trigger('molly-page-change', [current_url])
     capture_outbound();
     
     if (!!(window.history && history.pushState)) {
-      window.addEventListener('popstate', function(e){
+      window.addEventListener('popstate', function(e, state){
         if (current_url != window.location.pathname) {
           async_load(window.location.href, {}, 'GET');
         }
-      })
+      }, false)
     }
 });
 

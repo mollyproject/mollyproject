@@ -126,7 +126,7 @@ class ACISLiveMapsProvider(BaseMapsProvider):
                               parser = etree.HTMLParser())
         except (TypeError, IOError):
             rows = []
-            pip_info = None
+            pip_info = []
         except NoACISLiveInstanceException:
             return
         else:
@@ -145,9 +145,9 @@ class ACISLiveMapsProvider(BaseMapsProvider):
                                           messages_page)
                     pip_info = filter(lambda pip: pip != '&nbsp;', pip_info)
                 else:
-                    pip_info = None
+                    pip_info = []
             except:
-                pip_info = None
+                pip_info = []
 
         services = {}
         for row in rows:
