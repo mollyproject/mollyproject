@@ -1,10 +1,14 @@
-import itertools, datetime
+import itertools
+import datetime
+from logging import getLogger
 
 from lxml import etree
 
 from django.contrib.gis.geos import Point
 from django.core.paginator import Page
 from django.db import models
+
+logger = getLogger(__name__)
 
 class DateUnicode(unicode): pass
 class DateTimeUnicode(unicode): pass
@@ -28,6 +32,7 @@ def simplify_value(value):
             try:
                 out[new_key] = simplify_value(value[key])
             except NotImplementedError:
+                logger.warn('Could not simplify a value', exc_info=True)
                 pass
         return out
     elif isinstance(value, (list, tuple, set, frozenset)):
