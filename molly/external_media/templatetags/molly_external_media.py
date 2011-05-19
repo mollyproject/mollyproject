@@ -1,9 +1,12 @@
+from logging import getLogger
+
 from django import template
 
 from molly.external_media import resize_external_image
 
 register = template.Library()
 
+logger = getLogger(__name__)
 
 @register.tag(name='external_image')
 def external_image(parser, token):
@@ -41,6 +44,7 @@ class ExternalImageNode(template.Node):
         try:
             eis = resize_external_image(url, width)
         except IOError:
+            logger.warn('Resizing external image failed', exc_info=True)
             eis = None
 
         if self.just_url:
