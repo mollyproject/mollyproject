@@ -25,8 +25,8 @@ function handleLibraryAJAX(data){
         $('a.next').remove()
     }
     for (i in data.page.objects) {
-        item = data.page.objects[i]
-        $('#item-list').append('<li><a href="/library/item:' + item.control_number + '">' +
+        var item = data.page.objects[i]
+        $('#item-list').append('<li><a href="/library/item:' + item.control_number + '/">' +
                                item.title + 
                                '</a></li>')
         if (item.author != null) $('#item-list li:last a').append('<br/><small><strong>Author:</strong> ' + item.author + '</small>')
@@ -42,7 +42,7 @@ function handleLibraryAJAX(data){
 
 $(document).bind('molly-page-change', function(event, url){
     
-    if (url == '/library/search/') {
+    if (url.match(/^\/library\/search\//)) {
         $('a.next').click(function(){
             $.ajax({
                 url: $(this).attr('href'),

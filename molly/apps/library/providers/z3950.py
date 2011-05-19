@@ -27,6 +27,7 @@ class SearchResult(LibrarySearchResult):
         return {
             '_type': 'z3950.Item',
             '_pk': self.control_number,
+            'control_number': self.control_number,
             'title': self.title,
             'publisher': self.publisher,
             'author': self.author,
