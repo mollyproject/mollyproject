@@ -144,13 +144,15 @@ class USMARCSearchResult(SearchResult):
     edition = _metadata_property(USM_EDITION)
     copies = property(lambda self: len(self.metadata[self.USM_LOCATION]))
     holding_libraries = property(lambda self: len(self.libraries))
-
+    
+    @property
     def isbns(self):
         if self.USM_ISBN in self.metadata:
             return [a.get('a', ["%s (invalid)" % a.get('z', ['Unknown'])[0]])[0] for a in self.metadata[self.USM_ISBN]]
         else:
             return []
 
+    @property
     def issns(self):
         if self.USM_ISSN in self.metadata:
             return [a['a'][0] for a in self.metadata[self.USM_ISSN]]

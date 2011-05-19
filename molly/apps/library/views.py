@@ -91,6 +91,11 @@ class SearchDetailView(BaseView):
         
         page = paginator.page(page_index)
         
+        # Add cover image
+        if hasattr(self.conf, 'additional_metadata_provider'):
+            
+            self.conf.additional_metadata_provider.annotate(page.object_list)
+        
         # Render results page
         context.update({
             'removed': query.removed,

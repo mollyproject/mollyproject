@@ -1,4 +1,4 @@
-class BaseLibrarySearchProvider:
+class BaseLibrarySearchProvider(object):
     """
     Abstract class implementing the interface for a provider for the library app
     """
@@ -22,3 +22,19 @@ class BaseLibrarySearchProvider:
         pass
 
 from z3950 import Z3950
+
+class BaseMetadataProvider(object):
+    """
+    Abstract class implementing the interface for a provider which fetches
+    book covers
+    """
+    
+    def annotate(self, books):
+        """
+        @param books: The books to be annotated
+        @type books: [LibrarySearchResult]
+        @rtype: None
+        """
+        pass
+
+from google import GoogleBooksProvider
