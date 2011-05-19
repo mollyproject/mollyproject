@@ -34,8 +34,8 @@ class SearchResult(LibrarySearchResult):
             'edition': self.edition,
             'copies': self.copies,
             'holding_libraries': self.holding_libraries,
-            'isbns': simplify_value(self.isbns()),
-            'issns': simplify_value(self.issns()),
+            'isbns': simplify_value(self.isbns),
+            'issns': simplify_value(self.issns),
             'holdings': simplify_value(self.libraries),
         }
 
