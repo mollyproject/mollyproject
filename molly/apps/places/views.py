@@ -5,6 +5,7 @@ from itertools import chain
 import simplejson
 import copy
 import math
+from datetime import timedelta
 
 from suds import WebFault
 

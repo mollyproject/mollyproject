@@ -1,4 +1,5 @@
 import urllib
+from datetime import timedelta
 
 from django.conf import settings
 from django.core.urlresolvers import reverse

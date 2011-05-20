@@ -1,4 +1,5 @@
 import urllib
+from datetime import timedelta
 from xml.etree import ElementTree as ET
 
 from django.http import HttpResponse, Http404

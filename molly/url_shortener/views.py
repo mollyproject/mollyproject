@@ -1,4 +1,6 @@
-import random, re
+import random
+import re
+from datetime import timedelta
 
 from django.http import Http404
 from django.core.urlresolvers import resolve, reverse

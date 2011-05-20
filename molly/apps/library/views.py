@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from django.core.paginator import Paginator
 from django.http import Http404
 

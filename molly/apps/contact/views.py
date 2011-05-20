@@ -1,6 +1,7 @@
 import simplejson
 import hashlib
 import urllib2
+from datetime import timedelta
 
 from django.http import HttpResponse
 
