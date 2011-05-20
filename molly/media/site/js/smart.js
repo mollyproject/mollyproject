@@ -129,7 +129,7 @@ $(window).load(function() {
         if (window.location.hash && window.location.hash.substr(1) != current_url) {
             async_load(window.location.hash.substr(1), {}, "GET");
         }
-        if (typeof(window.opera)!='undefined'){
+        if (!!!(window.history && history.pushState)) {
             setTimeout(check_hash_change, 100);
         }
     }
