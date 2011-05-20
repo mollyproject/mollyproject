@@ -1,6 +1,8 @@
+from datetime import timedelta
 from xml.sax.saxutils import escape
+
 from django.core.paginator import Paginator, EmptyPage, InvalidPage
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 
 from molly.utils.views import BaseView
@@ -24,7 +26,8 @@ class IndexView(BaseView):
     def handle_GET(self, request, context):
         feeds = Feed.news.all()
         context['feeds'] = feeds
-        return self.render(request, context, 'feeds/news/index')
+        return self.render(request, context, 'feeds/news/index',
+                           expires=timedelta(days=7))
 
 class ItemListView(BaseView):
     def get_metadata(self, request, slug):

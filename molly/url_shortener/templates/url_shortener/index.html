@@ -13,6 +13,18 @@
     <img class="qr-code" src="http://chart.apis.google.com/chart?cht=qr&amp;chs=200x200&amp;chld=L|1&amp;chl={{ url|urlencode }}" style="width:100%; max-width:200px" />
   </p>
 
+<!-- Facebook, Twitter, and Email sharing icons-->
+
+<p>Click on the links below to share this page</p>
+
+<ul id="transport-links">
+<li class="transport-link"><a href="http://www.facebook.com/share.php?u={{ url }}"><img src="{{ STATIC_URL }}site/images/icons/facebook2.png" border="0"/></a></li>
+<li class="transport-link"><a href="http://twitter.com/home?status={% if page_title %}{{ page_title }} on site_name{% endif %} {{ url }}"><img src="{{ STATIC_URL }}site/images/icons/twitter2.png" border="0"/></a></li>
+<li class="transport-link"><a href="mailto:?subject={% if page_title %}{{ page_title }} From site_name{% endif %}&body={% if page_title %}{{ page_title }} From site_name{% endif %} {{ url }}"><img src="{{ STATIC_URL }}site/images/icons/email2.png" border="0"/></a></li>
+</ul>
+
+<!-- end sharing -->
+
   <p>You may wish to <a href="{{ path }}">go back whence you came</a>.</p>
 
 {% if use_javascript %}

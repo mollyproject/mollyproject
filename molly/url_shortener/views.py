@@ -1,6 +1,8 @@
-import random, re
+import random
+import re
+from datetime import timedelta
 
-from django.http import HttpResponsePermanentRedirect, Http404
+from django.http import Http404
 from django.core.urlresolvers import resolve, reverse
 from django.shortcuts import get_object_or_404
 
@@ -74,7 +76,7 @@ class IndexView(BaseView):
             return self.invalid_path(request, context)
 
         if IndexView in getattr(context['view'], '__mro__', ()):
-            return HttpResponsePermanentRedirect(path)
+            return self.redirect(path, request, 'perm')
 
         context['shortened_url'], created = ShortenedURL.objects.get_or_create(path=path)
 
@@ -90,4 +92,5 @@ class IndexView(BaseView):
 
         context['url'] = request.build_absolute_uri('/' + context['shortened_url'].slug)
 
-        return self.render(request, context, 'url_shortener/index')
+        return self.render(request, context, 'url_shortener/index',
+                           expires=timedelta(days=365))

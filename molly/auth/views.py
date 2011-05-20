@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from django.conf import settings
 from django.contrib.auth import logout
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponse
 from django.forms.util import ErrorList
 
 from molly.utils.views import BaseView
@@ -70,13 +70,13 @@ class TimedOutView(BaseView):
             for key in request.secure_session.keys():
                 del request.secure_session[key]
             request.secure_session['is_secure'] = True
-            return HttpResponseRedirect('.')
+            return self.redirect('.', request)
         elif 'reauthenticate' in request.POST and context['has_pin']:
             valid_pin = request.POST.get('pin') == request.secure_session['pin']
             if valid_pin:
                 # Reauthenticating brings the inactivity measure to zero
                 request.secure_session['last_accessed'] = datetime.now()
-                return HttpResponseRedirect('.')
+                return self.redirect('.', request)
             else:
                 context['incorrect_pin'] = True
                 return self.render(request, context, 'auth/timed_out')
@@ -133,7 +133,7 @@ class IndexView(SecureView):
             if hasattr(form, 'save'):
                 form.save()
         
-        return HttpResponseRedirect('.')
+        return self.redirect('.', request)
         
     
 class ClearSessionView(SecureView):
@@ -158,6 +158,6 @@ class ClearSessionView(SecureView):
         UserSession.objects.filter(secure_session_key = request.secure_session.session_key).delete()
         logout(request)
         if context['return_url']:
-            return HttpResponseRedirect(context['return_url'])
+            return self.redirect(context['return_url'], request)
         else:
-            return HttpResponseRedirect('.')
+            return self.redirect('.', request)

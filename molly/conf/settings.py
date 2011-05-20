@@ -36,8 +36,11 @@ class Application(object):
         kwargs['display_to_user'] = kwargs.get('display_to_user', True)
 
         self.providers = kwargs.pop('providers', ())
-        if 'provider' in kwargs:
-            self.providers += (kwargs.pop('provider'),)
+        for key in kwargs.copy():
+            if key == 'provider':
+                self.providers += (kwargs.pop(key),)
+            elif key.endswith('provider'):
+                self.providers += (kwargs[key],)
 
     def get(self):
         if self.conf:
@@ -64,6 +67,16 @@ class Application(object):
             'urls': self._get_urls_property(bases),
             'has_urlconf': self._module_exists(self.urlconf),
         })
+        
+        # Handle "other" providers - i.e., singletons which end with
+        # 'provider' and perhaps provide specialised providers
+        for key in self.kwargs:
+            if key != 'provider' and key.endswith('provider'):
+                provider = self.kwargs[key]
+                if not isinstance(provider, Provider):
+                    provider = Provider(provider)
+                providers.append(provider())
+                self.kwargs[key] = provider()
         self.conf = type(self.local_name.capitalize()+'Conf', (ApplicationConf,), self.kwargs)()
 
         for provider in self.conf.providers:

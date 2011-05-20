@@ -1,7 +1,5 @@
 {% extends "places/base.html" %}{% load molly_utils %}{% load molly_search %}
 
-{% block extrahead %}{% include "geolocation/js.html" %}{% endblock extrahead %}
-
 {% block content %}
 
 {# Places Search #}
@@ -31,14 +29,14 @@
 
 
 {# Points of Interest #}
-<div class="section">
+<div class="section" id="poi-category-selector">
 <div class="header">
   <h2>Points of Interest</h2>
   {% include "geolocation/update_location_embed.html" %}
 </div>
-  <ul class="link-list">
-    <li><a href="{% url places:nearby-list %}">Nearby</a></li>
-    <li class="round-bottom"><a href="{% url places:category-list %}">By Category</a></li>
+  <ul class="link-list category-list">
+    <li class="nearby"><a href="{% url places:nearby-list %}">Nearby</a></li>
+    <li class="categories"><a href="{% url places:category-list %}">By Category</a></li>
   </ul>
 </div>
 {# End Points of Interest #}

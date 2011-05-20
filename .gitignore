@@ -6,4 +6,4 @@ local/
 molly.egg-info/
 dist/
 molly/wurfl/wurfl_data.py
-
+*.komodoproject

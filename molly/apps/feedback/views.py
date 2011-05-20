@@ -1,7 +1,7 @@
 import urllib
+from datetime import timedelta
 
 from django.conf import settings
-from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 
 from molly.utils.views import BaseView
@@ -9,7 +9,6 @@ from molly.utils.breadcrumbs import BreadcrumbFactory, Breadcrumb, lazy_reverse
 from molly.utils import send_email
 
 from forms import FeedbackForm
-
 
 class IndexView(BaseView):
 
@@ -28,7 +27,8 @@ class IndexView(BaseView):
            'sent': request.GET.get('sent') == 'true',
            'referer': request.GET.get('referer', ''),
         })
-        return self.render(request, context, 'feedback/index')
+        return self.render(request, context, 'feedback/index',
+                           expires=timedelta(days=365))
 
     def handle_POST(self, request, context):
         form = context['feedback_form']
@@ -45,8 +45,8 @@ class IndexView(BaseView):
                 'referer': request.POST.get('referer', ''),
             })
 
-            return HttpResponseRedirect('%s?%s' %
-                                        (reverse('feedback:index'), qs))
+            return self.redirect('%s?%s' % (reverse('feedback:index'), qs),
+                                 request)
 
         else:
             return self.handle_GET(request, context)

@@ -596,8 +596,7 @@ APPLICATIONS = [
     ),
     """ % (ask('What is your Sakai OAuth secret?', compulsory=True), url)
     
-    # Places - always, start with some default nearby-entity-types, configure more
-    # later, no associations, configure more later
+    # Places - no associations, configure more later
     # ACIS Live? y/n
     # BBC TPEG y/n - UK wide or limit to county?
     # LDB - do you have a token?
@@ -691,17 +690,6 @@ APPLICATIONS = [
         tpeg_zone = ask('Which travel news area would you like to import?')
     config += """
         ],
-        nearby_entity_types = (
-            ('Transport', (
-                'bicycle-parking', 'bus-stop', 'car-park', 'park-and-ride',
-                'taxi-rank', 'rail-station')),
-            ('Amenities', (
-                'atm', 'bank', 'bench', 'medical', 'post-box', 'post-office',
-                'public-library', 'recycling', 'bar', 'food', 'pub')),
-            ('Leisure', (
-                'cinema', 'theatre', 'museum', 'park', 'swimming-pool',
-                'sports-centre', 'punt-hire')),
-        ),
 
     ),
     """
@@ -716,9 +704,9 @@ APPLICATIONS = [
         config += "        train_station = 'crs:%s'," % ask('What is the CRS code of the rail station to show?', compulsory=True)
         config += """
         nearby = {
-            'park_and_rides': ('park-and-ride', 5, True, False),
-            'bus_stops': ('bus-stop', 5, False, True),
+            'bus_stops': ('bus-stop', 5),
         },
+        #transit_status_provider = 'molly.apps.transport.providers.TubeStatusProvider',
     """
         if use_tpeg:
             config += "        travel_alerts = True,"

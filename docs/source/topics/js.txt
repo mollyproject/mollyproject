@@ -1,0 +1,82 @@
+JavaScript with Molly
+=====================
+
+Molly uses device detection to decide 
+
+Adding JavaScript to your app
+-----------------------------
+
+The single most important thing to remember when adding JS functionality to your
+app is that of graceful degradation. Not all devices that Molly supports support
+JS - the :doc:`supported_devices` page gives the full breakdown.
+
+Molly comes with JQuery 1.2.6 (Symbian 9.4 struggles on newer versions), so this
+is available for you to use if you would like.
+
+Putting JavaScript into page headers is not supported, as this will not work
+when the page is asynchronously loaded. All JavaScript must be put in a file
+called `static/APP/js/smart.js` (where `APP` is the name of your application
+package), which will be included automatically on every page of the site, as
+well as being minified and collated into one large file when served.
+
+As your JS will be loaded on every page, it is important not to do anything that
+may interfere with other pages. The section below covers this in more detail.
+
+JavaScript with the asynchronous page loading framework
+-------------------------------------------------------
+
+Because of the AJAX added to Molly in 1.1, JavaScript is not quite as straight
+forward as it used to be. As multiple pages can be loaded and rendered within
+the same session using AJAX, the document.ready event can not be relied upon to
+set up any functionality in your page.
+
+To work around this, Molly provides a new event which is called when an AJAX
+page change is triggered: 'molly-page-change', with one argument, the URL of the
+new page. You will then probably want to check the url attribute to ensure that
+it's a page that you should be handling.
+
+.. code-block:: javascript
+
+    $(document).bind('molly-page-change', function(event, url){    
+        if (url == '/my-app/') {
+            /* Set up my event handlers here */
+        }
+    });
+
+Anything that would be in a document.ready handler or a <script> tag in the
+head will then need to go on there. This event also get's called on the first
+page load, so you can put everything that you will ever need to handle in there.
+
+If you do things like set up timers in the event handler, you will also have
+to remember to clear those timers if the page transitions to another page.
+
+If you add your own AJAX handlers to redraw the page, etc, you will then be
+responsible for ensuring the listeners are set up on any <a> and <form> elements
+you create. Fortunately, this is quite simple - just call 'capture_outbound()'
+at the end of your AJAX callback and the correct event listeners will be
+created.
+
+To suppress the default action of AJAX page transitions, returning false or
+similar is not enough to stop the default page transition happening. To do this,
+you must add an 'has-ajax-handler' class to any links and forms you want your
+code to handle, before the 'capture_outbound()' function is called. If you add
+this class whilst inside the 'molly-page-change' event handler, then you don't
+need to worry any further, as this is automatically called after the event has
+been triggered.
+
+Catching location changes
+-------------------------
+
+It is also possible to catch occasions when the user updates their location, or
+the location is updated for them automatically by listening to an event in a
+similar way. You may want to do this to, for example, trigger a refresh of
+location-specific data.
+
+The event to listen to is on the document object, and is
+'molly-location-update'.
+
+.. code-block:: javascript
+
+    $(document).bind('molly-location-update', function(){
+        /* react to how the location changed here */
+    });

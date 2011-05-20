@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from django.http import Http404
 
 from molly.utils.views import BaseView
@@ -30,4 +32,5 @@ class TouchMapLiteView(BaseView):
         context.update({
             'zoom_controls': True,
         })
-        return self.render(request, context, 'maps/touchmaplite/map')
+        return self.render(request, context, 'maps/touchmaplite/map',
+                           expires=timedelta(days=365))

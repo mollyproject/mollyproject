@@ -1,5 +1,5 @@
 from django.contrib.gis import admin
-from models import Entity, EntityType
+from models import Entity, EntityType, EntityGroup
 
 
 class EntityAdmin(admin.OSMGeoAdmin):
@@ -8,3 +8,4 @@ class EntityAdmin(admin.OSMGeoAdmin):
 
 admin.site.register(Entity, EntityAdmin)
 admin.site.register(EntityType)
+admin.site.register(EntityGroup)

@@ -1,10 +1,14 @@
-import itertools, datetime
+import itertools
+import datetime
+from logging import getLogger
 
 from lxml import etree
 
 from django.contrib.gis.geos import Point
-from django.core.paginator import Paginator
+from django.core.paginator import Page
 from django.db import models
+
+logger = getLogger(__name__)
 
 class DateUnicode(unicode): pass
 class DateTimeUnicode(unicode): pass
@@ -28,6 +32,7 @@ def simplify_value(value):
             try:
                 out[new_key] = simplify_value(value[key])
             except NotImplementedError:
+                logger.warn('Could not simplify a value', exc_info=True)
                 pass
         return out
     elif isinstance(value, (list, tuple, set, frozenset)):
@@ -49,8 +54,15 @@ def simplify_value(value):
         return DateUnicode(value.isoformat())
     elif hasattr(type(value), '__mro__') and models.Model in type(value).__mro__:
         return simplify_model(value)
-    elif isinstance(value, Paginator):
-        return simplify_value(value.object_list)
+    elif isinstance(value, Page):
+        return {
+            'has_next': value.has_next(),
+            'has_previous': value.has_next(),
+            'next_page_number': value.has_next(),
+            'previous_page_number': value.has_next(),
+            'number': value.number,
+            'objects': simplify_value(value.object_list)
+        }
     elif value is None:
         return None
     elif isinstance(value, Point):
@@ -88,6 +100,15 @@ def simplify_model(obj, terse=False):
                 out[field_name] = simplify_value(value)
             except NotImplementedError:
                 pass
+        
+        # Add any non-field attributes
+        for field in list(dir(obj)):
+            if field[0] != '_' and field != 'objects' \
+             and not isinstance(getattr(obj, field), models.Field):
+                try:
+                    out[field] = simplify_value(getattr(obj, field))
+                except NotImplementedError:
+                    pass
     return out
 
 def serialize_to_xml(value):

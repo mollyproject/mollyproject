@@ -3,6 +3,7 @@ from datetime import datetime
 from lxml import etree
 import re
 
+from molly.apps.places.models import EntityType
 from molly.apps.places.providers import BaseMapsProvider
 
 class ACISLiveMapsProvider(BaseMapsProvider):
@@ -104,8 +105,10 @@ class ACISLiveMapsProvider(BaseMapsProvider):
     def augment_metadata(self, entities, **kwargs):
         threads = []
         for entity in entities:
-            # Ignore non-bus stop entities
-            if entity.identifiers.get('atco') is None:
+            
+            bus_et = EntityType.objects.get(slug='bus-stop')
+            
+            if bus_et not in entity.all_types.all():
                 continue
                 
             thread = threading.Thread(target=self.get_times, args=[entity])
@@ -123,7 +126,7 @@ class ACISLiveMapsProvider(BaseMapsProvider):
                               parser = etree.HTMLParser())
         except (TypeError, IOError):
             rows = []
-            pip_info = None
+            pip_info = []
         except NoACISLiveInstanceException:
             return
         else:
@@ -142,9 +145,9 @@ class ACISLiveMapsProvider(BaseMapsProvider):
                                           messages_page)
                     pip_info = filter(lambda pip: pip != '&nbsp;', pip_info)
                 else:
-                    pip_info = None
+                    pip_info = []
             except:
-                pip_info = None
+                pip_info = []
 
         services = {}
         for row in rows:
@@ -180,7 +183,7 @@ class ACISLiveMapsProvider(BaseMapsProvider):
             'services': services,
             'pip_info': pip_info,
         }
-        entity.metadata['meta_refresh'] = 60
+        entity.metadata['meta_refresh'] = 30
 
 class NoACISLiveInstanceException(Exception):
     """

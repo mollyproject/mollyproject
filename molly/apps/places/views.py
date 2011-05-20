@@ -1,13 +1,16 @@
 from __future__ import division
 
+from collections import defaultdict
 from itertools import chain
 import simplejson
 import copy
+import math
+from datetime import timedelta
 
 from suds import WebFault
 
 from django.contrib.gis.geos import Point
-from django.http import Http404, HttpResponse, HttpResponseRedirect, HttpResponsePermanentRedirect
+from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import capfirst
@@ -72,39 +75,54 @@ class NearbyListView(LocationRequiredView):
         point = get_point(request, entity)
 
         if entity:
-            return_url = reverse('places:entity-nearby-list', args=[entity.identifier_scheme, entity.identifier_value])
+            return_url = reverse('places:entity-nearby-list',args=[entity.identifier_scheme, entity.identifier_value])
         else:
             return_url = reverse('places:nearby-list')
-
-        entity_types_map = dict((e.slug, e) for e in EntityType.objects.all())
-        entity_types = tuple((name, tuple(entity_types_map[t] for t in types)) for (name, types) in self.conf.nearby_entity_types)
-        flat_entity_types = set(chain(*[types for name, types in entity_types]))
-
-        entities = Entity.objects.filter(location__isnull = False, all_types_completion__in = flat_entity_types)
+        
+        # Get entity types to show on nearby page
+        entity_types = EntityType.objects.filter(show_in_nearby_list=True)
+        entity_types_lookup = dict((et, et) for et in entity_types)
+        
+        # Get all nearby entities
+        entities = Entity.objects.filter(location__isnull = False, all_types_completion__in = entity_types)
         entities = entities.distance(point).order_by('distance')
-
-        for et in flat_entity_types:
+        
+        for et in entity_types:
             et.max_distance = 0
             et.entities_found = 0
-
+        
+        # For each entity...
         for e in entities:
-            for et in e.all_types_slugs:
-                et = entity_types_map[et]
-                if not et in flat_entity_types:
-                    continue
-                if (e.distance.m ** 0.75) * (et.entities_found + 1) > 500:
-                    flat_entity_types.remove(et)
-                    continue
-                et.max_distance = e.distance
-                et.entities_found += 1
-
-            if len(flat_entity_types) == 0 or e.distance.m > 5000:
+            for et in e.all_types.all():
+                try:
+                    # Check if this entity is in one of the entity types to show
+                    # if not - throws KeyError
+                    et = entity_types_lookup[et]
+                    
+                    # Check if this entity fits within the selection criteria
+                    # if it doesn't, then remove it from being considered for
+                    # future entities
+                    if (e.distance.m ** 0.75) * (et.entities_found + 1) > 500:
+                        del entity_types_lookup[et]
+                        continue
+                    et.max_distance = e.distance.m
+                    et.entities_found += 1
+                except KeyError:
+                    pass
+            
+            # Stop when we've considered all entity types, or are more than 5km
+            # away
+            if len(entity_types) == 0 or e.distance.m > 5000:
                 break
-
-        entity_types = tuple((name, tuple(t for t in types if t.entities_found>0)) for name, types in entity_types)
-
+        
+        categorised_entity_types = defaultdict(list)
+        for et in filter(lambda et: et.entities_found > 0, entity_types):
+            categorised_entity_types[et.category.name].append(et)
+        # Need to do this other Django evalutes .items as ['items']
+        categorised_entity_types = dict(categorised_entity_types.items())
+        
         context.update({
-            'entity_types': entity_types,
+            'entity_types': categorised_entity_types,
             'entity': entity,
             'return_url': return_url,
             'exposes_user_data': entity is None, # entity is None => we've searched around the user's location
@@ -235,7 +253,7 @@ class EntityDetailView(ZoomableView, FavouritableView):
         distance, bearing = entity.get_distance_and_bearing_from(user_location)
         additional = '<strong>%s</strong>' % capfirst(entity.primary_type.verbose_name)
         if distance:
-            additional += ', approximately %.3fkm %s' % (distance/1000, bearing)
+            additional += ', about %dm %s' % (int(math.ceil(distance/10)*10), bearing)
         return {
             'title': entity.title,
             'additional': additional,
@@ -254,6 +272,16 @@ class EntityDetailView(ZoomableView, FavouritableView):
                         associations += [{'type': type, 'entities': [get_entity(ns, value) for ns, value in es]} for type, es in associated_entities]
                 except (KeyError, Http404):
                     pass
+        
+        for entity_group in entity.groups.all():
+            group_entities = filter(lambda e: e != entity,
+                                   Entity.objects.filter(groups=entity_group))
+            
+            if len(group_entities) > 0:
+                associations.append({
+                    'type': entity_group.title,
+                    'entities': group_entities,
+                })
         
         board = request.GET.get('board', 'departures')
         if board != 'departures':
@@ -284,8 +312,13 @@ class EntityDetailView(ZoomableView, FavouritableView):
 
     def handle_GET(self, request, context, scheme, value):
         entity = context['entity']
+        
         if entity.absolute_url != request.path:
-            return HttpResponsePermanentRedirect(entity.absolute_url)
+            return self.redirect(entity.absolute_url, request, 'perm')
+        
+        entities = []
+        for association in context['associations']:
+            entities += association['entities']
 
         for provider in reversed(self.conf.providers):
             provider.augment_metadata((entity, ), board=context['board'])
@@ -359,7 +392,9 @@ class EntityUpdateView(ZoomableView):
             )
             osm_update.save()
 
-            return HttpResponseRedirect(reverse('places:entity-update', args=[scheme, value])+'?submitted=true')
+            return self.redirect(
+                reverse('places:entity-update', args=[scheme, value]) + '?submitted=true',
+                request)
         else:
             context['form'] = form
             return self.render(request, context, 'places/update_osm')
@@ -426,9 +461,13 @@ class NearbyEntityDetailView(NearbyDetailView):
 class CategoryListView(BaseView):
 
     def initial_context(self, request):
-        entity_types = EntityType.objects.filter(show_in_category_list=True)
+        categorised_entity_types = defaultdict(list)
+        for et in EntityType.objects.filter(show_in_category_list=True):
+            categorised_entity_types[et.category.name].append(et)
+        # Need to do this other Django evalutes .items as ['items']
+        categorised_entity_types = dict(categorised_entity_types.items())
         return {
-            'entity_types': entity_types,
+            'entity_types': categorised_entity_types,
         }
 
     @BreadcrumbFactory
@@ -441,7 +480,8 @@ class CategoryListView(BaseView):
         )
 
     def handle_GET(self, request, context):
-        return self.render(request, context, 'places/category_list')
+        return self.render(request, context, 'places/category_list',
+                           expires=timedelta(days=28))
 
 
 class CategoryDetailView(BaseView):
@@ -505,7 +545,8 @@ class CategoryDetailView(BaseView):
         }
 
     def handle_GET(self, request, context, ptypes):
-        return self.render(request, context, 'places/category_detail')
+        return self.render(request, context, 'places/category_detail',
+                           expires=timedelta(days=1))
 
 
 class ServiceDetailView(BaseView):
@@ -542,109 +583,27 @@ class ServiceDetailView(BaseView):
         if 'service_details' not in entity.metadata:
             raise Http404
 
-        stop_entities = []
-
         # Deal with train service data
         if entity.metadata['service_type'] == 'ldb':
             
-            try:
-                # LDB has + in URLs, but Django converts that to space
-                service = entity.metadata['service_details'](service_id.replace(' ', '+'))
-            except WebFault as f:
-                if f.fault['faultstring'] == 'Unexpected server error: Invalid length for a Base-64 char array.':
-                    raise Http404
-                else:
-                    context.update({
-                        'title': 'An error occurred',
-                        'entity': entity,
-                        'train_service': {
-                            'error': f.fault['faultstring'],
-                        },
-                    })
-                    return context
+            # LDB has + in URLs, but Django converts that to space
+            service = entity.metadata['service_details'](service_id.replace(' ', '+'))
             if service is None:
                 raise Http404
-
-            if len(service['previousCallingPoints']):
-                sources = [points['callingPoint'][0]['locationName'] for points in service['previousCallingPoints']['callingPointList']]
-            else:
-                sources = [service['locationName']]
-
-            if len(service['subsequentCallingPoints']):
-                destinations = [points['callingPoint'][-1]['locationName'] for points in service['subsequentCallingPoints']['callingPointList']]
-            else:
-                destinations = [service['locationName']]
-
-            # Trains can split and join, which makes figuring out the list of
-            # calling points a bit difficult. The LiveDepartureBoards documentation
-            # details how these should be handled. First, we build a list of all
-            # the calling points on the "through" train.
-            calling_points = service['previousCallingPoints']['callingPointList'][0]['callingPoint'] if len(service['previousCallingPoints']) else []
-            calling_points += [{
-                'locationName': service['locationName'],
-                'crs': service['crs'],
-                'st': service['std'] if 'std' in service else service['sta'],
-                'et': service['etd'] if 'etd' in service else service['eta'],
-                'at': service['atd'] if 'atd' in service else '',
-            }]
-            if len(service['subsequentCallingPoints']):
-                calling_points += service['subsequentCallingPoints']['callingPointList'][0]['callingPoint']
-
-            # Then attach joining services to our thorough route in the correct
-            # point, but only if there is a list of previous calling points
-            if len(service['previousCallingPoints']):
-                for points in service['previousCallingPoints']['callingPointList'][1:]:
-                    for point in calling_points:
-                        if points['callingPoint'][-1]['crs'] == point['crs']:
-                            point['joining'] = points['callingPoint']
-
-            # And do the same with splitting services
-            if len(service['subsequentCallingPoints']):
-                for points in service['subsequentCallingPoints']['callingPointList'][1:]:
-                    for point in calling_points:
-                        if points['callingPoint'][0]['crs'] == point['crs']:
-                            point['splitting'] = {'destination': points['callingPoint'][-1]['locationName'], 'list': points['callingPoint']}
-
-            # Now get a list of the entities for the stations (if they exist)
-            # to plot on a map
-            for point in calling_points:
-
-                if 'joining' in point:
-                    for jpoint in point['joining']:
-                        point_entity = Entity.objects.filter(_identifiers__scheme='crs', _identifiers__value=str(jpoint['crs']))
-                        if len(point_entity):
-                            point_entity = point_entity[0]
-                            jpoint['entity'] = point_entity
-                            stop_entities.append(point_entity)
-                            jpoint['stop_num'] = len(stop_entities)
-
-                point_entity = Entity.objects.filter(_identifiers__scheme='crs', _identifiers__value=str(point['crs']))
-                if len(point_entity):
-                    point_entity = point_entity[0]
-                    point['entity'] = point_entity
-                    stop_entities.append(point_entity)
-                    point['stop_num'] = len(stop_entities)
-
-                if 'splitting' in point:
-                    for spoint in point['splitting']['list']:
-                        point_entity = Entity.objects.filter(_identifiers__scheme='crs', _identifiers__value=str(spoint['crs']))
-                        if len(point_entity):
-                            point_entity = point_entity[0]
-                            spoint['entity'] = point_entity
-                            stop_entities.append(point_entity)
-                            spoint['stop_num'] = len(stop_entities)
-            
-            if 'std' in service:
-                title = service['std'] + ' ' + service['locationName'] + ' to ' + ' and '.join(destinations)
-            else:
-                # This service arrives here
-                title = service['sta'] + ' from ' + ' and '.join(sources)
+            if 'error' in service:
+                context.update({
+                    'title': 'An error occurred',
+                    'entity': entity,
+                    'train_service': {
+                        'error': service['error'],
+                    },
+                })
+                return context
             
             context.update({
                 'entity': entity,
                 'train_service': service,
-                'train_calling_points': calling_points,
-                'title': title,
+                'title': service['title'],
                 'zoom_controls': False,
             })
         
@@ -652,8 +611,8 @@ class ServiceDetailView(BaseView):
             centre_point = (entity.location[0], entity.location[1],
                             'green', entity.title),
             points = [(e.location[0], e.location[1], 'red', e.title)
-                for e in stop_entities],
-            min_points = len(stop_entities),
+                for e in service['entities']],
+            min_points = len(service['entities']),
             zoom = None,
             width = request.map_width,
             height = request.map_height,

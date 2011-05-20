@@ -2,13 +2,13 @@ import urllib, random
 from datetime import datetime, timedelta
 
 from django.core.urlresolvers import resolve, reverse
-from django.http import HttpResponse, HttpResponseRedirect, Http404, HttpResponseBadRequest
+from django.http import HttpResponse, Http404, HttpResponseBadRequest
 from django.contrib.gis.geos import Point
 from django.conf import settings
 
 from molly.utils.views import BaseView, renderer
 from molly.utils.breadcrumbs import *
-from molly.utils.http import HttpResponseSeeOther, update_url
+from molly.utils.http import update_url
 
 from molly.geolocation.forms import LocationUpdateForm
 from molly.geolocation import geocode, reverse_geocode
@@ -127,7 +127,7 @@ class GeolocationView(BaseView):
                 })
                 return self.handle_GET(request, context)
             else:
-                return HttpResponseSeeOther(redirect)
+                return self.redirect(redirect, request, 'seeother')
 
 class IndexView(GeolocationView):
     @BreadcrumbFactory
@@ -171,7 +171,8 @@ class IndexView(GeolocationView):
               and context.get('return_url') \
               and not request.REQUEST.get('update', False) \
               and not 'geolocation_alternatives' in context:
-                return HttpResponseSeeOther(context.get('return_url'))
+                return self.redirect(context.get('return_url'),
+                                     request, 'seeother')
             return self.render(request, context, 'geolocation/update_location')
 
     def handle_POST(self, request, context):
@@ -193,7 +194,7 @@ class IndexView(GeolocationView):
                     {'location_error': form.errors.popitem()[1].pop()},
                     'location-update',
                 )
-                return HttpResponseSeeOther(return_url)
+                return self.redirect(return_url, request, 'seeother')
 
 class FavouritesView(GeolocationView):
     breadcrumb = NullBreadcrumb
@@ -271,8 +272,8 @@ class LocationRequiredView(BaseView):
         if not self.is_location_required(request, *args, **kwargs) or request.session.get('geolocation:location'):
             return super(LocationRequiredView, self).__call__(request, *args, **kwargs)
         else:
-            return HttpResponseSeeOther('%s?%s' % (
+            return self.redirect('%s?%s' % (
                 reverse('geolocation:index'),
                 urllib.urlencode({'return_url': request.get_full_path()}),
-            ))
+            ), request, 'seeother')
 

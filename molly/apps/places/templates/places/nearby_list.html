@@ -1,22 +1,21 @@
-{% extends "places/base.html" %}
+{% extends "places/base.html" %}{% load molly_utils %}
 
 {% block extrahead %}{{ block.super }}{% if entity %}
-<meta name="robots" content="noindex" />{% endif %}
-{% include "geolocation/js.html" %}{% endblock %}
+<meta name="robots" content="noindex" />{% endif %}{% endblock %}
 
 {% block content %}
 
-{% for name, types in entity_types %}
+{% for name, types in entity_types.items %}
 <div class="section">
 <div class="header">
   <h2>{{ name }}</h2>
 </div>
 	<ul class="link-list">
 	{% for entity_type in types %}{% if entity %}
-	    <li{% if forloop.last %} class="round-bottom"{% endif %}><a href="{% url places:entity-nearby-detail entity.identifier_scheme,entity.identifier_value,entity_type.slug %}">
+	    <li><a href="{% url places:entity-nearby-detail entity.identifier_scheme,entity.identifier_value,entity_type.slug %}">
 	{% else %}
-	    <li{% if forloop.last %} class="round-bottom"{% endif %}><a href="{% url places:nearby-detail entity_type.slug %}">
-	{% endif %} {{ entity_type.verbose_name_plural|capfirst }} <small>({{ entity_type.entities_found }} within {{ entity_type.max_distance.m|floatformat:"-0" }}m)</small></a></li>{% endfor %}
+	    <li><a href="{% url places:nearby-detail entity_type.slug %}">
+	{% endif %} {{ entity_type.verbose_name_plural|capfirst }} <small>({{ entity_type.entities_found }} within {{ entity_type.max_distance|round_up_10 }}m)</small></a></li>{% endfor %}
 	</ul>
 </div>
 {% endfor %}

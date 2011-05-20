@@ -1,4 +1,4 @@
-from django.http import HttpResponseRedirect
+from datetime import timedelta
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
@@ -21,7 +21,8 @@ class IndexView(BaseView):
         if context['search_form'].is_valid():
             return self.handle_search(request, context)
 
-        return self.render(request, context, 'search/index')
+        return self.render(request, context, 'search/index',
+                           expires=timedelta(minutes=30))
 
     def handle_search(self, request, context):
         application = context['search_form'].cleaned_data['application'] or None
@@ -44,7 +45,7 @@ class IndexView(BaseView):
         results = [r for r in results if not r.get('exclude_from_search')]
 
         if len(results) == 1 and results[0].get('redirect_if_sole_result'):
-            return HttpResponseRedirect(results[0]['url'])
+            return self.redirect(results[0]['url'], request)
 
         context.update({
             'results': list(results)[:20],

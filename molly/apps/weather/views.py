@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
@@ -26,4 +26,5 @@ class IndexView(BaseView):
         )
 
     def handle_GET(self, request, context):
-        return self.render(request, context, 'weather/index')
+        return self.render(request, context, 'weather/index',
+                           expires=timedelta(minutes=10))

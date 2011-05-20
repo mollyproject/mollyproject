@@ -2,6 +2,7 @@ import simplejson
 import urllib2
 import feedparser
 import logging
+from datetime import timedelta
 
 from django.http import Http404, HttpResponse
 from django.template import loader, TemplateDoesNotExist, RequestContext
@@ -13,9 +14,8 @@ from molly.utils.breadcrumbs import NullBreadcrumb
 
 logger = logging.getLogger(__name__)
 
-
 class IndexView(BaseView):
-
+    
     def get_metadata(self, request):
         return {
             'exclude_from_search': True}
@@ -38,7 +38,10 @@ class IndexView(BaseView):
         }
 
     def handle_GET(self, request, context):
-        return self.render(request, context, 'desktop/index')
+        # Can't render fragment
+        if 'fragment' in self.FORMATS: del self.FORMATS['fragment']
+        return self.render(request, context, 'desktop/index',
+                           expires=timedelta(days=1))
 
     def _cache(self, f, key, args=None, kwargs=None, timeout=None):
         key = '.'.join(['molly', self.conf.local_name, key])

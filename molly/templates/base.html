@@ -1,7 +1,7 @@
 {% load molly_utils %}{% load compressed %}<!DOCTYPE HTML>
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-GB" lang="en-GB" manifest="{{ STATIC_URL }}cache.manifest">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-GB" lang="en-GB">
 <head>
-    <title>{% block site_title %}molly | {% endblock %}{% block title %}{{ breadcrumbs.4 }}{% endblock %}</title>
+    <title>{% block whole_title %}{% block site_title %}molly | {% endblock %}{% block title %}{{ breadcrumbs.4 }}{% endblock %}{% endblock %}</title>
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1"/>
     <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
     <meta name="format-detection" content="telephone=no" />
@@ -12,16 +12,17 @@
 {% endif %}
 
 {% if device|device_has_parent:"apple_generic" or device.device_os == "Android" %}
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <link rel="apple-touch-icon" href="{{ STATIC_URL }}site/images/apple-touch-icon.png"/>
     <link rel="apple-touch-icon" sizes="72x72" href="{{ STATIC_URL }}site/images/apple-touch-icon-72px.png"/>
     <link rel="apple-touch-icon" sizes="114x114" href="{{ STATIC_URL }}site/images/apple-touch-icon-114px.png"/>
     <link rel="apple-touch-icon-precomposed" href="{{ STATIC_URL }}site/images/apple-touch-icon.png"/>
     <link rel="apple-touch-startup-image" href="{{ STATIC_URL  }}site/images/apple-touch-startup-image.jpg">
 {% endif %}
-
-{% if use_javascript %}{% endif %}
     <link rel="icon" type="image/png" href="{{ STATIC_URL }}site/images/favicon.png"/>
-{% block extrahead %}{% endblock extrahead %}
+    
+    {% include "geolocation/js.html" %}
+    {% block extrahead %}{% endblock extrahead %}
 </head>
 
 <body>
@@ -86,24 +87,40 @@
 {% endblock %}
 
 {% if not hide_feedback_link %}
-<div style="margin-top:15px">
+<div style="margin-top:0.9em">
 {% block bottom_links %}
-  <div style="width:50%; float:left; margin-top: 2px; margin-bottom:2px;">
-    <a style="margin:0 2px 0 10px; background-color:white; padding:10px; -webkit-border-radius:6px; -moz-border-radius:6px; text-align:center; display:block"
-       href="{% url feedback:index %}?referer={{ full_path|urlencode }}">Provide feedback for this page</a>
+
+{% if device.brand_name == "RIM" %}
+<!-- Blackberry specific -->
+  <div style="width:49%; float:left; margin-top:0.1em; margin-bottom:0.2em;">
+    <a style="margin:0 0.2em 0 0.4em; background-color:white; padding:0.6em; -webkit-border-radius:0.4em; -moz-border-radius:0.4em; text-align:center; display:block"
+       href="{% url feedback:index %}?referer={{ full_path|urlencode }}">Feedback</a>
   </div>
-  <div style="width:50%; float:left; margin-top: 2px; margin-bottom:2px;">
-    <a style="margin:0 10px 0 2px; background-color:white; padding:10px; -webkit-border-radius:6px; -moz-border-radius:6px; text-align:center; display:block"
-       href="{% url url_shortener:index %}?path={{ full_path|urlencode }}">2D barcode and shortened link</a>
+  <div style="width:49%; float:right; margin-top: 0.1em; margin-bottom:0.2em;">
+    <a style="margin:0 0.2em 0 0.2em; background-color:white; padding:0.6em; -webkit-border-radius:0.4em; -moz-border-radius:0.4em; text-align:center; display:block"
+       href="{% url url_shortener:index %}?path={{ full_path|urlencode }}">Share</a>
   </div>
-  
+{% else %}
+  <div style="width:50%; float:left; margin-top:0.1em; margin-bottom:0.2em;">
+    <a style="margin:0 0.2em 0 0.2em; background-color:white; padding:0.6em; -webkit-border-radius:0.4em; -moz-border-radius:0.4em; text-align:center; display:block"
+       href="{% url feedback:index %}?referer={{ full_path|urlencode }}">Feedback</a>
+  </div>
+  <div style="width:50%; float:left; margin-top: 0.1em; margin-bottom:0.2em;">
+    <a style="margin:0 0.2em 0 0.4em; background-color:white; padding:0.6em; -webkit-border-radius:0.4em; -moz-border-radius:0.4em; text-align:center; display:block"
+       href="{% url url_shortener:index %}?path={{ full_path|urlencode }}">Share</a>
+  </div>
+
+{% endif %}  
+
 {% if "feature_vote"|app_is_loaded or "feature-suggestions"|app_is_loaded %}
-  <div style="width:100%; float:left; margin-top: 2px; margin-bottom:10px;">
-    <a style="margin:0 10px 0 10px; background-color:white; padding:10px; -webkit-border-radius:6px; -moz-border-radius:6px; text-align:center; display:block"
-       href="{% url feature_vote:index %}">Have an idea? Suggest a feature!</a>
+  <div style="width:100%; float:left; margin-top: 0.1em; margin-bottom:0.4em;">
+    <a style="margin:0 0.2em 0 0.2em; background-color:white; padding:0.6em; -webkit-border-radius:0.4em; -moz-border-radius:0.4em; text-align:center; display:block"
+       href="{% url feature_vote:index %}">Suggest a feature</a>
   </div>
 {% endif %}
   <div style="clear:both"> </div>
+
+
 
 {% endblock %}
 </div>
@@ -116,7 +133,7 @@
  <script type="text/javascript">
  var _gaq = _gaq || [];
  _gaq.push(['_setAccount', '{{ google_analytics|safe }}']);
- _gaq.push(['_trackPageview']);
+ $(document).bind('molly-page-change', function(e, url){_gaq.push(['_trackPageview', url]);});
  (function() {
    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
