@@ -9,9 +9,10 @@ class LDAPContactProvider(BaseContactProvider):
         'de', 'van der', 'te', 'von', 'van', 'du', 'di'
     ])
 
-    def __init__(self, url, base_dn):
+    def __init__(self, url, base_dn, phone_prefix=''):
         self._url = url
         self._base_dn = base_dn
+        self._phone_prefix = phone_prefix
 
     def normalize_query(self, cleaned_data, medium):
         # Examples of initial / surname splitting
@@ -70,7 +71,8 @@ class LDAPContactProvider(BaseContactProvider):
 
                 'sn': ldap_result[1].get('sn', []),
                 'givenName': ldap_result[1].get('givenName', []),
-                'telephoneNumber': ldap_result[1].get('telephoneNumber', []),
+                'telephoneNumber': ['%s%s' % (self._phone_prefix, number)
+                                    for number in ldap_result[1].get('telephoneNumber', [])],
                 'roomNumber': ldap_result[1].get('roomNumber', []),
                 'title': ldap_result[1].get('title', []),
                 'facsimileTelephoneNumber': ldap_result[1].get('facsimileTelephoneNumber', []),
