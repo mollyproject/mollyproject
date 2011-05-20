@@ -273,7 +273,7 @@ class BaseView(object):
                         response['Cache-Control'] = 'no-cache'
                     else:
                         response['Cache-Control'] = 'max-age=%d' % \
-                                expires.total_seconds()
+                                (expires.seconds + expires.days * 24 * 3600)
                     
                 return response
         else:
