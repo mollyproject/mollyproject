@@ -29,7 +29,8 @@ class IndexView(BaseView):
         return Breadcrumb(self.conf.local_name, None, 'Library search', lazy_reverse('index'))
     
     def handle_GET(self, request, context):
-        return self.render(request, context, 'library/index')
+        return self.render(request, context, 'library/index',
+                           expires=timedelta(days=28))
 
 class SearchDetailView(BaseView):
     """
@@ -97,7 +98,8 @@ class SearchDetailView(BaseView):
             'results': paginator,
             'page': page,
         })
-        return self.render(request, context, 'library/item_list')
+        return self.render(request, context, 'library/item_list',
+                           expires=timedelta(hours=1))
     
     def handle_error(self, request, context, message):
         context['error_message'] = message

@@ -10,7 +10,6 @@ from molly.apps.contact.providers import TooManyResults
 
 from .forms import GenericContactForm
 
-
 class IndexView(BaseView):
 
     @BreadcrumbFactory
@@ -29,7 +28,8 @@ class IndexView(BaseView):
         }
 
     def handle_GET(self, request, context):
-        return self.render(request, context, 'contact/index')
+        return self.render(request, context, 'contact/index',
+                           expires=timedelta(days=28))
 
 
 class ResultListView(IndexView):
@@ -67,7 +67,8 @@ class ResultListView(IndexView):
             })
 
         context['form'] = form
-        return self.render(request, context, 'contact/result_list')
+        return self.render(request, context, 'contact/result_list',
+                           expires=timedelta(days=7))
 
     def handle_error(self, request, context, message):
         context.update({

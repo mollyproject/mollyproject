@@ -90,4 +90,5 @@ class IndexView(BaseView):
 
         context['url'] = request.build_absolute_uri('/' + context['shortened_url'].slug)
 
-        return self.render(request, context, 'url_shortener/index')
+        return self.render(request, context, 'url_shortener/index',
+                           expires=timedelta(days=365))

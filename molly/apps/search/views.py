@@ -19,7 +19,8 @@ class IndexView(BaseView):
         if context['search_form'].is_valid():
             return self.handle_search(request, context)
 
-        return self.render(request, context, 'search/index')
+        return self.render(request, context, 'search/index',
+                           expires=timedelta(minutes=30))
 
     def handle_search(self, request, context):
         application = context['search_form'].cleaned_data['application'] or None

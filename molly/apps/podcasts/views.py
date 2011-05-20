@@ -34,7 +34,8 @@ class IndexView(BaseView):
             'categories': PodcastCategory.objects.all(),
             'show_itunesu_link': show_itunesu_link,
         })
-        return self.render(request, context, 'podcasts/index')
+        return self.render(request, context, 'podcasts/index',
+                           expires=timedelta(days=7))
 
 class CategoryDetailView(BaseView):
     def get_metadata(self, request, category, medium=None):
@@ -71,7 +72,8 @@ class CategoryDetailView(BaseView):
                           url)
         
     def handle_GET(self, request, context, category, medium=None):
-        return self.render(request, context, 'podcasts/category_detail')
+        return self.render(request, context, 'podcasts/category_detail',
+                           expires=timedelta(hours=4))
 
 class PodcastDetailView(BaseView):
     class RespondThus(Exception):
@@ -129,7 +131,8 @@ class PodcastDetailView(BaseView):
         context.update({
             'items': items,
         })
-        return self.render(request, context, 'podcasts/podcast_detail')
+        return self.render(request, context, 'podcasts/podcast_detail',
+                           expires=timedelta(hours=1))
 
 class ITunesURedirectView(BaseView):
     breadcrumb = NullBreadcrumb

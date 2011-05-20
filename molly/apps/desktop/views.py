@@ -40,7 +40,8 @@ class IndexView(BaseView):
     def handle_GET(self, request, context):
         # Can't render fragment
         if 'fragment' in self.FORMATS: del self.FORMATS['fragment']
-        return self.render(request, context, 'desktop/index')
+        return self.render(request, context, 'desktop/index',
+                           expires=timedelta(days=1))
 
     def _cache(self, f, key, args=None, kwargs=None, timeout=None):
         key = '.'.join(['molly', self.conf.local_name, key])

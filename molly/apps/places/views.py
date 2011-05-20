@@ -479,7 +479,8 @@ class CategoryListView(BaseView):
         )
 
     def handle_GET(self, request, context):
-        return self.render(request, context, 'places/category_list')
+        return self.render(request, context, 'places/category_list',
+                           expires=timedelta(days=28))
 
 
 class CategoryDetailView(BaseView):
@@ -543,7 +544,8 @@ class CategoryDetailView(BaseView):
         }
 
     def handle_GET(self, request, context, ptypes):
-        return self.render(request, context, 'places/category_detail')
+        return self.render(request, context, 'places/category_detail',
+                           expires=timedelta(days=1))
 
 
 class ServiceDetailView(BaseView):

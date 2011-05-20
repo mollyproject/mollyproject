@@ -27,7 +27,8 @@ class IndexView(BaseView):
     def handle_GET(self, request, context):
         webcams = Webcam.objects.all()
         context['webcams'] = webcams
-        return self.render(request, context, 'webcams/index')
+        return self.render(request, context, 'webcams/index',
+                           expires=timedelta(days=7))
     
 class WebcamDetailView(BaseView):
     def get_metadata(self, request, slug):

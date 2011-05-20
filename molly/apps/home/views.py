@@ -113,7 +113,8 @@ class StaticDetailView(BaseView):
             'title': title,
             'content': t.render(Context()),
         })
-        return self.render(request, context, 'home/static_detail')
+        return self.render(request, context, 'home/static_detail',
+                           expires=timedelta(days=365))
 
 class UserMessageView(BaseView):
     @BreadcrumbFactory

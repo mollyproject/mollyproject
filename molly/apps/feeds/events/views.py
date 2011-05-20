@@ -25,7 +25,8 @@ class IndexView(BaseView):
     def handle_GET(self, request, context):
         feeds = Feed.events.all()
         context['feeds'] = feeds
-        return self.render(request, context, 'feeds/events/index')
+        return self.render(request, context, 'feeds/events/index',
+                           expires=timedelta(days=7))
 
 class ItemListView(BaseView):
     def get_metadata(self, request, slug):

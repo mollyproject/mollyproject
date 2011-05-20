@@ -26,7 +26,8 @@ class IndexView(BaseView):
            'sent': request.GET.get('sent') == 'true',
            'referer': request.GET.get('referer', ''),
         })
-        return self.render(request, context, 'feedback/index')
+        return self.render(request, context, 'feedback/index',
+                           expires=timedelta(days=365))
 
     def handle_POST(self, request, context):
         form = context['feedback_form']
