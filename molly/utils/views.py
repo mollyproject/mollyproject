@@ -2,7 +2,7 @@ from email.utils import formatdate
 from time import mktime
 from inspect import isfunction
 import logging, itertools
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from slimmer.slimmer import xhtml_slimmer
 from urlparse import urlparse, urlunparse, parse_qs
 from urllib import urlencode
@@ -267,6 +267,14 @@ class BaseView(object):
                 if expires is not None:
                     response['Expires'] = formatdate(
                         mktime((datetime.now() + expires).timetuple()))
+                    
+                    # if expires is negative, then consider this to be no-cache
+                    if expires < timedelta(seconds=0):
+                        response['Cache-Control'] = 'no-cache'
+                    else:
+                        response['Cache-Control'] = 'max-age=%d' % \
+                                expires.total_seconds()
+                    
                 return response
         else:
             if 'format' not in request.REQUEST:
