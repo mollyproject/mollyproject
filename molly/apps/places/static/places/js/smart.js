@@ -77,19 +77,17 @@ $(document).bind('molly-page-change', function(event, url){
     if (url.match(/^\/places\/[a-z_\-]+:[\da-zA-Z]+\/$/)) {
         // Entity detail view
         
-	if (data.entity.metadata.meta_refresh) {
-	    entitydetail_ajax_refresh = setTimeout(function(){
-		$.ajax({
-		    url: to_absolute(current_url),
-		    data: { format: 'json' },
-		    dataType: 'json',
-		    success: refreshRTI
-		})
-	    }, 30000) // default to 30 seconds here because we don't actually know
-		      // what the refresh frequency is - future requests will be
-		      // spaced correctly
-	}
-	
+        entitydetail_ajax_refresh = setTimeout(function(){
+        $.ajax({
+            url: to_absolute(current_url),
+            data: { format: 'json' },
+            dataType: 'json',
+            success: refreshRTI
+        })
+        }, 30000) // default to 30 seconds here because we don't actually know
+                  // what the refresh frequency is - future requests will be
+                  // spaced correctly
+        
         $('.nearby a').click(function(){
             display_loading_screen()
             $.ajax({
@@ -158,14 +156,16 @@ function refreshRTI(data){
             }
         }
     }
-    entitydetail_ajax_refresh = setTimeout(function(){
-        $.ajax({
-            url: to_absolute(current_url),
-            data: { format: 'json', board: board },
-            dataType: 'json',
-            success: refreshRTI
-        })
-    }, data.entity.metadata.meta_refresh * 1000)
+    if (data.entity.metadata.meta_refresh) {
+        entitydetail_ajax_refresh = setTimeout(function(){
+            $.ajax({
+                url: to_absolute(current_url),
+                data: { format: 'json', board: board },
+                dataType: 'json',
+                success: refreshRTI
+            })
+        }, data.entity.metadata.meta_refresh * 1000)
+    }
 }
 
 function rebuildRTI(elem, metadata){
