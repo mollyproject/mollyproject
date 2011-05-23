@@ -1,6 +1,6 @@
 /* Consistent asynchronous page loading */
 
-var current_url = window.location.pathname;
+var current_url = window.location.pathname + window.location.search;
 
 /* This is a work around for the back button being broken in Opera
  * http://www.opera.com/support/kb/view/827/
