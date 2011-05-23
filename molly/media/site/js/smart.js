@@ -126,7 +126,8 @@ function capture_outbound()  {
 
 $(window).load(function() {
     function check_hash_change(){
-        if (window.location.hash && window.location.hash.substr(1) != current_url) {
+        var pathpart = window.location.hash.substr(1).split('?')[0];
+        if (window.location.hash && pathpart != current_url) {
             async_load(window.location.hash.substr(1), {}, "GET");
         }
         if (typeof(window.opera)!='undefined'){
