@@ -154,7 +154,7 @@ $(window).load(function() {
     
     if (!!(window.history && history.pushState)) {
       window.addEventListener('popstate', function(e, state){
-        if (current_url != window.location.pathname) {
+        if (current_url != window.location.pathname + window.location.search) {
           async_load(window.location.href, {}, 'GET');
         }
       }, false)
