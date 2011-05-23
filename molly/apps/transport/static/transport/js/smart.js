@@ -74,6 +74,8 @@ function refreshTransport(data){
                 } else {
                     tbody.append('<tr><td colspan="3">There is currently no departure information from this stop</td></tr>')
                 }
+            } else {
+                tbody.append('<tr><td colspan="3">There is currently no departure information from this stop</td></tr>')
             }
         }
     }
