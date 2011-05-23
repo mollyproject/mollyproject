@@ -128,18 +128,7 @@ function capture_outbound()  {
 $(window).load(function() {
     already_doing_hash_reload = false;
     function check_hash_change(){
-        var pathparts = window.location.hash.substr(1).split('?');
-        var pathpart = pathparts[1]
-        if (pathparts.length > 1) {
-            pathpart += '?';
-            for (var i=1;i<pathparts.length;i++) {
-                if (i > 1) {
-                    pathpart += encodeURIComponent('?')
-                }
-                pathpart += encodeURIComponent(pathparts[i])
-            }
-        }
-        if (window.location.hash && pathpart != current_url && !already_doing_hash_reload) {
+        if (window.location.hash && window.location.hash.substr(1) != decodeURI(current_url) && !already_doing_hash_reload) {
             already_doing_hash_reload = true;
             async_load(window.location.hash.substr(1), {}, "GET");
         }
