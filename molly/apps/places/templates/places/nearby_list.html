@@ -5,6 +5,8 @@
 
 {% block content %}
 
+{% if not entity %}{% include "geolocation/update_location_embed.html" %}{% endif %}
+
 {% for name, types in entity_types.items %}
 <div class="section">
 <div class="header">

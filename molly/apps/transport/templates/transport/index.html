@@ -2,16 +2,16 @@
 
 {% block content %}
 
-
+{% block transport-links %}
 {% if device|device_has_parent:"apple_generic" or browser.svgt_1_1 %}
 <ul id="transport-links">
-    {% if park_and_rides %}
-    <li class="transport-link">
-        <a href="#park_and_rides"><img src="{{ STATIC_URL }}transport/images/pride.svg" alt="Park and Rides" width="48" height="48" /></a></li>
-    {% endif %}
     {% if nearby.bus %}
     <li class="transport-link">
         <a href="#bus"><img src="{{ STATIC_URL }}transport/images/bus.svg" alt="Bus Stops" width="48" height="48" /></a></li>
+    {% endif %}
+    {% if park_and_rides %}
+    <li class="transport-link">
+        <a href="#park_and_rides"><img src="{{ STATIC_URL }}transport/images/pride.svg" alt="Park and Rides" width="48" height="48" /></a></li>
     {% endif %}
     {% if train_station %}
     <li class="transport-link">
@@ -24,13 +24,13 @@
 </ul>
 {% else %}
 <ul id="transport-links">
-    {% if park_and_rides %}
-    <li class="transport-link">
-        <a href="#park_and_rides"><img src="{{ STATIC_URL }}transport/images/pride.png" alt="Park and Rides" width="48" height="48" /></a></li>
-    {% endif %}
     {% if nearby.bus %}
     <li class="transport-link">
         <a href="#bus"><img src="{{ STATIC_URL }}transport/images/bus.png" alt="Bus Stops" width="48" height="48" /></a></li>
+    {% endif %}
+    {% if park_and_rides %}
+    <li class="transport-link">
+        <a href="#park_and_rides"><img src="{{ STATIC_URL }}transport/images/pride.png" alt="Park and Rides" width="48" height="48" /></a></li>
     {% endif %}
     {% if train_station %}
     <li class="transport-link">
@@ -42,48 +42,14 @@
     {% endif %}
 </ul>
 {% endif %}
+{% endblock %}
+
+{% include "geolocation/update_location_embed.html" %}
 
 {% if transit_status %}
     {% include "places/metadata/transit_status.html" %}
 {% endif %}
 
-{% if park_and_rides %}
-<div class="section" id="park_and_rides">
-    <div class="header">
-        <h2><a href="{% url places:nearby-detail "park-and-ride" %}">Park and Rides</a></h2>
-    </div>
-    <div class="section-content">
-        {% for entity in park_and_rides %}
-            <div class="park-and-ride" style="{% if not forloop.last or forloop.counter|divisibleby:2 %} float: left;{% endif %}{% if not forloop.counter|divisibleby:2 %} clear: left;{% endif %}">
-                <h3><a href="{{ entity.get_absolute_url}}">
-                    {% ifequal entity.title|slice:"-13:" "Park and Ride" %}
-                        {{ entity.title|slice:":-14" }}
-                    {% else %}
-                        {% ifequal entity.title|slice:"-11:" "Park & Ride" %}
-                            {{ entity.title|slice:":-12" }}
-                        {% else %}
-                            {{ entity.title }}
-                        {% endifequal %}
-                    {% endifequal %}</a></h3>
-                {% if entity.metadata.park_and_ride %}
-                    {% if not entity.metadata.park_and_ride.unavailable %}
-                        <div class="capacity-bar">
-                            <div style="width: {{ entity.metadata.park_and_ride.percentage }}%; height:7px;background-color: #960300;">&nbsp;</div>
-                        </div>
-                        <p>Spaces: {{ entity.metadata.park_and_ride.spaces }} / {{ entity.metadata.park_and_ride.capacity }}</p>
-                    {% else %}
-                        <p><em>Space information currently unavailable</em></p>
-                        <p>Spaces: ? / {{ entity.metadata.park_and_ride.capacity }}</p>
-                    {% endif %}
-                {% endif %}
-            </div>
-        {% endfor %}
-    </div>
-</div>
-{% endif %}
-{% ifnotequal data.results_type "Favourite" %}
-    <div class="section-content no-round-bottom">{% include "geolocation/update_location_embed.html" %}</div>
-{% endifnotequal %}
 {% for type, data in nearby.items %}
 <div class="section" id="{{ type }}">
     <div class="header">
@@ -122,6 +88,41 @@
     {% endifequal %}
 </div>
 {% endfor %}
+
+{% if park_and_rides %}
+<div class="section" id="park_and_rides">
+    <div class="header">
+        <h2><a href="{% url places:nearby-detail "park-and-ride" %}">Park and Rides</a></h2>
+    </div>
+    <div class="section-content">
+        {% for entity in park_and_rides %}
+            <div class="park-and-ride" style="{% if not forloop.last or forloop.counter|divisibleby:2 %} float: left;{% endif %}{% if not forloop.counter|divisibleby:2 %} clear: left;{% endif %}">
+                <h3><a href="{{ entity.get_absolute_url}}">
+                    {% ifequal entity.title|slice:"-13:" "Park and Ride" %}
+                        {{ entity.title|slice:":-14" }}
+                    {% else %}
+                        {% ifequal entity.title|slice:"-11:" "Park & Ride" %}
+                            {{ entity.title|slice:":-12" }}
+                        {% else %}
+                            {{ entity.title }}
+                        {% endifequal %}
+                    {% endifequal %}</a></h3>
+                {% if entity.metadata.park_and_ride %}
+                    {% if not entity.metadata.park_and_ride.unavailable %}
+                        <div class="capacity-bar">
+                            <div style="width: {{ entity.metadata.park_and_ride.percentage }}%; height:7px;background-color: #960300;">&nbsp;</div>
+                        </div>
+                        <p>Spaces: {{ entity.metadata.park_and_ride.spaces }} / {{ entity.metadata.park_and_ride.capacity }}</p>
+                    {% else %}
+                        <p><em>Space information currently unavailable</em></p>
+                        <p>Spaces: ? / {{ entity.metadata.park_and_ride.capacity }}</p>
+                    {% endif %}
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
 
 {% if train_station %}
     {% include "places/metadata/ldb.html" %}
