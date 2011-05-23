@@ -128,28 +128,13 @@ function capture_outbound()  {
 $(window).load(function() {
     already_doing_hash_reload = false;
     function check_hash_change(){
-        var pathparts = window.location.hash.substr(1).split('?');
-        var pathpart = pathparts[0]
-        if (pathparts.length > 1) {
-            pathpart += '?'
-            var afterparts = pathparts.slice(1).join('?').split('&');
-            for (var i=0;i<afterparts.length;i++) {
-                if (i > 0) {
-                    pathpart += encodeURIComponent('&')
-                }
-                var kvparts = afterparts[i].split('=')
-                pathpart += kvparts[0]
-                if (kvparts.length > 1) {
-                    var vpart = kvparts.slice(1).join('=')
-                    pathpart += '='
-                    if (window.opera) {
-                        pathpart += vpart
-                    } else {
-                        pathpart += encodeURIComponent(vpart)
-                    }
-                }
-                
-            }
+        // Can't use window.location.hash directly because of
+        // https://bugzilla.mozilla.org/show_bug.cgi?id=483304
+        var pathpart = window.location.href.split('#');
+        if (pathpart.length == 1) {
+            pathpart = '';
+        } else {
+            pathpart = pathpart[1]
         }
         if (window.location.hash && pathpart != current_url && !already_doing_hash_reload) {
             already_doing_hash_reload = true;
