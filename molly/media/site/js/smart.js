@@ -136,9 +136,13 @@ $(window).load(function() {
         } else {
             pathpart = pathpart[1]
         }
-        if (window.location.hash && pathpart != current_url && !already_doing_hash_reload) {
+        if (!already_doing_hash_reload && (window.location.hash && pathpart != current_url)) {
             already_doing_hash_reload = true;
             async_load(window.location.hash.substr(1), {}, "GET");
+        }
+        if (!already_doing_hash_reload && (!window.location.hash && current_url != window.location.pathname + window.location.search)) {
+            already_doing_hash_reload = true;
+            async_load(window.location.pathname + window.location.search, {}, "GET");
         }
         if (!!!(window.history && history.pushState)) {
             setTimeout(check_hash_change, 100);
