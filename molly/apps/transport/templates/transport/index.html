@@ -81,15 +81,14 @@
     </div>
 </div>
 {% endif %}
-
+{% ifnotequal data.results_type "Favourite" %}
+    <div class="section-content no-round-bottom">{% include "geolocation/update_location_embed.html" %}</div>
+{% endifnotequal %}
 {% for type, data in nearby.items %}
 <div class="section" id="{{ type }}">
     <div class="header">
         <h2>{{ data.results_type }} {{ data.type.verbose_name_plural }} - {% now "G:i:s "%}</h2>
     </div>
-    {% ifnotequal data.results_type "Favourite" %}
-        <div class="section-content no-round-bottom">{% include "geolocation/update_location_embed.html" %}</div>
-    {% endifnotequal %}
     <table class="content{% ifequal data.results_type "Favourite" %} no-round-bottom{% endifequal %}">
         <tbody>
         {% for entity in data.entities %}
