@@ -1,32 +1,38 @@
 {% extends "feeds/events/base.html" %}{% load molly_utils %}
 
+{% block breadcrumbs %}
+{{ block.super }}
+            <li><a href="{% url events:index %}">
+                <img src="{{ STATIC_URL }}images/index-icons/rss-bc.png" alt="Events"/>
+            </a></li>
+{% endblock %}
+
+{% block pagetitle %}Events feed{% endblock %}
+{% block title %}Events feed: {{ feed.title }}{% endblock %}
+
 {% block content %}
 
-{% for item in items %}
-
-  {% ifchanged item.dt_start|date:"dMY" %}
-    {% if not forloop.first %}
-  </ul>
-</div>
-    {% endif %}
 <div class="section">
-  <div class="header">
-    <h2>{{ item.dt_start|date:"l, jS F Y" }}</h2>
-  </div>
-  <ul class="link-list">
-  {% endifchanged %}
-  <li {% if forloop.last %}class="round-bottom"{% endif %}>
-    <a href="{{ item.get_absolute_url }}">
-      {{ item.title }}<br />
-      <small>
-        {{ item.venue.name }}
-      </small>
-    </a>
-  </li>
+<div class="header">
+    <h2>{{ feed.title }}</h2>
+</div>
+    <ul class="link-list">
+{% for item in feed.item_set.all %}
+        <li {% if forloop.last %}class="round-bottom"{% endif %}>
+            <a href="{{ item.get_absolute_url }}">
+                {{ item.title }}<br />
+                <small><em>
+                {% if not item.last_modified_local|this_year %}
+                    {{ item.last_modified_local|date:"j M Y" }}
+                {% else %}
+                    {{ item.last_modified_local|date:"j M"}}
+                {% endif %}
+                </em></small>
+                
+            </a>
+        </li>
 {% endfor %}
-{% if not items|length_is:"0" %}
     </ul>
 </div>
-{% endif %}
 
 {% endblock %}
