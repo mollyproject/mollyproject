@@ -131,12 +131,20 @@ $(window).load(function() {
         var pathparts = window.location.hash.substr(1).split('?');
         var pathpart = pathparts[0]
         if (pathparts.length > 1) {
-            pathpart += '?';
-            for (var i=1;i<pathparts.length;i++) {
-                if (i > 1) {
-                    pathpart += encodeURIComponent('?')
+            pathpart += '?'
+            var afterparts = pathparts.slice(1).join('?').split('&');
+            for (var i=0;i<afterparts.length;i++) {
+                if (i > 0) {
+                    pathpart += encodeURIComponent('&')
                 }
-                pathpart += encodeURIComponent(pathparts[i])
+                var kvparts = afterparts[i].split('=')
+                pathpart += kvparts[0]
+                if (kvparts.length > 1) {
+                    var vpart = kvparts.slice(1).join('=')
+                    pathpart += '='
+                    pathpart += vpart
+                }
+                
             }
         }
         if (window.location.hash && pathpart != current_url && !already_doing_hash_reload) {
