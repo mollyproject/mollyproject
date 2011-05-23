@@ -142,7 +142,11 @@ $(window).load(function() {
                 if (kvparts.length > 1) {
                     var vpart = kvparts.slice(1).join('=')
                     pathpart += '='
-                    pathpart += vpart
+                    if (window.opera) {
+                        pathpart += vpart
+                    } else {
+                        pathpart += encodeURIComponent(vpart)
+                    }
                 }
                 
             }
