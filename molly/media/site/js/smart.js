@@ -126,7 +126,7 @@ function capture_outbound()  {
 
 $(window).load(function() {
     function check_hash_change(){
-        var pathpart = window.location.hash.substr(1);//.split('?')[0];
+        var pathpart = encodeURIComponent(window.location.hash.substr(1));
         if (window.location.hash && pathpart != current_url) {
             async_load(window.location.hash.substr(1), {}, "GET");
         }
