@@ -173,7 +173,7 @@ function rebuildRTI(elem, metadata){
     if ((typeof(metadata.pip_info) != 'undefined' && metadata.pip_info.length > 0) || metadata.services.length == 0) {
         elem.append('<ul class="content-list no-round-bottom"></ul>')
         if (metadata.pip_info.length > 0) {
-            elem.append('<li></li>')
+            elem.find('ul').append('<li></li>')
             var li = elem.find('li')
             for (var i in metadata.pip_info) {
                 if (i > 0) {
