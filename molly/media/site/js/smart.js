@@ -89,6 +89,7 @@ function async_load(url, query, meth) {
                 if (!!(window.history && history.pushState)) {
                     history.pushState(null, null, to_absolute(current_url))
                 } else {
+                    already_doing_hash_reload = false;
                     window.location.hash = current_url;
                 }
                 return async_load_callback(data, textStatus, xhr);
@@ -125,9 +126,11 @@ function capture_outbound()  {
 }
 
 $(window).load(function() {
+    already_doing_hash_reload = false;
     function check_hash_change(){
         var pathpart = encodeURIComponent(window.location.hash.substr(1));
-        if (window.location.hash && pathpart != current_url) {
+        if (window.location.hash && pathpart != current_url && !already_doing_hash_reload) {
+            already_doing_hash_reload = true;
             async_load(window.location.hash.substr(1), {}, "GET");
         }
         if (!!!(window.history && history.pushState)) {
