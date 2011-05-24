@@ -85,7 +85,7 @@ class PostcodesMapsProvider(BaseMapsProvider):
             entity.update_all_types_completion()
 
     def _get_entity_type(self):
-        category, _ = EntityTypeCategory.objects.get_or_create(name='Uncategorised')
+        category, created = EntityTypeCategory.objects.get_or_create(name='Uncategorised')
         entity_type, created = EntityType.objects.get_or_create(
             slug='post-code', category=category)
         entity_type.slug = 'post-code'

@@ -293,7 +293,7 @@ class OSMMapsProvider(BaseMapsProvider):
         entity_types = {}
         new_entity_types = set()
         for slug, (article, verbose_name, verbose_name_plural, nearby, category, subtype_of, et_category) in ENTITY_TYPES.items():
-            et_category, _ = EntityTypeCategory.objects.get_or_create(name=et_category)
+            et_category, created = EntityTypeCategory.objects.get_or_create(name=et_category)
             entity_type, created = EntityType.objects.get_or_create(slug=slug)
             entity_type.slug = slug
             entity_type.category=et_category
