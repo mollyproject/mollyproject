@@ -6,6 +6,7 @@ from django.conf import settings
 from django.contrib.gis.db import models
 from django.core.urlresolvers import reverse, NoReverseMatch
 from django.contrib.gis.geos import Point
+from django.utils.translation import get_language
 
 class Source(models.Model):
     module_name = models.CharField(max_length=128)
@@ -21,15 +22,45 @@ IDENTIFIER_SCHEME_PREFERENCE = getattr(
     ('atco', 'osm', 'naptan', 'postcode', 'bbc-tpeg'))
 
 class EntityTypeCategory(models.Model):
-    name = models.TextField(blank=False)
+    
+    @property
+    def name(self):
+        try:
+            return self.names.get(language_code=get_language()).name
+        except EntityTypeCategoryName.DoesNotExist:
+            return self.names.get(language_code=settings.LANGUAGE_CODE).name
+    
     def __unicode__(self):
         return self.name
 
+class EntityTypeCategoryName(models.Model):
+    entity_type_category = models.ForeignKey(EntityTypeCategory,
+                                             related_name='names')
+    name = models.TextField(blank=False)
+    language_code = models.CharField(max_length=10)
+
 class EntityType(models.Model):
     slug = models.SlugField()
-    article = models.CharField(max_length=2)
-    verbose_name = models.TextField()
-    verbose_name_plural = models.TextField()
+    
+    def _for_language(self, field):
+        try:
+            return getattr(self.names.get(language_code=get_language()), field)
+        except EntityTypeName.DoesNotExist:
+            return getattr(self.names.get(language_code=settings.LANGUAGE_CODE),
+                                          field)
+    
+    @property
+    def article(self):
+        return self._for_language('article')
+    
+    @property
+    def verbose_name(self):
+        return self._for_language('verbose_name')
+    
+    @property
+    def verbose_name_plural(self):
+        return self._for_language('verbose_name_plural')
+    
     show_in_nearby_list = models.BooleanField()
     show_in_category_list = models.BooleanField()
     note = models.TextField(null=True)
@@ -42,14 +73,14 @@ class EntityType(models.Model):
 
     def __unicode__(self):
         return self.verbose_name
-        
+    
     def save(self, *args, **kwargs):
         super(EntityType, self).save(*args, **kwargs)
-
+        
         subtypes_of = set([self])
         for subtype_of in self.subtype_of.all():
             subtypes_of |= set(subtype_of.subtype_of_completion.all())
-
+        
         if set(self.subtype_of_completion.all()) != subtypes_of:
             self.subtype_of_completion = subtypes_of
             for et in self.subtypes.all():
@@ -58,10 +89,16 @@ class EntityType(models.Model):
                 e.save()
         else:
             super(EntityType, self).save(*args, **kwargs)
-            
 
-    class Meta:
-        ordering = ('verbose_name',)
+class EntityTypeName(models.Model):
+    entity_type = models.ForeignKey(EntityType, related_name='names')
+    language_code = models.CharField(max_length=10)
+    article = models.CharField(max_length=10)
+    verbose_name = models.TextField()
+    verbose_name_plural = models.TextField()
+    
+    def __unicode__(self):
+        return self.name
 
 class Identifier(models.Model):
     scheme = models.CharField(max_length=32)
@@ -75,15 +112,33 @@ class EntityGroup(models.Model):
     Used to express relationships between entities
     """
     
-    title = models.TextField(blank=True)
+    @property
+    def title(self):
+        try:
+            return self.names.get(language_code=get_language()).title
+        except EntityGroupName.DoesNotExist:
+            return self.names.get(language_code=settings.LANGUAGE_CODE).title
+    
     source = models.ForeignKey(Source)
     ref_code = models.CharField(max_length=256)
 
     def __unicode__(self):
         return self.title
 
+class EntityGroupName(models.Model):
+    entity_group = models.ForeignKey(EntityGroup, related_name='names')
+    title = models.TextField(blank=False)
+    language_code = models.CharField(max_length=10)
+
 class Entity(models.Model):
-    title = models.TextField(blank=True)
+    
+    @property
+    def title(self):
+        try:
+            return self.names.get(language_code=get_language()).title
+        except EntityName.DoesNotExist:
+            return self.names.get(language_code=settings.LANGUAGE_CODE).title
+    
     source = models.ForeignKey(Source)
     
     primary_type = models.ForeignKey(EntityType, null=True)
@@ -91,13 +146,13 @@ class Entity(models.Model):
                                        related_name='entities')
     all_types_completion = models.ManyToManyField(EntityType, blank=True,
                                             related_name='entities_completion')
-
+    
     location = models.PointField(srid=4326, null=True)
     geometry = models.GeometryField(srid=4326, null=True)
     _metadata = models.TextField(default='{}')
-
+    
     absolute_url = models.TextField()
-
+    
     parent = models.ForeignKey('self', null=True)
     is_sublocation = models.BooleanField(default=False)
     is_stack = models.BooleanField(default=False)
@@ -133,7 +188,7 @@ class Entity(models.Model):
                     self.__identifiers[scheme] = value
             
             return self.__identifiers
-
+    
     def get_metadata(self):
         try:
             return self.__metadata
@@ -143,7 +198,7 @@ class Entity(models.Model):
     def set_metadata(self, metadata):
         self.__metadata = metadata
     metadata = property(get_metadata, set_metadata)
-
+    
     COMPASS_POINTS = ('N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW')
     def get_bearing(self, p1):
         p2 = self.location
@@ -151,7 +206,7 @@ class Entity(models.Model):
         compass_point = int(((90 - degrees(atan2(lon_diff, lat_diff)) + 22.5)
             % 360) // 45)
         return self.COMPASS_POINTS[compass_point]
-        
+    
     def get_distance_and_bearing_from(self, point):
         if point is None or not self.location:
             return None, None
@@ -162,19 +217,19 @@ class Entity(models.Model):
                 self.location.transform(27700, clone=True)),
             self.get_bearing(point),
         )
-
+    
     def save(self, *args, **kwargs):
         try:
             self._metadata = simplejson.dumps(self.__metadata)
         except AttributeError:
             pass
-
+        
         identifiers = kwargs.pop('identifiers', None)
         if not identifiers is None:            
             self.absolute_url = self._get_absolute_url(identifiers)
-
+        
         super(Entity, self).save(*args, **kwargs)
-            
+        
         if not identifiers is None:
             self._identifiers.all().delete()
             id_objs = []
@@ -193,7 +248,7 @@ class Entity(models.Model):
             self._identifiers.add(*id_objs)
         
         self.update_all_types_completion()
-        
+    
     def update_all_types_completion(self):    
         all_types = set()
         for t in self.all_types.all():
@@ -216,13 +271,9 @@ class Entity(models.Model):
         for identifier in self._identifiers.all():
             identifier.delete()
         super(Entity, self).delete()
-
+    
     objects = models.GeoManager()
-
-
-    class Meta:
-        ordering = ('title',)
-
+    
     def _get_absolute_url(self, identifiers):
         for scheme in IDENTIFIER_SCHEME_PREFERENCE:
             if scheme in identifiers:
@@ -244,10 +295,10 @@ class Entity(models.Model):
     
     def get_absolute_url(self):
         return self.absolute_url
-
+    
     def __unicode__(self):
         return self.title
-
+    
     @property
     def display_id(self):
         for et in self.all_types.all():
@@ -255,7 +306,7 @@ class Entity(models.Model):
                 return getattr(self, et.id_field).strip()
             else:
                 return getattr(self, et.id_field)
-            
+    
     def simplify_for_render(self, simplify_value, simplify_model):
         return simplify_value({
             '_type': '%s.%s' % (self.__module__[:-7], self._meta.object_name),
@@ -272,6 +323,8 @@ class Entity(models.Model):
             'identifier_scheme': self.identifier_scheme,
             'identifier_value': self.identifier_value
         })
-            
 
-
+class EntityName(models.Model):
+    entity_group = models.ForeignKey(Entity, related_name='names')
+    title = models.TextField(blank=False)
+    language_code = models.CharField(max_length=10)
