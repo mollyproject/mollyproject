@@ -11,6 +11,8 @@ from molly.apps.contact.providers import TooManyResults
 
 from .forms import GenericContactForm
 
+from django.utils.translation import ugettext as _
+
 class IndexView(BaseView):
 
     @BreadcrumbFactory
@@ -18,7 +20,7 @@ class IndexView(BaseView):
         return Breadcrumb(
             self.conf.local_name,
             None,
-            'Contact search',
+            _('Contact search'),
             lazy_reverse('index'),
         )
 
@@ -40,7 +42,7 @@ class ResultListView(IndexView):
         return Breadcrumb(
             self.conf.local_name,
             None,
-            'Contact search',
+            _('Contact search'),
             lazy_reverse('result_list'),
         )
 
@@ -60,7 +62,7 @@ class ResultListView(IndexView):
                 people = provider.perform_query(**query)
             except TooManyResults:
                 return self.handle_error(request, context,
-                                         "Your search returned too many results.")
+                                         _("Your search returned too many results."))
 
             context.update({
                 'results': people,
@@ -86,7 +88,7 @@ class ResultDetailView(BaseView):
         return Breadcrumb(
             self.conf.local_name,
             None,
-            'Contact search',
+            _('Contact search'),
             lazy_reverse('result_detail', id),
         )
 
