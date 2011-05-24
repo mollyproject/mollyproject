@@ -28,7 +28,13 @@ class EntityTypeCategory(models.Model):
         try:
             return self.names.get(language_code=get_language()).name
         except EntityTypeCategoryName.DoesNotExist:
-            return self.names.get(language_code=settings.LANGUAGE_CODE).name
+            try:
+                return self.names.get(language_code=settings.LANGUAGE_CODE).name
+            except EntityTypeCategoryName.DoesNotExist:
+                if '-' in settings.LANGUAGE_CODE:
+                    return self.names.get(language_code=settings.LANGUAGE_CODE.split('-')[0]).name
+                else:
+                    raise
     
     def __unicode__(self):
         return self.name
@@ -49,8 +55,13 @@ class EntityType(models.Model):
         try:
             return getattr(self.names.get(language_code=get_language()), field)
         except EntityTypeName.DoesNotExist:
-            return getattr(self.names.get(language_code=settings.LANGUAGE_CODE),
-                                          field)
+            try:
+                return getattr(self.names.get(language_code=settings.LANGUAGE_CODE).name, field)
+            except EntityTypeName.DoesNotExist:
+                if '-' in settings.LANGUAGE_CODE:
+                    return getattr(self.names.get(language_code=settings.LANGUAGE_CODE.split('-')[0]), field)
+                else:
+                    raise
     
     @property
     def verbose_name(self):
@@ -120,7 +131,13 @@ class EntityGroup(models.Model):
         try:
             return self.names.get(language_code=get_language()).title
         except EntityGroupName.DoesNotExist:
-            return self.names.get(language_code=settings.LANGUAGE_CODE).title
+            try:
+                return self.names.get(language_code=settings.LANGUAGE_CODE).title
+            except EntityGroupName.DoesNotExist:
+                if '-' in settings.LANGUAGE_CODE:
+                    return self.names.get(language_code=settings.LANGUAGE_CODE.split('-')[0]).title
+                else:
+                    raise
     
     source = models.ForeignKey(Source)
     ref_code = models.CharField(max_length=256)
@@ -143,7 +160,13 @@ class Entity(models.Model):
         try:
             return self.names.get(language_code=get_language()).title
         except EntityName.DoesNotExist:
-            return self.names.get(language_code=settings.LANGUAGE_CODE).title
+            try:
+                return self.names.get(language_code=settings.LANGUAGE_CODE).title
+            except EntityName.DoesNotExist:
+                if '-' in settings.LANGUAGE_CODE:
+                    return self.names.get(language_code=settings.LANGUAGE_CODE.split('-')[0]).title
+                else:
+                    raise
     
     source = models.ForeignKey(Source)
     

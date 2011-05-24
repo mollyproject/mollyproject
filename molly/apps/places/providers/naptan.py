@@ -12,7 +12,11 @@ from StringIO import StringIO
 from xml.sax import ContentHandler, make_parser
 import yaml
 
+from django.conf import settings
 from django.contrib.gis.geos import Point
+from django.utils.translation import ugettext_noop as _
+from django.utils.translation import ugettext, get_language
+from molly.utils.misc import override
 
 from molly.apps.places.providers import BaseMapsProvider
 from molly.apps.places.models import EntityType, Entity, EntityGroup, Source, EntityTypeCategory
@@ -25,6 +29,7 @@ class NaptanContentHandler(ContentHandler):
         ('NaptanCode',): 'naptan-code',
         ('PlateCode',): 'plate-code',
         ('Descriptor','CommonName'): 'common-name',
+        ('AlternativeDescriptors', 'Descriptor','CommonName'): 'common-name',
         ('Descriptor','Indicator'): 'indicator',
         ('Descriptor','Street'): 'street',
         ('Place','NptgLocalityRef'): 'locality-ref',
@@ -63,9 +68,16 @@ class NaptanContentHandler(ContentHandler):
         if name == 'StopPoint':
             self.stop_areas = []
             self.meta = defaultdict(str)
+            self.names = dict()
         elif name == 'StopArea':
             self.meta = defaultdict(str)
-
+            self.names = dict()
+        elif name in ('CommonName', 'Name'):
+            if 'xml:lang' in attrs:
+                self.lang = attrs['xml:lang'].lower()
+            else:
+                self.lang = None
+    
     def endElement(self, name):
         self.name_stack.pop()
 
@@ -85,6 +97,7 @@ class NaptanContentHandler(ContentHandler):
                 entity = self.add_stop(self.meta, entity_type, self.source)
                 if entity:
                     self.entities.add(entity)
+        
         elif name == 'StopAreaRef':
             self.stop_areas.append(self.meta['stop-area'])
             del self.meta['stop-area']
@@ -101,8 +114,25 @@ class NaptanContentHandler(ContentHandler):
             sa, created = EntityGroup.objects.get_or_create(
                 source=self.source,
                 ref_code=self.meta['area-code'])
-            sa.title = self.meta['name']
             sa.save()
+            for lang_code, name in self.names.items():
+                names = sa.names.filter(language_code=lang_code)
+                if names.count() == 0:
+                    sa.names.create(
+                        language_code=lang_code,
+                        title=name
+                    )
+                else:
+                    names[0].name = name
+                    names[0].save()
+        
+        elif name == 'CommonName':
+            if self.lang not in self.names:
+                self.names[self.lang] = self.meta['common-name']
+        
+        elif name == 'Name' and self.meta['name'] != '':
+            if self.lang not in self.names:
+                self.names[self.lang] = self.meta['name']
 
     def endDocument(self):
         pass
@@ -149,47 +179,70 @@ class NaptanContentHandler(ContentHandler):
             return
         
         if self.meta['stop-type'] in ('MET','GAT','FER', 'RLY'):
-            title = common_name
+            names = self.names
         else:
+            
+            names = dict()
+            
+            for lang_code, lang_name in settings.LANGUAGES:
+                with override(lang_code):
+                    
+                    # Try and find one in our preferred order
+                    for lang in (lang_code, 'en', None):
+                        if lang in self.names:
+                            common_name = self.names[lang]
+                            break
+                
+                    # Convert indicator to a friendlier format
+                    indicator = {
+                        # Translators: This is referring to bus stop location descriptions
+                        'opp': ugettext('Opposite'),
+                        'opposite': ugettext('Opposite'),
+                        # Translators: This is referring to bus stop location descriptions
+                        'adj': ugettext('Adjacent'),
+                        # Translators: This is referring to bus stop location descriptions
+                        'outside': ugettext('Outside'),
+                        'o/s': ugettext('Outside'),
+                        # Translators: This is referring to bus stop location descriptions
+                        'nr': ugettext('Near'),
+                        # Translators: This is referring to bus stop location descriptions
+                        'inside': ugettext('Inside'),
+                    }.get(indicator, indicator)
+                    
+                    if indicator is None and self.meta['stop-type'] in ('AIR', 'FTD', 'RSE', 'TMU', 'BCE'):
+                        # Translators: This is referring to public transport entities
+                        indicator = ugettext('Entrance to %s') % common_name
+                    
+                    elif indicator is None and self.meta['stop-type'] in ('FBT',):
+                        # Translators: This is referring to ferry ports
+                        indicator = ugettext('Berth at %s') % common_name
+                    
+                    elif indicator is None and self.meta['stop-type'] in ('RPL','PLT'):
+                        # Translators: This is referring to rail and metro stations
+                        indicator = ugettext('Platform at %s') % common_name
+                    
+                    elif indicator is not None:
+                        title = indicator + ' ' + common_name
+                    
+                    else:
+                        
+                        title = common_name
+                    
+                    if street != None and street != '-' \
+                                 and not common_name.startswith(street):
+                        title += ', ' + street
+                    
+                    locality_lang = self.nptg_localities.get(locality)
+                    if locality_lang != None:
+                        if lang_code in locality_lang:
+                            title += ', ' + locality_lang[lang_code]
+                        else:
+                            title += ', ' + locality_lang['en']
+                    
+                    names[lang_code] = title
         
-            # Convert indicator to a friendlier format
-            indicator = {
-                'opp': 'Opposite',
-                'opposite': 'Opposite',
-                'adj': 'Adjacent',
-                'outside': 'Outside',
-                'o/s': 'Outside',
-                'nr': 'Near',
-                'inside': 'Inside',
-            }.get(indicator, indicator)
-            
-            if indicator is None and self.meta['stop-type'] in ('AIR', 'FTD', 'RSE', 'TMU', 'BCE'):
-                indicator = 'Entrance to'
-            
-            if indicator is None and self.meta['stop-type'] in ('FBT',):
-                indicator = 'Berth at'
-            
-            if indicator is None and self.meta['stop-type'] in ('RPL','PLT'):
-                indicator = 'Platform at'
-            
-            title = ''
-            
-            if indicator != None:
-                title += indicator + ' '
-            
-            title += common_name
-            
-            if street != None and street != '-' \
-                         and not common_name.startswith(street):
-                title += ', ' + street
-            
-            locality = self.nptg_localities.get(locality)
-            if locality != None:
-                title += ', ' + locality
-        
-        entity.title = title
         entity.primary_type = entity_type
-
+        
         if not entity.metadata:
             entity.metadata = {}
         entity.metadata['naptan'] = meta
@@ -212,16 +265,29 @@ class NaptanContentHandler(ContentHandler):
         if indicator != None and re.match('Stop [A-Z]\d\d?', indicator):
             identifiers['stop'] = indicator[5:]
         
-        
         entity.save(identifiers=identifiers)
+        
+        for lang_code, name in names.items():
+            # This is the NaPTAN, so default to English
+            if lang_code is None: lang_code = 'en'
+            titles = entity.names.filter(language_code=lang_code)
+            if titles.count() == 0:
+                entity.names.create(
+                    language_code=lang_code,
+                    title=name
+                )
+            else:
+                title = titles[0]
+                title.title = name
+                title.save()
+        
         entity.all_types = (entity_type,)
-        
         entity.update_all_types_completion()
-        
         entity.groups.clear()
         for stop_area in self.stop_areas:
             sa, created = EntityGroup.objects.get_or_create(source=source, ref_code=stop_area)
             entity.groups.add(sa)
+        entity.save()
         
         return entity
 
@@ -235,33 +301,33 @@ class NaptanMapsProvider(BaseMapsProvider):
     TRAIN_STATION = object()
     BUS_STOP_DEFINITION = {
             'slug': 'bus-stop',
-            'article': 'a',
-            'verbose-name': 'bus stop',
-            'verbose-name-plural': 'bus stops',
+            'verbose-name': _('bus stop'),
+            'verbose-name-singular': _('a bus stop'),
+            'verbose-name-plural': _('bus stops'),
             'nearby': True, 'category': False,
             'uri-local': 'BusStop',
         }
     TAXI_RANK_DEFINITION = {
         'slug': 'taxi-rank',
-        'article': 'a',
-        'verbose-name': 'taxi rank',
-        'verbose-name-plural': 'taxi ranks',
+        'verbose-name': _('taxi rank'),
+        'verbose-name-singular': _('a taxi rank'),
+        'verbose-name-plural': _('taxi ranks'),
         'nearby': False, 'category': False,
         'uri-local': 'TaxiRank',
     }
     RAIL_STATION_DEFINITION = {
             'slug': 'rail-station',
-            'article': 'a',
-            'verbose-name': 'rail station',
-            'verbose-name-plural': 'rail stations',
+            'verbose-name': _('rail station'),
+            'verbose-name-singular': _('a rail station'),
+            'verbose-name-plural': _('rail stations'),
             'nearby': True, 'category': False,
             'uri-local': 'RailStation',
         }
     HERITAGE_RAIL_STATION_DEFINITION = {
             'slug': 'heritage-rail-station',
-            'article': 'a',
-            'verbose-name': 'heritage rail station',
-            'verbose-name-plural': 'heritage rail stations',
+            'verbose-name': _('heritage rail station'),
+            'verbose-name-singular': _('a heritage rail station'),
+            'verbose-name-plural': _('heritage rail stations'),
             'nearby': True, 'category': False,
             'uri-local': 'HeritageRailStation',
         }
@@ -272,9 +338,9 @@ class NaptanMapsProvider(BaseMapsProvider):
         'BCQ': BUS_STOP_DEFINITION,
         'BSE': {
             'slug': 'bus-station-entrance',
-            'article': 'a',
-            'verbose-name': 'bus station entrance',
-            'verbose-name-plural': 'bus station entrances',
+            'verbose-name': _('bus station entrance'),
+            'verbose-name-singular': _('a bus station entrance'),
+            'verbose-name-plural': _('bus station entrances'),
             'nearby': False, 'category': False,
             'uri-local': 'BusStationEntrance',
         },
@@ -283,41 +349,50 @@ class NaptanMapsProvider(BaseMapsProvider):
         'RLY': RAIL_STATION_DEFINITION,
         'RSE': {
             'slug': 'rail-station-entrance',
-            'article': 'a',
-            'verbose-name': 'rail station entrance',
-            'verbose-name-plural': 'rail station entrances',
+            'verbose-name': _('rail station entrance'),
+            'verbose-name-singular': _('a rail station entrance'),
+            'verbose-name-plural': _('rail station entrances'),
             'nearby': False, 'category': False,
             'uri-local': 'RailStationEntrance',
         },
         'RPL': {
             'slug': 'rail-platform',
-            'article': 'a',
-            'verbose-name': 'rail platform',
-            'verbose-name-plural': 'rail platform',
+            'verbose-name': _('rail platform'),
+            'verbose-name-singular': _('a rail platform'),
+            'verbose-name-plural': _('rail platforms'),
             'nearby': False, 'category': False,
             'uri-local': 'RailPlatform',
         },
         'TMU': {
             'slug': 'metro-entrance',
-            'article': 'a',
-            'verbose-name': 'metro entrance',
-            'verbose-name-plural': 'metro entrances',
+            # Translators: This is the generic term for rapid transit systems
+            'verbose-name': _('metro station entrance'),
+            # Translators: This is the generic term for rapid transit systems
+            'verbose-name-singular': _('a metro station entrance'),
+            # Translators: This is the generic term for rapid transit systems
+            'verbose-name-plural': _('metro station entrances'),
             'nearby': False, 'category': False,
             'uri-local': 'MetroEntrance',
         },
         'PLT': {
             'slug': 'platform',
-            'article': 'a',
-            'verbose-name': 'platform',
-            'verbose-name-plural': 'platforms',
+            # Translators: This is the generic term for rapid transit systems
+            'verbose-name': _('metro station platform'),
+            # Translators: This is the generic term for rapid transit systems
+            'verbose-name-singular': _('a metro station platform'),
+            # Translators: This is the generic term for rapid transit systems
+            'verbose-name-plural': _('metro station platforms'),
             'nearby': False, 'category': False,
             'uri-local': 'MetroPlatform',
         },
         'MET': {
             'slug': 'metro-station',
-            'article': 'a',
-            'verbose-name': 'metro station',
-            'verbose-name-plural': 'metro stations',
+            # Translators: This is the generic term for rapid transit systems
+            'verbose-name': _('metro station'),
+            # Translators: This is the generic term for rapid transit systems
+            'verbose-name-singular': _('a metro station'),
+            # Translators: This is the generic term for rapid transit systems
+            'verbose-name-plural': _('metro stations'),
             'nearby': True, 'category': False,
             'uri-local': 'MetroStation',
         },
@@ -328,9 +403,12 @@ class NaptanMapsProvider(BaseMapsProvider):
         'MET:BL': HERITAGE_RAIL_STATION_DEFINITION,
         'MET:BP': {
             'slug': 'tramway-stop',
-            'article': 'a',
-            'verbose-name': 'tramway stop',
-            'verbose-name-plural': 'tramway stops',
+            # Translators: This is the Blackpool tram system
+            'verbose-name': _('tramway stop'),
+            # Translators: This is the Blackpool tram system
+            'verbose-name-singular': _('a tramway stop'),
+            # Translators: This is the Blackpool tram system
+            'verbose-name-plural': _('tramway stops'),
             'nearby': True, 'category': False,
             'uri-local': 'TramwayStop',
         },
@@ -338,9 +416,9 @@ class NaptanMapsProvider(BaseMapsProvider):
         'MET:CA': HERITAGE_RAIL_STATION_DEFINITION,
         'MET:CR': {
             'slug': 'tramlink-stop',
-            'article': 'a',
-            'verbose-name': 'tram stop',
-            'verbose-name-plural': 'tram stops',
+            'verbose-name': _('tram stop'),
+            'verbose-name-singular': _('a tram stop'),
+            'verbose-name-plural': _('tram stops'),
             'nearby': True, 'category': False,
             'uri-local': 'TramlinkStop',
         },
@@ -349,9 +427,12 @@ class NaptanMapsProvider(BaseMapsProvider):
         'MET:DF': HERITAGE_RAIL_STATION_DEFINITION,
         'MET:DL': {
             'slug': 'dlr-station',
-            'article': 'a',
-            'verbose-name': 'DLR station',
-            'verbose-name-plural': 'DLR stations',
+            # Translators: This is the Docklands Light Railway
+            'verbose-name': _('DLR station'),
+            # Translators: This is the Docklands Light Railway
+            'verbose-name-singular': _('a DLR station'),
+            # Translators: This is the Docklands Light Railway
+            'verbose-name-plural': _('DLR stations'),
             'nearby': True, 'category': False,
             'uri-local': 'DLRStation',
         },
@@ -365,18 +446,24 @@ class NaptanMapsProvider(BaseMapsProvider):
         'MET:GC': HERITAGE_RAIL_STATION_DEFINITION,
         'MET:GL': {
             'slug': 'subway-station',
-            'article': 'a',
-            'verbose-name': 'Subway station',
-            'verbose-name-plural': 'Subway stations',
+            # Translators: This is the Glasgow Subway
+            'verbose-name': _('Subway station'),
+            # Translators: This is the Glasgow Subway
+            'verbose-name-singular': _('a Subway station'),
+            # Translators: This is the Glasgow Subway
+            'verbose-name-plural': _('Subway stations'),
             'nearby': True, 'category': False,
             'uri-local': 'SubwayStation',
         },
         'MET:GO': HERITAGE_RAIL_STATION_DEFINITION,
         'MET:GW': {
             'slug': 'shuttle-station',
-            'article': 'a',
-            'verbose-name': 'shuttle station',
-            'verbose-name-plural': 'shuttle station',
+            # Translators: This is the Gatwick airport shuttle
+            'verbose-name': _('shuttle station'),
+            # Translators: This is the Gatwick airport shuttle
+            'verbose-name-singular': _('a shuttle station'),
+            # Translators: This is the Gatwick airport shuttle
+            'verbose-name-plural': _('shuttle stations'),
             'nearby': True, 'category': False,
             'uri-local': 'ShuttleStation',
         },
@@ -389,17 +476,23 @@ class NaptanMapsProvider(BaseMapsProvider):
         'MET:LL': HERITAGE_RAIL_STATION_DEFINITION,
         'MET:LU': {
             'slug': 'tube-station',
-            'article': 'an',
-            'verbose-name': 'Underground station',
-            'verbose-name-plural': 'Underground stations',
+            # Translators: This is the London Underground (Tube)
+            'verbose-name': _('Underground station'),
+            # Translators: This is the London Underground (Tube)
+            'verbose-name-singular': _('an Underground station'),
+            # Translators: This is the London Underground (Tube)
+            'verbose-name-plural': _('Underground stations'),
             'nearby': True, 'category': False,
             'uri-local': 'TubeStation',
         },
         'MET:MA': {
             'slug': 'metrolink-station',
-            'article': 'a',
-            'verbose-name': 'Metrolink station',
-            'verbose-name-plural': 'Metrolink stations',
+            # Translators: This is the Manchester tram system
+            'verbose-name': _('Metrolink station'),
+            # Translators: This is the Manchester tram system
+            'verbose-name-singular': _('a Metrolink station'),
+            # Translators: This is the Manchester tram system
+            'verbose-name-plural': _('Metrolink stations'),
             'nearby': True, 'category': False,
             'uri-local': 'MetrolinkStation',
         },
@@ -408,9 +501,9 @@ class NaptanMapsProvider(BaseMapsProvider):
         'MET:NN': HERITAGE_RAIL_STATION_DEFINITION,
         'MET:NO': {
             'slug': 'net-stop',
-            'article': 'a',
-            'verbose-name': 'tram stop',
-            'verbose-name-plural': 'tram stops',
+            'verbose-name': _('tram stop'),
+            'verbose-name-singular': _('a tram stop'),
+            'verbose-name-plural': _('tram stops'),
             'nearby': True, 'category': False,
             'uri-local': 'NETStop',
         },
@@ -429,18 +522,24 @@ class NaptanMapsProvider(BaseMapsProvider):
         'MET:SV': HERITAGE_RAIL_STATION_DEFINITION,
         'MET:SY': {
             'slug': 'supertram-stop',
-            'article': 'a',
-            'verbose-name': 'Supertram stop',
-            'verbose-name-plural': 'Supertram stops',
+            # Translators: This is the Sheffield tram system
+            'verbose-name': _('Supertram stop'),
+            # Translators: This is the Sheffield tram system
+            'verbose-name-singular': _('a Supertram stop'),
+            # Translators: This is the Sheffield tram system
+            'verbose-name-plural': _('Supertram stops'),
             'nearby': True, 'category': False,
             'uri-local': 'SupertramStop',
         },
         'MET:TL': HERITAGE_RAIL_STATION_DEFINITION,
         'MET:TW': {
             'slug': 'tyne-and-wear-metro-station',
-            'article': 'a',
-            'verbose-name': 'Metro station',
-            'verbose-name-plural': 'Metro stations',
+            # Translators: This is the Tyne & Wear metro system
+            'verbose-name': _('Metro station'),
+            # Translators: This is the Tyne & Wear metro system
+            'verbose-name-singular': _('a Metro station'),
+            # Translators: This is the Tyne & Wear metro system
+            'verbose-name-plural': _('Metro stations'),
             'nearby': True, 'category': False,
             'uri-local': 'TyneAndWearMetroStation',
         },
@@ -451,9 +550,12 @@ class NaptanMapsProvider(BaseMapsProvider):
         'MET:WL': HERITAGE_RAIL_STATION_DEFINITION,
         'MET:WM': {
             'slug': 'midland-metro-stop',
-            'article': 'a',
-            'verbose-name': 'Midland Metro stop',
-            'verbose-name-plural': 'Midland Metro stops',
+            # Translators: This is the Midland Metro system
+            'verbose-name': _('Midland Metro stop'),
+            # Translators: This is the Midland Metro system
+            'verbose-name-singular': _('a Midland Metro stop'),
+            # Translators: This is the Midland Metro system
+            'verbose-name-plural': _('Midland Metro stops'),
             'nearby': True, 'category': False,
             'uri-local': 'MidlandMetroStation',
         },
@@ -461,49 +563,49 @@ class NaptanMapsProvider(BaseMapsProvider):
         'MET:WW': HERITAGE_RAIL_STATION_DEFINITION,
         'GAT': {
             'slug': 'airport',
-            'article': 'an',
-            'verbose-name': 'airport',
-            'verbose-name-plural': 'airports',
+            'verbose-name': _('airport'),
+            'verbose-name-singular': _('an airport'),
+            'verbose-name-plural': _('airports'),
             'nearby': True, 'category': False,
             'uri-local': 'Airport',
         },
         'AIR': {
             'slug': 'airport-entrance',
-            'article': 'an',
-            'verbose-name': 'airport entrance',
-            'verbose-name-plural': 'airport entrances',
+            'verbose-name': _('airport entrance'),
+            'verbose-name-singular': _('an airport entrance'),
+            'verbose-name-plural': _('airport entrances'),
             'nearby': False, 'category': False,
             'uri-local': 'AirportEntrance',
         },
         'FER': {
             'slug': 'ferry-terminal',
-            'article': 'a',
-            'verbose-name': 'ferry terminal',
-            'verbose-name-plural': 'ferry terminals',
+            'verbose-name': _('ferry terminal'),
+            'verbose-name-singular': _('a ferry terminal'),
+            'verbose-name-plural': _('ferry terminals'),
             'nearby': True, 'category': False,
             'uri-local': 'FerryTerminal',
         },
         'FTD': {
             'slug': 'ferry-terminal-entrance',
-            'article': 'a',
-            'verbose-name': 'ferry terminal entrance',
-            'verbose-name-plural': 'ferry terminal entrances',
+            'verbose-name': _('ferry terminal entrance'),
+            'verbose-name-singular': _('a ferry terminal entrance'),
+            'verbose-name-plural': _('ferry terminal entrances'),
             'nearby': False, 'category': False,
             'uri-local': 'FerryTerminalEntrance',
         },
         'FBT': {
             'slug': 'ferry-berth',
-            'article': 'a',
-            'verbose-name': 'ferry berth',
-            'verbose-name-plural': 'ferry berths',
+            'verbose-name': _('ferry berth'),
+            'verbose-name-singular': _('a ferry berth'),
+            'verbose-name-plural': _('ferry berths'),
             'nearby': False, 'category': False,
             'uri-local': 'FerryBerth',
         },
         None: {
             'slug': 'public-transport-access-node',
-            'article': 'a',
-            'verbose-name': 'public transport access node',
-            'verbose-name-plural': 'public transport access nodes',
+            'verbose-name': _('public transport access node'),
+            'verbose-name-singular': _('a public transport access node'),
+            'verbose-name-plural': _('public transport access nodes'),
             'nearby': False, 'category': False,
             'uri-local': 'PublicTransportAccessNode',
         }
@@ -561,9 +663,11 @@ class NaptanMapsProvider(BaseMapsProvider):
         archive = zipfile.ZipFile(filename)
         if hasattr(archive, 'open'):
             f = archive.open('Localities.csv')
+            falt = archive.open('LocalityAlternativeNames.csv')
         else:
             f = StringIO(archive.read('Localities.csv'))
-        localities = self._get_nptg(f)
+            falt = StringIO(archive.read('LocalityAlternativeNames.csv'))
+        localities = self._get_nptg_alt_names(falt, self._get_nptg(f))
         os.unlink(filename)
         
         if self._areas is None:
@@ -622,9 +726,11 @@ class NaptanMapsProvider(BaseMapsProvider):
         archive = zipfile.ZipFile(filename)
         if hasattr(archive, 'open'):
             f = archive.open('Localities.csv')
+            falt = archive.open('LocalityAlternativeNames.csv')
         else:
             f = StringIO(archive.read('Localities.csv'))
-        localities = self._get_nptg(f)
+            falt = StringIO(archive.read('LocalityAlternativeNames.csv'))
+        localities = self._get_nptg_alt_names(falt, self._get_nptg(f))
         os.unlink(filename)
         
         f, filename = tempfile.mkstemp()
@@ -645,17 +751,39 @@ class NaptanMapsProvider(BaseMapsProvider):
         parser.parse(pipe_r)
 
     def _get_nptg(self, f):
-        localities = {}
+        localities=defaultdict(dict)
         csvfile = csv.reader(f)
         csvfile.next()
         for line in csvfile:
-            localities[line[0]] = line[1]
+            if line[2].lower() not in localities[line[0]]:
+                localities[line[0]][line[2].lower()] = line[1]
+        return localities
+
+    def _get_nptg_alt_names(self, f, localities):
+        csvfile = csv.reader(f)
+        csvfile.next()
+        for line in csvfile:
+            if line[3].lower() not in localities[line[0]]:
+                localities[line[0]][line[3].lower()] = line[2]
         return localities
 
     def _get_entity_types(self):
 
         entity_types = {}
-        category, created = EntityTypeCategory.objects.get_or_create(name='Transport')
+        category, created = EntityTypeCategory.objects.get_or_create(names__name=ugettext('Transport'),
+                                                                     names__language_code=get_language())
+        for lang_code, lang_name in settings.LANGUAGES:
+            with override(lang_code):
+                name = category.names.filter(language_code=lang_code)
+                if name.count() == 0:
+                    category.names.create(language_code=lang_code,
+                                          name=ugettext('Transport'))
+                else:
+                    name = name[0]
+                    name.name = ugettext('Transport')
+                    name.save()
+        category.save()
+        
         for stop_type in self.entity_type_definitions:
             et = self.entity_type_definitions[stop_type]
             
@@ -666,14 +794,26 @@ class NaptanMapsProvider(BaseMapsProvider):
             
             entity_type.category = category
             entity_type.uri = "http://mollyproject.org/schema/maps#%s" % et['uri-local']
-            entity_type.article = et['article']
-            entity_type.verbose_name = et['verbose-name']
-            entity_type.verbose_name_plural = et['verbose-name-plural']
             if created:
                 entity_type.show_in_nearby_list = et['nearby']
                 entity_type.show_in_category_list = et['category']
             entity_type.save()
-
+            for lang_code, lang_name in settings.LANGUAGES:
+                with override(lang_code):
+                    name = entity_type.names.filter(language_code=lang_code)
+                    if name.count() == 0:
+                        entity_type.names.create(
+                            language_code=lang_code,
+                            verbose_name=ugettext(et['verbose-name']),
+                            verbose_name_singular=ugettext(et['verbose-name-singular']),
+                            verbose_name_plural=ugettext(et['verbose-name-plural']))
+                    else:
+                        name = name[0]
+                        name.verbose_name=ugettext(et['verbose-name'])
+                        name.verbose_name_singular=ugettext(et['verbose-name-singular'])
+                        name.verbose_name_plural=ugettext(et['verbose-name-plural'])
+                        name.save()
+            
             entity_types[stop_type] = entity_type
 
         for stop_type, entity_type in entity_types.items():
