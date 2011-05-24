@@ -1,0 +1,1167 @@
+9400ZZLUACT:
+  line-codes:
+  - D
+  - P
+  station-code: ACT
+9400ZZLUACY:
+  line-codes:
+  - N
+  station-code: ARC
+9400ZZLUADE:
+  line-codes:
+  - D
+  - H
+  station-code: ALE
+9400ZZLUAGL:
+  line-codes:
+  - N
+  station-code: ANG
+9400ZZLUALD:
+  line-codes:
+  - H
+  - M
+  station-code: ALD
+9400ZZLUALP:
+  line-codes:
+  - P
+  station-code: ALP
+9400ZZLUAMS:
+  line-codes:
+  - M
+  station-code: AME
+9400ZZLUASG:
+  line-codes:
+  - P
+  station-code: AGR
+9400ZZLUASL:
+  line-codes:
+  - P
+  station-code: ARL
+9400ZZLUBBB:
+  line-codes:
+  - D
+  - H
+  station-code: BBB
+9400ZZLUBBN:
+  line-codes:
+  - H
+  - M
+  station-code: BAR
+9400ZZLUBDS:
+  line-codes:
+  - P
+  station-code: BGR
+9400ZZLUBEC:
+  line-codes:
+  - D
+  station-code: BCT
+9400ZZLUBKE:
+  line-codes:
+  - C
+  station-code: BDE
+9400ZZLUBKF:
+  line-codes:
+  - D
+  - H
+  station-code: BLF
+9400ZZLUBKG:
+  line-codes:
+  - D
+  - H
+  - M
+  station-code: BKG
+9400ZZLUBKH:
+  line-codes:
+  - C
+  station-code: BHL
+9400ZZLUBLG:
+  line-codes:
+  - C
+  station-code: BNG
+9400ZZLUBLM:
+  line-codes:
+  - N
+  station-code: BAL
+9400ZZLUBLR:
+  line-codes:
+  - V
+  station-code: BHR
+9400ZZLUBMY:
+  line-codes:
+  - J
+  station-code: BER
+9400ZZLUBND:
+  line-codes:
+  - C
+  - J
+  station-code: BDS
+9400ZZLUBNK:
+  line-codes:
+  - C
+  - N
+  - W
+  station-code: BNK
+9400ZZLUBOR:
+  line-codes:
+  - N
+  station-code: BOR
+9400ZZLUBOS:
+  line-codes:
+  - P
+  station-code: BOS
+9400ZZLUBSC:
+  line-codes:
+  - D
+  - P
+  station-code: BCT
+9400ZZLUBST:
+  line-codes:
+  - B
+  - H
+  - J
+  - M
+  station-code: BST
+9400ZZLUBTK:
+  line-codes:
+  - N
+  station-code: BUR
+9400ZZLUBTX:
+  line-codes:
+  - N
+  station-code: BTX
+9400ZZLUBWR:
+  line-codes:
+  - D
+  - H
+  station-code: BWR
+9400ZZLUBWT:
+  line-codes:
+  - H
+  station-code: BAY
+9400ZZLUBXN:
+  line-codes:
+  - V
+  station-code: BRX
+9400ZZLUBZP:
+  line-codes:
+  - N
+  station-code: BPL
+9400ZZLUCAL:
+  line-codes:
+  - M
+  station-code: CLF
+9400ZZLUCAR:
+  line-codes:
+  - P
+  station-code: CRD
+9400ZZLUCFM:
+  line-codes:
+  - N
+  station-code: CHF
+9400ZZLUCGN:
+  line-codes:
+  - P
+  station-code: COV
+9400ZZLUCGT:
+  line-codes:
+  - J
+  station-code: CNT
+9400ZZLUCHL:
+  line-codes:
+  - C
+  station-code: CYL
+9400ZZLUCHX:
+  line-codes:
+  - B
+  - N
+  - J
+  station-code: CHX
+9400ZZLUCKS:
+  line-codes:
+  - P
+  station-code: CFS
+9400ZZLUCND:
+  line-codes:
+  - N
+  station-code: COL
+9400ZZLUCPC:
+  line-codes:
+  - N
+  station-code: CPC
+9400ZZLUCPK:
+  line-codes: []
+  station-code: ''
+9400ZZLUCPN:
+  line-codes:
+  - N
+  station-code: CPN
+9400ZZLUCPS:
+  line-codes:
+  - N
+  station-code: CPS
+9400ZZLUCSD:
+  line-codes:
+  - M
+  - N
+  station-code: CLW
+9400ZZLUCSM:
+  line-codes: []
+  station-code: ''
+9400ZZLUCST:
+  line-codes:
+  - D
+  - H
+  station-code: CST
+9400ZZLUCTN:
+  line-codes:
+  - N
+  station-code: CAM
+9400ZZLUCWL:
+  line-codes:
+  - C
+  station-code: CHG
+9400ZZLUCWP:
+  line-codes:
+  - D
+  station-code: CHP
+9400ZZLUCWR:
+  line-codes:
+  - J
+  station-code: CWR
+9400ZZLUCXY:
+  line-codes:
+  - M
+  station-code: CRX
+9400ZZLUCYD:
+  line-codes:
+  - M
+  station-code: CWD
+9400ZZLUCYF:
+  line-codes:
+  - J
+  station-code: CWF
+9400ZZLUDBN:
+  line-codes:
+  - C
+  station-code: DEB
+9400ZZLUDGE:
+  line-codes:
+  - D
+  station-code: DGE
+9400ZZLUDGY:
+  line-codes:
+  - D
+  station-code: DGH
+9400ZZLUDOH:
+  line-codes:
+  - J
+  station-code: DHL
+9400ZZLUEAC:
+  line-codes:
+  - B
+  - N
+  station-code: ELE
+9400ZZLUEAE:
+  line-codes:
+  - M
+  - P
+  station-code: ETE
+9400ZZLUEAN:
+  line-codes:
+  - C
+  station-code: EAC
+9400ZZLUEBY:
+  line-codes:
+  - C
+  - D
+  station-code: EBY
+9400ZZLUECM:
+  line-codes:
+  - D
+  - P
+  station-code: ECM
+9400ZZLUECT:
+  line-codes:
+  - D
+  - P
+  station-code: ECT
+9400ZZLUEFY:
+  line-codes:
+  - N
+  station-code: EFY
+9400ZZLUEGW:
+  line-codes:
+  - N
+  station-code: EDG
+9400ZZLUEHM:
+  line-codes:
+  - D
+  - H
+  station-code: EHM
+9400ZZLUEMB:
+  line-codes:
+  - B
+  - D
+  - H
+  - N
+  station-code: EMB
+9400ZZLUEPG:
+  line-codes:
+  - C
+  station-code: EPP
+9400ZZLUEPK:
+  line-codes:
+  - D
+  station-code: EPK
+9400ZZLUEPY:
+  line-codes:
+  - D
+  station-code: EPY
+9400ZZLUERB:
+  line-codes:
+  - B
+  station-code: ERB
+9400ZZLUERC:
+  line-codes:
+  - D
+  - H
+  station-code: ERD
+9400ZZLUESQ:
+  line-codes:
+  - H
+  - M
+  station-code: ESQ
+9400ZZLUEUS:
+  line-codes:
+  - N
+  - V
+  station-code: EUS
+9400ZZLUFBY:
+  line-codes:
+  - D
+  station-code: FBY
+9400ZZLUFCN:
+  line-codes:
+  - H
+  - M
+  station-code: FAR
+9400ZZLUFLP:
+  line-codes:
+  - C
+  station-code: FLP
+9400ZZLUFPK:
+  line-codes:
+  - P
+  - V
+  station-code: FPK
+9400ZZLUFYC:
+  line-codes:
+  - N
+  station-code: FYC
+9400ZZLUFYR:
+  line-codes:
+  - J
+  - M
+  station-code: FRD
+9400ZZLUGBY:
+  line-codes:
+  - D
+  station-code: GUN
+9400ZZLUGDG:
+  line-codes:
+  - N
+  station-code: GST
+9400ZZLUGFD:
+  line-codes:
+  - C
+  station-code: GFD
+9400ZZLUGGH:
+  line-codes:
+  - C
+  station-code: GRH
+9400ZZLUGGN:
+  line-codes:
+  - N
+  station-code: GGR
+9400ZZLUGHK:
+  line-codes: []
+  station-code: ''
+9400ZZLUGPK:
+  line-codes:
+  - J
+  - P
+  - V
+  station-code: GPK
+9400ZZLUGPS:
+  line-codes:
+  - H
+  - M
+  station-code: GPS
+9400ZZLUGTH:
+  line-codes:
+  - C
+  station-code: GHL
+9400ZZLUGTR:
+  line-codes:
+  - D
+  - H
+  - P
+  station-code: GRD
+9400ZZLUHAI:
+  line-codes:
+  - V
+  station-code: HBY
+9400ZZLUHAW:
+  line-codes:
+  - B
+  station-code: HAW
+9400ZZLUHBN:
+  line-codes:
+  - C
+  - P
+  station-code: HOL
+9400ZZLUHBT:
+  line-codes:
+  - N
+  station-code: HBT
+9400ZZLUHCH:
+  line-codes:
+  - D
+  station-code: HCH
+9400ZZLUHCL:
+  line-codes:
+  - N
+  station-code: HND
+9400ZZLUHGD:
+  line-codes:
+  - M
+  - P
+  station-code: HDN
+9400ZZLUHGR:
+  line-codes:
+  - C
+  station-code: HLN
+9400ZZLUHGT:
+  line-codes:
+  - N
+  station-code: HIG
+9400ZZLUHLT:
+  line-codes:
+  - C
+  station-code: HAI
+9400ZZLUHNX:
+  line-codes:
+  - P
+  station-code: HTX
+9400ZZLUHOH:
+  line-codes:
+  - M
+  station-code: HOH
+9400ZZLUHPC:
+  line-codes:
+  - P
+  station-code: HPC
+9400ZZLUHPK:
+  line-codes:
+  - C
+  station-code: HPK
+9400ZZLUHR4:
+  line-codes:
+  - P
+  station-code: HTF
+9400ZZLUHR5:
+  line-codes:
+  - P
+  station-code: HRV
+9400ZZLUHRC:
+  line-codes:
+  - P
+  station-code: HRC
+9400ZZLUHSC:
+  line-codes:
+  - H
+  station-code: HMS
+9400ZZLUHSD:
+  line-codes:
+  - D
+  - P
+  station-code: HMD
+9400ZZLUHSK:
+  line-codes:
+  - D
+  - H
+  station-code: HST
+9400ZZLUHSN:
+  line-codes:
+  - B
+  station-code: HSD
+9400ZZLUHTD:
+  line-codes:
+  - N
+  station-code: HMP
+9400ZZLUHWC:
+  line-codes:
+  - P
+  station-code: NHC
+9400ZZLUHWE:
+  line-codes:
+  - P
+  station-code: HNE
+9400ZZLUHWT:
+  line-codes:
+  - P
+  station-code: HNW
+9400ZZLUHWY:
+  line-codes:
+  - P
+  station-code: HRD
+9400ZZLUICK:
+  line-codes:
+  - M
+  - P
+  station-code: ICK
+9400ZZLUKBN:
+  line-codes:
+  - J
+  station-code: KIL
+9400ZZLUKBY:
+  line-codes:
+  - J
+  station-code: KBY
+9400ZZLUKEN:
+  line-codes:
+  - B
+  station-code: KNT
+9400ZZLUKNB:
+  line-codes:
+  - P
+  station-code: KNB
+9400ZZLUKNG:
+  line-codes:
+  - N
+  station-code: KEN
+9400ZZLUKOY:
+  line-codes:
+  - D
+  station-code: OLY
+9400ZZLUKPK:
+  line-codes:
+  - B
+  station-code: KPK
+9400ZZLUKSH:
+  line-codes:
+  - N
+  station-code: KTN
+9400ZZLUKSL:
+  line-codes:
+  - B
+  station-code: KGN
+9400ZZLUKSX:
+  line-codes:
+  - H
+  - M
+  - N
+  - P
+  - V
+  station-code: KXX
+9400ZZLUKWG:
+  line-codes:
+  - D
+  station-code: KEW
+9400ZZLULAD:
+  line-codes:
+  - H
+  station-code: LBG
+9400ZZLULBN:
+  line-codes:
+  - B
+  station-code: LAM
+9400ZZLULGN:
+  line-codes:
+  - C
+  station-code: LTN
+9400ZZLULGT:
+  line-codes:
+  - C
+  station-code: LAN
+9400ZZLULNB:
+  line-codes:
+  - J
+  - N
+  station-code: LON
+9400ZZLULRD:
+  line-codes: []
+  station-code: ''
+9400ZZLULSQ:
+  line-codes:
+  - N
+  - P
+  station-code: LSQ
+9400ZZLULVT:
+  line-codes:
+  - C
+  - H
+  - M
+  station-code: LST
+9400ZZLULYN:
+  line-codes:
+  - C
+  station-code: LEY
+9400ZZLULYS:
+  line-codes:
+  - C
+  station-code: LYS
+9400ZZLUMBA:
+  line-codes:
+  - C
+  station-code: MAR
+9400ZZLUMDN:
+  line-codes:
+  - N
+  station-code: MOR
+9400ZZLUMED:
+  line-codes:
+  - C
+  - D
+  - H
+  station-code: MLE
+9400ZZLUMGT:
+  line-codes:
+  - H
+  - M
+  - N
+  station-code: MGT
+9400ZZLUMHL:
+  line-codes:
+  - N
+  station-code: MHE
+9400ZZLUMMT:
+  line-codes:
+  - D
+  - H
+  station-code: MON
+9400ZZLUMPK:
+  line-codes:
+  - M
+  station-code: MPK
+9400ZZLUMRH:
+  line-codes:
+  - P
+  station-code: MNR
+9400ZZLUMSH:
+  line-codes:
+  - D
+  - H
+  station-code: MAN
+9400ZZLUMTC:
+  line-codes:
+  - N
+  station-code: MCR
+9400ZZLUMVL:
+  line-codes:
+  - B
+  station-code: MDV
+9400ZZLUMYB:
+  line-codes:
+  - B
+  station-code: MYB
+9400ZZLUNAN:
+  line-codes:
+  - C
+  station-code: NAC
+9400ZZLUNBP:
+  line-codes:
+  - C
+  station-code: NEP
+9400ZZLUNDN:
+  line-codes:
+  - J
+  station-code: NEA
+9400ZZLUNEN:
+  line-codes:
+  - P
+  station-code: NEL
+9400ZZLUNFD:
+  line-codes:
+  - P
+  station-code: NFD
+9400ZZLUNGW:
+  line-codes:
+  - J
+  station-code: NGW
+9400ZZLUNHA:
+  line-codes:
+  - M
+  station-code: NHR
+9400ZZLUNHG:
+  line-codes:
+  - C
+  - H
+  station-code: NHG
+9400ZZLUNHT:
+  line-codes:
+  - C
+  station-code: NHT
+9400ZZLUNKP:
+  line-codes:
+  - M
+  station-code: NWP
+9400ZZLUNOW:
+  line-codes:
+  - M
+  station-code: NWD
+9400ZZLUNWH:
+  line-codes:
+  - M
+  station-code: NWH
+9400ZZLUNWY:
+  line-codes:
+  - B
+  station-code: NWM
+9400ZZLUOAK:
+  line-codes:
+  - P
+  station-code: OAK
+9400ZZLUODS:
+  line-codes:
+  - N
+  station-code: OLD
+9400ZZLUOSY:
+  line-codes:
+  - P
+  station-code: OST
+9400ZZLUOVL:
+  line-codes:
+  - N
+  station-code: OVL
+9400ZZLUOXC:
+  line-codes:
+  - B
+  - C
+  - V
+  station-code: OXC
+9400ZZLUPAC:
+  line-codes:
+  - B
+  station-code: PAD
+9400ZZLUPAH:
+  line-codes:
+  - H
+  station-code: PAD
+9400ZZLUPCC:
+  line-codes:
+  - B
+  - P
+  station-code: PIC
+9400ZZLUPCO:
+  line-codes:
+  - V
+  station-code: PIM
+9400ZZLUPKR:
+  line-codes:
+  - P
+  station-code: PRY
+9400ZZLUPLW:
+  line-codes:
+  - D
+  - H
+  station-code: PLW
+9400ZZLUPNR:
+  line-codes:
+  - M
+  station-code: PIN
+9400ZZLUPRD:
+  line-codes: []
+  station-code: ''
+9400ZZLUPSG:
+  line-codes:
+  - D
+  station-code: PGR
+9400ZZLUPVL:
+  line-codes:
+  - C
+  station-code: PER
+9400ZZLUPYB:
+  line-codes:
+  - D
+  station-code: PUT
+9400ZZLUQBY:
+  line-codes:
+  - J
+  station-code: QBY
+9400ZZLUQPS:
+  line-codes:
+  - B
+  station-code: QPK
+9400ZZLUQWY:
+  line-codes:
+  - C
+  station-code: QWY
+9400ZZLURBG:
+  line-codes:
+  - C
+  station-code: RED
+9400ZZLURGP:
+  line-codes:
+  - B
+  station-code: RPK
+9400ZZLURKW:
+  line-codes:
+  - M
+  station-code: RKY
+9400ZZLURMD:
+  line-codes:
+  - D
+  station-code: RMD
+9400ZZLURSG:
+  line-codes:
+  - C
+  station-code: RUG
+9400ZZLURSM:
+  line-codes:
+  - M
+  - P
+  station-code: RUM
+9400ZZLURSP:
+  line-codes:
+  - M
+  - P
+  station-code: RUI
+9400ZZLURSQ:
+  line-codes:
+  - P
+  station-code: RSQ
+9400ZZLURVP:
+  line-codes:
+  - D
+  station-code: RCP
+9400ZZLURVY:
+  line-codes:
+  - C
+  station-code: ROD
+9400ZZLURYL:
+  line-codes:
+  - M
+  - P
+  station-code: RLN
+9400ZZLURYO:
+  line-codes:
+  - H
+  station-code: ROA
+9400ZZLUSBC:
+  line-codes:
+  - C
+  station-code: SBC
+9400ZZLUSBM:
+  line-codes: []
+  station-code: ''
+9400ZZLUSEA:
+  line-codes:
+  - P
+  station-code: SEL
+9400ZZLUSFB:
+  line-codes:
+  - D
+  station-code: STB
+9400ZZLUSFS:
+  line-codes:
+  - D
+  station-code: SFS
+9400ZZLUSGN:
+  line-codes:
+  - D
+  - H
+  station-code: STG
+9400ZZLUSGP:
+  line-codes:
+  - B
+  station-code: SPK
+9400ZZLUSGT:
+  line-codes:
+  - P
+  station-code: SGT
+9400ZZLUSHH:
+  line-codes:
+  - P
+  station-code: SHR
+9400ZZLUSJP:
+  line-codes:
+  - D
+  - H
+  station-code: SJP
+9400ZZLUSJW:
+  line-codes:
+  - J
+  station-code: SJW
+9400ZZLUSKS:
+  line-codes:
+  - D
+  - H
+  - P
+  station-code: SKN
+9400ZZLUSKT:
+  line-codes:
+  - B
+  station-code: SKT
+9400ZZLUSKW:
+  line-codes:
+  - N
+  - V
+  station-code: STK
+9400ZZLUSNB:
+  line-codes:
+  - C
+  station-code: SNB
+9400ZZLUSPU:
+  line-codes:
+  - C
+  station-code: STP
+9400ZZLUSRP:
+  line-codes:
+  - C
+  station-code: SRP
+9400ZZLUSSQ:
+  line-codes:
+  - D
+  - H
+  station-code: SSQ
+9400ZZLUSTD:
+  line-codes:
+  - C
+  - J
+  station-code: SFD
+9400ZZLUSTM:
+  line-codes:
+  - J
+  station-code: STA
+9400ZZLUSUH:
+  line-codes:
+  - P
+  station-code: SHL
+9400ZZLUSUT:
+  line-codes:
+  - P
+  station-code: STN
+9400ZZLUSVS:
+  line-codes:
+  - V
+  station-code: SVS
+9400ZZLUSWC:
+  line-codes:
+  - J
+  station-code: SWC
+9400ZZLUSWF:
+  line-codes:
+  - C
+  station-code: SWF
+9400ZZLUSWK:
+  line-codes:
+  - J
+  station-code: SWK
+9400ZZLUSWN:
+  line-codes:
+  - N
+  station-code: SWM
+9400ZZLUTAW:
+  line-codes:
+  - N
+  station-code: TOT
+9400ZZLUTBC:
+  line-codes:
+  - N
+  station-code: TBE
+9400ZZLUTBY:
+  line-codes:
+  - N
+  station-code: TBY
+9400ZZLUTCR:
+  line-codes:
+  - C
+  - N
+  station-code: TCR
+9400ZZLUTFP:
+  line-codes:
+  - N
+  station-code: TPK
+9400ZZLUTHB:
+  line-codes:
+  - C
+  station-code: THB
+9400ZZLUTMH:
+  line-codes:
+  - V
+  station-code: TTH
+9400ZZLUTMP:
+  line-codes:
+  - D
+  - H
+  station-code: TEM
+9400ZZLUTNG:
+  line-codes:
+  - D
+  - P
+  station-code: TGR
+9400ZZLUTPN:
+  line-codes:
+  - P
+  station-code: TPL
+9400ZZLUTWH:
+  line-codes:
+  - D
+  - H
+  station-code: THL
+9400ZZLUUPB:
+  line-codes:
+  - D
+  station-code: UPM
+9400ZZLUUPK:
+  line-codes:
+  - D
+  - H
+  station-code: UPK
+9400ZZLUUPM:
+  line-codes: []
+  station-code: ''
+9400ZZLUUPY:
+  line-codes:
+  - D
+  station-code: UPY
+9400ZZLUUXB:
+  line-codes:
+  - M
+  - P
+  station-code: UXB
+9400ZZLUVIC:
+  line-codes:
+  - D
+  - H
+  - V
+  station-code: VIC
+9400ZZLUVXL:
+  line-codes:
+  - V
+  station-code: VUX
+9400ZZLUWAF:
+  line-codes:
+  - M
+  station-code: WAT
+9400ZZLUWBN:
+  line-codes:
+  - D
+  station-code: WBT
+9400ZZLUWCY:
+  line-codes:
+  - C
+  station-code: WCT
+9400ZZLUWFN:
+  line-codes:
+  - N
+  station-code: WFY
+9400ZZLUWHM:
+  line-codes:
+  - D
+  - H
+  - J
+  station-code: WHM
+9400ZZLUWHP:
+  line-codes:
+  - J
+  station-code: WHD
+9400ZZLUWHW:
+  line-codes:
+  - M
+  station-code: WHR
+9400ZZLUWIG:
+  line-codes:
+  - J
+  station-code: WLG
+9400ZZLUWIM:
+  line-codes:
+  - D
+  station-code: WDN
+9400ZZLUWIP:
+  line-codes:
+  - D
+  station-code: WMP
+9400ZZLUWJN:
+  line-codes:
+  - B
+  station-code: WJN
+9400ZZLUWKA:
+  line-codes:
+  - B
+  station-code: WAR
+9400ZZLUWKN:
+  line-codes:
+  - D
+  station-code: WKN
+9400ZZLUWLA:
+  line-codes: []
+  station-code: ''
+9400ZZLUWLO:
+  line-codes:
+  - B
+  - J
+  - N
+  - W
+  station-code: WLO
+9400ZZLUWOF:
+  line-codes:
+  - C
+  station-code: WFD
+9400ZZLUWOG:
+  line-codes:
+  - P
+  station-code: WGN
+9400ZZLUWOP:
+  line-codes:
+  - N
+  - M
+  station-code: WSP
+9400ZZLUWPL:
+  line-codes:
+  - D
+  - H
+  - M
+  station-code: WCL
+9400ZZLUWRP:
+  line-codes:
+  - C
+  station-code: WRP
+9400ZZLUWRR:
+  line-codes:
+  - N
+  - V
+  station-code: WST
+9400ZZLUWSD:
+  line-codes:
+  - C
+  station-code: WAN
+9400ZZLUWSM:
+  line-codes:
+  - D
+  - H
+  - J
+  station-code: WMS
+9400ZZLUWSP:
+  line-codes:
+  - H
+  station-code: WBP
+9400ZZLUWTA:
+  line-codes:
+  - C
+  station-code: WAC
+9400ZZLUWWL:
+  line-codes:
+  - V
+  station-code: WAL
+9400ZZLUWYC:
+  line-codes:
+  - B
+  station-code: WEM
+9400ZZLUWYP:
+  line-codes:
+  - J
+  - M
+  station-code: WPK
+

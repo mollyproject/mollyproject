@@ -49,7 +49,8 @@ class TubeRealtimeProvider(BaseMapsProvider):
         
         services = []
         
-        for line, station in entity.metadata['london-underground-identifiers']:
+        station = entity.metadata['london-underground-identifiers']['station-code']
+        for line in entity.metadata['london-underground-identifiers']['line-codes']:
             next_info = defaultdict(list)
             
             xml = minidom.parseString(urlopen(self.TRACKERNET_PREDICTION_URL % (line, station)).read())
