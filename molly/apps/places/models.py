@@ -38,6 +38,9 @@ class EntityTypeCategoryName(models.Model):
                                              related_name='names')
     name = models.TextField(blank=False)
     language_code = models.CharField(max_length=10)
+    
+    class Meta:
+        unique_together = ('entity_type_category', 'language_code')
 
 class EntityType(models.Model):
     slug = models.SlugField()
@@ -50,12 +53,12 @@ class EntityType(models.Model):
                                           field)
     
     @property
-    def article(self):
-        return self._for_language('article')
-    
-    @property
     def verbose_name(self):
         return self._for_language('verbose_name')
+    
+    @property
+    def verbose_name_singular(self):
+        return self._for_language('verbose_name_singular')
     
     @property
     def verbose_name_plural(self):
@@ -93,12 +96,12 @@ class EntityType(models.Model):
 class EntityTypeName(models.Model):
     entity_type = models.ForeignKey(EntityType, related_name='names')
     language_code = models.CharField(max_length=10)
-    article = models.CharField(max_length=10)
     verbose_name = models.TextField()
+    verbose_name_singular = models.TextField()
     verbose_name_plural = models.TextField()
     
-    def __unicode__(self):
-        return self.name
+    class Meta:
+        unique_together = ('entity_type', 'language_code')
 
 class Identifier(models.Model):
     scheme = models.CharField(max_length=32)
@@ -129,6 +132,9 @@ class EntityGroupName(models.Model):
     entity_group = models.ForeignKey(EntityGroup, related_name='names')
     title = models.TextField(blank=False)
     language_code = models.CharField(max_length=10)
+    
+    class Meta:
+        unique_together = ('entity_group', 'language_code')
 
 class Entity(models.Model):
     
@@ -325,6 +331,9 @@ class Entity(models.Model):
         })
 
 class EntityName(models.Model):
-    entity_group = models.ForeignKey(Entity, related_name='names')
+    entity = models.ForeignKey(Entity, related_name='names')
     title = models.TextField(blank=False)
     language_code = models.CharField(max_length=10)
+    
+    class Meta:
+        unique_together = ('entity', 'language_code')
