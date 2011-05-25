@@ -3,6 +3,7 @@ from xml.sax.saxutils import escape
 
 from django.shortcuts import get_object_or_404
 from django.http import Http404
+from django.utils.translation import ugettext as _
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
@@ -15,13 +16,13 @@ import datetime
 class IndexView(BaseView):
     def get_metadata(self, request):
         return {
-            'title': 'Webcams',
-            'additional': 'View webcams from around the city and University',
+            'title': _('Webcams'),
+            'additional': _('View webcams from around the city and University'),
         }
         
     @BreadcrumbFactory
     def breadcrumb(self, request, context):
-        return Breadcrumb(self.conf.local_name, None, 'Webcams', lazy_reverse('index'))
+        return Breadcrumb(self.conf.local_name, None, _('Webcams'), lazy_reverse('index'))
         
     def handle_GET(self, request, context):
         webcams = Webcam.objects.all()
@@ -34,7 +35,7 @@ class WebcamDetailView(BaseView):
         webcam = get_object_or_404(Webcam, slug=slug)
         return {
             'title': webcam.title,
-            'additional': '<strong>Webcam</strong>, %s' % escape(webcam.description)
+            'additional': _('<strong>Webcam</strong>, %(description)s') % { 'description' : escape(webcam.description)}
         }
         
     def initial_context(self, request, slug):
@@ -45,7 +46,7 @@ class WebcamDetailView(BaseView):
     @BreadcrumbFactory
     def breadcrumb(self, request, context, slug):
         return Breadcrumb(self.conf.local_name, lazy_parent('index'),
-                          'Webcam', lazy_reverse('webcams', args=[slug]))
+                          _('Webcam'), lazy_reverse('webcams', args=[slug]))
         
     def handle_GET(self, request, context, slug):
         try:
