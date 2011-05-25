@@ -162,10 +162,6 @@ class OSMHandler(handler.ContentHandler):
                             except IndexError:
                                 name = u"↝ %f, %f" % (self.node_location[1], self.node_location[0])
                         
-                        if self.id == 'N261137327':
-                            print lang_code, name
-                            print tag_to_try
-                            print tags_to_try
                         names[lang_code] = name
                 
                 entity.metadata['osm'] = {

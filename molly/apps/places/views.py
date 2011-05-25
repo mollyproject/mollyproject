@@ -189,7 +189,7 @@ class NearbyDetailView(LocationRequiredView, ZoomableView):
                                                         'title': entity.title
                                                     }
         else:
-            title = _('%(entity_type)s nearby') % {'entity_type': et_name}
+            title = _('%(et)s nearby') % {'et': et_name}
             
         if len(context['entity_types']) > 1:
             return {
