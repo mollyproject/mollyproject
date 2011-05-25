@@ -12,8 +12,11 @@ from xml.sax import saxutils, handler, make_parser
 from django.contrib.gis.geos import Point, LineString, LinearRing
 from django.conf import settings
 from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_noop as _noop
+from django.utils.translation import get_language
 
-from molly.apps.places.models import Entity, EntityType, Source, EntityTypeCategory
+from molly.apps.places.models import (Entity, EntityType, Source,
+                                      EntityTypeCategory, EntityName)
 from molly.apps.places.providers import BaseMapsProvider
 from molly.utils.misc import AnyMethodRequest, override
 from molly.geolocation import reverse_geocode
@@ -40,11 +43,11 @@ class OSMHandler(handler.ContentHandler):
         self.ids = set()
         self.tags = {}
         self.valid_node = True
-
+        
         self.create_count, self.modify_count = 0,0
         self.delete_count, self.unchanged_count = 0,0
         self.ignore_count = 0
-
+        
         self.node_locations = {}
 
     def startElement(self, name, attrs):
@@ -59,7 +62,7 @@ class OSMHandler(handler.ContentHandler):
                               and self._lon_west < lon < self._lon_east)
                 if not self.valid:
                     return
-
+            
             id = node_id(attrs['id'])
             self.node_location = lon, lat
             self.attrs = attrs
@@ -67,23 +70,23 @@ class OSMHandler(handler.ContentHandler):
             self.ids.add(id)
             self.tags = {}
             self.node_locations[id] = lon, lat
-
+        
         elif name == 'tag' and self.valid:
             self.tags[attrs['k']] = attrs['v']
-
+        
         elif name == 'way':
             self.nodes = []
             self.tags = {}
             self.valid = True
-
+            
             id = way_id(attrs['id'])
-
+            
             self.id = id
             self.ids.add(id)
-
+        
         elif name == 'nd':
             self.nodes.append( node_id(attrs['ref']) )
-
+    
     def endElement(self, name):
         if name in ('node','way') and self.valid:
             try:
@@ -91,33 +94,36 @@ class OSMHandler(handler.ContentHandler):
             except ValueError:
                 self.ignore_count += 1
                 return
-
+            
             # Ignore ways that lay partly outside our bounding box
             if name == 'way' and not all(id in self.node_locations for id in self.nodes):
                 return
-
+            
             # We already have these from OxPoints, so leave them alone.
             if self.tags.get('amenity') == 'library' and self.tags.get('operator') == 'University of Oxford':
                 return
-
+            
             # Ignore disused and under-construction entities
             if self.tags.get('life_cycle', 'in_use') != 'in_use' or self.tags.get('disused') in ('1', 'yes', 'true'):
                 return
-
+            
             try:
-                entity = Entity.objects.get(source=self.source, _identifiers__scheme='osm', _identifiers__value=self.id)
+                entity = Entity.objects.get(source=self.source,
+                                            _identifiers__scheme='osm',
+                                            _identifiers__value=self.id)
                 created = True
             except Entity.DoesNotExist:
                 entity = Entity(source=self.source)
                 created = False
-
-            if not 'osm' in entity.metadata or entity.metadata['osm'].get('attrs', {}).get('timestamp', '') < self.attrs['timestamp']:
-
+            
+            if not 'osm' in entity.metadata or \
+              entity.metadata['osm'].get('attrs', {}).get('timestamp', '') < self.attrs['timestamp']:
+                
                 if created:
                     self.create_count += 1
                 else:
                     self.modify_count += 1
-
+                
                 if name == 'node':
                     entity.location = Point(self.node_location, srid=4326)
                     entity.geometry = entity.location
@@ -131,35 +137,60 @@ class OSMHandler(handler.ContentHandler):
                     entity.location = Point( (min_[0]+max_[0])/2 , (min_[1]+max_[1])/2 , srid=4326)
                 else:
                     raise AssertionError("There should be no other types of entity we're to deal with.")
-
-                try:
-                    name = self.tags.get('name') or self.tags['operator']
-                except (KeyError, AssertionError):
-                    try:
-                        name = reverse_geocode(*entity.location)[0]['name']
-                        if not name:
-                            raise IndexError
-                        name = u"↝ %s" % name
-                    except IndexError:
-                        name = u"↝ %f, %f" % (self.node_location[1], self.node_location[0])
-
-                entity.title = name
+                
+                names = dict()
+                
+                for lang_code, lang_name in settings.LANGUAGES:
+                    with override(lang_code):
+                    
+                        if '-' in lang_code:
+                            tags_to_try = ('name:%s' % lang_code, 'name:%s' % lang_code.split('-')[0], 'name', 'operator')
+                        else:
+                            tags_to_try = ('name:%s' % lang_code, 'name', 'operator')
+                            name = None
+                            for tag_to_try in tags_to_try:
+                                if self.tags.get(tag_to_try):
+                                    name = self.tags.get(tag_to_try)
+                                    break
+                        
+                        if name is None:
+                            try:
+                                name = reverse_geocode(*entity.location)[0]['name']
+                                if not name:
+                                    raise IndexError
+                                name = u"↝ %s" % name
+                            except IndexError:
+                                name = u"↝ %f, %f" % (self.node_location[1], self.node_location[0])
+                        
+                        if self.id == 'N261137327':
+                            print lang_code, name
+                            print tag_to_try
+                            print tags_to_try
+                        names[lang_code] = name
+                
                 entity.metadata['osm'] = {
                     'attrs': dict(self.attrs),
                     'tags': self.tags
                 }
                 entity.primary_type = self.entity_types[types[0]]
-
-                if 'addr:postcode' in self.tags:
-                    entity.post_code = self.tags['addr:postcode'].replace(' ', '')
-                else:
-                    entity.post_code = ""
-
+                
                 entity.save(identifiers={'osm': self.id})
-
+                
+                for lang_code, name in names.items():
+                    titles = entity.names.filter(language_code=lang_code)
+                    if titles.count() == 0:
+                        entity.names.create(
+                            language_code=lang_code,
+                            title=name
+                        )
+                    else:
+                        title = titles[0]
+                        title.title = name
+                        title.save()
+                
                 entity.all_types = [self.entity_types[et] for et in types]
                 entity.update_all_types_completion()
-
+            
             else:
                 self.unchanged_count += 1
 
@@ -168,7 +199,7 @@ class OSMHandler(handler.ContentHandler):
             if not entity.identifiers['osm'] in self.ids:
                 entity.delete()
                 self.delete_count += 1
-
+        
         self.output.write("""\
 Complete
   Created:   %6d
@@ -249,24 +280,24 @@ class OSMMapsProvider(BaseMapsProvider):
     @batch('%d 9 * * mon' % random.randint(0, 59))
     def import_data(self, metadata, output):
         "Imports places data from OpenStreetMap"
-
+        
         old_etag = metadata.get('etag', '')
-
+        
         request = AnyMethodRequest(self._url, method='HEAD')
         response = urllib2.urlopen(request)
         new_etag = response.headers['ETag'][1:-1]
-
+        
         if False and new_etag == old_etag:
             output.write('OSM data not updated. Not updating.\n')
             return
-
+        
         p = subprocess.Popen([self.SHELL_CMD % self._url], shell=True,
             stdin=subprocess.PIPE, stdout=subprocess.PIPE, close_fds=True)
-
+        
         parser = make_parser()
         parser.setContentHandler(OSMHandler(self._get_source(),
                                             self._get_entity_types(),
-                                            lambda tags, type_list=None: self._find_types(t, self._osm_tags if type_list is None else type_list),
+                                            lambda tags, type_list=None: self._find_types(tags, self._osm_tags if type_list is None else type_list),
                                             output,
                                             self._lat_north,
                                             self._lat_south,
@@ -274,8 +305,10 @@ class OSMMapsProvider(BaseMapsProvider):
                                             self._lon_east))
         parser.parse(p.stdout)
         
-        self.disambiguate_titles(self._get_source())
-
+        for lang_code, lang_name in settings.LANGUAGES:
+            with override(lang_code):
+                self.disambiguate_titles(self._get_source())
+        
         return {
             'etag': new_etag,
         }
@@ -285,10 +318,10 @@ class OSMMapsProvider(BaseMapsProvider):
             source = Source.objects.get(module_name="molly.providers.apps.maps.osm")
         except Source.DoesNotExist:
             source = Source(module_name="molly.providers.apps.maps.osm")
-
+        
         source.name = "OpenStreetMap"
         source.save()
-
+        
         return source
 
     def _get_entity_types(self):
@@ -297,9 +330,12 @@ class OSMMapsProvider(BaseMapsProvider):
         new_entity_types = set()
         for slug, et in self._entity_types.items():
             et_category, created = EntityTypeCategory.objects.get_or_create(name=et['category'])
-            entity_type, created = EntityType.objects.get_or_create(slug=slug)
+            try:
+                entity_type = EntityType.objects.get(slug=slug)
+            except EntityType.DoesNotExist:
+                entity_type = EntityType(slug=slug)
+            entity_type.category = et_category
             entity_type.slug = slug
-            entity_type.category=et_category
             if created:
                 entity_type.show_in_nearby_list = et['show_in_nearby_list']
                 entity_type.show_in_category_list = et['show_in_category_list']
@@ -321,14 +357,14 @@ class OSMMapsProvider(BaseMapsProvider):
                         name.save()
             new_entity_types.add(slug)
             entity_types[slug] = entity_type
-
+        
         for slug in new_entity_types:
-            subtype_of = self._entity_types[slug][5]
+            subtype_of = self._entity_types[slug]['parent-types']
             entity_types[slug].subtype_of.clear()
             for s in subtype_of:
                 entity_types[slug].subtype_of.add(entity_types[s])
             entity_types[slug].save()
-
+        
         return entity_types
 
     def _find_types(self, tags, type_list):
@@ -349,31 +385,309 @@ class OSMMapsProvider(BaseMapsProvider):
             raise ValueError
 
     def disambiguate_titles(self, source):
+        lang_code = get_language()
         entities = Entity.objects.filter(source=source)
         inferred_names = {}
+        if '-' in lang_code:
+            tags_to_try = ('name:%s' % lang_code, 'name:%s' % lang_code.split('-')[0], 'name', 'operator')
+        else:
+            tags_to_try = ('name:%s' % lang_code, 'name', 'operator')
         for entity in entities:
-            inferred_name = entity.metadata['osm']['tags'].get('name') or entity.metadata['osm']['tags'].get('operator')
+            inferred_name = None
+            for tag_to_try in tags_to_try:
+                if entity.metadata['osm']['tags'].get(tag_to_try):
+                    inferred_name = entity.metadata['osm']['tags'].get(tag_to_try)
+                    break
             if not inferred_name:
                 continue
             if not inferred_name in inferred_names:
                 inferred_names[inferred_name] = set()
             inferred_names[inferred_name].add(entity)
-
+        
         for inferred_name, entities in inferred_names.items():
             if len(entities) > 1:
                 for entity in entities:
                     if entity.metadata['osm']['tags'].get('addr:street'):
-                        entity.title = u"%s, %s" % (inferred_name, entity.metadata['osm']['tags'].get('addr:street'))
-                        continue
-
+                        title = u"%s, %s" % (inferred_name, entity.metadata['osm']['tags'].get('addr:street'))
+                    else:
+                        try:
+                            place_name = reverse_geocode(entity.location[0], entity.location[1])[0]['name']
+                            if place_name:
+                                title = u"%s, %s" % (inferred_name, place_name)
+                                entity.save()
+                            else:
+                                title = inferred_name
+                        except:
+                            self.output.write("Couldn't geocode for %s\n" % inferred_name)
+                            title = inferred_name
                     try:
-                        name = reverse_geocode(entity.location[0], entity.location[1])[0]['name']
-                        if name:
-                            entity.title = u"%s, %s" % (inferred_name, name)
-                            entity.save()
-                    except:
-                        self.output.write("Couldn't geocode for %s\n" % inferred_name)
+                        name = entity.names.get(language_code=lang_code)
+                    except EntityName.DoesNotExist:
+                        name = entity.names.create(language_code=lang_code,
+                                                   title=title)
+                    else:
+                        name.title = title
+                    finally:
+                        name.save()
 
 if __name__ == '__main__':
     provider = OSMMapsProvider()
     provider.import_data()
+
+# IGNORE BELOW HERE! These are dummy EntityType definitions that exist so they
+# get picked up as ready to translate
+# THIS CODE DOES NOTHING, CHANGING HERE WON'T DO WHAT YOU THINK IT DOES
+{
+    'atm': {
+        'category': _noop('Amenities'),
+        'verbose_name': _noop('ATM'),
+        'verbose_name_plural': _noop('ATMs'),
+        'verbose_name_singular': _noop('an ATM')
+    },
+    'bank': {
+        'category': _noop('Amenities'),
+        'verbose_name': _noop('bank'),
+        'verbose_name_plural': _noop('banks'),
+        'verbose_name_singular': _noop('a bank')
+    },
+    'bar': {
+        'category': _noop('Amenities'),
+        'verbose_name': _noop('bar'),
+        'verbose_name_plural': _noop('bars'),
+        'verbose_name_singular': _noop('a bar')
+    },
+    'bench': {
+        'category': _noop('Amenities'),
+        'verbose_name': _noop('bench'),
+        'verbose_name_plural': _noop('benches'),
+        'verbose_name_singular': _noop('a bench')
+    },
+    'bicycle-parking': {
+        'category': _noop('Transport'),
+        'verbose_name': _noop('bicycle rack'),
+        'verbose_name_plural': _noop('bicycle racks'),
+        'verbose_name_singular': _noop('a bicycle rack')
+    },
+    'cafe': {
+        'category': _noop('Amenities'),
+        'verbose_name': _noop(u'café'),
+        'verbose_name_plural': _noop(u'cafés'),
+        'verbose_name_singular': _noop(u'a café')
+    },
+    'car-park': {
+        'category': _noop('Transport'),
+        'verbose_name': _noop('car park'),
+        'verbose_name_plural': _noop('car parks'),
+        'verbose_name_singular': _noop('a car park')
+    },
+    'cathedral': {
+        'category': _noop('Amenities'),
+        'verbose_name': _noop('cathedral'),
+        'verbose_name_plural': _noop('cathedrals'),
+        'verbose_name_singular': _noop('a cathedral')
+    },
+    'chapel': {
+        'category': _noop('Amenities'),
+        'verbose_name': _noop('chapel'),
+        'verbose_name_plural': _noop('chapels'),
+        'verbose_name_singular': _noop('a chapel')
+    },
+    'church': {
+        'category': _noop('Amenities'),
+        'verbose_name': _noop('church'),
+        'verbose_name_plural': _noop('churches'),
+        'verbose_name_singular': _noop('a church')
+    },
+    'cinema': {
+        'category': _noop('Leisure'),
+        'verbose_name': _noop('cinema'),
+        'verbose_name_plural': _noop('cinemas'),
+        'verbose_name_singular': _noop('a cinema')
+    },
+    'cycle-shop': {
+        'category': _noop('Amenities'),
+        'verbose_name': _noop('cycle shop'),
+        'verbose_name_plural': _noop('cycle shops'),
+        'verbose_name_singular': _noop('a cycle shop')
+    },
+    'dispensing-pharmacy': {
+        'category': _noop('Amenities'),
+        'verbose_name': _noop('dispensing pharmacy'),
+        'verbose_name_plural': _noop('dispensing pharmacies'),
+        'verbose_name_singular': _noop('a dispensing pharmacy')
+    },
+    'doctors': {
+        'category': _noop('Amenities'),
+        'verbose_name': _noop("doctor's surgery"),
+        'verbose_name_plural': _noop("doctors' surgeries"),
+        'verbose_name_singular': _noop("a doctor's surgery")
+    },
+    'fast-food': {
+        'category': _noop('Amenities'),
+        'verbose_name': _noop('fast food outlet'),
+        'verbose_name_plural': _noop('fast food outlets'),
+        'verbose_name_singular': _noop('a fast food outlet')
+    },
+    'food': {
+        'category': _noop('Amenities'),
+        'verbose_name': _noop('place to eat'),
+        'verbose_name_plural': _noop('places to eat'),
+        'verbose_name_singular': _noop('a place to eat')
+    },
+    'hospital': {
+        'category': _noop('Amenities'),
+        'verbose_name': _noop('hospital'),
+        'verbose_name_plural': _noop('hospitals'),
+        'verbose_name_singular': _noop('a hospital')
+    },
+    'ice-cream': {
+        'category': _noop('Amenities'),
+        'verbose_name': _noop(u'ice cream café'),
+        'verbose_name_plural': _noop(u'ice cream cafés'),
+        'verbose_name_singular': _noop(u'an ice cream café')
+    },
+    'ice-rink': {
+        'category': _noop('Leisure'),
+        'verbose_name': _noop('ice rink'),
+        'verbose_name_plural': _noop('ice rinks'),
+        'verbose_name_singular': _noop('an ice rink')
+    },
+    'library': {
+        'category': _noop('Amenities'),
+        'verbose_name': _noop('library'),
+        'verbose_name_plural': _noop('libraries'),
+        'verbose_name_singular': _noop('a library')
+    },
+    'mandir': {
+        'category': _noop('Amenities'),
+        'verbose_name': _noop('mandir'),
+        'verbose_name_plural': _noop('mandirs'),
+        'verbose_name_singular': _noop('a mandir')
+    },
+    'medical': {
+        'category': _noop('Amenities'),
+        'verbose_name': _noop('place relating to health'),
+        'verbose_name_plural': _noop('places relating to health'),
+        'verbose_name_singular': _noop('a place relating to health')
+    },
+    'mosque': {
+        'category': _noop('Amenities'),
+        'verbose_name': _noop('mosque'),
+        'verbose_name_plural': _noop('mosques'),
+        'verbose_name_singular': _noop('a mosque')
+    },
+    'museum': {
+        'category': _noop('Leisure'),
+        'verbose_name': _noop('museum'),
+        'verbose_name_plural': _noop('museums'),
+        'verbose_name_singular': _noop('a museum')
+    },
+    'park': {
+        'category': _noop('Leisure'),
+        'verbose_name': _noop('park'),
+        'verbose_name_plural': _noop('parks'),
+        'verbose_name_singular': _noop('a park')
+    },
+    'park-and-ride': {
+        'category': _noop('Transport'),
+        'verbose_name': _noop('park and ride'),
+        'verbose_name_plural': _noop('park and rides'),
+        'verbose_name_singular': _noop('a park and ride')
+    },
+    'pharmacy': {
+        'category': _noop('Amenities'),
+        'verbose_name': _noop('pharmacy'),
+        'verbose_name_plural': _noop('pharmacies'),
+        'verbose_name_singular': _noop('a pharmacy')
+    },
+    'place-of-worship': {
+        'category': _noop('Amenities'),
+        'verbose_name': _noop('place of worship'),
+        'verbose_name_plural': _noop('places of worship'),
+        'verbose_name_singular': _noop('a place of worship')
+    },
+    'post-box': {
+        'category': _noop('Amenities'),
+        'verbose_name': _noop('post box'),
+        'verbose_name_plural': _noop('post boxes'),
+        'verbose_name_singular': _noop('a post box')
+    },
+    'post-office': {
+        'category': _noop('Amenities'),
+        'verbose_name': _noop('post office'),
+        'verbose_name_plural': _noop('post offices'),
+        'verbose_name_singular': _noop('a post office')
+    },
+    'pub': {
+        'category': _noop('Amenities'),
+        'verbose_name': _noop('pub'),
+        'verbose_name_plural': _noop('pubs'),
+        'verbose_name_singular': _noop('a pub')
+    },
+    'public-library': {
+        'category': _noop('Amenities'),
+        'verbose_name': _noop('public library'),
+        'verbose_name_plural': _noop('public libraries'),
+        'verbose_name_singular': _noop('a public library')
+    },
+    'punt-hire': {
+        'category': _noop('Leisure'),
+        'verbose_name': _noop('place to hire punts'),
+        'verbose_name_plural': _noop('places to hire punts'),
+        'verbose_name_singular': _noop('a place to hire punts')
+    },
+    'recycling': {
+        'category': _noop('Amenities'),
+        'verbose_name': _noop('recycling facility'),
+        'verbose_name_plural': _noop('recycling facilities'),
+        'verbose_name_singular': _noop('a recycling facility')
+    },
+    'restaurant': {
+        'category': _noop('Amenities'),
+        'verbose_name': _noop('restaurant'),
+        'verbose_name_plural': _noop('restaurants'),
+        'verbose_name_singular': _noop('a restaurant')
+    },
+    'shop': {
+        'category': _noop('Amenities'),
+        'verbose_name': _noop('shop'),
+        'verbose_name_plural': _noop('shops'),
+        'verbose_name_singular': _noop('a shop')
+    },
+    'sport': {
+        'category': _noop('Leisure'),
+        'verbose_name': _noop('place relating to sport'),
+        'verbose_name_plural': _noop('places relating to sport'),
+        'verbose_name_singular': _noop('a place relating to sport')
+    },
+    'sports-centre': {
+        'category': _noop('Leisure'),
+        'verbose_name': _noop('sports centre'),
+        'verbose_name_plural': _noop('sports centres'),
+        'verbose_name_singular': _noop('a sports centre')
+    },
+    'swimming-pool': {
+        'category': _noop('Leisure'),
+        'verbose_name': _noop('swimming pool'),
+        'verbose_name_plural': _noop('swimming pools'),
+        'verbose_name_singular': _noop('a swimming pool')
+    },
+    'synagogue': {
+        'category': _noop('Amenities'),
+        'verbose_name': _noop('synagogue'),
+        'verbose_name_plural': _noop('synagogues'),
+        'verbose_name_singular': _noop('a synagogue')
+    },
+    'taxi-rank': {
+        'category': _noop('Transport'),
+        'verbose_name': _noop('taxi rank'),
+        'verbose_name_plural': _noop('taxi ranks'),
+        'verbose_name_singular': _noop('a taxi rank')
+    },
+    'theatre': {
+        'category': _noop('Leisure'),
+        'verbose_name': _noop('theatre'),
+        'verbose_name_plural': _noop('theatres'),
+        'verbose_name_singular': _noop('a theatre')
+    }
+}

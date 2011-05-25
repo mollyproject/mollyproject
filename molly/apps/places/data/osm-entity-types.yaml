@@ -43,9 +43,9 @@ cafe:
   parent-types: [food]
   show_in_category_list: false
   show_in_nearby_list: false
-  verbose_name: !!python/str "caf\xE9"
-  verbose_name_plural: !!python/str "caf\xE9s"
-  verbose_name_singular: !!python/str "a caf\xE9"
+  verbose_name: !!python/unicode "caf\xE9"
+  verbose_name_plural: !!python/unicode "caf\xE9s"
+  verbose_name_singular: !!python/unicode "a caf\xE9"
 car-park:
   category: Transport
   parent-types: []
@@ -139,9 +139,9 @@ ice-cream:
   parent-types: [cafe, food]
   show_in_category_list: false
   show_in_nearby_list: false
-  verbose_name: !!python/str "ice cream caf\xE9"
-  verbose_name_plural: !!python/str "ice cream caf\xE9s"
-  verbose_name_singular: !!python/str "an ice cream caf\xE9"
+  verbose_name: !!python/unicode "ice cream caf\xE9"
+  verbose_name_plural: !!python/unicode "ice cream caf\xE9s"
+  verbose_name_singular: !!python/unicode "an ice cream caf\xE9"
 ice-rink:
   category: Leisure
   parent-types: [sport]
