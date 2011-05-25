@@ -4,6 +4,7 @@ import urllib, re, email, random, logging
 import traceback
 
 from django.template.defaultfilters import slugify
+from django.utils.translation import ugettext_noop as _
 
 from molly.conf.settings import batch
 from molly.apps.podcasts.providers import BasePodcastsProvider
