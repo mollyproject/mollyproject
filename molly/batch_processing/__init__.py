@@ -26,7 +26,7 @@ def load_batches():
 
     batches = set()
     for batch_detail in batch_details:
-        batch, _ = Batch.objects.get_or_create(
+        batch, created = Batch.objects.get_or_create(
             local_name = batch_detail['local_name'],
             provider_name = batch_detail['provider_name'],
             method_name = batch_detail['method_name'],

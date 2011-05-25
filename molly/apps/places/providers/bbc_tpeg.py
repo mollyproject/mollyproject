@@ -120,7 +120,7 @@ class BBCTPEGPlacesProvider(BaseMapsProvider):
     
     def _get_entity_type(self):
         entity_type, created = EntityType.objects.get_or_create(slug='travel-alert')
-        category, _ = EntityTypeCategory.objects.get_or_create(name='Transport')
+        category, created2 = EntityTypeCategory.objects.get_or_create(name='Transport')
         entity_type.verbose_name = 'travel alert'
         entity_type.verbose_name_plural = 'travel alerts'
         entity_type.article = 'a'

@@ -41,11 +41,11 @@ def _cached(getargsfunc):
                     results = filtered_results
 
             try:
-                geocode, _ = Geocode.objects.get_or_create(local_name = app.local_name,
+                geocode, created = Geocode.objects.get_or_create(local_name = app.local_name,
                                                             **args)
             except Geocode.MultipleObjectsReturned:
                 Geocode.objects.filter(local_name = app.local_name, **args).delete()
-                geocode, _ = Geocode.objects.get_or_create(local_name = app.local_name,
+                geocode, created = Geocode.objects.get_or_create(local_name = app.local_name,
                                                             **args)
             geocode.results = results
             geocode.save()
