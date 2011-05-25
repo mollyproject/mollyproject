@@ -495,8 +495,8 @@ class CategoryDetailView(BaseView):
         entities = Entity.objects.filter(is_sublocation=False)
         for entity_type in entity_types:
             entities = entities.filter(all_types_completion=entity_type)
-        entities = entities.order_by('title')
 
+        entities = sorted(entities, key=lambda e: e.title)
         paginator = Paginator(entities, 100)
 
         try:

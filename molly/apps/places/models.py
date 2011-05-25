@@ -6,6 +6,7 @@ from django.conf import settings
 from django.contrib.gis.db import models
 from django.core.urlresolvers import reverse, NoReverseMatch
 from django.contrib.gis.geos import Point
+from django.utils.translation import get_language
 
 
 class Source(models.Model):
@@ -45,9 +46,31 @@ class EntityType(models.Model):
     """
 
     slug = models.SlugField()
-    article = models.CharField(max_length=2)
-    verbose_name = models.TextField()
-    verbose_name_plural = models.TextField()
+    
+    def _for_language(self, field):
+        try:
+            return getattr(self.names.get(language_code=get_language()), field)
+        except EntityTypeName.DoesNotExist:
+            try:
+                return getattr(self.names.get(language_code=settings.LANGUAGE_CODE).name, field)
+            except EntityTypeName.DoesNotExist:
+                if '-' in settings.LANGUAGE_CODE:
+                    return getattr(self.names.get(language_code=settings.LANGUAGE_CODE.split('-')[0]), field)
+                else:
+                    raise
+    
+    @property
+    def verbose_name(self):
+        return self._for_language('verbose_name')
+    
+    @property
+    def verbose_name_singular(self):
+        return self._for_language('verbose_name_singular')
+    
+    @property
+    def verbose_name_plural(self):
+        return self._for_language('verbose_name_plural')
+    
     show_in_nearby_list = models.BooleanField()
     show_in_category_list = models.BooleanField()
     note = models.TextField(null=True)
@@ -63,11 +86,11 @@ class EntityType(models.Model):
 
     def save(self, *args, **kwargs):
         super(EntityType, self).save(*args, **kwargs)
-
+        
         subtypes_of = set([self])
         for subtype_of in self.subtype_of.all():
             subtypes_of |= set(subtype_of.subtype_of_completion.all())
-
+        
         if set(self.subtype_of_completion.all()) != subtypes_of:
             self.subtype_of_completion = subtypes_of
             for et in self.subtypes.all():
@@ -77,8 +100,15 @@ class EntityType(models.Model):
         else:
             super(EntityType, self).save(*args, **kwargs)
 
+class EntityTypeName(models.Model):
+    entity_type = models.ForeignKey(EntityType, related_name='names')
+    language_code = models.CharField(max_length=10)
+    verbose_name = models.TextField()
+    verbose_name_singular = models.TextField()
+    verbose_name_plural = models.TextField()
+    
     class Meta:
-        ordering = ('verbose_name', )
+        unique_together = ('entity_type', 'language_code')
 
 
 class Identifier(models.Model):
@@ -98,8 +128,20 @@ class EntityGroup(models.Model):
     """
     Used to express relationships between entities
     """
+    
+    @property
+    def title(self):
+        try:
+            return self.names.get(language_code=get_language()).title
+        except EntityGroupName.DoesNotExist:
+            try:
+                return self.names.get(language_code=settings.LANGUAGE_CODE).title
+            except EntityGroupName.DoesNotExist:
+                if '-' in settings.LANGUAGE_CODE:
+                    return self.names.get(language_code=settings.LANGUAGE_CODE.split('-')[0]).title
+                else:
+                    raise
 
-    title = models.TextField(blank=True)
     source = models.ForeignKey(Source)
     ref_code = models.CharField(max_length=256)
 
@@ -107,13 +149,34 @@ class EntityGroup(models.Model):
         return self.title
 
 
+class EntityGroupName(models.Model):
+    entity_group = models.ForeignKey(EntityGroup, related_name='names')
+    title = models.TextField(blank=False)
+    language_code = models.CharField(max_length=10)
+    
+    class Meta:
+        unique_together = ('entity_group', 'language_code')
+
+
 class Entity(models.Model):
     """
     An Entity represents a geo-spatial point with attached metadata. This
     includes all DB stored Points regardless of data source.
     """
-
-    title = models.TextField(blank=True)
+    
+    @property
+    def title(self):
+        try:
+            return self.names.get(language_code=get_language()).title
+        except EntityName.DoesNotExist:
+            try:
+                return self.names.get(language_code=settings.LANGUAGE_CODE).title
+            except EntityName.DoesNotExist:
+                if '-' in settings.LANGUAGE_CODE:
+                    return self.names.get(language_code=settings.LANGUAGE_CODE.split('-')[0]).title
+                else:
+                    raise
+    
     source = models.ForeignKey(Source)
 
     primary_type = models.ForeignKey(EntityType, null=True)
@@ -121,13 +184,13 @@ class Entity(models.Model):
                                        related_name='entities')
     all_types_completion = models.ManyToManyField(EntityType, blank=True,
                                             related_name='entities_completion')
-
+    
     location = models.PointField(srid=4326, null=True)
     geometry = models.GeometryField(srid=4326, null=True)
     _metadata = models.TextField(default='{}')
-
+    
     absolute_url = models.TextField()
-
+    
     parent = models.ForeignKey('self', null=True)
     is_sublocation = models.BooleanField(default=False)
     is_stack = models.BooleanField(default=False)
@@ -163,7 +226,7 @@ class Entity(models.Model):
                     self.__identifiers[scheme] = value
 
             return self.__identifiers
-
+    
     def get_metadata(self):
         try:
             return self.__metadata
@@ -174,7 +237,7 @@ class Entity(models.Model):
     def set_metadata(self, metadata):
         self.__metadata = metadata
     metadata = property(get_metadata, set_metadata)
-
+    
     COMPASS_POINTS = ('N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW')
 
     def get_bearing(self, p1):
@@ -201,17 +264,17 @@ class Entity(models.Model):
                 self.location.transform(27700, clone=True)),
             self.get_bearing(point),
         )
-
+    
     def save(self, *args, **kwargs):
         try:
             self._metadata = simplejson.dumps(self.__metadata)
         except AttributeError:
             pass
-
+        
         identifiers = kwargs.pop('identifiers', None)
         if not identifiers is None:
             self.absolute_url = self._get_absolute_url(identifiers)
-
+        
         super(Entity, self).save(*args, **kwargs)
 
         if not identifiers is None:
@@ -254,11 +317,8 @@ class Entity(models.Model):
         for identifier in self._identifiers.all():
             identifier.delete()
         super(Entity, self).delete()
-
+    
     objects = models.GeoManager()
-
-    class Meta:
-        ordering = ('title', )
 
     def _get_absolute_url(self, identifiers):
         for scheme in IDENTIFIER_SCHEME_PREFERENCE:
@@ -281,10 +341,10 @@ class Entity(models.Model):
 
     def get_absolute_url(self):
         return self.absolute_url
-
+    
     def __unicode__(self):
         return self.title
-
+    
     @property
     def display_id(self):
         for et in self.all_types.all():
@@ -307,4 +367,13 @@ class Entity(models.Model):
             'title': self.title,
             'identifiers': self.identifiers,
             'identifier_scheme': self.identifier_scheme,
-            'identifier_value': self.identifier_value})
+            'identifier_value': self.identifier_value
+        })
+
+class EntityName(models.Model):
+    entity = models.ForeignKey(Entity, related_name='names')
+    title = models.TextField(blank=False)
+    language_code = models.CharField(max_length=10)
+    
+    class Meta:
+        unique_together = ('entity', 'language_code')
