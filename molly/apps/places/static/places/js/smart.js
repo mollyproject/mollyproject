@@ -183,6 +183,8 @@ function rebuildRTI(elem, metadata){
             }
         }
         if (metadata.services.length == 0) {
+            elem.find('ul').append('<li></li>')
+            var li = elem.find('li')
             li.append('Sorry, there is currently no real time information for this stop.')
         }
     }
