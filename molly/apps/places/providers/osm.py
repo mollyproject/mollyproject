@@ -1,16 +1,23 @@
 # -*- coding: utf-8 -*-
+import urllib2
+import bz2
+import subprocess
+import sys
+import random
+import os
+import yaml
+
+from xml.sax import saxutils, handler, make_parser
+
 from django.contrib.gis.geos import Point, LineString, LinearRing
 from django.conf import settings
+from django.utils.translation import ugettext as _
 
 from molly.apps.places.models import Entity, EntityType, Source, EntityTypeCategory
 from molly.apps.places.providers import BaseMapsProvider
-from molly.utils.misc import AnyMethodRequest
+from molly.utils.misc import AnyMethodRequest, override
 from molly.geolocation import reverse_geocode
 from molly.conf.settings import batch
-
-from xml.sax import saxutils, handler, make_parser
-import urllib2, bz2, subprocess, sys, random
-from os import path
 
 def node_id(id):
     return "N%d" % int(id)
@@ -18,7 +25,8 @@ def way_id(id):
     return "W%d" % int(id)
 
 class OSMHandler(handler.ContentHandler):
-    def __init__(self, source, entity_types, find_types, output, lat_north=None, lat_south=None, lon_west=None, lon_east=None):
+    def __init__(self, source, entity_types, find_types, output, lat_north=None,
+                 lat_south=None, lon_west=None, lon_east=None):
         self.source = source
         self.entity_types = entity_types
         self.find_types = find_types
@@ -47,7 +55,8 @@ class OSMHandler(handler.ContentHandler):
             if self._lat_north is None:
                 self.valid = True
             else:
-                self.valid = (self._lat_south < lat < self._lat_north and self._lon_west < lon < self._lon_east)
+                self.valid = (self._lat_south < lat < self._lat_north \
+                              and self._lon_west < lon < self._lon_east)
                 if not self.valid:
                     return
 
@@ -178,7 +187,11 @@ Complete
 class OSMMapsProvider(BaseMapsProvider):
     SHELL_CMD = "wget -O- %s --quiet | bunzip2"
 
-    def __init__(self, lat_north=None, lat_south=None, lon_west=None, lon_east=None, url='http://download.geofabrik.de/osm/europe/great_britain/england.osm.bz2'):
+    def __init__(self, lat_north=None, lat_south=None,
+                 lon_west=None, lon_east=None,
+                 url='http://download.geofabrik.de/osm/europe/great_britain/england.osm.bz2',
+                 entity_type_data_file=None,
+                 osm_tags_data_file=None):
         """
         @param lat_north: A limit of the northern-most latitude to import points
                           for
@@ -192,12 +205,46 @@ class OSMMapsProvider(BaseMapsProvider):
         @param lon_east: A limit of the eastern-most longitude to import points
                           for
         @type lon_east: float
+        @param url: The URL of the OSM planet file to download (defaults to
+                    England)
+        @type url: str
+        @param entity_type_data_file: A YAML file defining the entity types
+                                      which the OSM importer should create
+        @type entity_type_data_file: str
+        @param osm_tags_data_file: A YAML file defining the OSM tags which
+                                   should be imported, and how these map to
+                                   Molly's entity types
+        @type osm_tags_data_file: str
         """
         self._lat_north = lat_north
         self._lat_south = lat_south
         self._lon_west = lon_west
         self._lon_east = lon_east
         self._url = url
+        
+        if entity_type_data_file is None:
+            entity_type_data_file = os.path.join(os.path.dirname(__file__),
+                                                 '..', 'data', 'osm-entity-types.yaml')
+        with open(entity_type_data_file) as fd:
+            self._entity_types = yaml.load(fd)
+            
+        if osm_tags_data_file is None:
+            osm_tags_data_file = os.path.join(os.path.dirname(__file__),
+                                                 '..', 'data', 'osm-tags.yaml')
+        with open(osm_tags_data_file) as fd:
+            def to_tuple(tag):
+                """
+                Converts the new-style OSM tag file into the old-style tuple
+                representation
+                """
+                if 'subtags' in tag:
+                    return (tag['osm-tag'],
+                            map(to_tuple, tag['subtags']),
+                            tag['entity-type'])
+                else:
+                    return (tag['osm-tag'],
+                            tag['entity-type'])
+            self._osm_tags = map(to_tuple, yaml.load(fd))
 
     @batch('%d 9 * * mon' % random.randint(0, 59))
     def import_data(self, metadata, output):
@@ -213,12 +260,13 @@ class OSMMapsProvider(BaseMapsProvider):
             output.write('OSM data not updated. Not updating.\n')
             return
 
-        p = subprocess.Popen([self.SHELL_CMD % self._url], shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, close_fds=True)
+        p = subprocess.Popen([self.SHELL_CMD % self._url], shell=True,
+            stdin=subprocess.PIPE, stdout=subprocess.PIPE, close_fds=True)
 
         parser = make_parser()
         parser.setContentHandler(OSMHandler(self._get_source(),
                                             self._get_entity_types(),
-                                            self._find_types,
+                                            lambda tags, type_list=None: self._find_types(t, self._osm_tags if type_list is None else type_list),
                                             output,
                                             self._lat_north,
                                             self._lat_south,
@@ -244,71 +292,38 @@ class OSMMapsProvider(BaseMapsProvider):
         return source
 
     def _get_entity_types(self):
-        ENTITY_TYPES = {
-            'atm':                 ('an', 'ATM',                      'ATMs',                      True,  False, (),                    'Amenities'),
-            'bank':                ('a',  'bank',                     'banks',                     True,  True,  (),                    'Amenities'),
-            'bench':               ('a',  'bench',                    'benches',                   True,  False, (),                    'Amenities'),
-            'bar':                 ('a',  'bar',                      'bars',                      True,  True,  (),                    'Amenities'),
-            'bicycle-parking':     ('a',  'bicycle rack',             'bicycle racks',             True,  False, (),                    'Transport'),
-            'cafe':                ('a',  'café',                     'cafés',                     False, False, ('food',),             'Amenities'),
-            'car-park':            ('a',  'car park',                 'car parks',                 False, False, (),                    'Transport'),
-            'cathedral':           ('a',  'cathedral',                'cathedrals',                False, False, ('place-of-worship',), 'Amenities'),
-            'chapel':              ('a',  'chapel',                   'chapels',                   False, False, ('place-of-worship',), 'Amenities'),
-            'church':              ('a',  'church',                   'churches',                  False, False, ('place-of-worship',), 'Amenities'),
-            'cinema':              ('a',  'cinema',                   'cinemas',                   True,  True,  (),                    'Leisure'),
-            'cycle-shop':          ('a',  'cycle shop',               'cycle shops',               False, False, ('shop',),             'Amenities'),
-            'dispensing-pharmacy': ('a',  'dispensing pharmacy',      'dispensing pharmacies',     False, False, ('pharmacy',),         'Amenities'),
-            'doctors':             ('a',  "doctor's surgery",         "doctors' surgeries",        False, False, ('medical',),          'Amenities'),
-            'fast-food':           ('a',  'fast food outlet',         'fast food outlets',         False, False, ('food',),             'Amenities'),
-            'food':                ('a',  'place to eat',             'places to eat',             True,  True,  (),                    'Amenities'),
-            'hospital':            ('a',  'hospital',                 'hospitals',                 False, False, ('medical',),          'Amenities'),
-            'ice-cream':           ('an', 'ice cream café',           'ice cream cafés',           False, False, ('cafe','food',),      'Amenities'),
-            'ice-rink':            ('an', 'ice rink',                 'ice rinks',                 False, False, ('sport',),            'Leisure'),
-            'library':             ('a',  'library',                  'libraries',                 True,  True,  (),                    'Amenities'),
-            'mandir':              ('a',  'mandir',                   'mandirs',                   False, False, ('place-of-worship',), 'Amenities'),
-            'medical':             ('a',  'place relating to health', 'places relating to health', True,  True,  (),                    'Amenities'),
-            'mosque':              ('a',  'mosque',                   'mosques',                   False, False, ('place-of-worship',), 'Amenities'),
-            'museum':              ('a',  'museum',                   'museums',                   False, False, (),                    'Leisure'),
-            'car-park':            ('a',  'car park',                 'car parks',                 True,  False, (),                    'Transport'),
-            'park':                ('a',  'park',                     'parks',                     False, False, (),                    'Leisure'),
-            'park-and-ride':       ('a',  'park and ride',            'park and rides',            False, False, ('car-park',),         'Transport'),
-            'pharmacy':            ('a',  'pharmacy',                 'pharmacies',                False, False, ('medical',),          'Amenities'),
-            'place-of-worship':    ('a',  'place of worship',         'places of worship',         False, False, (),                    'Amenities'),
-            'post-box':            ('a',  'post box',                 'post boxes',                True,  False, (),                    'Amenities'),
-            'post-office':         ('a',  'post office',              'post offices',              True,  False, (),                    'Amenities'),
-            'pub':                 ('a',  'pub',                      'pubs',                      True,  True,  (),                    'Amenities'),
-            'public-library':      ('a',  'public library',           'public libraries',          True,  True,  ('library',),          'Amenities'),
-            'punt-hire':           ('a',  'place to hire punts',      'places to hire punts',      False, False, (),                    'Leisure'),
-            'recycling':           ('a',  'recycling facility',       'recycling facilities',      True,  False, (),                    'Amenities'),
-            'restaurant':          ('a',  'restaurant',               'restaurants',               False, False, ('food',),             'Amenities'),
-            'shop':                ('a',  'shop',                     'shops',                     False, False, (),                    'Amenities'),
-            'sport':               ('a',  'place relating to sport',  'places relating to sport',  False, False, (),                    'Leisure'),
-            'sports-centre':       ('a',  'sports centre',            'sports centres',            False, False, ('sport',),            'Leisure'),
-            'swimming-pool':       ('a',  'swimming pool',            'swimming pools',            False, False, ('sport',),            'Leisure'),
-            'synagogue':           ('a',  'synagogue',                'synagogues',                False, False, ('place-of-worship',), 'Amenities'),
-            'taxi-rank':           ('a',  'taxi rank',                'taxi ranks',                False, False, (),                    'Transport'),
-            'theatre':             ('a',  'theatre',                  'theatres',                  True,  True,  (),                    'Leisure'),
-        }
-
+        
         entity_types = {}
         new_entity_types = set()
-        for slug, (article, verbose_name, verbose_name_plural, nearby, category, subtype_of, et_category) in ENTITY_TYPES.items():
-            et_category, _ = EntityTypeCategory.objects.get_or_create(name=et_category)
+        for slug, et in self._entity_types.items():
+            et_category, created = EntityTypeCategory.objects.get_or_create(name=et['category'])
             entity_type, created = EntityType.objects.get_or_create(slug=slug)
             entity_type.slug = slug
             entity_type.category=et_category
-            entity_type.verbose_name = verbose_name
-            entity_type.verbose_name_plural = verbose_name_plural
-            entity_type.article = 'a'
             if created:
-                entity_type.show_in_nearby_list = nearby
-                entity_type.show_in_category_list = category
+                entity_type.show_in_nearby_list = et['show_in_nearby_list']
+                entity_type.show_in_category_list = et['show_in_category_list']
             entity_type.save()
+            for lang_code, lang_name in settings.LANGUAGES:
+                with override(lang_code):
+                    name = entity_type.names.filter(language_code=lang_code)
+                    if name.count() == 0:
+                        entity_type.names.create(
+                            language_code=lang_code,
+                            verbose_name=_(et['verbose_name']),
+                            verbose_name_singular=_(et['verbose_name_singular']),
+                            verbose_name_plural=_(et['verbose_name_plural']))
+                    else:
+                        name = name[0]
+                        name.verbose_name=_(et['verbose_name'])
+                        name.verbose_name_singular=_(et['verbose_name_singular'])
+                        name.verbose_name_plural=_(et['verbose_name_plural'])
+                        name.save()
             new_entity_types.add(slug)
             entity_types[slug] = entity_type
 
         for slug in new_entity_types:
-            subtype_of = ENTITY_TYPES[slug][5]
+            subtype_of = self._entity_types[slug][5]
             entity_types[slug].subtype_of.clear()
             for s in subtype_of:
                 entity_types[slug].subtype_of.add(entity_types[s])
@@ -316,54 +331,7 @@ class OSMMapsProvider(BaseMapsProvider):
 
         return entity_types
 
-    OSM_TYPES = [
-        ('amenity=place_of_worship', [
-            ('place_of_worship=chapel', 'chapel'),
-            ('place_of_worship=church', 'church'),
-            ('place_of_worship=cathedral', 'cathedral'),
-            ('religion=christian', 'church'),
-            ('religion=muslim', 'mosque'),
-            ('religion=hindu', 'mandir'),
-            ('religion=jewish', 'synagogue'),
-        ], 'place-of-worship'),
-        ('amenity=ice_cream', 'ice-cream'),
-        ('amenity=cafe', 'cafe'),
-        ('amenity=atm', 'atm'),
-        ('amenity=bank', 'bank'),
-        ('amenity=bar', 'bar'),
-        ('amenity=bench', 'bench'),
-        ('amenity=bicycle_parking', 'bicycle-parking'),
-        ('amenity=cinema', 'cinema'),
-        ('amenity=doctors', 'doctors'),
-        ('amenity=fast_food', 'fast-food'),
-        ('amenity=hospital', 'hospital'),
-        ('amenity=punt_hire', 'punt-hire'),
-        ('amenity=library', 'library'),
-        ('amenity=museum', 'museum'),
-        ('amenity=parking', [
-            ('park_ride=bus', 'park-and-ride'),
-        ], 'car-park'),
-        ('amenity=pharmacy', [
-            ('dispensing=yes', 'dispensing-pharmacy'),
-        ], 'pharmacy'),
-        ('amenity=post_box', 'post-box'),
-        ('amenity=post_office', 'post-office'),
-        ('amenity=pub', 'pub'),
-        ('amenity=recycling', 'recycling'),
-        ('amenity=restaurant', 'restaurant'),
-        ('amenity=theatre', 'theatre'),
-        ('amenity=taxi', 'taxi-rank'),
-        ('food=yes', 'food'),
-        ('atm=yes', 'atm'),
-        ('leisure=park', 'park'),
-        ('leisure=sports_centre', 'sports-centre'),
-        ('leisure=ice_rink', 'ice-rink'),
-        ('sport=swimming', 'swimming-pool'),
-        ('leisure=swimming_pool', 'swimming-pool'),
-        ('shop=bicycle', 'cycle-shop'),
-    ]
-
-    def _find_types(self, tags, type_list=OSM_TYPES):
+    def _find_types(self, tags, type_list):
         found_types = []
         for item in type_list:
             tag, value = item[0].split('=')
