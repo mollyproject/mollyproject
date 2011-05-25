@@ -184,9 +184,12 @@ class NearbyDetailView(LocationRequiredView, ZoomableView):
 
         et_name = capfirst(context['entity_types'][0].verbose_name_plural)
         if entity is not None:
-            title = _('%s near %s') % (et_name, entity.title)
+            title = _('%(entity_type)s near %(entity)s') % {
+                                                        'entity_type':et_name,
+                                                        'title': entity.title
+                                                    }
         else:
-            title = _('%s nearby') % et_name
+            title = _('%(entity_type)s nearby') % {'entity_type': et_name}
             
         if len(context['entity_types']) > 1:
             return {
