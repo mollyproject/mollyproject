@@ -35,8 +35,7 @@ class IndexView(BaseView):
     def get_metadata(self, request):
         return {
             'title': _('places'),
-            'additional': _('Find University buildings and units, along with' \
-                          + ' bus stops and local amenities'), }
+            'additional': _('Find University buildings and units, along with bus stops and local amenities'), }
 
     @BreadcrumbFactory
     def breadcrumb(self, request, context):
@@ -60,8 +59,7 @@ class NearbyListView(LocationRequiredView):
     def get_metadata(self, request, entity=None):
         return {
             'title': _('Find things nearby'),
-            'additional': _('Search for things based on your current ' \
-            + 'location'),
+            'additional': _('Search for things based on your current location'),
         }
 
     @BreadcrumbFactory
@@ -198,8 +196,7 @@ class NearbyDetailView(LocationRequiredView, ZoomableView):
 
         return {
             'title': title,
-            'additional': _('<strong>%(number)d %(entity_type)s</strong>' \
-            + 'within 1km') % {'number': number,
+            'additional': _('<strong>%(number)d %(entity_type)s</strong> within 1km') % {'number': number,
                                'entity_type': entity_type}
         }
 
