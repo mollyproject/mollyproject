@@ -7,9 +7,6 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
-        # Adding unique constraint on 'EntityTypeCategoryName', fields ['entity_type_category', 'language_code']
-        db.create_unique('places_entitytypecategoryname', ['entity_type_category_id', 'language_code'])
 
         # Deleting field 'EntityName.entity_group'
         db.delete_column('places_entityname', 'entity_group_id')
@@ -37,9 +34,6 @@ class Migration(SchemaMigration):
 
         # Removing unique constraint on 'EntityName', fields ['language_code', 'entity']
         db.delete_unique('places_entityname', ['language_code', 'entity_id'])
-
-        # Removing unique constraint on 'EntityTypeCategoryName', fields ['entity_type_category', 'language_code']
-        db.delete_unique('places_entitytypecategoryname', ['entity_type_category_id', 'language_code'])
 
         # User chose to not deal with backwards NULL issues for 'EntityName.entity_group'
         raise RuntimeError("Cannot reverse this migration. 'EntityName.entity_group' and its values cannot be restored.")
@@ -101,13 +95,7 @@ class Migration(SchemaMigration):
         },
         'places.entitytypecategory': {
             'Meta': {'object_name': 'EntityTypeCategory'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
-        },
-        'places.entitytypecategoryname': {
-            'Meta': {'unique_together': "(('entity_type_category', 'language_code'),)", 'object_name': 'EntityTypeCategoryName'},
-            'entity_type_category': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'names'", 'to': "orm['places.EntityTypeCategory']"}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'language_code': ('django.db.models.fields.CharField', [], {'max_length': '10'}),
             'name': ('django.db.models.fields.TextField', [], {})
         },
         'places.entitytypename': {

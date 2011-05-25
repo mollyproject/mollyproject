@@ -23,30 +23,10 @@ IDENTIFIER_SCHEME_PREFERENCE = getattr(
 
 class EntityTypeCategory(models.Model):
     
-    @property
-    def name(self):
-        try:
-            return self.names.get(language_code=get_language()).name
-        except EntityTypeCategoryName.DoesNotExist:
-            try:
-                return self.names.get(language_code=settings.LANGUAGE_CODE).name
-            except EntityTypeCategoryName.DoesNotExist:
-                if '-' in settings.LANGUAGE_CODE:
-                    return self.names.get(language_code=settings.LANGUAGE_CODE.split('-')[0]).name
-                else:
-                    raise
+    name = models.TextField(blank=False)
     
     def __unicode__(self):
         return self.name
-
-class EntityTypeCategoryName(models.Model):
-    entity_type_category = models.ForeignKey(EntityTypeCategory,
-                                             related_name='names')
-    name = models.TextField(blank=False)
-    language_code = models.CharField(max_length=10)
-    
-    class Meta:
-        unique_together = ('entity_type_category', 'language_code')
 
 class EntityType(models.Model):
     slug = models.SlugField()

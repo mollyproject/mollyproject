@@ -7,15 +7,6 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
-        # Adding model 'EntityTypeCategoryName'
-        db.create_table('places_entitytypecategoryname', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('entity_type_category', self.gf('django.db.models.fields.related.ForeignKey')(related_name='names', to=orm['places.EntityTypeCategory'])),
-            ('name', self.gf('django.db.models.fields.TextField')()),
-            ('language_code', self.gf('django.db.models.fields.CharField')(max_length=10)),
-        ))
-        db.send_create_signal('places', ['EntityTypeCategoryName'])
 
         # Adding model 'EntityName'
         db.create_table('places_entityname', (
@@ -57,9 +48,6 @@ class Migration(SchemaMigration):
 
         # Deleting field 'EntityGroup.title'
         db.delete_column('places_entitygroup', 'title')
-
-        # Deleting field 'EntityTypeCategory.name'
-        db.delete_column('places_entitytypecategory', 'name')
 
         # Deleting field 'Entity.title'
         db.delete_column('places_entity', 'title')
@@ -151,13 +139,7 @@ class Migration(SchemaMigration):
         },
         'places.entitytypecategory': {
             'Meta': {'object_name': 'EntityTypeCategory'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
-        },
-        'places.entitytypecategoryname': {
-            'Meta': {'object_name': 'EntityTypeCategoryName'},
-            'entity_type_category': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'names'", 'to': "orm['places.EntityTypeCategory']"}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'language_code': ('django.db.models.fields.CharField', [], {'max_length': '10'}),
             'name': ('django.db.models.fields.TextField', [], {})
         },
         'places.entitytypename': {

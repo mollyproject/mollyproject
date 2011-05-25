@@ -770,18 +770,7 @@ class NaptanMapsProvider(BaseMapsProvider):
     def _get_entity_types(self):
 
         entity_types = {}
-        category, created = EntityTypeCategory.objects.get_or_create(names__name=ugettext('Transport'),
-                                                                     names__language_code=get_language())
-        for lang_code, lang_name in settings.LANGUAGES:
-            with override(lang_code):
-                name = category.names.filter(language_code=lang_code)
-                if name.count() == 0:
-                    category.names.create(language_code=lang_code,
-                                          name=ugettext('Transport'))
-                else:
-                    name = name[0]
-                    name.name = ugettext('Transport')
-                    name.save()
+        category, created = EntityTypeCategory.objects.get_or_create(name=_('Transport'))
         category.save()
         
         for stop_type in self.entity_type_definitions:

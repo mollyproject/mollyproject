@@ -77,13 +77,7 @@ class Migration(SchemaMigration):
         },
         'places.entitytypecategory': {
             'Meta': {'object_name': 'EntityTypeCategory'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
-        },
-        'places.entitytypecategoryname': {
-            'Meta': {'object_name': 'EntityTypeCategoryName'},
-            'entity_type_category': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'names'", 'to': "orm['places.EntityTypeCategory']"}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'language_code': ('django.db.models.fields.CharField', [], {'max_length': '10'}),
             'name': ('django.db.models.fields.TextField', [], {})
         },
         'places.entitytypename': {
