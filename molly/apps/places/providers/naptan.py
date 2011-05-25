@@ -234,10 +234,10 @@ class NaptanContentHandler(ContentHandler):
                     
                     locality_lang = self.nptg_localities.get(locality)
                     if locality_lang != None:
-                        if lang_code in locality_lang:
-                            title += ', ' + locality_lang[lang_code]
-                        else:
-                            title += ', ' + locality_lang['en']
+                        for lang in (lang_code, 'en', 'cy'):
+                            if lang in locality_lang:
+                                title += ', ' + locality_lang[lang]
+                                break
                     
                     names[lang_code] = title
         
