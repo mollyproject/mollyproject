@@ -1,6 +1,7 @@
 from django.core.paginator import Paginator, EmptyPage, InvalidPage
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+from django.utils.translation import ugettext as _
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
@@ -10,14 +11,14 @@ from ..models import Feed, Item
 class IndexView(BaseView):
     def get_metadata(self, request):
         return {
-            'title': 'Events',
-            'additional': 'View events from across the University.',
+            'title': _('Events'),
+            'additional': _('View events from across the University.'),
         }
 
     @BreadcrumbFactory
     def breadcrumb(self, request, context):
         return Breadcrumb(
-            self.conf.local_name, None, 'Events', lazy_reverse('events:index')
+            self.conf.local_name, None, _('Events'), lazy_reverse('events:index')
         )
 
     def handle_GET(self, request, context):
@@ -30,7 +31,8 @@ class ItemListView(BaseView):
     def get_metadata(self, request, slug):
         feed = get_object_or_404(Feed.events, slug=slug)
 
-        last_modified = feed.last_modified.strftime('%a, %d %b %Y') if feed.last_modified else 'never updated'
+        # Translators: Feed last modified [date format] otherwise _('never_updated')
+        last_modified = feed.last_modified.strftime('%a, %d %b %Y') if feed.last_modified else _('never updated')
         return {
             'last_modified': feed.last_modified,
             'title': feed.title,
@@ -42,7 +44,7 @@ class ItemListView(BaseView):
         return Breadcrumb(
             self.conf.local_name,
             lazy_parent('index'),
-            'News feed',
+            _('News feed'),
             lazy_reverse('item-list', args=[slug])
         )
 
@@ -55,11 +57,11 @@ class ItemDetailView(BaseView):
     def get_metadata(self, request, slug, id):
         item = get_object_or_404(Item, feed__slug=slug, id=id)
 
-        last_modified = item.last_modified.strftime('%a, %d %b %Y') if item.last_modified else 'never updated'
+        last_modified = item.last_modified.strftime('%a, %d %b %Y') if item.last_modified else _('never updated')
         return {
             'last_modified': item.last_modified,
             'title': item.title,
-            'additional': '<strong>Events item</strong>, %s, %s' % (escape(item.feed.title), last_modified),
+            'feed_title': escape(item.feed.title),
         }
 
     @BreadcrumbFactory
@@ -67,7 +69,7 @@ class ItemDetailView(BaseView):
         return Breadcrumb(
             self.conf.local_name,
             lazy_parent('item-list', slug=slug),
-            'Events item',
+            _('Events item'),
             lazy_reverse('item-detail', args=[slug,id])
         )
 

@@ -4,6 +4,7 @@ from lxml import etree
 from django.core.urlresolvers import reverse
 from django.contrib.gis.db import models
 from django.conf import settings
+from django.utils.translation import ugettext_lazy as _
 
 from molly.external_media import resize_external_image
 from molly.apps.places.models import Entity
@@ -40,12 +41,15 @@ class Tag(models.Model):
     value = models.CharField(max_length=128)
 
 class Feed(models.Model):
-    title = models.TextField()
-    unit = models.CharField(max_length=10,null=True,blank=True)
-    rss_url = models.URLField()
-    slug = models.SlugField()
+    title = models.TextField(help_text=_("Feed title"))
+    # Represents the 'unit' which owns said feed. 
+    # Translators: A unit e.g. 'oucs' or short form of a department name. 
+    unit = models.CharField(max_length=10,null=True,blank=True,help_text=_("Unit to which the feed belongs to"))
+    rss_url = models.URLField(help_text=_("URL of RSS feed"))
+    slug = models.SlugField(help_text=_("Slug of feed, e.g. oucs-news"))
     last_modified = models.DateTimeField(null=True, blank=True) # this one is in UTC
     
+    # Provider type
     ptype = models.CharField(max_length=1, choices=FEED_TYPE_CHOICES)
     provider = models.CharField(max_length=128, choices=PROVIDER_CHOICES)
     
@@ -92,10 +96,10 @@ class Series(models.Model):
 
 class Item(models.Model):
     feed = models.ForeignKey(Feed)
-    title = models.TextField()
+    title = models.TextField(help_text=_("Title of feed item"))
     guid = models.TextField()
-    description = models.TextField()
-    link = models.URLField()
+    description = models.TextField(help_text=_("Description of feed item"))
+    link = models.URLField(help_text=_("URL to feed item"))
     last_modified = models.DateTimeField() # this one is also in UTC
     
     ptype = models.CharField(max_length=16, choices=FEED_TYPE_CHOICES)

@@ -4,6 +4,7 @@ from xml.sax.saxutils import escape
 from django.core.paginator import Paginator, EmptyPage, InvalidPage
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+from django.utils.translation import ugettext as _
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
@@ -13,14 +14,14 @@ from ..models import Feed, Item
 class IndexView(BaseView):
     def get_metadata(self, request):
         return {
-            'title': 'News',
-            'additional': 'View news feeds and events from across the University.',
+            'title': _('News'),
+            'additional': _('View news feeds and events from across the University.'),
         }
         
     @BreadcrumbFactory
     def breadcrumb(self, request, context):
         return Breadcrumb(
-            self.conf.local_name, None, 'News', lazy_reverse('index')
+            self.conf.local_name, None, _('News'), lazy_reverse('index')
         )
         
     def handle_GET(self, request, context):
@@ -33,7 +34,7 @@ class ItemListView(BaseView):
     def get_metadata(self, request, slug):
         feed = get_object_or_404(Feed.news, slug=slug)
         
-        last_modified = feed.last_modified.strftime('%a, %d %b %Y') if feed.last_modified else 'never updated'
+        last_modified = feed.last_modified.strftime('%a, %d %b %Y') if feed.last_modified else _('never updated')
         return {
             'last_modified': feed.last_modified,
             'title': feed.title,
