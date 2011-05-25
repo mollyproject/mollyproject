@@ -34,7 +34,7 @@ class Migration(SchemaMigration):
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('entity_type', self.gf('django.db.models.fields.related.ForeignKey')(related_name='names', to=orm['places.EntityType'])),
             ('language_code', self.gf('django.db.models.fields.CharField')(max_length=10)),
-            ('article', self.gf('django.db.models.fields.CharField')(max_length=10)),
+            ('verbose_name_singular', self.gf('django.db.models.fields.CharField')(max_length=10)),
             ('verbose_name', self.gf('django.db.models.fields.TextField')()),
             ('verbose_name_plural', self.gf('django.db.models.fields.TextField')()),
         ))
@@ -46,7 +46,7 @@ class Migration(SchemaMigration):
             cursor.execute('SELECT article, verbose_name, verbose_name_plural FROM places_entitytype WHERE id=%d', [et.pk])
             r = cursor.fetchone()
             et.names.create(language_code=settings.LANGUAGE_CODE,
-                            article=r[0],
+                            verbose_name_singular = '%s %s' % (r[0], r[1]),
                             verbose_name=r[1],
                             verbose_name_plural=r[2],
                             )
@@ -173,7 +173,7 @@ class Migration(SchemaMigration):
         },
         'places.entitytypename': {
             'Meta': {'object_name': 'EntityTypeName'},
-            'article': ('django.db.models.fields.CharField', [], {'max_length': '10'}),
+            'verbose_name_singular': ('django.db.models.fields.TextField', [], {}),
             'entity_type': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'names'", 'to': "orm['places.EntityType']"}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'language_code': ('django.db.models.fields.CharField', [], {'max_length': '10'}),
