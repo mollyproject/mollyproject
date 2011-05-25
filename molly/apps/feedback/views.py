@@ -3,6 +3,7 @@ from datetime import timedelta
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext as _
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import BreadcrumbFactory, Breadcrumb, lazy_reverse
@@ -15,7 +16,7 @@ class IndexView(BaseView):
     @BreadcrumbFactory
     def breadcrumb(self, request, context):
         return Breadcrumb(
-            self.conf.local_name, None, 'Feedback',
+            self.conf.local_name, None, _('Feedback'),
             lazy_reverse('index'))
 
     def initial_context(self, request):
