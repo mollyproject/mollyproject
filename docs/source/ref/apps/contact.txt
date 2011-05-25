@@ -29,7 +29,12 @@ This queries an LDAP server for contact details. It takes three options:
  * base_dn: The base DN to use when searching the LDAP tree
  * phone_prefix (optional, defaults to blank): A prefix to add to phone numbers,
    e.g., if your LDAP servers only store extension numbers, you can add the
-   prefix to make it externally callable here (e.g., '+44190443')
+   prefix to make it externally callable here (e.g., '+44190443'). This is not
+   used when formatter is set.
+ * phone_formatter (optional, defaults to nothing): A custom "number formatter",
+   which is called with the raw phone number from LDAP and is expected to return
+   a normalised phone number. Use this is you need more advanced logic than
+   the phone_prefix option can give you.
 
 Writing Your Own Providers
 --------------------------
