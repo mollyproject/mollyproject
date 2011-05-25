@@ -34,7 +34,7 @@ class Migration(SchemaMigration):
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('entity_type', self.gf('django.db.models.fields.related.ForeignKey')(related_name='names', to=orm['places.EntityType'])),
             ('language_code', self.gf('django.db.models.fields.CharField')(max_length=10)),
-            ('verbose_name_singular', self.gf('django.db.models.fields.CharField')(max_length=10)),
+            ('verbose_name_singular', self.gf('django.db.models.fields.TextField')()),
             ('verbose_name', self.gf('django.db.models.fields.TextField')()),
             ('verbose_name_plural', self.gf('django.db.models.fields.TextField')()),
         ))
