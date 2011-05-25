@@ -1,49 +1,51 @@
 from datetime import datetime, time
 from django.contrib.gis.db import models
+from django.utils.translation import ugettext_lazy as _
 
 PTYPE_CHOICES = (
-    ('o', 'observation'),
-    ('f', 'forecast'),
+    ('o', _('observation')),
+    ('f', _('forecast')),
 )
 
 PRESSURE_STATE_CHOICES = (
-    ('+', 'rising'),
-    ('-', 'falling'),
-    ('~', 'steady'),
-    ('c', 'no change'),
+    # Translators: Weather pressure states
+    ('+', _('rising')),
+    ('-', _('falling')),
+    ('~', _('steady')),
+    ('c', _('no change')),
 )
 
 VISIBILITY_CHOICES = (
-    ('vp', 'very poor visibility'),
-    ('p',  'poor visibility '),
-    ('vg', 'very good visibility'),
-    ('g', 'good visibility'),
-    ('df', 'dense fog'),
-    ('f', 'fog'),
-    ('e', 'excellent visibility'),
-    ('m', 'moderate visibility'),
+    ('vp', _('very poor visibility')),
+    ('p',  _('poor visibility ')),
+    ('vg', _('very good visibility')),
+    ('g', _('good visibility')),
+    ('df', _('dense fog')),
+    ('f', _('fog')),
+    ('e', _('excellent visibility')),
+    ('m', _('moderate visibility')),
 )
 
 OUTLOOK_CHOICES = (
-    ('si', 'sunny intervals'),
-    ('gc', 'grey cloud'),
-    ('hr', 'heavy rain'),
-    ('s', 'sunny'),
-    ('lr', 'light rain'),
-    ('pc', 'partly cloudy'),
-    ('f', 'fog'),
-    ('wc', 'white cloud'),
-    ('tst', 'thunder storm'),
-    ('m', 'mist'),
-    ('tsh', 'thundery shower'),
-    ('lrs', 'light rain shower'),
-    ('cs', 'clear sky'),
-    ('d', 'drizzle'),
-    ('h', 'hail'),
-    ('lsn', 'light snow'),
-    ('sn', 'snow'),
-    ('hsn', 'heavy snow'),
-    ('unk', 'n/a'),
+    ('si', _('sunny intervals')),
+    ('gc', _('grey cloud')),
+    ('hr', _('heavy rain')),
+    ('s', _('sunny')),
+    ('lr', _('light rain')),
+    ('pc', _('partly cloudy')),
+    ('f', _('fog')),
+    ('wc', _('white cloud')),
+    ('tst', _('thunder storm')),
+    ('m', _('mist')),
+    ('tsh', _('thundery shower')),
+    ('lrs', _('light rain shower')),
+    ('cs', _('clear sky')),
+    ('d', _('drizzle')),
+    ('h', _('hail')),
+    ('lsn', _('light snow')),
+    ('sn', _('snow')),
+    ('hsn', _('heavy snow')),
+    ('unk', _('n/a')),
 )
 
 OUTLOOK_TO_ICON = {
@@ -69,9 +71,9 @@ OUTLOOK_TO_ICON = {
 }
 
 SCALE_CHOICES = (
-    ('l', 'low'),
-    ('m', 'medium'),
-    ('h', 'high'),
+    ('l', _('low')),
+    ('m', _('medium')),
+    ('h', _('high')),
 )
 
 class Weather(models.Model):

@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from django.utils.translation import ugettext as _
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
@@ -21,7 +22,7 @@ class IndexView(BaseView):
         return Breadcrumb(
             'weather',
             None,
-            'Weather',
+            _('Weather'),
             lazy_reverse('index'),
         )
 
