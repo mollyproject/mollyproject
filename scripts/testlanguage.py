@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # coding: utf-8
 
 from codecs import open
@@ -20,13 +21,23 @@ INVERSIONS = dict(zip(
     u'Ɩ', u'ᄅ', u'Ɛ', u'ㄣ', u'ϛ', u'9', u'Ɫ', u'8', u'6', u'0',
     u'¡', u'¿', u'„', u'\'', u',', u'(', u')', u'‾', u'v',
     
-    u']', u'[', u'}', u'{', u'/', u'\\', u'>', u'<', u'˙']
+    u']', u'[', u'}', u'{', u'/', u'\\\\', u'>', u'<', u'˙']
 ))
 
 def invert(chars):
     r = u''
+    in_formatter = 0
     for char in chars:
-        r += INVERSIONS.get(char, char)
+        if char == '%':
+            in_formatter = 1
+        if in_formatter > 0:
+            r += char
+            if in_formatter == 2:
+                in_formatter = 0
+            if char == ')':
+                in_formatter = 2
+        else:
+            r += INVERSIONS.get(char, char)
     return r
 
 if __name__ == '__main__':
@@ -36,7 +47,7 @@ if __name__ == '__main__':
     this_msg = ''
     in_msgid = False
     
-    with open(sys.argv[1]) as fd:
+    with open(sys.argv[1], encoding='utf-8') as fd:
         for line in fd:
             if line[:5] == 'msgid':
                 in_msgid = True
