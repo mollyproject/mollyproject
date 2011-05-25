@@ -2,17 +2,27 @@
 import datetime
 from south.db import db
 from south.v2 import SchemaMigration
-from django.db import models
+from django.db import models, connection
+
+from molly.apps.places.models import EntityTypeName
 
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
         
+        # Adding field 'EntityTypeName.verbose_name_singular'
+        db.add_column('places_entitytypename', 'verbose_name_singular', self.gf('django.db.models.fields.TextField')(default=''), keep_default=False)
+        
+        for etn in EntityTypeName.objects.all():
+            cursor = connection.cursor()
+            cursor.execute('SELECT article FROM places_entitytypename WHERE id=%d', [etn.pk])
+            r = cursor.fetchone()
+            etn.verbose_name_singular = '%s %s' % (r[0], etn.verbose_name)
+            etn.save()
+        
         # Deleting field 'EntityTypeName.article'
         db.delete_column('places_entitytypename', 'article')
 
-        # Adding field 'EntityTypeName.verbose_name_singular'
-        db.add_column('places_entitytypename', 'verbose_name_singular', self.gf('django.db.models.fields.TextField')(default=''), keep_default=False)
 
 
     def backwards(self, orm):

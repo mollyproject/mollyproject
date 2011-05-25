@@ -2,7 +2,10 @@
 import datetime
 from south.db import db
 from south.v2 import SchemaMigration
-from django.db import models
+from django.db import models, connection
+from django.conf import settings
+
+from molly.apps.places.models import Entity, EntityGroup, EntityType
 
 class Migration(SchemaMigration):
 
@@ -36,7 +39,18 @@ class Migration(SchemaMigration):
             ('verbose_name_plural', self.gf('django.db.models.fields.TextField')()),
         ))
         db.send_create_signal('places', ['EntityTypeName'])
-
+        
+        # Convert EntityType names to the new model
+        for et in EntityType.objects.all():
+            cursor = connection.cursor()
+            cursor.execute('SELECT article, verbose_name, verbose_name_plural FROM places_entitytype WHERE id=%d', [et.pk])
+            r = cursor.fetchone()
+            et.names.create(language_code=settings.LANGUAGE_CODE,
+                            article=r[0],
+                            verbose_name=r[1],
+                            verbose_name_plural=r[2],
+                            )
+        
         # Deleting field 'EntityType.verbose_name_plural'
         db.delete_column('places_entitytype', 'verbose_name_plural')
 
@@ -46,9 +60,24 @@ class Migration(SchemaMigration):
         # Deleting field 'EntityType.verbose_name'
         db.delete_column('places_entitytype', 'verbose_name')
 
+        for eg in EntityGroup.objects.all():
+            cursor = connection.cursor()
+            cursor.execute('SELECT title FROM places_entitygroup WHERE id=%d', [eg.pk])
+            r = cursor.fetchone()
+            eg.names.create(language_code=settings.LANGUAGE_CODE,
+                            title=r[0])
+        
         # Deleting field 'EntityGroup.title'
         db.delete_column('places_entitygroup', 'title')
 
+
+        for e in EntityGroup.objects.all():
+            cursor = connection.cursor()
+            cursor.execute('SELECT title FROM places_entity WHERE id=%d', [e.pk])
+            r = cursor.fetchone()
+            e.names.create(language_code=settings.LANGUAGE_CODE,
+                            title=r[0])
+        
         # Deleting field 'Entity.title'
         db.delete_column('places_entity', 'title')
 
