@@ -43,7 +43,7 @@ class Migration(SchemaMigration):
         # Convert EntityType names to the new model
         for et in EntityType.objects.all():
             cursor = connection.cursor()
-            cursor.execute('SELECT article, verbose_name, verbose_name_plural FROM places_entitytype WHERE id=%d', [et.pk])
+            cursor.execute('SELECT article, verbose_name, verbose_name_plural FROM places_entitytype WHERE id=%s', [et.pk])
             r = cursor.fetchone()
             et.names.create(language_code=settings.LANGUAGE_CODE,
                             article=r[0],
@@ -62,7 +62,7 @@ class Migration(SchemaMigration):
 
         for eg in EntityGroup.objects.all():
             cursor = connection.cursor()
-            cursor.execute('SELECT title FROM places_entitygroup WHERE id=%d', [eg.pk])
+            cursor.execute('SELECT title FROM places_entitygroup WHERE id=%s', [eg.pk])
             r = cursor.fetchone()
             eg.names.create(language_code=settings.LANGUAGE_CODE,
                             title=r[0])
@@ -73,7 +73,7 @@ class Migration(SchemaMigration):
 
         for e in EntityGroup.objects.all():
             cursor = connection.cursor()
-            cursor.execute('SELECT title FROM places_entity WHERE id=%d', [e.pk])
+            cursor.execute('SELECT title FROM places_entity WHERE id=%s', [e.pk])
             r = cursor.fetchone()
             e.names.create(language_code=settings.LANGUAGE_CODE,
                             title=r[0])

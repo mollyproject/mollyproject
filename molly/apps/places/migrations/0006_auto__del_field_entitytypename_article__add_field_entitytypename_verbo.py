@@ -15,7 +15,7 @@ class Migration(SchemaMigration):
         
         for etn in EntityTypeName.objects.all():
             cursor = connection.cursor()
-            cursor.execute('SELECT article FROM places_entitytypename WHERE id=%d', [etn.pk])
+            cursor.execute('SELECT article FROM places_entitytypename WHERE id=%s', [etn.pk])
             r = cursor.fetchone()
             etn.verbose_name_singular = '%s %s' % (r[0], etn.verbose_name)
             etn.save()
