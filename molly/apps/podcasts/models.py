@@ -1,11 +1,13 @@
 from django.db import models
 from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext_lazy as _
+
 from molly.apps.podcasts.data import licenses
 
 MEDIUM_CHOICES = (
-    ('audio', 'audio'),
-    ('video', 'video'),
-    ('document', 'document'),
+    ('audio', _('audio')),
+    ('video', _('video')),
+    ('document', _('document')),
 )
 
 class PodcastCategory(models.Model):
@@ -19,8 +21,8 @@ class PodcastCategory(models.Model):
     def __unicode__(self):
         return self.name or ''
     class Meta:
-        verbose_name = 'Podcast category'
-        verbose_name_plural = 'Podcast categories'
+        verbose_name = _('Podcast category')
+        verbose_name_plural = _('Podcast categories')
         ordering = ('order','name',)
 
 class Podcast(models.Model):
@@ -47,8 +49,8 @@ class Podcast(models.Model):
         return licenses.get(self.license)
 
     class Meta:
-        verbose_name = 'Podcast feed'
-        verbose_name_plural = 'Podcast feeds'
+        verbose_name = _('Podcast feed')
+        verbose_name_plural = _('Podcast feeds')
         ordering = ('title',)
 
 
@@ -71,24 +73,24 @@ class PodcastItem(models.Model):
         return licenses.get(self.license) or licenses.get(self.podcast.license)
 
     class Meta:
-        verbose_name = 'Podcast item'
-        verbose_name_plural = 'Podcast items'
+        verbose_name = _('Podcast item')
+        verbose_name_plural = _('Podcast items')
 
 MIMETYPES = {
-    'audio/x-mpeg': 'MP3 audio',
-    'video/mp4': 'MP4 video',
-    'MPEG4 Video': 'MP4 video',
-    'text/html': 'HTML document',
-    'audio/mpeg': 'MP3 audio',
-    'video/x-ms-wmv': 'WMV video',
-    'text/plain': 'plain text',
-    'application/pdf': 'PDF document',
-    'audio/x-m4b': 'MP4 audio',
-    'application/octet-stream': 'unknown',
-    'video/mpeg': 'MPEG video',
-    'video/x-m4v': 'MP4 video',
-    'audio/x-m4a': 'MP4 audio',
-    'application/epub+zip': 'ePub eBook'
+    'audio/x-mpeg': _('MP3 audio'),
+    'video/mp4': _('MP4 video'),
+    'MPEG4 Video': _('MP4 video'),
+    'text/html': _('HTML document'),
+    'audio/mpeg': _('MP3 audio'),
+    'video/x-ms-wmv': _('WMV video'),
+    'text/plain': _('plain text'),
+    'application/pdf': _('PDF document'),
+    'audio/x-m4b': _('MP4 audio'),
+    'application/octet-stream': _('unknown'),
+    'video/mpeg': _('MPEG video'),
+    'video/x-m4v': _('MP4 video'),
+    'audio/x-m4a': _('MP4 audio'),
+    'application/epub+zip': _('ePub eBook')
 }    
 
 class PodcastEnclosure(models.Model):
@@ -99,22 +101,23 @@ class PodcastEnclosure(models.Model):
     
     @property
     def medium(self):
-        medium = {'application/pdf': 'document', 'MPEG4 Video': 'video'}.get(self.mimetype)
+        medium = {'application/pdf': _('document'), 'MPEG4 Video': _('video')}.get(self.mimetype)
         if medium:
             return medium
         elif not self.mimetype:
-            return self.podcast_item.podcast.medium or 'unknown'
+            # Translators: Unknown podcast medium type
+            return self.podcast_item.podcast.medium or _('unknown')
         elif self.mimetype.startswith('audio/'):
-            return 'audio'
+            return _('audio')
         elif self.mimetype.startswith('video/'):
-            return 'video'
+            return _('video')
         else:
-            return self.podcast_item.podcast.medium or 'unknown'
+            return self.podcast_item.podcast.medium or _('unknown')
     
     def get_mimetype_display(self):
-        return MIMETYPES.get(self.mimetype, 'unknown')
+        return MIMETYPES.get(self.mimetype, _('unknown'))
     
     class Meta:
-        verbose_name = 'Podcast enclosed data'
-        verbose_name_plural = 'Podcast enclosed data'
+        verbose_name = _('Podcast enclosed data')
+        verbose_name_plural = _('Podcast enclosed data')
 

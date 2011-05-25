@@ -5,6 +5,7 @@ from xml.etree import ElementTree as ET
 from django.http import HttpResponse, Http404
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
+from django.utils.translation import ugettext as _
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
@@ -17,14 +18,14 @@ from molly.apps.podcasts.models import Podcast, PodcastCategory
 class IndexView(BaseView):
     def get_metadata(self, request):
         return {
-            'title': 'Podcasts',
-            'additional': 'Browse and listen to podcasts from around the University.'
+            'title': _('Podcasts'),
+            'additional': _('Browse and listen to podcasts from around the University.')
         }
         
     @BreadcrumbFactory
     def breadcrumb(self, request, context):
         return Breadcrumb(self.conf.local_name, None,
-                          'Podcasts', lazy_reverse('index'))
+                          _('Podcasts'), lazy_reverse('index'))
         
     def handle_GET(self, request, context):
         show_itunesu_link = request.session.get('podcasts:use_itunesu') == None
@@ -46,7 +47,7 @@ class CategoryDetailView(BaseView):
         category = get_object_or_404(PodcastCategory, slug=category)
         return {
             'title': category.name,
-            'additional': '<strong>Podcast category</strong>'
+            'additional': _('<strong>Podcast category</strong>')
         }
         
     def initial_context(self, request, category, medium=None):
@@ -92,10 +93,10 @@ class PodcastDetailView(BaseView):
         
         return {
             'title': podcast.title,
-            'category': 'podcast',
-            'category_display': 'podcast',
+            'category': _('podcast'),
+            'category_display': _('podcast'),
             'last_updated': podcast.last_updated,
-            'additional': '<strong>Podcast</strong> %s' % podcast.last_updated.strftime('%d %b %Y')
+            'additional': _('<strong>Podcast</strong> %s') % podcast.last_updated.strftime('%d %b %Y')
         }
         
     def initial_context(self, request, slug=None, podcast=None):
@@ -155,6 +156,7 @@ class ITunesURedirectView(BaseView):
                     reverse('podcasts:index') + '?show_itunesu_link=false',
                     request)
         else:
+            # TODO Remove hard link to Oxford's iTunes U library
             return self.redirect(
                 "http://deimos.apple.com/WebObjects/Core.woa/Browse/ox-ac-uk-public",
                 request)
