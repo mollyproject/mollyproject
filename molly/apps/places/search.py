@@ -1,13 +1,18 @@
-import re, simplejson, urllib2
+import re
+import simplejson
+import urllib2
 from itertools import chain
 
 from django.core.urlresolvers import reverse
 from django.db.models import Q
+from django.utils.translation import ugettext as _
 
 from views import NearbyDetailView, EntityDetailView
 from models import Entity, EntityType
 
+
 class ApplicationSearch(object):
+
     def __init__(self, conf):
         self.conf = conf
 
@@ -19,8 +24,12 @@ class ApplicationSearch(object):
         )
 
     def nearby_search(self, request, query, is_single_app_search):
+        """
+        nearby_search was invented to allow a user to query in plain text such
+        e.g. 'post boxes near OUCS' this is yet to be completed."
+        """
         # TODO: Complete
-        query = query.lower().split(' near ')
+        query = query.lower().split(_(' near '))
         if len(query) != 2:
             return []
 
@@ -52,11 +61,9 @@ class ApplicationSearch(object):
             result.update(EntityDetailView(self.conf).get_metadata(request, entity.identifier_scheme, entity.identifier_value))
             yield result
 
-
     def entity_type_search(self, request, query, is_single_app_search):
         entity_types = EntityType.objects.filter(
-            Q(verbose_name__iexact = query) | Q(verbose_name_plural__iexact = query)
-        )
+            Q(verbose_name__iexact = query) | Q(verbose_name_plural__iexact = query))
 
         for entity_type in entity_types:
             result = {

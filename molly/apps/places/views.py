@@ -15,6 +15,7 @@ from django.shortcuts import get_object_or_404
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import capfirst
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
+from django.utils.translation import ugettext as _
 
 from molly.utils.views import BaseView, ZoomableView
 from molly.utils.breadcrumbs import *
@@ -33,16 +34,16 @@ class IndexView(BaseView):
 
     def get_metadata(self, request):
         return {
-            'title': 'places',
-            'additional': 'Find University buildings and units, along with' \
-                          + ' bus stops and local amenities', }
+            'title': _('places'),
+            'additional': _('Find University buildings and units, along with' \
+                          + ' bus stops and local amenities'), }
 
     @BreadcrumbFactory
     def breadcrumb(self, request, context):
         return Breadcrumb(
             'places',
             None,
-            'Places',
+            _('Places'),
             lazy_reverse('index'))
 
     def initial_context(self, request):
@@ -58,8 +59,9 @@ class NearbyListView(LocationRequiredView):
 
     def get_metadata(self, request, entity=None):
         return {
-            'title': 'Find things nearby',
-            'additional': 'Search for things based on your current location',
+            'title': _('Find things nearby'),
+            'additional': _('Search for things based on your current ' \
+            + 'location'),
         }
 
     @BreadcrumbFactory
@@ -67,7 +69,7 @@ class NearbyListView(LocationRequiredView):
         return Breadcrumb(
             'places',
             lazy_parent('index'),
-            'Things nearby',
+            _('Things nearby'),
             url = lazy_reverse('nearby-list'),
         )
 
@@ -75,22 +77,23 @@ class NearbyListView(LocationRequiredView):
         point = get_point(request, entity)
 
         if entity:
-            return_url = reverse('places:entity-nearby-list',args=[entity.identifier_scheme, entity.identifier_value])
+            return_url = reverse('places:entity-nearby-list',
+                      args=[entity.identifier_scheme, entity.identifier_value])
         else:
             return_url = reverse('places:nearby-list')
-        
+
         # Get entity types to show on nearby page
         entity_types = EntityType.objects.filter(show_in_nearby_list=True)
         entity_types_lookup = dict((et, et) for et in entity_types)
-        
+
         # Get all nearby entities
         entities = Entity.objects.filter(location__isnull = False, all_types_completion__in = entity_types)
         entities = entities.distance(point).order_by('distance')
-        
+
         for et in entity_types:
             et.max_distance = 0
             et.entities_found = 0
-        
+
         # For each entity...
         for e in entities:
             for et in e.all_types.all():
@@ -98,7 +101,7 @@ class NearbyListView(LocationRequiredView):
                     # Check if this entity is in one of the entity types to show
                     # if not - throws KeyError
                     et = entity_types_lookup[et]
-                    
+
                     # Check if this entity fits within the selection criteria
                     # if it doesn't, then remove it from being considered for
                     # future entities
@@ -109,23 +112,24 @@ class NearbyListView(LocationRequiredView):
                     et.entities_found += 1
                 except KeyError:
                     pass
-            
+
             # Stop when we've considered all entity types, or are more than 5km
             # away
             if len(entity_types) == 0 or e.distance.m > 5000:
                 break
-        
+
         categorised_entity_types = defaultdict(list)
         for et in filter(lambda et: et.entities_found > 0, entity_types):
             categorised_entity_types[et.category.name].append(et)
         # Need to do this other Django evalutes .items as ['items']
         categorised_entity_types = dict(categorised_entity_types.items())
-        
+
         context.update({
             'entity_types': categorised_entity_types,
             'entity': entity,
             'return_url': return_url,
-            'exposes_user_data': entity is None, # entity is None => we've searched around the user's location
+            # entity is None => we've searched around the user's location
+            'exposes_user_data': entity is None, 
         })
         if entity and not entity.location:
             return self.render(request, context, 'places/entity_without_location')
@@ -156,7 +160,8 @@ class NearbyDetailView(LocationRequiredView, ZoomableView):
             'point': point,
             'entities': entities,
             'entity': entity,
-            'exposes_user_data': entity is None, # entity is None => point is the user's location
+            # entity is None => point is the user's location
+            'exposes_user_data': entity is None, 
         })
         return context
 
@@ -174,29 +179,28 @@ class NearbyDetailView(LocationRequiredView, ZoomableView):
         if len(context['entity_types']) == 0:
             return {
                 'exclude_from_search': True,
-                'title': 'Things near %s' % entity.title,
+                'title': _('Things near %(title)s') % {'title': entity.title}
             }
 
+        et_name = capfirst(context['entity_types'][0].verbose_name_plural)
+        if entity is not None:
+            title = _('%s near %s') % (et_name, entity.title)
+        else:
+            title = _('%s nearby') % et_name
+            
         if len(context['entity_types']) > 1:
             return {
                 'exclude_from_search': True,
-                'title': '%s near%s%s' % (
-                    capfirst(context['entity_types'][0].verbose_name_plural),
-                    entity and ' ' or '',
-                    entity and entity.title or 'by',
-                ),
-            }
+                'title': title}
+        
+        number = len([e for e in context['entities'] if e.location.transform(27700, clone=True).distance(context['point'].transform(27700, clone=True)) <= 1000])
+        entity_type = context['entity_types'][0].verbose_name_plural
 
         return {
-            'title': '%s near%s%s' % (
-                capfirst(context['entity_types'][0].verbose_name_plural),
-                entity and ' ' or '',
-                entity and entity.title or 'by',
-            ),
-            'additional': '<strong>%d %s</strong> within 1km' % (
-                len([e for e in context['entities'] if e.location.transform(27700, clone=True).distance(context['point'].transform(27700, clone=True)) <= 1000]),
-                context['entity_types'][0].verbose_name_plural,
-            ),
+            'title': title,
+            'additional': _('<strong>%(number)d %(entity_type)s</strong>' \
+            + 'within 1km') % {'number': number,
+                               'entity_type': entity_type}
         }
 
     def handle_GET(self, request, context, ptypes, entity=None):
@@ -208,7 +212,6 @@ class NearbyDetailView(LocationRequiredView, ZoomableView):
 
         if entity and not point:
             context = {'entity': entity}
-            raise Exception
             return self.render(request, context, 'places/entity_without_location')
 
         if context['zoom'] is None:
@@ -272,21 +275,21 @@ class EntityDetailView(ZoomableView, FavouritableView):
                         associations += [{'type': type, 'entities': [get_entity(ns, value) for ns, value in es]} for type, es in associated_entities]
                 except (KeyError, Http404):
                     pass
-        
+
         for entity_group in entity.groups.all():
             group_entities = filter(lambda e: e != entity,
                                    Entity.objects.filter(groups=entity_group))
-            
+
             if len(group_entities) > 0:
                 associations.append({
                     'type': entity_group.title,
                     'entities': group_entities,
                 })
-        
+
         board = request.GET.get('board', 'departures')
         if board != 'departures':
             board = 'arrivals'
-        
+
         context.update({
             'entity': entity,
             'train_station': entity, # This allows the ldb metadata to be portable
@@ -312,10 +315,10 @@ class EntityDetailView(ZoomableView, FavouritableView):
 
     def handle_GET(self, request, context, scheme, value):
         entity = context['entity']
-        
+
         if entity.absolute_url != request.path:
             return self.redirect(entity.absolute_url, request, 'perm')
-        
+
         entities = []
         for association in context['associations']:
             entities += association['entities']
@@ -493,19 +496,19 @@ class CategoryDetailView(BaseView):
         for entity_type in entity_types:
             entities = entities.filter(all_types_completion=entity_type)
         entities = entities.order_by('title')
-        
+
         paginator = Paginator(entities, 100)
-        
+
         try:
             page = int(request.GET.get('page', '1'))
         except ValueError:
             page = 1
-        
+
         try:
             paged_entities = paginator.page(page)
         except (EmptyPage, InvalidPage):
             paged_entities = paginator.page(1)
-        
+
         found_entity_types = set()
         for e in entities:
             found_entity_types |= set(e.all_types.all())
@@ -585,7 +588,7 @@ class ServiceDetailView(BaseView):
 
         # Deal with train service data
         if entity.metadata['service_type'] == 'ldb':
-            
+
             # LDB has + in URLs, but Django converts that to space
             service = entity.metadata['service_details'](service_id.replace(' ', '+'))
             if service is None:
@@ -599,14 +602,14 @@ class ServiceDetailView(BaseView):
                     },
                 })
                 return context
-            
+
             context.update({
                 'entity': entity,
                 'train_service': service,
                 'title': service['title'],
                 'zoom_controls': False,
             })
-        
+
         map = Map(
             centre_point = (entity.location[0], entity.location[1],
                             'green', entity.title),
@@ -619,13 +622,13 @@ class ServiceDetailView(BaseView):
         )
 
         context.update({
-            'map': map
-        })
-        
+            'map': map})
+
         return context
 
     def handle_GET(self, request, context, scheme, value):
         return self.render(request, context, 'places/service_details')
+
 
 class APIView(BaseView):
     """
