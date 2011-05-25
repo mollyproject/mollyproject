@@ -1,5 +1,6 @@
 from django.http import HttpResponseForbidden
 from django.db.models import Avg, Count
+from django.utils.translation import ugettext as _
 
 from molly.utils.breadcrumbs import lazy_reverse, Breadcrumb, BreadcrumbFactory
 from molly.utils.views import BaseView
@@ -17,7 +18,7 @@ class SlowPagesView(BaseView):
         return Breadcrumb(
             self.conf.local_name,
             None,
-            'Slow Pages',
+            _('Slow Pages'),
             lazy_reverse('slow-pages'),
         )
     
@@ -42,7 +43,7 @@ class PopularPagesView(BaseView):
         return Breadcrumb(
             self.conf.local_name,
             None,
-            'Popular Pages',
+            _('Popular Pages'),
             lazy_reverse('popular-pages'),
         )
     
@@ -52,7 +53,7 @@ class PopularPagesView(BaseView):
             return HttpResponseForbidden()
         
         context = {
-            'title': 'Most Popular Pages',
+            'title': _('Most Popular Pages'),
             'pages': Hit.objects.values('full_path').annotate(count=Count('full_path')).order_by('count').reverse()[:LIST_LIMIT]
         }
         
@@ -68,7 +69,7 @@ class Popular404sView(BaseView):
         return Breadcrumb(
             self.conf.local_name,
             None,
-            'Popular 404s',
+            _('Popular 404s'),
             lazy_reverse('popular-404s'),
         )
     
@@ -78,7 +79,7 @@ class Popular404sView(BaseView):
             return HttpResponseForbidden()
         
         context = {
-            'title': 'Most Popular 404s',
+            'title': _('Most Popular 404s'),
             'pages': Hit.objects.filter(status_code='404').values('full_path').annotate(count=Count('full_path')).order_by('count').reverse()[:LIST_LIMIT]
         }
         
@@ -94,7 +95,7 @@ class PopularDevicesView(BaseView):
         return Breadcrumb(
             self.conf.local_name,
             None,
-            'Popular Devices',
+            _('Popular Devices'),
             lazy_reverse('popular-devices'),
         )
     
@@ -116,7 +117,7 @@ class IndexView(BaseView):
         return Breadcrumb(
             self.conf.local_name,
             None,
-            'Stats',
+            _('Stats'),
             lazy_reverse('index'),
         )
     
