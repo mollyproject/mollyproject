@@ -1,4 +1,5 @@
 from django.http import Http404
+from django.utils.translation import ugettext as _
 
 from molly.conf.applications import app_by_local_name
 from molly.apps.places import get_entity
@@ -11,14 +12,15 @@ class LibrarySearchQuery:
     """
     
     STOP_WORDS = frozenset( (
-    "a,able,about,across,after,all,almost,also,am,among,an,and,any,are,as,at,"
+    # Translators: A list of stop words to be filtered out during library searches
+    _("a,able,about,across,after,all,almost,also,am,among,an,and,any,are,as,at,"
   + "be,because,been,but,by,can,cannot,could,dear,did,do,does,either,else,"
   + "ever,every,for,from,get,got,had,has,have,he,her,hers,him,his,how,however,"
   + "i,if,in,into,is,it,its,just,least,let,like,likely,may,me,might,most,must,"
   + "my,neither,no,nor,not,of,off,often,on,only,or,other,our,own,rather,said,"
   + "say,says,she,should,since,so,some,than,that,the,their,them,then,there,"
   + "these,they,this,tis,to,too,twas,us,wants,was,we,were,what,when,where,"
-  + "which,while,who,whom,why,will,with,would,yet,you,your" ).split(',') )
+  + "which,while,who,whom,why,will,with,would,yet,you,your")).split(',') )
     
     class InconsistentQuery(ValueError):
         def __init__(self, msg):
@@ -75,15 +77,15 @@ class LibrarySearchQuery:
         
         if isbn and issn:
             raise self.InconsistentQuery(
-                "You cannot specify both an ISBN and an ISSN.")
+                _("You cannot specify both an ISBN and an ISSN."))
         
         if (title or author) and (isbn or issn):
             raise self.InconsistentQuery(
-                "You cannot specify both an ISBN and a title or author.")
+                _("You cannot specify both an ISBN and a title or author."))
         
         if not (title or author or isbn or issn):
             raise self.InconsistentQuery(
-                "You must supply some subset of title or author, and ISBN.")
+                _("You must supply some subset of title or author, and ISBN."))
         
         self.removed = set()
         
@@ -214,6 +216,7 @@ class Library(object):
     def __eq__(self, other):
         return self.location == other.location
 
+    # TODO Identify how this should best be translated
     def availability_display(self):
         return [
             'unavailable', 'unknown', 'stack', 'reference', 'available'
