@@ -116,6 +116,7 @@ class NaptanContentHandler(ContentHandler):
                 ref_code=self.meta['area-code'])
             sa.save()
             for lang_code, name in self.names.items():
+                if lang_code is None: lang_code = 'en'
                 names = sa.names.filter(language_code=lang_code)
                 if names.count() == 0:
                     sa.names.create(
