@@ -12,7 +12,7 @@ from xml.sax import saxutils, handler, make_parser
 from django.contrib.gis.geos import Point, LineString, LinearRing
 from django.conf import settings
 from django.utils.translation import ugettext as _
-from django.utils.translation import ugettext_noop as _noop
+from django.utils.translation import ugettext_noop
 from django.utils.translation import get_language
 
 from molly.apps.places.models import (Entity, EntityType, Source,
@@ -433,257 +433,257 @@ if __name__ == '__main__':
 # IGNORE BELOW HERE! These are dummy EntityType definitions that exist so they
 # get picked up as ready to translate
 # THIS CODE DOES NOTHING, CHANGING HERE WON'T DO WHAT YOU THINK IT DOES
-{
+DUMMY = {
     'atm': {
-        'category': _noop('Amenities'),
-        'verbose_name': _noop('ATM'),
-        'verbose_name_plural': _noop('ATMs'),
-        'verbose_name_singular': _noop('an ATM')
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop('ATM'),
+        'verbose_name_plural': ugettext_noop('ATMs'),
+        'verbose_name_singular': ugettext_noop('an ATM')
     },
     'bank': {
-        'category': _noop('Amenities'),
-        'verbose_name': _noop('bank'),
-        'verbose_name_plural': _noop('banks'),
-        'verbose_name_singular': _noop('a bank')
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop('bank'),
+        'verbose_name_plural': ugettext_noop('banks'),
+        'verbose_name_singular': ugettext_noop('a bank')
     },
     'bar': {
-        'category': _noop('Amenities'),
-        'verbose_name': _noop('bar'),
-        'verbose_name_plural': _noop('bars'),
-        'verbose_name_singular': _noop('a bar')
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop('bar'),
+        'verbose_name_plural': ugettext_noop('bars'),
+        'verbose_name_singular': ugettext_noop('a bar')
     },
     'bench': {
-        'category': _noop('Amenities'),
-        'verbose_name': _noop('bench'),
-        'verbose_name_plural': _noop('benches'),
-        'verbose_name_singular': _noop('a bench')
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop('bench'),
+        'verbose_name_plural': ugettext_noop('benches'),
+        'verbose_name_singular': ugettext_noop('a bench')
     },
     'bicycle-parking': {
-        'category': _noop('Transport'),
-        'verbose_name': _noop('bicycle rack'),
-        'verbose_name_plural': _noop('bicycle racks'),
-        'verbose_name_singular': _noop('a bicycle rack')
+        'category': ugettext_noop('Transport'),
+        'verbose_name': ugettext_noop('bicycle rack'),
+        'verbose_name_plural': ugettext_noop('bicycle racks'),
+        'verbose_name_singular': ugettext_noop('a bicycle rack')
     },
     'cafe': {
-        'category': _noop('Amenities'),
-        'verbose_name': _noop(u'café'),
-        'verbose_name_plural': _noop(u'cafés'),
-        'verbose_name_singular': _noop(u'a café')
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop(u'café'),
+        'verbose_name_plural': ugettext_noop(u'cafés'),
+        'verbose_name_singular': ugettext_noop(u'a café')
     },
     'car-park': {
-        'category': _noop('Transport'),
-        'verbose_name': _noop('car park'),
-        'verbose_name_plural': _noop('car parks'),
-        'verbose_name_singular': _noop('a car park')
+        'category': ugettext_noop('Transport'),
+        'verbose_name': ugettext_noop('car park'),
+        'verbose_name_plural': ugettext_noop('car parks'),
+        'verbose_name_singular': ugettext_noop('a car park')
     },
     'cathedral': {
-        'category': _noop('Amenities'),
-        'verbose_name': _noop('cathedral'),
-        'verbose_name_plural': _noop('cathedrals'),
-        'verbose_name_singular': _noop('a cathedral')
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop('cathedral'),
+        'verbose_name_plural': ugettext_noop('cathedrals'),
+        'verbose_name_singular': ugettext_noop('a cathedral')
     },
     'chapel': {
-        'category': _noop('Amenities'),
-        'verbose_name': _noop('chapel'),
-        'verbose_name_plural': _noop('chapels'),
-        'verbose_name_singular': _noop('a chapel')
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop('chapel'),
+        'verbose_name_plural': ugettext_noop('chapels'),
+        'verbose_name_singular': ugettext_noop('a chapel')
     },
     'church': {
-        'category': _noop('Amenities'),
-        'verbose_name': _noop('church'),
-        'verbose_name_plural': _noop('churches'),
-        'verbose_name_singular': _noop('a church')
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop('church'),
+        'verbose_name_plural': ugettext_noop('churches'),
+        'verbose_name_singular': ugettext_noop('a church')
     },
     'cinema': {
-        'category': _noop('Leisure'),
-        'verbose_name': _noop('cinema'),
-        'verbose_name_plural': _noop('cinemas'),
-        'verbose_name_singular': _noop('a cinema')
+        'category': ugettext_noop('Leisure'),
+        'verbose_name': ugettext_noop('cinema'),
+        'verbose_name_plural': ugettext_noop('cinemas'),
+        'verbose_name_singular': ugettext_noop('a cinema')
     },
     'cycle-shop': {
-        'category': _noop('Amenities'),
-        'verbose_name': _noop('cycle shop'),
-        'verbose_name_plural': _noop('cycle shops'),
-        'verbose_name_singular': _noop('a cycle shop')
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop('cycle shop'),
+        'verbose_name_plural': ugettext_noop('cycle shops'),
+        'verbose_name_singular': ugettext_noop('a cycle shop')
     },
     'dispensing-pharmacy': {
-        'category': _noop('Amenities'),
-        'verbose_name': _noop('dispensing pharmacy'),
-        'verbose_name_plural': _noop('dispensing pharmacies'),
-        'verbose_name_singular': _noop('a dispensing pharmacy')
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop('dispensing pharmacy'),
+        'verbose_name_plural': ugettext_noop('dispensing pharmacies'),
+        'verbose_name_singular': ugettext_noop('a dispensing pharmacy')
     },
     'doctors': {
-        'category': _noop('Amenities'),
-        'verbose_name': _noop("doctor's surgery"),
-        'verbose_name_plural': _noop("doctors' surgeries"),
-        'verbose_name_singular': _noop("a doctor's surgery")
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop("doctor's surgery"),
+        'verbose_name_plural': ugettext_noop("doctors' surgeries"),
+        'verbose_name_singular': ugettext_noop("a doctor's surgery")
     },
     'fast-food': {
-        'category': _noop('Amenities'),
-        'verbose_name': _noop('fast food outlet'),
-        'verbose_name_plural': _noop('fast food outlets'),
-        'verbose_name_singular': _noop('a fast food outlet')
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop('fast food outlet'),
+        'verbose_name_plural': ugettext_noop('fast food outlets'),
+        'verbose_name_singular': ugettext_noop('a fast food outlet')
     },
     'food': {
-        'category': _noop('Amenities'),
-        'verbose_name': _noop('place to eat'),
-        'verbose_name_plural': _noop('places to eat'),
-        'verbose_name_singular': _noop('a place to eat')
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop('place to eat'),
+        'verbose_name_plural': ugettext_noop('places to eat'),
+        'verbose_name_singular': ugettext_noop('a place to eat')
     },
     'hospital': {
-        'category': _noop('Amenities'),
-        'verbose_name': _noop('hospital'),
-        'verbose_name_plural': _noop('hospitals'),
-        'verbose_name_singular': _noop('a hospital')
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop('hospital'),
+        'verbose_name_plural': ugettext_noop('hospitals'),
+        'verbose_name_singular': ugettext_noop('a hospital')
     },
     'ice-cream': {
-        'category': _noop('Amenities'),
-        'verbose_name': _noop(u'ice cream café'),
-        'verbose_name_plural': _noop(u'ice cream cafés'),
-        'verbose_name_singular': _noop(u'an ice cream café')
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop(u'ice cream café'),
+        'verbose_name_plural': ugettext_noop(u'ice cream cafés'),
+        'verbose_name_singular': ugettext_noop(u'an ice cream café')
     },
     'ice-rink': {
-        'category': _noop('Leisure'),
-        'verbose_name': _noop('ice rink'),
-        'verbose_name_plural': _noop('ice rinks'),
-        'verbose_name_singular': _noop('an ice rink')
+        'category': ugettext_noop('Leisure'),
+        'verbose_name': ugettext_noop('ice rink'),
+        'verbose_name_plural': ugettext_noop('ice rinks'),
+        'verbose_name_singular': ugettext_noop('an ice rink')
     },
     'library': {
-        'category': _noop('Amenities'),
-        'verbose_name': _noop('library'),
-        'verbose_name_plural': _noop('libraries'),
-        'verbose_name_singular': _noop('a library')
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop('library'),
+        'verbose_name_plural': ugettext_noop('libraries'),
+        'verbose_name_singular': ugettext_noop('a library')
     },
     'mandir': {
-        'category': _noop('Amenities'),
-        'verbose_name': _noop('mandir'),
-        'verbose_name_plural': _noop('mandirs'),
-        'verbose_name_singular': _noop('a mandir')
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop('mandir'),
+        'verbose_name_plural': ugettext_noop('mandirs'),
+        'verbose_name_singular': ugettext_noop('a mandir')
     },
     'medical': {
-        'category': _noop('Amenities'),
-        'verbose_name': _noop('place relating to health'),
-        'verbose_name_plural': _noop('places relating to health'),
-        'verbose_name_singular': _noop('a place relating to health')
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop('place relating to health'),
+        'verbose_name_plural': ugettext_noop('places relating to health'),
+        'verbose_name_singular': ugettext_noop('a place relating to health')
     },
     'mosque': {
-        'category': _noop('Amenities'),
-        'verbose_name': _noop('mosque'),
-        'verbose_name_plural': _noop('mosques'),
-        'verbose_name_singular': _noop('a mosque')
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop('mosque'),
+        'verbose_name_plural': ugettext_noop('mosques'),
+        'verbose_name_singular': ugettext_noop('a mosque')
     },
     'museum': {
-        'category': _noop('Leisure'),
-        'verbose_name': _noop('museum'),
-        'verbose_name_plural': _noop('museums'),
-        'verbose_name_singular': _noop('a museum')
+        'category': ugettext_noop('Leisure'),
+        'verbose_name': ugettext_noop('museum'),
+        'verbose_name_plural': ugettext_noop('museums'),
+        'verbose_name_singular': ugettext_noop('a museum')
     },
     'park': {
-        'category': _noop('Leisure'),
-        'verbose_name': _noop('park'),
-        'verbose_name_plural': _noop('parks'),
-        'verbose_name_singular': _noop('a park')
+        'category': ugettext_noop('Leisure'),
+        'verbose_name': ugettext_noop('park'),
+        'verbose_name_plural': ugettext_noop('parks'),
+        'verbose_name_singular': ugettext_noop('a park')
     },
     'park-and-ride': {
-        'category': _noop('Transport'),
-        'verbose_name': _noop('park and ride'),
-        'verbose_name_plural': _noop('park and rides'),
-        'verbose_name_singular': _noop('a park and ride')
+        'category': ugettext_noop('Transport'),
+        'verbose_name': ugettext_noop('park and ride'),
+        'verbose_name_plural': ugettext_noop('park and rides'),
+        'verbose_name_singular': ugettext_noop('a park and ride')
     },
     'pharmacy': {
-        'category': _noop('Amenities'),
-        'verbose_name': _noop('pharmacy'),
-        'verbose_name_plural': _noop('pharmacies'),
-        'verbose_name_singular': _noop('a pharmacy')
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop('pharmacy'),
+        'verbose_name_plural': ugettext_noop('pharmacies'),
+        'verbose_name_singular': ugettext_noop('a pharmacy')
     },
     'place-of-worship': {
-        'category': _noop('Amenities'),
-        'verbose_name': _noop('place of worship'),
-        'verbose_name_plural': _noop('places of worship'),
-        'verbose_name_singular': _noop('a place of worship')
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop('place of worship'),
+        'verbose_name_plural': ugettext_noop('places of worship'),
+        'verbose_name_singular': ugettext_noop('a place of worship')
     },
     'post-box': {
-        'category': _noop('Amenities'),
-        'verbose_name': _noop('post box'),
-        'verbose_name_plural': _noop('post boxes'),
-        'verbose_name_singular': _noop('a post box')
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop('post box'),
+        'verbose_name_plural': ugettext_noop('post boxes'),
+        'verbose_name_singular': ugettext_noop('a post box')
     },
     'post-office': {
-        'category': _noop('Amenities'),
-        'verbose_name': _noop('post office'),
-        'verbose_name_plural': _noop('post offices'),
-        'verbose_name_singular': _noop('a post office')
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop('post office'),
+        'verbose_name_plural': ugettext_noop('post offices'),
+        'verbose_name_singular': ugettext_noop('a post office')
     },
     'pub': {
-        'category': _noop('Amenities'),
-        'verbose_name': _noop('pub'),
-        'verbose_name_plural': _noop('pubs'),
-        'verbose_name_singular': _noop('a pub')
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop('pub'),
+        'verbose_name_plural': ugettext_noop('pubs'),
+        'verbose_name_singular': ugettext_noop('a pub')
     },
     'public-library': {
-        'category': _noop('Amenities'),
-        'verbose_name': _noop('public library'),
-        'verbose_name_plural': _noop('public libraries'),
-        'verbose_name_singular': _noop('a public library')
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop('public library'),
+        'verbose_name_plural': ugettext_noop('public libraries'),
+        'verbose_name_singular': ugettext_noop('a public library')
     },
     'punt-hire': {
-        'category': _noop('Leisure'),
-        'verbose_name': _noop('place to hire punts'),
-        'verbose_name_plural': _noop('places to hire punts'),
-        'verbose_name_singular': _noop('a place to hire punts')
+        'category': ugettext_noop('Leisure'),
+        'verbose_name': ugettext_noop('place to hire punts'),
+        'verbose_name_plural': ugettext_noop('places to hire punts'),
+        'verbose_name_singular': ugettext_noop('a place to hire punts')
     },
     'recycling': {
-        'category': _noop('Amenities'),
-        'verbose_name': _noop('recycling facility'),
-        'verbose_name_plural': _noop('recycling facilities'),
-        'verbose_name_singular': _noop('a recycling facility')
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop('recycling facility'),
+        'verbose_name_plural': ugettext_noop('recycling facilities'),
+        'verbose_name_singular': ugettext_noop('a recycling facility')
     },
     'restaurant': {
-        'category': _noop('Amenities'),
-        'verbose_name': _noop('restaurant'),
-        'verbose_name_plural': _noop('restaurants'),
-        'verbose_name_singular': _noop('a restaurant')
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop('restaurant'),
+        'verbose_name_plural': ugettext_noop('restaurants'),
+        'verbose_name_singular': ugettext_noop('a restaurant')
     },
     'shop': {
-        'category': _noop('Amenities'),
-        'verbose_name': _noop('shop'),
-        'verbose_name_plural': _noop('shops'),
-        'verbose_name_singular': _noop('a shop')
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop('shop'),
+        'verbose_name_plural': ugettext_noop('shops'),
+        'verbose_name_singular': ugettext_noop('a shop')
     },
     'sport': {
-        'category': _noop('Leisure'),
-        'verbose_name': _noop('place relating to sport'),
-        'verbose_name_plural': _noop('places relating to sport'),
-        'verbose_name_singular': _noop('a place relating to sport')
+        'category': ugettext_noop('Leisure'),
+        'verbose_name': ugettext_noop('place relating to sport'),
+        'verbose_name_plural': ugettext_noop('places relating to sport'),
+        'verbose_name_singular': ugettext_noop('a place relating to sport')
     },
     'sports-centre': {
-        'category': _noop('Leisure'),
-        'verbose_name': _noop('sports centre'),
-        'verbose_name_plural': _noop('sports centres'),
-        'verbose_name_singular': _noop('a sports centre')
+        'category': ugettext_noop('Leisure'),
+        'verbose_name': ugettext_noop('sports centre'),
+        'verbose_name_plural': ugettext_noop('sports centres'),
+        'verbose_name_singular': ugettext_noop('a sports centre')
     },
     'swimming-pool': {
-        'category': _noop('Leisure'),
-        'verbose_name': _noop('swimming pool'),
-        'verbose_name_plural': _noop('swimming pools'),
-        'verbose_name_singular': _noop('a swimming pool')
+        'category': ugettext_noop('Leisure'),
+        'verbose_name': ugettext_noop('swimming pool'),
+        'verbose_name_plural': ugettext_noop('swimming pools'),
+        'verbose_name_singular': ugettext_noop('a swimming pool')
     },
     'synagogue': {
-        'category': _noop('Amenities'),
-        'verbose_name': _noop('synagogue'),
-        'verbose_name_plural': _noop('synagogues'),
-        'verbose_name_singular': _noop('a synagogue')
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop('synagogue'),
+        'verbose_name_plural': ugettext_noop('synagogues'),
+        'verbose_name_singular': ugettext_noop('a synagogue')
     },
     'taxi-rank': {
-        'category': _noop('Transport'),
-        'verbose_name': _noop('taxi rank'),
-        'verbose_name_plural': _noop('taxi ranks'),
-        'verbose_name_singular': _noop('a taxi rank')
+        'category': ugettext_noop('Transport'),
+        'verbose_name': ugettext_noop('taxi rank'),
+        'verbose_name_plural': ugettext_noop('taxi ranks'),
+        'verbose_name_singular': ugettext_noop('a taxi rank')
     },
     'theatre': {
-        'category': _noop('Leisure'),
-        'verbose_name': _noop('theatre'),
-        'verbose_name_plural': _noop('theatres'),
-        'verbose_name_singular': _noop('a theatre')
+        'category': ugettext_noop('Leisure'),
+        'verbose_name': ugettext_noop('theatre'),
+        'verbose_name_plural': ugettext_noop('theatres'),
+        'verbose_name_singular': ugettext_noop('a theatre')
     }
 }
