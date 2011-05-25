@@ -4,6 +4,7 @@ import urllib2
 from datetime import timedelta
 
 from django.http import HttpResponse
+from django.utils.translation import ugettext as _
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
@@ -11,7 +12,7 @@ from molly.apps.contact.providers import TooManyResults
 
 from .forms import GenericContactForm
 
-from django.utils.translation import ugettext as _
+
 
 class IndexView(BaseView):
 
