@@ -2,10 +2,9 @@
 import datetime
 from south.db import db
 from south.v2 import SchemaMigration
-from django.db import models, connection
+from django.db import models
 from django.conf import settings
-
-from molly.apps.places.models import Entity, EntityGroup, EntityType
+from molly.utils.i18n import name_in_language
 
 class Migration(SchemaMigration):
 
@@ -14,7 +13,7 @@ class Migration(SchemaMigration):
         # Adding model 'EntityName'
         db.create_table('places_entityname', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('entity_group', self.gf('django.db.models.fields.related.ForeignKey')(related_name='names', to=orm['places.Entity'])),
+            ('entity', self.gf('django.db.models.fields.related.ForeignKey')(related_name='names', to=orm['places.Entity'])),
             ('title', self.gf('django.db.models.fields.TextField')()),
             ('language_code', self.gf('django.db.models.fields.CharField')(max_length=10)),
         ))
@@ -41,51 +40,26 @@ class Migration(SchemaMigration):
         db.send_create_signal('places', ['EntityTypeName'])
         
         # Convert EntityType names to the new model
-        for et in EntityType.objects.all():
-            cursor = connection.cursor()
-            cursor.execute('SELECT article, verbose_name, verbose_name_plural FROM places_entitytype WHERE id=%s', [et.pk])
-            r = cursor.fetchone()
+        for et in orm.EntityType.objects.all():
             et.names.create(language_code=settings.LANGUAGE_CODE,
-                            verbose_name_singular = '%s %s' % (r[0], r[1]),
-                            verbose_name=r[1],
-                            verbose_name_plural=r[2],
+                            verbose_name_singular = '%s %s' % (et.article, et.verbose_name),
+                            verbose_name=et.verbose_name,
+                            verbose_name_plural=et.verbose_name_plural,
                             )
-        
-        # Deleting field 'EntityType.verbose_name_plural'
-        db.delete_column('places_entitytype', 'verbose_name_plural')
 
-        # Deleting field 'EntityType.article'
-        db.delete_column('places_entitytype', 'article')
-
-        # Deleting field 'EntityType.verbose_name'
-        db.delete_column('places_entitytype', 'verbose_name')
-
-        for eg in EntityGroup.objects.all():
-            cursor = connection.cursor()
-            cursor.execute('SELECT title FROM places_entitygroup WHERE id=%s', [eg.pk])
-            r = cursor.fetchone()
+        for eg in orm.EntityGroup.objects.all():
             eg.names.create(language_code=settings.LANGUAGE_CODE,
-                            title=r[0])
-        
-        # Deleting field 'EntityGroup.title'
-        db.delete_column('places_entitygroup', 'title')
+                            title=eg.title)
 
-
-        for e in EntityGroup.objects.all():
-            cursor = connection.cursor()
-            cursor.execute('SELECT title FROM places_entity WHERE id=%s', [e.pk])
-            r = cursor.fetchone()
+        for e in orm.Entity.objects.all():
             e.names.create(language_code=settings.LANGUAGE_CODE,
-                            title=r[0])
+                            title=e.title)
         
         # Deleting field 'Entity.title'
         db.delete_column('places_entity', 'title')
 
 
     def backwards(self, orm):
-        
-        # Deleting model 'EntityTypeCategoryName'
-        db.delete_table('places_entitytypecategoryname')
 
         # Deleting model 'EntityName'
         db.delete_table('places_entityname')
@@ -95,24 +69,6 @@ class Migration(SchemaMigration):
 
         # Deleting model 'EntityTypeName'
         db.delete_table('places_entitytypename')
-
-        # User chose to not deal with backwards NULL issues for 'EntityType.verbose_name_plural'
-        raise RuntimeError("Cannot reverse this migration. 'EntityType.verbose_name_plural' and its values cannot be restored.")
-
-        # User chose to not deal with backwards NULL issues for 'EntityType.article'
-        raise RuntimeError("Cannot reverse this migration. 'EntityType.article' and its values cannot be restored.")
-
-        # User chose to not deal with backwards NULL issues for 'EntityType.verbose_name'
-        raise RuntimeError("Cannot reverse this migration. 'EntityType.verbose_name' and its values cannot be restored.")
-
-        # Adding field 'EntityGroup.title'
-        db.add_column('places_entitygroup', 'title', self.gf('django.db.models.fields.TextField')(default='', blank=True), keep_default=False)
-
-        # User chose to not deal with backwards NULL issues for 'EntityTypeCategory.name'
-        raise RuntimeError("Cannot reverse this migration. 'EntityTypeCategory.name' and its values cannot be restored.")
-
-        # Adding field 'Entity.title'
-        db.add_column('places_entity', 'title', self.gf('django.db.models.fields.TextField')(default='', blank=True), keep_default=False)
 
 
     models = {
@@ -133,13 +89,15 @@ class Migration(SchemaMigration):
             'location': ('django.contrib.gis.db.models.fields.PointField', [], {'null': 'True'}),
             'parent': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['places.Entity']", 'null': 'True'}),
             'primary_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['places.EntityType']", 'null': 'True'}),
-            'source': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['places.Source']"})
+            'source': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['places.Source']"}),
+            'title': ('django.db.models.fields.TextField', [], {}),
         },
         'places.entitygroup': {
             'Meta': {'object_name': 'EntityGroup'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'ref_code': ('django.db.models.fields.CharField', [], {'max_length': '256'}),
-            'source': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['places.Source']"})
+            'source': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['places.Source']"}),
+            'title': ('django.db.models.fields.TextField', [], {})
         },
         'places.entitygroupname': {
             'Meta': {'object_name': 'EntityGroupName'},
@@ -150,7 +108,7 @@ class Migration(SchemaMigration):
         },
         'places.entityname': {
             'Meta': {'object_name': 'EntityName'},
-            'entity_group': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'names'", 'to': "orm['places.Entity']"}),
+            'entity': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'names'", 'to': "orm['places.Entity']"}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'language_code': ('django.db.models.fields.CharField', [], {'max_length': '10'}),
             'title': ('django.db.models.fields.TextField', [], {})
@@ -164,7 +122,10 @@ class Migration(SchemaMigration):
             'show_in_nearby_list': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'slug': ('django.db.models.fields.SlugField', [], {'max_length': '50', 'db_index': 'True'}),
             'subtype_of': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'subtypes'", 'blank': 'True', 'to': "orm['places.EntityType']"}),
-            'subtype_of_completion': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'subtypes_completion'", 'blank': 'True', 'to': "orm['places.EntityType']"})
+            'subtype_of_completion': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'subtypes_completion'", 'blank': 'True', 'to': "orm['places.EntityType']"}),
+            'article': ('django.db.models.fields.CharField', [], {'max_length': 2}),
+            'verbose_name': ('django.db.models.fields.TextField', [], {}),
+            'verbose_name_plural': ('django.db.models.fields.TextField', [], {})
         },
         'places.entitytypecategory': {
             'Meta': {'object_name': 'EntityTypeCategory'},

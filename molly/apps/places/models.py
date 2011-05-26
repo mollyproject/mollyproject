@@ -8,6 +8,7 @@ from django.core.urlresolvers import reverse, NoReverseMatch
 from django.contrib.gis.geos import Point
 from django.utils.translation import get_language
 
+from molly.utils.i18n import name_in_language
 
 class Source(models.Model):
     """
@@ -47,29 +48,17 @@ class EntityType(models.Model):
 
     slug = models.SlugField()
     
-    def _for_language(self, field):
-        try:
-            return getattr(self.names.get(language_code=get_language()), field)
-        except EntityTypeName.DoesNotExist:
-            try:
-                return getattr(self.names.get(language_code=settings.LANGUAGE_CODE).name, field)
-            except EntityTypeName.DoesNotExist:
-                if '-' in settings.LANGUAGE_CODE:
-                    return getattr(self.names.get(language_code=settings.LANGUAGE_CODE.split('-')[0]), field)
-                else:
-                    raise
-    
     @property
     def verbose_name(self):
-        return self._for_language('verbose_name')
+        return name_in_language(self, 'verbose_name')
     
     @property
     def verbose_name_singular(self):
-        return self._for_language('verbose_name_singular')
+        return name_in_language(self, 'verbose_name_singular')
     
     @property
     def verbose_name_plural(self):
-        return self._for_language('verbose_name_plural')
+        return name_in_language(self, 'verbose_name_plural')
     
     show_in_nearby_list = models.BooleanField()
     show_in_category_list = models.BooleanField()
@@ -102,7 +91,7 @@ class EntityType(models.Model):
 
 class EntityTypeName(models.Model):
     entity_type = models.ForeignKey(EntityType, related_name='names')
-    language_code = models.CharField(max_length=10)
+    language_code = models.CharField(max_length=10, choices=settings.LANGUAGES)
     verbose_name = models.TextField()
     verbose_name_singular = models.TextField()
     verbose_name_plural = models.TextField()
@@ -131,16 +120,7 @@ class EntityGroup(models.Model):
     
     @property
     def title(self):
-        try:
-            return self.names.get(language_code=get_language()).title
-        except EntityGroupName.DoesNotExist:
-            try:
-                return self.names.get(language_code=settings.LANGUAGE_CODE).title
-            except EntityGroupName.DoesNotExist:
-                if '-' in settings.LANGUAGE_CODE:
-                    return self.names.get(language_code=settings.LANGUAGE_CODE.split('-')[0]).title
-                else:
-                    raise
+        return name_in_language(self, 'title')
 
     source = models.ForeignKey(Source)
     ref_code = models.CharField(max_length=256)
@@ -152,7 +132,7 @@ class EntityGroup(models.Model):
 class EntityGroupName(models.Model):
     entity_group = models.ForeignKey(EntityGroup, related_name='names')
     title = models.TextField(blank=False)
-    language_code = models.CharField(max_length=10)
+    language_code = models.CharField(max_length=10, choices=settings.LANGUAGES)
     
     class Meta:
         unique_together = ('entity_group', 'language_code')
@@ -166,16 +146,7 @@ class Entity(models.Model):
     
     @property
     def title(self):
-        try:
-            return self.names.get(language_code=get_language()).title
-        except EntityName.DoesNotExist:
-            try:
-                return self.names.get(language_code=settings.LANGUAGE_CODE).title
-            except EntityName.DoesNotExist:
-                if '-' in settings.LANGUAGE_CODE:
-                    return self.names.get(language_code=settings.LANGUAGE_CODE.split('-')[0]).title
-                else:
-                    raise
+        return name_in_language(self, 'title')
     
     source = models.ForeignKey(Source)
 
@@ -373,7 +344,7 @@ class Entity(models.Model):
 class EntityName(models.Model):
     entity = models.ForeignKey(Entity, related_name='names')
     title = models.TextField(blank=False)
-    language_code = models.CharField(max_length=10)
+    language_code = models.CharField(max_length=10, choices=settings.LANGUAGES)
     
     class Meta:
         unique_together = ('entity', 'language_code')

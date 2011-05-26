@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 
@@ -25,6 +26,7 @@ class PodcastCategory(models.Model):
         verbose_name_plural = _('Podcast categories')
         ordering = ('order','name',)
 
+
 class Podcast(models.Model):
     slug = models.SlugField(unique=True)
     title = models.TextField(null=True)
@@ -37,6 +39,8 @@ class Podcast(models.Model):
     provider = models.TextField()
     license = models.URLField(null=True)
     logo = models.URLField(null=True)
+    language = models.CharField(max_length=10, choices=settings.LANGUAGES,
+                                null=True)
     
     def get_absolute_url(self):
         return reverse('podcasts:podcast', args=[self.slug])

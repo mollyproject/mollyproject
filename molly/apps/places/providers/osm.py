@@ -18,7 +18,8 @@ from django.utils.translation import get_language
 from molly.apps.places.models import (Entity, EntityType, Source,
                                       EntityTypeCategory, EntityName)
 from molly.apps.places.providers import BaseMapsProvider
-from molly.utils.misc import AnyMethodRequest, override
+from molly.utils.misc import AnyMethodRequest
+from molly.utils.i18n import override
 from molly.geolocation import reverse_geocode
 from molly.conf.settings import batch
 
@@ -328,8 +329,10 @@ class OSMMapsProvider(BaseMapsProvider):
             et_category, created = EntityTypeCategory.objects.get_or_create(name=et['category'])
             try:
                 entity_type = EntityType.objects.get(slug=slug)
+                created = False
             except EntityType.DoesNotExist:
                 entity_type = EntityType(slug=slug)
+                created = True
             entity_type.category = et_category
             entity_type.slug = slug
             if created:

@@ -16,7 +16,7 @@ from django.conf import settings
 from django.contrib.gis.geos import Point
 from django.utils.translation import ugettext_noop as _
 from django.utils.translation import ugettext, get_language
-from molly.utils.misc import override
+from molly.utils.i18n import override
 
 from molly.apps.places.providers import BaseMapsProvider
 from molly.apps.places.models import EntityType, Entity, EntityGroup, Source, EntityTypeCategory

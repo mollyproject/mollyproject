@@ -3,25 +3,6 @@ import sys
 import os.path
 import imp
 
-try:
-    from django.utils.translation import override
-except ImportError:
-    from django.utils.translation import get_language, activate, deactivate
-    class override(object):
-        def __init__(self, language, deactivate=False):
-            self.language = language
-            self.deactivate = deactivate
-            self.old_language = get_language()
-        
-        def __enter__(self):
-            activate(self.language)
-        
-        def __exit__(self, exc_type, exc_value, traceback):
-            if self.deactivate:
-                deactivate()
-            else:
-                activate(self.old_language)
-
 class AnyMethodRequest(urllib2.Request):
     def __init__(self, url, data=None, headers={}, origin_req_host=None, unverifiable=None, method=None):
         self.method = method and method.upper() or None
@@ -34,6 +15,7 @@ class AnyMethodRequest(urllib2.Request):
             return "POST"
         else:
             return "GET"
+
 
 def get_norm_sys_path():
     """
