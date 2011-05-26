@@ -1006,3 +1006,37 @@ small {
 .favourite-link .additional {
     font-size: 0.9em;
 }
+
+/* Botton Links bottom-links 
+   Used to create buttons on non opt-out pages (most) for feedback, sharing etc
+*/
+
+div#bottom-links {
+   margin-top: 0.9em;
+   margin-bottom: 0.9em;
+   padding: 5px; 
+}
+
+div#bottom-links div {
+   margin-top: 0.1em;
+   margin-bottom: 0.2em;
+   float: left;
+   /* Width gets overwritten for some devices */
+   width: 50%;
+}
+
+div#bottom-links div.full-width {
+    width: 100%;
+}
+
+div#bottom-links div a {
+    margin:0 0.2em 0 0.2em; 
+    background-color:white; 
+    padding:0.6em; 
+    text-align:center; 
+    display:block;
+    border-radius: 0.4em;
+    -webkit-border-radius:0.4em; 
+    -moz-border-radius:0.4em;
+}
+/* End Bottom Links */
