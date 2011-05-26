@@ -18,22 +18,9 @@ class ApplicationSearch(object):
 
     def perform_search(self, request, query, is_single_app_search):
         return chain(
-            self.nearby_search(request, query, is_single_app_search),
             self.entity_search(request, query, is_single_app_search),
             self.entity_type_search(request, query, is_single_app_search),
         )
-
-    def nearby_search(self, request, query, is_single_app_search):
-        """
-        nearby_search was invented to allow a user to query in plain text such
-        e.g. 'post boxes near OUCS' this is yet to be completed."
-        """
-        # TODO: Complete
-        query = query.lower().split(_(' near '))
-        if len(query) != 2:
-            return []
-
-        return []
 
     def entity_search(self, request, query, is_single_app_search):
         entities = Entity.objects.all()
