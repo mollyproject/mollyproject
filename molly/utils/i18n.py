@@ -1,6 +1,7 @@
 from django.utils.translation import get_language
 from django.db.models import Model
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 
 try:
     from django.utils.translation import override
@@ -25,10 +26,10 @@ except ImportError:
 def name_in_language(obj, field):
     try:
         return getattr(obj.names.get(language_code=get_language()), field)
-    except Model.DoesNotExist:
+    except ObjectDoesNotExist:
         try:
             return getattr(obj.names.get(language_code=settings.LANGUAGE_CODE), field)
-        except Model.DoesNotExist:
+        except ObjectDoesNotExist:
             if '-' in settings.LANGUAGE_CODE:
                 return getattr(obj.names.get(language_code=settings.LANGUAGE_CODE.split('-')[0]), field)
             else:
