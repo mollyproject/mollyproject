@@ -52,7 +52,7 @@ class EntityType(models.Model):
             return getattr(self.names.get(language_code=get_language()), field)
         except EntityTypeName.DoesNotExist:
             try:
-                return getattr(self.names.get(language_code=settings.LANGUAGE_CODE).name, field)
+                return getattr(self.names.get(language_code=settings.LANGUAGE_CODE), field)
             except EntityTypeName.DoesNotExist:
                 if '-' in settings.LANGUAGE_CODE:
                     return getattr(self.names.get(language_code=settings.LANGUAGE_CODE.split('-')[0]), field)
