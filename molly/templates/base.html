@@ -192,12 +192,19 @@
 </div>
 {% endblock body %}
 
-{# Send google analytics javascript if appropriate for the device #}
+{# Send Google Analytics javascript to all devices, if a key is set. GA is
+   more likely to run anywhere than our code, and there's no consequences if it
+   fails, so we include it everywhere #}
 {% if google_analytics %}
  <script type="text/javascript">
  var _gaq = _gaq || [];
  _gaq.push(['_setAccount', '{{ google_analytics|safe }}']);
- $(document).bind('molly-page-change', function(e, url){_gaq.push(['_trackPageview', url]);});
+ {% if use_javascript %}
+    {# This code ties into Molly's AJAX framework #}
+    $(document).bind('molly-page-change', function(e, url){_gaq.push(['_trackPageview', url]);});
+ {% else %}
+    _gaq.push(['_trackPageview']);
+ {% endif %}
  (function() {
    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
