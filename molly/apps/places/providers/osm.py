@@ -18,7 +18,8 @@ from django.utils.translation import get_language
 from molly.apps.places.models import (Entity, EntityType, Source,
                                       EntityTypeCategory, EntityName)
 from molly.apps.places.providers import BaseMapsProvider
-from molly.utils.misc import AnyMethodRequest, override
+from molly.utils.misc import AnyMethodRequest
+from molly.utils.i18n import override
 from molly.geolocation import reverse_geocode
 from molly.conf.settings import batch
 
