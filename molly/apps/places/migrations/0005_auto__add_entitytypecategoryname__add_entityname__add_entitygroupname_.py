@@ -46,25 +46,12 @@ class Migration(SchemaMigration):
                             verbose_name=et.verbose_name,
                             verbose_name_plural=et.verbose_name_plural,
                             )
-        
-        # Deleting field 'EntityType.verbose_name_plural'
-        db.delete_column('places_entitytype', 'verbose_name_plural')
 
-        # Deleting field 'EntityType.article'
-        db.delete_column('places_entitytype', 'article')
-
-        # Deleting field 'EntityType.verbose_name'
-        db.delete_column('places_entitytype', 'verbose_name')
-
-        for eg in EntityGroup.objects.all():
+        for eg in orm.EntityGroup.objects.all():
             eg.names.create(language_code=settings.LANGUAGE_CODE,
                             title=eg.title)
-        
-        # Deleting field 'EntityGroup.title'
-        db.delete_column('places_entitygroup', 'title')
 
-
-        for e in Entity.objects.all():
+        for e in orm.Entity.objects.all():
             e.names.create(language_code=settings.LANGUAGE_CODE,
                             title=e.title)
         
@@ -73,32 +60,6 @@ class Migration(SchemaMigration):
 
 
     def backwards(self, orm):
-        
-        # Adding field 'EntityGroup.title'
-        db.add_column('places_entitygroup', 'title', self.gf('django.db.models.fields.TextField')(default='', blank=True), keep_default=False)
-        
-        for eg in orm.EntityGroup.objects.all():
-            eg.title = name_in_category(eg, 'title')
-        
-        # Adding field 'Entity.title'
-        db.add_column('places_entity', 'title', self.gf('django.db.models.fields.TextField')(default='', blank=True), keep_default=False)
-
-        for e in orm.Entity.objects.all():
-            e.title = name_in_category(eg, 'title')
-        
-        # Adding field 'EntityType.verbose_name_plural'
-        db.add_column('places_entitytype', 'verbose_name_plural', self.gf('django.db.models.fields.TextField')(default='', blank=True), keep_default=False)
-
-        # Adding field 'EntityType.article'
-        db.add_column('places_entitytype', 'article', self.gf('django.db.models.fields.TextField')(default='', blank=True, max_length=2), keep_default=False)
-
-        # Adding field 'EntityType.verbose_name'
-        db.add_column('places_entitytype', 'verbose_name', self.gf('django.db.models.fields.TextField')(default='', blank=True), keep_default=False)
-
-        for e in orm.Entity.objects.all():
-            e.article = name_in_category(eg, 'verbose_name_singular').split()[0]
-            e.verbose_name = name_in_category(eg, 'verbose_name')
-            e.verbose_name_plural = name_in_category(eg, 'verbose_name_plural')
 
         # Deleting model 'EntityName'
         db.delete_table('places_entityname')
@@ -128,13 +89,15 @@ class Migration(SchemaMigration):
             'location': ('django.contrib.gis.db.models.fields.PointField', [], {'null': 'True'}),
             'parent': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['places.Entity']", 'null': 'True'}),
             'primary_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['places.EntityType']", 'null': 'True'}),
-            'source': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['places.Source']"})
+            'source': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['places.Source']"}),
+            'title': ('django.db.models.fields.TextField', [], {}),
         },
         'places.entitygroup': {
             'Meta': {'object_name': 'EntityGroup'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'ref_code': ('django.db.models.fields.CharField', [], {'max_length': '256'}),
-            'source': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['places.Source']"})
+            'source': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['places.Source']"}),
+            'title': ('django.db.models.fields.TextField', [], {})
         },
         'places.entitygroupname': {
             'Meta': {'object_name': 'EntityGroupName'},
@@ -159,7 +122,10 @@ class Migration(SchemaMigration):
             'show_in_nearby_list': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'slug': ('django.db.models.fields.SlugField', [], {'max_length': '50', 'db_index': 'True'}),
             'subtype_of': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'subtypes'", 'blank': 'True', 'to': "orm['places.EntityType']"}),
-            'subtype_of_completion': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'subtypes_completion'", 'blank': 'True', 'to': "orm['places.EntityType']"})
+            'subtype_of_completion': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'subtypes_completion'", 'blank': 'True', 'to': "orm['places.EntityType']"}),
+            'article': ('django.db.models.fields.CharField', [], {'max_length': 2}),
+            'verbose_name': ('django.db.models.fields.TextField', [], {}),
+            'verbose_name_plural': ('django.db.models.fields.TextField', [], {})
         },
         'places.entitytypecategory': {
             'Meta': {'object_name': 'EntityTypeCategory'},

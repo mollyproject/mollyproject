@@ -10,19 +10,21 @@ class Migration(SchemaMigration):
         
         # Deleting field 'Webcam.title'
         db.delete_column('webcams_webcam', 'title')
+        db.delete_column('webcams_webcam', 'credit')
+        db.delete_column('webcams_webcam', 'description')
 
 
     def backwards(self, orm):
         
         # Adding field 'Webcam.title'
         db.add_column('webcams_webcam', 'title', self.gf('django.db.models.fields.TextField')(default=''), keep_default=False)
+        db.add_column('webcams_webcam', 'credit', self.gf('django.db.models.fields.TextField')(default=''), keep_default=False)
+        db.add_column('webcams_webcam', 'description', self.gf('django.db.models.fields.TextField')(default=''), keep_default=False)
 
 
     models = {
         'webcams.webcam': {
             'Meta': {'object_name': 'Webcam'},
-            'credit': ('django.db.models.fields.TextField', [], {'null': 'True'}),
-            'description': ('django.db.models.fields.TextField', [], {'null': 'True'}),
             'fetch_period': ('django.db.models.fields.PositiveIntegerField', [], {}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'slug': ('django.db.models.fields.SlugField', [], {'max_length': '50', 'db_index': 'True'}),
@@ -33,6 +35,8 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'language_code': ('django.db.models.fields.CharField', [], {'max_length': '10'}),
             'title': ('django.db.models.fields.TextField', [], {}),
+            'description': ('django.db.models.fields.TextField', [], {}),
+            'credit': ('django.db.models.fields.TextField', [], {}),
             'webcam': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'names'", 'to': "orm['webcams.Webcam']"})
         }
     }

@@ -7,6 +7,17 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
+        # Deleting field 'EntityType.verbose_name_plural'
+        db.delete_column('places_entitytype', 'verbose_name_plural')
+
+        # Deleting field 'EntityType.article'
+        db.delete_column('places_entitytype', 'article')
+
+        # Deleting field 'EntityType.verbose_name'
+        db.delete_column('places_entitytype', 'verbose_name')
+
+        # Deleting field 'EntityGroup.title'
+        db.delete_column('places_entitygroup', 'title')
 
         # Adding unique constraint on 'EntityName', fields ['language_code', 'entity']
         db.create_unique('places_entityname', ['language_code', 'entity_id'])
@@ -28,6 +39,32 @@ class Migration(SchemaMigration):
 
         # Removing unique constraint on 'EntityName', fields ['language_code', 'entity']
         db.delete_unique('places_entityname', ['language_code', 'entity_id'])
+        
+        # Adding field 'EntityGroup.title'
+        db.add_column('places_entitygroup', 'title', self.gf('django.db.models.fields.TextField')(default='', blank=True), keep_default=False)
+        
+        for eg in orm.EntityGroup.objects.all():
+            eg.title = name_in_category(eg, 'title')
+        
+        # Adding field 'Entity.title'
+        db.add_column('places_entity', 'title', self.gf('django.db.models.fields.TextField')(default='', blank=True), keep_default=False)
+
+        for e in orm.Entity.objects.all():
+            e.title = name_in_category(eg, 'title')
+        
+        # Adding field 'EntityType.verbose_name_plural'
+        db.add_column('places_entitytype', 'verbose_name_plural', self.gf('django.db.models.fields.TextField')(default='', blank=True), keep_default=False)
+
+        # Adding field 'EntityType.article'
+        db.add_column('places_entitytype', 'article', self.gf('django.db.models.fields.CharField')(default='', blank=True, max_length=2), keep_default=False)
+
+        # Adding field 'EntityType.verbose_name'
+        db.add_column('places_entitytype', 'verbose_name', self.gf('django.db.models.fields.TextField')(default='', blank=True), keep_default=False)
+
+        for e in orm.Entity.objects.all():
+            e.article = name_in_category(eg, 'verbose_name_singular').split()[0]
+            e.verbose_name = name_in_category(eg, 'verbose_name')
+            e.verbose_name_plural = name_in_category(eg, 'verbose_name_plural')
 
 
     models = {

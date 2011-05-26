@@ -14,6 +14,8 @@ class Migration(SchemaMigration):
             ('webcam', self.gf('django.db.models.fields.related.ForeignKey')(related_name='names', to=orm['webcams.Webcam'])),
             ('language_code', self.gf('django.db.models.fields.CharField')(max_length=10)),
             ('title', self.gf('django.db.models.fields.TextField')()),
+            ('description', self.gf('django.db.models.fields.TextField')()),
+            ('credit', self.gf('django.db.models.fields.TextField')()),
         ))
         db.send_create_signal('webcams', ['WebcamName'])
 
@@ -40,6 +42,8 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'language_code': ('django.db.models.fields.CharField', [], {'max_length': '10'}),
             'title': ('django.db.models.fields.TextField', [], {}),
+            'description': ('django.db.models.fields.TextField', [], {}),
+            'credit': ('django.db.models.fields.TextField', [], {}),
             'webcam': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'names'", 'to': "orm['webcams.Webcam']"})
         }
     }
