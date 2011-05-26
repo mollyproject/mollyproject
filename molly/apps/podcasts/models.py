@@ -2,6 +2,7 @@ from django.db import models
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
+from molly.utils.i18n import name_in_language
 
 from molly.apps.podcasts.data import licenses
 

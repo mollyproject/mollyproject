@@ -8,7 +8,7 @@ class WebcamNameInline(admin.TabularInline):
 
 
 class WebcamAdmin(admin.ModelAdmin):
-    list_display = ('description', 'credit',)
+    list_display = ('title', 'description', 'credit',)
     inlines = [
         WebcamNameInline,
     ]
