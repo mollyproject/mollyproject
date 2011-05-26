@@ -2,6 +2,7 @@ import threading
 
 from models import Batch
 from django.contrib import admin
+from django.utils.translation import ugettext as _
 
 def run_batch(modeladmin, request, queryset):
     def run(batches):
@@ -15,7 +16,7 @@ def run_batch(modeladmin, request, queryset):
         thread = threading.Thread(target=run, args=[(batch,)])
         thread.daemon = True
         thread.start()
-run_batch.short__description = "Run selected batch jobs"
+run_batch.short__description = _("Run selected batch jobs")
 
 class BatchAdmin(admin.ModelAdmin):
     list_display = ['title', 'cron_stmt', 'enabled', 'last_run', 'pending',
