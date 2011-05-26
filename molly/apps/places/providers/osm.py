@@ -328,8 +328,10 @@ class OSMMapsProvider(BaseMapsProvider):
             et_category, created = EntityTypeCategory.objects.get_or_create(name=et['category'])
             try:
                 entity_type = EntityType.objects.get(slug=slug)
+                created = False
             except EntityType.DoesNotExist:
                 entity_type = EntityType(slug=slug)
+                created = True
             entity_type.category = et_category
             entity_type.slug = slug
             if created:
