@@ -139,11 +139,11 @@
 	{% endcomment %}
 	{% if unread_user_messages %}
 	    <div class="section" style="padding:10px;">
-			<div class="bubble pad-10">
-	      	<a href="{% url home:messages %}" style="font-size:1.2em; padding:1em 0.2em; display:block;">
-	        {% trans "You have a message from the developers!" %}
-	      	</a>
-			</div>
+		<div class="bubble pad-10">
+		    <a href="{% url home:messages %}" style="font-size:1.2em; padding:1em 0.2em; display:block;">
+		    {% trans "You have a message from the developers!" %}
+		    </a>
+		</div>
 	    </div>
 	{% endif %}
 
@@ -189,6 +189,8 @@
 		</div>
 	{% endif %}
 
+    {% include "language_selector.html" %}
+    
 </div>
 {% endblock body %}
 

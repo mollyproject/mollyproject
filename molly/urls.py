@@ -10,7 +10,8 @@ admin.autodiscover()
 urlpatterns = patterns('',
     (r'^adm/', include(admin.site.urls)), # Admin site
     (r'^comments/', include('django.contrib.comments.urls')), # Django comments
-    (r'', applications.home.urls)) # Home default
+    (r'', applications.home.urls), # Home default
+    (r'set-language', 'django.views.i18n.set_language', {}, 'set-language')) # Change language view
 
 # Dynamically add apps
 for app in (app for app in all_apps() if app.has_urlconf and app.local_name != 'home'):

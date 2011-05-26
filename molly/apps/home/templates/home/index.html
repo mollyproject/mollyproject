@@ -103,7 +103,9 @@
         <li class="round-bottom"><a href="{% url feedback:index %}?referer={% url home:index %}">Provide feedback</a></li>
     </ul>
 
-	{% block below-about %} {% endblock %} 
+    {% include "language_selector.html" %}
+
+    {% block below-about %} {% endblock %} 
 
 {% if user.is_superuser %}
         <hr/>
