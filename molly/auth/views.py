@@ -6,6 +6,7 @@ from django.contrib.auth import logout
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.forms.util import ErrorList
+from django.utils.translation import ugettext as _
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import BreadcrumbFactory, Breadcrumb, static_reverse, lazy_reverse, static_parent
@@ -58,7 +59,7 @@ class TimedOutView(BaseView):
         return Breadcrumb(
             view.conf.local_name,
             None,
-            'Session expired',
+            _('Session expired'),
             static_reverse(request.get_full_path()),
         )
     
@@ -102,7 +103,7 @@ class IndexView(SecureView):
         return Breadcrumb(
             self.conf.local_name,
             None,
-            'Authentication preferences',
+            _('Authentication preferences'),
             lazy_reverse('auth:index'),
         )
         
@@ -147,7 +148,7 @@ class ClearSessionView(SecureView):
         return Breadcrumb(
             self.conf.local_name,
             static_parent(context['return_url'], 'Back'),
-            'Clear session',
+            _('Clear session'),
             lazy_reverse('auth:clear-session'),
             
         )
