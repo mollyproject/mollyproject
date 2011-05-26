@@ -15,7 +15,7 @@ class IndexView(BaseView):
     def get_metadata(self, request):
         return {
             'title': _('News'),
-            'additional': _('View news feeds and events from across the University.'),
+            'additional': _('View news from across the University.'),
         }
         
     @BreadcrumbFactory

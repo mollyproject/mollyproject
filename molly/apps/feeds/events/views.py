@@ -61,6 +61,7 @@ class ItemDetailView(BaseView):
         return {
             'last_modified': item.last_modified,
             'title': item.title,
+            'additional': '<strong>Events item</strong>, %s, %s' % (escape(item.feed.title), last_modified),
             'feed_title': escape(item.feed.title),
         }
 
