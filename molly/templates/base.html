@@ -192,9 +192,11 @@
 </div>
 {% endblock body %}
 
-{# Send Google Analytics javascript to all devices, if a key is set. GA is
-   more likely to run anywhere than our code, and there's no consequences if it
-   fails, so we include it everywhere #}
+{% comment %}
+Send Google Analytics javascript to all devices, if a key is set. GA is
+more likely to run anywhere than our code, and there's no consequences if it
+fails, so we include it everywhere
+{% endcomment %}
 {% if google_analytics %}
  <script type="text/javascript">
  var _gaq = _gaq || [];
