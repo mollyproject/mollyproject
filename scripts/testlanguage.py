@@ -59,7 +59,23 @@ if __name__ == '__main__':
             elif in_msgid:
                 this_msg += line[1:-2] + '\n'
     with open(sys.argv[1], 'w', encoding='utf-8') as fd:
+        print >>fd, """
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\\n"
+"Report-Msgid-Bugs-To: \\n"
+"POT-Creation-Date: 2011-05-26 18:56+0100\\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\\n"
+"Language-Team: LANGUAGE <LL@li.org>\\n"
+"Language: \\n"
+"MIME-Version: 1.0\\n"
+"Content-Type: text/plain; charset=UTF-8\\n"
+"Content-Transfer-Encoding: 8bit\\n"
+"""
         for msg in msgs:
+            if msg == '\n':
+                continue
             print >>fd, "msgid ",
             for line in msg.split('\n')[:-1]:
                 print >> fd, "\"%s\"" % line
