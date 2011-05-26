@@ -2,10 +2,9 @@
 import datetime
 from south.db import db
 from south.v2 import SchemaMigration
-from django.db import models, connection
+from django.db import models
 from django.conf import settings
-
-from molly.apps.places.models import Entity, EntityGroup, EntityType
+from molly.utils.i18n import name_in_language
 
 class Migration(SchemaMigration):
 
@@ -14,7 +13,7 @@ class Migration(SchemaMigration):
         # Adding model 'EntityName'
         db.create_table('places_entityname', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('entity_group', self.gf('django.db.models.fields.related.ForeignKey')(related_name='names', to=orm['places.Entity'])),
+            ('entity', self.gf('django.db.models.fields.related.ForeignKey')(related_name='names', to=orm['places.Entity'])),
             ('title', self.gf('django.db.models.fields.TextField')()),
             ('language_code', self.gf('django.db.models.fields.CharField')(max_length=10)),
         ))
@@ -41,14 +40,11 @@ class Migration(SchemaMigration):
         db.send_create_signal('places', ['EntityTypeName'])
         
         # Convert EntityType names to the new model
-        for et in EntityType.objects.all():
-            cursor = connection.cursor()
-            cursor.execute('SELECT article, verbose_name, verbose_name_plural FROM places_entitytype WHERE id=%s', [et.pk])
-            r = cursor.fetchone()
+        for et in orm.EntityType.objects.all():
             et.names.create(language_code=settings.LANGUAGE_CODE,
-                            verbose_name_singular = '%s %s' % (r[0], r[1]),
-                            verbose_name=r[1],
-                            verbose_name_plural=r[2],
+                            verbose_name_singular = '%s %s' % (et.article, et.verbose_name),
+                            verbose_name=et.verbose_name,
+                            verbose_name_plural=et.verbose_name_plural,
                             )
         
         # Deleting field 'EntityType.verbose_name_plural'
@@ -61,22 +57,16 @@ class Migration(SchemaMigration):
         db.delete_column('places_entitytype', 'verbose_name')
 
         for eg in EntityGroup.objects.all():
-            cursor = connection.cursor()
-            cursor.execute('SELECT title FROM places_entitygroup WHERE id=%s', [eg.pk])
-            r = cursor.fetchone()
             eg.names.create(language_code=settings.LANGUAGE_CODE,
-                            title=r[0])
+                            title=eg.title)
         
         # Deleting field 'EntityGroup.title'
         db.delete_column('places_entitygroup', 'title')
 
 
-        for e in EntityGroup.objects.all():
-            cursor = connection.cursor()
-            cursor.execute('SELECT title FROM places_entity WHERE id=%s', [e.pk])
-            r = cursor.fetchone()
+        for e in Entity.objects.all():
             e.names.create(language_code=settings.LANGUAGE_CODE,
-                            title=r[0])
+                            title=e.title)
         
         # Deleting field 'Entity.title'
         db.delete_column('places_entity', 'title')
@@ -84,8 +74,31 @@ class Migration(SchemaMigration):
 
     def backwards(self, orm):
         
-        # Deleting model 'EntityTypeCategoryName'
-        db.delete_table('places_entitytypecategoryname')
+        # Adding field 'EntityGroup.title'
+        db.add_column('places_entitygroup', 'title', self.gf('django.db.models.fields.TextField')(default='', blank=True), keep_default=False)
+        
+        for eg in orm.EntityGroup.objects.all():
+            eg.title = name_in_category(eg, 'title')
+        
+        # Adding field 'Entity.title'
+        db.add_column('places_entity', 'title', self.gf('django.db.models.fields.TextField')(default='', blank=True), keep_default=False)
+
+        for e in orm.Entity.objects.all():
+            e.title = name_in_category(eg, 'title')
+        
+        # Adding field 'EntityType.verbose_name_plural'
+        db.add_column('places_entitytype', 'verbose_name_plural', self.gf('django.db.models.fields.TextField')(default='', blank=True), keep_default=False)
+
+        # Adding field 'EntityType.article'
+        db.add_column('places_entitytype', 'article', self.gf('django.db.models.fields.TextField')(default='', blank=True, max_length=2), keep_default=False)
+
+        # Adding field 'EntityType.verbose_name'
+        db.add_column('places_entitytype', 'verbose_name', self.gf('django.db.models.fields.TextField')(default='', blank=True), keep_default=False)
+
+        for e in orm.Entity.objects.all():
+            e.article = name_in_category(eg, 'verbose_name_singular').split()[0]
+            e.verbose_name = name_in_category(eg, 'verbose_name')
+            e.verbose_name_plural = name_in_category(eg, 'verbose_name_plural')
 
         # Deleting model 'EntityName'
         db.delete_table('places_entityname')
@@ -95,24 +108,6 @@ class Migration(SchemaMigration):
 
         # Deleting model 'EntityTypeName'
         db.delete_table('places_entitytypename')
-
-        # User chose to not deal with backwards NULL issues for 'EntityType.verbose_name_plural'
-        raise RuntimeError("Cannot reverse this migration. 'EntityType.verbose_name_plural' and its values cannot be restored.")
-
-        # User chose to not deal with backwards NULL issues for 'EntityType.article'
-        raise RuntimeError("Cannot reverse this migration. 'EntityType.article' and its values cannot be restored.")
-
-        # User chose to not deal with backwards NULL issues for 'EntityType.verbose_name'
-        raise RuntimeError("Cannot reverse this migration. 'EntityType.verbose_name' and its values cannot be restored.")
-
-        # Adding field 'EntityGroup.title'
-        db.add_column('places_entitygroup', 'title', self.gf('django.db.models.fields.TextField')(default='', blank=True), keep_default=False)
-
-        # User chose to not deal with backwards NULL issues for 'EntityTypeCategory.name'
-        raise RuntimeError("Cannot reverse this migration. 'EntityTypeCategory.name' and its values cannot be restored.")
-
-        # Adding field 'Entity.title'
-        db.add_column('places_entity', 'title', self.gf('django.db.models.fields.TextField')(default='', blank=True), keep_default=False)
 
 
     models = {
@@ -150,7 +145,7 @@ class Migration(SchemaMigration):
         },
         'places.entityname': {
             'Meta': {'object_name': 'EntityName'},
-            'entity_group': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'names'", 'to': "orm['places.Entity']"}),
+            'entity': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'names'", 'to': "orm['places.Entity']"}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'language_code': ('django.db.models.fields.CharField', [], {'max_length': '10'}),
             'title': ('django.db.models.fields.TextField', [], {})

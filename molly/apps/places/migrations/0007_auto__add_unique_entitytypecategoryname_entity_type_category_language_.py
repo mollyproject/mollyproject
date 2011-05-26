@@ -8,12 +8,6 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
 
-        # Deleting field 'EntityName.entity_group'
-        db.delete_column('places_entityname', 'entity_group_id')
-
-        # Adding field 'EntityName.entity'
-        db.add_column('places_entityname', 'entity', self.gf('django.db.models.fields.related.ForeignKey')(default=0, related_name='names', to=orm['places.Entity']), keep_default=False)
-
         # Adding unique constraint on 'EntityName', fields ['language_code', 'entity']
         db.create_unique('places_entityname', ['language_code', 'entity_id'])
 
@@ -34,12 +28,6 @@ class Migration(SchemaMigration):
 
         # Removing unique constraint on 'EntityName', fields ['language_code', 'entity']
         db.delete_unique('places_entityname', ['language_code', 'entity_id'])
-
-        # User chose to not deal with backwards NULL issues for 'EntityName.entity_group'
-        raise RuntimeError("Cannot reverse this migration. 'EntityName.entity_group' and its values cannot be restored.")
-
-        # Deleting field 'EntityName.entity'
-        db.delete_column('places_entityname', 'entity_id')
 
 
     models = {
