@@ -47,7 +47,7 @@ class CategoryDetailView(BaseView):
         category = get_object_or_404(PodcastCategory, slug=category)
         return {
             'title': category.name,
-            'additional': _('<strong>Podcast category</strong>')
+            'additional': '<strong>' + _('Podcast category') + '</strong>'
         }
         
     def initial_context(self, request, category, medium=None):
