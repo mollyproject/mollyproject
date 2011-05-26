@@ -96,7 +96,7 @@ class PodcastDetailView(BaseView):
             'category': _('podcast'),
             'category_display': _('podcast'),
             'last_updated': podcast.last_updated,
-            'additional': _('<strong>Podcast</strong> %s') % podcast.last_updated.strftime('%d %b %Y')
+            'additional': '<strong>' + _('Podcast') + '</strong> %s') % podcast.last_updated.strftime('%d %b %Y')
         }
         
     def initial_context(self, request, slug=None, podcast=None):
