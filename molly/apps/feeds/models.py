@@ -48,6 +48,8 @@ class Feed(models.Model):
     rss_url = models.URLField(help_text=_("URL of RSS feed"))
     slug = models.SlugField(help_text=_("Slug of feed, e.g. oucs-news"))
     last_modified = models.DateTimeField(null=True, blank=True) # this one is in UTC
+    language = models.CharField(max_length=10, choices=settings.LANGUAGES,
+                                null=True)
     
     # Provider type
     ptype = models.CharField(max_length=1, choices=FEED_TYPE_CHOICES)
@@ -107,7 +109,7 @@ class Item(models.Model):
     organiser = models.ForeignKey(vCard, related_name='organising_set', null=True, blank=True)
     speaker = models.ForeignKey(vCard, related_name='speaking_set', null=True, blank=True)
     venue = models.ForeignKey(vCard, related_name='venue_set', null=True, blank=True)
-    contact = models.ForeignKey(vCard, related_name    ='contact_set', null=True, blank=True)
+    contact = models.ForeignKey(vCard, related_name='contact_set', null=True, blank=True)
     
     series = models.ForeignKey(Series, null=True, blank=True)
     ordinal = models.IntegerField(null=True)
@@ -158,5 +160,3 @@ class Item(models.Model):
     
     class Meta:
         ordering = ('-last_modified',)
-
-    
