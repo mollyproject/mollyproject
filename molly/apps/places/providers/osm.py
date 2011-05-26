@@ -283,6 +283,7 @@ class OSMMapsProvider(BaseMapsProvider):
         request = AnyMethodRequest(self._url, method='HEAD')
         response = urllib2.urlopen(request)
         new_etag = response.headers['ETag'][1:-1]
+        output = self.output
         
         if False and new_etag == old_etag:
             output.write('OSM data not updated. Not updating.\n')
