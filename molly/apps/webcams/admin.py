@@ -1,8 +1,17 @@
 from django.contrib import admin
 
-from models import Webcam
+from models import Webcam, WebcamName
 
-class WeatherAdmin(admin.ModelAdmin):
-    list_display = ('title', 'description', 'credit',)
+class WebcamNameInline(admin.TabularInline):
+    model = WebcamName
+    fk_name = "webcam"
 
-admin.site.register(Webcam, WeatherAdmin)
+
+class WebcamAdmin(admin.ModelAdmin):
+    list_display = ('description', 'credit',)
+    inlines = [
+        WebcamNameInline,
+    ]
+
+
+admin.site.register(Webcam, WebcamAdmin)
