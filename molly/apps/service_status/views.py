@@ -15,7 +15,7 @@ class IndexView(BaseView):
     # TODO Remove specific references to OUCS and OLIS
     def get_metadata(self, request):
         return {
-            'title': _('Service Status', )
+            'title': _('Service Status'),
             'additional': _('Check whether OUCS and OLIS services are available'),
         }
 
