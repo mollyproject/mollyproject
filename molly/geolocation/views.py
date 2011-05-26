@@ -5,6 +5,7 @@ from django.core.urlresolvers import resolve, reverse
 from django.http import HttpResponse, Http404, HttpResponseBadRequest
 from django.contrib.gis.geos import Point
 from django.conf import settings
+from django.utils.translation import ugettext as _
 
 from molly.utils.views import BaseView, renderer
 from molly.utils.breadcrumbs import *
@@ -136,7 +137,7 @@ class IndexView(GeolocationView):
             return Breadcrumb(
                 self.conf.local_name,
                 None,
-                'Update location',
+                _('Update location'),
                 lazy_reverse('geolocation:index'),
             )
 
@@ -159,7 +160,7 @@ class IndexView(GeolocationView):
         return Breadcrumb(
             application,
             parent,
-            'Update location',
+            _('Update location'),
             lazy_reverse('index'),
         )
 
