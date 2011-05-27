@@ -1,4 +1,4 @@
-{% load compressed %}{% if use_javascript %}
+{% load compressed %}{% load i18n %}{% if use_javascript %}
     <script type="text/javascript">
         var locationRequired = {{ require_location|yesno:"true,false" }};
         var base = window.location.protocol + '//' + window.location.host + "{% url home:index %}";
@@ -8,6 +8,7 @@
     </script>
   
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.2.6/jquery.min.js"></script>
-    <script type="text/javascript" src="{% url js-i18n %}"></script>
+    {% get_current_language as LANGUAGE_CODE %}
+    <script type="text/javascript" src="{% url js-i18n %}?language={{ LANGUAGE_CODE }}"></script>
     {% compressed_js style_group %}
 {% endif %}
