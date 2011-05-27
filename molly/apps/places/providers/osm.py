@@ -167,7 +167,7 @@ class OSMHandler(handler.ContentHandler):
                 
                 entity.metadata['osm'] = {
                     'attrs': dict(self.attrs),
-                    'tags': self.tags
+                    'tags': dict(zip((k.replace(':', '-') for k in self.tags.keys()), self.tags.values()))
                 }
                 entity.primary_type = self.entity_types[types[0]]
                 
@@ -389,9 +389,9 @@ class OSMMapsProvider(BaseMapsProvider):
         entities = Entity.objects.filter(source=source)
         inferred_names = {}
         if '-' in lang_code:
-            tags_to_try = ('name:%s' % lang_code, 'name:%s' % lang_code.split('-')[0], 'name', 'operator')
+            tags_to_try = ('name-%s' % lang_code, 'name-%s' % lang_code.split('-')[0], 'name', 'operator')
         else:
-            tags_to_try = ('name:%s' % lang_code, 'name', 'operator')
+            tags_to_try = ('name-%s' % lang_code, 'name', 'operator')
         for entity in entities:
             inferred_name = None
             for tag_to_try in tags_to_try:
@@ -407,8 +407,8 @@ class OSMMapsProvider(BaseMapsProvider):
         for inferred_name, entities in inferred_names.items():
             if len(entities) > 1:
                 for entity in entities:
-                    if entity.metadata['osm']['tags'].get('addr:street'):
-                        title = u"%s, %s" % (inferred_name, entity.metadata['osm']['tags'].get('addr:street'))
+                    if entity.metadata['osm']['tags'].get('addr-street'):
+                        title = u"%s, %s" % (inferred_name, entity.metadata['osm']['tags'].get('addr-street'))
                     else:
                         try:
                             place_name = reverse_geocode(entity.location[0], entity.location[1])[0]['name']
