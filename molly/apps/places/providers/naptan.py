@@ -117,15 +117,7 @@ class NaptanContentHandler(ContentHandler):
             sa.save()
             for lang_code, name in self.names.items():
                 if lang_code is None: lang_code = 'en'
-                names = sa.names.filter(language_code=lang_code)
-                if names.count() == 0:
-                    sa.names.create(
-                        language_code=lang_code,
-                        title=name
-                    )
-                else:
-                    names[0].name = name
-                    names[0].save()
+                set_name_in_language(entity, lang_code, name=name)
         
         elif name == 'CommonName':
             if self.lang not in self.names:
@@ -271,16 +263,7 @@ class NaptanContentHandler(ContentHandler):
         for lang_code, name in names.items():
             # This is the NaPTAN, so default to English
             if lang_code is None: lang_code = 'en'
-            titles = entity.names.filter(language_code=lang_code)
-            if titles.count() == 0:
-                entity.names.create(
-                    language_code=lang_code,
-                    title=name
-                )
-            else:
-                title = titles[0]
-                title.title = name
-                title.save()
+            set_name_in_language(entity, lang_code, title=name)
         
         entity.all_types = (entity_type,)
         entity.update_all_types_completion()
@@ -790,19 +773,10 @@ class NaptanMapsProvider(BaseMapsProvider):
             entity_type.save()
             for lang_code, lang_name in settings.LANGUAGES:
                 with override(lang_code):
-                    name = entity_type.names.filter(language_code=lang_code)
-                    if name.count() == 0:
-                        entity_type.names.create(
-                            language_code=lang_code,
-                            verbose_name=ugettext(et['verbose-name']),
-                            verbose_name_singular=ugettext(et['verbose-name-singular']),
-                            verbose_name_plural=ugettext(et['verbose-name-plural']))
-                    else:
-                        name = name[0]
-                        name.verbose_name=ugettext(et['verbose-name'])
-                        name.verbose_name_singular=ugettext(et['verbose-name-singular'])
-                        name.verbose_name_plural=ugettext(et['verbose-name-plural'])
-                        name.save()
+                    set_name_in_language(entity_type, lang_code,
+                                         verbose_name=ugettext(et['verbose-name']),
+                                         verbose_name_singular=ugettext(et['verbose-name-singular']),
+                                         verbose_name_plural=ugettext(et['verbose-name-plural']))
             
             entity_types[stop_type] = entity_type
 

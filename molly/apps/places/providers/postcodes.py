@@ -15,7 +15,7 @@ from django.utils.translation import ugettext as _
 
 from molly.apps.places.providers import BaseMapsProvider
 from molly.apps.places.models import Entity, EntityType, Source, EntityTypeCategory
-from molly.utils.i18n import override
+from molly.utils.i18n import override, set_name_in_language
 
 from molly.conf.settings import batch
 
@@ -84,16 +84,8 @@ class PostcodesMapsProvider(BaseMapsProvider):
                 'postcode-canonical': postcode,
             }
             entity.save(identifiers=identifiers)
-            titles = entity.names.all()
-            if titles.count() == 0:
-                entity.names.create(
-                    language_code=settings.LANGUAGE_CODE,
-                    title=postcode
-                )
-            else:
-                for title in titles:
-                    title.title = postcode
-                    title.save()
+            set_name_in_language(entity, 'en',
+                                 title = postcode)
             entity.all_types.add(entity_type)
             entity.update_all_types_completion()
 
@@ -108,19 +100,10 @@ class PostcodesMapsProvider(BaseMapsProvider):
         entity_type.save()
         for lang_code, lang_name in settings.LANGUAGES:
             with override(lang_code):
-                name = entity_type.names.filter(language_code=lang_code)
-                if name.count() == 0:
-                    entity_type.names.create(
-                        language_code=lang_code,
-                        verbose_name=_('postcode'),
-                        verbose_name_singular=_('a postcode'),
-                        verbose_name_plural=_('postcodes'))
-                else:
-                    name = name[0]
-                    name.verbose_name = _('postcode')
-                    name.verbose_name_singular = _('a postcode')
-                    name.verbose_name_plural = _('postcodes')
-                    name.save()
+                set_name_in_language(entity_type, lang_code,
+                                     verbose_name=_('postcode'),
+                                     verbose_name_singular=_('a postcode'),
+                                     verbose_name_plural=_('postcodes'))
         return entity_type
 
     def _get_source(self):

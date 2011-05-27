@@ -9,7 +9,7 @@ from django.utils.translation import ugettext_noop
 from molly.apps.places.providers import BaseMapsProvider
 from molly.apps.places.models import Source, Entity, EntityType, EntityTypeCategory
 from molly.conf.settings import batch
-from molly.utils.i18n import override
+from molly.utils.i18n import override, set_name_in_language
 
 class BBCTPEGResolver(etree.Resolver):
     """
@@ -74,7 +74,6 @@ class BBCTPEGPlacesProvider(BaseMapsProvider):
                 entities[id] = entity
             
             entity.source = source
-            entity.title = message.find('summary').text
             entity.primary_type = entity_type
             
             locs = map(self._wgs84_to_point, road_traffic_message.findall('location_container/location_coordinates/WGS84'))
@@ -98,6 +97,8 @@ class BBCTPEGPlacesProvider(BaseMapsProvider):
             }
             
             entity.save(identifiers={'bbc-tpeg': id})
+            set_name_in_language(entity, 'en',
+                                 title = message.find('summary').text)
             entity.all_types = [entity_type]
             entity.update_all_types_completion()
             seen.add(entity.pk)
@@ -136,17 +137,8 @@ class BBCTPEGPlacesProvider(BaseMapsProvider):
         entity_type.save()
         for lang_code, lang_name in settings.LANGUAGES:
             with override(lang_code):
-                name = entity_type.names.filter(language_code=lang_code)
-                if name.count() == 0:
-                    entity_type.names.create(
-                        language_code=lang_code,
-                        verbose_name=_('travel alert'),
-                        verbose_name_singular=_('a travel alert'),
-                        verbose_name_plural=_('travel alerts'))
-                else:
-                    name = name[0]
-                    name.verbose_name = _('travel alert')
-                    name.verbose_name_singular = _('a travel alert')
-                    name.verbose_name_plural = _('travel alerts')
-                    name.save()
+                set_name_in_language(entity_type, lang_code,
+                                     verbose_name=_('travel alert'),
+                                     verbose_name_singular=_('a travel alert'),
+                                     verbose_name_plural=_('travel alerts'))
         return entity_type

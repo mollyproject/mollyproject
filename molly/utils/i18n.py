@@ -9,6 +9,11 @@ from django.core.urlresolvers import reverse
 from molly.utils.views import BaseView
 
 def name_in_language(obj, field):
+    """
+    Assuming the object follows the Molly pattern for i18n data (related manager
+    called names, and the related object has a language_code field), then get
+    the i18n'd version of 'field' in the user's current language.
+    """
     try:
         return getattr(obj.names.get(language_code=get_language()), field)
     except ObjectDoesNotExist:
@@ -19,6 +24,25 @@ def name_in_language(obj, field):
                 return getattr(obj.names.get(language_code=settings.LANGUAGE_CODE.split('-')[0]), field)
             else:
                 raise
+
+def set_name_in_language(obj, lang, **fields):
+    """
+    Assuming the object follows the Molly pattern for i18n data (related manager
+    called names, and the related object has a language_code field), then set
+    name/language pair to 'field'.
+    """
+    
+    names = obj.names.filter(language_code=lang)
+    if names.count() == 0:
+        
+        obj.names.create(
+            language_code=lang,
+            **fields)
+    else:
+        name = names[0]
+        for k, v in fields.items():
+            setattr(name, k, v)
+        name.save()
 
 class SetLanguageView(BaseView):
 
