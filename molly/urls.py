@@ -12,7 +12,7 @@ urlpatterns = patterns('',
     (r'^comments/', include('django.contrib.comments.urls')), # Django comments
     (r'', applications.home.urls), # Home default
     (r'set-language/$', 'django.views.i18n.set_language', {}, 'set-language'), # Change language view
-    (r'^jsi18n/$', 'django.views.i18n.javascript_catalog',
+    (r'^jsi18n/$', 'molly.utils.i18n.javascript_catalog',
      {'packages': settings.INSTALLED_APPS}, 'js-i18n')) # JS i18n catalogues
 
 # Dynamically add apps
