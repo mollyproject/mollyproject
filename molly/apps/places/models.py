@@ -7,6 +7,7 @@ from django.contrib.gis.db import models
 from django.core.urlresolvers import reverse, NoReverseMatch
 from django.contrib.gis.geos import Point
 from django.utils.translation import get_language
+from django.utils.translation import ugettext_lazy as _
 
 from molly.utils.i18n import name_in_language
 
