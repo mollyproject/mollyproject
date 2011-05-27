@@ -40,7 +40,16 @@ class OPMLPodcastsProvider(RSSPodcastsProvider):
         
         slug = slugify(cat)
         
-        podcast_category, created = PodcastCategory.objects.get_or_create(slug=slug,name=cat)
+        podcast_category, created = PodcastCategory.objects.get_or_create(slug=slug)
+        name = category.names.filter(language_code=settings.LANGUAGE_CODE)
+        if name.count() == 0:
+            category.names.create(
+                language_code=settings.LANGUAGE_CODE,
+                name=cat)
+        else:
+            name = name[0]
+            name.name = cat
+            name.save()
         
         try:
             podcast_category.order = self.CATEGORY_ORDERS[slug]
@@ -60,6 +69,7 @@ class OPMLPodcastsProvider(RSSPodcastsProvider):
         podcast.medium = self.extract_medium(attrib['xmlUrl'])
         podcast.category = self.decode_category(attrib)
         podcast.slug = self.extract_slug(attrib['xmlUrl'])
+        podcast.save()
         
         self.update_podcast(podcast)
 
