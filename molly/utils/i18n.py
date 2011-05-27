@@ -2,6 +2,11 @@ from django.utils.translation import get_language
 from django.db.models import Model
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
+from django.views.i18n import set_language
+from django.utils.translation import ugettext as _
+from django.core.urlresolvers import reverse
+
+from molly.utils.views import BaseView
 
 def name_in_language(obj, field):
     try:
@@ -15,7 +20,16 @@ def name_in_language(obj, field):
             else:
                 raise
 
-# TODO: When Molly moves to Django 1.3, this can be removed
+class SetLanguageView(BaseView):
+
+    def handle_GET(self, request, context):
+        return self.render(request, context, 'i18n/index')
+    
+    def handle_POST(self, request, context):
+        # Do Django's built in language setter
+        return set_language(request)
+
+# TODO: When Molly moves to Django 1.4, this can be removed
 
 """
 Below here contains backports from newer versions of Django, licensed under the

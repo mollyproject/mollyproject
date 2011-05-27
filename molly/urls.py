@@ -3,6 +3,7 @@ from django.conf import settings
 from django.contrib import admin
 
 from molly.conf import applications, all_apps
+from molly.utils.i18n import SetLanguageView, javascript_catalog
 
 # Admin
 admin.autodiscover()
@@ -11,8 +12,8 @@ urlpatterns = patterns('',
     (r'^adm/', include(admin.site.urls)), # Admin site
     (r'^comments/', include('django.contrib.comments.urls')), # Django comments
     (r'', applications.home.urls), # Home default
-    (r'set-language/$', 'django.views.i18n.set_language', {}, 'set-language'), # Change language view
-    (r'^jsi18n/$', 'molly.utils.i18n.javascript_catalog',
+    (r'set-language/$', SetLanguageView, {}, 'set-language'), # Change language view
+    (r'^jsi18n/$', javascript_catalog,
      {'packages': settings.INSTALLED_APPS}, 'js-i18n')) # JS i18n catalogues
 
 # Dynamically add apps

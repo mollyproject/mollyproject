@@ -849,7 +849,8 @@ small {
     margin-right: 28px !important;
 }
 
-.as-text-link
+.as-text-link,
+#bottom-links button
 {
     background: none !important;
     border: 0 !important;
@@ -1038,5 +1039,13 @@ div#bottom-links div a {
     border-radius: 0.4em;
     -webkit-border-radius:0.4em; 
     -moz-border-radius:0.4em;
+}
+
+#bottom-links button {
+    font-size: 9pt;
+    color: #00e !important;
+    text-decoration: underline;
+    font-weight: normal;
+    font-family: "Liberation Sans",sans-serif;
 }
 /* End Bottom Links */
