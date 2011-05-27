@@ -55,7 +55,7 @@ function async_load_callback(data, textStatus, xhr) {
 
 function ajax_failure() {
     $('#loading')
-        .html('<p style="position:fixed; top: 10%; width:100%; margin:0 auto; text-align:center;">Error loading page - please try again.</p>')
+        .html('<p style="position:fixed; top: 10%; width:100%; margin:0 auto; text-align:center;">' + gettext('Error loading page - please try again.') + '</p>')
         .css({'font-size': '20px', 'font-weight': 'bold'})
         .fadeTo('fast', 0.9, function() {
             setTimeout(function() {

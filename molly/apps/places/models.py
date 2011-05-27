@@ -210,7 +210,9 @@ class Entity(models.Model):
         self.__metadata = metadata
     metadata = property(get_metadata, set_metadata)
     
-    COMPASS_POINTS = ('N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW')
+    # Translators: These are compass points
+    COMPASS_POINTS = (_('N'), _('NE'), _('E'), _('SE'),
+                      _('S'), _('SW'), _('W'), _('NW'))
 
     def get_bearing(self, p1):
         """
