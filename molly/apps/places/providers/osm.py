@@ -137,7 +137,7 @@ class OSMHandler(handler.ContentHandler):
                 entity.title = name
                 entity.metadata['osm'] = {
                     'attrs': dict(self.attrs),
-                    'tags': self.tags
+                    'tags': dict(zip((k.replace(':', '-') for k in self.tags.keys()), self.tags.values()))
                 }
                 entity.primary_type = self.entity_types[types[0]]
 
@@ -399,8 +399,8 @@ class OSMMapsProvider(BaseMapsProvider):
         for inferred_name, entities in inferred_names.items():
             if len(entities) > 1:
                 for entity in entities:
-                    if entity.metadata['osm']['tags'].get('addr:street'):
-                        entity.title = u"%s, %s" % (inferred_name, entity.metadata['osm']['tags'].get('addr:street'))
+                    if entity.metadata['osm']['tags'].get('addr-street'):
+                        entity.title = u"%s, %s" % (inferred_name, entity.metadata['osm']['tags'].get('addr-street'))
                         continue
 
                     try:
