@@ -10,12 +10,12 @@ import re
 
 from django.conf import settings
 from django.contrib.gis.geos import Point
-from django.utils.translation import ugettext_noop as _noop
+from django.utils.translation import ugettext_noop
 from django.utils.translation import ugettext as _
 
 from molly.apps.places.providers import BaseMapsProvider
 from molly.apps.places.models import Entity, EntityType, Source, EntityTypeCategory
-from molly.utils.misc import override
+from molly.utils.i18n import override
 
 from molly.conf.settings import batch
 
@@ -98,7 +98,7 @@ class PostcodesMapsProvider(BaseMapsProvider):
             entity.update_all_types_completion()
 
     def _get_entity_type(self):
-        category, created = EntityTypeCategory.objects.get_or_create(name=_noop('Uncategorised'))
+        category, created = EntityTypeCategory.objects.get_or_create(name=ugettext_noop('Uncategorised'))
         entity_type, created = EntityType.objects.get_or_create(
             slug='post-code', category=category)
         entity_type.slug = 'post-code'
