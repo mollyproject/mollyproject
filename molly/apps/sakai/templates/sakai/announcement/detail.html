@@ -9,7 +9,7 @@
     <div class="section-content">
         {{ announcement.body|safe }}
         <p><small><em>{{ announcement.createdByDisplayName }} at
-            {{ announcement.createdOn|from_sakai_timestamp|date:"j M Y \a\t H:m" }}
+            {{ announcement.createdOn|from_sakai_timestamp|date:"DATETIME_FORMAT" }}
         </em></small></p>
     </div>
 </div>

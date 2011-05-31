@@ -1,46 +1,52 @@
-{% extends "sakai/base.html" %}
+{% extends "sakai/base.html" %}{% load i18n %}
 
 {% block content %}
 <div class="section">
-  <div class="header">
-    <h2>WebLearn Preview</h2>
-  </div>
-  <div class="section-content">
-    <p>Hello{% if user_details.firstName %} {{ user_details.firstName }}{% endif %}, welcome to mobile WebLearn preview!</p>
-    <p>
-      You'll see this section expand and improve over time and we would really
-      like to hear what you think, so do drop us a note via the link at the
-      bottom of the page.
-    </p>
-  </div>
-
+    <div class="header">
+        <h2>{% trans "WebLearn Preview" %}</h2>
+    </div>
+    <div class="section-content">
+        {% if user_details.firstName %}
+            {% blocktrans with user_details.firstName as name %}
+                Hello {{ name }}, welcome to mobile WebLearn preview!
+            {% endblocktrans %}
+        {% else %}
+            {% trans "Hello, welcome to mobile WebLearn preview!" %}
+        {% endif %}
+        <p></p>
+        <p>{% blocktrans %}
+          You'll see this section expand and improve over time and we would really
+          like to hear what you think, so do drop us a note via the link at the
+          bottom of the page.
+        {% endblocktrans %}</p>
+    </div>
 </div>
+
 <div class="section">
   <div class="header">
-    <h2>Announcements
+    <h2>{% trans "Announcements" %}
 	{% if not user_details.firstName %}
-		- <a href="{% url sakai:index %}?force_login">log in for more</a> 
+		- <a href="{% url sakai:index %}?force_login">{% trans "log in for more" %}</a> 
 	{% endif %}
 	</h2>
-    
   </div>
   <ul class="link-list">
     {% for announcement in announcements.announcement_collection %}
-      <li><a href="{% url sakai:announcement announcement.id %}">{{ announcement.title|safe }}</a></li>
+        <li><a href="{% url sakai:announcement announcement.id %}">{{ announcement.title|safe }}</a></li>
     {% empty %}
-      <li>No announcements right now</li>
+        <li>{% trans "No announcements right now" %}</li>
     {% endfor %}
   </ul>
 </div>
 
 <div class="section">
-  <div class="header">
-    <h2>Tools</h2>
-  </div>
-  <ul class="link-list">
-  {% for tool in tools %}
-    <li><a href="{{ tool.url }}">{{ tool.title }}</a></li>
-  {% endfor %}
-  </ul>
+    <div class="header">
+        <h2>{% trans "Tools" %}</h2>
+    </div>
+    <ul class="link-list">
+        {% for tool in tools %}
+            <li><a href="{{ tool.url }}">{% trans tool.title %}</a></li>
+        {% endfor %}
+    </ul>
 </div>
 {% endblock %} 
