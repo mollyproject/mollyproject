@@ -1,5 +1,6 @@
 from django.http import Http404
 from django.core.urlresolvers import resolve
+from django.utils.translation import ugettext as _
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import lazy_reverse, Breadcrumb, BreadcrumbFactory
@@ -37,7 +38,7 @@ class IndexView(BaseView):
         return Breadcrumb(
             self.conf.local_name,
             None,
-            'Favourites',
+            _('Favourites'),
             lazy_reverse('index'),
         )
     

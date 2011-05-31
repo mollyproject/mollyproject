@@ -216,10 +216,9 @@ class Library(object):
     def __eq__(self, other):
         return self.location == other.location
 
-    # TODO Identify how this should best be translated
     def availability_display(self):
         return [
-            'unavailable', 'unknown', 'stack', 'reference', 'available'
+            _('unavailable'), _('unknown'), _('stack'), _('reference'), _('available')
         ][self.availability]
     
     def get_entity(self):

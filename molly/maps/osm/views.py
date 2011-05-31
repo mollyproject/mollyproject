@@ -7,6 +7,7 @@ from xml.sax.saxutils import escape
 
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse, Http404
+from django.utils.translation import ugettext as _
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
@@ -35,7 +36,7 @@ class AboutView(BaseView):
         return Breadcrumb(
             self.conf.local_name,
             None,
-            'About OpenStreetMap',
+            _('About OpenStreetMap'),
             lazy_reverse('maps:osm-about'),
         )
 

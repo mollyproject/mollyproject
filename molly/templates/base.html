@@ -6,11 +6,11 @@
 	Because of this, it's rare that you will ever need to touch this file, but you may  
 	want to refer to it to identify blocks to override.
 	
-	block list - indentation defines hierarchy 
+	block list - indentation defines hierarchy
 	==========================================
-	- whole_title
-	  - site_title
-	  - title 
+	- whole_title (the entire title)
+	  - site_title (name of the site)
+	  - title (title of a single page which follows site_title)
 	
 	- extrahead
 	
@@ -72,10 +72,13 @@
 	{# Favicon link #}
     <link rel="icon" type="image/png" href="{{ STATIC_URL }}site/images/favicon.png"/>
     
-	{# Include geolocation javascript #}
+	{# Include ALL javascript (ignore filename) #}
     {% include "geolocation/js.html" %}
 
-	{# extrahead is used when a particular child page needs extra tags in the head e.g. javascript for a particular tool #}
+	{% comment %}
+		extrahead is used when a particular child page needs extra tags in the head e.g. meta-refresh
+		javascript should *not* be placed here. 
+	{% endcomment %}
     {% block extrahead %}{% endblock extrahead %}
 </head>
 
@@ -152,7 +155,9 @@
 	{% endblock content %}
 	
 	{% comment %}
-		The bottom_links block - displayed on certain pages provides links to 2D barcodes, short URLs, facebook sharing etc 	
+		The bottom_links block - 
+		displayed on pages which have not opted out:
+		provides links to 2D barcodes, short URLs, facebook sharing, feedback etc	
 	{% endcomment %}
 	{% if not hide_feedback_link %}
 		<div id="bottom-links">
@@ -201,7 +206,9 @@
 				<ul>
 					<li><a href="{% url feedback:index %}?referer={{ full_path|urlencode }}">{% trans "Feedback" %}</a></li>
 					<li><a href="{% url url_shortener:index %}?path={{ full_path|urlencode }}">{% trans "Share" %}</a></li>
-					<li><a href="{% url feature_vote:index %}">{% trans "Suggest a feature" %}</a></li>
+					{% if "feature_vote"|app_is_loaded or "feature-suggestions"|app_is_loaded %}
+						<li><a href="{% url feature_vote:index %}">{% trans "Suggest a feature" %}</a></li>
+					{% endif %}
 				</ul>
 			{% endifnotequal %}
 		{% endblock bottom_links %}

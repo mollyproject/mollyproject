@@ -75,6 +75,7 @@ li#menu-library {background-image:url('../../site/images/index-icons/library.png
 li#menu-weather {background-image:url('../../site/images/index-icons/weather.png');}
 li#menu-weblearn {background-image:url('../../site/images/index-icons/weblearn.png');}
 li#menu-service_status {background-image:url('../../site/images/index-icons/service_status.png');}
+/* The following line is here for legacy reasons */
 li#menu-service-status {background-image:url('../../site/images/index-icons/service_status.png');}
 li#menu-transport {background-image:url('../../site/images/index-icons/transport.png');}
 /* End Index Page Specific */

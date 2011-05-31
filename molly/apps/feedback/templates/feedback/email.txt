@@ -18,6 +18,8 @@ Referer:     {{ referer }}
 Location:    {% if lat %}http://google.co.uk/maps?q={{ lat }},{{ lon }}{% else %}None{% endif %}
 Session key: {{ session_key }}
 
+Reply URL: http:// /adm/home/usermessage/add/?session_key={{ session_key }}
+
 Message
 =======
 
