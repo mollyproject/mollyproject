@@ -28,7 +28,7 @@ def invert(chars):
     r = u''
     in_formatter = 0
     for char in chars:
-        if char == '%':
+        if char in ('%', '<'):
             in_formatter = 1
         if in_formatter > 0:
             r += char
@@ -36,6 +36,8 @@ def invert(chars):
                 in_formatter = 0
             if char == ')':
                 in_formatter = 2
+            if char == '>':
+                in_formatter = 0
         else:
             r += INVERSIONS.get(char, char)
     return r

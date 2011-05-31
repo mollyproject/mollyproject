@@ -11,7 +11,8 @@
 <h2>{% trans "404 Error" %}</h2>
     <div class="note"><div class="bubble pad-10">
         <p>{% trans "Sorry, we couldn't find what you're looking for." %}</p>
-        <p>{% blocktrans %}Perhaps you'd like to head back to <a href="{% url home:index %}">the home page</a>?{% endblocktrans %}</p>
+        {% url home:index as home_url %}
+        <p>{% blocktrans %}Perhaps you'd like to head back to <a href="{{ home_url }}">the home page</a>?{% endblocktrans %}</p>
     </div></div>
 </div>
 {% endblock %}
