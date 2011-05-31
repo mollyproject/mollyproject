@@ -1,4 +1,4 @@
-{% extends "places/base.html" %}{% load molly_maps %}{% load molly_utils %}
+{% extends "places/base.html" %}{% load molly_maps %}{% load molly_utils %}{% load i18n %}
 
 {% block extrahead %}{{ block.super }}{% if entity %}
 <meta name="robots" content="noindex" />{% endif %}{% endblock %}
@@ -76,7 +76,7 @@
 					{{ type_name }}, about {{ distance }}m {{ bearing }}
 				{% endblocktrans %}
 			{% else %}
-				{% blocktrans entity.distance.m|round_up_10 as distance and entity.bearing as bearing %}
+				{% blocktrans with entity.distance.m|round_up_10 as distance and entity.bearing as bearing %}
 					{{ distance }}m {{ bearing }}
 				{% endblocktrans %}
 			{% endif %}
@@ -87,7 +87,7 @@
     {% with entity_group.0 as entity %}
         <li class="non-link-item">
 			{{ forloop.counter }}. <em>{{ entity_group|length }} {{ entity_type.0.verbose_name_plural }}</em> 
-			{% blocktrans entity.distance.m|round_up_10 as distance and entity.bearing as bearing %}
+			{% blocktrans with entity.distance.m|round_up_10 as distance and entity.bearing as bearing %}
 				{{ distance }}m {{ bearing }}
 			{% endblocktrans %}
 		</li>

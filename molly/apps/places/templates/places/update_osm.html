@@ -1,8 +1,8 @@
 {% extends "places/base.html" %}
-{% load molly_maps %}{% load molly_utils %}
+{% load molly_maps %}{% load molly_utils %}{% load i18n %}
 
 {% block title %}
-{% blocktrans entity.title as title %}
+{% blocktrans with entity.title as title %}
 	Update {{ title }}
 {% endblocktrans %}{% endblock %}
 
@@ -16,43 +16,43 @@
   
   <div class="article"><div class="bubble pad-5">
     <p>
-	{% blocktrans %}
-	  Thank you for wanting to improve the data provided by {{ site_name }}.
-      However, before you submit any changes, you should be aware of the
-      following terms.	
-	{% endblocktrans %}
+    {% blocktrans %}
+	Thank you for wanting to improve the data provided by {{ site_name }}.
+        However, before you submit any changes, you should be aware of the
+        following terms.	
+    {% endblocktrans %}
     </p>
     
     <p style="margin-top:0.5em;">
-	{% blocktrans %}
+    {% blocktrans %}
       Your contribution will be released into the Public Domain, and then
       submitted to OpenStreetMap by {{ site_name }}.
-	{% endblocktrans %}
+    {% endblocktrans %}
     </p>
     
     <p style="margin-top:0.5em;">
-	{% blocktrans %}
+    {% blocktrans %}
       Your changes will be checked by a member of the {{ site_name }} team
       before being uploaded. {{ site_name }} may tidy or normalise the data you
       provide before they are uploaded using the {{ site_name }} OSM account.
-	{% endblocktrans %}
+    {% endblocktrans %}
     </p>
     
     <p style="margin-top:0.5em;">
-	{% blocktrans %}
+    {% blocktrans %}
       If you would like to be named as the original author of the changes,
       please provide your name and tick the attribution box. Your e-mail
       address will never be submitted to OSM, but may be used by us to clarify
       any changes you provide.
-	{% endblocktrans %}
+    {% endblocktrans %}
     </p>
     
     <p style="margin-top:0.5em;">
-	{% url places:static-openstreetmap as osm_url %}
-	{% blocktrans %}
+    {% url places:static-openstreetmap as osm_url %}
+    {% blocktrans %}
       You may be interested to read <a href="{{ osm_url }}">further information about
       OpenStreetMap and other ways in which one may contribute</a>.
-	{% endblocktrans %}
+    {% endblocktrans %}
     </p>
   </div></div>
 </div>
@@ -61,7 +61,7 @@
   <h2>{% trans "Map" %}</h2>
   <div class="note"><div class="bubble pad-10">
 	{% blocktrans with entity.primary_type.verbose_name as type_name and entity.title as title %}
-		You are submitting an update to the {{ type_name }} <em>&quot;{{ title }}&quot;</em>.
+            You are submitting an update to the {{ type_name }} <em>&quot;{{ title }}&quot;</em>.
 	{% endblocktrans %}
   </div>
   
@@ -74,8 +74,8 @@
   {% csrf_token %}
     <p>
     {% blocktrans %}
-		Not all fields will be relevant to the item you are updating, and all
-	    fields are optional.
+	Not all fields will be relevant to the item you are updating, and all
+	fields are optional.
     {% endblocktrans %}
     </p>
       
@@ -137,10 +137,10 @@
     
     <tr>
       <th colspan="2">
-		{% blocktrans %}
-			This next two about food apply mostly to pubs. For things that obviously serve food (e.g.
-	        restaurants), feel free to leave this empty.
-		{% endblocktrans %}
+        {% blocktrans %}
+            This next two about food apply mostly to pubs. For things that obviously serve food (e.g.
+            restaurants), feel free to leave this empty.
+        {% endblocktrans %}
       </th>
     </tr>
     <tr>
@@ -154,10 +154,10 @@
 
     <tr>
       <th colspan="2">
-		{% blocktrans %}
-        If there is an ATM accessible at all hours here, please set this. This
-        may be left blank if you are editing an ATM.
-		{% endblocktrans %}
+	{% blocktrans %}
+            If there is an ATM accessible at all hours here, please set this. This
+            may be left blank if you are editing an ATM.
+	{% endblocktrans %}
       </th>
     </tr>
     <tr>
@@ -167,10 +167,10 @@
 
     <tr>
       <th colspan="2">
-		{% blocktrans %}
-        The following only apply to post boxes. The reference is normally
-        printed at the bottom of the details on the post box.
-		{% endblocktrans %}
+	{% blocktrans %}
+            The following only apply to post boxes. The reference is normally
+            printed at the bottom of the details on the post box.
+	{% endblocktrans %}
       </th>
     </tr>
     <tr>
@@ -194,10 +194,10 @@
 
     <tr>
       <th colspan="2">
-		{% blocktrans %}
-        If you have any other information you think should be included, please
-        tell us about it here.
-		{% endblocktrans %}
+        {% blocktrans %}
+            If you have any other information you think should be included, please
+            tell us about it here.
+        {% endblocktrans %}
       </th>
     </tr>
     <tr>
@@ -207,10 +207,10 @@
   <tfoot>
     <tr>
       <th colspan="2">
-		{% blocktrans %}
-        If you are happy with your changes and agree to the terms above, you
-        may now click 'Submit'.
-		{% endblocktrans %}
+        {% blocktrans %}
+            If you are happy with your changes and agree to the terms above, you
+            may now click 'Submit'.
+        {% endblocktrans %}
       </th>
     </tr>
     <tr>

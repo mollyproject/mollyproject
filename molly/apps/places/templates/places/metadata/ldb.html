@@ -16,12 +16,13 @@
   <table class="content no-round-bottom">
     <thead>
       <tr>
-        <th>{% ifequal board "arrivals" %}
-				{% trans "Origin" %}
-			{% else %}
-				{% trans "Destination" %}
-			{% endifequal %}
-		</th>
+        <th>
+            {% ifequal board "arrivals" %}
+                    {% trans "Origin" %}
+            {% else %}
+                    {% trans "Destination" %}
+            {% endifequal %}
+	</th>
         {% if train_station.metadata.ldb.platformAvailable %}
         <th>{% trans "Plat." %}</th>
         {% endif %}
@@ -85,10 +86,12 @@
         {% empty %}
           <tr>
             <td colspan="{% if train_station.metadata.ldb.platformAvailable %}4{% else %}3{% endif %}">
-				{% blocktrans with _(board) as board %}
-					There are currently no scheduled {{ board }}.
-				{% endblocktrans %}
-			</td>
+                {% ifequal board "arrivals" %}
+                    There are currently no scheduled arrivals.
+                {% else %}
+                    There are currently no scheduled departures.
+                {% endifequal%}
+	    </td>
           </tr>
         {% endfor %}
       {% endif %}

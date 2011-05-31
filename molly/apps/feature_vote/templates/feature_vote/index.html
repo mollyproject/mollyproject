@@ -32,13 +32,13 @@
       <h3><a href="{% url feature_vote:feature-detail feature.id %}">{{ feature.title }}</a></h3>
        
       <p><small>
-    {% blocktrans with feature.user_name as user_name feature.created|timesince as created_timesince %}
+    {% blocktrans with feature.user_name as user_name and feature.created|timesince as created_timesince %}
         by {{ user_name }}, added {{ created_timesince }} ago
     {% endblocktrans %}
       </small></p>
       <p>{{ feature.description|truncatewords:20 }}</p>
       <p>
-      {% blocktrans with count comment_count as comment_count  %}
+      {% blocktrans count comment_count as comment_count  %}
         one comment.
         {% plural %}
         {{ comment_count }} comments.
