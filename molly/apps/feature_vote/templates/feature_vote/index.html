@@ -1,21 +1,28 @@
-{% extends "feature_vote/base.html" %}{% load comments %}
+{% load i18n %}{% extends "feature_vote/base.html" %}{% load comments %}
 
 {% block content %}
 
-
 <div class="bubble pad-5">
 {% if submitted %}
-  <p><strong>Thank you for submitting a feature request! It is pending moderation, and should appear shortly.</strong></p>
+  <p><strong>{% trans "Thank you for submitting a feature request! It is pending moderation, and should appear shortly." %}</strong></p>
 {% else %}
-  <p>Do you have something you'd like to see added to {{ site_name }}?</p>
+  <p>
+  {% blocktrans %}
+  	Do you have something you'd like to see added to {{ site_name }}?
+  {% endblocktrans %}
+  </p>
   
-  <p>You can vote or comment on existing suggestions, or use the <a href="#submit-feature">form at the bottom of the page</a> to add a new suggestion.</p>
+  <p>
+	{% blocktrans  %}
+	You can vote or comment on existing suggestions, or use the <a href="#submit-feature">form at the bottom of the page</a> to add a new suggestion.
+	{% endblocktrans %}
+  </p>
 {% endif %}
 </div>
 
 <div class="section">
   <div class="header">
-  <h2>Current suggestions</h2>
+  <h2>{% trans "Current suggestions" %}</h2>
 </div>
 {% if features %}
   <ul class="content-list">
@@ -23,12 +30,21 @@
     <li>
       {% include "feature_vote/vote.html" %}
       <h3><a href="{% url feature_vote:feature-detail feature.id %}">{{ feature.title }}</a></h3>
-        
-      <p><small>by {{ feature.user_name }}, added {{ feature.created|timesince }} ago</small></p>
+       
+      <p><small>
+	{% blocktrans with feature.user_name as user_name feature.created|timesince as created_timesince %}
+		by {{ user_name }}, added {{ created_timesince }} ago
+	{% endblocktrans %}
+	  </small></p>
       <p>{{ feature.description|truncatewords:20 }}</p>
-      <p>{{ comment_count }} comment{{ comment_count|pluralize }}.
+      <p>
+	  {% blocktrans with count comment_count as comment_count  %}
+      	one comment
+		{% plural %}
+		{{ comment_count }} comments
+      {% endblocktrans %}
         <a href="{% url feature_vote:feature-detail feature.id %}">
-          {% if comment_count %}Read more&hellip;{% else %}Be the first to comment&hellip;{% endif %}
+          {% if comment_count %}{% trans "Read more&hellip;" %}{% else %}{% trans "Be the first to comment&hellip;" %}{% endif %}
         </a>
       </p>
     </li>
@@ -36,7 +52,7 @@
   </ul>
 {% else %}
   <div class="section-content">
-    <p>There aren't yet any features to vote on.</p>
+    <p>{% trans "There are no features to vote on yet." %}</p>
   </div>
 {% endif %}
 
@@ -44,7 +60,7 @@
 
 <div class="form-section" id="submit-feature">
   <div class="header">
-  <h2>Suggest a feature</h2>
+  <h2>{% trans "Suggest a feature" %}</h2>
   </div>
   <form method="post" action=".">
     {% csrf_token %}
@@ -61,7 +77,7 @@
     </dl>
     
     <p class="submit-buttons">
-      <input type="submit" value="Submit"/>
+      <input type="submit" value='{% trans "Submit" %}'/>
     </p>
     
     <div style="clear:both"></div>
