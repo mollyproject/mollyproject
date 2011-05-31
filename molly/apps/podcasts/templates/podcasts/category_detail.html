@@ -1,18 +1,18 @@
 {% extends "podcasts/base.html" %}{% load molly_utils %}{% load molly_external_media %}
-
+{% load i18n %}
 {% block content %}
 
 
 <div class="section">
   <div class="header">
-    <h2>{{ category.name }}</h2>
-    Show:
+    <h2>{% trans category.name %}</h2>
+    {% trans "Show:" %}
     {% comment %} the non-breaking spaces are to combat a bug in slimmer,
 		  where it is over zealous in removing the spaces
 		  between the a tags {% endcomment %}
-    <a href="{% url podcasts:category-medium category.slug,"audio" %}">audio</a>&nbsp;
-    <a href="{% url podcasts:category-medium category.slug,"video" %}">video</a>&nbsp;
-    <a href="{% url podcasts:category-medium category.slug,"all" %}">all</a>
+    <a href="{% url podcasts:category-medium category.slug,"audio" %}">{% trans "audio" %}</a>&nbsp;
+    <a href="{% url podcasts:category-medium category.slug,"video" %}">{% trans "video" %}</a>&nbsp;
+    <a href="{% url podcasts:category-medium category.slug,"all" %}">{% trans "all" %}</a>
   </div>
 		
 <ul class="link-list">
@@ -37,11 +37,11 @@
     </li>
 {% empty %}
   {% if more_in_all %}
-    <li><em>Sorry, there are no podcasts in your language.</em></li>
+    <li><em>{% trans "Sorry, there are no podcasts in your language." %}</em></li>
   {% endif %}
 {% endfor %}
 {% if more_in_all %}
-  <li><a href="{% url podcasts:category-medium category.slug,"all" %}">View podcasts in all languages</a></li>
+  <li><a href="{% url podcasts:category-medium category.slug,"all" %}">{% trans "View podcasts in all languages" %}</a></li>
 {% endif %}
 </ul>
 </div>

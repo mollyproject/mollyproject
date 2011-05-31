@@ -60,6 +60,8 @@ class IndexView(BaseView):
                             is set to Off in Opera settings"""))
             request.session['home:opera_mini_warning'] = True
 
+        # TODO Add back in messages from the developers 
+        
         applications = [{
             'application_name': app.application_name,
             'local_name': app.local_name,

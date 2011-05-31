@@ -1,7 +1,6 @@
 {# Search form results list #}
-{% load i18n %}
 {% extends "contact/base.html" %}{% load molly_utils %}
-
+{% load i18n %}
 {% block title %}{% trans "Contact Search" %}{% if query %}: {{ query }}{% endif %}{% endblock %}
 
 {% block content %}
@@ -22,7 +21,7 @@
     {% endif %}
     <div class="section-content{% if results %} no-round-bottom{% endif %}">
       <div class="note"><div class="bubble pad-10">
-        {% blocktrans count counter=results|length %}
+        {% blocktrans count results|length as counter %}
         	Your search returned one item.
 			{% plural %}
 			Your search return {{ counter }} items.

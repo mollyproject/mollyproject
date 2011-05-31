@@ -1,13 +1,13 @@
-{% extends "podcasts/base.html" %}{% load molly_search %}
+{% extends "podcasts/base.html" %}{% load molly_search %}{% load i18n %}
 {% load molly_utils %}
 
 {% block content %}
 
+{# The following detects the existence of an Apple device and offers a redirect to the iTunes U app on said device. Only relevant if institution has feed on iTunes U #}
 {% if device|device_has_parent:"apple_generic" and show_itunesu_link %}
 <div class="help-bubble" id="itunesu_link_div">
-    <p>It looks like you're using an Apple device! You can also get all the University's podcasts via your iTunes U app, which gives you extra features like downloads for later listening/viewing.</p>
-    
-    <p>Please note that this will close Safari.</p>
+    <p>{% trans "It looks like you're using an Apple device! You can also get all the University's podcasts via your iTunes U app, which gives you extra features like downloads for later listening/viewing." %}</p>
+    <p>{% trans "Please note that this will close Safari." %}</p>
     <form method="post" action="{% url podcasts:itunesu-redirect %}">
 	{% csrf_token %}
     {% comment %}<p><input type="checkbox" name="remember" id="remember"/>
@@ -16,8 +16,8 @@
        </label>
     </p>{% endcomment %}
     <p style="text-align:center; margin-bottom:0;">
-        <button type="submit" name="use_itunesu" value="yes">Go to iTunes U</button>
-        <button type="submit" name="cancel" id="hide_itunesu_link" value="no">Stay here</button>
+        <button type="submit" name="use_itunesu" value="yes">{% trans "Go to iTunes U" %}</button>
+        <button type="submit" name="cancel" id="hide_itunesu_link" value="no">{% trans "Stay here" %}</button>
     </p>
     </form>
 </div>
@@ -27,20 +27,20 @@
 {% search_form %}
 <form method="get" action="{% url search:index %}">
     <!-- Doing the devil's work below: couldn't get a CSS design to work with Blackberry 8900 so using Tables as a last resort. Tim F -->
-<h2 class="invisible">Search Podcasts</h2>    
+<h2 class="invisible">{% trans "Search Podcasts" %}</h2>    
 <table class="search"><tbody>
         <tr><td>
-                <label class="invisible" for="id_query">Search podcasts</label>
+                <label class="invisible" for="id_query">{% trans "Search podcasts" %}</label>
                 {{ search_form.query }}
         </td><td>
-                <input type="hidden" name="application" value="podcasts" title="Search Podcasts" />
+                <input type="hidden" name="application" value="podcasts" title='{% trans "Search Podcasts" %}' />
                 {% ifequal style_group "dumb" %}
-                    <button type="submit">Go!</button>
+                    <button type="submit">{% trans "Go!" %}</button>
                 {% else %}
-                	<input type="image" src="{{ STATIC_URL }}site/images/buttons/search-button.png" title="Search" alt="Search"/>
+                	<input type="image" src="{{ STATIC_URL }}site/images/buttons/search-button.png" title='{% trans "Search" %}' alt='{% trans "Search" %}'/>
                 {% endifequal %}
         </td></tr><tr><td>
-                <p class="help-bubble top">Try searching for a podcast by subject, name or author</p>
+                <p class="help-bubble top">{% trans "Try searching for a podcast by subject, name or author" %}</p>
         </td><td></td></tr></tbody>
 </table>
 </form>
@@ -49,16 +49,15 @@
 <div class="section" >
 {% block listdef %}
   <div class="header">
-	<h2>By category</h2>
+	<h2>{% trans "By category" %}</h2>
   </div>
 {% endblock %}
-
 
 
 <ul class="link-list">
 {% for category in categories %}
     <li {% if forloop.last %}class="round-bottom" {% endif %}>
-	<a href="{{ category.get_absolute_url }}">{{ category.name }}</a></li>
+	<a href="{{ category.get_absolute_url }}">{% trans category.name %}</a></li>
 {% endfor %}
 </ul></div>
 {% endblock %}
