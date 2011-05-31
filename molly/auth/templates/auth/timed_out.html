@@ -1,39 +1,36 @@
-{% extends "auth/secure.html" %}
+{% extends "auth/secure.html" %}{% load i18n %}
 
 {% block content %}
 
 <div class="section">
-  <h2>Your secure session has timed out.</h2>
+  <h2>{% trans "Your secure session has timed out." %}</h2>
 
   <div class="note"><div class="bubble">
     <p>
-      As a security feature your session has timed out due to a period of
-      inactivity. 
+      {% trans "As a security feature your session has timed out due to a period of inactivity." %}
     </p>
 {% if has_pin %}
     <p>
-      You can get back in by entering your PIN:
+      {% trans "You can get back in by entering your PIN:" %}
     </p>
     <p>
       <form method="post" action=".">
         {% csrf_token %}
         <label for="pin">
-          Enter your PIN
+          {% trans "Enter your PIN" %}
         </label>
         <input id="pin" name="pin" type="password"/>
-        <input type="submit" name="reauthenticate" value="Submit"/>
+        <input type="submit" name="reauthenticate" value="{% trans "Submit" %}"/>
       </form>
     </p>
     <p>
-      If you can't remember your PIN, you may reset your session by
-      using the button below. Note, that you may lose some secure preferences!
+      {% trans "If you can't remember your PIN, you may reset your session by using the button below. Note, that you may lose some secure preferences!" %}
     </p>
 {% else %}
     <p>
-      The button below will clear your secure session, allowing you to
-      reauthenticate with any services you were previously using.
+      {% trans "The button below will clear your secure session, allowing you to reauthenticate with any services you were previously using." %}
     </p>
-    <p>Tip: Make it easier to get back in by setting a PIN!</p>
+    <p>{% trans "Tip: Make it easier to get back in by setting a PIN!" %}</p>
 {% endif %}
     <p>
       <form method="post" action=".">
@@ -42,8 +39,7 @@
       </form>
     </p>
     <p>
-      You may set a new PIN at any point by using the link at the bottom of an
-      authenticated page.
+      {% trans "You may set a new PIN at any point by using the link at the bottom of an authenticated page." %}
     </p>
   </div></div>
 </div>

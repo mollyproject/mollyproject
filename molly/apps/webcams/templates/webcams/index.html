@@ -8,15 +8,15 @@
 
 
 <div class="section">
-<div class="header">
-	<h2>{% trans "Webcams" %}</h2>
+    <div class="header">
+        <h2>{% trans "Webcams" %}</h2>
+    </div>
+    <ul class="link-list">
+    {% for webcam in webcams %}
+        <li {% if forloop.last %}class="round-bottom"{% endif %}>
+            <a href="{% url webcams:webcam webcam.slug %}">{{ webcam.title }}</a>
+        </li>
+    {% endfor %}
+    </ul>
 </div>
-		<ul class="link-list">
-{% for webcam in webcams %}
-		<li {% if forloop.last %}class="round-bottom"{% endif %}>
-        	<a href="{% url webcams:webcam webcam.slug %}">{{ webcam.title }}</a>
-    	</li>
-{% endfor %}
-		</ul>
-	</div>
 {% endblock %}
