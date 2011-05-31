@@ -5,6 +5,8 @@ from django.core.paginator import Paginator, EmptyPage, InvalidPage
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext as _
+from django.utils.translation import get_language
+from django.db.models import Q
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
@@ -26,7 +28,25 @@ class IndexView(BaseView):
         
     def handle_GET(self, request, context):
         feeds = Feed.news.all()
-        context['feeds'] = feeds
+        
+        # Only actually care about showing feeds in the right language, not
+        # dialect, so only match on before the -
+        lang_code = get_language()
+        if '-' in lang_code:
+            lang_code = lang_code.split('-')[0]
+        
+        
+        all_feeds = feeds.count()
+        if 'all' not in request.GET:
+            feeds = feeds.filter(
+                Q(language__startswith=lang_code) | Q(language=None)
+            )
+        lang_feeds = feeds.count()
+        
+        context= {
+            'feeds': feeds,
+            'more_in_all': lang_feeds != all_feeds,
+        }
         return self.render(request, context, 'feeds/news/index',
                            expires=timedelta(days=7))
 

@@ -15,7 +15,7 @@
     {% ifequal count 1 %}
       {{ entity_types.0.verbose_name }}
       {% ifnotequal entity_types|length 1 %}
-        that is also {% for et in entity_types|slice:"1:" %}{% if not forloop.first %}, {% if forloop.last %}and {% endif %}{% endif %}{{ et.article }} {{ et.verbose_name }}{% endfor %}
+        that is also {% for et in entity_types|slice:"1:" %}{% if not forloop.first %}, {% if forloop.last %}and {% endif %}{% endif %}{{ et.verbose_name_singular }}{% endfor %}
       {% endifnotequal %} 
     {% else %}
       {{ entity_types.0.verbose_name_plural }}

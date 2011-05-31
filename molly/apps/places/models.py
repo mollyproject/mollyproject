@@ -7,6 +7,7 @@ from django.contrib.gis.db import models
 from django.core.urlresolvers import reverse, NoReverseMatch
 from django.contrib.gis.geos import Point
 from django.utils.translation import get_language
+from django.utils.translation import ugettext_lazy as _
 
 from molly.utils.i18n import name_in_language
 
@@ -209,7 +210,9 @@ class Entity(models.Model):
         self.__metadata = metadata
     metadata = property(get_metadata, set_metadata)
     
-    COMPASS_POINTS = ('N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW')
+    # Translators: These are compass points
+    COMPASS_POINTS = (_('N'), _('NE'), _('E'), _('SE'),
+                      _('S'), _('SW'), _('W'), _('NW'))
 
     def get_bearing(self, p1):
         """

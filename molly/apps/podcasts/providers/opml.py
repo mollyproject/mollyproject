@@ -7,9 +7,9 @@ from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_noop as _
 
 from molly.conf.settings import batch
+from molly.utils.i18n import set_name_in_language
 from molly.apps.podcasts.providers import BasePodcastsProvider
 from molly.apps.podcasts.models import Podcast, PodcastItem, PodcastCategory, PodcastEnclosure
-
 from molly.apps.podcasts.providers.rss import RSSPodcastsProvider
 
 logger = logging.getLogger(__name__)
@@ -40,7 +40,8 @@ class OPMLPodcastsProvider(RSSPodcastsProvider):
         
         slug = slugify(cat)
         
-        podcast_category, created = PodcastCategory.objects.get_or_create(slug=slug,name=cat)
+        podcast_category, created = PodcastCategory.objects.get_or_create(slug=slug)
+        set_name_in_language(category, lang_code, name=cat)
         
         try:
             podcast_category.order = self.CATEGORY_ORDERS[slug]
@@ -60,6 +61,7 @@ class OPMLPodcastsProvider(RSSPodcastsProvider):
         podcast.medium = self.extract_medium(attrib['xmlUrl'])
         podcast.category = self.decode_category(attrib)
         podcast.slug = self.extract_slug(attrib['xmlUrl'])
+        podcast.save()
         
         self.update_podcast(podcast)
 

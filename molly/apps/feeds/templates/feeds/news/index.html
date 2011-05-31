@@ -35,7 +35,14 @@
         <li {% if forloop.last %}class="round-bottom"{% endif %}>
             <a href="{{ feed.get_absolute_url }}">{{ feed.title }}</a>
         </li>
+{% empty %}
+    {% if more_in_all %}
+	<li><em>Sorry, there are no news feeds in your language.</em></li>
+    {% endif %}
 {% endfor %}
+{% if more_in_all %}
+  <li><a href="{% url news:index %}?all">View news in all languages</a></li>
+{% endif %}
     </ul>
 </div>
 

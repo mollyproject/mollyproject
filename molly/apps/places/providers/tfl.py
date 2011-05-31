@@ -3,6 +3,8 @@ from xml.dom import minidom
 from collections import defaultdict
 import threading
 
+from django.utils.translation import ugettext_lazy as _
+
 from molly.apps.places.providers import BaseMapsProvider
 
 class TubeRealtimeProvider(BaseMapsProvider):
@@ -69,7 +71,8 @@ class TubeRealtimeProvider(BaseMapsProvider):
         services.sort(key=lambda s: s['etas'][0])
         for service in services:
             etas = [round(e/60) for e in service['etas']]
-            etas = ['DUE' if e == 0 else '%d mins' % e for e in etas]
+            # Translators: This refers to arrival times of trains, in minutes
+            etas = [_('DUE') if e == 0 else _('%d mins') % e for e in etas]
             service['next'] = etas[0]
             service['following'] = etas[1:]
         entity.metadata['real_time_information']['services'] = services

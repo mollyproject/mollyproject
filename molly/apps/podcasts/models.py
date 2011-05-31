@@ -2,6 +2,7 @@ from django.db import models
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
+from molly.utils.i18n import name_in_language
 
 from molly.apps.podcasts.data import licenses
 
@@ -13,8 +14,11 @@ MEDIUM_CHOICES = (
 
 class PodcastCategory(models.Model):
     slug = models.SlugField()
-    name = models.TextField()
     order = models.IntegerField(null=True)
+    
+    @property
+    def name(self):
+        return name_in_language(self, 'name')
     
     def get_absolute_url(self):
         return reverse('podcasts:category', args=[self.slug])
@@ -24,8 +28,14 @@ class PodcastCategory(models.Model):
     class Meta:
         verbose_name = _('Podcast category')
         verbose_name_plural = _('Podcast categories')
-        ordering = ('order','name',)
+        ordering = ('order',)
 
+
+class PodcastCategoryName(models.Model):
+    podcast_category = models.ForeignKey(PodcastCategory, related_name='names')
+    language_code = models.CharField(max_length=10, choices=settings.LANGUAGES)
+    name = models.TextField()
+    
 
 class Podcast(models.Model):
     slug = models.SlugField(unique=True)

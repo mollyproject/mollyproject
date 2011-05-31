@@ -1,15 +1,15 @@
 {% extends "webcams/base.html" %}
 
 {% block pagetitleclass %}webcams-header with-icon{% endblock %}
-{% block pagetitle %}Webcams{% endblock %}
-{% block title %}Webcams{% endblock %}
+{% block pagetitle %}{% trans "Webcams" %}{% endblock %}
+{% block title %}{% trans "Webcams" %}{% endblock %}
 
 {% block content %}
 
 
 <div class="section">
 <div class="header">
-	<h2>Webcams</h2>
+	<h2>{% trans "Webcams" %}</h2>
 </div>
 		<ul class="link-list">
 {% for webcam in webcams %}

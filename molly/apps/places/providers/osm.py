@@ -19,7 +19,7 @@ from molly.apps.places.models import (Entity, EntityType, Source,
                                       EntityTypeCategory, EntityName)
 from molly.apps.places.providers import BaseMapsProvider
 from molly.utils.misc import AnyMethodRequest
-from molly.utils.i18n import override
+from molly.utils.i18n import override, set_name_in_language
 from molly.geolocation import reverse_geocode
 from molly.conf.settings import batch
 
@@ -167,23 +167,14 @@ class OSMHandler(handler.ContentHandler):
                 
                 entity.metadata['osm'] = {
                     'attrs': dict(self.attrs),
-                    'tags': self.tags
+                    'tags': dict(zip((k.replace(':', '_') for k in self.tags.keys()), self.tags.values()))
                 }
                 entity.primary_type = self.entity_types[types[0]]
                 
                 entity.save(identifiers={'osm': self.id})
                 
                 for lang_code, name in names.items():
-                    titles = entity.names.filter(language_code=lang_code)
-                    if titles.count() == 0:
-                        entity.names.create(
-                            language_code=lang_code,
-                            title=name
-                        )
-                    else:
-                        title = titles[0]
-                        title.title = name
-                        title.save()
+                    set_name_in_language(entity, lang_code, title=name)
                 
                 entity.all_types = [self.entity_types[et] for et in types]
                 entity.update_all_types_completion()
@@ -283,6 +274,7 @@ class OSMMapsProvider(BaseMapsProvider):
         request = AnyMethodRequest(self._url, method='HEAD')
         response = urllib2.urlopen(request)
         new_etag = response.headers['ETag'][1:-1]
+        self.output = output
         
         if False and new_etag == old_etag:
             output.write('OSM data not updated. Not updating.\n')
@@ -341,19 +333,10 @@ class OSMMapsProvider(BaseMapsProvider):
             entity_type.save()
             for lang_code, lang_name in settings.LANGUAGES:
                 with override(lang_code):
-                    name = entity_type.names.filter(language_code=lang_code)
-                    if name.count() == 0:
-                        entity_type.names.create(
-                            language_code=lang_code,
-                            verbose_name=_(et['verbose_name']),
-                            verbose_name_singular=_(et['verbose_name_singular']),
-                            verbose_name_plural=_(et['verbose_name_plural']))
-                    else:
-                        name = name[0]
-                        name.verbose_name=_(et['verbose_name'])
-                        name.verbose_name_singular=_(et['verbose_name_singular'])
-                        name.verbose_name_plural=_(et['verbose_name_plural'])
-                        name.save()
+                    set_name_in_language(entity, lang_code,
+                                         verbose_name=_(et['verbose_name']),
+                                         verbose_name_singular=_(et['verbose_name_singular']),
+                                         verbose_name_plural=_(et['verbose_name_plural']))
             new_entity_types.add(slug)
             entity_types[slug] = entity_type
         
@@ -388,9 +371,9 @@ class OSMMapsProvider(BaseMapsProvider):
         entities = Entity.objects.filter(source=source)
         inferred_names = {}
         if '-' in lang_code:
-            tags_to_try = ('name:%s' % lang_code, 'name:%s' % lang_code.split('-')[0], 'name', 'operator')
+            tags_to_try = ('name-%s' % lang_code, 'name-%s' % lang_code.split('-')[0], 'name', 'operator')
         else:
-            tags_to_try = ('name:%s' % lang_code, 'name', 'operator')
+            tags_to_try = ('name-%s' % lang_code, 'name', 'operator')
         for entity in entities:
             inferred_name = None
             for tag_to_try in tags_to_try:
@@ -406,8 +389,8 @@ class OSMMapsProvider(BaseMapsProvider):
         for inferred_name, entities in inferred_names.items():
             if len(entities) > 1:
                 for entity in entities:
-                    if entity.metadata['osm']['tags'].get('addr:street'):
-                        title = u"%s, %s" % (inferred_name, entity.metadata['osm']['tags'].get('addr:street'))
+                    if entity.metadata['osm']['tags'].get('addr_street'):
+                        title = u"%s, %s" % (inferred_name, entity.metadata['osm']['tags'].get('addr_street'))
                     else:
                         try:
                             place_name = reverse_geocode(entity.location[0], entity.location[1])[0]['name']

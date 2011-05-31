@@ -29,10 +29,10 @@ function handleLibraryAJAX(data){
         $('#item-list').append('<li><a href="/library/item:' + item.control_number + '/">' +
                                item.title + 
                                '</a></li>')
-        if (item.author != null) $('#item-list li:last a').append('<br/><small><strong>Author:</strong> ' + item.author + '</small>')
-        if (item.publisher != null) $('#item-list li:last a').append('<br/><small><strong>Publisher:</strong> ' + item.publisher + '</small>')
-        if (item.edition != null) $('#item-list li:last a').append('<br/><small><strong>Edition:</strong> ' + item.edition + '</small>')
-        $('#item-list li:last a').append('<br/><small><strong>Libraries:</strong> ' + item.holding_libraries + '</small>')
+        if (item.author != null) $('#item-list li:last a').append('<br/><small><strong>' + gettext('Author') + ':</strong> ' + item.author + '</small>')
+        if (item.publisher != null) $('#item-list li:last a').append('<br/><small><strong>' + gettext('Publisher') + ':</strong> ' + item.publisher + '</small>')
+        if (item.edition != null) $('#item-list li:last a').append('<br/><small><strong>' + gettext('Edition') + ':</strong> ' + item.edition + '</small>')
+        $('#item-list li:last a').append('<br/><small><strong>' + gettext('Libraries') + ':</strong> ' + item.holding_libraries + '</small>')
         if (i == 0) {
             $('#item-list li:last').addClass('page-break')
         }
