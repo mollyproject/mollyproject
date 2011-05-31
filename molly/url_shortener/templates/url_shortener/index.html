@@ -3,9 +3,15 @@
 {% block content %}
 
 <div class="bubble pad-10">
-  <p>{% blocktrans %}
-	The shortened URL for the page{% if page_title %} <strong>{{ page_title }}</strong>{% endif %}  is:
-  {% endblocktrans %}</p>
+    {% if page_title %}
+        <p>{% blocktrans %}
+          The shortened URL for the page <strong>{{ page_title }}</strong>  is:
+        {% endblocktrans %}</p>
+    {% else %}
+        <p>{% blocktrans %}
+          The shortened URL for the page is:
+        {% endblocktrans %}</p>
+    {% endif %}
 
   <p style="text-align:center; font-size:150%"><a href="{{ url }}">{{ url }}</a></p>
 
@@ -20,14 +26,14 @@
 <p>{% trans "Click on the links below to share this page" %}</p>
 
 <ul id="transport-links">
-<li class="transport-link"><a href="http://www.facebook.com/share.php?u={{ url }}"><img src="{{ STATIC_URL }}site/images/icons/facebook2.png" border="0"/></a></li>
-<li class="transport-link"><a href="http://twitter.com/home?status={% if page_title %}{{ page_title }} on {{ site_name }}{% endif %} {{ url }}"><img src="{{ STATIC_URL }}site/images/icons/twitter2.png" border="0"/></a></li>
-<li class="transport-link"><a href="mailto:?subject={% if page_title %}{{ page_title }} From {{ site_name }}{% endif %}&body={% if page_title %}{{ page_title }} From site_name{% endif %} {{ url }}"><img src="{{ STATIC_URL }}site/images/icons/email2.png" border="0"/></a></li>
+    <li class="transport-link"><a href="http://www.facebook.com/share.php?u={{ url }}"><img src="{{ STATIC_URL }}site/images/icons/facebook2.png" border="0"/></a></li>
+    <li class="transport-link"><a href="http://twitter.com/home?status={% if page_title %}{{ page_title }} on {{ site_name }}{% endif %} {{ url }}"><img src="{{ STATIC_URL }}site/images/icons/twitter2.png" border="0"/></a></li>
+    <li class="transport-link"><a href="mailto:?subject={% if page_title %}{{ page_title }} From {{ site_name }}{% endif %}&body={% if page_title %}{{ page_title }} From site_name{% endif %} {{ url }}"><img src="{{ STATIC_URL }}site/images/icons/email2.png" border="0"/></a></li>
 </ul>
 
 
   <p>{% blocktrans %}
-	You may wish to <a href="{{ path }}">go back to the previous page</a>.
+    You may wish to <a href="{{ path }}">go back to the previous page</a>.
   {% endblocktrans %}</p>
 
 {% if use_javascript %}

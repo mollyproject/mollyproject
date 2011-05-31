@@ -1,4 +1,4 @@
-{% extends "transport/base.html" %}{% load molly_utils %}
+{% extends "transport/base.html" %}{% load molly_utils %}{% load i18n %}
 
 {% block content %}
 
@@ -7,38 +7,38 @@
 <ul id="transport-links">
     {% if nearby.bus %}
     <li class="transport-link">
-        <a href="#bus"><img src="{{ STATIC_URL }}transport/images/bus.svg" alt="Bus Stops" width="48" height="48" /></a></li>
+        <a href="#bus"><img src="{{ STATIC_URL }}transport/images/bus.svg" alt="{% trans "Bus Stops" %}"  width="48" height="48" /></a></li>
     {% endif %}
     {% if park_and_rides %}
     <li class="transport-link">
-        <a href="#park_and_rides"><img src="{{ STATIC_URL }}transport/images/pride.svg" alt="Park and Rides" width="48" height="48" /></a></li>
+        <a href="#park_and_rides"><img src="{{ STATIC_URL }}transport/images/pride.svg" alt="{% trans "Park and Rides" %}" width="48" height="48" /></a></li>
     {% endif %}
     {% if train_station %}
     <li class="transport-link">
-        <a href="#ldb"><img src="{{ STATIC_URL }}transport/images/train.svg" alt="Train Departure Boards" width="48" height="48" /></a></li>
+        <a href="#ldb"><img src="{{ STATIC_URL }}transport/images/train.svg" alt="{% trans "Train Departure Boards" %}" width="48" height="48" /></a></li>
     {% endif %}
     {% if travel_alerts %}
     <li class="transport-link">
-        <a href="#travel_news"><img src="{{ STATIC_URL }}transport/images/warn.svg" alt="Travel News" width="48" height="48" /></a></li>
+        <a href="#travel_news"><img src="{{ STATIC_URL }}transport/images/warn.svg" alt="{% trans "Travel News" %}" width="48" height="48" /></a></li>
     {% endif %}
 </ul>
 {% else %}
 <ul id="transport-links">
     {% if nearby.bus %}
     <li class="transport-link">
-        <a href="#bus"><img src="{{ STATIC_URL }}transport/images/bus.png" alt="Bus Stops" width="48" height="48" /></a></li>
+        <a href="#bus"><img src="{{ STATIC_URL }}transport/images/bus.png" alt="{% trans "Bus Stops" %}" width="48" height="48" /></a></li>
     {% endif %}
     {% if park_and_rides %}
     <li class="transport-link">
-        <a href="#park_and_rides"><img src="{{ STATIC_URL }}transport/images/pride.png" alt="Park and Rides" width="48" height="48" /></a></li>
+        <a href="#park_and_rides"><img src="{{ STATIC_URL }}transport/images/pride.png" alt="{% trans "Park and Rides" %}" width="48" height="48" /></a></li>
     {% endif %}
     {% if train_station %}
     <li class="transport-link">
-        <a href="#ldb"><img src="{{ STATIC_URL }}transport/images/train.png" alt="Train Departure Boards" width="48" height="48" /></a></li>
+        <a href="#ldb"><img src="{{ STATIC_URL }}transport/images/train.png" alt="{% trans "Train Departure Boards" %}" width="48" height="48" /></a></li>
     {% endif %}
     {% if travel_alerts %}
     <li class="transport-link">
-        <a href="#travel_news"><img src="{{ STATIC_URL }}transport/images/warn.png" alt="Travel News" width="48" height="48" /></a></li>
+        <a href="#travel_news"><img src="{{ STATIC_URL }}transport/images/warn.png" alt="{% trans "Travel News" %}" width="48" height="48" /></a></li>
     {% endif %}
 </ul>
 {% endif %}
@@ -55,12 +55,16 @@
     <div class="header">
         <h2>{{ data.results_type }} {{ data.type.verbose_name_plural }} - {% now "G:i:s "%}</h2>
     </div>
-    <table class="content{% ifequal data.results_type "Favourite" %} no-round-bottom{% endifequal %}">
+    <table class="content{% ifequal data.results_type _("Favourite") %} no-round-bottom{% endifequal %}">
         <tbody>
         {% for entity in data.entities %}
             <tr class="sub-section-divider"><th colspan="3"><a href="{{ entity.get_absolute_url }}" style="color:inherit;">
                     {{ entity.title }}
-                    {% if entity.distance %} <small>(about {{ entity.distance.m|round_up_10 }}m {{ entity.bearing }})</small>{% endif %}
+                    {% if entity.distance %}<small>
+                        {% blocktrans with entity.distance.m|round_up_10 as distance and entity.bearing as bearing %}
+                        (about {{ distance }}m {{ bearing }})
+                        {% endblocktrans %}
+                    </small>{% endif %}
                 </a></th></tr>
             {% if entity.metadata.real_time_information.pip_info %}
                 <tr><td colspan="3">{{ entity.metadata.real_time_information.pip_info|join:"<br/>" }}</td></tr>
@@ -75,15 +79,17 @@
                 {% endfor %}
             {% else %}
                 {% if not entity.metadata.real_time_information.pip_info %}
-                    <tr><td colspan="3">There is currently no real time information from this stop</td></tr>
+                    <tr><td colspan="3">{% trans "There is currently no real time information from this stop." %}</td></tr>
                 {% endif %}
             {% endif %}
         {% endfor %}
         </tbody>
     </table>
-    {% ifequal data.results_type "Favourite" %}
+    {% ifequal data.results_type _("Favourite") %}
     <ul class="link-list">
-        <li><a href="{% url places:nearby-detail data.type.slug %}">View nearby {{ data.type.verbose_name_plural }}</a></li>
+        <li><a href="{% url places:nearby-detail data.type.slug %}">
+            {% blocktrans with data.type.verbose_name_plural as entity_type %}View nearby {{ entity_type }}{% endblocktrans %}
+        </a></li>
     </ul>
     {% endifequal %}
 </div>
@@ -92,7 +98,7 @@
 {% if park_and_rides %}
 <div class="section" id="park_and_rides">
     <div class="header">
-        <h2><a href="{% url places:nearby-detail "park-and-ride" %}">Park and Rides</a></h2>
+        <h2><a href="{% url places:nearby-detail "park-and-ride" %}">{% trans "Park and Rides" %}</a></h2>
     </div>
     <div class="section-content">
         {% for entity in park_and_rides %}
@@ -112,10 +118,13 @@
                         <div class="capacity-bar">
                             <div style="width: {{ entity.metadata.park_and_ride.percentage }}%; height:7px;background-color: #960300;">&nbsp;</div>
                         </div>
-                        <p>Spaces: {{ entity.metadata.park_and_ride.spaces }} / {{ entity.metadata.park_and_ride.capacity }}</p>
+                        {# Translators: As in, car parking spaces #}
+                        <p>{% trans "Spaces" %}: {{ entity.metadata.park_and_ride.spaces }} / {{ entity.metadata.park_and_ride.capacity }}</p>
                     {% else %}
-                        <p><em>Space information currently unavailable</em></p>
-                        <p>Spaces: ? / {{ entity.metadata.park_and_ride.capacity }}</p>
+                        {# Translators: As in, car parking spaces #}
+                        <p><em>{% trans "Space information currently unavailable" %}</em></p>
+                        {# Translators: As in, car parking spaces #}
+                        <p>{% trans "Spaces" %}: ? / {{ entity.metadata.park_and_ride.capacity }}</p>
                     {% endif %}
                 {% endif %}
             </div>
@@ -132,7 +141,7 @@
 
 <div class="section" id="travel_news">
     <div class="header">
-        <h2>Travel alerts</h2>
+        <h2>{% trans "Travel alerts" %}</h2>
     </div>
   
     <ul class="content-list">
