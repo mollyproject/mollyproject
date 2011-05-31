@@ -30,10 +30,12 @@ class IndexView(BaseView):
             'blog_feed': self._cache(self._get_blog_feed, 'blog',
                                         args=[getattr(self.conf,
                                         'blog_rss_url')], timeout=300),
-            'twitter_username': getattr(self.conf, 'twitter_username'),
+            'blog_url': getattr(self.conf, 'blog_url', None),
+            'facebook_url': getattr(self.conf, 'facebook_url', None),
+            'twitter_username': getattr(self.conf, 'twitter_username', None),
             'twitter_url': ('http://twitter.com/' +
                             self.conf.twitter_username)
-                            if getattr(self.conf, 'twitter_username')
+                            if getattr(self.conf, 'twitter_username', None)
                             else None,
         }
 
