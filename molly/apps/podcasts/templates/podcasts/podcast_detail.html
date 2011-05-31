@@ -1,21 +1,21 @@
 {% extends "podcasts/base.html" %}{% load molly_utils %}{% load molly_external_media %}{% load molly_podcasts %}
-
+{% load i18n %}
 {% block breadcrumbs %}
 {{ block.super }}
             <li><a href="{% url podcasts:index %}">
-                <img src="{{ STATIC_URL }}images/index-icons/podcasts-bc.png" alt="Podcasts"/>
+                <img src="{{ STATIC_URL }}images/index-icons/podcasts-bc.png" alt='{% trans "Podcasts" %}'/>
             </a></li>
 {% if podcast.category %}
     <li><a href="{{ podcast.category.get_absolute_url }}">...</a></li>
 {% endif %}
 {% endblock %}
 
-{% block pagetitle %}Podcast{% endblock %}
+{% block pagetitle %}{% trans "Podcast" %}{% endblock %}
 {% block title %}{{ podcast.title }}{% endblock %}
 
 
 {% block extrahead %}
-<link href="{{ podcast.rss_url }}?destination=moxacuk" type="application/rss+xml" rel="alternate" title="Podcast RSS feed" />
+<link href="{{ podcast.rss_url }}" type="application/rss+xml" rel="alternate" title="Podcast RSS feed" />
 {% endblock %}
 
 {% block content %}
@@ -46,7 +46,8 @@
     {% endif %}
       
       <small>
-      Published: {{ item.published_date|date:"j M Y" }}
+	  {# Significant whitespace on next line #}
+      {% trans "Published:" %} {{ item.published_date|date:"j M Y" }}
       </small><br />
     <div style="line-height:1.1em; margin-top:5px">
       {{ item.description|safe }}
