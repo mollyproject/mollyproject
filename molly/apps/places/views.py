@@ -143,11 +143,9 @@ class NearbyDetailView(LocationRequiredView, ZoomableView):
 
         if point:
             entities = Entity.objects.filter(location__isnull = False, is_sublocation = False)
-            if ptypes:
-                for et in entity_types:
-                    entities = entities.filter(all_types_completion=et)
-            else:
-                entity_types = []
+            for et in entity_types:
+                entities = entities.filter(all_types_completion=et)
+            
             entities = entities.distance(point).order_by('distance')[:99]
         else:
             entities = []
@@ -236,7 +234,11 @@ class NearbyDetailView(LocationRequiredView, ZoomableView):
             e.bearing = e.get_bearing(point)
             found_entity_types |= set(e.all_types.all())
         found_entity_types -= set(entity_types)
-
+        
+        # If there are no entities, return a 404. This should only happen if URLs are manually formed by user.
+        if len(entities) == 0:
+            raise Http404()
+        
         context.update({
             'entities': entities,
             'map': entity_map,
