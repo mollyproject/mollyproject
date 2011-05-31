@@ -21,7 +21,7 @@
 </div>
 {% if removed %}
 <div class="note"><div class="bubble pad-10">
-{% blocktrans removed|length %}
+{% blocktrans count removed|length as num_removed %}
     The following common word was not included in your query:
 {% plural %}
     The following common words were not included in your query:
@@ -37,7 +37,7 @@
         {% trans "Previous" %}</a>
 {% endif %}
 
-{% blocktrans with page.start_index as first_result and page.end_index as last_result and results.object_list|length and page.number as page_number and results.num_pages number_of_pages %}
+{% blocktrans with page.start_index as first_result and page.end_index as last_result and results.object_list|length as num_results and page.number as page_number and results.num_pages as number_of_pages %}
     Showing results {{ first_result }} to <span class="result-number">{{ last_result }}</span> of {{ num_results }}. Page <span class="current-page">{{ page_number }}</span> of {{ number_of_pages }}.
 {% endblocktrans %}
 {% if page.has_next %}
@@ -68,7 +68,7 @@
         {% trans "Previous" %}</a>
 {% endif %}
 
-{% blocktrans with page.start_index as first_result and page.end_index as last_result and results.object_list|length and page.number as page_number and results.num_pages number_of_pages %}
+{% blocktrans with page.start_index as first_result and page.end_index as last_result and results.object_list|length as num_results and page.number as page_number and results.num_pages as number_of_pages %}
     Showing results {{ first_result }} to <span class="result-number">{{ last_result }}</span> of {{ num_results }}. Page <span class="current-page">{{ page_number }}</span> of {{ number_of_pages }}.
 {% endblocktrans %}
 {% if page.has_next %}
