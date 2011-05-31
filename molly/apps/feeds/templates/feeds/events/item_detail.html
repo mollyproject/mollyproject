@@ -3,7 +3,7 @@
 {% block breadcrumbs %}
 {{ block.super }}
             <li><a href="{% url events:index %}">
-                <img src="{{ STATIC_URL }}images/index-icons/rss-bc.png" alt='{% trans "News" %}'/>
+                <img src="{{ STATIC_URL }}images/index-icons/rss-bc.png" alt='{% trans "Events" %}'/>
             </a></li>
             <li><a href="{% url events:item-list item.feed.slug %}">
                 &hellip;
@@ -12,7 +12,7 @@
 
 {% block pagetitle %}{% trans "Event" %}{% endblock %}
 {# Significant whitespace on line below #}
-{% block title %}{% trans "Event:" %} {{ item.title }}{% endblock %}
+{% block title %}{% trans "Event" %}: {{ item.title }}{% endblock %}
 
 {% block content %}
 
