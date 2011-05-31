@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base.html" %}{% load i18n %}
 
 {% block content %}
 
@@ -10,8 +10,8 @@
     <table class="content">
       <thead>
         <tr>
-          <th>Page</th>
-          <th>Requests</th>
+          <th>{% trans "Page" %}</th>
+          <th>{% trans "Requests" %}</th>
         </tr>
       </thead>
       <tbody>
