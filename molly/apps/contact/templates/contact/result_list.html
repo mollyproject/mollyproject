@@ -1,7 +1,6 @@
 {# Search form results list #}
-{% load i18n %}
 {% extends "contact/base.html" %}{% load molly_utils %}
-
+{% load i18n %}
 {% block title %}{% trans "Contact Search" %}{% if query %}: {{ query }}{% endif %}{% endblock %}
 
 {% block content %}
