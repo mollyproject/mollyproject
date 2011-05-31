@@ -1,8 +1,9 @@
 {# Search form #}
+{% load i18n %}
 <div class="form-section">
   <form method="get" action="{% url contact:result_list %}">
 
-    <h2><label for="id_query">Search</label></h2>
+    <h2><label for="id_query">{% trans "Search" %}</label></h2>
 
   <div class="form">
     <p>{{ form.query }}</p>
