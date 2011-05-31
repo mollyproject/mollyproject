@@ -1,4 +1,4 @@
-{% extends "feeds/news/base.html" %}{% load molly_search %}
+{% load i18n %}{% extends "feeds/news/base.html" %}{% load molly_search %}
 
 {% block content %}
 
@@ -6,20 +6,20 @@
 {% search_form %}
 <form method="get" action="{% url search:index %}">
     <!-- Doing the devil's work below: couldn't get a CSS design to work with Blackberry 8900 so using Tables as a last resort. Tim F -->
-<h2 class="invisible">Search News</h2>    
+<h2 class="invisible">{% trans "Search News" %}</h2>    
 <table class="search"><tbody>
         <tr><td>
-                <label style="display:none;" for="id_query">Search News Box</label>
+                <label style="display:none;" for="id_query">{% trans "Search News Box" %}</label>
                 {{ search_form.query }}
         </td><td>
-                <input type="hidden" name="application" value="news" title="Search News" />
+                <input type="hidden" name="application" value="news" title='{% trans "Search News" %}' />
                 {% ifequal style_group "dumb" %}
-                    <button type="submit">Go!</button>
+                    <button type="submit">{% trans "Go!" %}</button>
                 {% else %}
-                	<input type="image" src="{{ STATIC_URL }}site/images/buttons/search-button.png" title="Search" alt="Search"/>
+                	<input type="image" src="{{ STATIC_URL }}site/images/buttons/search-button.png" title='{% trans "Search" %}' alt='{% trans "Search" %}'/>
                 {% endifequal %}
         </td></tr><tr><td>
-                <p class="help-bubble top">Search for particular news articles</p>
+                <p class="help-bubble top">{% trans "Search for particular news articles" %}</p>
         </td><td></td></tr></tbody>
 </table>
 </form>
@@ -28,7 +28,7 @@
 
 <div class="section">
   <div class="header">
-	<h2>Feeds</h2>
+	<h2>{% trans "Feeds" %}</h2>
   </div>
     <ul class="link-list">
 {% for feed in feeds %}
@@ -37,11 +37,11 @@
         </li>
 {% empty %}
     {% if more_in_all %}
-	<li><em>Sorry, there are no news feeds in your language.</em></li>
+	<li><em>{% trans "Sorry, there are no news feeds in your language." %}</em></li>
     {% endif %}
 {% endfor %}
 {% if more_in_all %}
-  <li><a href="{% url news:index %}?all">View news in all languages</a></li>
+  <li><a href="{% url news:index %}?all">{% trans "View news in all languages" %}</a></li>
 {% endif %}
     </ul>
 </div>

@@ -1,4 +1,4 @@
-{% extends "feeds/events/base.html" %}{% load molly_utils %}
+{% load i18n %}{% extends "feeds/events/base.html" %}{% load molly_utils %}
 
 {% block breadcrumbs %}
 {{ block.super }}
@@ -7,8 +7,9 @@
             </a></li>
 {% endblock %}
 
-{% block pagetitle %}Events feed{% endblock %}
-{% block title %}Events feed: {{ feed.title }}{% endblock %}
+{% block pagetitle %}{% trans "Events feed" %}{% endblock %}
+{# Significant whitespace on line below #}
+{% block title %}{% trans "Events feed:" %} {{ feed.title }}{% endblock %}
 
 {% block content %}
 

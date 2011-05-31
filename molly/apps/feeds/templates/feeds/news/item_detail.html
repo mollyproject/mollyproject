@@ -1,17 +1,18 @@
-{% extends "feeds/news/base.html" %}
+{% load i18n %}{% extends "feeds/news/base.html" %}
 
 {% block breadcrumbs %}
 {{ block.super }}
             <li><a href="{% url news:index %}">
-                <img src="{{ STATIC_URL }}images/index-icons/rss-bc.png" alt="News"/>
+                <img src="{{ STATIC_URL }}images/index-icons/rss-bc.png" alt='{% trans "News" %}'/>
             </a></li>
             <li><a href="{% url news:item-list item.feed.slug %}">
                 &hellip;
             </a></li>
 {% endblock %}
 
-{% block pagetitle %}News item{% endblock %}
-{% block title %}News: {{ item.title }}{% endblock %}
+{% block pagetitle %}{% trans "News item" %}{% endblock %}
+{# Significant whitespace on next line #}
+{% block title %}{% trans "News:" %} {{ item.title }}{% endblock %}
 
 {% block content %}
 <div class="section">
@@ -24,7 +25,8 @@
     <br />
         <small><em>
             {{ item.last_modified_local|date:"j M Y \a\t H:m" }}<br />
-            Link: <a href="{{ item.link }}" title="{{ item.title }}">{{ item.link }}</a>
+			{# Significant whitespace on next line #}
+            {% trans "Link:" %} <a href="{{ item.link }}" title="{{ item.title }}">{{ item.link }}</a>
         </em></small>
     </div>
 </div>
