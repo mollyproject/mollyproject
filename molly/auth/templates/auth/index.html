@@ -1,4 +1,4 @@
-{% extends "auth/secure.html" %}
+{% extends "auth/secure.html" %}{% load i18n %}
 
 {% block content %}
 
@@ -9,16 +9,16 @@
 
 <div class="section">
   <div class="header">
-    <h2>Bound devices</h2>
-    <p>These devices are currently set up with access to the authenticated services listed below. You may remove access from devices you no longer need.</p>
+    <h2>{% trans "Bound devices" %}</h2>
+    <p>{% trans "These devices are currently set up with access to the authenticated services listed below. You may remove access from devices you no longer need." %}</p>
   </div>
   <div class="section-content">
     <table style="width:100%">
       <thead>
         <tr>
-          <th>Device name</th>
-          <th>Last used</th>
-          <th>Remove</th>
+          <th>{% trans "Device name" %}</th>
+          <th>{% trans "Last used" %}</th>
+          <th>{% trans "Remove" %}</th>
         </tr>
       </thead>
       <tbody>
@@ -26,10 +26,14 @@
         <tr>
           <td>{{ form.id }}{{ form.instance.device_name }}</td>
 {% ifequal session_key form.instance.secure_session_key %}
-          <td>This device</td>
+          <td>{% trans "This device" %}</td>
           <td></td>
 {% else %}
-          <td>{{ form.instance.last_used|timesince }} ago</td>
+          <td>
+            {% blocktrans with form.instance.last_used|timesince as last_used %}
+              {{ last_used }} ago
+            {% endblocktrans %}
+          </td>
           <td>{{ form.DELETE }}</td>
 {% endifequal %}
         </tr>
@@ -41,39 +45,38 @@
 
 <div class="section">
   <div class="header">
-    <h2>Authenticated services</h2>
+    <h2>{% trans "Authenticated services" %}</h2>
 {% if external_service_tokens.forms %}
-    <p>You may currently access the following authenticated services using this device and those listed above.</p>
+    <p>{% trans "You may currently access the following authenticated services using this device and those listed above." %}</p>
   </div>
   <div class="section-content">
     <table style="width:100%">
       <thead>
         <tr>
-          <th>Service name</th>
-          <th>Remove</th>
+          <th>{% trans "Service name" %}</th>
+          <th>{% trans "Remove" %}</th>
         </tr>
       </thead>
       <tbody>
 {% for form in external_service_tokens.forms %}
         <tr>
           <td>{{ form.id }}
-            <a href="{{ form.instance.service_url }}">{{ form.instance.service_name }}</a></td>
+            <a href="{{ form.instance.service_url }}">{% trans form.instance.service_name %}</a></td>
           <td>{{ form.DELETE }}</td>
         </tr>
 {% endfor %}
       </tbody>
     </table>
 {% else %}
-     <p>There are no currently authenticated services.</p>
+     <p>{% trans "There are no currently authenticated services." %}</p>
 {% endif %}
   </div>
 </div>
 
 <div class="section invisible">
-  <h2>PIN</h2>
+  <h2>{% trans "PIN" %}</h2>
   <div class="note"><div class="bubble pad-10">
-    Setting a PIN allows you to recover expired secured sessions. It must
-    be composed of alphanumerics and be at least four characters in length.
+    {% trans "Setting a PIN allows you to recover expired secured sessions. It must be composed of alphanumerics and be at least four characters in length." %}
   </div></div>
   
   <div class="content">
@@ -94,10 +97,9 @@
 
 
 <div class="section invisible">
-  <h2>Time-out period</h2>
+  <h2>{% trans "Time-out period" %}</h2>
   <div class="note"><div class="bubble pad-10">
-    You may vary the length of the period of allowed inactivity before your
-    session gets locked. Accepted values are between 5 minutes and 720 (being 12 hours).
+    {% trans "You may vary the length of the period of allowed inactivity before your session gets locked. Accepted values are between 5 minutes and 720 (being 12 hours)." %}
   </div></div>
   <div class="content">
     <dl>
@@ -112,9 +114,9 @@
 
 {% if has_pin %}
 <div class="section invisible">
-  <h2>Time-out period</h2>
+  <h2>{% trans "Time-out period" %}</h2>
   <div class="note"><div class="bubble pad-10">
-    Please enter your current PIN in order to make these changes.
+    {% trans "Please enter your current PIN in order to make these changes." %}
   </div></div>
   <div class="content">
     <dl>
@@ -130,7 +132,7 @@
 {% endif %}
 
 <p style="text-align:center">
-  <input type="submit" value="Submit"/>
+  <input type="submit" value="{% trans "Submit" %}"/>
 </p>
 </form>
 

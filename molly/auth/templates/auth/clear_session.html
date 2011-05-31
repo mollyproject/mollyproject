@@ -1,4 +1,4 @@
-{% extends "auth/secure.html" %}
+{% extends "auth/secure.html" %}{% load i18n %}
 
 {% block content %}
 
@@ -7,13 +7,13 @@
 
 <div class="section">
   <div class="header">
-    <h2>Clear session</h2>
-    <p>Clearing your session will make all your authenticated services unavailable from this phone.</p>
-    <p>If you are signed into WebAuth, you may wish to close your browser.</p>
+    <h2>{% trans "Clear session" %}</h2>
+    <p>{% trans "Clearing your session will make all your authenticated services unavailable from this phone." %}</p>
+    <p>{% trans "If you are signed into any external services, you may wish to close your browser." %}</p>
   </div>
   <div class="section-content">
     <p style="text-align:center">
-      <input type="submit" value="Clear session"/>
+      <input type="submit" value="{% trans "Clear session" %}"/>
     </p>
   </div>
 </div>

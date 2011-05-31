@@ -1,46 +1,55 @@
-{% extends "auth/secure.html" %}
+{% extends "auth/secure.html" %}{% load i18n %}
 
 {% block content %}
 
 <div class="section">
   <div class="header">
-    <h2>There was an error</h2>
+    <h2>{% trans "There was an error" %}</h2>
   </div>
   
   <div class="section-content">
+{% url home:index as home_url %}
 {% ifequal error "oauth_problem" %}
   {% ifequal oauth_problem "permission_denied" %}
-    You did not give {{ site_name }} permission to access your data held with
-    {{ service_name }}. You may <a href=".?skip_interstitial=true">try again</a>, go
-    <a href="{{ breadcrumbs.1.1 }}" title="{{ breadcrumbs.1.0 }}">back to the
-    {{ service_name }} page</a>, or back to the
-    <a href="{% url home:index %}">{{ site_name }} homepage</a>.
+    {% blocktrans with breadcrumbs.1.1 as last_url and breadcrumbs.1.0 as last_page %}
+      You did not give {{ site_name }} permission to access your data held with
+      {{ service_name }}. You may <a href=".?skip_interstitial=true">try again</a>, go
+      <a href="{{ last_url }}" title="{{ last_page }}">back to the
+      {{ service_name }} page</a>, or back to the
+      <a href="{{ home_url }}">{{ site_name }} homepage</a>.
+    {% endblocktrans %}
   {% else %}
     {% ifequal oauth_problem "token_expired" %}
       {% ifequal token_type "access" %}
-      {{ site_name }} was unable to access your data held with {{ service_name }},
-      most likely because you have revoked permission from within
-      {{ service_name }}. If you'd still like to access {{ service_name }} from
-      {{ site_name }} <a href=".?skip_interstitial=true">renew {{ site_name }}'s permissions</a>.
-      Alternatively, you can go
-      <a href="{{ breadcrumbs.1.1 }}" title="{{ breadcrumbs.1.0 }}">back to the
-      {{ service_name }} page</a>, or back to the
-      <a href="{% url home:index %}">{{ site_name }} homepage</a>.
+        {% blocktrans with breadcrumbs.1.1 as last_url and breadcrumbs.1.0 as last_page %}
+          {{ site_name }} was unable to access your data held with {{ service_name }},
+          most likely because you have revoked permission from within
+          {{ service_name }}. If you'd still like to access {{ service_name }} from
+          {{ site_name }} <a href=".?skip_interstitial=true">renew {{ site_name }}'s permissions</a>.
+          Alternatively, you can go
+          <a href="{{ last_url }}" title="{{ last_page }}">back to the
+          {{ service_name }} page</a>, or back to the
+          <a href="{{ home_url }}">{{ site_name }} homepage</a>.
+        {% endblocktrans %}
       {% else %}
-      There was an unexpected error. You can <a href=".?skip_interstitial=true">try again</a>, go
-      <a href="{{ breadcrumbs.1.1 }}" title="{{ breadcrumbs.1.0 }}">back to the
-      {{ service_name }} page</a>, or back to the
-      <a href="{% url home:index %}">{{ site_name }} homepage</a>.
+        {% blocktrans with breadcrumbs.1.1 as last_url and breadcrumbs.1.0 as last_page %}
+          There was an unexpected error. You can <a href=".?skip_interstitial=true">try again</a>, go
+          <a href="{{ last_url }}" title="{{ last_page }}">back to the
+          {{ service_name }} page</a>, or back to the
+          <a href="{{ home_url }}">{{ site_name }} homepage</a>.
+        {% endblocktrans %}
       {% endifequal %}
     {% else %}
       
     {% endifequal %}
   {% endifequal %}
 {% else %}
+  {% blocktrans with breadcrumbs.1.1 as last_url and breadcrumbs.1.0 as last_page %}
     There was an unexpected error. You can <a href=".?skip_interstitial=true">try again</a>, go
-    <a href="{{ breadcrumbs.1.1 }}" title="{{ breadcrumbs.1.0 }}">back to the
+    <a href="{{ last_url }}" title="{{ last_page }}">back to the
     {{ service_name }} page</a>, or back to the
-    <a href="{% url home:index %}">{{ site_name }} homepage</a>.
+    <a href="{{ home_url }}">{{ site_name }} homepage</a>.
+  {% endblocktrans %}
 {% endifequal %}
   </div>
 </div>
