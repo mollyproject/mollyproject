@@ -1,3 +1,4 @@
+{% load i18n %}
 <div class="vote-box" style="float:right">
   <form method="post" action="{% url feature_vote:index %}">
     {% csrf_token %}
