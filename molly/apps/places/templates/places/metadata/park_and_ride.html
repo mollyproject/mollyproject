@@ -1,18 +1,21 @@
+{% load i18n %}
 {% if entity.metadata.park_and_ride %}
 <div class="section">
   <div class="header">
-    <h2>Car Park Information</h2>
+    <h2>{% trans "Car Park Information" %}</h2>
   </div>
   <div class="section-content">
     <div class="bubble pad-5 park-and-ride">
       {% if not entity.metadata.park_and_ride.unavailable %}
-      Spaces: {{ entity.metadata.park_and_ride.spaces }} / {{ entity.metadata.park_and_ride.capacity }}
-      <div class="capacity-bar">
-        <div style="width: {{ entity.metadata.park_and_ride.percentage }}%; height:5px;background-color: #ff0000;">&nbsp;</div>
-      </div>
+	  	{# Translators: As in, car parking spaces #}
+      	{% trans "Spaces" %}: {{ entity.metadata.park_and_ride.spaces }} / {{ entity.metadata.park_and_ride.capacity }}
+      	<div class="capacity-bar">
+        	<div style="width: {{ entity.metadata.park_and_ride.percentage }}%; height:5px;background-color: #ff0000;">&nbsp;</div>
+      	</div>
       {% else %}
-      <p><em>Space information currently unavailable</em></p>
-      <p>Spaces: ? / {{ entity.metadata.park_and_ride.capacity }}</p>
+      	<p><em>{% trans "Space information currently unavailable" %}</em></p>
+	  	{# Translators: As in, car parking spaces #}
+      	<p>{% trans "Spaces" %}: ? / {{ entity.metadata.park_and_ride.capacity }}</p>
       {% endif %}
     </div>
   </div>

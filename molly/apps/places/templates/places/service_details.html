@@ -1,32 +1,44 @@
 {% extends "places/base.html" %}
 {% load molly_utils %}{% load molly_maps %}
-
+{% load i18n %}
 {% block content %}
 
 {% if train_service %}
 <div class="section">
   <div class="header">
-    <h2>Live Train Information
-    {% if train_service.ldb.generatedAt %} - {{ train_service.ldb.generatedAt|date:"H:i:s" }}{% endif %}</h2>
+    <h2>{% trans "Live Train Information" %}
+    {% if train_service.ldb.generatedAt %} - {{ train_service.ldb.generatedAt|localize_utc|date:"SHORT_TIME_FORMAT" }}{% endif %}</h2>
   </div>
   {% if train_service.error %}
   
   <ul class="content-list">
-    <li> There is currently a problem retrieving live departure information from
+    <li>
+	{% blocktrans %}
+	There is currently a problem retrieving live departure information from
     the National Rail web site. Departure information may still be accessed
     <a href="http://pda.ojp.nationalrail.co.uk/en/pj/ldbboard/dep/{{ entity.identifiers.crs }}">directly
-    from their web site</a>.</li>
+    from their web site</a>.
+	{% endblocktrans %}
+	</li>
   </ul>
   
   {% else %}
   
   <ul class="content-list no-round-bottom">
-    <li>Operated by {{ train_service.ldb.operator }}</li>
+    <li>
+	{% blocktrans with train_service.ldb.operator as operator %}
+		Operated by {{ operator }}
+    {% endblocktrans %}
+	</li>
     {% if train_service.ldb.platform %}
-      <li>Calling at platform {{ train_service.ldb.platform }}</li>
+		<li>
+		{% blocktrans with train_service.ldb.platform as platform %}
+			Calling at platform {{ platform }}
+		{% endblocktrans %}
+		</li>
     {% endif %}
     {% if train_service.ldb.disruptionReason %}
-      <li>{{ train_service.ldb.disruptionReason|sanitize_html }}</li>
+		<li>{{ train_service.ldb.disruptionReason|sanitize_html }}</li>
     {% endif %}
     {% if train_service.ldb.overdueMessage %}
       <li>{{ train_service.ldb.overdueMessage|sanitize_html }}</li>
@@ -36,9 +48,9 @@
   <table class="content">
     <thead>
       <tr>
-        <th>Calling Point</th>
-        <th>Scheduled</th>
-        <th>Expected / Actual</th>
+        <th>{% trans "Calling Point" %}</th>
+        <th>{% trans "Scheduled" %}</th>
+        <th>{% trans "Expected / Actual" %}</th>
       </tr>
     </thead>
     <tbody>
@@ -46,13 +58,17 @@
         {% if point.joining %}
           <tr>
             <td colspan="3">
-                <p>This train then merges with a train from {{ point.joining.0.locationName }}</p>
+                <p>
+				{% blocktrans with point.joining.0.locationName as location %}
+                	This train then merges with a train from {{ location }}
+                {% endblocktrans %}
+				</p>
                 <table class="content">
                   <thead>
                     <tr>
-                      <th>Calling Point</th>
-                      <th>Scheduled</th>
-                      <th>Expected / Actual</th>
+                      <th>{% trans "Calling Point" %}</th>
+                      <th>{% trans "Scheduled" %}</th>
+                      <th>{% trans "Expected / Actual" %}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -76,13 +92,17 @@
         {% if point.splitting %}
           <tr>
             <td colspan="3">
-                <p>This train then splits to go to {{ point.splitting.destination }}</p>
+                <p>
+				{% blocktrans with point.splitting.destination as destination %}
+					This train then splits to go to {{ destination }}
+				{% endblocktrans %}
+				</p>
                 <table class="content">
                   <thead>
                     <tr>
-                      <th>Calling Point</th>
-                      <th>Scheduled</th>
-                      <th>Expected / Actual</th>
+                      <th>{% trans "Calling Point" %}</th>
+                      <th>{% trans "Scheduled" %}</th>
+                      <th>{% trans "Expected / Actual" %}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -110,7 +130,7 @@
 {% if map %}
 <div class="section">
     <div class="header">
-        <h2>Map</h2>
+        <h2>{% trans "Map" %}</h2>
     </div>
     <div class="section-content">
     {% render_map map %}
