@@ -15,8 +15,9 @@
     <p>{% trans "If you have any further information, questions or feedback, you can contact us using the feedback button at the bottom of the site." %}
     </p>
     <p id="alt-suggest">
+      {% url home:index as home_url %}
       {% blocktrans %}
-      Alternatively, you can try <a href="{% url home:index %}">returning to the home page</a>.
+      Alternatively, you can try <a href="{{ home_url }}">returning to the home page</a>.
       {% endblocktrans %}
     </p>
     <script type="text/javascript">
