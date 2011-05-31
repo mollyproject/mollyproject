@@ -18,6 +18,12 @@
 <link href="{{ podcast.rss_url }}" type="application/rss+xml" rel="alternate" title="Podcast RSS feed" />
 {% endblock %}
 
+{% comment %}
+	blocklist
+	
+	content
+	    after_encurl - defines any extra parameters after each enclosure URL 
+{% endcomment %}
 {% block content %}
 
 <div class="section">
@@ -56,7 +62,8 @@
     <ul class="link-list round-top" style="margin-top:10px;">
     {% for enc in item.podcastenclosure_set.all %}
       <li style="vertical-align:middle;">
-        <a href="{{ enc.url }}?CAMEFROM=moxacuk" style="vertical-align:middle; font-size:11px">
+	    
+        <a href="{{ enc.url }}{% block after_encurl %}{% endblock %}" style="vertical-align:middle; font-size:11px">
         <img src="{{ STATIC_URL }}site/images/icons/list-{{ enc.medium }}.png" style="vertical-align:middle; margin:2px;" alt="({{ enc.medium }})"/>
           {% if item.duration %}{{ item.duration|humanize_seconds }}, {% endif %}{{ enc.get_mimetype_display|capfirst }}, {{ enc.length|filesizeformat }}
           </a>
