@@ -1,25 +1,25 @@
-{% extends "base.html" %}
+{% extends "base.html" %}{% load i18n %}
 
 {% block content %}
 
 <div class="section">
   <div class="header">
-    <h2>Request details</h2>
-    <p>These are headers you are sending to the site. Formats are inferred from your Accept header.</p>
+    <h2>{% trans "Request details" %}</h2>
+    <p>{% trans "These are headers you are sending to the site. Formats are inferred from your Accept header." %}</p>
   </div>
     
     <table class="content">
       <tbody>
         <tr>
-          <th>User-Agent</th>
+          <th>{% trans "User-Agent" %}</th>
           <td>{{ ua }}</td>
         </tr>
         <tr>
-          <th>Accept</th>
+          <th>{% "Accept" %}</th>
           <td>{{ accept }}</td>
         </tr>
         <tr>
-          <th>Formats</th>
+          <th>{% "Formats" %}</th>
           <td>{{ formats|join:", " }}</td>
       </tbody>
     </table>
@@ -27,26 +27,27 @@
 
 <div class="section">
   <div class="header">
-    <h2>Device details</h2>
-    <p>These details relate to the device the site <em>believes</em> that you are using.</p>
+    <h2>{% trans "Device details" %}</h2>
+    <p>{% trans "These details relate to the device the site <em>believes</em> that you are using." %}</p>
   </div>
     
     <table class="content">
       <tbody>
         <tr>
-          <th>Matched device</th>
+          <th>{% trans "Matched device" %}</th>
           <td>{{ brand_name }} {{ model_name }}</td>
         </tr>
         <tr>
-          <th>Matched UA</th>
+          {# Translators: Matched User-Agent #}
+          <th>{% trans "Matched UA" %}</th>
           <td>{{ matched_ua }}</td>
         </tr>
         <tr>
-          <th>Device identifier</th>
+          <th>{% trans "Device identifier" %}</th>
           <td>{{ id }}</td>
         </tr>
         <tr>
-          <th>Mobile?</th>
+          <th>{% trans "Mobile?" %}</th>
           <td>{{ is_mobile|yesno|capfirst }}</td>
         </tr>
       </tbody>
