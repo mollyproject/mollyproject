@@ -14,9 +14,8 @@
                 <span class="location">
                     {% if geolocation.name %}{{ geolocation.name }}{% else %}{% trans "No location known" %}{% endif %}</span><br/>
                 <span class="location-accuracy">{% if geolocation.accuracy %}
-                    {% blocktrans with geolocation.accuracy|floatformat:"0" as accuracy %}
-                    within approx. {{ accuracy }} m
-                    {% endblocktrans %}{% endif %}</span>
+                    {% blocktrans with geolocation.accuracy|floatformat:"0" as accuracy %}within approx. {{ accuracy }} m{% endblocktrans %}
+                    {% endif %}</span>
             </p>
         </div>
         <div class="alternate-location-box"{% if not geolocation_alternatives %} style="display:none;"{% endif %}>

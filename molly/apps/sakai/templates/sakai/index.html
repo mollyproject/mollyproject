@@ -7,18 +7,12 @@
     </div>
     <div class="section-content">
         {% if user_details.firstName %}
-            {% blocktrans with user_details.firstName as name %}
-                Hello {{ name }}, welcome to mobile WebLearn preview!
-            {% endblocktrans %}
+            {% blocktrans with user_details.firstName as name %}Hello {{ name }}, welcome to mobile WebLearn preview!{% endblocktrans %}
         {% else %}
             {% trans "Hello, welcome to mobile WebLearn preview!" %}
         {% endif %}
         <p></p>
-        <p>{% blocktrans %}
-          You'll see this section expand and improve over time and we would really
-          like to hear what you think, so do drop us a note via the link at the
-          bottom of the page.
-        {% endblocktrans %}</p>
+        <p>{% trans "You'll see this section expand and improve over time and we would really like to hear what you think, so do drop us a note via the link at the bottom of the page." %}</p>
     </div>
 </div>
 

@@ -31,10 +31,8 @@
     {% else %}
       {% if entity.identifiers.naptan %}
 	<h2><small>
-		{% blocktrans with entity.identifiers.naptan as stop_id %}
-			Real-time information from stop {{ stop_id }}
-		{% endblocktrans %}
-		 - <span class="update-time">{% now "SHORT_TIME_FORMAT" %}</span>
+	    {% blocktrans with entity.identifiers.naptan as stop_id %}Real-time information from stop {{ stop_id }}{% endblocktrans %}
+	     - <span class="update-time">{% now "SHORT_TIME_FORMAT" %}</span>
 	</small></h2>
       {% else %}
 	<h2>{% trans "Real-time information" %} - <span class="update-time">{% now "SHORT_TIME_FORMAT" %}</span></h2>
@@ -55,9 +53,7 @@
 	</ul>
 	{% else %}
 	    <div class="note"><div class="bubble">
-			{% blocktrans with entity.primary_type.verbose_name as type_name %}
-				We do not yet have a location for this {{ type_name }}.
-			{% endblocktrans %}
+	      {% blocktrans with entity.primary_type.verbose_name as type_name %}We do not yet have a location for this {{ type_name }}.{% endblocktrans %}
 	    </div></div>
 	{% endif %}
 </div>

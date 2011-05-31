@@ -125,9 +125,7 @@
             
             <dt>{% trans "Status" %}</dt>
             {% if event.startToSignUp and not event.passedDeadline %}
-                <dd>{% blocktrans with event.signupDeadline|from_sakai_timestamp|date:"DATETIME_FORMAT"|lower as signup_deadline %}
-                    Open to sign up until {{ signup_deadline }}
-                {% endblocktrans %}</dd>
+                <dd>{% blocktrans with event.signupDeadline|from_sakai_timestamp|date:"DATETIME_FORMAT"|lower as signup_deadline %}Open to sign up until {{ signup_deadline }}{% endblocktrans %}</dd>
             {% else %}
                 {% if event.passedDeadline and not event.meetingExpired %}
                     <dd>{% trans "Sign up deadline has passed" %}</dd>
@@ -135,9 +133,7 @@
                     {% if event.meetingExpired %}
                         <dd>{% trans "This meeting has already happened!" %}</dd>
                     {% else %}
-                        <dd>{% blocktrans with event.signupBegins|from_sakai_timestamp|date:"DATETIME_FORMAT" as open_time %}
-                            Sign up will open on {{ open_time }}
-                        {% endblocktrans %}</dd>
+                        <dd>{% blocktrans with event.signupBegins|from_sakai_timestamp|date:"DATETIME_FORMAT" as open_time %}Sign up will open on {{ open_time }}{% endblocktrans %}</dd>
                     {% endif %}
                 {% endif %}
             {% endif %}
@@ -156,9 +152,7 @@
                     {{ ts.startTime|from_sakai_timestamp|date:"g:iA"|lower }} - {{ ts.endTime|from_sakai_timestamp|date:"g:iA"|lower }}<br />
     
                     {# max Attendees #}
-                    <small>{% blocktrans with ts|places_left as places_left and ts.maxNoOfAttendees as capacity %}
-                        Places available: {{ places_left }}/{{ capacity }}
-                    {% endblocktrans %}</small><br />
+                    <small>{% blocktrans with ts|places_left as places_left and ts.maxNoOfAttendees as capacity %}Places available: {{ places_left }}/{{ capacity }}{% endblocktrans %}</small><br />
     
                     {# if the sign-up event is set up to display attendee names #}
                     {% if ts.displayAttendees %}
@@ -169,20 +163,12 @@
     
                         {# otherwise #}
                         {% if ts.signedUp and not ts.attendees|length_is:"1" %}
-                            {% blocktrans count ts.attendees|length|add:"-1" as attendee_number %}
-                                You and {{ attendee_number }} other
-                            {% plural %}
-                               You and {{ attendee_number }} others
-                            {% endblocktrans %}
+                            {% blocktrans count ts.attendees|length|add:"-1" as attendee_number %}You and {{ attendee_number }} other{% plural %}You and {{ attendee_number }} others{% endblocktrans %}
                         {% else %}
                             {% if ts.attendees|length_is:"0" %}
                                 {% trans "No one yet" %}
                             {% else %}
-                                {% blocktrans count ts.attendees|length as attendee_number %}
-                                    {{ attendee_number }} attendee
-                                {% plural %}
-                                    {{ attendee_number }} attendees
-                                {% endblocktrans %}
+                                {% blocktrans count ts.attendees|length as attendee_number %}{{ attendee_number }} attendee{% plural %}{{ attendee_number }} attendees{% endblocktrans %}
                             {% endif %}
                         {% endif %}
                     {% endif %}

@@ -34,17 +34,8 @@
       {% if train_station.metadata.ldb.error %}
         <tr>
           <td colspan="{% if train_station.metadata.ldb.platformAvailable %}4{% else %}3{% endif %}">
-            <p>
-              {% trans "There is currently a problem retrieving live departure information from the National Rail web site." %}
-            </p>
-            <p>
-	          {% blocktrans with train_station.identifiers.crs as crs %}
-				Departure information may still be accessed
-	              <a href="http://pda.ojp.nationalrail.co.uk/en/pj/ldbboard/dep/{{ crs }}">directly
-	              from their web site</a>.
-	          {% endblocktrans %}
-              
-            </p>
+            <p>{% trans "There is currently a problem retrieving live departure information from the National Rail web site." %}</p>
+            <p>{% blocktrans with train_station.identifiers.crs as crs %}Departure information may still be accessed<a href="http://pda.ojp.nationalrail.co.uk/en/pj/ldbboard/dep/{{ crs }}">directly from their web site</a>.{% endblocktrans %}</p>
           </td>
         </tr>
       {% else %}

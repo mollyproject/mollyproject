@@ -4,13 +4,9 @@
 
 <div class="bubble pad-10">
     {% if page_title %}
-        <p>{% blocktrans %}
-          The shortened URL for the page <strong>{{ page_title }}</strong>  is:
-        {% endblocktrans %}</p>
+        <p>{% blocktrans %}The shortened URL for the page <strong>{{ page_title }}</strong> is:{% endblocktrans %}</p>
     {% else %}
-        <p>{% blocktrans %}
-          The shortened URL for the page is:
-        {% endblocktrans %}</p>
+        <p>{% blocktrans %}The shortened URL for the page is:{% endblocktrans %}</p>
     {% endif %}
 
   <p style="text-align:center; font-size:150%"><a href="{{ url }}">{{ url }}</a></p>
@@ -32,9 +28,7 @@
 </ul>
 
 
-  <p>{% blocktrans %}
-    You may wish to <a href="{{ path }}">go back to the previous page</a>.
-  {% endblocktrans %}</p>
+  <p><a href="{{ path }}">{% trans "You may wish to go back to the previous page" %}</a>.</p>
 
 {% if use_javascript %}
     <script type="text/javascript">

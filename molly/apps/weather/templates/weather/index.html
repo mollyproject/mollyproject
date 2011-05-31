@@ -9,8 +9,7 @@
 <div class="section">
     <div class="header">
         <h2>{% block location %}{{ observation.name }}{% endblock %}
-	    <small>{% blocktrans with observation.observed_date|date:"H:i" as observation_time %}
-	    at {{ observation_time }}{% endblocktrans %}</small>
+	    <small>{% blocktrans with observation.observed_date|date:"H:i" as observation_time %}at {{ observation_time }}{% endblocktrans %}</small>
 	</h2>
     </div>
     

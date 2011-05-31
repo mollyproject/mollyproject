@@ -54,10 +54,7 @@ class IndexView(BaseView):
         
         if not request.session.get('home:opera_mini_warning', False) \
           and request.browser.mobile_browser == u'Opera Mini':
-            messages.append(_("""Please note that the "Mobile View" on Opera Mini
-                            does not display this site correctly. To ensure
-                            correct operation of this site, ensure "Mobile View"
-                            is set to Off in Opera settings"""))
+            messages.append(_("""Please note that the "Mobile View" on Opera Mini does not display this site correctly. To ensure correct operation of this site, ensure "Mobile View" is set to Off in Opera settings"""))
             request.session['home:opera_mini_warning'] = True
 
         # TODO Add back in messages from the developers 

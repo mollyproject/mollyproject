@@ -23,13 +23,9 @@
       <div class="sakai-error-message">
         <p>
           {% if poll.hasClosed %}
-              {% blocktrans with poll.voteClose|timesince as time_since_closed %}
-                You are unable to vote in this poll as it closed {{ time_since_closed }} ago.
-              {% endblocktrans %}
+              {% blocktrans with poll.voteClose|timesince as time_since_closed %}You are unable to vote in this poll as it closed {{ time_since_closed }} ago.{% endblocktrans %}
           {% else %}
-              {% blocktrans with poll.voteOpen|timeuntil as time_until_open %}
-                This poll has not yet opened. Please try again in {{ time_until_open }}.
-              {% endblocktrans %}
+              {% blocktrans with poll.voteOpen|timeuntil as time_until_open %}This poll has not yet opened. Please try again in {{ time_until_open }}.{% endblocktrans %}
           {% endif %}
         </p>
       </div>

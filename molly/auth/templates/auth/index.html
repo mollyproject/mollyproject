@@ -30,9 +30,7 @@
           <td></td>
 {% else %}
           <td>
-            {% blocktrans with form.instance.last_used|timesince as last_used %}
-              {{ last_used }} ago
-            {% endblocktrans %}
+            {% blocktrans with form.instance.last_used|timesince as last_used %}{{ last_used }} ago{% endblocktrans %}
           </td>
           <td>{{ form.DELETE }}</td>
 {% endifequal %}

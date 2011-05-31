@@ -9,25 +9,24 @@
 
 {% for name, types in entity_types.items %}
 <div class="section">
-<div class="header">
-  <h2>{{ name }}</h2>
-</div>
-	<ul class="link-list">
-	{% for entity_type in types %}
-		<li>
-		{% if entity %}
-	    	<a href="{% url places:entity-nearby-detail entity.identifier_scheme,entity.identifier_value,entity_type.slug %}">
-		{% else %}
-	    	<a href="{% url places:nearby-detail entity_type.slug %}">
-		{% endif %} 
-		{{ entity_type.verbose_name_plural|capfirst }} 
-		<small>
-		{% blocktrans with entity_type.entities_found as quantity and entity_type.max_distance|round_up_10 as distance %}
-			({{ quantity }} within {{ distance }}m)
-		{% endblocktrans %}
-		</small></a></li>
-	{% endfor %}
-	</ul>
+  <div class="header">
+    <h2>{{ name }}</h2>
+  </div>
+  <ul class="link-list">
+    {% for entity_type in types %}
+      <li>
+	{% if entity %}
+	  <a href="{% url places:entity-nearby-detail entity.identifier_scheme,entity.identifier_value,entity_type.slug %}">
+	{% else %}
+	  <a href="{% url places:nearby-detail entity_type.slug %}">
+	{% endif %} 
+	{{ entity_type.verbose_name_plural|capfirst }} 
+	<small>
+	  {% blocktrans with entity_type.entities_found as quantity and entity_type.max_distance|round_up_10 as distance %}({{ quantity }} within {{ distance }}m){% endblocktrans %}
+	</small></a>
+      </li>
+    {% endfor %}
+  </ul>
 </div>
 {% endfor %}
 

@@ -16,9 +16,7 @@
     </p>
     <p id="alt-suggest">
       {% url home:index as home_url %}
-      {% blocktrans %}
-      Alternatively, you can try <a href="{{ home_url }}">returning to the home page</a>.
-      {% endblocktrans %}
+      {% blocktrans %}Alternatively, you can try <a href="{{ home_url }}">returning to the home page</a>.{% endblocktrans %}
     </p>
     <script type="text/javascript">
         suggest = document.getElementById('alt-suggest');

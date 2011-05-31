@@ -6,13 +6,11 @@
   <div class="header">
     <h2>{{ feature.title }}</h2>
     {% include "feature_vote/vote.html" %}
- <p style="margin-top:0;">
-	<small>
-		{% blocktrans with feature.user_name as user_name feature.created|timesince as timesince_created %}
-			Suggested by {{ user_name }}; added {{ timesince_created }} ago
-		{% endblocktrans %}
-	</small>
- </p>
+  <p style="margin-top:0;">
+    <small>
+        {% blocktrans with feature.user_name as user_name feature.created|timesince as timesince_created %}Suggested by {{ user_name }}; added {{ timesince_created }} ago{% endblocktrans %}
+    </small>
+  </p>
 
     <p>{{ feature.description|linebreaksbr }}</p>
   </div>
@@ -21,23 +19,18 @@
 {% if comments %}
 
   <ul class="content-list">
-	{% for comment in comments %}
-    <li{% if comment.user.is_superuser %} class="superuser-comment"{% endif %}>
-    <h3>
-	{% if comment.user.is_superuser %}
-		{% blocktrans with comment.user_name as username comment.submit_date|timesince as timesince %}
-		Posted by {{ user_name }} ({{ site_name }} team member) {{ timesince }} ago
-		{% endblocktrans %}
-	{% else %}
-		{% blocktrans with comment.user_name as username comment.submit_date|timesince as timesince %}
-		Posted by {{ user_name }} {{ timesince }} ago
-		{% endblocktrans %}
-	{% endblock %}}
-	{% endif %}
-	</h3>
-      <p>{{ comment.comment|linebreaksbr }}</p>
-    </li>
-	{% endfor %}
+    {% for comment in comments %}
+        <li{% if comment.user.is_superuser %} class="superuser-comment"{% endif %}>
+            <h3>
+                {% if comment.user.is_superuser %}
+                    {% blocktrans with comment.user_name as username comment.submit_date|timesince as timesince %}Posted by {{ user_name }} ({{ site_name }} team member) {{ timesince }} ago{% endblocktrans %}
+                {% else %}
+                    {% blocktrans with comment.user_name as username comment.submit_date|timesince as timesince %}Posted by {{ user_name }} {{ timesince }} ago{% endblocktrans %}
+                {% endif %}
+            </h3>
+            <p>{{ comment.comment|linebreaksbr }}</p>
+        </li>
+    {% endfor %}
   </ul>
 
 {% else %}

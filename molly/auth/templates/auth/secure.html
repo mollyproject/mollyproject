@@ -8,11 +8,7 @@
       <div style="background-image:url('{{ STATIC_URL }}auth/images/padlock.png'); background-repeat:no-repeat; background-position:left center; padding-left:28px"> 
   <a style="padding:5px 1px;" href="{% url auth:index %}">{% trans "Security preferences" %}</a>
   <a style="padding:5px 1px;" href="{% url auth:clear-session %}?return_url={{ full_path }}" rel="nofollow">{% trans "Clear secure session" %}</a><br/>
-  {% blocktrans with user|externalservicetoken_count as number_services count user.usersession_set.all.count as number_devices %}
-    {{ number_services }} accessible from {{ number_devices }} device.
-  {% plural %}
-    {{ number_services }} accessible from {{ number_devices }} devices.
-  {% endblocktrans %}
+  {% blocktrans with user|externalservicetoken_count as number_services count user.usersession_set.all.count as number_devices %}{{ number_services }} accessible from {{ number_devices }} device.{% plural %}{{ number_services }} accessible from {{ number_devices }} devices.{% endblocktrans %}
   <a style="padding:5px 1px;" href="{% url auth:index %}">{% trans "Change" %}</a>
   </div></div>
   </div>

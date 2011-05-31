@@ -6,10 +6,8 @@
   <h2>{% trans "Location required" %}</h2>
 
   <div class="note"><div class="bubble pad-10">
-  {% url geolocation:index as geolocation_url %}
-  {% blocktrans with return_url|urlencode as return_url %}
-    To be able to use this feature you need to <a href="{{ geolocation_url }}?return_url={{ return_url }}">choose a location</a>.
-  {% endblocktrans %}
+    {% url geolocation:index as geolocation_url %}
+    {% blocktrans with return_url|urlencode as return_url %}To be able to use this feature you need to <a href="{{ geolocation_url }}?return_url={{ return_url }}">choose a location</a>.{% endblocktrans %}
   </div></div>
 </div>
 

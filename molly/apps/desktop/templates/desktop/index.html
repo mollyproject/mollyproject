@@ -230,62 +230,37 @@ img.shadow {
 		<img class="brandmark" src="{{ STATIC_URL }}desktop/images/brandmark.gif" width="115" height="115" alt="University of Oxford" />
 	</div>
 	<div class="prepend-1 span-42 append-1 last">
-		<div class="blurb">
+	    <div class="blurb">
 		<div class="introduction">
-		<div class="prepend-1 span-15">
+		    <div class="prepend-1 span-15">
 
-		<h2>{% trans "A wealth of information from across the University and City." %}</h2>
+			<h2>{% trans "A wealth of information from across the University and City." %}</h2>
+    
+			<p style="margin-bottom: 4px;">
+			    {% blocktrans %}Whoever you are, {{ site_name }} is your central guide to help you do your day-to-day tasks. Whether it's <a href="#library">finding a library book</a>, <a href="#bus">checking the next bus</a> or even finding <a href="#places">what time the nearest post box is collected</a> {{ site_name }} is for you.{% endblocktrans %}
+			</p>
 
-		<p style="margin-bottom: 4px;">
-			{% blocktrans  %}
-			Whoever you are, {{ site_name }} is your central guide to help you do your day-to-day tasks. Whether 
-		it's <a href="#library">finding a library book</a>, <a href="#bus">checking
-		the next bus</a> or even finding <a href="#places">what time
-		the nearest post box is collected</a> {{ site_name }} is for you.
-			{% endblocktrans %}
-		</p>
+			<div class="accessing" style="font-size:1.2em; margin-bottom: 4px;">
+				<p><a href="#features">
+				{% blocktrans %}Discover {{ site_name }}'s features{% endblocktrans %}</a></p>
+			</div>
 
-		<div class="accessing" style="font-size:1.2em; margin-bottom: 4px;">
-			<p><a href="#features">
-			{% blocktrans %}
-			Discover {{ site_name }}'s features
-			{% endblocktrans %}</a></p>
-		</div>
+			<h2>{% trans "You do not need a fancy phone" %}</h2>
+			<p>{% blocktrans %}A device with a web browser is all you need to be able to use most of the features below. Of course if you're lucky enough to own a smartphone you can use more advanced features like your GPS.{% endblocktrans %}</p>
 
-		<h2>{% trans "You do not need a fancy phone" %}</h2>
-		<p>{% blocktrans %}
-			A device with a web browser is all you need to be able to use
-			most of the features below. Of course if you're lucky enough to own a
-			smartphone you can use more advanced features like your GPS.
-		{% endblocktrans %}</p>
-
-		<div class="accessing">
-		<p>
-		{% blocktrans with request.HTTP_HOST as hostname %}
-			Use it now by visiting <br /> 
-			<span class="domain-link"><a class="preview-link" href="/?preview=true">
-			{{ hostname }}
-			</a></span><br />
-			using your mobile device's web browser, 
-			<a class="preview-link" href="/?preview=true">
-			preview on your computer
-			</a>
-			or click on and scan a 2D barcode below 
-			<br/>
-		{% endblocktrans %}
-		{# URLS to 2D barcodes #}
-		<a class="lightbox"
-			href="{{ STATIC_URL }}desktop/images/barcodes/qrcode.png" title="QR Code"> <img
-			src="{{ STATIC_URL }}desktop/images/barcodes/qrcode-small.png" alt="QR Code" /></a> <a
-			class="lightbox" href="{{ STATIC_URL }}desktop/images/barcodes/datamatrix.png"
-			title="DataMatrix Code"> <img
-			src="{{ STATIC_URL }}desktop/images/barcodes/datamatrix-small.png"
-			alt="DataMatrix Code" /></a> <a class="lightbox"
-			href="{{ STATIC_URL }}desktop/images/barcodes/mstag.png" title="Microsoft Tag"> <img
-			src="{{ STATIC_URL }}desktop/images/barcodes/mstag-small.png" alt="Microsoft Tag" /></a>
-		</p>
-		</div>
-		</div>
+			<div class="accessing">
+			    <p>
+				{% blocktrans with request.HTTP_HOST as hostname %}Use it now by visiting <br /><span class="domain-link"><a class="preview-link" href="/?preview=true">{{ hostname }}</a></span><br />using your mobile device's web browser, <a class="preview-link" href="/?preview=true">preview on your computer</a>or click on and scan a 2D barcode below {% endblocktrans %}<br/>
+				{# URLS to 2D barcodes #}
+				<a class="lightbox" href="{{ STATIC_URL }}desktop/images/barcodes/qrcode.png" title="QR Code">
+				    <img src="{{ STATIC_URL }}desktop/images/barcodes/qrcode-small.png" alt="QR Code" /></a>
+				<a class="lightbox" href="{{ STATIC_URL }}desktop/images/barcodes/datamatrix.png" title="DataMatrix Code">
+				    <img src="{{ STATIC_URL }}desktop/images/barcodes/datamatrix-small.png" alt="DataMatrix Code" /></a>
+				<a class="lightbox" href="{{ STATIC_URL }}desktop/images/barcodes/mstag.png" title="Microsoft Tag">
+				    <img src="{{ STATIC_URL }}desktop/images/barcodes/mstag-small.png" alt="Microsoft Tag" /></a>
+			    </p>
+			</div>
+		    </div>
 		</div>
 
 		<div class="span-24 append-1 last align-center"><img
@@ -294,7 +269,7 @@ img.shadow {
 		</div>
 
 		<div class="prepend-1 span-40 append-1 last prepend-top">
-		<hr />
+		    <hr />
 		</div>
 
 		<div class="prepend-1 span-23 colborder">
@@ -450,9 +425,7 @@ img.shadow {
 	<div class="span-14 last">
 	<h2>{% trans "Contact or help out" %}</h2>
 	<p>
-	{% blocktrans %}
-		There are many ways you can get involved with {{ site_name }}.
-	{% endblocktrans %}
+	{% blocktrans %}There are many ways you can get involved with {{ site_name }}.{% endblocktrans %}
 	</p>
 	<dl>
 	    <dt>{% trans "Email feedback:" %}</dt>
@@ -461,8 +434,8 @@ img.shadow {
 		</dd>
 	    <dt>{% trans "Suggest new features:" %}</dt>
 	    <dd><a href="http://{{ request.HOST_NAME }}/feature-suggestions/">Our mobile feature suggestion page (optimised for mobile devices)</a></dd>
-	    <dt>{% trans "Join the Open Street Map community" %}</dt>
-	    <dd><a href="http://wiki.openstreetmap.org/wiki/Main_Page">{% trans "and help improve the points of interest and maps of Oxford that we use: http://openstreetmap.org" %}</a></dd>
+	    <dt>{% trans "Join the OpenStreetMap community" %}</dt>
+	    <dd><a href="http://wiki.openstreetmap.org/wiki/Main_Page">{% trans "and help improve the points of interest and maps that we use: http://openstreetmap.org" %}</a></dd>
 	    <dt>{% trans "Help develop our software (the Molly Project)" %}</dt>
 	    <dd><a href="http://mollyproject.org/">http://mollyproject.org/</a></dd>  
 	</dl>

@@ -21,11 +21,7 @@
 </div>
 {% if removed %}
 <div class="note"><div class="bubble pad-10">
-{% blocktrans count removed|length as num_removed %}
-    The following common word was not included in your query:
-{% plural %}
-    The following common words were not included in your query:
-{% endblocktrans %}
+{% blocktrans count removed|length as num_removed %}The following common word was not included in your query:{% plural %}The following common words were not included in your query:{% endblocktrans %}
     {% for w in removed %}{% if forloop.last %}{% if not forloop.first %}and {% endif %}<em>{{ w }}</em>{% else %}<em>{{ w }}</em>, {% endif %}{% endfor %}
 </div></div>
 {% endif %}
@@ -37,9 +33,7 @@
         {% trans "Previous" %}</a>
 {% endif %}
 
-{% blocktrans with page.start_index as first_result and page.end_index as last_result and results.object_list|length as num_results and page.number as page_number and results.num_pages as number_of_pages %}
-    Showing results {{ first_result }} to <span class="result-number">{{ last_result }}</span> of {{ num_results }}. Page <span class="current-page">{{ page_number }}</span> of {{ number_of_pages }}.
-{% endblocktrans %}
+{% blocktrans with page.start_index as first_result and page.end_index as last_result and results.object_list|length as num_results and page.number as page_number and results.num_pages as number_of_pages %}Showing results {{ first_result }} to <span class="result-number">{{ last_result }}</span> of {{ num_results }}. Page <span class="current-page">{{ page_number }}</span> of {{ number_of_pages }}.{% endblocktrans %}
 {% if page.has_next %}
     <a href="?title={{ search_form.cleaned_data.title|urlencode }}&author={{ search_form.cleaned_data.author|urlencode }}&isbn={{ search_form.cleaned_data.isbn|urlencode }}&page={{ page.next_page_number }}" title="{% trans "Next page" %}" class="next">
         {% trans "Next" %}
@@ -68,9 +62,7 @@
         {% trans "Previous" %}</a>
 {% endif %}
 
-{% blocktrans with page.start_index as first_result and page.end_index as last_result and results.object_list|length as num_results and page.number as page_number and results.num_pages as number_of_pages %}
-    Showing results {{ first_result }} to <span class="result-number">{{ last_result }}</span> of {{ num_results }}. Page <span class="current-page">{{ page_number }}</span> of {{ number_of_pages }}.
-{% endblocktrans %}
+{% blocktrans with page.start_index as first_result and page.end_index as last_result and results.object_list|length as num_results and page.number as page_number and results.num_pages as number_of_pages %}Showing results {{ first_result }} to <span class="result-number">{{ last_result }}</span> of {{ num_results }}. Page <span class="current-page">{{ page_number }}</span> of {{ number_of_pages }}.{% endblocktrans %}
 {% if page.has_next %}
     <a href="?title={{ search_form.cleaned_data.title|urlencode }}&author={{ search_form.cleaned_data.author|urlencode }}&isbn={{ search_form.cleaned_data.isbn|urlencode }}&page={{ page.next_page_number }}" title="{% trans "Next page" %}" class="next">
         {% trans "Next" %}

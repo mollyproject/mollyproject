@@ -25,13 +25,9 @@
                 <td>{{ poll.text }}</td>
                 <td>
                   {% if poll.hasOpened %}
-                      {% blocktrans with poll.voteClose|timeuntil as timeuntilclose %}
-                        Closes in <strong>{{ timeuntilclose }}</strong>.
-                      {% endblocktrans %}
+                      {% blocktrans with poll.voteClose|timeuntil as timeuntilclose %}Closes in <strong>{{ timeuntilclose }}</strong>.{% endblocktrans %}
                   {% else %}
-                      {% blocktrans with poll.voteOpen|timeuntil as time_until_open and poll.voteClose|timeuntil:poll.voteOpen as time_open %}
-                        Opens in <strong>{{ time_until_open }}</strong> for <strong>{{ time_open }}</strong>.
-                      {% endblocktrans %}
+                      {% blocktrans with poll.voteOpen|timeuntil as time_until_open and poll.voteClose|timeuntil:poll.voteOpen as time_open %}Opens in <strong>{{ time_until_open }}</strong> for <strong>{{ time_open }}</strong>.{% endblocktrans %}
                   {% endif %}
                 </td>
                 <td>

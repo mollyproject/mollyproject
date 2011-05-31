@@ -22,9 +22,7 @@
             {{ evaluation.title }}<br/>
             <small>
                 <em>{{ evaluation.status }}</em><br/>
-                {% blocktrans with evaluation.site as sitename and evaluation.start as start and evaluation.end as end %}
-                    {{ sitename }}, open from {{ start }} until {{ end }}
-                {% endblocktrans %}
+                {% blocktrans with evaluation.site as sitename and evaluation.start as start and evaluation.end as end %}{{ sitename }}, open from {{ start }} until {{ end }}{% endblocktrans %}
             </small>
         {% if evaluation.id %}
           </a>
