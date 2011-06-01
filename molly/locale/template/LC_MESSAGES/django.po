@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-01 10:43+0100\n"
+"POT-Creation-Date: 2011-06-01 11:17+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,8 +30,8 @@ msgstr ""
 #: apps/desktop/templates/desktop/index.html:337
 #: apps/feeds/templates/feeds/events/index.html:19
 #: apps/feeds/templates/feeds/news/index.html:19
-#: apps/home/templates/home/index.html:60
-#: apps/home/templates/home/index.html:63
+#: apps/home/templates/home/index.html:59
+#: apps/home/templates/home/index.html:62
 #: apps/library/templates/library/search_form.html:15
 #: apps/places/templates/places/index.html:19
 #: apps/podcasts/templates/podcasts/index.html:41 apps/search/forms.py:33
@@ -162,7 +162,7 @@ msgid "River Flag Status"
 msgstr ""
 
 #: apps/desktop/templates/desktop/index.html:338
-#: apps/service_status/views.py:18 apps/service_status/views.py:25
+#: apps/service_status/views.py:25
 msgid "Service Status"
 msgstr ""
 
@@ -2715,6 +2715,10 @@ msgstr ""
 
 #: apps/search/templates/search/index.html:55
 msgid "Sorry, your search returned no results."
+msgstr ""
+
+#: apps/service_status/views.py:18
+msgid "Service status"
 msgstr ""
 
 #: apps/service_status/views.py:19
