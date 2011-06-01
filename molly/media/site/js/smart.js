@@ -7,9 +7,6 @@ var current_url = window.location.pathname + window.location.search;
  */
 history.navigationMode = 'compatible';
 
-// Have to put strings here because Django's makemessages is broken
-gettext('Error loading page - please try again.')
-
 function to_absolute(url) {
     if (url.match(/https?\:\/\//)) {
         return url;

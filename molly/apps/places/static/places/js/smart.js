@@ -226,10 +226,6 @@ function rebuildLDB(elem, data){
         board = 'departures'
     }
     
-    /* dummy text to make sure boards get correctly picked up for translation */
-    gettext('arrivals')
-    gettext('departures')
-    
     if (data.train_station.metadata.ldb.error) {
         elem.append('<div class="header"><h2>' + data.train_station.title + ' (' + gettext(board) + ')</h2></div>');
     } else {
@@ -271,7 +267,7 @@ function rebuildLDB(elem, data){
     tbody = elem.find('.content tbody')
     if (data.train_station.metadata.ldb.error) {
         tbody.append('<tr><td colspan="' + cols + '"><p>' + gettext('There is currently a problem retrieving live departure information from the National Rail web site.') + '</p>' +
-                     '<p>' + gettext('Departure information may still be accessed <a href="http://pda.ojp.nationalrail.co.uk/en/pj/ldbboard/dep/' +  data.train_station.identifiers.crs + '"> directly from their web site</a>.') + '</p></td></tr>')
+                     '<p>' + gettext('Departure information may still be accessed <a href="http://pda.ojp.nationalrail.co.uk/"> directly from their web site</a>.') + '</p></td></tr>')
     }
     if (data.train_station.metadata.ldb.trainServices) {
         for (var i in data.train_station.metadata.ldb.trainServices.service) {

@@ -548,7 +548,7 @@ var geo_position_js=function() {
                                             onFailure: function(e){
                                                                 if (e.errorCode==1)
                                                                 {
-                                                                        errorCallback({code:3,message:gettext("Timeout")});
+                                                                        errorCallback({code:3,message:gettext("Timeout error")});
                                                                 }
                                                                 else if (e.errorCode==2)
                                                                 {
