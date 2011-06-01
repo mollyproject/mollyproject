@@ -38,7 +38,7 @@
         <tr>
 {% if forloop.first %}
             <th{% ifnotequal item.isbns|length 1 %} rowspan="{{ item.isbns|length }}"{% endifnotequal %}>
-                {% blocktrans item.isbns|length %}ISBN{% plural %}ISBNs{% endblocktrans %}:</th>
+                {% blocktrans count item.isbns|length as count %}ISBN{% plural %}ISBNs{% endblocktrans %}:</th>
 {% endif %}
             <td>{{ isbn }}</td>
         </tr>
@@ -50,7 +50,7 @@
         <tr>
 {% if forloop.first %}
             <th{% ifnotequal item.issns|length 1 %} rowspan="{{ item.issns|length }}"{% endifnotequal %}>
-                {% blocktrans item.issns|length %}ISSN{% plural %}ISSNs{% endblocktrans %}:</th>
+                {% blocktrans count item.issns|length as count %}ISSN{% plural %}ISSNs{% endblocktrans %}:</th>
 {% endif %}
             <td>{{ issn }}</td>
         </tr>

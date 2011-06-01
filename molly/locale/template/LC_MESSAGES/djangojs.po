@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-01 10:25+0100\n"
+"POT-Creation-Date: 2011-06-01 12:32+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -33,22 +33,20 @@ msgstr ""
 msgid "Libraries"
 msgstr ""
 
-#: apps/places/static/places/js/smart.js:116
-msgid "%(entities_found)d within %(distance)dm"
+#: apps/places/static/places/js/smart.js:138
+msgid "%(entitiesfound)s within %(distance)sm"
 msgstr ""
 
 #: apps/transport/static/transport/js/smart.js:16
 msgid "Space information currently unavailable"
 msgstr ""
 
-#. Translators: Spaces: Free spaces / Capactity
 #: apps/transport/static/transport/js/smart.js:22
-msgid "Spaces: %(spaces)d / %(capacity)d"
+msgid "Spaces: %(spaces)s / %(capacity)s"
 msgstr ""
 
-#. Translators: e.g., about 100 metres NW
 #: apps/transport/static/transport/js/smart.js:50
-msgid "about %(distance)d %(bearing)s"
+msgid "about %(distance)s %(bearing)s"
 msgstr ""
 
 #: geolocation/static/geolocation/js/smart.js:4
@@ -63,7 +61,6 @@ msgstr ""
 msgid "Please wait while we attempt to determine your location&hellip;"
 msgstr ""
 
-#. Translators: Examples of what can be entered into the 'Set location' field, e.g., postcode, partial match, street name
 #: geolocation/static/geolocation/js/smart.js:109
 #: geolocation/static/geolocation/js/smart.js:116
 msgid "e.g., OX2 6NN, kebl, St Clements"
@@ -78,7 +75,7 @@ msgid "Add as favourite"
 msgstr ""
 
 #: geolocation/static/geolocation/js/smart.js:222
-msgid "within approx. %(accuracy)dm"
+msgid "within approx. %(accuracy)sm"
 msgstr ""
 
 #: geolocation/static/geolocation/js/smart.js:230
@@ -117,4 +114,8 @@ msgstr ""
 
 #: geolocation/static/geolocation/js/smart.js:554
 msgid "Unknown Error"
+msgstr ""
+
+#: media/site/js/smart.js:10
+msgid "Error loading page - please try again."
 msgstr ""

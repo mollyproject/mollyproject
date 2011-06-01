@@ -2,7 +2,7 @@
 {% load i18n %}
 <div class="section" id="ldb">
   <div class="header">
-    <h2>{{ train_station.title }} ({% if board %}{% trans board %}{% else %}{% trans "departures" %}{% endif %}) - {{ train_station.metadata.ldb.generatedAt|localize_utc|date:"SHORT_TIME_FORMAT" }}</h2>
+    <h2>{{ train_station.title }} ({% if board %}{% trans board %}{% else %}{% trans "departures" %}{% endif %}) - {{ train_station.metadata.ldb.generatedAt|localize_utc|date:"H:i:s" }}</h2>
   </div>
   
   {% if train_station.metadata.ldb.nrccMessages.message %}

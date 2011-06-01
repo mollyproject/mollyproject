@@ -32,10 +32,10 @@
       {% if entity.identifiers.naptan %}
 	<h2><small>
 	    {% blocktrans with entity.identifiers.naptan as stop_id %}Real-time information from stop {{ stop_id }}{% endblocktrans %}
-	     - <span class="update-time">{% now "SHORT_TIME_FORMAT" %}</span>
+	     - <span class="update-time">{% now "H:i:s" %}</span>
 	</small></h2>
       {% else %}
-	<h2>{% trans "Real-time information" %} - <span class="update-time">{% now "SHORT_TIME_FORMAT" %}</span></h2>
+	<h2>{% trans "Real-time information" %} - <span class="update-time">{% now "H:i:s" %}</span></h2>
       {% endif %}
     {% endif %}
  </div>

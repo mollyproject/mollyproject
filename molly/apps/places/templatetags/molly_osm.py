@@ -1,73 +1,58 @@
 from xml.sax.saxutils import escape as xml_escape
 from django import template
 from django.utils.safestring import mark_safe
+from django.utils.translation import ugettext as _
 
 register = template.Library()
 
 def yesno(s):
-    return {'yes':'Yes','no':'No', 'true':'Yes', 'false':'No'}.get(s.lower())
+    return {
+        'yes': _('Yes'),
+        'no': _('No'),
+        'true': _('Yes'),
+        'false': _('No')
+        }.get(s.lower())
+
 def verbatim(name):
-    return lambda t,s,tags: (name, s)
+    return lambda t,s,tags: (name, _(s))
 
 def tag_wifi(t, s, tags):
-    return 'wi-fi access', yesno(s)
+    return _('wi-fi access'), yesno(s)
     
 def tag_atm(t, s, tags):
-    return 'has ATM', yesno(s)
+    return _('has ATM'), yesno(s)
     
 def tag_food(t, s, tags):
-    return 'serves food', yesno(s) or s
-
-#def tag_phone(t, s, tags):
-#    return 'phone', mark_safe('<a href="tel:%s">%s</a>' % (
-#        ''.join(c for c in s if c in '0123456789+'),
-#        s.replace('+44-', '0').replace('-', ' '),
-#    ))
+    return _('serves food'), yesno(s) or s
     
 def tag_opening_hours(t, s, tags):
-    return 'opening hours', s
-#    try:
-#        r = [d.split(' ') for d in s.split('; ')]
-#        
-#    return 
+    return _('opening hours'), s
 
 def tag_collection_times(t, s, tags):
-    return 'collection times', s
+    return _('collection times'), s
 
 def tag_capacity(t, s, tags):
     try:
-        return 'capacity', int(s)
+        return _('capacity'), int(s)
     except:
         return None
 
 def tag_cuisine(t, s, tags):
     try:
-        cuisines = [w.capitalize().replace('_', ' ') for w in s.split(';')]
+        cuisines = [_(w.capitalize().replace('_', ' ')) for w in s.split(';')]
         if len(cuisines) == 1:
-            return 'cuisine', ', '.join(cuisines)
+            return _('cuisine'), ', '.join(cuisines)
         else:
-            return 'cuisines', ', '.join(cuisines)
+            return _('cuisines'), ', '.join(cuisines)
     except:
         return None
 
-#def tag_url(t, s, tags):
-#    title = tags.get('url:title', s)
-#    return "URL", mark_safe('<a href="%s">%s</a>' % (xml_escape(s), xml_escape(title)))
-#def tag_website(t, s, tags):
-#    title = tags.get('website:title', s)
-#    return "Website", mark_safe('<a href="%s">%s</a>' % (xml_escape(s), xml_escape(title)))
-
-#def tag_wikipedia(t, s, tags):
-#    if s.startswith("http://en.wikipedia.org/wiki/"):
-#        s = s[29:]
-#    return "Wikipedia article", mark_safe('<a href="http://en.m.wikipedia.org/wiki/%s">%s</a>' % (xml_escape(s), xml_escape(tags.get('wikipedia:title', s.replace("_", " ")))))
-
-tag_operator = verbatim('operator')
-tag_note = verbatim('note')
+tag_operator = verbatim(_('operator'))
+tag_note = verbatim(_('note'))
     
 def tag_dispensing(t, s, tags):
     if t == 'pharmacy':
-        return 'dispensing', yesno(s)
+        return _('dispensing'), yesno(s)
 
 TAGS, funcs = {}, locals().copy()
 for func_name in funcs:

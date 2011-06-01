@@ -220,7 +220,7 @@ function locationFound(data) {
   if (data.name) {
     $('.location').html(data.name)
     locationName = data.name
-    var within = interpolate(gettext('within approx. %(accuracy)dm'),
+    var within = interpolate(gettext('within approx. %(accuracy)sm'),
                              { accuracy: Math.round(data.accuracy) }, true);
     $('.location-accuracy').html(within)
     $('.location-accuracy').show()

@@ -19,7 +19,7 @@ function refreshTransport(data){
                 spaces = entity.metadata.park_and_ride.spaces.toString()
             }
             // Translators: Spaces: Free spaces / Capactity
-            var spaces = interpolate(gettext('Spaces: %(spaces)d / %(capacity)d'),
+            var spaces = interpolate(gettext('Spaces: %(spaces)s / %(capacity)s'),
                                      { spaces: spaces,
                                        capacity: entity.metadata.park_and_ride.capacity },
                                      true)
@@ -47,7 +47,7 @@ function refreshTransport(data){
             tbody.append('<tr class="sub-section-divider"><th colspan="3"><a href="' + entity._url  + '" style="color:inherit;">' + entity.title + '</a></th></tr>')
             if (entity.distance) {
                 // Translators: e.g., about 100 metres NW
-                var about = interpolate(gettext('about %(distance)d %(bearing)s'),
+                var about = interpolate(gettext('about %(distance)s %(bearing)s'),
                                         { distance: Math.ceil(entity.distance/10)*10,
                                           bearing: entity.bearing }, true)
                 tbody.find('th').append('<small>(' + about + ')</small>')

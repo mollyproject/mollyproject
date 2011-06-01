@@ -7,7 +7,7 @@
 <div class="section">
   <div class="header">
     <h2>{% trans "Live Train Information" %}
-    {% if train_service.ldb.generatedAt %} - {{ train_service.ldb.generatedAt|localize_utc|date:"SHORT_TIME_FORMAT" }}{% endif %}</h2>
+    {% if train_service.ldb.generatedAt %} - {{ train_service.ldb.generatedAt|localize_utc|date:"H:i:s" }}{% endif %}</h2>
   </div>
   {% if train_service.error %}
   

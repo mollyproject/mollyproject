@@ -63,7 +63,7 @@ class EntityType(models.Model):
     
     show_in_nearby_list = models.BooleanField()
     show_in_category_list = models.BooleanField()
-    note = models.TextField(null=True)
+    note = models.TextField(null=True, blank=True)
     category = models.ForeignKey(EntityTypeCategory)
 
     subtype_of = models.ManyToManyField('self', blank=True, symmetrical=False,

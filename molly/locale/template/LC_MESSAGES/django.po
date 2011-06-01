@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-01 11:17+0100\n"
+"POT-Creation-Date: 2011-06-01 12:23+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -644,10 +644,9 @@ msgstr ""
 msgid "unavailable"
 msgstr ""
 
-#. Translators: Unknown podcast medium type
-#: apps/library/models.py:214 apps/podcasts/models.py:103
-#: apps/podcasts/models.py:123 apps/podcasts/models.py:129
-#: apps/podcasts/models.py:132
+#: apps/library/models.py:214 apps/podcasts/models.py:104
+#: apps/podcasts/models.py:126 apps/podcasts/models.py:132
+#: apps/podcasts/models.py:135
 msgid "unknown"
 msgstr ""
 
@@ -2293,83 +2292,137 @@ msgstr ""
 msgid "Status"
 msgstr ""
 
-#: apps/podcasts/models.py:10 apps/podcasts/models.py:125
+#: apps/places/templatetags/molly_osm.py:10
+#: apps/places/templatetags/molly_osm.py:12
+msgid "Yes"
+msgstr ""
+
+#: apps/places/templatetags/molly_osm.py:11
+#: apps/places/templatetags/molly_osm.py:13
+msgid "No"
+msgstr ""
+
+#: apps/places/templatetags/molly_osm.py:20
+msgid "wi-fi access"
+msgstr ""
+
+#: apps/places/templatetags/molly_osm.py:23
+msgid "has ATM"
+msgstr ""
+
+#: apps/places/templatetags/molly_osm.py:26
+msgid "serves food"
+msgstr ""
+
+#: apps/places/templatetags/molly_osm.py:29
+msgid "opening hours"
+msgstr ""
+
+#: apps/places/templatetags/molly_osm.py:32
+msgid "collection times"
+msgstr ""
+
+#: apps/places/templatetags/molly_osm.py:36
+msgid "capacity"
+msgstr ""
+
+#: apps/places/templatetags/molly_osm.py:44
+msgid "cuisine"
+msgstr ""
+
+#: apps/places/templatetags/molly_osm.py:46
+msgid "cuisines"
+msgstr ""
+
+#: apps/places/templatetags/molly_osm.py:50
+msgid "operator"
+msgstr ""
+
+#: apps/places/templatetags/molly_osm.py:51
+msgid "note"
+msgstr ""
+
+#: apps/places/templatetags/molly_osm.py:55
+msgid "dispensing"
+msgstr ""
+
+#: apps/podcasts/models.py:11 apps/podcasts/models.py:128
 #: apps/podcasts/templates/podcasts/category_detail.html:14
 msgid "audio"
 msgstr ""
 
-#: apps/podcasts/models.py:11 apps/podcasts/models.py:118
-#: apps/podcasts/models.py:127
+#: apps/podcasts/models.py:12 apps/podcasts/models.py:121
+#: apps/podcasts/models.py:130
 #: apps/podcasts/templates/podcasts/category_detail.html:15
 msgid "video"
 msgstr ""
 
-#: apps/podcasts/models.py:12 apps/podcasts/models.py:118
+#: apps/podcasts/models.py:13 apps/podcasts/models.py:120
 msgid "document"
 msgstr ""
 
-#: apps/podcasts/models.py:29 apps/podcasts/views.py:53
+#: apps/podcasts/models.py:30 apps/podcasts/views.py:53
 msgid "Podcast category"
 msgstr ""
 
-#: apps/podcasts/models.py:30
+#: apps/podcasts/models.py:31
 msgid "Podcast categories"
 msgstr ""
 
-#: apps/podcasts/models.py:66
+#: apps/podcasts/models.py:67
 msgid "Podcast feed"
 msgstr ""
 
-#: apps/podcasts/models.py:67
+#: apps/podcasts/models.py:68
 msgid "Podcast feeds"
 msgstr ""
 
-#: apps/podcasts/models.py:90
+#: apps/podcasts/models.py:91
 msgid "Podcast item"
 msgstr ""
 
-#: apps/podcasts/models.py:91
+#: apps/podcasts/models.py:92
 msgid "Podcast items"
 msgstr ""
 
-#: apps/podcasts/models.py:94 apps/podcasts/models.py:98
+#: apps/podcasts/models.py:95 apps/podcasts/models.py:99
 msgid "MP3 audio"
 msgstr ""
 
-#: apps/podcasts/models.py:95 apps/podcasts/models.py:96
-#: apps/podcasts/models.py:105
+#: apps/podcasts/models.py:96 apps/podcasts/models.py:97
+#: apps/podcasts/models.py:106
 msgid "MP4 video"
 msgstr ""
 
-#: apps/podcasts/models.py:97
+#: apps/podcasts/models.py:98
 msgid "HTML document"
 msgstr ""
 
-#: apps/podcasts/models.py:99
+#: apps/podcasts/models.py:100
 msgid "WMV video"
 msgstr ""
 
-#: apps/podcasts/models.py:100
+#: apps/podcasts/models.py:101
 msgid "plain text"
 msgstr ""
 
-#: apps/podcasts/models.py:101
+#: apps/podcasts/models.py:102
 msgid "PDF document"
 msgstr ""
 
-#: apps/podcasts/models.py:102 apps/podcasts/models.py:106
+#: apps/podcasts/models.py:103 apps/podcasts/models.py:107
 msgid "MP4 audio"
 msgstr ""
 
-#: apps/podcasts/models.py:104
+#: apps/podcasts/models.py:105
 msgid "MPEG video"
 msgstr ""
 
-#: apps/podcasts/models.py:107
+#: apps/podcasts/models.py:108
 msgid "ePub eBook"
 msgstr ""
 
-#: apps/podcasts/models.py:135 apps/podcasts/models.py:136
+#: apps/podcasts/models.py:138 apps/podcasts/models.py:139
 msgid "Podcast enclosed data"
 msgstr ""
 
@@ -3700,7 +3753,8 @@ msgstr ""
 #: templates/static/about.html:13
 msgid ""
 "Using this site may incur a cost of data transmission from your network "
-"provider. Many providers now offer \\"
+"provider. Many providers now offer 'unlimited' day, week or month passes, "
+"please check with your provider for more information."
 msgstr ""
 
 #: url_shortener/views.py:61 url_shortener/views.py:70
