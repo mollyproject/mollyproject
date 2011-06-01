@@ -31,7 +31,7 @@ h1 {
 }
 
 h2 {
-    font-size: 13pt;
+    font-size: 1.4em;
     margin-bottom: 0.4em;
 }
 
@@ -124,7 +124,7 @@ div.social-items h3 {
 /* END Social Networking Item list */
 
 
-#features {
+div#features {
     padding-top: 10px;
     padding-bottom: 10px;
 	background: #FCFCFC;
@@ -133,6 +133,9 @@ div.social-items h3 {
 	border-top: 1px solid #dfdfdf;
 }
 
+div#features div#feature-margin h2 {
+	font-size: 3em;
+}
 
 div.accessing {
 	text-align: center;
@@ -152,6 +155,12 @@ div.accessing {
 
 div.accessing p {
 	margin-bottom: 0;
+}
+
+div#discover {
+	font-size:1.2em; 
+	margin-bottom: 4px; 
+	margin-top: 4px;"
 }
 
 span.domain-link {
@@ -236,11 +245,11 @@ img.shadow {
 
 			<h2>{% trans "A wealth of information from across the University and City." %}</h2>
     
-			<p style="margin-bottom: 4px;">
+			<p>
 			    {% blocktrans %}Whoever you are, {{ site_name }} is your central guide to help you do your day-to-day tasks. Whether it's <a href="#library">finding a library book</a>, <a href="#bus">checking the next bus</a> or even finding <a href="#places">what time the nearest post box is collected</a> {{ site_name }} is for you.{% endblocktrans %}
 			</p>
 
-			<div class="accessing" style="font-size:1.2em; margin-bottom: 4px;">
+			<div id="discover" class="accessing">
 				<p><a href="#features">
 				{% blocktrans %}Discover {{ site_name }}'s features{% endblocktrans %}</a></p>
 			</div>
@@ -314,7 +323,7 @@ img.shadow {
 
 <div id="features" class="span-44">
 <div id="feature-margin" class="prepend-1 span-42 append-1 last" >
-	<h2 style="font-size: 3em;">{% trans "Features" %}</h2>
+	<h2>{% trans "Features" %}</h2>
 
 	<div id="feature-intro" class="span-42 last">
 		<div class="span-24" >
