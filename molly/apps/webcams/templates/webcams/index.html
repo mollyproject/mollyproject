@@ -13,7 +13,7 @@
     </div>
     <ul class="link-list">
     {% for webcam in webcams %}
-        <li {% if forloop.last %}class="round-bottom"{% endif %}>
+        <li>
             <a href="{% url webcams:webcam webcam.slug %}">{{ webcam.title }}</a>
         </li>
     {% endfor %}

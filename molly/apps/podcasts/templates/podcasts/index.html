@@ -56,7 +56,7 @@
 
 <ul class="link-list">
 {% for category in categories %}
-    <li {% if forloop.last %}class="round-bottom" {% endif %}>
+    <li>
 	<a href="{{ category.get_absolute_url }}">{% trans category.name %}</a></li>
 {% endfor %}
 </ul></div>

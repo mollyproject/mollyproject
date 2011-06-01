@@ -44,7 +44,7 @@
 
     <ul class="link-list{% ifnotequal entities.paginator.num_pages 1 %} no-round-bottom{% endifnotequal %}" id="category-list">
         {% for entity in entities.object_list %}{% if entity.title %}
-            <li{% if forloop.last %} class="round-bottom"{% endif %}><a href="{{ entity.get_absolute_url }}">
+            <li><a href="{{ entity.get_absolute_url }}">
               {{ entity.title|capfirst }}
             </a></li>
         {% endif %}{% endfor %}

@@ -542,14 +542,6 @@ div.note a{
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
 }
-.round-bottom {
-    -webkit-border-bottom-left-radius: 8px;
-    -webkit-border-bottom-right-radius: 8px;
-    -moz-border-radius-bottomleft: 8px;
-    -moz-border-radius-bottomright: 8px;
-    border-bottom-left-radius: 8px;
-    border-bottom-right-radius: 8px;
-}
 div.pad-10{padding: 10px;}
 div.pad-5 {padding:5px;}
 

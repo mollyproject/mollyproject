@@ -141,7 +141,7 @@
 	{% if has_user_messages %}
             <li><a href="{% url home:messages %}">{% trans "Read messages from the developers" %}</a></li>
 	{% endif %}
-        <li class="round-bottom"><a href="{% url feedback:index %}?referer={% url home:index %}">{% trans "Provide feedback" %}</a></li>
+        <li><a href="{% url feedback:index %}?referer={% url home:index %}">{% trans "Provide feedback" %}</a></li>
     </ul>
 
 	{% block below-about %}

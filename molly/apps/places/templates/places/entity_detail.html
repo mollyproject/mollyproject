@@ -46,7 +46,7 @@
 	{% render_location_map entity.location %}
  </div>
 	<ul class="link-list category-list">
-	    <li class="round-bottom nearby">
+	    <li class="nearby">
 		<a href="{% url places:entity-nearby-list entity.identifier_scheme entity.identifier_value %}" rel="nofollow">
 			{% trans "Find things near here" %}</a>
 		</li>
