@@ -35,7 +35,7 @@
     {% endif %}
     <h2>{{ podcast.title }}</h2>
     
-    <div style="font-size:1em; line-height:1.1em;">
+    <div class="podcast-description">
     {{ podcast.description|safe }}
     </div>
     <div class="clear"> </div>
@@ -55,16 +55,16 @@
 	  {# Significant whitespace on next line #}
       {% trans "Published:" %} {{ item.published_date|date:"j M Y" }}
       </small><br />
-    <div style="line-height:1.1em; margin-top:5px">
+    <div class="podcast-description">
       {{ item.description|safe }}
     </div>
     
-    <ul class="link-list round-top" style="margin-top:10px;">
+    <ul class="link-list round-top podcast-enclosures">
     {% for enc in item.podcastenclosure_set.all %}
-      <li style="vertical-align:middle;">
+      <li class="podcast-enclosure">
 	    
-        <a href="{{ enc.url }}{% block after_encurl %}{% endblock %}" style="vertical-align:middle; font-size:11px">
-        <img src="{{ STATIC_URL }}site/images/icons/list-{{ enc.medium }}.png" style="vertical-align:middle; margin:2px;" alt="({{ enc.medium }})"/>
+        <a href="{{ enc.url }}{% block after_encurl %}{% endblock %}">
+        <img src="{{ STATIC_URL }}site/images/icons/list-{{ enc.medium }}.png" alt="({{ enc.medium }})"/>
           {% if item.duration %}{{ item.duration|humanize_seconds }}, {% endif %}{{ enc.get_mimetype_display|capfirst }}, {{ enc.length|filesizeformat }}
           </a>
         </li>
