@@ -311,10 +311,23 @@ div.weather-live-info {
     text-align: left;
 }
 
+div.weather-live-info span {
+    font-size: 3em;
+}
+
 table.weather-forecast {
     padding: 20px;
     width: 100%;
     color:#000000;
+}
+
+table.weather-forecast tbody tr td.large-text {
+    font-size: 1em;
+}
+
+table.weather-forecast tbody tr td img {
+    height: 2.5em;
+    width: 2.5em;
 }
 /* End Weather */
 
@@ -1043,6 +1056,16 @@ div#bottom-links div {
    float: left;
    /* Width gets overwritten for some devices */
    width: 50%;
+}
+
+div#bottom-links div#rim-left {
+    width: 49%;
+    float: left;
+}
+
+div#bottom-links div#rim-right {
+    width: 49%;
+    float: right;
 }
 
 div#bottom-links div.full-width {
