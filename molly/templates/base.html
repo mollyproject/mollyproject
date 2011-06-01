@@ -179,10 +179,11 @@
 				{% endif %}
 				
 				{% if "feature_vote"|app_is_loaded or "feature-suggestions"|app_is_loaded %}
-				  <div><a href="{% url feature_vote:index %}">{% trans "Suggest a feature" %}</a></div>
+				  <div {% if LANGUAGES|length == 1 %}class="full-width"{% endif %}>
+					<a href="{% url feature_vote:index %}">{% trans "Suggest a feature" %}</a></div>
 				{% endif %}
-				{# If there's only two languages to switch between, show the switch here #}
-				{% if LANGUAGES|length < 3 %}
+				{# If there are only two languages to switch between, show the switch here #}
+				{% if LANGUAGES|length == 2 %}
 				    <div>
 				    {% for language_code, language_name in LANGUAGES %}
 					{% if language_code != LANGUAGE_CODE %}
@@ -195,7 +196,8 @@
 					{% endif %}
 				    {% endfor %}
 				    </div>
-				{% else %}
+				{% endif %}
+				{% if LANGUAGES|length >= 3 %}
 				{# Otherwise take to another page to choose language #}
 				{# This is always in English as it's a lingua franca #}
 				    <div><a href="{% url set-language %}">Change language</a></div>
