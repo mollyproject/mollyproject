@@ -213,7 +213,7 @@ ul.link-list, ol.search-results {
     color:#ffffff;
 }
 ul.link-list li, ol.search-results li {
-    font-size:1em;
+    font-size:1.3em;
     border-top:1px solid #98a1ac;
     padding: 10px;
     display:block;
@@ -486,6 +486,7 @@ button, input[type="submit"], input[type="reset"] {
 /*** Generic ***/
 .invisible {display:none;}
 .center {text-align:center;}
+.clear {clear:both;}
 
 h2 {
     text-align:center;
