@@ -58,7 +58,7 @@
     <table class="content{% ifequal data.results_type _("Favourite") %} no-round-bottom{% endifequal %}">
         <tbody>
         {% for entity in data.entities %}
-            <tr class="sub-section-divider"><th colspan="3"><a href="{{ entity.get_absolute_url }}" style="color:inherit;">
+            <tr class="sub-section-divider"><th colspan="3"><a href="{{ entity.get_absolute_url }}" class="inherit-color">
                     {{ entity.title }}
                     {% if entity.distance %}<small>
                         {% blocktrans with entity.distance.m|round_up_10 as distance and entity.bearing as bearing %}(about {{ distance }}m {{ bearing }}){% endblocktrans %}
@@ -70,7 +70,7 @@
             {% if entity.metadata.real_time_information.services %}
                 {% for service in entity.metadata.real_time_information.services %}
                     <tr>
-                        <td style="text-align: center;"><big>{{ service.service }}</big></td>
+                        <td class="center"><big>{{ service.service }}</big></td>
                         <td>{{ service.destination }}</td>
                         <td>{{ service.next }}{% if service.following %}<small>, {{ service.following.0 }}{% if service.following.1 %}, &hellip;{% endif %}</small>{% endif %}</td>
                     </tr>
@@ -144,7 +144,7 @@
   
     <ul class="content-list">
     {% for alert in travel_alerts %}
-        <li><a href="{{ alert.get_absolute_url }}" style="color: inherit;">{{ alert.title }}</a></li>
+        <li><a href="{{ alert.get_absolute_url }}" class="inherit-color">{{ alert.title }}</a></li>
     {% endfor %}
     </ul>
 </div>

@@ -19,6 +19,10 @@ ul li.transport-link {
     -moz-box-shadow: 3px 3px 3px #333;
 }
 
+table.content tbody tr.grey {
+    color: #7c7c7c;
+}
+
 ul li.transport-link a img { border: 0; }
 
 .section .header h2 {

@@ -229,6 +229,14 @@ ul.link-list li a, ol.search-results li a {
     background-repeat: no-repeat;
     background-image:url('../../site/images/icons/list-arrow.png'); /* Default background image */
 }
+
+ol.search-results li a img {
+    float:left;
+    border:0;
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+
 ul.link-list li a.go-back, ol.search-results li a.go-back {
     background-image:url('../../site/images/icons/list-arrow-left.png'); /* Default background image */
 }
@@ -487,6 +495,8 @@ button, input[type="submit"], input[type="reset"] {
 .invisible {display:none;}
 .center {text-align:center;}
 .clear {clear:both;}
+.inherit-color {color:inherit;}
+.no-border {border:0;}
 
 h2 {
     text-align:center;
