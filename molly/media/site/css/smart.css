@@ -7,6 +7,15 @@ body {
     margin: 0;
 }
 
+a img {
+  border:0;
+}
+
+small {
+  font-size:90%;
+}
+
+
 /* Breadcrumb Trail Styles */
 div#bc-header {
     height:34px;
@@ -156,7 +165,6 @@ ul.stand-alone {
     margin: 10px;
 }
 
-
 /* Background images primarily for list items */
 ul.link-list li a.phone {background-image:url('../../site/images/icons/list-phone.png');}
 ul.link-list li a.email {background-image:url('../../site/images/icons/list-email.png');}
@@ -246,7 +254,6 @@ table.search {
 table tbody td {padding: 0; margin: 0;}
 table tbody tr {padding: 0; margin: 0;}
 
-/* CSS 2.1 */
 table.search * input[type="text"] {
     float:left;
     width:100%;
@@ -262,7 +269,7 @@ table.search * input[type="text"] {
 	border-top-left-radius: 5px; border-bottom-left-radius: 5px; 
 	border-top-right-radius: 0; border-bottom-right-radius: 0;
 }
-/* CSS 2.1 */
+
 table.search * input[type="image"] {
     position: relative;
     margin:0; padding:0;
@@ -306,7 +313,6 @@ table.search * input[type="image"] {
 /* End Help Bubble */
 
 /* Input Buttons */
-/* CSS 2.1 */
 button, input[type="submit"], input[type="reset"] {
     display: inline-block;
     color: #fff;
@@ -381,7 +387,6 @@ table.no-round-bottom > *:last-child > tr:last-child > *:first-child {
     -webkit-border-bottom-right-radius: 0px !important;  -moz-border-radius-bottomright: 0px !important;    border-bottom-right-radius: 0px !important;
 }
 
-div.vote-box span {padding:0;}
 /* End Generic */
 
 
@@ -505,6 +510,7 @@ div.header {
     color:#222;
     padding:5px;
     border-top:1px solid rgba(255, 255, 255, 0.33);
+    border-bottom: 1px solid #888;
     border-left:1px solid rgba(255, 255, 255, 0.33);
     background-color: #dfdfdf;
     background:-moz-linear-gradient(top, #fff, #dfdfdf);
@@ -639,9 +645,6 @@ tfoot.may-vote tr td {
 }
 /* End Sakai */
 
-
-.header {border-bottom: 1px solid #888;}
-
 table.content {
     border-spacing:0;
     width: 100%;
@@ -704,15 +707,6 @@ div.button > a {
     line-height: 2em;
     vertical-align: middle;
     /*text-shadow: 0 -1px 1px #000;*/
-}
-
-
-a img {
-  border:0;
-}
-
-small {
-  font-size:90%;
 }
 
 #favourite-bit
