@@ -18,3 +18,7 @@ ul.link-list li.podcast {
     clear: left;
     background: none;
 }
+
+#itunesu_link_div p.itunesu_buttons {
+    margin-bottom: 0;
+}
