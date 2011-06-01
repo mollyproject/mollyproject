@@ -333,7 +333,7 @@ class OSMMapsProvider(BaseMapsProvider):
             entity_type.save()
             for lang_code, lang_name in settings.LANGUAGES:
                 with override(lang_code):
-                    set_name_in_language(entity, lang_code,
+                    set_name_in_language(entity_type, lang_code,
                                          verbose_name=_(et['verbose_name']),
                                          verbose_name_singular=_(et['verbose_name_singular']),
                                          verbose_name_plural=_(et['verbose_name_plural']))
