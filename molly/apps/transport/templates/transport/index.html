@@ -53,7 +53,7 @@
 {% for type, data in nearby.items %}
 <div class="section" id="{{ type }}">
     <div class="header">
-        <h2>{{ data.results_type }} {{ data.type.verbose_name_plural }} - {% now "G:i:s "%}</h2>
+        <h2>{% trans data.results_type %} {{ data.type.verbose_name_plural }} - {% now "G:i:s "%}</h2>
     </div>
     <table class="content{% ifequal data.results_type _("Favourite") %} no-round-bottom{% endifequal %}">
         <tbody>

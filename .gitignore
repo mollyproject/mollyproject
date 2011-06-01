@@ -7,3 +7,4 @@ molly.egg-info/
 dist/
 molly/wurfl/wurfl_data.py
 *.komodoproject
+molly/locale/template/LC_MESSAGES/*.mo

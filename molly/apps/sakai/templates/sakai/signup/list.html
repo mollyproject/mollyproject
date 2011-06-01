@@ -1,12 +1,12 @@
 {% extends "sakai/base.html" %}{% load molly_utils %}
 
-{% block pagetitle %}Meetings{% endblock %}
+{% block pagetitle %}{% trans "Meetings" %}{% endblock %}
 
 {% block content %}
 
 <div class="section">
     <div class="header">
-    <h2>Available Events</h2>
+    <h2>{% trans "Available Events" %}</h2>
     </div>
 
 {% if events %}
@@ -17,7 +17,7 @@
 
 {% ifchanged event.start|date:"WY" %}
 <tr class="sub-section-divider"><th colspan='3'>
-Week {{ event.start|date:"W" }}, {{ event.start|date:"Y" }}
+    {% blocktrans with event.start|date:"W" as week_number and event.start|date:"Y" as year %}Week {{ week_number }}, {{ year }}{% endblocktrans %}
 </th></tr>
 {% endifchanged %}
 <tr><td class="center tutorial-date">
@@ -69,10 +69,10 @@ Week {{ event.start|date:"W" }}, {{ event.start|date:"Y" }}
         {{ event.title }}
     </td>
     {% if 1 or event.permission.update %}
-    <td><div class="button"><a href="{% url sakai:signup-event site,event.id %}">View</a></div></td>
+    <td><div class="button"><a href="{% url sakai:signup-event site,event.id %}">{% trans "View" %}</a></div></td>
     {% else %}
     {% if event.permission.attend %}
-    <td><div class="button"><a href="{% url sakai:signup-event site,event.id %}">Book</a></div></td>
+    <td><div class="button"><a href="{% url sakai:signup-event site,event.id %}">{% trans "Book" %}</a></div></td>
     {% endif %}
     {% endif %}
   </tr> {% endfor %}
@@ -83,7 +83,7 @@ Week {{ event.start|date:"W" }}, {{ event.start|date:"Y" }}
 {% else %}
 
 <div class="section-content">
-  There are currently no available sign-ups for this site.
+  {% trans "There are currently no available sign-ups for this site." %}
 </div>
 
 {% endif %}

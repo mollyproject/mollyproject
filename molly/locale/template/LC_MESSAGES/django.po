@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-01 12:58+0100\n"
+"POT-Creation-Date: 2011-06-01 13:09+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2657,6 +2657,7 @@ msgid "Vote!"
 msgstr ""
 
 #: apps/sakai/templates/sakai/poll/index.html:35
+#: apps/sakai/templates/sakai/signup/list.html:72
 msgid "View"
 msgstr ""
 
@@ -2740,6 +2741,37 @@ msgstr ""
 
 #: apps/sakai/templates/sakai/signup/detail.html:218
 msgid "Join waiting list"
+msgstr ""
+
+#: apps/sakai/templates/sakai/signup/index.html:6
+msgid "Sign-up events by WebLearn site"
+msgstr ""
+
+#: apps/sakai/templates/sakai/signup/index.html:7
+msgid ""
+"We're still working on a way of only showing you sites that you have "
+"tutorials available to book; bear with us in the meantime!"
+msgstr ""
+
+#: apps/sakai/templates/sakai/signup/list.html:3
+msgid "Meetings"
+msgstr ""
+
+#: apps/sakai/templates/sakai/signup/list.html:9
+msgid "Available Events"
+msgstr ""
+
+#: apps/sakai/templates/sakai/signup/list.html:20
+#, python-format
+msgid "Week %(week_number)s, %(year)s"
+msgstr ""
+
+#: apps/sakai/templates/sakai/signup/list.html:75
+msgid "Book"
+msgstr ""
+
+#: apps/sakai/templates/sakai/signup/list.html:86
+msgid "There are currently no available sign-ups for this site."
 msgstr ""
 
 #: apps/sakai/templatetags/molly_sakai.py:34
