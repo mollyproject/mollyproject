@@ -469,6 +469,11 @@ table.real-time-information tr {
     border-collapse: collapse;
     border-top: 1px solid #FFBF00;
 }
+
+tbody#bus_times td.service-id {
+    font-size: 2em;
+    text-align: center;
+}
 /* End RTI */
 
 
@@ -731,8 +736,7 @@ div.section-content {
 /* End Section Formatting */
 
 
-/* Sakai bits */
-
+/* Sakai */
 span.sakai-compulsory-question {
     font-weight: bold;
     color: #ff0000;
@@ -779,6 +783,56 @@ div.sakai-error-message p, div.sakai-notice-message p {
 div.sakai-error-message p:first-child, div.sakai-notice-message p:first-child {
     margin-top: 0;
 }
+
+tr.poll-option td.poll-choice {
+    font-size: 2em;
+    width: 35px;
+    text-align: center;
+}
+
+tr.poll-option td.poll-choice label {
+    display: block;
+    padding: 10px;
+    margin: 8px;
+    border: 1px solid #888;
+    width: 1.1em;
+    line-height: 1.1em;
+    vertical-align: middle;
+    border-radius: 8px; -webkit-border-radius: 8px; -moz-border-radius: 8px;
+}
+
+tr.poll-option td.poll-choice label input {
+    font-size: 2.8em;
+}
+
+tr.poll-option td.vote-count {
+    text-align: center;
+    font-size: 1.2em;
+    width: 102px;
+}
+
+tr.poll-option td.vote-count span {
+    white-space: nowrap;
+}
+
+tr.poll-option td.vote-count div.vote-box {
+    min-width: 40px;
+    max-width: 100px;
+    background-color: #cfcfcf;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid #888;
+}
+
+tr.poll-option td.vote-count div.vote-box div.vote-box-voted {
+    height: 10px;
+    background-color: #e5f0e1;
+}
+
+tfoot.may-vote tr td {
+    padding: 10px;
+}
+/* End Sakai */
 
 
 .header {border-bottom: 1px solid #888;}

@@ -71,15 +71,14 @@
     
     <tbody>
         {% for option in options %}
-            <tr>
-                <td class="center" style="font-size:2em; width:35px">
+            <tr class="poll-option">
+                <td class="poll-choice">
                     {% if poll.mayVote %}
-                    <label style="display:block; padding:10px; margin:8px; -moz-border-radius:8px; border:1px solid #888; width:1.1em; line-height:1.1em; vertical-align:middle">
+                    <label>
                         <input
                           type="{{ poll.maxOptions|pluralize:"radio,checkbox" }}"
                           name="pollOption" id="pollOption-{{ option.id }}"
                           value="{{ option.id }}"
-                          style="font-size:30px;"
                         />
                     </label>
                     {% else %}
@@ -92,10 +91,10 @@
                     {{ option.text|sanitize_html }}
                 </td>
                 {% if vote_count %}
-                    <td class="center" style="font-size:120%; width:102px;">
-                        <span style="white-space:nowrap;">{{ option.voteCount }} ({% widthratio option.voteCount vote_count 100 %}%)</span><br/>
-                        <div style="min-width:40px; max-width:100px; background-color: #cfcfcf; margin-left:auto; margin-right:auto; border:1px solid #888">
-                            <div style="width:{% widthratio option.voteCount vote_count 100 %}%; height:10px; background-color:#e5f0e1;"></div>
+                    <td class="vote-count">
+                        <span>{{ option.voteCount }} ({% widthratio option.voteCount vote_count 100 %}%)</span><br/>
+                        <div class="vote-box">
+                            <div class="vote-box-voted" style="width:{% widthratio option.voteCount vote_count 100 %}%;"></div>
                         </div>
                     </td>
                 {% endif %}
@@ -104,9 +103,9 @@
     </tbody>
     
     {% if poll.mayVote %}
-        <tfoot>
+        <tfoot class="may-vote">
             <tr>
-                <td colspan="{% if vote_count %}3{% else %}2{% endif %}" class="center" style="padding:10px">
+                <td colspan="{% if vote_count %}3{% else %}2{% endif %}" class="center">
                     <input type="submit" value="{% trans "Vote" %}"/>
                 </td>
             </tr>
