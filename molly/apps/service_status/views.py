@@ -16,7 +16,7 @@ class IndexView(BaseView):
     def get_metadata(self, request):
         return {
             'title': _('Service Status'),
-            'additional': _('Check whether OUCS and OLIS services are available'),
+            'additional': _('Check whether services are available'),
         }
 
     @BreadcrumbFactory
