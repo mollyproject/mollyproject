@@ -141,9 +141,9 @@
 		An admin can send a user a message based on the user's session key via the admin UI. 
 	{% endcomment %}
 	{% if unread_user_messages %}
-	    <div class="section" style="padding:10px;">
+	    <div class="section">
 		<div class="bubble pad-10">
-		    <a href="{% url home:messages %}" style="font-size:1.2em; padding:1em 0.2em; display:block;">
+		    <a href="{% url home:messages %}">
 		    {% trans "You have a message from the developers!" %}
 		    </a>
 		</div>
@@ -166,10 +166,10 @@
 			{% ifnotequal style_group "dumb" %}
 				{# As older Blackberry (RIM) devices have poor browsers we reduce button width and float each side #}
 				{% if device.brand_name == "RIM" %}
-				  <div style="width:49%; float:left;">
+				  <div id="rim-left">
 				    <a href="{% url feedback:index %}?referer={{ full_path|urlencode }}">{% trans "Feedback" %}</a>
 				  </div>
-				  <div style="width:49%; float:right;">
+				  <div id="rim-right">
 				    <a href="{% url url_shortener:index %}?path={{ full_path|urlencode }}">{% trans "Share" %}</a>
 				  </div>
 				{# All other devices #}
