@@ -17,7 +17,7 @@
 		
 <ul class="link-list">
 {% for podcast in podcasts %}
-    <li style="padding:5px; clear:left; background:none;">
+    <li class="podcast">
       <a href="{{ podcast.get_absolute_url }}" style="">
         <div class="center" style="float:left; width:60px; margin-right:5px;">
           {% if podcast.logo %}
