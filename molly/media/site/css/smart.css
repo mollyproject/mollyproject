@@ -77,9 +77,6 @@ div#bc-title h1.feature_vote-header {  background-image:url('../../site/images/i
 div#bc-title h1.auth-header {  background-image:url('../../site/images/index-icons/auth-bc.png');}
 /* End Breadcrumb Trail Styles */
 
-
-
-
 /* Standard List Styles */
 /* Content-List */
 ul.content-list, ul.link-list, ol.search-results {
@@ -199,7 +196,7 @@ div.osm-license {
 /* End Webcams/Maps */
 
 
-/* News Articles */
+/* News/Events/Library/Places(OSM) Articles */
 div.article {
     text-align:left;
     color: #000000;
@@ -208,17 +205,6 @@ div.article {
     padding: 2px;
 }
 /* End News Articles */
-
-/* Library Search */
-div#library-search ul li{
-    border: none;
-    padding: 5px 0;
-    text-align:center;
-    font-size:0.8em;
-    display:block;
-    background: none;
-}
-/* End Library */
 
 /* Forms/Search */
 div.form {
