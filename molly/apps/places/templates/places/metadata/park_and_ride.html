@@ -10,7 +10,7 @@
 	  	{# Translators: As in, car parking spaces #}
       	{% trans "Spaces" %}: {{ entity.metadata.park_and_ride.spaces }} / {{ entity.metadata.park_and_ride.capacity }}
       	<div class="capacity-bar">
-        	<div style="width: {{ entity.metadata.park_and_ride.percentage }}%; height:5px;background-color: #ff0000;">&nbsp;</div>
+        	<div class="capacity-bar-red" style="width: {{ entity.metadata.park_and_ride.percentage }}%;">&nbsp;</div>
       	</div>
       {% else %}
       	<p><em>{% trans "Space information currently unavailable" %}</em></p>

@@ -114,7 +114,7 @@
                 {% if entity.metadata.park_and_ride %}
                     {% if not entity.metadata.park_and_ride.unavailable %}
                         <div class="capacity-bar">
-                            <div style="width: {{ entity.metadata.park_and_ride.percentage }}%; height:7px;background-color: #960300;">&nbsp;</div>
+                            <div class="capacity-bar-red" style="width: {{ entity.metadata.park_and_ride.percentage }}%;">&nbsp;</div>
                         </div>
                         {# Translators: As in, car parking spaces #}
                         <p>{% trans "Spaces" %}: {{ entity.metadata.park_and_ride.spaces }} / {{ entity.metadata.park_and_ride.capacity }}</p>

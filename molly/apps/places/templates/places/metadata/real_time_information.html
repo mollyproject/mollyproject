@@ -30,7 +30,7 @@
     <tbody id="bus_times">
     {% for service in entity.metadata.real_time_information.services %}
         <tr>
-            <td rowspan="2" class="center" style="font-size:200%;">{{ service.service }}</td>
+            <td rowspan="2" class="center" style="font-size:2em;">{{ service.service }}</td>
             <td>{{ service.destination }}</td>
             <td>{{ service.next }}</td>
         </tr>
