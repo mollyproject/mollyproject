@@ -1,0 +1,120 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-06-01 10:25+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: apps/library/static/library/js/smart.js:33
+msgid "Author"
+msgstr ""
+
+#: apps/library/static/library/js/smart.js:34
+msgid "Publisher"
+msgstr ""
+
+#: apps/library/static/library/js/smart.js:35
+msgid "Edition"
+msgstr ""
+
+#: apps/library/static/library/js/smart.js:36
+msgid "Libraries"
+msgstr ""
+
+#: apps/places/static/places/js/smart.js:116
+msgid "%(entities_found)d within %(distance)dm"
+msgstr ""
+
+#: apps/transport/static/transport/js/smart.js:16
+msgid "Space information currently unavailable"
+msgstr ""
+
+#. Translators: Spaces: Free spaces / Capactity
+#: apps/transport/static/transport/js/smart.js:22
+msgid "Spaces: %(spaces)d / %(capacity)d"
+msgstr ""
+
+#. Translators: e.g., about 100 metres NW
+#: apps/transport/static/transport/js/smart.js:50
+msgid "about %(distance)d %(bearing)s"
+msgstr ""
+
+#: geolocation/static/geolocation/js/smart.js:4
+msgid "Location found; please wait while we put a name to it."
+msgstr ""
+
+#: geolocation/static/geolocation/js/smart.js:30
+msgid "You did not give permission for the site to know your location."
+msgstr ""
+
+#: geolocation/static/geolocation/js/smart.js:94
+msgid "Please wait while we attempt to determine your location&hellip;"
+msgstr ""
+
+#. Translators: Examples of what can be entered into the 'Set location' field, e.g., postcode, partial match, street name
+#: geolocation/static/geolocation/js/smart.js:109
+#: geolocation/static/geolocation/js/smart.js:116
+msgid "e.g., OX2 6NN, kebl, St Clements"
+msgstr ""
+
+#: geolocation/static/geolocation/js/smart.js:166
+msgid "Remove from favourites"
+msgstr ""
+
+#: geolocation/static/geolocation/js/smart.js:174
+msgid "Add as favourite"
+msgstr ""
+
+#: geolocation/static/geolocation/js/smart.js:222
+msgid "within approx. %(accuracy)dm"
+msgstr ""
+
+#: geolocation/static/geolocation/js/smart.js:230
+msgid "Or did you mean&hellip;"
+msgstr ""
+
+#: geolocation/static/geolocation/js/smart.js:246
+msgid "Or select a favourite location"
+msgstr ""
+
+#: geolocation/static/geolocation/js/smart.js:258
+msgid "Or select from history"
+msgstr ""
+
+#: geolocation/static/geolocation/js/smart.js:264
+msgid "Clear history"
+msgstr ""
+
+#: geolocation/static/geolocation/js/smart.js:394
+msgid "Timeout error"
+msgstr ""
+
+#: geolocation/static/geolocation/js/smart.js:407
+#: geolocation/static/geolocation/js/smart.js:550
+#: geolocation/static/geolocation/js/smart.js:570
+msgid "Position unavailable"
+msgstr ""
+
+#: geolocation/static/geolocation/js/smart.js:495
+msgid "There is already a location request pending"
+msgstr ""
+
+#: geolocation/static/geolocation/js/smart.js:546
+msgid "Timeout"
+msgstr ""
+
+#: geolocation/static/geolocation/js/smart.js:554
+msgid "Unknown Error"
+msgstr ""

@@ -1,0 +1,3794 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-06-01 10:25+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: apps/contact/views.py:24 apps/contact/views.py:46 apps/contact/views.py:92
+msgid "Contact search"
+msgstr ""
+
+#: apps/contact/views.py:66
+msgid "Your search returned too many results."
+msgstr ""
+
+#: apps/contact/providers/__init__.py:18
+#: apps/contact/templates/contact/search_form.html:6
+#: apps/desktop/templates/desktop/index.html:337
+#: apps/feeds/templates/feeds/events/index.html:19
+#: apps/feeds/templates/feeds/news/index.html:19
+#: apps/home/templates/home/index.html:60
+#: apps/home/templates/home/index.html:63
+#: apps/library/templates/library/search_form.html:15
+#: apps/places/templates/places/index.html:19
+#: apps/podcasts/templates/podcasts/index.html:41 apps/search/forms.py:33
+#: apps/search/templates/search/index.html:3
+#: apps/search/templates/search/index.html:4
+#: apps/search/templates/search/index.html:10
+#: apps/search/templates/search/index.html:15
+#: apps/search/templates/search/index.html:22
+msgid "Search"
+msgstr ""
+
+#: apps/contact/templates/contact/result_list.html:4
+#: apps/desktop/templates/desktop/index.html:325
+msgid "Contact Search"
+msgstr ""
+
+#: apps/contact/templates/contact/result_list.html:13
+#: apps/sakai/templates/sakai/poll/detail.html:67
+#: apps/search/templates/search/index.html:34
+msgid "Results"
+msgstr ""
+
+#: apps/contact/templates/contact/result_list.html:24
+#, python-format
+msgid "Your search returned one item."
+msgid_plural "Your search returned %(counter)s items."
+msgstr[0] ""
+msgstr[1] ""
+
+#: apps/contact/templates/contact/result_list.html:27
+msgid "Try adding an initial to get more specific results."
+msgstr ""
+
+#: apps/desktop/templates/desktop/index.html:227
+msgid "Your university and city on the move"
+msgstr ""
+
+#: apps/desktop/templates/desktop/index.html:237
+msgid "A wealth of information from across the University and City."
+msgstr ""
+
+#: apps/desktop/templates/desktop/index.html:240
+#, python-format
+msgid ""
+"Whoever you are, %(site_name)s is your central guide to help you do your day-"
+"to-day tasks. Whether it's <a href=\"#library\">finding a library book</a>, "
+"<a href=\"#bus\">checking the next bus</a> or even finding <a href=\"#places"
+"\">what time the nearest post box is collected</a> %(site_name)s is for you."
+msgstr ""
+
+#: apps/desktop/templates/desktop/index.html:245
+#, python-format
+msgid "Discover %(site_name)s's features"
+msgstr ""
+
+#: apps/desktop/templates/desktop/index.html:248
+msgid "You do not need a fancy phone"
+msgstr ""
+
+#: apps/desktop/templates/desktop/index.html:249
+msgid ""
+"A device with a web browser is all you need to be able to use most of the "
+"features below. Of course if you're lucky enough to own a smartphone you can "
+"use more advanced features like your GPS."
+msgstr ""
+
+#: apps/desktop/templates/desktop/index.html:253
+#, python-format
+msgid ""
+"Use it now by visiting <br /><span class=\"domain-link\"><a class=\"preview-"
+"link\" href=\"/?preview=true\">%(hostname)s</a></span><br />using your "
+"mobile device's web browser, <a class=\"preview-link\" href=\"/?preview=true"
+"\">preview on your computer</a>or click on and scan a 2D barcode below "
+msgstr ""
+
+#: apps/desktop/templates/desktop/index.html:268
+msgid "Various phones showing {{ site_name }}"
+msgstr ""
+
+#: apps/desktop/templates/desktop/index.html:277
+msgid "Blog"
+msgstr ""
+
+#: apps/desktop/templates/desktop/index.html:286
+msgid "More entries&hellip;"
+msgstr ""
+
+#: apps/desktop/templates/desktop/index.html:306
+msgid "More tweets&hellip;"
+msgstr ""
+
+#: apps/desktop/templates/desktop/index.html:317
+msgid "Features"
+msgstr ""
+
+#: apps/desktop/templates/desktop/index.html:321
+msgid "Jump to a feature:"
+msgstr ""
+
+#: apps/desktop/templates/desktop/index.html:326
+msgid "Library Search"
+msgstr ""
+
+#: apps/desktop/templates/desktop/index.html:327 apps/feeds/news/views.py:19
+#: apps/feeds/news/views.py:26
+#: apps/feeds/templates/feeds/news/item_detail.html:6
+#: apps/feeds/templates/feeds/news/item_list.html:6
+msgid "News"
+msgstr ""
+
+#: apps/desktop/templates/desktop/index.html:328 apps/places/views.py:45
+msgid "Places"
+msgstr ""
+
+#: apps/desktop/templates/desktop/index.html:329 apps/podcasts/views.py:23
+#: apps/podcasts/views.py:30
+#: apps/podcasts/templates/podcasts/podcast_detail.html:6
+msgid "Podcasts"
+msgstr ""
+
+#: apps/desktop/templates/desktop/index.html:335
+msgid "Results Releases"
+msgstr ""
+
+#: apps/desktop/templates/desktop/index.html:336
+msgid "River Flag Status"
+msgstr ""
+
+#: apps/desktop/templates/desktop/index.html:338
+#: apps/service_status/views.py:18 apps/service_status/views.py:25
+msgid "Service Status"
+msgstr ""
+
+#: apps/desktop/templates/desktop/index.html:345
+msgid "Term Date"
+msgstr ""
+
+#: apps/desktop/templates/desktop/index.html:346 apps/weather/views.py:25
+#: apps/weather/templates/weather/index.html:4
+#: apps/weather/templates/weather/index.html:5
+msgid "Weather"
+msgstr ""
+
+#: apps/desktop/templates/desktop/index.html:347 apps/webcams/views.py:19
+#: apps/webcams/views.py:25 apps/webcams/templates/webcams/index.html:4
+#: apps/webcams/templates/webcams/index.html:5
+#: apps/webcams/templates/webcams/index.html:12
+msgid "Webcams"
+msgstr ""
+
+#: apps/desktop/templates/desktop/index.html:348 apps/sakai/views.py:64
+msgid "WebLearn"
+msgstr ""
+
+#: apps/desktop/templates/desktop/index.html:363
+msgid "Back to feature list"
+msgstr ""
+
+#: apps/desktop/templates/desktop/index.html:426
+msgid "Contact or help out"
+msgstr ""
+
+#: apps/desktop/templates/desktop/index.html:428
+#, python-format
+msgid "There are many ways you can get involved with %(site_name)s."
+msgstr ""
+
+#: apps/desktop/templates/desktop/index.html:431
+msgid "Email feedback:"
+msgstr ""
+
+#: apps/desktop/templates/desktop/index.html:435
+msgid "Suggest new features:"
+msgstr ""
+
+#: apps/desktop/templates/desktop/index.html:437
+msgid "Join the OpenStreetMap community"
+msgstr ""
+
+#: apps/desktop/templates/desktop/index.html:438
+msgid ""
+"and help improve the points of interest and maps that we use: http://"
+"openstreetmap.org"
+msgstr ""
+
+#: apps/desktop/templates/desktop/index.html:439
+msgid "Help develop our software (the Molly Project)"
+msgstr ""
+
+#: apps/feature_vote/forms.py:6 apps/feature_vote/models.py:12
+#: apps/places/forms.py:12
+msgid "Your name"
+msgstr ""
+
+#: apps/feature_vote/forms.py:7 apps/feature_vote/models.py:15
+msgid "Feature title"
+msgstr ""
+
+#: apps/feature_vote/models.py:13
+#: apps/sakai/templates/sakai/direct/index.html:10
+msgid "E-mail address"
+msgstr ""
+
+#: apps/feature_vote/models.py:16
+#: apps/library/templates/library/item_detail.html:31
+#: apps/library/templates/library/item_holdings_detail.html:31
+msgid "Description"
+msgstr ""
+
+#: apps/feature_vote/views.py:31
+#: apps/feature_vote/templates/comments/posted.html:11
+#: apps/feature_vote/templates/comments/posted.html:12
+msgid "Feature suggestions"
+msgstr ""
+
+#: apps/feature_vote/templates/comments/posted.html:3
+#: apps/feature_vote/templates/comments/posted.html:29
+msgid "Comment submitted"
+msgstr ""
+
+#: apps/feature_vote/templates/comments/posted.html:9 apps/home/views.py:29
+#: templates/base.html:102 templates/base.html.py:103 templates/base.html:127
+#: templates/registration/logged_out.html:4
+#: templates/registration/password_change_done.html:4
+#: templates/registration/password_change_form.html:4
+#: templates/registration/password_reset_complete.html:4
+#: templates/registration/password_reset_confirm.html:4
+#: templates/registration/password_reset_done.html:4
+#: templates/registration/password_reset_form.html:4
+msgid "Home"
+msgstr ""
+
+#: apps/feature_vote/templates/comments/posted.html:19
+#: apps/feature_vote/templates/feature_vote/feature_detail.html:47
+msgid "Add a comment"
+msgstr ""
+
+#: apps/feature_vote/templates/comments/posted.html:33
+msgid "Your comment has been submitted."
+msgstr ""
+
+#: apps/feature_vote/templates/comments/posted.html:35
+msgid "Go back from where you came."
+msgstr ""
+
+#: apps/feature_vote/templates/feature_vote/feature_detail.html:11
+#, python-format
+msgid "Suggested by %(user_name)s; added %(timesince_created)s ago"
+msgstr ""
+
+#: apps/feature_vote/templates/feature_vote/feature_detail.html:26
+#, python-format
+msgid "Posted by %(user_name)s (%(site_name)s team member) %(timesince)s ago"
+msgstr ""
+
+#: apps/feature_vote/templates/feature_vote/feature_detail.html:28
+#, python-format
+msgid "Posted by %(user_name)s %(timesince)s ago"
+msgstr ""
+
+#: apps/feature_vote/templates/feature_vote/feature_detail.html:39
+msgid "There aren't any comments yet"
+msgstr ""
+
+#: apps/feature_vote/templates/feature_vote/feature_detail.html:67
+#: apps/feature_vote/templates/feature_vote/index.html:70
+#: apps/feedback/templates/feedback/index.html:37
+#: apps/places/templates/places/update_osm.html:179
+#: auth/templates/auth/index.html:133 auth/templates/auth/timed_out.html:23
+msgid "Submit"
+msgstr ""
+
+#: apps/feature_vote/templates/feature_vote/index.html:7
+msgid ""
+"Thank you for submitting a feature request! It is pending moderation, and "
+"should appear shortly."
+msgstr ""
+
+#: apps/feature_vote/templates/feature_vote/index.html:10
+#, python-format
+msgid "Do you have something you'd like to see added to %(site_name)s?"
+msgstr ""
+
+#: apps/feature_vote/templates/feature_vote/index.html:14
+msgid ""
+"You can vote or comment on existing suggestions, or use the <a href="
+"\"#submit-feature\">form at the bottom of the page</a> to add a new "
+"suggestion."
+msgstr ""
+
+#: apps/feature_vote/templates/feature_vote/index.html:21
+msgid "Current suggestions"
+msgstr ""
+
+#: apps/feature_vote/templates/feature_vote/index.html:31
+#, python-format
+msgid "by %(user_name)s, added %(created_timesince)s ago"
+msgstr ""
+
+#: apps/feature_vote/templates/feature_vote/index.html:35
+#, python-format
+msgid "one comment."
+msgid_plural "%(comment_count)s comments."
+msgstr[0] ""
+msgstr[1] ""
+
+#: apps/feature_vote/templates/feature_vote/index.html:37
+msgid "Read more&hellip;"
+msgstr ""
+
+#: apps/feature_vote/templates/feature_vote/index.html:37
+msgid "Be the first to comment&hellip;"
+msgstr ""
+
+#: apps/feature_vote/templates/feature_vote/index.html:45
+msgid "There are no features to vote on yet."
+msgstr ""
+
+#: apps/feature_vote/templates/feature_vote/index.html:53
+#: apps/home/templates/home/index.html:138 templates/base.html:188
+#: templates/base.html.py:216
+msgid "Suggest a feature"
+msgstr ""
+
+#: apps/feature_vote/templates/feature_vote/vote.html:9
+msgid "Vote up (already voted)"
+msgstr ""
+
+#: apps/feature_vote/templates/feature_vote/vote.html:11
+msgid "Vote Up"
+msgstr ""
+
+#: apps/feature_vote/templates/feature_vote/vote.html:15
+msgid "Vote down (already voted)"
+msgstr ""
+
+#: apps/feature_vote/templates/feature_vote/vote.html:17
+msgid "Vote down"
+msgstr ""
+
+#: apps/feedback/forms.py:5
+msgid "Your e-mail address (optional)"
+msgstr ""
+
+#: apps/feedback/forms.py:8 apps/feedback/views.py:19 templates/base.html:176
+#: templates/base.html.py:183 templates/base.html:213
+msgid "Feedback"
+msgstr ""
+
+#: apps/feedback/templates/feedback/index.html:7
+msgid "Thank you for your feedback!"
+msgstr ""
+
+#: apps/feedback/templates/feedback/index.html:10
+msgid "You may wish to go back."
+msgstr ""
+
+#: apps/feedback/templates/feedback/index.html:12
+msgid "You may wish to go back to the home page."
+msgstr ""
+
+#: apps/feeds/models.py:44
+msgid "Feed title"
+msgstr ""
+
+#. Translators: A unit e.g. 'oucs' or short form of a department name.
+#: apps/feeds/models.py:47
+msgid "Unit to which the feed belongs to"
+msgstr ""
+
+#: apps/feeds/models.py:48
+msgid "URL of RSS feed"
+msgstr ""
+
+#: apps/feeds/models.py:49
+msgid "Slug of feed, e.g. oucs-news"
+msgstr ""
+
+#: apps/feeds/models.py:101
+msgid "Title of feed item"
+msgstr ""
+
+#: apps/feeds/models.py:103
+msgid "Description of feed item"
+msgstr ""
+
+#: apps/feeds/models.py:104
+msgid "URL to feed item"
+msgstr ""
+
+#: apps/feeds/events/views.py:17 apps/feeds/events/views.py:24
+#: apps/feeds/templates/feeds/events/item_detail.html:6
+msgid "Events"
+msgstr ""
+
+#: apps/feeds/events/views.py:18
+msgid "View events from across the University."
+msgstr ""
+
+#. Translators: Feed last modified [date format] otherwise _('never_updated')
+#: apps/feeds/events/views.py:55 apps/feeds/events/views.py:80
+#: apps/feeds/news/views.py:57
+msgid "never updated"
+msgstr ""
+
+#: apps/feeds/events/views.py:67
+#: apps/feeds/templates/feeds/news/item_list.html:10
+#: apps/feeds/templates/feeds/news/item_list.html:12
+msgid "News feed"
+msgstr ""
+
+#: apps/feeds/events/views.py:93
+msgid "Events item"
+msgstr ""
+
+#: apps/feeds/news/views.py:20
+msgid "View news from across the University."
+msgstr ""
+
+#: apps/feeds/templates/feeds/events/index.html:9
+msgid "Search Events"
+msgstr ""
+
+#: apps/feeds/templates/feeds/events/index.html:12
+#: apps/feeds/templates/feeds/news/index.html:12
+msgid "Search News Box"
+msgstr ""
+
+#: apps/feeds/templates/feeds/events/index.html:15
+#: apps/feeds/templates/feeds/news/index.html:9
+#: apps/feeds/templates/feeds/news/index.html:15
+msgid "Search News"
+msgstr ""
+
+#: apps/feeds/templates/feeds/events/index.html:17
+#: apps/feeds/templates/feeds/news/index.html:17
+#: apps/places/templates/places/index.html:17
+#: apps/podcasts/templates/podcasts/index.html:39
+#: apps/search/templates/search/index.html:20
+msgid "Go!"
+msgstr ""
+
+#: apps/feeds/templates/feeds/events/index.html:22
+msgid "Search for particular events"
+msgstr ""
+
+#: apps/feeds/templates/feeds/events/index.html:31
+#: apps/feeds/templates/feeds/news/index.html:31
+msgid "Feeds"
+msgstr ""
+
+#: apps/feeds/templates/feeds/events/index.html:40
+msgid "Sorry, there are no event feeds in your language."
+msgstr ""
+
+#: apps/feeds/templates/feeds/events/index.html:44
+msgid "View events in all languages"
+msgstr ""
+
+#: apps/feeds/templates/feeds/events/item_detail.html:13
+#: apps/feeds/templates/feeds/events/item_detail.html:15
+msgid "Event"
+msgstr ""
+
+#: apps/feeds/templates/feeds/events/item_detail.html:29
+#: apps/feeds/templates/feeds/news/item_detail.html:29
+msgid "Link:"
+msgstr ""
+
+#: apps/feeds/templates/feeds/events/item_detail.html:35
+msgid "Location"
+msgstr ""
+
+#: apps/feeds/templates/feeds/events/item_list.html:10
+#: apps/feeds/templates/feeds/events/item_list.html:12
+msgid "Events feed"
+msgstr ""
+
+#: apps/feeds/templates/feeds/news/index.html:22
+msgid "Search for particular news articles"
+msgstr ""
+
+#: apps/feeds/templates/feeds/news/index.html:40
+msgid "Sorry, there are no news feeds in your language."
+msgstr ""
+
+#: apps/feeds/templates/feeds/news/index.html:44
+msgid "View news in all languages"
+msgstr ""
+
+#: apps/feeds/templates/feeds/news/item_detail.html:13
+msgid "News item"
+msgstr ""
+
+#: apps/feeds/templates/feeds/news/item_detail.html:15
+msgid "News:"
+msgstr ""
+
+#: apps/home/views.py:57
+msgid ""
+"Please note that the \"Mobile View\" on Opera Mini does not display this "
+"site correctly. To ensure correct operation of this site, ensure \"Mobile "
+"View\" is set to Off in Opera settings"
+msgstr ""
+
+#: apps/home/views.py:123
+msgid "View messages from the developers"
+msgstr ""
+
+#: apps/home/templates/home/index.html:119 favourites/views.py:41
+#: favourites/templates/favourites/index.html:7
+msgid "Favourites"
+msgstr ""
+
+#: apps/home/templates/home/index.html:131
+msgid "Manage Favourites"
+msgstr ""
+
+#: apps/home/templates/home/index.html:140 templates/static/about.html:3
+msgid "About this site"
+msgstr ""
+
+#: apps/home/templates/home/index.html:142
+msgid "Read messages from the developers"
+msgstr ""
+
+#: apps/home/templates/home/index.html:144
+msgid "Provide feedback"
+msgstr ""
+
+#: apps/home/templates/home/messages.html:3
+msgid "Messages"
+msgstr ""
+
+#: apps/home/templates/home/messages.html:4
+#: apps/home/templates/home/messages.html:11
+#: apps/home/templates/home/messages.html:56
+msgid "Messages from the developers"
+msgstr ""
+
+#: apps/home/templates/home/messages.html:14
+#, python-format
+msgid ""
+"The developers would like to thank you for using %(site_name)s, and would "
+"like to ask your help in making it better."
+msgstr ""
+
+#: apps/home/templates/home/messages.html:31
+msgid "Left for you on:"
+msgstr ""
+
+#: apps/home/templates/home/messages.html:34
+msgid "Respond to this message"
+msgstr ""
+
+#: apps/home/templates/home/messages.html:47
+msgid "Delete selected"
+msgstr ""
+
+#: apps/home/templates/home/messages.html:59
+msgid "You have no messages"
+msgstr ""
+
+#: apps/library/forms.py:5 apps/library/templates/library/item_detail.html:13
+#: apps/library/templates/library/item_holdings_detail.html:13
+#: apps/library/templates/library/item_list.html:50
+msgid "Author"
+msgstr ""
+
+#: apps/library/forms.py:6
+msgid "Title"
+msgstr ""
+
+#: apps/library/forms.py:7 apps/library/templates/library/item_detail.html:43
+#: apps/library/templates/library/item_holdings_detail.html:41
+#, fuzzy
+msgid "ISBN"
+msgstr ""
+"#-#-#-#-#  django.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  django.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  django.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+
+#. Translators: A list of stop words to be filtered out during library searches
+#: apps/library/models.py:16
+msgid ""
+"a,able,about,across,after,all,almost,also,am,among,an,and,any,are,as,at,"
+msgstr ""
+
+#: apps/library/models.py:80
+msgid "You cannot specify both an ISBN and an ISSN."
+msgstr ""
+
+#: apps/library/models.py:84
+msgid "You cannot specify both an ISBN and a title or author."
+msgstr ""
+
+#: apps/library/models.py:88
+msgid "You must supply some subset of title or author, and ISBN."
+msgstr ""
+
+#: apps/library/models.py:221
+msgid "unavailable"
+msgstr ""
+
+#. Translators: Unknown podcast medium type
+#: apps/library/models.py:221 apps/podcasts/models.py:103
+#: apps/podcasts/models.py:123 apps/podcasts/models.py:129
+#: apps/podcasts/models.py:132
+msgid "unknown"
+msgstr ""
+
+#: apps/library/models.py:221
+msgid "stack"
+msgstr ""
+
+#: apps/library/models.py:221
+msgid "reference"
+msgstr ""
+
+#: apps/library/models.py:221
+msgid "available"
+msgstr ""
+
+#: apps/library/views.py:21 apps/library/views.py:32 apps/library/views.py:58
+msgid "Library search"
+msgstr ""
+
+#: apps/library/views.py:22
+msgid "View libraries' contact information and find library items."
+msgstr ""
+
+#: apps/library/views.py:56
+msgid "Search Results"
+msgstr ""
+
+#: apps/library/views.py:135
+msgid "Search result"
+msgstr ""
+
+#: apps/library/views.py:219
+msgid "Item holdings information"
+msgstr ""
+
+#: apps/library/providers/z3950.py:231
+msgid "Availability Unknown"
+msgstr ""
+
+#: apps/library/templates/library/item_detail.html:19
+#: apps/library/templates/library/item_holdings_detail.html:19
+#: apps/library/templates/library/item_list.html:51
+msgid "Publisher"
+msgstr ""
+
+#: apps/library/templates/library/item_detail.html:25
+#: apps/library/templates/library/item_holdings_detail.html:25
+#: apps/library/templates/library/item_list.html:52
+msgid "Edition"
+msgstr ""
+
+#: apps/library/templates/library/item_detail.html:56
+#: apps/library/templates/library/item_holdings_detail.html:53
+msgid "ISSN"
+msgid_plural "ISSNs"
+msgstr[0] ""
+msgstr[1] ""
+
+#: apps/library/templates/library/item_detail.html:72
+msgid "Library holdings"
+msgstr ""
+
+#: apps/library/templates/library/item_detail.html:77
+msgid ""
+"Please note that all libraries have admission and borrowing policies; "
+"inclusion in this list does not imply access."
+msgstr ""
+
+#: apps/library/templates/library/item_detail.html:77
+msgid "Closest results are not necessarily best."
+msgstr ""
+
+#: apps/library/templates/library/item_detail.html:93
+#: apps/library/templates/library/item_holdings_detail.html:76
+msgid "Shelfmark"
+msgstr ""
+
+#: apps/library/templates/library/item_detail.html:94
+#: apps/library/templates/library/item_holdings_detail.html:76
+msgid "issue"
+msgstr ""
+
+#: apps/library/templates/library/item_holdings_detail.html:76
+msgid "availability"
+msgstr ""
+
+#: apps/library/templates/library/item_list.html:7
+msgid "There was an error with your search"
+msgstr ""
+
+#: apps/library/templates/library/item_list.html:20
+msgid "Result list"
+msgstr ""
+
+#: apps/library/templates/library/item_list.html:20
+msgid "unsorted"
+msgstr ""
+
+#: apps/library/templates/library/item_list.html:24
+msgid "The following common word was not included in your query:"
+msgid_plural "The following common words were not included in your query:"
+msgstr[0] ""
+msgstr[1] ""
+
+#: apps/library/templates/library/item_list.html:32
+#: apps/library/templates/library/item_list.html:61
+#: apps/places/templates/places/category_detail.html:62
+msgid "Previous page"
+msgstr ""
+
+#: apps/library/templates/library/item_list.html:33
+#: apps/library/templates/library/item_list.html:62
+msgid "Previous"
+msgstr ""
+
+#: apps/library/templates/library/item_list.html:36
+#: apps/library/templates/library/item_list.html:65
+#, python-format
+msgid ""
+"Showing results %(first_result)s to <span class=\"result-number\">"
+"%(last_result)s</span> of %(num_results)s. Page <span class=\"current-page\">"
+"%(page_number)s</span> of %(number_of_pages)s."
+msgstr ""
+
+#: apps/library/templates/library/item_list.html:38
+#: apps/library/templates/library/item_list.html:67
+#: apps/places/templates/places/category_detail.html:65
+msgid "Next page"
+msgstr ""
+
+#: apps/library/templates/library/item_list.html:39
+#: apps/library/templates/library/item_list.html:68
+#: apps/places/templates/places/metadata/real_time_information.html:40
+msgid "Next"
+msgstr ""
+
+#: apps/library/templates/library/item_list.html:53
+msgid "Libraries"
+msgstr ""
+
+#: apps/library/templates/library/search_form.html:2
+msgid "Search libraries"
+msgstr ""
+
+#: apps/library/templates/library/search_form.html:16
+msgid "Reset Form"
+msgstr ""
+
+#: apps/library/templates/library/search_form.html:20
+msgid ""
+"Search the library by either some subset of title and author, or by ISBN."
+msgstr ""
+
+#: apps/library/templates/library/search_form.html:21
+msgid "You may use a '*' in place of an 'X' in an ISBN."
+msgstr ""
+
+#: apps/places/forms.py:13
+msgid "Your e-mail address"
+msgstr ""
+
+#: apps/places/forms.py:14
+msgid "Include name in update"
+msgstr ""
+
+#: apps/places/forms.py:19
+msgid "Opening hours"
+msgstr ""
+
+#: apps/places/forms.py:20
+msgid "Cuisine"
+msgstr ""
+
+#: apps/places/forms.py:22
+msgid "Phone number"
+msgstr ""
+
+#: apps/places/forms.py:24
+msgid "Food served"
+msgstr ""
+
+#: apps/places/forms.py:25
+msgid "Hours food is served"
+msgstr ""
+
+#: apps/places/forms.py:27
+msgid "ATM present"
+msgstr ""
+
+#: apps/places/forms.py:29 apps/places/templates/places/metadata/osm.html:42
+#: apps/places/templates/places/metadata/osm.html:49
+#: apps/places/templates/places/metadata/osm.html:56
+msgid "Website"
+msgstr ""
+
+#: apps/places/forms.py:31
+msgid "Reference (e.g. 'OX1 123')"
+msgstr ""
+
+#: apps/places/forms.py:32
+msgid "Collection times"
+msgstr ""
+
+#: apps/places/forms.py:34
+msgid "Capacity"
+msgstr ""
+
+#. Translators: These are compass points
+#: apps/places/models.py:214
+msgid "N"
+msgstr ""
+
+#: apps/places/models.py:214
+msgid "NE"
+msgstr ""
+
+#: apps/places/models.py:214
+msgid "E"
+msgstr ""
+
+#: apps/places/models.py:214
+msgid "SE"
+msgstr ""
+
+#: apps/places/models.py:215
+msgid "S"
+msgstr ""
+
+#: apps/places/models.py:215
+msgid "SW"
+msgstr ""
+
+#: apps/places/models.py:215
+msgid "W"
+msgstr ""
+
+#: apps/places/models.py:215
+msgid "NW"
+msgstr ""
+
+#: apps/places/views.py:37
+msgid "places"
+msgstr ""
+
+#: apps/places/views.py:38
+msgid ""
+"Find University buildings and units, along with bus stops and local amenities"
+msgstr ""
+
+#: apps/places/views.py:61
+msgid "Find things nearby"
+msgstr ""
+
+#: apps/places/views.py:62
+msgid "Search for things based on your current location"
+msgstr ""
+
+#: apps/places/views.py:70
+msgid "Things nearby"
+msgstr ""
+
+#: apps/places/views.py:178
+#, python-format
+msgid "Things near %(title)s"
+msgstr ""
+
+#: apps/places/views.py:183
+#, python-format
+msgid "%(entity_type)s near %(entity)s"
+msgstr ""
+
+#: apps/places/views.py:188
+#, python-format
+msgid "%(et)s nearby"
+msgstr ""
+
+#: apps/places/views.py:200
+#, python-format
+msgid "<strong>%(number)d %(entity_type)s</strong> within 1km"
+msgstr ""
+
+#: apps/places/providers/bbc_tpeg.py:132 apps/places/providers/naptan.py:757
+#: apps/places/providers/osm.py:448 apps/places/providers/osm.py:460
+#: apps/places/providers/osm.py:574 apps/places/providers/osm.py:664
+#: apps/transport/views.py:19
+msgid "Transport"
+msgstr ""
+
+#: apps/places/providers/bbc_tpeg.py:141
+msgid "travel alert"
+msgstr ""
+
+#: apps/places/providers/bbc_tpeg.py:142
+msgid "a travel alert"
+msgstr ""
+
+#: apps/places/providers/bbc_tpeg.py:143
+msgid "travel alerts"
+msgstr ""
+
+#. Translators: This is referring to bus stop location descriptions
+#: apps/places/providers/naptan.py:192 apps/places/providers/naptan.py:193
+msgid "Opposite"
+msgstr ""
+
+#. Translators: This is referring to bus stop location descriptions
+#: apps/places/providers/naptan.py:195
+msgid "Adjacent"
+msgstr ""
+
+#. Translators: This is referring to bus stop location descriptions
+#: apps/places/providers/naptan.py:197 apps/places/providers/naptan.py:198
+msgid "Outside"
+msgstr ""
+
+#. Translators: This is referring to bus stop location descriptions
+#: apps/places/providers/naptan.py:200
+msgid "Near"
+msgstr ""
+
+#. Translators: This is referring to bus stop location descriptions
+#: apps/places/providers/naptan.py:202
+msgid "Inside"
+msgstr ""
+
+#. Translators: This is referring to public transport entities
+#: apps/places/providers/naptan.py:207
+#, python-format
+msgid "Entrance to %s"
+msgstr ""
+
+#. Translators: This is referring to ferry ports
+#: apps/places/providers/naptan.py:211
+#, python-format
+msgid "Berth at %s"
+msgstr ""
+
+#. Translators: This is referring to rail and metro stations
+#: apps/places/providers/naptan.py:215
+#, python-format
+msgid "Platform at %s"
+msgstr ""
+
+#: apps/places/providers/naptan.py:288
+msgid "bus stop"
+msgstr ""
+
+#: apps/places/providers/naptan.py:289
+msgid "a bus stop"
+msgstr ""
+
+#: apps/places/providers/naptan.py:290
+msgid "bus stops"
+msgstr ""
+
+#: apps/places/providers/naptan.py:296 apps/places/providers/osm.py:665
+msgid "taxi rank"
+msgstr ""
+
+#: apps/places/providers/naptan.py:297 apps/places/providers/osm.py:667
+msgid "a taxi rank"
+msgstr ""
+
+#: apps/places/providers/naptan.py:298 apps/places/providers/osm.py:666
+msgid "taxi ranks"
+msgstr ""
+
+#: apps/places/providers/naptan.py:304
+msgid "rail station"
+msgstr ""
+
+#: apps/places/providers/naptan.py:305
+msgid "a rail station"
+msgstr ""
+
+#: apps/places/providers/naptan.py:306
+msgid "rail stations"
+msgstr ""
+
+#: apps/places/providers/naptan.py:312
+msgid "heritage rail station"
+msgstr ""
+
+#: apps/places/providers/naptan.py:313
+msgid "a heritage rail station"
+msgstr ""
+
+#: apps/places/providers/naptan.py:314
+msgid "heritage rail stations"
+msgstr ""
+
+#: apps/places/providers/naptan.py:325
+msgid "bus station entrance"
+msgstr ""
+
+#: apps/places/providers/naptan.py:326
+msgid "a bus station entrance"
+msgstr ""
+
+#: apps/places/providers/naptan.py:327
+msgid "bus station entrances"
+msgstr ""
+
+#: apps/places/providers/naptan.py:336
+msgid "rail station entrance"
+msgstr ""
+
+#: apps/places/providers/naptan.py:337
+msgid "a rail station entrance"
+msgstr ""
+
+#: apps/places/providers/naptan.py:338
+msgid "rail station entrances"
+msgstr ""
+
+#: apps/places/providers/naptan.py:344
+msgid "rail platform"
+msgstr ""
+
+#: apps/places/providers/naptan.py:345
+msgid "a rail platform"
+msgstr ""
+
+#: apps/places/providers/naptan.py:346
+msgid "rail platforms"
+msgstr ""
+
+#. Translators: This is the generic term for rapid transit systems
+#: apps/places/providers/naptan.py:353
+msgid "metro station entrance"
+msgstr ""
+
+#. Translators: This is the generic term for rapid transit systems
+#: apps/places/providers/naptan.py:355
+msgid "a metro station entrance"
+msgstr ""
+
+#. Translators: This is the generic term for rapid transit systems
+#: apps/places/providers/naptan.py:357
+msgid "metro station entrances"
+msgstr ""
+
+#. Translators: This is the generic term for rapid transit systems
+#: apps/places/providers/naptan.py:364
+msgid "metro station platform"
+msgstr ""
+
+#. Translators: This is the generic term for rapid transit systems
+#: apps/places/providers/naptan.py:366
+msgid "a metro station platform"
+msgstr ""
+
+#. Translators: This is the generic term for rapid transit systems
+#: apps/places/providers/naptan.py:368
+msgid "metro station platforms"
+msgstr ""
+
+#. Translators: This is the generic term for rapid transit systems
+#: apps/places/providers/naptan.py:375
+msgid "metro station"
+msgstr ""
+
+#. Translators: This is the generic term for rapid transit systems
+#: apps/places/providers/naptan.py:377
+msgid "a metro station"
+msgstr ""
+
+#. Translators: This is the generic term for rapid transit systems
+#: apps/places/providers/naptan.py:379
+msgid "metro stations"
+msgstr ""
+
+#. Translators: This is the Blackpool tram system
+#: apps/places/providers/naptan.py:391
+msgid "tramway stop"
+msgstr ""
+
+#. Translators: This is the Blackpool tram system
+#: apps/places/providers/naptan.py:393
+msgid "a tramway stop"
+msgstr ""
+
+#. Translators: This is the Blackpool tram system
+#: apps/places/providers/naptan.py:395
+msgid "tramway stops"
+msgstr ""
+
+#: apps/places/providers/naptan.py:403 apps/places/providers/naptan.py:488
+msgid "tram stop"
+msgstr ""
+
+#: apps/places/providers/naptan.py:404 apps/places/providers/naptan.py:489
+msgid "a tram stop"
+msgstr ""
+
+#: apps/places/providers/naptan.py:405 apps/places/providers/naptan.py:490
+msgid "tram stops"
+msgstr ""
+
+#. Translators: This is the Docklands Light Railway
+#: apps/places/providers/naptan.py:415
+msgid "DLR station"
+msgstr ""
+
+#. Translators: This is the Docklands Light Railway
+#: apps/places/providers/naptan.py:417
+msgid "a DLR station"
+msgstr ""
+
+#. Translators: This is the Docklands Light Railway
+#: apps/places/providers/naptan.py:419
+msgid "DLR stations"
+msgstr ""
+
+#. Translators: This is the Glasgow Subway
+#: apps/places/providers/naptan.py:434
+msgid "Subway station"
+msgstr ""
+
+#. Translators: This is the Glasgow Subway
+#: apps/places/providers/naptan.py:436
+msgid "a Subway station"
+msgstr ""
+
+#. Translators: This is the Glasgow Subway
+#: apps/places/providers/naptan.py:438
+msgid "Subway stations"
+msgstr ""
+
+#. Translators: This is the Gatwick airport shuttle
+#: apps/places/providers/naptan.py:446
+msgid "shuttle station"
+msgstr ""
+
+#. Translators: This is the Gatwick airport shuttle
+#: apps/places/providers/naptan.py:448
+msgid "a shuttle station"
+msgstr ""
+
+#. Translators: This is the Gatwick airport shuttle
+#: apps/places/providers/naptan.py:450
+msgid "shuttle stations"
+msgstr ""
+
+#. Translators: This is the London Underground (Tube)
+#: apps/places/providers/naptan.py:464
+msgid "Underground station"
+msgstr ""
+
+#. Translators: This is the London Underground (Tube)
+#: apps/places/providers/naptan.py:466
+msgid "an Underground station"
+msgstr ""
+
+#. Translators: This is the London Underground (Tube)
+#: apps/places/providers/naptan.py:468
+msgid "Underground stations"
+msgstr ""
+
+#. Translators: This is the Manchester tram system
+#: apps/places/providers/naptan.py:475
+msgid "Metrolink station"
+msgstr ""
+
+#. Translators: This is the Manchester tram system
+#: apps/places/providers/naptan.py:477
+msgid "a Metrolink station"
+msgstr ""
+
+#. Translators: This is the Manchester tram system
+#: apps/places/providers/naptan.py:479
+msgid "Metrolink stations"
+msgstr ""
+
+#. Translators: This is the Sheffield tram system
+#: apps/places/providers/naptan.py:510
+msgid "Supertram stop"
+msgstr ""
+
+#. Translators: This is the Sheffield tram system
+#: apps/places/providers/naptan.py:512
+msgid "a Supertram stop"
+msgstr ""
+
+#. Translators: This is the Sheffield tram system
+#: apps/places/providers/naptan.py:514
+msgid "Supertram stops"
+msgstr ""
+
+#. Translators: This is the Tyne & Wear metro system
+#: apps/places/providers/naptan.py:522
+msgid "Metro station"
+msgstr ""
+
+#. Translators: This is the Tyne & Wear metro system
+#: apps/places/providers/naptan.py:524
+msgid "a Metro station"
+msgstr ""
+
+#. Translators: This is the Tyne & Wear metro system
+#: apps/places/providers/naptan.py:526
+msgid "Metro stations"
+msgstr ""
+
+#. Translators: This is the Midland Metro system
+#: apps/places/providers/naptan.py:538
+msgid "Midland Metro stop"
+msgstr ""
+
+#. Translators: This is the Midland Metro system
+#: apps/places/providers/naptan.py:540
+msgid "a Midland Metro stop"
+msgstr ""
+
+#. Translators: This is the Midland Metro system
+#: apps/places/providers/naptan.py:542
+msgid "Midland Metro stops"
+msgstr ""
+
+#: apps/places/providers/naptan.py:550
+msgid "airport"
+msgstr ""
+
+#: apps/places/providers/naptan.py:551
+msgid "an airport"
+msgstr ""
+
+#: apps/places/providers/naptan.py:552
+msgid "airports"
+msgstr ""
+
+#: apps/places/providers/naptan.py:558
+msgid "airport entrance"
+msgstr ""
+
+#: apps/places/providers/naptan.py:559
+msgid "an airport entrance"
+msgstr ""
+
+#: apps/places/providers/naptan.py:560
+msgid "airport entrances"
+msgstr ""
+
+#: apps/places/providers/naptan.py:566
+msgid "ferry terminal"
+msgstr ""
+
+#: apps/places/providers/naptan.py:567
+msgid "a ferry terminal"
+msgstr ""
+
+#: apps/places/providers/naptan.py:568
+msgid "ferry terminals"
+msgstr ""
+
+#: apps/places/providers/naptan.py:574
+msgid "ferry terminal entrance"
+msgstr ""
+
+#: apps/places/providers/naptan.py:575
+msgid "a ferry terminal entrance"
+msgstr ""
+
+#: apps/places/providers/naptan.py:576
+msgid "ferry terminal entrances"
+msgstr ""
+
+#: apps/places/providers/naptan.py:582
+msgid "ferry berth"
+msgstr ""
+
+#: apps/places/providers/naptan.py:583
+msgid "a ferry berth"
+msgstr ""
+
+#: apps/places/providers/naptan.py:584
+msgid "ferry berths"
+msgstr ""
+
+#: apps/places/providers/naptan.py:590
+msgid "public transport access node"
+msgstr ""
+
+#: apps/places/providers/naptan.py:591
+msgid "a public transport access node"
+msgstr ""
+
+#: apps/places/providers/naptan.py:592
+msgid "public transport access nodes"
+msgstr ""
+
+#: apps/places/providers/osm.py:424 apps/places/providers/osm.py:430
+#: apps/places/providers/osm.py:436 apps/places/providers/osm.py:442
+#: apps/places/providers/osm.py:454 apps/places/providers/osm.py:466
+#: apps/places/providers/osm.py:472 apps/places/providers/osm.py:478
+#: apps/places/providers/osm.py:490 apps/places/providers/osm.py:496
+#: apps/places/providers/osm.py:502 apps/places/providers/osm.py:508
+#: apps/places/providers/osm.py:514 apps/places/providers/osm.py:520
+#: apps/places/providers/osm.py:526 apps/places/providers/osm.py:538
+#: apps/places/providers/osm.py:544 apps/places/providers/osm.py:550
+#: apps/places/providers/osm.py:556 apps/places/providers/osm.py:580
+#: apps/places/providers/osm.py:586 apps/places/providers/osm.py:592
+#: apps/places/providers/osm.py:598 apps/places/providers/osm.py:604
+#: apps/places/providers/osm.py:610 apps/places/providers/osm.py:622
+#: apps/places/providers/osm.py:628 apps/places/providers/osm.py:634
+#: apps/places/providers/osm.py:658
+msgid "Amenities"
+msgstr ""
+
+#: apps/places/providers/osm.py:425
+msgid "ATM"
+msgstr ""
+
+#: apps/places/providers/osm.py:426
+msgid "ATMs"
+msgstr ""
+
+#: apps/places/providers/osm.py:427
+msgid "an ATM"
+msgstr ""
+
+#: apps/places/providers/osm.py:431
+msgid "bank"
+msgstr ""
+
+#: apps/places/providers/osm.py:432
+msgid "banks"
+msgstr ""
+
+#: apps/places/providers/osm.py:433
+msgid "a bank"
+msgstr ""
+
+#: apps/places/providers/osm.py:437
+msgid "bar"
+msgstr ""
+
+#: apps/places/providers/osm.py:438
+msgid "bars"
+msgstr ""
+
+#: apps/places/providers/osm.py:439
+msgid "a bar"
+msgstr ""
+
+#: apps/places/providers/osm.py:443
+msgid "bench"
+msgstr ""
+
+#: apps/places/providers/osm.py:444
+msgid "benches"
+msgstr ""
+
+#: apps/places/providers/osm.py:445
+msgid "a bench"
+msgstr ""
+
+#: apps/places/providers/osm.py:449
+msgid "bicycle rack"
+msgstr ""
+
+#: apps/places/providers/osm.py:450
+msgid "bicycle racks"
+msgstr ""
+
+#: apps/places/providers/osm.py:451
+msgid "a bicycle rack"
+msgstr ""
+
+#: apps/places/providers/osm.py:455
+msgid "café"
+msgstr ""
+
+#: apps/places/providers/osm.py:456
+msgid "cafés"
+msgstr ""
+
+#: apps/places/providers/osm.py:457
+msgid "a café"
+msgstr ""
+
+#: apps/places/providers/osm.py:461
+msgid "car park"
+msgstr ""
+
+#: apps/places/providers/osm.py:462
+msgid "car parks"
+msgstr ""
+
+#: apps/places/providers/osm.py:463
+msgid "a car park"
+msgstr ""
+
+#: apps/places/providers/osm.py:467
+msgid "cathedral"
+msgstr ""
+
+#: apps/places/providers/osm.py:468
+msgid "cathedrals"
+msgstr ""
+
+#: apps/places/providers/osm.py:469
+msgid "a cathedral"
+msgstr ""
+
+#: apps/places/providers/osm.py:473
+msgid "chapel"
+msgstr ""
+
+#: apps/places/providers/osm.py:474
+msgid "chapels"
+msgstr ""
+
+#: apps/places/providers/osm.py:475
+msgid "a chapel"
+msgstr ""
+
+#: apps/places/providers/osm.py:479
+msgid "church"
+msgstr ""
+
+#: apps/places/providers/osm.py:480
+msgid "churches"
+msgstr ""
+
+#: apps/places/providers/osm.py:481
+msgid "a church"
+msgstr ""
+
+#: apps/places/providers/osm.py:484 apps/places/providers/osm.py:532
+#: apps/places/providers/osm.py:562 apps/places/providers/osm.py:568
+#: apps/places/providers/osm.py:616 apps/places/providers/osm.py:640
+#: apps/places/providers/osm.py:646 apps/places/providers/osm.py:652
+#: apps/places/providers/osm.py:670
+msgid "Leisure"
+msgstr ""
+
+#: apps/places/providers/osm.py:485
+msgid "cinema"
+msgstr ""
+
+#: apps/places/providers/osm.py:486
+msgid "cinemas"
+msgstr ""
+
+#: apps/places/providers/osm.py:487
+msgid "a cinema"
+msgstr ""
+
+#: apps/places/providers/osm.py:491
+msgid "cycle shop"
+msgstr ""
+
+#: apps/places/providers/osm.py:492
+msgid "cycle shops"
+msgstr ""
+
+#: apps/places/providers/osm.py:493
+msgid "a cycle shop"
+msgstr ""
+
+#: apps/places/providers/osm.py:497
+msgid "dispensing pharmacy"
+msgstr ""
+
+#: apps/places/providers/osm.py:498
+msgid "dispensing pharmacies"
+msgstr ""
+
+#: apps/places/providers/osm.py:499
+msgid "a dispensing pharmacy"
+msgstr ""
+
+#: apps/places/providers/osm.py:503
+msgid "doctor's surgery"
+msgstr ""
+
+#: apps/places/providers/osm.py:504
+msgid "doctors' surgeries"
+msgstr ""
+
+#: apps/places/providers/osm.py:505
+msgid "a doctor's surgery"
+msgstr ""
+
+#: apps/places/providers/osm.py:509
+msgid "fast food outlet"
+msgstr ""
+
+#: apps/places/providers/osm.py:510
+msgid "fast food outlets"
+msgstr ""
+
+#: apps/places/providers/osm.py:511
+msgid "a fast food outlet"
+msgstr ""
+
+#: apps/places/providers/osm.py:515
+msgid "place to eat"
+msgstr ""
+
+#: apps/places/providers/osm.py:516
+msgid "places to eat"
+msgstr ""
+
+#: apps/places/providers/osm.py:517
+msgid "a place to eat"
+msgstr ""
+
+#: apps/places/providers/osm.py:521
+msgid "hospital"
+msgstr ""
+
+#: apps/places/providers/osm.py:522
+msgid "hospitals"
+msgstr ""
+
+#: apps/places/providers/osm.py:523
+msgid "a hospital"
+msgstr ""
+
+#: apps/places/providers/osm.py:527
+msgid "ice cream café"
+msgstr ""
+
+#: apps/places/providers/osm.py:528
+msgid "ice cream cafés"
+msgstr ""
+
+#: apps/places/providers/osm.py:529
+msgid "an ice cream café"
+msgstr ""
+
+#: apps/places/providers/osm.py:533
+msgid "ice rink"
+msgstr ""
+
+#: apps/places/providers/osm.py:534
+msgid "ice rinks"
+msgstr ""
+
+#: apps/places/providers/osm.py:535
+msgid "an ice rink"
+msgstr ""
+
+#: apps/places/providers/osm.py:539
+msgid "library"
+msgstr ""
+
+#: apps/places/providers/osm.py:540
+msgid "libraries"
+msgstr ""
+
+#: apps/places/providers/osm.py:541
+msgid "a library"
+msgstr ""
+
+#: apps/places/providers/osm.py:545
+msgid "mandir"
+msgstr ""
+
+#: apps/places/providers/osm.py:546
+msgid "mandirs"
+msgstr ""
+
+#: apps/places/providers/osm.py:547
+msgid "a mandir"
+msgstr ""
+
+#: apps/places/providers/osm.py:551
+msgid "place relating to health"
+msgstr ""
+
+#: apps/places/providers/osm.py:552
+msgid "places relating to health"
+msgstr ""
+
+#: apps/places/providers/osm.py:553
+msgid "a place relating to health"
+msgstr ""
+
+#: apps/places/providers/osm.py:557
+msgid "mosque"
+msgstr ""
+
+#: apps/places/providers/osm.py:558
+msgid "mosques"
+msgstr ""
+
+#: apps/places/providers/osm.py:559
+msgid "a mosque"
+msgstr ""
+
+#: apps/places/providers/osm.py:563
+msgid "museum"
+msgstr ""
+
+#: apps/places/providers/osm.py:564
+msgid "museums"
+msgstr ""
+
+#: apps/places/providers/osm.py:565
+msgid "a museum"
+msgstr ""
+
+#: apps/places/providers/osm.py:569
+msgid "park"
+msgstr ""
+
+#: apps/places/providers/osm.py:570
+msgid "parks"
+msgstr ""
+
+#: apps/places/providers/osm.py:571
+msgid "a park"
+msgstr ""
+
+#: apps/places/providers/osm.py:575
+msgid "park and ride"
+msgstr ""
+
+#: apps/places/providers/osm.py:576
+msgid "park and rides"
+msgstr ""
+
+#: apps/places/providers/osm.py:577
+msgid "a park and ride"
+msgstr ""
+
+#: apps/places/providers/osm.py:581
+msgid "pharmacy"
+msgstr ""
+
+#: apps/places/providers/osm.py:582
+msgid "pharmacies"
+msgstr ""
+
+#: apps/places/providers/osm.py:583
+msgid "a pharmacy"
+msgstr ""
+
+#: apps/places/providers/osm.py:587
+msgid "place of worship"
+msgstr ""
+
+#: apps/places/providers/osm.py:588
+msgid "places of worship"
+msgstr ""
+
+#: apps/places/providers/osm.py:589
+msgid "a place of worship"
+msgstr ""
+
+#: apps/places/providers/osm.py:593
+msgid "post box"
+msgstr ""
+
+#: apps/places/providers/osm.py:594
+msgid "post boxes"
+msgstr ""
+
+#: apps/places/providers/osm.py:595
+msgid "a post box"
+msgstr ""
+
+#: apps/places/providers/osm.py:599
+msgid "post office"
+msgstr ""
+
+#: apps/places/providers/osm.py:600
+msgid "post offices"
+msgstr ""
+
+#: apps/places/providers/osm.py:601
+msgid "a post office"
+msgstr ""
+
+#: apps/places/providers/osm.py:605
+msgid "pub"
+msgstr ""
+
+#: apps/places/providers/osm.py:606
+msgid "pubs"
+msgstr ""
+
+#: apps/places/providers/osm.py:607
+msgid "a pub"
+msgstr ""
+
+#: apps/places/providers/osm.py:611
+msgid "public library"
+msgstr ""
+
+#: apps/places/providers/osm.py:612
+msgid "public libraries"
+msgstr ""
+
+#: apps/places/providers/osm.py:613
+msgid "a public library"
+msgstr ""
+
+#: apps/places/providers/osm.py:617
+msgid "place to hire punts"
+msgstr ""
+
+#: apps/places/providers/osm.py:618
+msgid "places to hire punts"
+msgstr ""
+
+#: apps/places/providers/osm.py:619
+msgid "a place to hire punts"
+msgstr ""
+
+#: apps/places/providers/osm.py:623
+msgid "recycling facility"
+msgstr ""
+
+#: apps/places/providers/osm.py:624
+msgid "recycling facilities"
+msgstr ""
+
+#: apps/places/providers/osm.py:625
+msgid "a recycling facility"
+msgstr ""
+
+#: apps/places/providers/osm.py:629
+msgid "restaurant"
+msgstr ""
+
+#: apps/places/providers/osm.py:630
+msgid "restaurants"
+msgstr ""
+
+#: apps/places/providers/osm.py:631
+msgid "a restaurant"
+msgstr ""
+
+#: apps/places/providers/osm.py:635
+msgid "shop"
+msgstr ""
+
+#: apps/places/providers/osm.py:636
+msgid "shops"
+msgstr ""
+
+#: apps/places/providers/osm.py:637
+msgid "a shop"
+msgstr ""
+
+#: apps/places/providers/osm.py:641
+msgid "place relating to sport"
+msgstr ""
+
+#: apps/places/providers/osm.py:642
+msgid "places relating to sport"
+msgstr ""
+
+#: apps/places/providers/osm.py:643
+msgid "a place relating to sport"
+msgstr ""
+
+#: apps/places/providers/osm.py:647
+msgid "sports centre"
+msgstr ""
+
+#: apps/places/providers/osm.py:648
+msgid "sports centres"
+msgstr ""
+
+#: apps/places/providers/osm.py:649
+msgid "a sports centre"
+msgstr ""
+
+#: apps/places/providers/osm.py:653
+msgid "swimming pool"
+msgstr ""
+
+#: apps/places/providers/osm.py:654
+msgid "swimming pools"
+msgstr ""
+
+#: apps/places/providers/osm.py:655
+msgid "a swimming pool"
+msgstr ""
+
+#: apps/places/providers/osm.py:659
+msgid "synagogue"
+msgstr ""
+
+#: apps/places/providers/osm.py:660
+msgid "synagogues"
+msgstr ""
+
+#: apps/places/providers/osm.py:661
+msgid "a synagogue"
+msgstr ""
+
+#: apps/places/providers/osm.py:671
+msgid "theatre"
+msgstr ""
+
+#: apps/places/providers/osm.py:672
+msgid "theatres"
+msgstr ""
+
+#: apps/places/providers/osm.py:673
+msgid "a theatre"
+msgstr ""
+
+#: apps/places/providers/postcodes.py:93
+msgid "Uncategorised"
+msgstr ""
+
+#: apps/places/providers/postcodes.py:104
+msgid "postcode"
+msgstr ""
+
+#: apps/places/providers/postcodes.py:105
+msgid "a postcode"
+msgstr ""
+
+#: apps/places/providers/postcodes.py:106
+msgid "postcodes"
+msgstr ""
+
+#. Translators: This refers to arrival times of trains, in minutes
+#: apps/places/providers/tfl.py:75
+msgid "DUE"
+msgstr ""
+
+#: apps/places/providers/tfl.py:75
+#, python-format
+msgid "%d mins"
+msgstr ""
+
+#: apps/places/templates/places/category_detail.html:14
+#: apps/places/templates/places/nearby_detail.html:14
+#, python-format
+msgid "Found %(count)s %(name)s"
+msgid_plural "Found %(count)s %(name_plural)s"
+msgstr[0] ""
+msgstr[1] ""
+
+#: apps/places/templates/places/category_detail.html:18
+#: apps/places/templates/places/nearby_detail.html:19
+msgid "that is also"
+msgid_plural "that are also"
+msgstr[0] ""
+msgstr[1] ""
+
+#: apps/places/templates/places/category_detail.html:21
+#: apps/places/templates/places/nearby_detail.html:23
+msgid "and"
+msgstr ""
+
+#: apps/places/templates/places/category_detail.html:31
+#: apps/places/templates/places/nearby_detail.html:32
+msgid "Limit to:"
+msgstr ""
+
+#: apps/places/templates/places/category_detail.html:56
+#, python-format
+msgid "Page <span class=\"current-page\">%(page)s</span> of %(pages)s"
+msgstr ""
+
+#: apps/places/templates/places/entity_detail.html:19
+msgid "Travel Alert"
+msgstr ""
+
+#: apps/places/templates/places/entity_detail.html:30
+#: apps/places/templates/places/service_details.html:120
+#: apps/places/templates/places/update_osm.html:42
+msgid "Map"
+msgstr ""
+
+#: apps/places/templates/places/entity_detail.html:34
+#, python-format
+msgid "Real-time information from stop %(stop_id)s"
+msgstr ""
+
+#: apps/places/templates/places/entity_detail.html:38
+msgid "Real-time information"
+msgstr ""
+
+#: apps/places/templates/places/entity_detail.html:51
+msgid "Find things near here"
+msgstr ""
+
+#: apps/places/templates/places/entity_detail.html:56
+#, python-format
+msgid "We do not yet have a location for this %(type_name)s."
+msgstr ""
+
+#: apps/places/templates/places/entity_without_location.html:5
+#: apps/places/templates/places/entity_without_location.html:17
+#, python-format
+msgid "%(type_name)s near %(title)s"
+msgstr ""
+
+#: apps/places/templates/places/entity_without_location.html:7
+#, python-format
+msgid "%(type_name)s nearby"
+msgstr ""
+
+#: apps/places/templates/places/entity_without_location.html:21
+msgid ""
+"Unfortunately, we do not have a location for this object, and so cannot tell "
+"you what is near it."
+msgstr ""
+
+#: apps/places/templates/places/index.html:9
+#: apps/places/templates/places/index.html:12
+#: apps/places/templates/places/index.html:15
+msgid "Search Places"
+msgstr ""
+
+#: apps/places/templates/places/index.html:23
+msgid "Search by place name, bus stop number e.g. E7 or 69323498 or postcode"
+msgstr ""
+
+#: apps/places/templates/places/index.html:34
+msgid "Points of Interest"
+msgstr ""
+
+#: apps/places/templates/places/index.html:38
+msgid "Nearby"
+msgstr ""
+
+#: apps/places/templates/places/index.html:39
+msgid "By Category"
+msgstr ""
+
+#: apps/places/templates/places/nearby_detail.html:12
+#, python-format
+msgid "Found %(count)s %(name)s near %(title)s"
+msgid_plural "Found %(count)s %(name_plural)s near %(title)s"
+msgstr[0] ""
+msgstr[1] ""
+
+#: apps/places/templates/places/nearby_detail.html:63
+#, python-format
+msgid "%(type_name)s, about %(distance)sm %(bearing)s"
+msgstr ""
+
+#: apps/places/templates/places/nearby_detail.html:65
+#: apps/places/templates/places/nearby_detail.html:74
+#, python-format
+msgid "%(distance)sm %(bearing)s"
+msgstr ""
+
+#: apps/places/templates/places/nearby_detail.html:87
+#, python-format
+msgid "Find more %(type_name)s"
+msgstr ""
+
+#: apps/places/templates/places/nearby_list.html:25
+#, python-format
+msgid "(%(quantity)s within %(distance)sm)"
+msgstr ""
+
+#: apps/places/templates/places/service_details.html:9
+msgid "Live Train Information"
+msgstr ""
+
+#: apps/places/templates/places/service_details.html:16
+#, python-format
+msgid ""
+"There is currently a problem retrieving live departure information from the "
+"National Rail web site. Departure information may still be accessed<a href="
+"\"http://pda.ojp.nationalrail.co.uk/en/pj/ldbboard/dep/"
+"%(entity.identifiers.crs)s\">directly from their web site</a>."
+msgstr ""
+
+#: apps/places/templates/places/service_details.html:24
+#, python-format
+msgid "Operated by %(operator)s"
+msgstr ""
+
+#: apps/places/templates/places/service_details.html:28
+#, python-format
+msgid "Calling at platform %(platform)s"
+msgstr ""
+
+#: apps/places/templates/places/service_details.html:42
+#: apps/places/templates/places/service_details.html:58
+#: apps/places/templates/places/service_details.html:90
+msgid "Calling Point"
+msgstr ""
+
+#: apps/places/templates/places/service_details.html:43
+#: apps/places/templates/places/service_details.html:59
+#: apps/places/templates/places/service_details.html:91
+#: apps/places/templates/places/metadata/ldb.html:29
+msgid "Scheduled"
+msgstr ""
+
+#: apps/places/templates/places/service_details.html:44
+#: apps/places/templates/places/service_details.html:60
+#: apps/places/templates/places/service_details.html:92
+msgid "Expected / Actual"
+msgstr ""
+
+#: apps/places/templates/places/service_details.html:53
+#, python-format
+msgid "This train then merges with a train from %(location)s"
+msgstr ""
+
+#: apps/places/templates/places/service_details.html:85
+#, python-format
+msgid "This train then splits to go to %(destination)s"
+msgstr ""
+
+#: apps/places/templates/places/update_osm.html:5
+#, python-format
+msgid "Update %(title)s"
+msgstr ""
+
+#: apps/places/templates/places/update_osm.html:15
+msgid "Important information"
+msgstr ""
+
+#: apps/places/templates/places/update_osm.html:19
+#, python-format
+msgid ""
+"Thank you for wanting to improve the data provided by %(site_name)s. "
+"However, before you submit any changes, you should be aware of the following "
+"terms."
+msgstr ""
+
+#: apps/places/templates/places/update_osm.html:23
+#, python-format
+msgid ""
+"Your contribution will be released into the Public Domain, and then "
+"submitted to OpenStreetMap by %(site_name)s."
+msgstr ""
+
+#: apps/places/templates/places/update_osm.html:27
+#, python-format
+msgid ""
+"Your changes will be checked by a member of the %(site_name)s team before "
+"being uploaded. %(site_name)s may tidy or normalise the data you provide "
+"before they are uploaded using the %(site_name)s OSM account."
+msgstr ""
+
+#: apps/places/templates/places/update_osm.html:31
+msgid ""
+"If you would like to be named as the original author of the changes, please "
+"provide your name and tick the attribution box. Your e-mail address will "
+"never be submitted to OSM, but may be used by us to clarify any changes you "
+"provide."
+msgstr ""
+
+#: apps/places/templates/places/update_osm.html:36
+#, python-format
+msgid ""
+"You may be interested to read <a href=\"%(osm_url)s\">further information "
+"about OpenStreetMap and other ways in which one may contribute</a>."
+msgstr ""
+
+#: apps/places/templates/places/update_osm.html:44
+#, python-format
+msgid ""
+"You are submitting an update to the %(type_name)s <em>&quot;%(title)s&quot;</"
+"em>."
+msgstr ""
+
+#: apps/places/templates/places/update_osm.html:55
+msgid ""
+"Not all fields will be relevant to the item you are updating, and all fields "
+"are optional."
+msgstr ""
+
+#: apps/places/templates/places/update_osm.html:62
+msgid "Provide your name and tick the box to be attributed for the change."
+msgstr ""
+
+#: apps/places/templates/places/update_osm.html:76
+msgid ""
+"Your e-mail address is useful should we want to clarify any change you make."
+msgstr ""
+
+#: apps/places/templates/places/update_osm.html:86
+msgid "The following are general properties for most types of item."
+msgstr ""
+
+#: apps/places/templates/places/update_osm.html:116
+msgid ""
+"This next two about food apply mostly to pubs. For things that obviously "
+"serve food (e.g. restaurants), feel free to leave this empty."
+msgstr ""
+
+#: apps/places/templates/places/update_osm.html:130
+msgid ""
+"If there is an ATM accessible at all hours here, please set this. This may "
+"be left blank if you are editing an ATM."
+msgstr ""
+
+#: apps/places/templates/places/update_osm.html:140
+msgid ""
+"The following only apply to post boxes. The reference is normally printed at "
+"the bottom of the details on the post box."
+msgstr ""
+
+#: apps/places/templates/places/update_osm.html:154
+msgid "For car parks and bicycle parking, please provide the number of spaces."
+msgstr ""
+
+#: apps/places/templates/places/update_osm.html:164
+msgid ""
+"If you have any other information you think should be included, please tell "
+"us about it here."
+msgstr ""
+
+#: apps/places/templates/places/update_osm.html:174
+msgid ""
+"If you are happy with your changes and agree to the terms above, you may now "
+"click 'Submit'."
+msgstr ""
+
+#: apps/places/templates/places/update_osm_done.html:10
+msgid "Thank you"
+msgstr ""
+
+#: apps/places/templates/places/update_osm_done.html:14
+#, python-format
+msgid ""
+"Your changes have been submitted and will be checked shortly. Thank you for "
+"contributing to both %(site_name)s and OpenStreetMap!"
+msgstr ""
+
+#: apps/places/templates/places/update_osm_done.html:18
+msgid "You may now wish to head back"
+msgstr ""
+
+#: apps/places/templates/places/metadata/ldb.html:5
+msgid "departures"
+msgstr ""
+
+#: apps/places/templates/places/metadata/ldb.html:21
+msgid "Origin"
+msgstr ""
+
+#: apps/places/templates/places/metadata/ldb.html:23
+#: apps/places/templates/places/metadata/real_time_information.html:26
+msgid "Destination"
+msgstr ""
+
+#: apps/places/templates/places/metadata/ldb.html:27
+msgid "Plat."
+msgstr ""
+
+#: apps/places/templates/places/metadata/ldb.html:30
+#: apps/places/templates/places/metadata/real_time_information.html:27
+msgid "Expected"
+msgstr ""
+
+#: apps/places/templates/places/metadata/ldb.html:37
+msgid ""
+"There is currently a problem retrieving live departure information from the "
+"National Rail web site."
+msgstr ""
+
+#: apps/places/templates/places/metadata/ldb.html:38
+#, python-format
+msgid ""
+"Departure information may still be accessed<a href=\"http://pda.ojp."
+"nationalrail.co.uk/en/pj/ldbboard/dep/%(crs)s\">directly from their web "
+"site</a>."
+msgstr ""
+
+#: apps/places/templates/places/metadata/ldb.html:64
+msgid "Circular Route"
+msgstr ""
+
+#: apps/places/templates/places/metadata/ldb.html:94
+#: apps/places/templates/places/metadata/ldb.html:99
+msgid "View arrivals board"
+msgstr ""
+
+#: apps/places/templates/places/metadata/ldb.html:96
+msgid "View departures board"
+msgstr ""
+
+#: apps/places/templates/places/metadata/osm.html:7
+msgid "Information from OpenStreetMap"
+msgstr ""
+
+#: apps/places/templates/places/metadata/osm.html:26
+#, python-format
+msgid "Call <em>%(title)s</em>"
+msgstr ""
+
+#: apps/places/templates/places/metadata/osm.html:35
+msgid "Wikipedia article"
+msgstr ""
+
+#: apps/places/templates/places/metadata/osm.html:64
+msgid "Suggest a correction"
+msgstr ""
+
+#: apps/places/templates/places/metadata/park_and_ride.html:5
+msgid "Car Park Information"
+msgstr ""
+
+#. Translators: As in, car parking spaces
+#: apps/places/templates/places/metadata/park_and_ride.html:11
+#: apps/places/templates/places/metadata/park_and_ride.html:18
+#: apps/transport/templates/transport/index.html:120
+#: apps/transport/templates/transport/index.html:125
+msgid "Spaces"
+msgstr ""
+
+#. Translators: As in, car parking spaces
+#: apps/places/templates/places/metadata/park_and_ride.html:16
+#: apps/transport/templates/transport/index.html:123
+msgid "Space information currently unavailable"
+msgstr ""
+
+#: apps/places/templates/places/metadata/real_time_information.html:15
+msgid "Sorry, there is currently no real time information for this stop."
+msgstr ""
+
+#: apps/places/templates/places/metadata/real_time_information.html:25
+msgid "Service"
+msgstr ""
+
+#: apps/places/templates/places/metadata/real_time_information.html:40
+msgid "No further info"
+msgstr ""
+
+#: apps/places/templates/places/metadata/transit_status.html:5
+#, python-format
+msgid "%(service_name)s line status"
+msgstr ""
+
+#: apps/places/templates/places/metadata/transit_status.html:10
+msgid "Line"
+msgstr ""
+
+#: apps/places/templates/places/metadata/transit_status.html:11
+#: apps/sakai/templates/sakai/poll/index.html:17
+#: apps/sakai/templates/sakai/signup/detail.html:126
+msgid "Status"
+msgstr ""
+
+#: apps/podcasts/models.py:10 apps/podcasts/models.py:125
+#: apps/podcasts/templates/podcasts/category_detail.html:14
+msgid "audio"
+msgstr ""
+
+#: apps/podcasts/models.py:11 apps/podcasts/models.py:118
+#: apps/podcasts/models.py:127
+#: apps/podcasts/templates/podcasts/category_detail.html:15
+msgid "video"
+msgstr ""
+
+#: apps/podcasts/models.py:12 apps/podcasts/models.py:118
+msgid "document"
+msgstr ""
+
+#: apps/podcasts/models.py:29 apps/podcasts/views.py:53
+msgid "Podcast category"
+msgstr ""
+
+#: apps/podcasts/models.py:30
+msgid "Podcast categories"
+msgstr ""
+
+#: apps/podcasts/models.py:66
+msgid "Podcast feed"
+msgstr ""
+
+#: apps/podcasts/models.py:67
+msgid "Podcast feeds"
+msgstr ""
+
+#: apps/podcasts/models.py:90
+msgid "Podcast item"
+msgstr ""
+
+#: apps/podcasts/models.py:91
+msgid "Podcast items"
+msgstr ""
+
+#: apps/podcasts/models.py:94 apps/podcasts/models.py:98
+msgid "MP3 audio"
+msgstr ""
+
+#: apps/podcasts/models.py:95 apps/podcasts/models.py:96
+#: apps/podcasts/models.py:105
+msgid "MP4 video"
+msgstr ""
+
+#: apps/podcasts/models.py:97
+msgid "HTML document"
+msgstr ""
+
+#: apps/podcasts/models.py:99
+msgid "WMV video"
+msgstr ""
+
+#: apps/podcasts/models.py:100
+msgid "plain text"
+msgstr ""
+
+#: apps/podcasts/models.py:101
+msgid "PDF document"
+msgstr ""
+
+#: apps/podcasts/models.py:102 apps/podcasts/models.py:106
+msgid "MP4 audio"
+msgstr ""
+
+#: apps/podcasts/models.py:104
+msgid "MPEG video"
+msgstr ""
+
+#: apps/podcasts/models.py:107
+msgid "ePub eBook"
+msgstr ""
+
+#: apps/podcasts/models.py:135 apps/podcasts/models.py:136
+msgid "Podcast enclosed data"
+msgstr ""
+
+#: apps/podcasts/views.py:24
+msgid "Browse and listen to podcasts from around the University."
+msgstr ""
+
+#: apps/podcasts/views.py:115 apps/podcasts/views.py:116
+msgid "podcast"
+msgstr ""
+
+#: apps/podcasts/views.py:118
+#: apps/podcasts/templates/podcasts/podcast_detail.html:13
+msgid "Podcast"
+msgstr ""
+
+#: apps/podcasts/templates/podcasts/category_detail.html:9
+msgid "Show:"
+msgstr ""
+
+#: apps/podcasts/templates/podcasts/category_detail.html:16
+msgid "all"
+msgstr ""
+
+#: apps/podcasts/templates/podcasts/category_detail.html:41
+msgid "Sorry, there are no podcasts in your language."
+msgstr ""
+
+#: apps/podcasts/templates/podcasts/category_detail.html:45
+msgid "View podcasts in all languages"
+msgstr ""
+
+#: apps/podcasts/templates/podcasts/index.html:9
+msgid ""
+"It looks like you're using an Apple device! You can also get all the "
+"University's podcasts via your iTunes U app, which gives you extra features "
+"like downloads for later listening/viewing."
+msgstr ""
+
+#: apps/podcasts/templates/podcasts/index.html:10
+msgid "Please note that this will close Safari."
+msgstr ""
+
+#: apps/podcasts/templates/podcasts/index.html:20
+msgid "Go to iTunes U"
+msgstr ""
+
+#: apps/podcasts/templates/podcasts/index.html:21
+msgid "Stay here"
+msgstr ""
+
+#: apps/podcasts/templates/podcasts/index.html:31
+#: apps/podcasts/templates/podcasts/index.html:37
+msgid "Search Podcasts"
+msgstr ""
+
+#: apps/podcasts/templates/podcasts/index.html:34
+msgid "Search podcasts"
+msgstr ""
+
+#: apps/podcasts/templates/podcasts/index.html:44
+msgid "Try searching for a podcast by subject, name or author"
+msgstr ""
+
+#: apps/podcasts/templates/podcasts/index.html:53
+msgid "By category"
+msgstr ""
+
+#: apps/podcasts/templates/podcasts/podcast_detail.html:56
+msgid "Published:"
+msgstr ""
+
+#: apps/sakai/views.py:107
+msgid "Sign-ups"
+msgstr ""
+
+#: apps/sakai/views.py:176 apps/sakai/views.py:301
+#: apps/sakai/templates/sakai/permission_denied.html:7
+msgid "Permission Denied"
+msgstr ""
+
+#: apps/sakai/views.py:231
+msgid "User information"
+msgstr ""
+
+#: apps/sakai/views.py:391
+msgid "Surveys"
+msgstr ""
+
+#: apps/sakai/views.py:430
+msgid "Authentication required"
+msgstr ""
+
+#: apps/sakai/templates/sakai/index.html:6
+msgid "WebLearn Preview"
+msgstr ""
+
+#: apps/sakai/templates/sakai/index.html:10
+#, python-format
+msgid "Hello %(name)s, welcome to mobile WebLearn preview!"
+msgstr ""
+
+#: apps/sakai/templates/sakai/index.html:12
+msgid "Hello, welcome to mobile WebLearn preview!"
+msgstr ""
+
+#: apps/sakai/templates/sakai/index.html:15
+msgid ""
+"You'll see this section expand and improve over time and we would really "
+"like to hear what you think, so do drop us a note via the link at the bottom "
+"of the page."
+msgstr ""
+
+#: apps/sakai/templates/sakai/index.html:21
+msgid "Announcements"
+msgstr ""
+
+#: apps/sakai/templates/sakai/index.html:23
+msgid "log in for more"
+msgstr ""
+
+#: apps/sakai/templates/sakai/index.html:31
+msgid "No announcements right now"
+msgstr ""
+
+#: apps/sakai/templates/sakai/index.html:38
+msgid "Tools"
+msgstr ""
+
+#: apps/sakai/templates/sakai/permission_denied.html:10
+msgid "You don't have permission to see this item."
+msgstr ""
+
+#: apps/sakai/templates/sakai/sites.html:3
+msgid "Sites"
+msgstr ""
+
+#: apps/sakai/templates/sakai/direct/index.html:8
+msgid "Name"
+msgstr ""
+
+#: apps/sakai/templates/sakai/direct/index.html:12
+msgid "Username"
+msgstr ""
+
+#: apps/sakai/templates/sakai/evaluation/closed.html:6
+msgid "This survey has closed."
+msgstr ""
+
+#: apps/sakai/templates/sakai/evaluation/index.html:7
+msgid "Current surveys"
+msgstr ""
+
+#: apps/sakai/templates/sakai/evaluation/index.html:10
+msgid ""
+"Thank you for taking part in the survey; your responses have been safely "
+"submitted."
+msgstr ""
+
+#: apps/sakai/templates/sakai/evaluation/index.html:25
+#, python-format
+msgid "%(sitename)s, open from %(start)s until %(end)s"
+msgstr ""
+
+#: apps/sakai/templates/sakai/evaluation/index.html:36
+msgid "Return to survey list"
+msgstr ""
+
+#: apps/sakai/templates/sakai/evaluation/index.html:40
+msgid "There are currently no surveys available to complete."
+msgstr ""
+
+#: apps/sakai/templates/sakai/poll/detail.html:26
+#, python-format
+msgid ""
+"You are unable to vote in this poll as it closed %(time_since_closed)s ago."
+msgstr ""
+
+#: apps/sakai/templates/sakai/poll/detail.html:28
+#, python-format
+msgid "This poll has not yet opened. Please try again in %(time_until_open)s."
+msgstr ""
+
+#: apps/sakai/templates/sakai/poll/detail.html:35
+#, python-format
+msgid "This poll closes %(time_until_close)s from now."
+msgstr ""
+
+#: apps/sakai/templates/sakai/poll/detail.html:41
+#, python-format
+msgid ""
+"You must select at least %(min_options)s and at most %(max_options)s options."
+msgstr ""
+
+#: apps/sakai/templates/sakai/poll/detail.html:43
+#, python-format
+msgid "You must select %(options)s options."
+msgstr ""
+
+#: apps/sakai/templates/sakai/poll/detail.html:49
+#, python-format
+msgid "You can select up to %(max_options)s options."
+msgstr ""
+
+#: apps/sakai/templates/sakai/poll/detail.html:64
+#: apps/sakai/templates/sakai/poll/detail.html:110
+msgid "Vote"
+msgstr ""
+
+#: apps/sakai/templates/sakai/poll/detail.html:65
+msgid "Option detail"
+msgstr ""
+
+#: apps/sakai/templates/sakai/poll/index.html:16
+msgid "Question"
+msgstr ""
+
+#: apps/sakai/templates/sakai/poll/index.html:28
+#, python-format
+msgid "Closes in <strong>%(timeuntilclose)s</strong>."
+msgstr ""
+
+#: apps/sakai/templates/sakai/poll/index.html:30
+#, python-format
+msgid ""
+"Opens in <strong>%(time_until_open)s</strong> for <strong>%(time_open)s</"
+"strong>."
+msgstr ""
+
+#: apps/sakai/templates/sakai/poll/index.html:35
+msgid "Vote!"
+msgstr ""
+
+#: apps/sakai/templates/sakai/poll/index.html:35
+msgid "View"
+msgstr ""
+
+#: apps/sakai/templates/sakai/poll/index.html:47
+msgid "Polls"
+msgstr ""
+
+#: apps/sakai/templates/sakai/poll/index.html:50
+msgid "There aren't currently any polls."
+msgstr ""
+
+#: apps/sakai/templates/sakai/signup/detail.html:122
+msgid "Organiser"
+msgstr ""
+
+#: apps/sakai/templates/sakai/signup/detail.html:128
+#, python-format
+msgid "Open to sign up until %(signup_deadline)s"
+msgstr ""
+
+#: apps/sakai/templates/sakai/signup/detail.html:131
+msgid "Sign up deadline has passed"
+msgstr ""
+
+#: apps/sakai/templates/sakai/signup/detail.html:134
+msgid "This meeting has already happened!"
+msgstr ""
+
+#: apps/sakai/templates/sakai/signup/detail.html:136
+#, python-format
+msgid "Sign up will open on %(open_time)s"
+msgstr ""
+
+#: apps/sakai/templates/sakai/signup/detail.html:155
+#, python-format
+msgid "Places available: %(places_left)s/%(capacity)s"
+msgstr ""
+
+#: apps/sakai/templates/sakai/signup/detail.html:166
+#, python-format
+msgid "You and %(attendee_number)s other"
+msgid_plural "You and %(attendee_number)s others"
+msgstr[0] ""
+msgstr[1] ""
+
+#: apps/sakai/templates/sakai/signup/detail.html:169
+msgid "No one yet"
+msgstr ""
+
+#: apps/sakai/templates/sakai/signup/detail.html:171
+#, python-format
+msgid "%(attendee_number)s attendee"
+msgid_plural "%(attendee_number)s attendees"
+msgstr[0] ""
+msgstr[1] ""
+
+#: apps/sakai/templates/sakai/signup/detail.html:178
+msgid "You're signed up"
+msgstr ""
+
+#: apps/sakai/templates/sakai/signup/detail.html:180
+msgid "You're on the waiting list"
+msgstr ""
+
+#: apps/sakai/templates/sakai/signup/detail.html:201
+#: auth/templates/auth/oauth/authorize.html:25
+msgid "Cancel"
+msgstr ""
+
+#: apps/sakai/templates/sakai/signup/detail.html:205
+msgid "Leave waiting list"
+msgstr ""
+
+#: apps/sakai/templates/sakai/signup/detail.html:211
+msgid "Move here"
+msgstr ""
+
+#: apps/sakai/templates/sakai/signup/detail.html:214
+msgid "Sign up"
+msgstr ""
+
+#: apps/sakai/templates/sakai/signup/detail.html:218
+msgid "Join waiting list"
+msgstr ""
+
+#: apps/sakai/templatetags/molly_sakai.py:34
+msgid "Signed Up"
+msgstr ""
+
+#: apps/sakai/templatetags/molly_sakai.py:35
+msgid "On Waiting List"
+msgstr ""
+
+#: apps/sakai/templatetags/molly_sakai.py:36
+msgid "Waiting List Available"
+msgstr ""
+
+#: apps/sakai/templatetags/molly_sakai.py:37
+msgid "Full"
+msgstr ""
+
+#: apps/sakai/templatetags/molly_sakai.py:38
+msgid "Available"
+msgstr ""
+
+#: apps/search/forms.py:29
+msgid "Show all"
+msgstr ""
+
+#: apps/search/templates/search/index.html:55
+msgid "Sorry, your search returned no results."
+msgstr ""
+
+#: apps/service_status/views.py:19
+msgid "Check whether OUCS and OLIS services are available"
+msgstr ""
+
+#: apps/service_status/templates/service_status/index.html:8
+#, python-format
+msgid "%(name)s <small>at %(updated_date)s</small>"
+msgstr ""
+
+#: apps/service_status/templates/service_status/index.html:11
+msgid "Service announcements"
+msgstr ""
+
+#: apps/service_status/templates/service_status/index.html:24
+msgid "Services"
+msgstr ""
+
+#: apps/stats/views.py:21 apps/stats/templates/stats/index.html:12
+msgid "Slow Pages"
+msgstr ""
+
+#: apps/stats/views.py:46
+msgid "Popular Pages"
+msgstr ""
+
+#: apps/stats/views.py:56 apps/stats/templates/stats/index.html:11
+msgid "Most Popular Pages"
+msgstr ""
+
+#: apps/stats/views.py:72
+msgid "Popular 404s"
+msgstr ""
+
+#: apps/stats/views.py:82 apps/stats/templates/stats/index.html:13
+msgid "Most Popular 404s"
+msgstr ""
+
+#: apps/stats/views.py:98
+msgid "Popular Devices"
+msgstr ""
+
+#: apps/stats/views.py:120
+msgid "Stats"
+msgstr ""
+
+#: apps/stats/templates/stats/index.html:7
+msgid "Hit Analysis"
+msgstr ""
+
+#: apps/stats/templates/stats/index.html:14
+msgid "Most Popular Devices"
+msgstr ""
+
+#: apps/stats/templates/stats/popular_devices.html:13
+msgid "Device"
+msgstr ""
+
+#: apps/stats/templates/stats/popular_devices.html:14 templates/base.html:179
+#: templates/base.html.py:184 templates/base.html:214
+msgid "Share"
+msgstr ""
+
+#: apps/stats/templates/stats/popular_pages.html:13
+#: apps/stats/templates/stats/slow_pages.html:13
+msgid "Page"
+msgstr ""
+
+#: apps/stats/templates/stats/popular_pages.html:14
+#: apps/stats/templates/stats/slow_pages.html:15
+msgid "Requests"
+msgstr ""
+
+#: apps/stats/templates/stats/slow_pages.html:7
+msgid "Pages that take a long time to generate (top 20)"
+msgstr ""
+
+#: apps/stats/templates/stats/slow_pages.html:14
+msgid "Average Generation Time"
+msgstr ""
+
+#: apps/stats/templates/stats/slow_pages.html:23
+#, python-format
+msgid "%(time)s s"
+msgstr ""
+
+#: apps/transport/providers/tfl.py:31
+msgid "London Underground"
+msgstr ""
+
+#: apps/transport/templates/transport/index.html:10
+#: apps/transport/templates/transport/index.html:29
+msgid "Bus Stops"
+msgstr ""
+
+#: apps/transport/templates/transport/index.html:14
+#: apps/transport/templates/transport/index.html:33
+#: apps/transport/templates/transport/index.html:99
+msgid "Park and Rides"
+msgstr ""
+
+#: apps/transport/templates/transport/index.html:18
+#: apps/transport/templates/transport/index.html:37
+msgid "Train Departure Boards"
+msgstr ""
+
+#: apps/transport/templates/transport/index.html:22
+#: apps/transport/templates/transport/index.html:41
+msgid "Travel News"
+msgstr ""
+
+#: apps/transport/templates/transport/index.html:58
+#: apps/transport/templates/transport/index.html:86
+#: favourites/templates/favourite.html:22
+msgid "Favourite"
+msgstr ""
+
+#: apps/transport/templates/transport/index.html:64
+#, python-format
+msgid "(about %(distance)sm %(bearing)s)"
+msgstr ""
+
+#: apps/transport/templates/transport/index.html:80
+msgid "There is currently no real time information from this stop."
+msgstr ""
+
+#: apps/transport/templates/transport/index.html:89
+#, python-format
+msgid "View nearby %(entity_type)s"
+msgstr ""
+
+#: apps/transport/templates/transport/index.html:142
+msgid "Travel alerts"
+msgstr ""
+
+#: apps/weather/models.py:6
+msgid "observation"
+msgstr ""
+
+#: apps/weather/models.py:7
+msgid "forecast"
+msgstr ""
+
+#. Translators: Weather pressure states
+#: apps/weather/models.py:12
+msgid "rising"
+msgstr ""
+
+#: apps/weather/models.py:13
+msgid "falling"
+msgstr ""
+
+#: apps/weather/models.py:14
+msgid "steady"
+msgstr ""
+
+#: apps/weather/models.py:15
+msgid "no change"
+msgstr ""
+
+#: apps/weather/models.py:19
+msgid "very poor visibility"
+msgstr ""
+
+#: apps/weather/models.py:20
+msgid "poor visibility "
+msgstr ""
+
+#: apps/weather/models.py:21
+msgid "very good visibility"
+msgstr ""
+
+#: apps/weather/models.py:22
+msgid "good visibility"
+msgstr ""
+
+#: apps/weather/models.py:23
+msgid "dense fog"
+msgstr ""
+
+#: apps/weather/models.py:24 apps/weather/models.py:36
+msgid "fog"
+msgstr ""
+
+#: apps/weather/models.py:25
+msgid "excellent visibility"
+msgstr ""
+
+#: apps/weather/models.py:26
+msgid "moderate visibility"
+msgstr ""
+
+#: apps/weather/models.py:30
+msgid "sunny intervals"
+msgstr ""
+
+#: apps/weather/models.py:31
+msgid "grey cloud"
+msgstr ""
+
+#: apps/weather/models.py:32
+msgid "heavy rain"
+msgstr ""
+
+#: apps/weather/models.py:33
+msgid "sunny"
+msgstr ""
+
+#: apps/weather/models.py:34
+msgid "light rain"
+msgstr ""
+
+#: apps/weather/models.py:35
+msgid "partly cloudy"
+msgstr ""
+
+#: apps/weather/models.py:37
+msgid "white cloud"
+msgstr ""
+
+#: apps/weather/models.py:38
+msgid "thunder storm"
+msgstr ""
+
+#: apps/weather/models.py:39
+msgid "mist"
+msgstr ""
+
+#: apps/weather/models.py:40
+msgid "thundery shower"
+msgstr ""
+
+#: apps/weather/models.py:41
+msgid "light rain shower"
+msgstr ""
+
+#: apps/weather/models.py:42
+msgid "clear sky"
+msgstr ""
+
+#: apps/weather/models.py:43
+msgid "drizzle"
+msgstr ""
+
+#: apps/weather/models.py:44
+msgid "hail"
+msgstr ""
+
+#: apps/weather/models.py:45
+msgid "light snow"
+msgstr ""
+
+#: apps/weather/models.py:46
+msgid "snow"
+msgstr ""
+
+#: apps/weather/models.py:47
+msgid "heavy snow"
+msgstr ""
+
+#: apps/weather/models.py:48
+msgid "n/a"
+msgstr ""
+
+#: apps/weather/models.py:74
+msgid "low"
+msgstr ""
+
+#: apps/weather/models.py:75
+msgid "medium"
+msgstr ""
+
+#: apps/weather/models.py:76
+msgid "high"
+msgstr ""
+
+#: apps/weather/templates/weather/index.html:12
+#, python-format
+msgid "at %(observation_time)s"
+msgstr ""
+
+#: apps/weather/templates/weather/index.html:22
+#, python-format
+msgid " %(temperature)s&deg;C"
+msgstr ""
+
+#: apps/weather/templates/weather/index.html:23
+#, python-format
+msgid "%(wind_speed)smph %(wind_direction)s"
+msgstr ""
+
+#: apps/weather/templates/weather/index.html:24
+#, python-format
+msgid "%(humidity)s%% Relative Humidity"
+msgstr ""
+
+#: apps/weather/templates/weather/index.html:25
+#, python-format
+msgid "%(pressure)s mbar and %(pressure_change)s"
+msgstr ""
+
+#: apps/weather/templates/weather/index.html:33
+msgid "Forecast"
+msgstr ""
+
+#: apps/weather/templates/weather/index.html:41
+#: apps/weather/templates/weather/index.html:42
+#, python-format
+msgid "%(temperature)s&deg;C"
+msgstr ""
+
+#: apps/webcams/views.py:20
+msgid "View webcams from around the city and University"
+msgstr ""
+
+#: apps/webcams/views.py:38
+#, python-format
+msgid "<strong>Webcam</strong>, %(description)s"
+msgstr ""
+
+#: apps/webcams/views.py:49
+msgid "Webcam"
+msgstr ""
+
+#: apps/webcams/templates/webcams/webcam_detail.html:24
+msgid "Webcam Image"
+msgstr ""
+
+#: apps/webcams/templates/webcams/webcam_detail.html:28
+msgid ""
+"Unfortunately, this webcam is currently unavailable. Please try again later."
+msgstr ""
+
+#: auth/forms.py:21
+msgid "Old PIN"
+msgstr ""
+
+#: auth/forms.py:25
+msgid "New PIN"
+msgstr ""
+
+#: auth/forms.py:29
+msgid "Repeat PIN"
+msgstr ""
+
+#: auth/views.py:62
+msgid "Session expired"
+msgstr ""
+
+#: auth/views.py:106
+msgid "Authentication preferences"
+msgstr ""
+
+#: auth/views.py:151 auth/templates/auth/clear_session.html:10
+#: auth/templates/auth/clear_session.html:16
+msgid "Clear session"
+msgstr ""
+
+#: auth/templates/auth/clear_session.html:11
+msgid ""
+"Clearing your session will make all your authenticated services unavailable "
+"from this phone."
+msgstr ""
+
+#: auth/templates/auth/clear_session.html:12
+msgid ""
+"If you are signed into any external services, you may wish to close your "
+"browser."
+msgstr ""
+
+#: auth/templates/auth/index.html:12
+msgid "Bound devices"
+msgstr ""
+
+#: auth/templates/auth/index.html:13
+msgid ""
+"These devices are currently set up with access to the authenticated services "
+"listed below. You may remove access from devices you no longer need."
+msgstr ""
+
+#: auth/templates/auth/index.html:19
+msgid "Device name"
+msgstr ""
+
+#: auth/templates/auth/index.html:20
+msgid "Last used"
+msgstr ""
+
+#: auth/templates/auth/index.html:21 auth/templates/auth/index.html.py:55
+msgid "Remove"
+msgstr ""
+
+#: auth/templates/auth/index.html:29
+msgid "This device"
+msgstr ""
+
+#: auth/templates/auth/index.html:33
+#, python-format
+msgid "%(last_used)s ago"
+msgstr ""
+
+#: auth/templates/auth/index.html:46
+msgid "Authenticated services"
+msgstr ""
+
+#: auth/templates/auth/index.html:48
+msgid ""
+"You may currently access the following authenticated services using this "
+"device and those listed above."
+msgstr ""
+
+#: auth/templates/auth/index.html:54
+msgid "Service name"
+msgstr ""
+
+#: auth/templates/auth/index.html:69
+msgid "There are no currently authenticated services."
+msgstr ""
+
+#: auth/templates/auth/index.html:75
+msgid "PIN"
+msgstr ""
+
+#: auth/templates/auth/index.html:77
+msgid ""
+"Setting a PIN allows you to recover expired secured sessions. It must be "
+"composed of alphanumerics and be at least four characters in length."
+msgstr ""
+
+#: auth/templates/auth/index.html:98 auth/templates/auth/index.html.py:115
+msgid "Time-out period"
+msgstr ""
+
+#: auth/templates/auth/index.html:100
+msgid ""
+"You may vary the length of the period of allowed inactivity before your "
+"session gets locked. Accepted values are between 5 minutes and 720 (being 12 "
+"hours)."
+msgstr ""
+
+#: auth/templates/auth/index.html:117
+msgid "Please enter your current PIN in order to make these changes."
+msgstr ""
+
+#: auth/templates/auth/secure.html:9
+msgid "Security preferences"
+msgstr ""
+
+#: auth/templates/auth/secure.html:10
+msgid "Clear secure session"
+msgstr ""
+
+#: auth/templates/auth/secure.html:11
+#, python-format
+msgid "%(number_services)s accessible from %(number_devices)s device."
+msgid_plural "%(number_services)s accessible from %(number_devices)s devices."
+msgstr[0] ""
+msgstr[1] ""
+
+#: auth/templates/auth/secure.html:12
+msgid "Change"
+msgstr ""
+
+#: auth/templates/auth/timed_out.html:6
+msgid "Your secure session has timed out."
+msgstr ""
+
+#: auth/templates/auth/timed_out.html:10
+msgid ""
+"As a security feature your session has timed out due to a period of "
+"inactivity."
+msgstr ""
+
+#: auth/templates/auth/timed_out.html:14
+msgid "You can get back in by entering your PIN:"
+msgstr ""
+
+#: auth/templates/auth/timed_out.html:20
+msgid "Enter your PIN"
+msgstr ""
+
+#: auth/templates/auth/timed_out.html:27
+msgid ""
+"If you can't remember your PIN, you may reset your session by using the "
+"button below. Note, that you may lose some secure preferences!"
+msgstr ""
+
+#: auth/templates/auth/timed_out.html:31
+msgid ""
+"The button below will clear your secure session, allowing you to "
+"reauthenticate with any services you were previously using."
+msgstr ""
+
+#: auth/templates/auth/timed_out.html:33
+msgid "Tip: Make it easier to get back in by setting a PIN!"
+msgstr ""
+
+#: auth/templates/auth/timed_out.html:42
+msgid ""
+"You may set a new PIN at any point by using the link at the bottom of an "
+"authenticated page."
+msgstr ""
+
+#: auth/templates/auth/oauth/authorize.html:7
+#, python-format
+msgid "Redirecting to %(service_name)s"
+msgstr ""
+
+#: auth/templates/auth/oauth/authorize.html:12
+#, python-format
+msgid ""
+"This page provides information from %(service_name)s, requiring you to allow "
+"access from %(site_name)s to your %(service_name)s account."
+msgstr ""
+
+#: auth/templates/auth/oauth/authorize.html:15
+#, python-format
+msgid ""
+"Select <strong>Proceed&hellip;</strong> to be redirected to %(service_name)s "
+"to confirm that you agree that access should be granted. If this page is not "
+"what you expected, select<strong>Cancel</strong>."
+msgstr ""
+
+#: auth/templates/auth/oauth/authorize.html:18
+#, python-format
+msgid ""
+"To revoke access from %(site_name)s in the future, you can do so from within "
+"%(service_name)s (refer to the %(service_name)s documentation for "
+"information on how to do this). If you wish to remove access from one of "
+"your devices, head to <em>Security preferences</em> at the bottom of any "
+"authenticated page on %(site_name)s."
+msgstr ""
+
+#: auth/templates/auth/oauth/authorize.html:22
+msgid "Proceed&hellip;"
+msgstr ""
+
+#: auth/templates/auth/oauth/error.html:7
+msgid "There was an error"
+msgstr ""
+
+#: auth/templates/auth/oauth/error.html:14
+#, python-format
+msgid ""
+"You did not give %(site_name)s permission to access your data held with "
+"%(service_name)s. You may <a href=\".?skip_interstitial=true\">try again</"
+"a>, go <a href=\"%(last_url)s\" title=\"%(last_page)s\">back to the "
+"%(service_name)s page</a>, or back to the <a href=\"%(home_url)s\">"
+"%(site_name)s homepage</a>."
+msgstr ""
+
+#: auth/templates/auth/oauth/error.html:18
+#, python-format
+msgid ""
+"%(site_name)s was unable to access your data held with %(service_name)s, "
+"most likely because you have revoked permission from within "
+"%(service_name)s. If you'd still like to access %(service_name)s from "
+"%(site_name)s <a href=\".?skip_interstitial=true\">renew %(site_name)s's "
+"permissions</a>. Alternatively, you can go <a href=\"%(last_url)s\" title="
+"\"%(last_page)s\">back to the %(service_name)s page</a>, or back to the <a "
+"href=\"%(home_url)s\">%(site_name)s homepage</a>."
+msgstr ""
+
+#: auth/templates/auth/oauth/error.html:20
+#: auth/templates/auth/oauth/error.html:27
+#, python-format
+msgid ""
+"There was an unexpected error. You can <a href=\".?skip_interstitial=true"
+"\">try again</a>, go <a href=\"%(last_url)s\" title=\"%(last_page)s\">back "
+"to the %(service_name)s page</a>, or back to the <a href=\"%(home_url)s\">"
+"%(site_name)s homepage</a>."
+msgstr ""
+
+#: auth/templatetags/molly_auth.py:9
+#, python-format
+msgid "%(count)d service"
+msgid_plural "%(count)d services"
+msgstr[0] ""
+msgstr[1] ""
+
+#: batch_processing/admin.py:19
+msgid "Run selected batch jobs"
+msgstr ""
+
+#: favourites/templates/favourite.html:20
+#: favourites/templates/favourites/index.html:21
+msgid "Unfavourite"
+msgstr ""
+
+#: favourites/templates/favourites/index.html:27
+msgid "You haven't favourited anything yet!"
+msgstr ""
+
+#: geolocation/views.py:140 geolocation/views.py:163
+msgid "Update location"
+msgstr ""
+
+#: geolocation/templates/geolocation/require_location.html:6
+msgid "Location required"
+msgstr ""
+
+#: geolocation/templates/geolocation/require_location.html:10
+#, python-format
+msgid ""
+"To be able to use this feature you need to <a href=\"%(geolocation_url)s?"
+"return_url=%(return_url)s\">choose a location</a>."
+msgstr ""
+
+#: geolocation/templates/geolocation/update_location_embed.html:4
+msgid "Your Location"
+msgstr ""
+
+#: geolocation/templates/geolocation/update_location_embed.html:10
+msgid "Update"
+msgstr ""
+
+#: geolocation/templates/geolocation/update_location_embed.html:15
+msgid "No location known"
+msgstr ""
+
+#: geolocation/templates/geolocation/update_location_embed.html:17
+#, python-format
+msgid "within approx. %(accuracy)s m"
+msgstr ""
+
+#: geolocation/templates/geolocation/update_location_embed.html:24
+msgid "Did you mean&hellip;"
+msgstr ""
+
+#: geolocation/templates/geolocation/update_location_embed.html:56
+msgid "Or search again:"
+msgstr ""
+
+#. Translators: This refers to sample things to be entered in the 'Set Location' box, postcode, building ID, street name
+#: geolocation/templates/geolocation/update_location_embed.html:67
+msgid "e.g., OX2 6NN, kebl, St Clements"
+msgstr ""
+
+#: geolocation/templates/geolocation/update_location_embed.html:71
+msgid "Set Location"
+msgstr ""
+
+#: geolocation/templates/geolocation/update_location_embed.html:76
+msgid "Favourite Locations"
+msgstr ""
+
+#: geolocation/templates/geolocation/update_location_embed.html:96
+msgid "(Remove from favourites)"
+msgstr ""
+
+#: geolocation/templates/geolocation/update_location_embed.html:104
+msgid "Location History"
+msgstr ""
+
+#: geolocation/templates/geolocation/update_location_embed.html:127
+msgid "(Add as favourite)"
+msgstr ""
+
+#: geolocation/templates/geolocation/update_location_embed.html:135
+msgid "Clear history"
+msgstr ""
+
+#: maps/views.py:15 maps/views.py:28
+msgid "Maps"
+msgstr ""
+
+#: maps/osm/views.py:39
+msgid "About OpenStreetMap"
+msgstr ""
+
+#: maps/templates/maps/map_elements.html:5
+msgid "Zoom out"
+msgstr ""
+
+#: maps/templates/maps/map_elements.html:10
+msgid "Zoom in"
+msgstr ""
+
+#: maps/templates/maps/map_elements.html:15
+#, python-format
+msgid ""
+"Map &copy; <a href=\"%(about_link)s\">OpenStreetMap</a> and contributors, CC-"
+"BY-SA"
+msgstr ""
+
+#: maps/templates/maps/osm/about.html:6 templates/static/openstreetmap.html:4
+msgid "OpenStreetMap"
+msgstr ""
+
+#: maps/templates/maps/osm/about.html:9 templates/static/openstreetmap.html:7
+msgid ""
+"OpenStreetMap (OSM) is a community-led mapping project providing free "
+"geographic data to anyone who wants them."
+msgstr ""
+
+#: maps/templates/maps/osm/about.html:10 templates/static/openstreetmap.html:8
+#, python-format
+msgid ""
+"%(site_name)s uses OSM data under the Creative Commons Attribution-Share "
+"Alike (CC-BY-SA) 2.0 license to provide maps and points-of-interest data."
+msgstr ""
+
+#: maps/templates/maps/osm/about.html:11 templates/static/openstreetmap.html:9
+#, python-format
+msgid ""
+"Should you wish to contribute to OSM, you can either submit corrections "
+"though %(site_name)s (there's a <em>Suggest a correction</em> link at the "
+"bottom of each OSM-derived page), or set up an OSM account and edit "
+"directly. For more information on getting started, see the Beginners' Guide "
+"(link below) on the OpenStreetMap website."
+msgstr ""
+
+#: maps/templates/maps/osm/about.html:12
+#: templates/static/openstreetmap.html:10
+msgid ""
+"Here are some useful links you may want to browse from a non-mobile browser:"
+msgstr ""
+
+#: maps/templates/maps/osm/about.html:14
+#: templates/static/openstreetmap.html:12
+msgid "Creative Commons Attribution-Share Alike 2.0 license"
+msgstr ""
+
+#: maps/templates/maps/osm/about.html:16
+#: templates/static/openstreetmap.html:14
+msgid "The OpenStreetMap website"
+msgstr ""
+
+#: maps/templates/maps/osm/about.html:18
+#: templates/static/openstreetmap.html:16
+msgid "The OpenStreetMap wiki"
+msgstr ""
+
+#: maps/templates/maps/osm/about.html:20
+#: templates/static/openstreetmap.html:18
+msgid "The OSM Beginners' Guide"
+msgstr ""
+
+#: templates/404.html:6
+msgid "Not found"
+msgstr ""
+
+#: templates/404.html:7
+msgid "404 Not Found"
+msgstr ""
+
+#: templates/404.html:11
+msgid "404 Error"
+msgstr ""
+
+#: templates/404.html:13
+msgid "Sorry, we couldn't find what you're looking for."
+msgstr ""
+
+#: templates/404.html:15
+#, python-format
+msgid ""
+"Perhaps you'd like to head back to <a href=\"%(home_url)s\">the home page</"
+"a>?"
+msgstr ""
+
+#: templates/500.html:6
+msgid "Server error"
+msgstr ""
+
+#: templates/500.html:7
+msgid "500 Server Error"
+msgstr ""
+
+#: templates/500.html:11
+msgid "500 Error"
+msgstr ""
+
+#: templates/500.html:13
+msgid "Sorry; something went wrong at our end."
+msgstr ""
+
+#: templates/500.html:14
+msgid "We've sent an e-mail to the webmaster, so it should be fixed soon."
+msgstr ""
+
+#: templates/500.html:15
+msgid ""
+"If you have any further information, questions or feedback, you can contact "
+"us using the feedback button at the bottom of the site."
+msgstr ""
+
+#: templates/500.html:19
+#, python-format
+msgid ""
+"Alternatively, you can try <a href=\"%(home_url)s\">returning to the home "
+"page</a>."
+msgstr ""
+
+#: templates/500.html:23
+msgid ""
+"Alternatively, you can try <a href=\"#\" onclick=\"javascript:history.back"
+"(1); return false;\">going back</a> or returning to the home page."
+msgstr ""
+
+#: templates/base.html:152
+msgid "You have a message from the developers!"
+msgstr ""
+
+#: templates/i18n/language_selector.html:6
+msgid "Change Language"
+msgstr ""
+
+#: templates/registration/logged_out.html:8
+msgid "Thanks for spending some quality time with the Web site today."
+msgstr ""
+
+#: templates/registration/logged_out.html:10
+msgid "Log in again"
+msgstr ""
+
+#: templates/registration/password_change_done.html:3
+#: templates/registration/password_change_form.html:3
+msgid "Documentation"
+msgstr ""
+
+#: templates/registration/password_change_done.html:3
+#: templates/registration/password_change_form.html:3
+msgid "Change password"
+msgstr ""
+
+#: templates/registration/password_change_done.html:3
+#: templates/registration/password_change_form.html:3
+msgid "Log out"
+msgstr ""
+
+#: templates/registration/password_change_done.html:4
+#: templates/registration/password_change_form.html:4
+#: templates/registration/password_change_form.html:6
+#: templates/registration/password_change_form.html:10
+msgid "Password change"
+msgstr ""
+
+#: templates/registration/password_change_done.html:6
+#: templates/registration/password_change_done.html:10
+msgid "Password change successful"
+msgstr ""
+
+#: templates/registration/password_change_done.html:12
+msgid "Your password was changed."
+msgstr ""
+
+#: templates/registration/password_change_form.html:12
+msgid ""
+"Please enter your old password, for security's sake, and then enter your new "
+"password twice so we can verify you typed it in correctly."
+msgstr ""
+
+#: templates/registration/password_change_form.html:17
+msgid "Old password:"
+msgstr ""
+
+#: templates/registration/password_change_form.html:19
+#: templates/registration/password_reset_confirm.html:19
+msgid "New password:"
+msgstr ""
+
+#: templates/registration/password_change_form.html:21
+#: templates/registration/password_reset_confirm.html:21
+msgid "Confirm password:"
+msgstr ""
+
+#: templates/registration/password_change_form.html:23
+#: templates/registration/password_reset_confirm.html:22
+msgid "Change my password"
+msgstr ""
+
+#: templates/registration/password_reset_complete.html:4
+#: templates/registration/password_reset_confirm.html:6
+#: templates/registration/password_reset_done.html:4
+#: templates/registration/password_reset_form.html:4
+#: templates/registration/password_reset_form.html:6
+#: templates/registration/password_reset_form.html:10
+msgid "Password reset"
+msgstr ""
+
+#: templates/registration/password_reset_complete.html:6
+#: templates/registration/password_reset_complete.html:10
+msgid "Password reset complete"
+msgstr ""
+
+#: templates/registration/password_reset_complete.html:12
+msgid "Your password has been set.  You may go ahead and log in now."
+msgstr ""
+
+#: templates/registration/password_reset_complete.html:14
+msgid "Log in"
+msgstr ""
+
+#: templates/registration/password_reset_confirm.html:4
+msgid "Password reset confirmation"
+msgstr ""
+
+#: templates/registration/password_reset_confirm.html:12
+msgid "Enter new password"
+msgstr ""
+
+#: templates/registration/password_reset_confirm.html:14
+msgid ""
+"Please enter your new password twice so we can verify you typed it in "
+"correctly."
+msgstr ""
+
+#: templates/registration/password_reset_confirm.html:27
+msgid "Password reset unsuccessful"
+msgstr ""
+
+#: templates/registration/password_reset_confirm.html:29
+msgid ""
+"The password reset link was invalid, possibly because it has already been "
+"used.  Please request a new password reset."
+msgstr ""
+
+#: templates/registration/password_reset_done.html:6
+#: templates/registration/password_reset_done.html:10
+msgid "Password reset successful"
+msgstr ""
+
+#: templates/registration/password_reset_done.html:12
+msgid ""
+"We've e-mailed you instructions for setting your password to the e-mail "
+"address you submitted. You should be receiving it shortly."
+msgstr ""
+
+#: templates/registration/password_reset_email.html:2
+msgid "You're receiving this e-mail because you requested a password reset"
+msgstr ""
+
+#: templates/registration/password_reset_email.html:3
+#, python-format
+msgid "for your user account at %(site_name)s"
+msgstr ""
+
+#: templates/registration/password_reset_email.html:5
+msgid "Please go to the following page and choose a new password:"
+msgstr ""
+
+#: templates/registration/password_reset_email.html:9
+msgid "Your username, in case you've forgotten:"
+msgstr ""
+
+#: templates/registration/password_reset_email.html:11
+msgid "Thanks for using our site!"
+msgstr ""
+
+#: templates/registration/password_reset_email.html:13
+#, python-format
+msgid "The %(site_name)s team"
+msgstr ""
+
+#: templates/registration/password_reset_form.html:12
+msgid ""
+"Forgotten your password? Enter your e-mail address below, and we'll e-mail "
+"instructions for setting a new one."
+msgstr ""
+
+#: templates/registration/password_reset_form.html:17
+msgid "E-mail address:"
+msgstr ""
+
+#: templates/registration/password_reset_form.html:17
+msgid "Reset my password"
+msgstr ""
+
+#: templates/static/about.html:5
+msgid "This is a Molly Project Demo site."
+msgstr ""
+
+#: templates/static/about.html:10
+msgid "Be aware"
+msgstr ""
+
+#: templates/static/about.html:13
+msgid ""
+"Using this site may incur a cost of data transmission from your network "
+"provider. Many providers now offer \\"
+msgstr ""
+
+#: url_shortener/views.py:61 url_shortener/views.py:70
+msgid "Shorten link"
+msgstr ""
+
+#: url_shortener/templates/url_shortener/index.html:7
+#, python-format
+msgid "The shortened URL for the page <strong>%(page_title)s</strong> is:"
+msgstr ""
+
+#: url_shortener/templates/url_shortener/index.html:9
+msgid "The shortened URL for the page is:"
+msgstr ""
+
+#: url_shortener/templates/url_shortener/index.html:14
+msgid "You can also use your phone to scan the following barcode:"
+msgstr ""
+
+#: url_shortener/templates/url_shortener/index.html:22
+msgid "Click on the links below to share this page"
+msgstr ""
+
+#: url_shortener/templates/url_shortener/index.html:31
+msgid "You may wish to go back to the previous page"
+msgstr ""
+
+#: utils/views.py:111
+msgid "The desired media type is not supported for this resource."
+msgstr ""
+
+#: utils/views.py:118
+msgid "Your request was malformed."
+msgstr ""
+
+#: utils/views.py:285
+msgid "Your Accept header didn't contain any supported media ranges."
+msgstr ""
+
+#: utils/views.py:286
+msgid "Supported ranges are:"
+msgstr ""
+
+#: utils/views.py:294
+msgid "Unable to render this document in this format."
+msgstr ""
+
+#: utils/views.py:295
+msgid "Supported formats are"
+msgstr ""
+
+#: wurfl/views.py:20
+msgid "Device detection"
+msgstr ""
+
+#: wurfl/templates/wurfl/index.html:7
+msgid "Request details"
+msgstr ""
+
+#: wurfl/templates/wurfl/index.html:8
+msgid ""
+"These are headers you are sending to the site. Formats are inferred from "
+"your Accept header."
+msgstr ""
+
+#: wurfl/templates/wurfl/index.html:14
+msgid "User-Agent"
+msgstr ""
+
+#: wurfl/templates/wurfl/index.html:18
+msgid "Accept"
+msgstr ""
+
+#: wurfl/templates/wurfl/index.html:22
+msgid "Formats"
+msgstr ""
+
+#: wurfl/templates/wurfl/index.html:30
+msgid "Device details"
+msgstr ""
+
+#: wurfl/templates/wurfl/index.html:31
+msgid ""
+"These details relate to the device the site <em>believes</em> that you are "
+"using."
+msgstr ""
+
+#: wurfl/templates/wurfl/index.html:37
+msgid "Matched device"
+msgstr ""
+
+#. Translators: Matched User-Agent
+#: wurfl/templates/wurfl/index.html:42
+msgid "Matched UA"
+msgstr ""
+
+#: wurfl/templates/wurfl/index.html:46
+msgid "Device identifier"
+msgstr ""
+
+#: wurfl/templates/wurfl/index.html:50
+msgid "Mobile?"
+msgstr ""
