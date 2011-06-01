@@ -2,6 +2,7 @@ from django.db import models
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext_noop
 from molly.utils.i18n import name_in_language
 
 from molly.apps.podcasts.data import licenses
@@ -57,7 +58,7 @@ class Podcast(models.Model):
         
     def __unicode__(self):
         return self.title or ''
-        
+    
     @property
     def license_data(self):
         return licenses.get(self.license)
@@ -115,18 +116,20 @@ class PodcastEnclosure(models.Model):
     
     @property
     def medium(self):
-        medium = {'application/pdf': _('document'), 'MPEG4 Video': _('video')}.get(self.mimetype)
+        medium = {
+                'application/pdf': ugettext_noop('document'),
+                'MPEG4 Video': ugettext_noop('video')
+            }.get(self.mimetype)
         if medium:
             return medium
         elif not self.mimetype:
-            # Translators: Unknown podcast medium type
-            return self.podcast_item.podcast.medium or _('unknown')
+            return self.podcast_item.podcast.medium or ugettext_noop('unknown')
         elif self.mimetype.startswith('audio/'):
-            return _('audio')
+            return ugettext_noop('audio')
         elif self.mimetype.startswith('video/'):
-            return _('video')
+            return ugettext_noop('video')
         else:
-            return self.podcast_item.podcast.medium or _('unknown')
+            return self.podcast_item.podcast.medium or ugettext_noop('unknown')
     
     def get_mimetype_display(self):
         return MIMETYPES.get(self.mimetype, _('unknown'))
