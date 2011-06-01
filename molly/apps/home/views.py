@@ -13,6 +13,8 @@ from molly.utils.breadcrumbs import *
 from molly.favourites import get_favourites
 from molly.wurfl import device_parents
 from molly import conf
+from molly.conf.applications import app_by_application_name, has_app_by_application_name
+from molly.apps.weather.models import Weather
 
 from models import UserMessage
 from forms import UserMessageFormSet
@@ -59,6 +61,12 @@ class IndexView(BaseView):
 
         # TODO Add back in messages from the developers 
         
+        if has_app_by_application_name('molly.apps.weather'):
+            weather_id = app_by_application_name('molly.apps.weather').location_id
+            weather = Weather.objects.get(ptype='o', location_id=weather_id)
+        else:
+            weather = None
+        
         applications = [{
             'application_name': app.application_name,
             'local_name': app.local_name,
@@ -80,6 +88,7 @@ class IndexView(BaseView):
             'is_christmas': datetime.now().month == 12,
             'messages': messages,
             'favourites': get_favourites(request),
+            'weather': weather,
         }
         return self.render(request, context, 'home/index',
                            expires=timedelta(minutes=10))

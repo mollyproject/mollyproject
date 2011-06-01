@@ -1,6 +1,5 @@
 {% extends "home/base.html" %}
 {% load i18n %}
-{% load molly_weather %}
 {% load molly_utils %}
 {% load molly_search %}
 
@@ -92,7 +91,8 @@
 	</div>
     </div>
         
-        {# The a div to display various 'quick' bits of information #}
+    {# The a div to display various 'quick' bits of information #}
+    {% block weather %}{% if weather %}
     <div class="bubble pad-5">
         <table style="width:100%; text-align:center;">
             <tbody>
@@ -103,7 +103,6 @@
 			{% endblock date %}
                     </td>
                     <td style="width:50%; font-size:1.2em">
-			{% weather %}
 			{% block weather-location %}{{ weather.name }}{% endblock weather-location %}: {{ weather.temperature }}&deg;C<img src="{{ STATIC_URL }}weather/images/{{ weather.icon }}_small.png" alt="{{ weather.get_outlook_display|capfirst }}" height="30" width="30" style="vertical-align:middle;"/>
                     </td>
                 </tr>
@@ -111,20 +110,21 @@
             </tbody>
         </table>
     </div>
+    {% endif %}{% endblock weather %}
     
     {# Display a list of favourite pages if a user has made any #}
     {% if favourites %}
     <div class="section">
       <div class="header">
-                <h2>{% trans "Favourites" %}</h2>
+        <h2>{% trans "Favourites" %}</h2>
       </div>
       <ul class="link-list">
 	{% for favourite in favourites %}
 	  <li class="favourite-link">
 	    <a href="{{ favourite.url }}">{{ favourite.metadata.title|safe }}
 	    {% if favourite.metadata.additional %}
-		    <br /><span class="additional">{{ favourite.metadata.additional|safe }}</span>
-		    {% endif %}
+		<br /><span class="additional">{{ favourite.metadata.additional|safe }}</span>
+	    {% endif %}
 	    </a>
 	  </li>
 	{% endfor %}
