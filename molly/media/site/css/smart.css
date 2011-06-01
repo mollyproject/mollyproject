@@ -206,7 +206,7 @@ div.article {
 }
 /* End News Articles */
 
-/* Forms/Search */
+/* Contact Search Form + Feedback Form */
 div.form {
     text-align: center;
     padding:5px; margin: 0;
@@ -235,7 +235,7 @@ div.form button[type="submit"] {
     font-size: 1.3em;
     min-height: 1.3em;
 }
-/* End Forms/Search */
+/* Contact Search Form + Feedback Form */
 
 
 /* New Standard Search Form */
@@ -272,8 +272,6 @@ table.search * input[type="image"] {
 /* End New Standard Search Form */
 
 
-
-
 /* Help Bubble */
 .help-bubble {
     position:relative;
@@ -306,33 +304,6 @@ table.search * input[type="image"] {
 	border-color:transparent transparent #dfdfdf;
 }
 /* End Help Bubble */
-
-
-/* RTI */
-table.real-time-information {
-    width: 100%;
-    background: #121C28;
-    color: #FFBF00;
-    border: 2px solid #FFBF00;
-    -webkit-border-radius: 8px;
-    -moz-border-radius: 8px;
-    border-radius: 8px;
-
-    padding: 2px 0;
-}
-
-table.real-time-information tr {
-    border-collapse: collapse;
-    border-top: 1px solid #FFBF00;
-}
-
-tbody#bus_times td.service-id {
-    font-size: 2em;
-    text-align: center;
-}
-/* End RTI */
-
-
 
 /* Input Buttons */
 /* CSS 2.1 */
