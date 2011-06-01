@@ -47,19 +47,28 @@ if __name__ == '__main__':
     
     msgs = []
     this_msg = ''
+    this_plural = ''
     in_msgid = False
     
     with open(sys.argv[1], encoding='utf-8') as fd:
         for line in fd:
-            if line[:5] == 'msgid':
-                in_msgid = True
+            if line[:12] == 'msgid_plural':
+                in_msgid = 'p'
+                this_plural += line[14:-2] + '\n'
+            elif line[:5] == 'msgid':
+                in_msgid = 's'
                 this_msg += line[7:-2] + '\n'
             elif line[:6] == 'msgstr':
                 in_msgid = False
-                msgs.append(this_msg)
+                if this_msg or this_plural:
+                    msgs.append((this_msg, this_plural))
                 this_msg = ''
+                this_plural = ''
             elif in_msgid:
-                this_msg += line[1:-2] + '\n'
+                if in_msgid == 's':
+                    this_msg += line[1:-2] + '\n'
+                else:
+                    this_plural += line[1:-2] + '\n'
     with open(sys.argv[1], 'w', encoding='utf-8') as fd:
         print >>fd, """
 msgid ""
@@ -75,12 +84,23 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\\n"
 "Content-Transfer-Encoding: 8bit\\n"
 """
-        for msg in msgs:
+        for msg, plural in msgs:
             if msg == '\n':
                 continue
             print >>fd, "msgid ",
             for line in msg.split('\n')[:-1]:
                 print >> fd, "\"%s\"" % line
-            print >>fd, "msgstr ",
-            for line in invert(msg).split('\n')[:-1]:
-                print >> fd, "\"%s\"" % line
+            if plural:
+                print >>fd, "msgid_plural ",
+                for line in plural.split('\n')[:-1]:
+                    print >> fd, "\"%s\"" % line
+                print >>fd, "msgstr[0] ",
+                for line in invert(msg).split('\n')[:-1]:
+                    print >> fd, "\"%s\"" % line
+                print >>fd, "msgstr[1] ",
+                for line in invert(plural).split('\n')[:-1]:
+                    print >> fd, "\"%s\"" % line
+            else:
+                print >>fd, "msgstr ",
+                for line in invert(msg).split('\n')[:-1]:
+                    print >> fd, "\"%s\"" % line
