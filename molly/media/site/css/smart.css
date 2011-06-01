@@ -78,6 +78,23 @@ li#menu-service_status {background-image:url('../../site/images/index-icons/serv
 /* The following line is here for legacy reasons */
 li#menu-service-status {background-image:url('../../site/images/index-icons/service_status.png');}
 li#menu-transport {background-image:url('../../site/images/index-icons/transport.png');}
+
+div#quick-info table {
+    width:100%;
+    text-align: center;
+}
+
+div#quick-info table tbody tr td.half-width {
+    width: 50%;
+}
+
+div#quick-info table tbody tr td.weather {
+    font-size: 1.2em;
+}
+
+div#quick-info table tbody tr td.weather img {
+    vertical-align: middle;
+}
 /* End Index Page Specific */
 
 
@@ -615,6 +632,7 @@ div.form-section p.submit-buttons input:first-child {
 
 /* Feature Vote */
 div.vote-box {
+    float: right;
     text-align: center;
     font-weight: bold;
     width:35px;

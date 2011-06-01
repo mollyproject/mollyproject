@@ -94,17 +94,17 @@
     </div>
 	
 	{# The a div to display various 'quick' bits of information #}
-    <div class="bubble pad-5">
-        <table style="width:100%; text-align:center;">
+    <div id="quick-info" class="bubble pad-5">
+        <table>
             <tbody>
                 <tr>
-                    <td style="width:50%">
+                    <td class="half-width">
 					{% block date %}
  						{% now "l, jS F, Y" %}
                     {% endblock date %}
 					</td>
-                    <td style="width:50%; font-size:1.2em">
-      {% weather %}{% block weather-location %}{{ weather.name }}{% endblock weather-location %}: {{ weather.temperature }}&deg;C<img src="{{ STATIC_URL }}weather/images/{{ weather.icon }}_small.png" alt="{{ weather.get_outlook_display|capfirst }}" height="30" width="30" style="vertical-align:middle;"/>
+                    <td class="half-width weather">
+      {% weather %}{% block weather-location %}{{ weather.name }}{% endblock weather-location %}: {{ weather.temperature }}&deg;C<img src="{{ STATIC_URL }}weather/images/{{ weather.icon }}_small.png" alt="{{ weather.get_outlook_display|capfirst }}" height="30" width="30"/>
                     </td>
                 </tr>
 				{% block below-weather %}{% endblock below-weather %}

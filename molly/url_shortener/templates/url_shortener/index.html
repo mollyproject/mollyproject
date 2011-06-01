@@ -9,11 +9,11 @@
         <p>{% blocktrans %}The shortened URL for the page is:{% endblocktrans %}</p>
     {% endif %}
 
-  <p style="text-align:center; font-size:150%"><a href="{{ url }}">{{ url }}</a></p>
+  <p class="center" style="font-size:150%"><a href="{{ url }}">{{ url }}</a></p>
 
   <p>{% trans "You can also use your phone to scan the following barcode:" %}</p>
 
-  <p style="text-align:center; ">
+  <p class="center">
     <img class="qr-code" src="http://chart.apis.google.com/chart?cht=qr&amp;chs=200x200&amp;chld=L|1&amp;chl={{ url|urlencode }}" style="width:100%; max-width:200px" />
   </p>
 

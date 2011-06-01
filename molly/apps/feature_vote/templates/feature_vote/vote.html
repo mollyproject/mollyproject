@@ -1,5 +1,5 @@
 {% load i18n %}
-<div class="vote-box" style="float:right">
+<div class="vote-box">
   <form method="post" action="{% url feature_vote:index %}">
     {% csrf_token %}
     <input type="hidden" name="csrf" value="{{ csrf }}"/>

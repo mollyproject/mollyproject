@@ -72,7 +72,7 @@
     <tbody>
         {% for option in options %}
             <tr>
-                <td style="text-align:center; font-size:200%; width:35px">
+                <td class="center" style="font-size:200%; width:35px">
                     {% if poll.mayVote %}
                     <label style="display:block; padding:10px; margin:8px; -moz-border-radius:8px; border:1px solid #888; width:1.1em; line-height:1.1em; vertical-align:middle">
                         <input
@@ -92,7 +92,7 @@
                     {{ option.text|sanitize_html }}
                 </td>
                 {% if vote_count %}
-                    <td style="text-align:center; font-size:120%; width:102px;">
+                    <td class="center" style="font-size:120%; width:102px;">
                         <span style="white-space:nowrap;">{{ option.voteCount }} ({% widthratio option.voteCount vote_count 100 %}%)</span><br/>
                         <div style="min-width:40px; max-width:100px; background-color: #cfcfcf; margin-left:auto; margin-right:auto; border:1px solid #888">
                             <div style="width:{% widthratio option.voteCount vote_count 100 %}%; height:10px; background-color:#e5f0e1;"></div>
@@ -106,7 +106,7 @@
     {% if poll.mayVote %}
         <tfoot>
             <tr>
-                <td colspan="{% if vote_count %}3{% else %}2{% endif %}" style="text-align:center; padding:10px">
+                <td colspan="{% if vote_count %}3{% else %}2{% endif %}" class="center" style="padding:10px">
                     <input type="submit" value="{% trans "Vote" %}"/>
                 </td>
             </tr>

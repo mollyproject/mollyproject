@@ -3,7 +3,7 @@
 {% block bottom_links %}
 
   <div style="width:100%; float:left; margin-top: 2px; margin-bottom:2px;">
-    <div style="line-height:1.8em; margin:0 10px 0 10px; background-color:#ffffbf; padding:10px; -webkit-border-radius:6px; -moz-border-radius:6px; text-align:center; display:block"
+    <div class="center" style="line-height:1.8em; margin:0 10px 0 10px; background-color:#ffffbf; padding:10px; -webkit-border-radius:6px; -moz-border-radius:6px; display:block;"
        href="{% url feature_vote:index %}">
       <div style="background-image:url('{{ STATIC_URL }}auth/images/padlock.png'); background-repeat:no-repeat; background-position:left center; padding-left:28px"> 
   <a style="padding:5px 1px;" href="{% url auth:index %}">{% trans "Security preferences" %}</a>
