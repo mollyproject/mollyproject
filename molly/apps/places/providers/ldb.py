@@ -74,7 +74,7 @@ class LiveDepartureBoardPlacesProvider(BaseMapsProvider):
     def service_details(service, entity):
         try:
             service = entity.metadata['ldb_service'](service)
-        except WebFault as f:
+        except suds.WebFault as f:
             if f.fault['faultstring'] == 'Unexpected server error: Invalid length for a Base-64 char array.':
                 raise Http404
             else:
