@@ -942,4 +942,21 @@ div.language-selector button {
     border: 0;
     cursor: pointer;
 }
+
+div.half-width button {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: #fff;
+    color: #00e !important;
+    text-decoration: underline;
+    font-weight: normal;
+    font-family: "Liberation Sans",sans-serif;
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    -moz-box-shadow: none !important;
+    border: 0;
+    cursor: pointer;
+}
 /* End Bottom Links */
