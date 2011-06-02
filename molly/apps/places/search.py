@@ -8,7 +8,7 @@ from django.db.models import Q
 from django.utils.translation import ugettext as _
 
 from views import NearbyDetailView, EntityDetailView
-from models import Entity, EntityType
+from models import Entity, EntityType, EntityName, EntityTypeName
 
 
 class ApplicationSearch(object):
@@ -35,7 +35,7 @@ class ApplicationSearch(object):
             )
 
         entities = chain(
-            Entity.objects.filter(title__iexact = query),
+            (en.entity for en in EntityName.objects.filter(title__iexact = query)),
             entities,
         )
 
@@ -49,8 +49,8 @@ class ApplicationSearch(object):
             yield result
 
     def entity_type_search(self, request, query, is_single_app_search):
-        entity_types = EntityType.objects.filter(
-            Q(verbose_name__iexact = query) | Q(verbose_name_plural__iexact = query))
+        entity_types = (etn.entity_type for etn in EntityTypeName.objects.filter(
+            Q(verbose_name__iexact = query) | Q(verbose_name_plural__iexact = query)))
 
         for entity_type in entity_types:
             result = {
