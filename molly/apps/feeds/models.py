@@ -1,5 +1,6 @@
 from dateutil.tz import tzutc, tzlocal
 from lxml import etree
+import simplejson
 
 from django.core.urlresolvers import reverse
 from django.contrib.gis.db import models
