@@ -73,7 +73,11 @@ class NearbyListView(LocationRequiredView):
 
     def handle_GET(self, request, context, entity=None):
         point = get_point(request, entity)
-
+        
+        if point is None:
+            return self.render(request, { 'entity': entity },
+                               'places/entity_without_location')
+        
         if entity:
             return_url = reverse('places:entity-nearby-list',args=[entity.identifier_scheme, entity.identifier_value])
         else:
@@ -208,7 +212,6 @@ class NearbyDetailView(LocationRequiredView, ZoomableView):
 
         if entity and not point:
             context = {'entity': entity}
-            raise Exception
             return self.render(request, context, 'places/entity_without_location')
 
         if context['zoom'] is None:
