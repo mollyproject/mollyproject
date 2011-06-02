@@ -1,5 +1,5 @@
-{% load molly_utils %}{% load compressed %}{% load i18n %}<!DOCTYPE HTML>
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-GB" lang="en-GB">
+{% load molly_utils %}{% load compressed %}{% load i18n %}{% get_current_language as LANGUAGE_CODE %}<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="{{ LANGUAGE_CODE }}" lang="{{ LANGUAGE_CODE }}">
 {% comment %}
 	Welcome to Molly's base.html. Virtually all pages in Molly inherit from this page.
 	This page is divided into various blocks so that customisations are easy to override. 
