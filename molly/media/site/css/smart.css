@@ -708,16 +708,14 @@ div.button > a {
     /*text-shadow: 0 -1px 1px #000;*/
 }
 
-#favourite-bit
-{
+#favourite-bit {
     position: absolute;
     right: 0px;
     padding: 5px;
 }
 
 #favourite, .favourite,
-#unfavourite, .unfavourite
-{
+#unfavourite, .unfavourite {
     background-color: transparent !important;
     border: 0 !important;
     text-shadow: none !important;
@@ -730,24 +728,20 @@ div.button > a {
     text-indent:-999em; /* Hack to not show the text on a button when we're showing the image */
 }
 
-#favourite, .favourite
-{
+#favourite, .favourite {
     background-image: url('../../favourites/images/star-grey.png') !important;
 }
 
-#unfavourite, .unfavourite
-{
+#unfavourite, .unfavourite {
     background-image: url('../../favourites/images/star.png') !important;
 }
 
-.with-favourite
-{
+.with-favourite {
     margin-right: 28px !important;
 }
 
 .as-text-link,
-#bottom-links button
-{
+#bottom-links button {
     background: none !important;
     border: 0 !important;
     -moz-box-shadow: none !important;
@@ -759,64 +753,54 @@ div.button > a {
     cursor: pointer;
 }
 
-.link-list .as-text-link
-{
+.link-list .as-text-link {
     color: #ffffff !important;
 }
 
-.current-location-box
-{
+.current-location-box {
     padding: 0 8px;
 }
 
-.current-location-box p
-{
+.current-location-box p {
     padding: 2px;
     line-height: 17px;
     min-height: 34px;
     margin: 0;
 }
 
-.location
-{
+.location {
     font-weight: bold;
 }
 
-.current-location-box .update-location-opener
-{
+.current-location-box .update-location-opener {
     float: right;
 }
 
-.location-automatic-list li
-{
+.location-automatic-list li {
     padding-left: 35px !important;
     background-image: url('../../geolocation/images/location-white.png');
     background-repeat: no-repeat;
     background-position: 5px center;
 }
 
-.update-location-name-container
-{
+.update-location-name-container {
     margin-right: 110px;
     padding-left: 5px;
     margin-bottom: 2px;
 }
 
-.update-location-name
-{
+.update-location-name {
     width: 100%;
     padding: 5px 0 5px 3px;
 }
 
-.update-location
-{
+.update-location {
     position: absolute;
     top: 0px;
     right: 0px;
 }
 
-.cancel-update
-{
+.cancel-update {
     position: absolute;
     top: -34px;
     right: 5px;
@@ -824,8 +808,7 @@ div.button > a {
     text-decoration: underline;
 }
 
-.favourite-location-form
-{
+.favourite-location-form {
     position: absolute;
     top: 0;
     right: 2px;
@@ -833,35 +816,29 @@ div.button > a {
     padding: 8px;
 }
 
-.update-location-lists .link-list li
-{
+.update-location-lists .link-list li {
     position: relative;
     overflow: hidden;
 }
 
-.location-box .header
-{
+.location-box .header {
     border-bottom: none !important;
 }
 
-.location-box .header h2
-{
+.location-box .header h2 {
     background-image: none !important;
 }
 
-.location-box .section-content
-{
+.location-box .section-content {
     padding: 0;
     border-top: none !important;
 }
 
-.location-box
-{
+.location-box {
     background-color: #DFDFDF !important;
 }
 
-.automatic-update-button
-{
+.automatic-update-button {
     background-color: transparent !important;
     border: 0 !important;
     text-shadow: none !important;
@@ -877,14 +854,12 @@ div.button > a {
     margin-right: 5px;
 }
 
-.slippy-map
-{
+.slippy-map {
     text-align: center;
     padding-right: 60px;
 }
 
-.map
-{
+.map {
     border: 1px solid #000000;
 }
 
