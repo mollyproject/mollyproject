@@ -77,7 +77,8 @@ class OAuthView(BaseView):
         except urllib2.HTTPError, e:
             if e.code == 401:
                 raise ImproperlyConfigured("OAuth shared secret not accepted by service %r. Check that the server is configured with the right credentials." % self.conf.service_name)
-            raise
+            else:
+                self.handle_error(request, exception)
 
         ExternalServiceToken.set(request.user, self.conf.local_name, ('request', token), authorized=False)
 
