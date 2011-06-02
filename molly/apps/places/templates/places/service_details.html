@@ -13,7 +13,7 @@
   
   <ul class="content-list">
     <li>
-	{% blocktrans %}There is currently a problem retrieving live departure information from the National Rail web site. Departure information may still be accessed<a href="http://pda.ojp.nationalrail.co.uk/en/pj/ldbboard/dep/{{ entity.identifiers.crs }}">directly from their web site</a>.{% endblocktrans %}
+	{% blocktrans with entity.identifiers.crs as crs %}There is currently a problem retrieving live departure information from the National Rail web site. Departure information may still be accessed<a href="http://pda.ojp.nationalrail.co.uk/en/pj/ldbboard/dep/{{ crs }}">directly from their web site</a>.{% endblocktrans %}
     </li>
   </ul>
   
