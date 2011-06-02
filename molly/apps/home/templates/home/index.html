@@ -146,6 +146,8 @@
 
     {% block below-about %}
     {% endblock below-about %}
-    {% include "i18n/language_selector.html" %}
+    {% if LANGUAGES|length > 1 %}
+        {% include "i18n/language_selector.html" %}
+    {% endif %}
 
 {% endblock content %}

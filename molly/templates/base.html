@@ -195,10 +195,6 @@
 					{% endif %}
 				    {% endfor %}
 				    </div>
-				{% else %}
-				{# Otherwise take to another page to choose language #}
-				{# This is always in English as it's a lingua franca #}
-				    <div><a href="{% url set-language %}">Change language</a></div>
 				{% endif %}
 			 	<div style="clear:both"> </div>
 			{# Give a simple list for feature phones #}
@@ -211,6 +207,10 @@
 					{% endif %}
 				</ul>
 			{% endifnotequal %}
+		
+		    {% if LANGUAGES|length > 2 %}
+			{% include "i18n/language_selector.html" %}
+		    {% endif %}
 		{% endblock bottom_links %}
 		</div>
 	{% endif %}
