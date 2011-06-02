@@ -1,22 +1,19 @@
-{% extends "places/base.html" %}
+{% extends "places/base.html" %}{% load i18n %}
 
 {% block title %}
-{% if entity %}
-    {% blocktrans with entity_type.verbose_name_plural|capfirst as type_name and entity.title as title %}{{ type_name }} near {{ title }}{% endblocktrans %}
-{% else %}
-    {% blocktrans with entity_type.verbose_name_plural|capfirst as type_name %}{{ type_name }} nearby{% endblocktrans %}
-{% endif %}
+    {% blocktrans with entity.title as title %}Things near {{ title }}{% endblocktrans %}
 {% endblock %}
 
 
 {% block content %}
 
 <div class="section">
-<div class="header">
-  <h2>{% blocktrans with entity.title as title %}Things near {{ title }}{% endblocktrans %}</h2>
-  <div class="note"><div class="bubble pad-10">
-    {% trans "Unfortunately, we do not have a location for this object, and so cannot tell you what is near it." %}
-  </div></div>
+    <div class="header">
+      <h2>{% blocktrans with entity.title as title %}Things near {{ title }}{% endblocktrans %}</h2>
+    </div>
+    <div class="note"><div class="bubble pad-10">
+      {% trans "Unfortunately, we do not have a location for this object, and so cannot tell you what is near it." %}
+    </div></div>
 </div>
 
 {% endblock %}

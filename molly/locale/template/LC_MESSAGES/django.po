@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-02 15:13+0100\n"
+"POT-Creation-Date: 2011-06-02 15:23+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -909,7 +909,8 @@ msgid "Things nearby"
 msgstr ""
 
 #: apps/places/views.py:182
-#: apps/places/templates/places/entity_without_location.html:16
+#: apps/places/templates/places/entity_without_location.html:4
+#: apps/places/templates/places/entity_without_location.html:12
 #, python-format
 msgid "Things near %(title)s"
 msgstr ""
@@ -1941,17 +1942,7 @@ msgstr ""
 msgid "We do not yet have a location for this %(type_name)s."
 msgstr ""
 
-#: apps/places/templates/places/entity_without_location.html:5
-#, python-format
-msgid "%(type_name)s near %(title)s"
-msgstr ""
-
-#: apps/places/templates/places/entity_without_location.html:7
-#, python-format
-msgid "%(type_name)s nearby"
-msgstr ""
-
-#: apps/places/templates/places/entity_without_location.html:18
+#: apps/places/templates/places/entity_without_location.html:15
 msgid ""
 "Unfortunately, we do not have a location for this object, and so cannot tell "
 "you what is near it."
@@ -3622,10 +3613,6 @@ msgstr ""
 
 #: templates/base.html:152
 msgid "You have a message from the developers!"
-msgstr ""
-
-#: templates/i18n/language_selector.html:6
-msgid "Change Language"
 msgstr ""
 
 #: templates/registration/logged_out.html:8
