@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-01 13:09+0100\n"
+"POT-Creation-Date: 2011-06-02 14:49+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,11 +27,11 @@ msgstr ""
 
 #: apps/contact/providers/__init__.py:18
 #: apps/contact/templates/contact/search_form.html:6
-#: apps/desktop/templates/desktop/index.html:337
+#: apps/desktop/templates/desktop/index.html:346
 #: apps/feeds/templates/feeds/events/index.html:19
 #: apps/feeds/templates/feeds/news/index.html:19
-#: apps/home/templates/home/index.html:59
-#: apps/home/templates/home/index.html:62
+#: apps/home/templates/home/index.html:58
+#: apps/home/templates/home/index.html:61
 #: apps/library/templates/library/search_form.html:15
 #: apps/places/templates/places/index.html:19
 #: apps/podcasts/templates/podcasts/index.html:41 apps/search/forms.py:33
@@ -44,7 +44,7 @@ msgid "Search"
 msgstr ""
 
 #: apps/contact/templates/contact/result_list.html:4
-#: apps/desktop/templates/desktop/index.html:325
+#: apps/desktop/templates/desktop/index.html:334
 msgid "Contact Search"
 msgstr ""
 
@@ -65,15 +65,15 @@ msgstr[1] ""
 msgid "Try adding an initial to get more specific results."
 msgstr ""
 
-#: apps/desktop/templates/desktop/index.html:227
+#: apps/desktop/templates/desktop/index.html:236
 msgid "Your university and city on the move"
 msgstr ""
 
-#: apps/desktop/templates/desktop/index.html:237
+#: apps/desktop/templates/desktop/index.html:246
 msgid "A wealth of information from across the University and City."
 msgstr ""
 
-#: apps/desktop/templates/desktop/index.html:240
+#: apps/desktop/templates/desktop/index.html:249
 #, python-format
 msgid ""
 "Whoever you are, %(site_name)s is your central guide to help you do your day-"
@@ -82,23 +82,23 @@ msgid ""
 "\">what time the nearest post box is collected</a> %(site_name)s is for you."
 msgstr ""
 
-#: apps/desktop/templates/desktop/index.html:245
+#: apps/desktop/templates/desktop/index.html:254
 #, python-format
 msgid "Discover %(site_name)s's features"
 msgstr ""
 
-#: apps/desktop/templates/desktop/index.html:248
+#: apps/desktop/templates/desktop/index.html:257
 msgid "You do not need a fancy phone"
 msgstr ""
 
-#: apps/desktop/templates/desktop/index.html:249
+#: apps/desktop/templates/desktop/index.html:258
 msgid ""
 "A device with a web browser is all you need to be able to use most of the "
 "features below. Of course if you're lucky enough to own a smartphone you can "
 "use more advanced features like your GPS."
 msgstr ""
 
-#: apps/desktop/templates/desktop/index.html:253
+#: apps/desktop/templates/desktop/index.html:262
 #, python-format
 msgid ""
 "Use it now by visiting <br /><span class=\"domain-link\"><a class=\"preview-"
@@ -107,118 +107,118 @@ msgid ""
 "\">preview on your computer</a>or click on and scan a 2D barcode below "
 msgstr ""
 
-#: apps/desktop/templates/desktop/index.html:268
+#: apps/desktop/templates/desktop/index.html:277
 #, python-format
 msgid "Various phones showing %(site_name)s"
 msgstr ""
 
-#: apps/desktop/templates/desktop/index.html:277
+#: apps/desktop/templates/desktop/index.html:286
 msgid "Blog"
 msgstr ""
 
-#: apps/desktop/templates/desktop/index.html:286
+#: apps/desktop/templates/desktop/index.html:295
 msgid "More entries&hellip;"
 msgstr ""
 
-#: apps/desktop/templates/desktop/index.html:306
+#: apps/desktop/templates/desktop/index.html:315
 msgid "More tweets&hellip;"
 msgstr ""
 
-#: apps/desktop/templates/desktop/index.html:317
+#: apps/desktop/templates/desktop/index.html:326
 msgid "Features"
 msgstr ""
 
-#: apps/desktop/templates/desktop/index.html:321
+#: apps/desktop/templates/desktop/index.html:330
 msgid "Jump to a feature:"
 msgstr ""
 
-#: apps/desktop/templates/desktop/index.html:326
+#: apps/desktop/templates/desktop/index.html:335
 msgid "Library Search"
 msgstr ""
 
-#: apps/desktop/templates/desktop/index.html:327 apps/feeds/news/views.py:19
+#: apps/desktop/templates/desktop/index.html:336 apps/feeds/news/views.py:19
 #: apps/feeds/news/views.py:26
 #: apps/feeds/templates/feeds/news/item_detail.html:6
 #: apps/feeds/templates/feeds/news/item_list.html:6
 msgid "News"
 msgstr ""
 
-#: apps/desktop/templates/desktop/index.html:328 apps/places/views.py:45
+#: apps/desktop/templates/desktop/index.html:337 apps/places/views.py:45
 msgid "Places"
 msgstr ""
 
-#: apps/desktop/templates/desktop/index.html:329 apps/podcasts/views.py:23
+#: apps/desktop/templates/desktop/index.html:338 apps/podcasts/views.py:23
 #: apps/podcasts/views.py:30
 #: apps/podcasts/templates/podcasts/podcast_detail.html:6
 msgid "Podcasts"
 msgstr ""
 
-#: apps/desktop/templates/desktop/index.html:335
+#: apps/desktop/templates/desktop/index.html:344
 msgid "Results Releases"
 msgstr ""
 
-#: apps/desktop/templates/desktop/index.html:336
+#: apps/desktop/templates/desktop/index.html:345
 msgid "River Flag Status"
 msgstr ""
 
-#: apps/desktop/templates/desktop/index.html:338
+#: apps/desktop/templates/desktop/index.html:347
 #: apps/service_status/views.py:25
 msgid "Service Status"
 msgstr ""
 
-#: apps/desktop/templates/desktop/index.html:345
+#: apps/desktop/templates/desktop/index.html:354
 msgid "Term Date"
 msgstr ""
 
-#: apps/desktop/templates/desktop/index.html:346 apps/weather/views.py:25
+#: apps/desktop/templates/desktop/index.html:355 apps/weather/views.py:25
 #: apps/weather/templates/weather/index.html:4
 #: apps/weather/templates/weather/index.html:5
 msgid "Weather"
 msgstr ""
 
-#: apps/desktop/templates/desktop/index.html:347 apps/webcams/views.py:19
+#: apps/desktop/templates/desktop/index.html:356 apps/webcams/views.py:19
 #: apps/webcams/views.py:25 apps/webcams/templates/webcams/index.html:4
 #: apps/webcams/templates/webcams/index.html:5
 #: apps/webcams/templates/webcams/index.html:12
 msgid "Webcams"
 msgstr ""
 
-#: apps/desktop/templates/desktop/index.html:348 apps/sakai/views.py:64
+#: apps/desktop/templates/desktop/index.html:357 apps/sakai/views.py:64
 msgid "WebLearn"
 msgstr ""
 
-#: apps/desktop/templates/desktop/index.html:363
+#: apps/desktop/templates/desktop/index.html:372
 msgid "Back to feature list"
 msgstr ""
 
-#: apps/desktop/templates/desktop/index.html:426
+#: apps/desktop/templates/desktop/index.html:435
 msgid "Contact or help out"
 msgstr ""
 
-#: apps/desktop/templates/desktop/index.html:428
+#: apps/desktop/templates/desktop/index.html:437
 #, python-format
 msgid "There are many ways you can get involved with %(site_name)s."
 msgstr ""
 
-#: apps/desktop/templates/desktop/index.html:431
+#: apps/desktop/templates/desktop/index.html:440
 msgid "Email feedback:"
 msgstr ""
 
-#: apps/desktop/templates/desktop/index.html:435
+#: apps/desktop/templates/desktop/index.html:444
 msgid "Suggest new features:"
 msgstr ""
 
-#: apps/desktop/templates/desktop/index.html:437
+#: apps/desktop/templates/desktop/index.html:446
 msgid "Join the OpenStreetMap community"
 msgstr ""
 
-#: apps/desktop/templates/desktop/index.html:438
+#: apps/desktop/templates/desktop/index.html:447
 msgid ""
 "and help improve the points of interest and maps that we use: http://"
 "openstreetmap.org"
 msgstr ""
 
-#: apps/desktop/templates/desktop/index.html:439
+#: apps/desktop/templates/desktop/index.html:448
 msgid "Help develop our software (the Molly Project)"
 msgstr ""
 
@@ -253,7 +253,7 @@ msgstr ""
 msgid "Comment submitted"
 msgstr ""
 
-#: apps/feature_vote/templates/comments/posted.html:9 apps/home/views.py:29
+#: apps/feature_vote/templates/comments/posted.html:9 apps/home/views.py:31
 #: templates/base.html:102 templates/base.html.py:103 templates/base.html:127
 #: templates/registration/logged_out.html:4
 #: templates/registration/password_change_done.html:4
@@ -352,8 +352,8 @@ msgid "There are no features to vote on yet."
 msgstr ""
 
 #: apps/feature_vote/templates/feature_vote/index.html:53
-#: apps/home/templates/home/index.html:138 templates/base.html:188
-#: templates/base.html.py:216
+#: apps/home/templates/home/index.html:139 templates/base.html:189
+#: templates/base.html.py:213
 msgid "Suggest a feature"
 msgstr ""
 
@@ -378,7 +378,7 @@ msgid "Your e-mail address (optional)"
 msgstr ""
 
 #: apps/feedback/forms.py:8 apps/feedback/views.py:19 templates/base.html:176
-#: templates/base.html.py:183 templates/base.html:213
+#: templates/base.html.py:183 templates/base.html:210
 msgid "Feedback"
 msgstr ""
 
@@ -531,35 +531,35 @@ msgstr ""
 msgid "News:"
 msgstr ""
 
-#: apps/home/views.py:57
+#: apps/home/views.py:59
 msgid ""
 "Please note that the \"Mobile View\" on Opera Mini does not display this "
 "site correctly. To ensure correct operation of this site, ensure \"Mobile "
 "View\" is set to Off in Opera settings"
 msgstr ""
 
-#: apps/home/views.py:123
+#: apps/home/views.py:132
 msgid "View messages from the developers"
 msgstr ""
 
-#: apps/home/templates/home/index.html:119 favourites/views.py:41
+#: apps/home/templates/home/index.html:120 favourites/views.py:41
 #: favourites/templates/favourites/index.html:7
 msgid "Favourites"
 msgstr ""
 
-#: apps/home/templates/home/index.html:131
+#: apps/home/templates/home/index.html:132
 msgid "Manage Favourites"
 msgstr ""
 
-#: apps/home/templates/home/index.html:140 templates/static/about.html:3
+#: apps/home/templates/home/index.html:141 templates/static/about.html:3
 msgid "About this site"
 msgstr ""
 
-#: apps/home/templates/home/index.html:142
+#: apps/home/templates/home/index.html:143
 msgid "Read messages from the developers"
 msgstr ""
 
-#: apps/home/templates/home/index.html:144
+#: apps/home/templates/home/index.html:145
 msgid "Provide feedback"
 msgstr ""
 
@@ -2016,8 +2016,8 @@ msgstr ""
 msgid ""
 "There is currently a problem retrieving live departure information from the "
 "National Rail web site. Departure information may still be accessed<a href="
-"\"http://pda.ojp.nationalrail.co.uk/en/pj/ldbboard/dep/"
-"%(entity.identifiers.crs)s\">directly from their web site</a>."
+"\"http://pda.ojp.nationalrail.co.uk/en/pj/ldbboard/dep/%(crs)s\">directly "
+"from their web site</a>."
 msgstr ""
 
 #: apps/places/templates/places/service_details.html:24
@@ -2628,7 +2628,7 @@ msgid "You can select up to %(max_options)s options."
 msgstr ""
 
 #: apps/sakai/templates/sakai/poll/detail.html:64
-#: apps/sakai/templates/sakai/poll/detail.html:110
+#: apps/sakai/templates/sakai/poll/detail.html:109
 msgid "Vote"
 msgstr ""
 
@@ -2864,7 +2864,7 @@ msgid "Device"
 msgstr ""
 
 #: apps/stats/templates/stats/popular_devices.html:14 templates/base.html:179
-#: templates/base.html.py:184 templates/base.html:214
+#: templates/base.html.py:184 templates/base.html:211
 msgid "Share"
 msgstr ""
 
@@ -3114,6 +3114,10 @@ msgstr ""
 #: apps/weather/templates/weather/index.html:42
 #, python-format
 msgid "%(temperature)s&deg;C"
+msgstr ""
+
+#: apps/webcams/models.py:11
+msgid "in seconds"
 msgstr ""
 
 #: apps/webcams/views.py:20
