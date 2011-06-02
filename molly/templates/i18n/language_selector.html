@@ -1,27 +1,22 @@
 {% load i18n %}
 {% get_current_language as LANGUAGE_CODE %}
 {% if LANGUAGES|length > 1 %}
-    <div class="section clear">
-	<div class="header">
-	    <h2>{% trans "Change Language" %}</h2>
-	</div>
+    
 	{% comment %}
 	It doesn't really have an AJAX handler, but we need to reload JS to get
 	the new JS language file, and we can't do this in the AJAX framework
 	{% endcomment %}
+	<div class="center language-selector">
 	<form action="{% url set-language %}" method="post" class="has-ajax-handler">
 	    {% csrf_token %}
-	    <ul class="link-list">
 		{% for language_code, language_name in LANGUAGES %}
 		    {% if language_code != LANGUAGE_CODE %}
-			<li><a>
-			    <button class="as-text-link" type="submit" name="language" value="{{ language_code }}">
+			    <button type="submit" name="language" value="{{ language_code }}">
 				{{ language_name }}
 			    </button>
-			</a></li>
 		    {% endif %}
 		{% endfor %}
 	    </ul>
 	</form>
-    </div>
+	</div>
 {% endif %}

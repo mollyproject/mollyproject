@@ -174,8 +174,8 @@
                   </div>
                 {# All other devices #}
                 {% else %}
-                  <div><a href="{% url feedback:index %}?referer={{ full_path|urlencode }}">{% trans "Feedback" %}</a></div>
-                  <div><a href="{% url url_shortener:index %}?path={{ full_path|urlencode }}">{% trans "Share" %}</a></div>
+                  <div class="half-width"><a href="{% url feedback:index %}?referer={{ full_path|urlencode }}">{% trans "Feedback" %}</a></div>
+                  <div class="half-width"><a href="{% url url_shortener:index %}?path={{ full_path|urlencode }}">{% trans "Share" %}</a></div>
                 {% endif %}
                 
                 {% if "feature_vote"|app_is_loaded or "feature-suggestions"|app_is_loaded %}
