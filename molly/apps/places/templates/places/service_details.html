@@ -62,8 +62,8 @@
                   </thead>
                   <tbody>
                     {% for joining_point in point.joining %}
-                    <tr{% if joining_point.at %} style="color:#7c7c7c;"{% endif %}>
-                      <td>{{ joining_point.stop_num }} <a href="{{ joining_point.entity.get_absolute_url }}" style="color: inherit;">{{ joining_point.locationName }}</a></td>
+                    <tr{% if joining_point.at %} class="grey"{% endif %}>
+                      <td>{{ joining_point.stop_num }} <a href="{{ joining_point.entity.get_absolute_url }}" class="inherit-color">{{ joining_point.locationName }}</a></td>
                       <td>{{ joining_point.st }}</td>
                       <td>{{ joining_point.et }}{{ joining_point.at }}</td>
                     </tr>
@@ -73,8 +73,8 @@
             </td>
           </tr>
         {% endif %}
-        <tr{% if point.at %} style="color:#7c7c7c;"{% endif %}>
-          <td>{{ point.stop_num }} <a href="{{ point.entity.get_absolute_url }}" style="color: inherit;">{{ point.locationName }}</a></td>
+        <tr{% if point.at %} class="grey"{% endif %}>
+          <td>{{ point.stop_num }} <a href="{{ point.entity.get_absolute_url }}" class="inherit-color">{{ point.locationName }}</a></td>
           <td>{{ point.st }}</td>
           <td>{{ point.et }}{{ point.at }}</td>
         </tr>
@@ -94,8 +94,8 @@
                   </thead>
                   <tbody>
                     {% for splitting_point in point.splitting.list %}
-                    <tr{% if splitting_point.at %} style="color:#7c7c7c;"{% endif %}>
-                      <td>{{ splitting_point.stop_num }} <a href="{{ splitting_point.entity.get_absolute_url }}" style="color: inherit;">{{ splitting_point.locationName }}</a></td>
+                    <tr{% if splitting_point.at %} class="grey"{% endif %}>
+                      <td>{{ splitting_point.stop_num }} <a href="{{ splitting_point.entity.get_absolute_url }}" class="inherit-color">{{ splitting_point.locationName }}</a></td>
                       <td>{{ splitting_point.st }}</td>
                       <td>{{ splitting_point.et }}{{ splitting_point.at }}</td>
                     </tr>

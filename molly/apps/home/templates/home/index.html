@@ -33,35 +33,35 @@
     {# Brandmark for site #}
     <div id="index-title">
         
-	{# Display a logo (should be on white background) for featurephones: should be .jpg for compatibility #}
-	{% ifequal style_group "dumb" %}
-	    <img width="90" height="55" src="{{ STATIC_URL }}site/images/logos/logo-90x55.jpg" alt="{{ site_name }}">
-	{% else %}
-	    {# Display a different logo at Christmas time! (non-featurephones only, as featurephones don't believe in Christmas) #}
-	    {% if is_christmas %}
-		<img width="128" height="51" src="{{ STATIC_URL }}site/images/logos/logo-128x51-TRMargin-5px-christmas.png" alt="{{ site_name }}"/>
-	    {% else %}
-		{# Standard logo for non-featurephones #}
-		<img width="128" height="51" src="{{ STATIC_URL }}site/images/logos/logo-128x51-TRMargin-5px.png" alt="{{ site_name }}"/>
-	    {% endif %}
+    {# Display a logo (should be on white background) for featurephones: should be .jpg for compatibility #}
+    {% ifequal style_group "dumb" %}
+        <img width="90" height="55" src="{{ STATIC_URL }}site/images/logos/logo-90x55.jpg" alt="{{ site_name }}">
+    {% else %}
+        {# Display a different logo at Christmas time! (non-featurephones only, as featurephones don't believe in Christmas) #}
+        {% if is_christmas %}
+        <img width="128" height="51" src="{{ STATIC_URL }}site/images/logos/logo-128x51-TRMargin-5px-christmas.png" alt="{{ site_name }}"/>
+        {% else %}
+        {# Standard logo for non-featurephones #}
+        <img width="128" height="51" src="{{ STATIC_URL }}site/images/logos/logo-128x51-TRMargin-5px.png" alt="{{ site_name }}"/>
+        {% endif %}
         {% endifequal %}
     </div>
 
         {# universal search form #}
     <div id="index-search">
         {% search_form %}
-	<form method="get" action="{% url search:index %}">
-	    <p>
-		{{ search_form.query }}
-		{# Give featurephones a simple search button #}
-		{% ifequal style_group "dumb" %}
-		    <input type="submit" value="{% trans 'Search' %}" />
-		{% else %}
-		    {# Give non-featurephones an image search button #}
-		    <input type="image" src="{{ STATIC_URL }}site/images/buttons/search-button.png" title="{% trans 'Search' %}" alt="{% trans 'Search' %}"/>
-		{% endifequal %}
-	    </p>
-	</form>
+    <form method="get" action="{% url search:index %}">
+        <p>
+        {{ search_form.query }}
+        {# Give featurephones a simple search button #}
+        {% ifequal style_group "dumb" %}
+            <input type="submit" value="{% trans 'Search' %}" />
+        {% else %}
+            {# Give non-featurephones an image search button #}
+            <input type="image" src="{{ STATIC_URL }}site/images/buttons/search-button.png" title="{% trans 'Search' %}" alt="{% trans 'Search' %}"/>
+        {% endifequal %}
+        </p>
+    </form>
     </div>
 </div>
 {% endblock header %}
@@ -81,29 +81,30 @@
     {# The main icon bubble for non-featurephones, access keys are defined in the view #}
     <div class="bubble">
         <div class="center">
-	    <ol class="icon-menu">
-		{% for application in applications %}{% if application.display_to_user %}
-		    <li id="menu-{{ application.local_name }}">
-			<a {% if application.accesskey %} accesskey="{{ application.accesskey }}"{% endif %} href="{{ application.url }}">{% trans application.title %}</a>
-		    </li>
-		{% endif %}{% endfor %}
-	    </ol>
-	</div>
+        <ol class="icon-menu">
+        {% for application in applications %}{% if application.display_to_user %}
+            <li id="menu-{{ application.local_name }}">
+            <a {% if application.accesskey %} accesskey="{{ application.accesskey }}"{% endif %} href="{{ application.url }}">{% trans application.title %}</a>
+            </li>
+        {% endif %}{% endfor %}
+        </ol>
     </div>
-        
+    </div>
+    </div>
+    
     {# The a div to display various 'quick' bits of information #}
     {% block weather %}{% if weather %}
-    <div class="bubble pad-5">
-        <table style="width:100%; text-align:center;">
+    <div id="quick-info" class="bubble pad-5">
+        <table>
             <tbody>
                 <tr>
-                    <td style="width:50%">
-                        {% block date %}
-                            {% now "l, jS F, Y" %}
-			{% endblock date %}
+                    <td class="half-width">
+                    {% block date %}
+                        {% now "l, jS F, Y" %}
+                    {% endblock date %}
                     </td>
-                    <td style="width:50%; font-size:1.2em">
-			{% block weather-location %}{{ weather.name }}{% endblock weather-location %}: {{ weather.temperature }}&deg;C<img src="{{ STATIC_URL }}weather/images/{{ weather.icon }}_small.png" alt="{{ weather.get_outlook_display|capfirst }}" height="30" width="30" style="vertical-align:middle;"/>
+                    <td class="half-width weather">
+                {% block weather-location %}{{ weather.name }}{% endblock weather-location %}: {{ weather.temperature }}&deg;C<img src="{{ STATIC_URL }}weather/images/{{ weather.icon }}_small.png" alt="{{ weather.get_outlook_display|capfirst }}" height="30" width="30"/>
                     </td>
                 </tr>
                 {% block below-weather %}{% endblock below-weather %}
@@ -119,15 +120,15 @@
         <h2>{% trans "Favourites" %}</h2>
       </div>
       <ul class="link-list">
-	{% for favourite in favourites %}
-	  <li class="favourite-link">
-	    <a href="{{ favourite.url }}">{{ favourite.metadata.title|safe }}
-	    {% if favourite.metadata.additional %}
-		<br /><span class="additional">{{ favourite.metadata.additional|safe }}</span>
-	    {% endif %}
-	    </a>
-	  </li>
-	{% endfor %}
+    {% for favourite in favourites %}
+      <li class="favourite-link">
+        <a href="{{ favourite.url }}">{{ favourite.metadata.title|safe }}
+        {% if favourite.metadata.additional %}
+        <br /><span class="additional">{{ favourite.metadata.additional|safe }}</span>
+        {% endif %}
+        </a>
+      </li>
+    {% endfor %}
         <li><a href="{% url favourites:index %}"><strong>{% trans "Manage Favourites" %}</strong></a></li>
       </ul>
     </div>
@@ -141,7 +142,7 @@
         {% if has_user_messages %}
             <li><a href="{% url home:messages %}">{% trans "Read messages from the developers" %}</a></li>
         {% endif %}
-        <li class="round-bottom"><a href="{% url feedback:index %}?referer={% url home:index %}">{% trans "Provide feedback" %}</a></li>
+        <li><a href="{% url feedback:index %}?referer={% url home:index %}">{% trans "Provide feedback" %}</a></li>
     </ul>
 
     {% block below-about %}

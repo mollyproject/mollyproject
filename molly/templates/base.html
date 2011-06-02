@@ -1,84 +1,84 @@
 {% load molly_utils %}{% load compressed %}{% load i18n %}<!DOCTYPE HTML>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-GB" lang="en-GB">
 {% comment %}
-	Welcome to Molly's base.html. Virtually all pages in Molly inherit from this page.
-	This page is divided into various blocks so that customisations are easy to override. 
-	Because of this, it's rare that you will ever need to touch this file, but you may  
-	want to refer to it to identify blocks to override.
-	
-	block list - indentation defines hierarchy
-	==========================================
-	- whole_title (the entire title)
-	  - site_title (name of the site)
-	  - title (title of a single page which follows site_title)
-	
-	- extrahead
-	
-	- body
-	  - header
-	    - site-small-logo 
-	    - breadcrumb_0 
-	  - content 
-	  - bottom_links
+    Welcome to Molly's base.html. Virtually all pages in Molly inherit from this page.
+    This page is divided into various blocks so that customisations are easy to override. 
+    Because of this, it's rare that you will ever need to touch this file, but you may  
+    want to refer to it to identify blocks to override.
+    
+    block list - indentation defines hierarchy
+    ==========================================
+    - whole_title (the entire title)
+      - site_title (name of the site)
+      - title (title of a single page which follows site_title)
+    
+    - extrahead
+    
+    - body
+      - header
+        - site-small-logo 
+        - breadcrumb_0 
+      - content 
+      - bottom_links
 {% endcomment %}
 
 <head>
-	{% comment %}
-		The 'site_title' is typically over written by local customisations but otherwise defaults to 'molly |' 
-		It then is followed by the 'title' which includes the last breadcrumb in a trail.	
-	{% endcomment %}
-	<title>{% block whole_title %}{% block site_title %}molly | {% endblock site_title %}{% block title %}{{ breadcrumbs.4 }}{% endblock title %}{% endblock whole_title %}</title>
+    {% comment %}
+        The 'site_title' is typically over written by local customisations but otherwise defaults to 'molly |' 
+        It then is followed by the 'title' which includes the last breadcrumb in a trail.   
+    {% endcomment %}
+    <title>{% block whole_title %}{% block site_title %}molly | {% endblock site_title %}{% block title %}{{ breadcrumbs.4 }}{% endblock title %}{% endblock whole_title %}</title>
 
-	{% comment %}
-		meta name='viewport' defines the viewport for devices which support it. Here we define that the viewport 
-		is the width of the device and that the scale is fixed. Fixed (non user-scalable) scaling is important to 
-		ensure that horizontal scrolling does not occur, which burdens the UX. 
-		However - not all phones that support these tags support them in the same way. E.g. Opera Mobile.
-	{% endcomment %}
+    {% comment %}
+        meta name='viewport' defines the viewport for devices which support it. Here we define that the viewport 
+        is the width of the device and that the scale is fixed. Fixed (non user-scalable) scaling is important to 
+        ensure that horizontal scrolling does not occur, which burdens the UX. 
+        However - not all phones that support these tags support them in the same way. E.g. Opera Mobile.
+    {% endcomment %}
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1"/>
 
-	{# The following stops certain browsers from turning strings of numbers into clickable phone numbers #}
+    {# The following stops certain browsers from turning strings of numbers into clickable phone numbers #}
     <meta name="format-detection" content="telephone=no" />
     <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
 
-  	{# Provide the minified CSS file appropriate to class of device #}
-	{% compressed_css style_group %}
-	{# If the device supports SVGs, add the following CSS file that gives SVG icons rather than .png #}
-	{% if device|device_has_parent:"apple_iphone_ver4" or browser.svgt_1_1 %}
-		{% compressed_css 'svg' %}
-	{% endif %}
+    {# Provide the minified CSS file appropriate to class of device #}
+    {% compressed_css style_group %}
+    {# If the device supports SVGs, add the following CSS file that gives SVG icons rather than .png #}
+    {% if device|device_has_parent:"apple_iphone_ver4" or browser.svgt_1_1 %}
+        {% compressed_css 'svg' %}
+    {% endif %}
 
-	{% comment %}
-		meta name="apple-mobile-web-app-capable" enables 'web app mode' for Molly when saved as a home screen icon
-		on either an Apple *or* Android. This depends on all requests from the home page onwards being made 
-		using AJAX calls. Typically this removes a URL bar in the user's window. 
-	
-		apple-touch-icons are different sized icons for home screens on devices e.g. iPad, iPhone 4, iPhone 
-		- some of these are also supported by other devices
-	
-		apple-touch-startup-image is used as a splash screen for when a user clicks on the application's home
-		screen icon. Under Apple's HCI guidelines, this should really be a greyed out screenshot of the first
-		page of the User interface. 
-	{% endcomment %}
-	{% if device|device_has_parent:"apple_generic" or device.device_os == "Android" %}
-	    <meta name="apple-mobile-web-app-capable" content="yes">
-	    <link rel="apple-touch-icon" href="{{ STATIC_URL }}site/images/apple-touch-icon.png"/>
-	    <link rel="apple-touch-icon" sizes="72x72" href="{{ STATIC_URL }}site/images/apple-touch-icon-72px.png"/>
-	    <link rel="apple-touch-icon" sizes="114x114" href="{{ STATIC_URL }}site/images/apple-touch-icon-114px.png"/>
-	    <link rel="apple-touch-icon-precomposed" href="{{ STATIC_URL }}site/images/apple-touch-icon.png"/>
-	    <link rel="apple-touch-startup-image" href="{{ STATIC_URL  }}site/images/apple-touch-startup-image.jpg">
-	{% endif %}
+    {% comment %}
+        meta name="apple-mobile-web-app-capable" enables 'web app mode' for Molly when saved as a home screen icon
+        on either an Apple *or* Android. This depends on all requests from the home page onwards being made 
+        using AJAX calls. Typically this removes a URL bar in the user's window. 
+    
+        apple-touch-icons are different sized icons for home screens on devices e.g. iPad, iPhone 4, iPhone 
+        - some of these are also supported by other devices
+    
+        apple-touch-startup-image is used as a splash screen for when a user clicks on the application's home
+        screen icon. Under Apple's HCI guidelines, this should really be a greyed out screenshot of the first
+        page of the User interface. 
+    {% endcomment %}
+    {% if device|device_has_parent:"apple_generic" or device.device_os == "Android" %}
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="apple-touch-icon" href="{{ STATIC_URL }}site/images/apple-touch-icon.png"/>
+        <link rel="apple-touch-icon" sizes="72x72" href="{{ STATIC_URL }}site/images/apple-touch-icon-72px.png"/>
+        <link rel="apple-touch-icon" sizes="114x114" href="{{ STATIC_URL }}site/images/apple-touch-icon-114px.png"/>
+        <link rel="apple-touch-icon-precomposed" href="{{ STATIC_URL }}site/images/apple-touch-icon.png"/>
+        <link rel="apple-touch-startup-image" href="{{ STATIC_URL  }}site/images/apple-touch-startup-image.jpg">
+    {% endif %}
 
-	{# Favicon link #}
+    {# Favicon link #}
     <link rel="icon" type="image/png" href="{{ STATIC_URL }}site/images/favicon.png"/>
     
-	{# Include ALL javascript (ignore filename) #}
+    {# Include ALL javascript (ignore filename) #}
     {% include "geolocation/js.html" %}
 
-	{% comment %}
-		extrahead is used when a particular child page needs extra tags in the head e.g. meta-refresh
-		javascript should *not* be placed here. 
-	{% endcomment %}
+    {% comment %}
+        extrahead is used when a particular child page needs extra tags in the head e.g. meta-refresh
+        javascript should *not* be placed here. 
+    {% endcomment %}
     {% block extrahead %}{% endblock extrahead %}
 </head>
 
@@ -86,134 +86,140 @@
 <body>
 {% block body %}
 
-	{# header consists of the breadcrumb trail #}
-	{% block header %}
-	
-	{# Breadcrumbs for devices that are not featurephones #}
-	{% ifnotequal style_group "dumb" %}
-	    <div id="bc-header">
-	      <ol id="bc">
-		  {# Breadcrumb home logo - override this in your own templates #}
-	      {% block site-small-logo %}
-	        <li><a href="{% url home:index %}" title="{% trans 'Home' %}">
-	          <img src="{{ STATIC_URL }}site/images/logo.png" width="42" height="30" alt="{% trans 'Home' %}"/>
-	        </a></li>
-	      {% endblock %}
-	      {% if breadcrumbs.2 %}
-	        <li><a href="{{ breadcrumbs.1.1 }}" title="{{ breadcrumbs.1.0 }}">
-	          <img src="{{ STATIC_URL }}site/images/index-icons/{{ breadcrumbs.0 }}-bc.png" alt="{{ breadcrumb.1.0 }}"/>
-	        </a></li>
-	      {% if not breadcrumbs.3 %}
-	        <li><a href="{{ breadcrumbs.2.1 }}" title="{{ breadcrumbs.2.0 }}">
-	          &hellip;
-	        </a></li>
-	      {% endif %}{% endif %}
-	      </ol> 
-	      <div id="bc-title">
-			{# Title of the page #}
-	        <h1 class="{% if not breadcrumbs.2 %}{{ breadcrumbs.0 }}-header with-icon{% endif %}">{{ breadcrumbs.4 }}</h1>
-			{# Include favourites if appropriate (defined in favourite.html) - a star is placed at the top right if so #}
-	        {% include "favourite.html" %}
-	      </div>
-	    </div>
-	
-	{# Breadcrumbs for featurephones #}
-	{% else %}
-	    <div id="bc-header">
-	           <a href="{% url home:index %}">{% block breadcrumb_0 %}{% trans "Home" %}{% endblock %}</a>
-	       {% if breadcrumbs.2 %}
-	           / <a href="{{ breadcrumbs.1.1 }}" title="{{ breadcrumbs.1.0 }}">{{ breadcrumbs.1.0 }}</a>
-	       {% if not breadcrumbs.3 %}
-	            / <a href="{{ breadcrumbs.2.1 }}" title="{{ breadcrumbs.2.0 }}">&hellip;</a>
-	       {% endif %}{% endif %}
-	         <div id="bc-title">
-	           <h1>{{ breadcrumbs.4 }}</h1>
-	         </div>
-	         {% include "favourite.html" %}
-	     </div>
-	{% endifnotequal %}
-	{% endblock header %}
+    {# header consists of the breadcrumb trail #}
+    {% block header %}
+    
+    {# Breadcrumbs for devices that are not featurephones #}
+    {% ifnotequal style_group "dumb" %}
+        <div id="bc-header">
+          <ol id="bc">
+          {# Breadcrumb home logo - override this in your own templates #}
+          {% block site-small-logo %}
+            <li><a href="{% url home:index %}" title="{% trans 'Home' %}">
+              <img src="{{ STATIC_URL }}site/images/logo.png" width="42" height="30" alt="{% trans 'Home' %}"/>
+            </a></li>
+          {% endblock %}
+          {% if breadcrumbs.2 %}
+            <li><a href="{{ breadcrumbs.1.1 }}" title="{{ breadcrumbs.1.0 }}">
+              <img src="{{ STATIC_URL }}site/images/index-icons/{{ breadcrumbs.0 }}-bc.png" alt="{{ breadcrumb.1.0 }}"/>
+            </a></li>
+          {% if not breadcrumbs.3 %}
+            <li><a href="{{ breadcrumbs.2.1 }}" title="{{ breadcrumbs.2.0 }}">
+              &hellip;
+            </a></li>
+          {% endif %}{% endif %}
+          </ol> 
+          <div id="bc-title">
+            {# Title of the page #}
+            <h1 class="{% if not breadcrumbs.2 %}{{ breadcrumbs.0 }}-header with-icon{% endif %}">{{ breadcrumbs.4 }}</h1>
+            {# Include favourites if appropriate (defined in favourite.html) - a star is placed at the top right if so #}
+            {% include "favourite.html" %}
+          </div>
+        </div>
+    
+    {# Breadcrumbs for featurephones #}
+    {% else %}
+        <div id="bc-header">
+               <a href="{% url home:index %}">{% block breadcrumb_0 %}{% trans "Home" %}{% endblock %}</a>
+           {% if breadcrumbs.2 %}
+               / <a href="{{ breadcrumbs.1.1 }}" title="{{ breadcrumbs.1.0 }}">{{ breadcrumbs.1.0 }}</a>
+           {% if not breadcrumbs.3 %}
+                / <a href="{{ breadcrumbs.2.1 }}" title="{{ breadcrumbs.2.0 }}">&hellip;</a>
+           {% endif %}{% endif %}
+             <div id="bc-title">
+               <h1>{{ breadcrumbs.4 }}</h1>
+             </div>
+             {% include "favourite.html" %}
+         </div>
+    {% endifnotequal %}
+    {% endblock header %}
 
-	<div class="content">
+    <div class="content">
 
-	{% comment %}
-		The following displays a box and link to a user if the developers have sent said person a message.
-		An admin can send a user a message based on the user's session key via the admin UI. 
-	{% endcomment %}
-	{% if unread_user_messages %}
-	    <div class="section" style="padding:10px;">
-		<div class="bubble pad-10">
-		    <a href="{% url home:messages %}" style="font-size:1.2em; padding:1em 0.2em; display:block;">
-		    {% trans "You have a message from the developers!" %}
-		    </a>
-		</div>
-	    </div>
-	{% endif %}
+    {% comment %}
+        The following displays a box and link to a user if the developers have sent said person a message.
+        An admin can send a user a message based on the user's session key via the admin UI. 
+    {% endcomment %}
+    {% if unread_user_messages %}
+        <div class="section">
+        <div class="bubble pad-10">
+            <a href="{% url home:messages %}">
+            {% trans "You have a message from the developers!" %}
+            </a>
+        </div>
+        </div>
+    {% endif %}
 
-	{# content block for a child page's content #}
-	{% block content %}
-	{% endblock content %}
-	
-	{% comment %}
-		The bottom_links block - 
-		displayed on pages which have not opted out:
-		provides links to 2D barcodes, short URLs, facebook sharing, feedback etc	
-	{% endcomment %}
-	{% if not hide_feedback_link %}
-		<div id="bottom-links">
-		{% block bottom_links %}
-			{# Give all non-feature phones a stylised bunch of links #}
-			{% ifnotequal style_group "dumb" %}
-				{# As older Blackberry (RIM) devices have poor browsers we reduce button width and float each side #}
-				{% if device.brand_name == "RIM" %}
-				  <div style="width:49%; float:left;">
-				    <a href="{% url feedback:index %}?referer={{ full_path|urlencode }}">{% trans "Feedback" %}</a>
-				  </div>
-				  <div style="width:49%; float:right;">
-				    <a href="{% url url_shortener:index %}?path={{ full_path|urlencode }}">{% trans "Share" %}</a>
-				  </div>
-				{# All other devices #}
-				{% else %}
-				  <div><a href="{% url feedback:index %}?referer={{ full_path|urlencode }}">{% trans "Feedback" %}</a></div>
-				  <div><a href="{% url url_shortener:index %}?path={{ full_path|urlencode }}">{% trans "Share" %}</a></div>
-				{% endif %}
-				
-				{% if "feature_vote"|app_is_loaded or "feature-suggestions"|app_is_loaded %}
-				  <div><a href="{% url feature_vote:index %}">{% trans "Suggest a feature" %}</a></div>
-				{% endif %}
-				{# If there's only two languages to switch between, show the switch here #}
-				{% if LANGUAGES|length < 3 %}
-				    <div>
-				    {% for language_code, language_name in LANGUAGES %}
-					{% if language_code != LANGUAGE_CODE %}
-					<form action="{% url set-language %}" method="post" class="has-ajax-handler">
-					    {% csrf_token %}
-					    <a><button type="submit" name="language" value="{{ language_code }}">
-						{{ language_name }}
-					    </button></a>
-					</form>
-					{% endif %}
-				    {% endfor %}
-				    </div>
-				{% endif %}
-			 	<div style="clear:both"> </div>
-			{# Give a simple list for feature phones #}
-			{% else %}
-				<ul>
-					<li><a href="{% url feedback:index %}?referer={{ full_path|urlencode }}">{% trans "Feedback" %}</a></li>
-					<li><a href="{% url url_shortener:index %}?path={{ full_path|urlencode }}">{% trans "Share" %}</a></li>
-					{% if "feature_vote"|app_is_loaded or "feature-suggestions"|app_is_loaded %}
-						<li><a href="{% url feature_vote:index %}">{% trans "Suggest a feature" %}</a></li>
-					{% endif %}
-				</ul>
-			{% endifnotequal %}
-		
-		    {% if LANGUAGES|length > 2 %}
-			{% include "i18n/language_selector.html" %}
-		    {% endif %}
-		{% endblock bottom_links %}
-		</div>
-	{% endif %}
+    {# content block for a child page's content #}
+    {% block content %}
+    {% endblock content %}
+    
+    {% comment %}
+        The bottom_links block - 
+        displayed on pages which have not opted out:
+        provides links to 2D barcodes, short URLs, facebook sharing, feedback etc   
+    {% endcomment %}
+    {% if not hide_feedback_link %}
+        <div id="bottom-links">
+        {% block bottom_links %}
+            {# Give all non-feature phones a stylised bunch of links #}
+            {% ifnotequal style_group "dumb" %}
+                {# As older Blackberry (RIM) devices have poor browsers we reduce button width and float each side #}
+                {% if device.brand_name == "RIM" %}
+                  <div id="rim-left">
+                    <a href="{% url feedback:index %}?referer={{ full_path|urlencode }}">{% trans "Feedback" %}</a>
+                  </div>
+                  <div id="rim-right">
+                    <a href="{% url url_shortener:index %}?path={{ full_path|urlencode }}">{% trans "Share" %}</a>
+                  </div>
+                {# All other devices #}
+                {% else %}
+                  <div><a href="{% url feedback:index %}?referer={{ full_path|urlencode }}">{% trans "Feedback" %}</a></div>
+                  <div><a href="{% url url_shortener:index %}?path={{ full_path|urlencode }}">{% trans "Share" %}</a></div>
+                {% endif %}
+                
+                {% if "feature_vote"|app_is_loaded or "feature-suggestions"|app_is_loaded %}
+                  <div {% if LANGUAGES|length == 1 %}class="full-width"{% endif %}>
+                    <a href="{% url feature_vote:index %}">{% trans "Suggest a feature" %}</a></div>
+                {% endif %}
+                {# If there are only two languages to switch between, show the switch here #}
+                {% if LANGUAGES|length == 2 %}
+                    <div>
+                    {% for language_code, language_name in LANGUAGES %}
+                    {% if language_code != LANGUAGE_CODE %}
+                    <form action="{% url set-language %}" method="post" class="has-ajax-handler">
+                        {% csrf_token %}
+                        <a><button type="submit" name="language" value="{{ language_code }}">
+                        {{ language_name }}
+                        </button></a>
+                    </form>
+                    {% endif %}
+                    {% endfor %}
+                    </div>
+                {% endif %}
+                {% if LANGUAGES|length >= 3 %}
+                {# Otherwise take to another page to choose language #}
+                {# This is always in English as it's a lingua franca #}
+                    <div><a href="{% url set-language %}">Change language</a></div>
+                {% endif %}
+                <div class="clear"> </div>
+            {# Give a simple list for feature phones #}
+            {% else %}
+                <ul>
+                    <li><a href="{% url feedback:index %}?referer={{ full_path|urlencode }}">{% trans "Feedback" %}</a></li>
+                    <li><a href="{% url url_shortener:index %}?path={{ full_path|urlencode }}">{% trans "Share" %}</a></li>
+                    {% if "feature_vote"|app_is_loaded or "feature-suggestions"|app_is_loaded %}
+                        <li><a href="{% url feature_vote:index %}">{% trans "Suggest a feature" %}</a></li>
+                    {% endif %}
+                </ul>
+            {% endifnotequal %}
+        
+            {% if LANGUAGES|length > 2 %}
+            {% include "i18n/language_selector.html" %}
+            {% endif %}
+        {% endblock bottom_links %}
+        </div>
+    {% endif %}
     
 </div>
 {% endblock body %}

@@ -9,7 +9,7 @@
 <h2 class="invisible">{% trans "Search Places" %}</h2>    
 <table class="search"><tbody>
         <tr><td>
-                <label style="display:none;" for="id_query">{% trans "Search Places" %}</label>
+                <label class="invisible" for="id_query">{% trans "Search Places" %}</label>
                 {{ search_form.query }}
         </td><td>
                 <input type="hidden" name="application" value="places" title='{% trans "Search Places" %}' />

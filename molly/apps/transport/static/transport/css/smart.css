@@ -1,3 +1,5 @@
+
+
 ul#transport-links {
     list-style: none;
     margin: 5px 0 0 0;
@@ -17,6 +19,10 @@ ul li.transport-link {
     box-shadow: 3px 3px 3px #333;
     -webkit-box-shadow: 3px 3px 3px #333;
     -moz-box-shadow: 3px 3px 3px #333;
+}
+
+table.content tbody tr.grey {
+    color: #7c7c7c;
 }
 
 ul li.transport-link a img { border: 0; }
@@ -56,6 +62,11 @@ ul li.transport-link a img { border: 0; }
     height: 7px;
     background-color: #39d93c;
     margin: 5px auto;
+}
+
+.park-and-ride div.capacity-bar div.capacity-bar-red {
+    height:7px;
+    background-color: #960300;
 }
 
 .park-and-ride p {

@@ -12,7 +12,7 @@
         <tbody>
             <tr>
                 <td>
-                    <label style="display:none;" for="id_query">{% trans "Search" %}</label>
+                    <label class="invisible" for="id_query">{% trans "Search" %}</label>
                     {{ search_form.query }}
                 </td>
                 <td>
@@ -36,10 +36,10 @@
     {% if results %}
   	<ol class="search-results">
 	{% for result in results %}
-	    <li{% if forloop.last %} class="round-bottom"{% endif %}>
+	    <li class=">
                 <a href="{{ result.url }}">
                     {% if result.application %}
-                        <img src="{{ STATIC_URL }}site/images/index-icons/{{ result.application }}-bc.png" style="float:left; border:0; margin-right: 5px; margin-bottom: 5px;"/>
+                        <img src="{{ STATIC_URL }}site/images/index-icons/{{ result.application }}-bc.png" />
                     {% endif %}
                     {{ result.title|safe }}<br/>
                     {% if result.additional %}
@@ -69,7 +69,7 @@
 	{% endif %}
 	{% if "library"|app_is_loaded %}
 	    <li><a href="{% url library:search %}?title={{ search_form.data.query }}">Library books titled with <em>'{{ search_form.data.query }}'</em></a></li>
-	    <li class="round-bottom"><a href="{% url library:search %}?author={{ search_form.data.query }}">Library books authored by <em>'{{ search_form.data.query }}'</em> </a></li>
+	    <li><a href="{% url library:search %}?author={{ search_form.data.query }}">Library books authored by <em>'{{ search_form.data.query }}'</em> </a></li>
 	{% endif %}
     </ul>
 </div>

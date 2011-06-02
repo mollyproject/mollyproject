@@ -5,7 +5,7 @@
 {% for slug, name, lastBuildDate, statuses, announcements in services %}
 <div class="section">
   <div class="header">
-    <h2>{% blocktrans with lastBuildDate|date:"DATETIME_FORMAT" as updated_date %}{{ name }} <small>at {{ updated_date }}</small>{% endblocktrans %}</h2>
+    <h2>{% blocktrans with lastBuildDate|date:"H:i:s" as updated_date %}{{ name }} <small>at {{ updated_date }}</small>{% endblocktrans %}</h2>
   </div>
   {% if announcements %}
   <h3 class="invisible">{% trans "Service announcements" %}</h3>
@@ -25,7 +25,7 @@
 
   <ul class="content-list service-status-list">
 {% for status in statuses %}
-    <li class="service-status-item service-status-{{ status.status }}{% if forloop.last %} round-bottom{% endif %}">
+    <li class="service-status-item service-status-{{ status.status }}">
       <span class="service-status-name">{% trans status.name %}</span><br/>
       <span class="service-status-status">{{ status.status|capfirst }}</span>
 {% if status.statusMessage %}

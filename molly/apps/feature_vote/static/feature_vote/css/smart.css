@@ -1,0 +1,16 @@
+/* Feature Vote */
+div.vote-box {
+    float: right;
+    text-align: center;
+    font-weight: bold;
+    width:35px;
+    margin:0 0 5px 5px;
+}
+div.vote-box span {padding:0;}
+
+ul.content-list li.superuser-comment {
+	border: 2px solid #465347;
+	border-width: 2px 0 2px 0;
+	background-color:#CFE8D9;
+}
+/* End Feature Vote */

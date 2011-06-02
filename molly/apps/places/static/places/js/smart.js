@@ -199,7 +199,7 @@ function rebuildRTI(elem, metadata){
         for (var i in metadata.services) {
             var service = metadata.services[i]
             tbody.append('<tr>' + 
-            '<td rowspan="2" style="font-size:200%; text-align:center;">' + service.service + '</td>' +
+            '<td class="center" rowspan="2" style="font-size:200%;">' + service.service + '</td>' +
             '<td>' + service.destination + '</td>' +
             '<td>' + service.next + '</td>' +
             '</tr><tr class="notopborder"><td colspan="2"><small>' + gettext('Next') + ': </small></td></tr>')

@@ -15,7 +15,7 @@
        Remember this preference in future.
        </label>
     </p>{% endcomment %}
-    <p style="text-align:center; margin-bottom:0;">
+    <p class="center itunesu_buttons">
         <button type="submit" name="use_itunesu" value="yes">{% trans "Go to iTunes U" %}</button>
         <button type="submit" name="cancel" id="hide_itunesu_link" value="no">{% trans "Stay here" %}</button>
     </p>
@@ -56,7 +56,7 @@
 
 <ul class="link-list">
 {% for category in categories %}
-    <li {% if forloop.last %}class="round-bottom" {% endif %}>
+    <li>
 	<a href="{{ category.get_absolute_url }}">{% trans category.name %}</a></li>
 {% endfor %}
 </ul></div>

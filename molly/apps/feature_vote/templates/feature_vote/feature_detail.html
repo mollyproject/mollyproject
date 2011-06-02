@@ -6,7 +6,7 @@
   <div class="header">
     <h2>{{ feature.title }}</h2>
     {% include "feature_vote/vote.html" %}
-  <p style="margin-top:0;">
+  <p>
     <small>
         {% blocktrans with feature.user_name as user_name feature.created|timesince as timesince_created %}Suggested by {{ user_name }}; added {{ timesince_created }} ago{% endblocktrans %}
     </small>
@@ -67,7 +67,7 @@
       <input type="submit" value="{% trans 'Submit' %}"/>
     </p>
 
-    <div style="clear:both"></div>
+    <div class="clear"></div>
   </form>
 </div>
 

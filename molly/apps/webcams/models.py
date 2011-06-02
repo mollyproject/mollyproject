@@ -1,6 +1,6 @@
 from django.db import models
 from django.conf import settings
-
+from django.utils.translation import ugettext_lazy as _
 from molly.utils.i18n import name_in_language
 
 WEBCAM_WIDTHS = (100, 300, 200)
@@ -8,7 +8,7 @@ WEBCAM_WIDTHS = (100, 300, 200)
 class Webcam(models.Model):
     slug = models.SlugField()
     url = models.URLField()
-    fetch_period = models.PositiveIntegerField()
+    fetch_period = models.PositiveIntegerField( help_text=_('in seconds'))
     
     @property
     def title(self):

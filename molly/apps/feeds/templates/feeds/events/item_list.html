@@ -19,7 +19,7 @@
 </div>
     <ul class="link-list">
 {% for item in feed.item_set.all %}
-        <li {% if forloop.last %}class="round-bottom"{% endif %}>
+        <li>
             <a href="{{ item.get_absolute_url }}">
                 {{ item.title }}<br />
                 <small><em>
