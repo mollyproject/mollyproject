@@ -916,7 +916,8 @@ div#bottom-links div#rim-right {
     float: right;
 }
 
-div#bottom-links div a {
+div#bottom-links div.full-width a, 
+div#bottom-links div.half-width a {
     margin:0 0.2em 0 0.2em; 
     background-color:white; 
     padding:0.6em; 
@@ -939,5 +940,6 @@ div.language-selector button {
     -webkit-box-shadow: none !important;
     -moz-box-shadow: none !important;
     border: 0;
+    cursor: pointer;
 }
 /* End Bottom Links */
