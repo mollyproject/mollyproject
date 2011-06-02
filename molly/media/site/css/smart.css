@@ -740,7 +740,7 @@ div.button > a {
     margin-right: 28px !important;
 }
 
-.as-text-link,
+/*.as-text-link,
 #bottom-links button {
     background: none !important;
     border: 0 !important;
@@ -751,7 +751,7 @@ div.button > a {
     color: #000000 !important;
     text-shadow: none !important;
     cursor: pointer;
-}
+}*/
 
 .link-list .as-text-link {
     color: #ffffff !important;
@@ -891,12 +891,19 @@ div#bottom-links {
    padding: 5px; 
 }
 
-div#bottom-links div {
+div#bottom-links div.full-width, 
+div#bottom-links div.half-width {
    margin-top: 0.1em;
    margin-bottom: 0.2em;
    float: left;
    /* Width gets overwritten for some devices */
    width: 50%;
+}
+
+div#bottom-links div.full-width {
+    margin-top: 0.1em;
+    margin-bottom: 0.2em;
+    width: 100%;
 }
 
 div#bottom-links div#rim-left {
@@ -907,10 +914,6 @@ div#bottom-links div#rim-left {
 div#bottom-links div#rim-right {
     width: 49%;
     float: right;
-}
-
-div#bottom-links div.full-width {
-    width: 100%;
 }
 
 div#bottom-links div a {
@@ -924,11 +927,17 @@ div#bottom-links div a {
     -moz-border-radius:0.4em;
 }
 
-#bottom-links button {
-    font-size: 0.75em;
+div.language-selector button {
+    min-width: 7em;
+    min-height: 2.5em;
+    background-color: #fff;
     color: #00e !important;
     text-decoration: underline;
     font-weight: normal;
     font-family: "Liberation Sans",sans-serif;
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    -moz-box-shadow: none !important;
+    border: 0;
 }
 /* End Bottom Links */
