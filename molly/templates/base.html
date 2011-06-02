@@ -179,7 +179,7 @@
                 {% endif %}
                 
                 {% if "feature_vote"|app_is_loaded or "feature-suggestions"|app_is_loaded %}
-                  <div {% if LANGUAGES|length == 1 %}class="full-width"{% endif %}>
+                  <div {% if LANGUAGES|length != 2 %}class="full-width"{% endif %}>
                     <a href="{% url feature_vote:index %}">{% trans "Suggest a feature" %}</a></div>
                 {% endif %}
                 {# If there are only two languages to switch between, show the switch here #}
@@ -197,11 +197,6 @@
                     {% endfor %}
                     </div>
                 {% endif %}
-                {% if LANGUAGES|length >= 3 %}
-                {# Otherwise take to another page to choose language #}
-                {# This is always in English as it's a lingua franca #}
-                    <div><a href="{% url set-language %}">Change language</a></div>
-                {% endif %}
                 <div class="clear"> </div>
             {# Give a simple list for feature phones #}
             {% else %}
@@ -215,7 +210,7 @@
             {% endifnotequal %}
         
             {% if LANGUAGES|length > 2 %}
-            {% include "i18n/language_selector.html" %}
+		{% include "i18n/language_selector.html" %}
             {% endif %}
         {% endblock bottom_links %}
         </div>
