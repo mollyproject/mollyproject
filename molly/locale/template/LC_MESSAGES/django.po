@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-02 14:49+0100\n"
+"POT-Creation-Date: 2011-06-02 15:13+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -908,22 +908,23 @@ msgstr ""
 msgid "Things nearby"
 msgstr ""
 
-#: apps/places/views.py:178
+#: apps/places/views.py:182
+#: apps/places/templates/places/entity_without_location.html:16
 #, python-format
 msgid "Things near %(title)s"
 msgstr ""
 
-#: apps/places/views.py:183
+#: apps/places/views.py:187
 #, python-format
 msgid "%(entity_type)s near %(entity)s"
 msgstr ""
 
-#: apps/places/views.py:188
+#: apps/places/views.py:192
 #, python-format
 msgid "%(et)s nearby"
 msgstr ""
 
-#: apps/places/views.py:200
+#: apps/places/views.py:204
 #, python-format
 msgid "<strong>%(number)d %(entity_type)s</strong> within 1km"
 msgstr ""
@@ -1941,7 +1942,6 @@ msgid "We do not yet have a location for this %(type_name)s."
 msgstr ""
 
 #: apps/places/templates/places/entity_without_location.html:5
-#: apps/places/templates/places/entity_without_location.html:17
 #, python-format
 msgid "%(type_name)s near %(title)s"
 msgstr ""
@@ -1951,7 +1951,7 @@ msgstr ""
 msgid "%(type_name)s nearby"
 msgstr ""
 
-#: apps/places/templates/places/entity_without_location.html:21
+#: apps/places/templates/places/entity_without_location.html:18
 msgid ""
 "Unfortunately, we do not have a location for this object, and so cannot tell "
 "you what is near it."
@@ -2558,6 +2558,17 @@ msgstr ""
 
 #: apps/sakai/templates/sakai/sites.html:3
 msgid "Sites"
+msgstr ""
+
+#: apps/sakai/templates/sakai/announcement/detail.html:16
+#, python-format
+msgid "This announcement has %(attachments)s attachment."
+msgid_plural "This announcement has %(attachments)s attachments."
+msgstr[0] ""
+msgstr[1] ""
+
+#: apps/sakai/templates/sakai/announcement/detail.html:22
+msgid "Please use WebLearn on a desktop PC to retrieve them."
 msgstr ""
 
 #: apps/sakai/templates/sakai/direct/index.html:8

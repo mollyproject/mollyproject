@@ -81,7 +81,7 @@ setup(
         "feedparser>=5.0",
         "simplejson",
         "rdflib",
-        "python-dateutil",
+        "python-dateutil==1.5",
         "Django==1.2.5",
         "oauth==1.0.1",
         "psycopg2",
