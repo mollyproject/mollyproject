@@ -16,7 +16,8 @@
 <div class="section">
     <div class="header">
         <h2>{{ webcam.title }}<br /><small>{% now "G:i "%}</small></h2>
-        
+    </div>
+    <div class="section-content">
         {% if eis %}
             {% ifnotequal style_group "dumb" %}
                 <div class="backgrounded-image" style="background-image:url('{{ eis.get_absolute_url }}'); height:{{ eis.height }}px;"> </div>
@@ -30,13 +31,12 @@
         {% endif %}
         
         <div class="note"><div class="bubble pad-5">
-            <p><small>{{ webcam.description }}</small></p>
+            <p>{{ webcam.description }}</p>
             
             {% if webcam.credit %}
-            <p><small>{{ webcam.credit|safe }}</small></p>
+            <p>{{ webcam.credit|safe }}</p>
             {% endif %}
         </div></div>
-        
     </div>
 </div>
 {% endblock %}
