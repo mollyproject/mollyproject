@@ -16,6 +16,7 @@ from django.core.urlresolvers import reverse
 from django.template.defaultfilters import capfirst
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.utils.translation import ugettext as _
+from django.contrib.gis.measure import D
 
 from molly.utils.views import BaseView, ZoomableView
 from molly.utils.breadcrumbs import *
@@ -86,39 +87,19 @@ class NearbyListView(LocationRequiredView):
 
         # Get entity types to show on nearby page
         entity_types = EntityType.objects.filter(show_in_nearby_list=True)
-        entity_types_lookup = dict((et, et) for et in entity_types)
-
-        # Get all nearby entities
-        entities = Entity.objects.filter(location__isnull = False, all_types_completion__in = entity_types)
-        entities = entities.distance(point).order_by('distance')
-
+        
         for et in entity_types:
+            # For each et, get the entities that belong to it
             et.max_distance = 0
             et.entities_found = 0
-
-        # For each entity...
-        for e in entities:
-            for et in e.all_types.all():
-                try:
-                    # Check if this entity is in one of the entity types to show
-                    # if not - throws KeyError
-                    et = entity_types_lookup[et]
-
-                    # Check if this entity fits within the selection criteria
-                    # if it doesn't, then remove it from being considered for
-                    # future entities
-                    if (e.distance.m ** 0.75) * (et.entities_found + 1) > 500:
-                        del entity_types_lookup[et]
-                        continue
-                    et.max_distance = e.distance.m
-                    et.entities_found += 1
-                except KeyError:
-                    pass
-
-            # Stop when we've considered all entity types, or are more than 5km
-            # away
-            if len(entity_types) == 0 or e.distance.m > 5000:
-                break
+            es = et.entities_completion.filter(location__isnull=False,
+                                               location__distance_lt=(point, D(km=5))).distance(point).order_by('distance')
+            for e in es:
+                # Selection criteria for whether or not to count this entity
+                if (e.distance.m ** 0.75) * (et.entities_found + 1) > 500:
+                    break
+                et.max_distance = e.distance.m
+                et.entities_found += 1
 
         categorised_entity_types = defaultdict(list)
         for et in filter(lambda et: et.entities_found > 0, entity_types):

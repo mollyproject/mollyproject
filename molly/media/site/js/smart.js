@@ -8,6 +8,7 @@ var current_url = window.location.pathname + window.location.search;
 history.navigationMode = 'compatible';
 
 function to_absolute(url) {
+    url = url.split('#')[0]
     if (url.match(/https?\:\/\//)) {
         return url;
     } else if (url.substr(0, 1) == "/") {
