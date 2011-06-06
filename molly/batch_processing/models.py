@@ -2,7 +2,7 @@ import simplejson, traceback, sys, logging
 from datetime import datetime
 from StringIO import StringIO
 
-from django.db import models
+from django.db import models, IntegrityError, transaction
 
 from molly.conf import all_apps, app_by_local_name
 
@@ -71,6 +71,8 @@ class Batch(models.Model):
             
             self.metadata = method(self.metadata, output)
         except Exception, e:
+            if isinstance(e, IntegrityError):
+                transaction.rollback()
             if output.getvalue():
                 output.write("\n\n")
             traceback.print_exc(file=output)
