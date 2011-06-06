@@ -81,7 +81,7 @@ setup(
         "feedparser>=5.0",
         "simplejson",
         "rdflib",
-        "python-dateutil",
+        "python-dateutil==1.5",
         "Django==1.2.5",
         "oauth==1.0.1",
         "psycopg2",
@@ -94,6 +94,7 @@ setup(
         "South",
         "suds",
         "django-slimmer",
+        'pyyaml',
     ],
     dependency_links = [
         'http://pylevenshtein.googlecode.com/files/python-Levenshtein-0.10.1.tar.bz2#egg=python-Levenshtein'

@@ -1,6 +1,7 @@
 from pywurfl.algorithms import DeviceNotFound
 
 from django.http import Http404
+from django.utils.translation import ugettext as _
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
@@ -16,7 +17,7 @@ class IndexView(BaseView):
         return Breadcrumb(
             self.conf.local_name,
             None,
-            'Device detection',
+            _('Device detection'),
             lazy_reverse('index'),
         )
     

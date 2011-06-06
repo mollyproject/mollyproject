@@ -1,22 +1,21 @@
 {% extends "places/base.html" %}
 {% load molly_maps %}{% load molly_utils %}
-
+{% load i18n %}
 {% block extrahead %}{{ block.super }}
 <meta name="robots" content="noindex"/>{% endblock %}
 
 {% block content %}
 
 <div class="section-nopad">
-  <h2>Thank you</h2>
+  <h2>{% trans "Thank you" %}</h2>
   
-  <div class="section-content" style="text-align:left;">
+  <div class="section-content">
     <p>
-      Your changes have been submitted and will be checked shortly. Thank you
-      for contributing to both {{ site_name }} and OpenStreetMap!
+	{% blocktrans %}Your changes have been submitted and will be checked shortly. Thank you for contributing to both {{ site_name }} and OpenStreetMap!{% endblocktrans %}
     </p>
     
     <p>
-      You may now wish to <a href="{{ entity.get_absolute_url }}">head back</a>.
+      <a href="{{ entity.get_absolute_url }}">{% trans "You may now wish to head back" %}</a>.
     </p>
 
   </div>

@@ -3,11 +3,12 @@ body {
     text-align: left;
 }
 
-/* Index Page Specific 
-    - 1 CSS 2.1 Selector
-    - 4 Webkit Only Tags
-    -- Written in order of use on index.html
-*/
+/* Generic */
+.invisible {display:none;}
+.center {text-align:center;}
+.clear {clear:both;}
+
+/* Index Page Specific */
 
 h1 {
     font-size: 0.8em;
@@ -35,15 +36,11 @@ div.section {
     background-color: #f0f0f0;
 }
 
-
 div#index-header {
     width:100%;
- 
-}
-div#index-title {
-
-}
-div#index-search {
-
 }
 
+/* Generic */
+.invisible {display:none;}
+.center {text-align:center;}
+.clear {clear:both;}

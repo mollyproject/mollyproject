@@ -1,4 +1,5 @@
 {% extends "places/base.html" %}{% load molly_maps %}{% load molly_utils %}
+{% load i18n %}
 
 {% block extrahead %}
   {% if entity.metadata.meta_refresh %}
@@ -15,7 +16,7 @@
 {% ifequal entity.primary_type.slug "travel-alert" %}
 <div class="section">
   <div class="header">
-    <h2>Travel Alert</h2>
+    <h2>{% trans "Travel Alert" %}</h2>
   </div>
   <div class="section-content"><div class="bubble pad-5">
       {{ entity.title }}
@@ -26,12 +27,15 @@
 <div class="section" id="poi-category-selector">
 <div class="header">
     {% if not entity.metadata.real_time_information %}
-      <h2>Map</h2>
+      <h2>{% trans "Map" %}</h2>
     {% else %}
       {% if entity.identifiers.naptan %}
-	<h2><small>Real-time information from bus stop {{entity.identifiers.naptan}} - <span class="update-time">{% now "G:i:s "%}</span></small></h2>
+	<h2><small>
+	    {% blocktrans with entity.identifiers.naptan as stop_id %}Real-time information from stop {{ stop_id }}{% endblocktrans %}
+	     - <span class="update-time">{% now "H:i:s" %}</span>
+	</small></h2>
       {% else %}
-	<h2>Real-time information - <span class="update-time">{% now "G:i:s "%}</span></h2>
+	<h2>{% trans "Real-time information" %} - <span class="update-time">{% now "H:i:s" %}</span></h2>
       {% endif %}
     {% endif %}
  </div>
@@ -42,11 +46,14 @@
 	{% render_location_map entity.location %}
  </div>
 	<ul class="link-list category-list">
-	    <li class="round-bottom nearby"><a href="{% url places:entity-nearby-list entity.identifier_scheme entity.identifier_value %}" rel="nofollow">Find things near here</a></li>
+	    <li class="nearby">
+		<a href="{% url places:entity-nearby-list entity.identifier_scheme entity.identifier_value %}" rel="nofollow">
+			{% trans "Find things near here" %}</a>
+		</li>
 	</ul>
 	{% else %}
 	    <div class="note"><div class="bubble">
-	        We do not yet have a location for this {{ entity.entity_type.verbose_name }}.
+	      {% blocktrans with entity.primary_type.verbose_name as type_name %}We do not yet have a location for this {{ type_name }}.{% endblocktrans %}
 	    </div></div>
 	{% endif %}
 </div>

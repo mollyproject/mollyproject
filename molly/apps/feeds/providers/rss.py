@@ -20,7 +20,9 @@ class RSSFeedsProvider(BaseFeedsProvider):
     
     @batch('%d * * * *' % random.randint(0, 59))
     def import_data(self, metadata, output):
-        "Pulls RSS feeds"
+        """
+        Pulls RSS feeds
+        """
 
         from molly.apps.feeds.models import Feed
         for feed in Feed.objects.filter(provider=self.class_path):

@@ -1,3 +1,5 @@
+/* Molly podcasts app smart.css */
+
 a.podcasts-license {
   float:right;
   background:none;
@@ -13,3 +15,58 @@ img.podcasts-icon {
   -webkit-box-shadow:1px 1px 2px #222;
 }
  
+ul.link-list li.podcast {
+    padding: 5px;
+    clear: left;
+    background: none;
+}
+
+#itunesu_link_div p.itunesu_buttons {
+    margin-bottom: 0;
+}
+
+div.podcast-description {
+    font-size: 1em;
+    line-height: 1.1em;
+}
+
+ul.content-list li div.podcast-description {
+    line-height: 1.1em;
+    margin-top: 5px;
+}
+
+/* Category detail */
+li.podcast div.podcast-image {
+    float: left;
+    width: 60px; 
+    margin-right: 5px;
+}
+
+li.podcast div.podcast-title {
+    padding-left: 60px;
+}
+
+li.podcast div.podcast-title span.podcast-description {
+    font-size: 0.8em;
+    padding-left: 0;
+}
+/* End category detail */
+
+/* Podcast detail */
+ul.podcast-enclosures {
+    margin-top: 10px;
+}
+li.podcast-enclosure {
+    vertical-align: middle;
+}
+
+li.podcast-enclosure a {
+    vertical-align: middle;
+    font-size: 0.95em;
+}
+
+li.podcast-enclosure a img {
+    vertical-align: middle;
+    margin: 2px;
+}
+/* End podcast detail */

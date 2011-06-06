@@ -1,13 +1,14 @@
+{% load i18n %}
 {% if transit_status %}    
     <div class="section">
         <div class="header">
-            <h2>{{ transit_status.service_name }} line status</h2>
+            <h2>{% blocktrans with transit_status.service_name as service_name %}{{ service_name }} line status{% endblocktrans %}</h2>
         </div>
         <table class="content">
             <thead>
                 <tr>
-                    <th>Line</th>
-                    <th>Status</th>
+                    <th>{% trans "Line" %}</th>
+                    <th>{% trans "Status" %}</th>
                 </tr>
             </thead>
             <tbody>

@@ -1,4 +1,5 @@
-from datetime import datetime
+from datetime import datetime, timedelta
+from django.utils.translation import ugettext as _
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
@@ -21,9 +22,10 @@ class IndexView(BaseView):
         return Breadcrumb(
             'weather',
             None,
-            'Weather',
+            _('Weather'),
             lazy_reverse('index'),
         )
 
     def handle_GET(self, request, context):
-        return self.render(request, context, 'weather/index')
+        return self.render(request, context, 'weather/index',
+                           expires=timedelta(minutes=10))

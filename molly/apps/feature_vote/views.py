@@ -3,6 +3,7 @@ import random
 from django.shortcuts import get_object_or_404
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseForbidden
+from django.utils.translation import ugettext as _
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
@@ -27,7 +28,7 @@ class IndexView(BaseView):
         return Breadcrumb(
             self.conf.local_name,
             None,
-            'Feature suggestions',
+            _('Feature suggestions'),
             lazy_reverse('index'),
         )
 
@@ -106,6 +107,7 @@ class FeatureDetailView(BaseView):
         )
 
     def initial_context(self, request, id):
+        # TODO Replace following with Django CSRF
         if not 'feature_vote:csrf' in request.session:
             request.session['feature_vote:csrf'] = ''.join(random.choice('0123456789abcdef') for i in range(8))
         if not 'feature_vote:votes' in request.session:

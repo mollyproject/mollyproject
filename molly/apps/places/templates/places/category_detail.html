@@ -1,4 +1,5 @@
 {% extends "places/base.html" %}
+{% load i18n %}
 {% load molly_utils %}
 
 {% block pagetitle %}{{ entity_types.0.verbose_name_plural|capfirst }}{% endblock %}
@@ -7,57 +8,64 @@
 {% block content %}
 
 <div class="section">
-<div class="header">
-  <h2>
-    Found {{ count }}
-    {% ifequal count 1 %}
-      {{ entity_types.0.verbose_name }}
+  <div class="header">
+    {# Defines an H2 title which defines which category this page is showing #}
+    <h2>
+      {% blocktrans count count as count and entity_types.0.verbose_name as name and entity_types.0.verbose_name_plural as name_plural %}Found {{ count }} {{ name }}{% plural %}Found {{ count }} {{ name_plural }}{% endblocktrans %}
+  
+      {# Also show other categories if this is an 'and' search #}
       {% ifnotequal entity_types|length 1 %}
-        that is also {% for et in entity_types|slice:"1:" %}{% if not forloop.first %}, {% if forloop.last %}and {% endif %}{% endif %}{{ et.article }} {{ et.verbose_name }}{% endfor %}
-      {% endifnotequal %} 
-    {% else %}
-      {{ entity_types.0.verbose_name_plural }}
-      {% ifnotequal entity_types|length 1 %}
-        that are also {% for et in entity_types|slice:"1:" %}{% if not forloop.first %}, {% if forloop.last %}and {% endif %}{% endif %}{{ et.verbose_name_plural }}{% endfor %}
-      {% endifnotequal %} 
-    {% endifequal %}
-  </h2>
-</div>
-{% if not found_entity_types|length_is:0 and not found_entity_types|length_is:1 %}
-  <div class="note">
-    <div class="bubble pad-10">
-      Limit to:
-{% for et in found_entity_types %}
-  {% if entity %}
-    <a href="{% url places:entity-category-list entity.identifier_scheme entity.identifier_value %}{{ et.slug }}{% for oet in entity_types %}{% if not et.subtype_of.all|contains:oet %};{{ oet.slug }}{% endif %}{% endfor %}/">{{ et.verbose_name_plural }}</a>
-  {% else %}
-    <a href="{% url places:category-list %}{{ et.slug }}{% for oet in entity_types %}{% if not et.subtype_of_completion.all|contains:oet %};{{ oet.slug }}{% endif %}{% endfor %}/">{{ et.verbose_name_plural }}</a>
-  {% endif %}
-{% if not forloop.last %} | {% endif %} 
-{% endfor %}
-    </div>
+          {% blocktrans count count as count %}that is also{% plural %}that are also{% endblocktrans %}
+          {% for et in entity_types|slice:"1:" %}
+              {% if not forloop.first %}, 
+                  {% if forloop.last %}{% trans "and" %} {% endif %}
+              {% endif %}
+              {{ et.verbose_name_singular }}
+          {% endfor %}
+      {% endifnotequal %}
+    </h2>
   </div>
-{% endif %}
 
-<ul class="link-list{% ifnotequal entities.paginator.num_pages 1 %} no-round-bottom{% endifnotequal %}" id="category-list">
-{% for entity in entities.object_list %}{% if entity.title %}
-    <li{% if forloop.last %} class="round-bottom"{% endif %}><a href="{{ entity.get_absolute_url }}">
-      {{ entity.title|capfirst }}
-    </a></li>
-{% endif %}{% endfor %}
-</ul>
+    {% if not found_entity_types|length_is:0 and not found_entity_types|length_is:1 %}
+        <div class="note"><div class="bubble pad-10">
+            {% trans "Limit to:" %}
+            {% for et in found_entity_types %}
+                {% if entity %}
+                <a href="{% url places:entity-category-list entity.identifier_scheme entity.identifier_value %}{{ et.slug }}{% for oet in entity_types %}{% if not et.subtype_of.all|contains:oet %};{{ oet.slug }}{% endif %}{% endfor %}/">
+                    {{ et.verbose_name_plural }}</a>
+                {% else %}
+                <a href="{% url places:category-list %}{{ et.slug }}{% for oet in entity_types %}{% if not et.subtype_of_completion.all|contains:oet %};{{ oet.slug }}{% endif %}{% endfor %}/">
+                    {{ et.verbose_name_plural }}</a>
+                {% endif %}
+                {% if not forloop.last %} | {% endif %} 
+            {% endfor %}
+        </div></div>
+    {% endif %}
 
-{% ifnotequal entities.paginator.num_pages 1 %}
-<div class="section-content no-round-bottom">
-   <div class="note"><div class="bubble pad-10">
-     Page <span class="current-page">{{ entities.number }}</span> of {{ entities.paginator.num_pages }}
-   </div></div>
-</div>
-<ul class="link-list">
-  {% if entities.has_previous %}<li><a class="go-back" href="?page={{ entities.previous_page_number }}">Previous page</a></li>{% endif %}
-  {% if entities.has_next %}<li class="next"><a href="?page={{ entities.next_page_number }}">Next page</a></li>{% endif %}
-</ul>
-{% endifnotequal %}
+    <ul class="link-list{% ifnotequal entities.paginator.num_pages 1 %} no-round-bottom{% endifnotequal %}" id="category-list">
+        {% for entity in entities.object_list %}{% if entity.title %}
+            <li><a href="{{ entity.get_absolute_url }}">
+              {{ entity.title|capfirst }}
+            </a></li>
+        {% endif %}{% endfor %}
+    </ul>
+
+    {% ifnotequal entities.paginator.num_pages 1 %}
+        <div class="section-content no-round-bottom">
+           <div class="note"><div class="bubble pad-10">
+            {% blocktrans with entities.number as page and entities.paginator.num_pages as pages %}Page <span class="current-page">{{ page }}</span> of {{ pages }}{% endblocktrans %}
+             
+           </div></div>
+        </div>
+        <ul class="link-list">
+          {% if entities.has_previous %}
+            <li><a class="go-back" href="?page={{ entities.previous_page_number }}">{% trans "Previous page" %}</a></li>
+          {% endif %}
+          {% if entities.has_next %}
+            <li class="next"><a href="?page={{ entities.next_page_number }}">{% trans "Next page" %}</a></li>
+          {% endif %}
+        </ul>
+    {% endifnotequal %}
 
 </div>
 

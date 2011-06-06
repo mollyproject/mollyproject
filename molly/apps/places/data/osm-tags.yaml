@@ -1,0 +1,48 @@
+- entity-type: place-of-worship
+  osm-tag: amenity=place_of_worship
+  subtags:
+  - {entity-type: chapel, osm-tag: place_of_worship=chapel}
+  - {entity-type: church, osm-tag: place_of_worship=church}
+  - {entity-type: cathedral, osm-tag: place_of_worship=cathedral}
+  - {entity-type: church, osm-tag: religion=christian}
+  - {entity-type: mosque, osm-tag: religion=muslim}
+  - {entity-type: mandir, osm-tag: religion=hindu}
+  - {entity-type: synagogue, osm-tag: religion=jewish}
+- {entity-type: ice-cream, osm-tag: amenity=ice_cream}
+- {entity-type: cafe, osm-tag: amenity=cafe}
+- {entity-type: atm, osm-tag: amenity=atm}
+- {entity-type: bank, osm-tag: amenity=bank}
+- {entity-type: bar, osm-tag: amenity=bar}
+- {entity-type: bench, osm-tag: amenity=bench}
+- {entity-type: bicycle-parking, osm-tag: amenity=bicycle_parking}
+- {entity-type: cinema, osm-tag: amenity=cinema}
+- {entity-type: doctors, osm-tag: amenity=doctors}
+- {entity-type: fast-food, osm-tag: amenity=fast_food}
+- {entity-type: hospital, osm-tag: amenity=hospital}
+- {entity-type: punt-hire, osm-tag: amenity=punt_hire}
+- {entity-type: library, osm-tag: amenity=library}
+- {entity-type: museum, osm-tag: amenity=museum}
+- entity-type: car-park
+  osm-tag: amenity=parking
+  subtags:
+  - {entity-type: park-and-ride, osm-tag: park_ride=bus}
+- entity-type: pharmacy
+  osm-tag: amenity=pharmacy
+  subtags:
+  - {entity-type: dispensing-pharmacy, osm-tag: dispensing=yes}
+- {entity-type: post-box, osm-tag: amenity=post_box}
+- {entity-type: post-office, osm-tag: amenity=post_office}
+- {entity-type: pub, osm-tag: amenity=pub}
+- {entity-type: recycling, osm-tag: amenity=recycling}
+- {entity-type: restaurant, osm-tag: amenity=restaurant}
+- {entity-type: theatre, osm-tag: amenity=theatre}
+- {entity-type: taxi-rank, osm-tag: amenity=taxi}
+- {entity-type: food, osm-tag: food=yes}
+- {entity-type: atm, osm-tag: atm=yes}
+- {entity-type: park, osm-tag: leisure=park}
+- {entity-type: sports-centre, osm-tag: leisure=sports_centre}
+- {entity-type: ice-rink, osm-tag: leisure=ice_rink}
+- {entity-type: swimming-pool, osm-tag: sport=swimming}
+- {entity-type: swimming-pool, osm-tag: leisure=swimming_pool}
+- {entity-type: cycle-shop, osm-tag: shop=bicycle}
+

@@ -1,16 +1,27 @@
 # -*- coding: utf-8 -*-
-from django.contrib.gis.geos import Point, LineString, LinearRing
-from django.conf import settings
-
-from molly.apps.places.models import Entity, EntityType, Source, EntityTypeCategory
-from molly.apps.places.providers import BaseMapsProvider
-from molly.utils.misc import AnyMethodRequest
-from molly.geolocation import reverse_geocode
-from molly.conf.settings import batch
+import urllib2
+import bz2
+import subprocess
+import sys
+import random
+import os
+import yaml
 
 from xml.sax import saxutils, handler, make_parser
-import urllib2, bz2, subprocess, sys, random
-from os import path
+
+from django.contrib.gis.geos import Point, LineString, LinearRing
+from django.conf import settings
+from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_noop
+from django.utils.translation import get_language
+
+from molly.apps.places.models import (Entity, EntityType, Source,
+                                      EntityTypeCategory, EntityName)
+from molly.apps.places.providers import BaseMapsProvider
+from molly.utils.misc import AnyMethodRequest
+from molly.utils.i18n import override, set_name_in_language
+from molly.geolocation import reverse_geocode
+from molly.conf.settings import batch
 
 def node_id(id):
     return "N%d" % int(id)
@@ -18,7 +29,8 @@ def way_id(id):
     return "W%d" % int(id)
 
 class OSMHandler(handler.ContentHandler):
-    def __init__(self, source, entity_types, find_types, output, lat_north=None, lat_south=None, lon_west=None, lon_east=None):
+    def __init__(self, source, entity_types, find_types, output, lat_north=None,
+                 lat_south=None, lon_west=None, lon_east=None):
         self.source = source
         self.entity_types = entity_types
         self.find_types = find_types
@@ -32,11 +44,11 @@ class OSMHandler(handler.ContentHandler):
         self.ids = set()
         self.tags = {}
         self.valid_node = True
-
+        
         self.create_count, self.modify_count = 0,0
         self.delete_count, self.unchanged_count = 0,0
         self.ignore_count = 0
-
+        
         self.node_locations = {}
 
     def startElement(self, name, attrs):
@@ -47,10 +59,11 @@ class OSMHandler(handler.ContentHandler):
             if self._lat_north is None:
                 self.valid = True
             else:
-                self.valid = (self._lat_south < lat < self._lat_north and self._lon_west < lon < self._lon_east)
+                self.valid = (self._lat_south < lat < self._lat_north \
+                              and self._lon_west < lon < self._lon_east)
                 if not self.valid:
                     return
-
+            
             id = node_id(attrs['id'])
             self.node_location = lon, lat
             self.attrs = attrs
@@ -58,23 +71,23 @@ class OSMHandler(handler.ContentHandler):
             self.ids.add(id)
             self.tags = {}
             self.node_locations[id] = lon, lat
-
+        
         elif name == 'tag' and self.valid:
             self.tags[attrs['k']] = attrs['v']
-
+        
         elif name == 'way':
             self.nodes = []
             self.tags = {}
             self.valid = True
-
+            
             id = way_id(attrs['id'])
-
+            
             self.id = id
             self.ids.add(id)
-
+        
         elif name == 'nd':
             self.nodes.append( node_id(attrs['ref']) )
-
+    
     def endElement(self, name):
         if name in ('node','way') and self.valid:
             try:
@@ -82,33 +95,36 @@ class OSMHandler(handler.ContentHandler):
             except ValueError:
                 self.ignore_count += 1
                 return
-
+            
             # Ignore ways that lay partly outside our bounding box
             if name == 'way' and not all(id in self.node_locations for id in self.nodes):
                 return
-
+            
             # We already have these from OxPoints, so leave them alone.
             if self.tags.get('amenity') == 'library' and self.tags.get('operator') == 'University of Oxford':
                 return
-
+            
             # Ignore disused and under-construction entities
             if self.tags.get('life_cycle', 'in_use') != 'in_use' or self.tags.get('disused') in ('1', 'yes', 'true'):
                 return
-
+            
             try:
-                entity = Entity.objects.get(source=self.source, _identifiers__scheme='osm', _identifiers__value=self.id)
+                entity = Entity.objects.get(source=self.source,
+                                            _identifiers__scheme='osm',
+                                            _identifiers__value=self.id)
                 created = True
             except Entity.DoesNotExist:
                 entity = Entity(source=self.source)
                 created = False
-
-            if not 'osm' in entity.metadata or entity.metadata['osm'].get('attrs', {}).get('timestamp', '') < self.attrs['timestamp']:
-
+            
+            if not 'osm' in entity.metadata or \
+              entity.metadata['osm'].get('attrs', {}).get('timestamp', '') < self.attrs['timestamp']:
+                
                 if created:
                     self.create_count += 1
                 else:
                     self.modify_count += 1
-
+                
                 if name == 'node':
                     entity.location = Point(self.node_location, srid=4326)
                     entity.geometry = entity.location
@@ -122,35 +138,47 @@ class OSMHandler(handler.ContentHandler):
                     entity.location = Point( (min_[0]+max_[0])/2 , (min_[1]+max_[1])/2 , srid=4326)
                 else:
                     raise AssertionError("There should be no other types of entity we're to deal with.")
-
-                try:
-                    name = self.tags.get('name') or self.tags['operator']
-                except (KeyError, AssertionError):
-                    try:
-                        name = reverse_geocode(*entity.location)[0]['name']
-                        if not name:
-                            raise IndexError
-                        name = u"↝ %s" % name
-                    except IndexError:
-                        name = u"↝ %f, %f" % (self.node_location[1], self.node_location[0])
-
-                entity.title = name
+                
+                names = dict()
+                
+                for lang_code, lang_name in settings.LANGUAGES:
+                    with override(lang_code):
+                    
+                        if '-' in lang_code:
+                            tags_to_try = ('name:%s' % lang_code, 'name:%s' % lang_code.split('-')[0], 'name', 'operator')
+                        else:
+                            tags_to_try = ('name:%s' % lang_code, 'name', 'operator')
+                            name = None
+                            for tag_to_try in tags_to_try:
+                                if self.tags.get(tag_to_try):
+                                    name = self.tags.get(tag_to_try)
+                                    break
+                        
+                        if name is None:
+                            try:
+                                name = reverse_geocode(*entity.location)[0]['name']
+                                if not name:
+                                    raise IndexError
+                                name = u"↝ %s" % name
+                            except IndexError:
+                                name = u"↝ %f, %f" % (self.node_location[1], self.node_location[0])
+                        
+                        names[lang_code] = name
+                
                 entity.metadata['osm'] = {
                     'attrs': dict(self.attrs),
-                    'tags': self.tags
+                    'tags': dict(zip((k.replace(':', '_') for k in self.tags.keys()), self.tags.values()))
                 }
                 entity.primary_type = self.entity_types[types[0]]
-
-                if 'addr:postcode' in self.tags:
-                    entity.post_code = self.tags['addr:postcode'].replace(' ', '')
-                else:
-                    entity.post_code = ""
-
+                
                 entity.save(identifiers={'osm': self.id})
-
+                
+                for lang_code, name in names.items():
+                    set_name_in_language(entity, lang_code, title=name)
+                
                 entity.all_types = [self.entity_types[et] for et in types]
                 entity.update_all_types_completion()
-
+            
             else:
                 self.unchanged_count += 1
 
@@ -159,7 +187,7 @@ class OSMHandler(handler.ContentHandler):
             if not entity.identifiers['osm'] in self.ids:
                 entity.delete()
                 self.delete_count += 1
-
+        
         self.output.write("""\
 Complete
   Created:   %6d
@@ -178,7 +206,11 @@ Complete
 class OSMMapsProvider(BaseMapsProvider):
     SHELL_CMD = "wget -O- %s --quiet | bunzip2"
 
-    def __init__(self, lat_north=None, lat_south=None, lon_west=None, lon_east=None, url='http://download.geofabrik.de/osm/europe/great_britain/england.osm.bz2'):
+    def __init__(self, lat_north=None, lat_south=None,
+                 lon_west=None, lon_east=None,
+                 url='http://download.geofabrik.de/osm/europe/great_britain/england.osm.bz2',
+                 entity_type_data_file=None,
+                 osm_tags_data_file=None):
         """
         @param lat_north: A limit of the northern-most latitude to import points
                           for
@@ -192,33 +224,69 @@ class OSMMapsProvider(BaseMapsProvider):
         @param lon_east: A limit of the eastern-most longitude to import points
                           for
         @type lon_east: float
+        @param url: The URL of the OSM planet file to download (defaults to
+                    England)
+        @type url: str
+        @param entity_type_data_file: A YAML file defining the entity types
+                                      which the OSM importer should create
+        @type entity_type_data_file: str
+        @param osm_tags_data_file: A YAML file defining the OSM tags which
+                                   should be imported, and how these map to
+                                   Molly's entity types
+        @type osm_tags_data_file: str
         """
         self._lat_north = lat_north
         self._lat_south = lat_south
         self._lon_west = lon_west
         self._lon_east = lon_east
         self._url = url
+        
+        if entity_type_data_file is None:
+            entity_type_data_file = os.path.join(os.path.dirname(__file__),
+                                                 '..', 'data', 'osm-entity-types.yaml')
+        with open(entity_type_data_file) as fd:
+            self._entity_types = yaml.load(fd)
+            
+        if osm_tags_data_file is None:
+            osm_tags_data_file = os.path.join(os.path.dirname(__file__),
+                                                 '..', 'data', 'osm-tags.yaml')
+        with open(osm_tags_data_file) as fd:
+            def to_tuple(tag):
+                """
+                Converts the new-style OSM tag file into the old-style tuple
+                representation
+                """
+                if 'subtags' in tag:
+                    return (tag['osm-tag'],
+                            map(to_tuple, tag['subtags']),
+                            tag['entity-type'])
+                else:
+                    return (tag['osm-tag'],
+                            tag['entity-type'])
+            self._osm_tags = map(to_tuple, yaml.load(fd))
 
     @batch('%d 9 * * mon' % random.randint(0, 59))
     def import_data(self, metadata, output):
         "Imports places data from OpenStreetMap"
-
+        
         old_etag = metadata.get('etag', '')
-
+        
         request = AnyMethodRequest(self._url, method='HEAD')
         response = urllib2.urlopen(request)
         new_etag = response.headers['ETag'][1:-1]
-
+        self.output = output
+        
         if False and new_etag == old_etag:
             output.write('OSM data not updated. Not updating.\n')
             return
-
-        p = subprocess.Popen([self.SHELL_CMD % self._url], shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, close_fds=True)
-
+        
+        p = subprocess.Popen([self.SHELL_CMD % self._url], shell=True,
+            stdin=subprocess.PIPE, stdout=subprocess.PIPE, close_fds=True)
+        
         parser = make_parser()
         parser.setContentHandler(OSMHandler(self._get_source(),
                                             self._get_entity_types(),
-                                            self._find_types,
+                                            lambda tags, type_list=None: self._find_types(tags, self._osm_tags if type_list is None else type_list),
                                             output,
                                             self._lat_north,
                                             self._lat_south,
@@ -226,8 +294,10 @@ class OSMMapsProvider(BaseMapsProvider):
                                             self._lon_east))
         parser.parse(p.stdout)
         
-        self.disambiguate_titles(self._get_source())
-
+        for lang_code, lang_name in settings.LANGUAGES:
+            with override(lang_code):
+                self.disambiguate_titles(self._get_source())
+        
         return {
             'etag': new_etag,
         }
@@ -237,133 +307,49 @@ class OSMMapsProvider(BaseMapsProvider):
             source = Source.objects.get(module_name="molly.providers.apps.maps.osm")
         except Source.DoesNotExist:
             source = Source(module_name="molly.providers.apps.maps.osm")
-
+        
         source.name = "OpenStreetMap"
         source.save()
-
+        
         return source
 
     def _get_entity_types(self):
-        ENTITY_TYPES = {
-            'atm':                 ('an', 'ATM',                      'ATMs',                      True,  False, (),                    'Amenities'),
-            'bank':                ('a',  'bank',                     'banks',                     True,  True,  (),                    'Amenities'),
-            'bench':               ('a',  'bench',                    'benches',                   True,  False, (),                    'Amenities'),
-            'bar':                 ('a',  'bar',                      'bars',                      True,  True,  (),                    'Amenities'),
-            'bicycle-parking':     ('a',  'bicycle rack',             'bicycle racks',             True,  False, (),                    'Transport'),
-            'cafe':                ('a',  'café',                     'cafés',                     False, False, ('food',),             'Amenities'),
-            'car-park':            ('a',  'car park',                 'car parks',                 False, False, (),                    'Transport'),
-            'cathedral':           ('a',  'cathedral',                'cathedrals',                False, False, ('place-of-worship',), 'Amenities'),
-            'chapel':              ('a',  'chapel',                   'chapels',                   False, False, ('place-of-worship',), 'Amenities'),
-            'church':              ('a',  'church',                   'churches',                  False, False, ('place-of-worship',), 'Amenities'),
-            'cinema':              ('a',  'cinema',                   'cinemas',                   True,  True,  (),                    'Leisure'),
-            'cycle-shop':          ('a',  'cycle shop',               'cycle shops',               False, False, ('shop',),             'Amenities'),
-            'dispensing-pharmacy': ('a',  'dispensing pharmacy',      'dispensing pharmacies',     False, False, ('pharmacy',),         'Amenities'),
-            'doctors':             ('a',  "doctor's surgery",         "doctors' surgeries",        False, False, ('medical',),          'Amenities'),
-            'fast-food':           ('a',  'fast food outlet',         'fast food outlets',         False, False, ('food',),             'Amenities'),
-            'food':                ('a',  'place to eat',             'places to eat',             True,  True,  (),                    'Amenities'),
-            'hospital':            ('a',  'hospital',                 'hospitals',                 False, False, ('medical',),          'Amenities'),
-            'ice-cream':           ('an', 'ice cream café',           'ice cream cafés',           False, False, ('cafe','food',),      'Amenities'),
-            'ice-rink':            ('an', 'ice rink',                 'ice rinks',                 False, False, ('sport',),            'Leisure'),
-            'library':             ('a',  'library',                  'libraries',                 True,  True,  (),                    'Amenities'),
-            'mandir':              ('a',  'mandir',                   'mandirs',                   False, False, ('place-of-worship',), 'Amenities'),
-            'medical':             ('a',  'place relating to health', 'places relating to health', True,  True,  (),                    'Amenities'),
-            'mosque':              ('a',  'mosque',                   'mosques',                   False, False, ('place-of-worship',), 'Amenities'),
-            'museum':              ('a',  'museum',                   'museums',                   False, False, (),                    'Leisure'),
-            'car-park':            ('a',  'car park',                 'car parks',                 True,  False, (),                    'Transport'),
-            'park':                ('a',  'park',                     'parks',                     False, False, (),                    'Leisure'),
-            'park-and-ride':       ('a',  'park and ride',            'park and rides',            False, False, ('car-park',),         'Transport'),
-            'pharmacy':            ('a',  'pharmacy',                 'pharmacies',                False, False, ('medical',),          'Amenities'),
-            'place-of-worship':    ('a',  'place of worship',         'places of worship',         False, False, (),                    'Amenities'),
-            'post-box':            ('a',  'post box',                 'post boxes',                True,  False, (),                    'Amenities'),
-            'post-office':         ('a',  'post office',              'post offices',              True,  False, (),                    'Amenities'),
-            'pub':                 ('a',  'pub',                      'pubs',                      True,  True,  (),                    'Amenities'),
-            'public-library':      ('a',  'public library',           'public libraries',          True,  True,  ('library',),          'Amenities'),
-            'punt-hire':           ('a',  'place to hire punts',      'places to hire punts',      False, False, (),                    'Leisure'),
-            'recycling':           ('a',  'recycling facility',       'recycling facilities',      True,  False, (),                    'Amenities'),
-            'restaurant':          ('a',  'restaurant',               'restaurants',               False, False, ('food',),             'Amenities'),
-            'shop':                ('a',  'shop',                     'shops',                     False, False, (),                    'Amenities'),
-            'sport':               ('a',  'place relating to sport',  'places relating to sport',  False, False, (),                    'Leisure'),
-            'sports-centre':       ('a',  'sports centre',            'sports centres',            False, False, ('sport',),            'Leisure'),
-            'swimming-pool':       ('a',  'swimming pool',            'swimming pools',            False, False, ('sport',),            'Leisure'),
-            'synagogue':           ('a',  'synagogue',                'synagogues',                False, False, ('place-of-worship',), 'Amenities'),
-            'taxi-rank':           ('a',  'taxi rank',                'taxi ranks',                False, False, (),                    'Transport'),
-            'theatre':             ('a',  'theatre',                  'theatres',                  True,  True,  (),                    'Leisure'),
-        }
-
+        
         entity_types = {}
         new_entity_types = set()
-        for slug, (article, verbose_name, verbose_name_plural, nearby, category, subtype_of, et_category) in ENTITY_TYPES.items():
-            et_category, _ = EntityTypeCategory.objects.get_or_create(name=et_category)
-            entity_type, created = EntityType.objects.get_or_create(slug=slug)
+        for slug, et in self._entity_types.items():
+            et_category, created = EntityTypeCategory.objects.get_or_create(name=et['category'])
+            try:
+                entity_type = EntityType.objects.get(slug=slug)
+                created = False
+            except EntityType.DoesNotExist:
+                entity_type = EntityType(slug=slug)
+                created = True
+            entity_type.category = et_category
             entity_type.slug = slug
-            entity_type.category=et_category
-            entity_type.verbose_name = verbose_name
-            entity_type.verbose_name_plural = verbose_name_plural
-            entity_type.article = 'a'
             if created:
-                entity_type.show_in_nearby_list = nearby
-                entity_type.show_in_category_list = category
+                entity_type.show_in_nearby_list = et['show_in_nearby_list']
+                entity_type.show_in_category_list = et['show_in_category_list']
             entity_type.save()
+            for lang_code, lang_name in settings.LANGUAGES:
+                with override(lang_code):
+                    set_name_in_language(entity_type, lang_code,
+                                         verbose_name=_(et['verbose_name']),
+                                         verbose_name_singular=_(et['verbose_name_singular']),
+                                         verbose_name_plural=_(et['verbose_name_plural']))
             new_entity_types.add(slug)
             entity_types[slug] = entity_type
-
+        
         for slug in new_entity_types:
-            subtype_of = ENTITY_TYPES[slug][5]
+            subtype_of = self._entity_types[slug]['parent-types']
             entity_types[slug].subtype_of.clear()
             for s in subtype_of:
                 entity_types[slug].subtype_of.add(entity_types[s])
             entity_types[slug].save()
-
+        
         return entity_types
 
-    OSM_TYPES = [
-        ('amenity=place_of_worship', [
-            ('place_of_worship=chapel', 'chapel'),
-            ('place_of_worship=church', 'church'),
-            ('place_of_worship=cathedral', 'cathedral'),
-            ('religion=christian', 'church'),
-            ('religion=muslim', 'mosque'),
-            ('religion=hindu', 'mandir'),
-            ('religion=jewish', 'synagogue'),
-        ], 'place-of-worship'),
-        ('amenity=ice_cream', 'ice-cream'),
-        ('amenity=cafe', 'cafe'),
-        ('amenity=atm', 'atm'),
-        ('amenity=bank', 'bank'),
-        ('amenity=bar', 'bar'),
-        ('amenity=bench', 'bench'),
-        ('amenity=bicycle_parking', 'bicycle-parking'),
-        ('amenity=cinema', 'cinema'),
-        ('amenity=doctors', 'doctors'),
-        ('amenity=fast_food', 'fast-food'),
-        ('amenity=hospital', 'hospital'),
-        ('amenity=punt_hire', 'punt-hire'),
-        ('amenity=library', 'library'),
-        ('amenity=museum', 'museum'),
-        ('amenity=parking', [
-            ('park_ride=bus', 'park-and-ride'),
-        ], 'car-park'),
-        ('amenity=pharmacy', [
-            ('dispensing=yes', 'dispensing-pharmacy'),
-        ], 'pharmacy'),
-        ('amenity=post_box', 'post-box'),
-        ('amenity=post_office', 'post-office'),
-        ('amenity=pub', 'pub'),
-        ('amenity=recycling', 'recycling'),
-        ('amenity=restaurant', 'restaurant'),
-        ('amenity=theatre', 'theatre'),
-        ('amenity=taxi', 'taxi-rank'),
-        ('food=yes', 'food'),
-        ('atm=yes', 'atm'),
-        ('leisure=park', 'park'),
-        ('leisure=sports_centre', 'sports-centre'),
-        ('leisure=ice_rink', 'ice-rink'),
-        ('sport=swimming', 'swimming-pool'),
-        ('leisure=swimming_pool', 'swimming-pool'),
-        ('shop=bicycle', 'cycle-shop'),
-    ]
-
-    def _find_types(self, tags, type_list=OSM_TYPES):
+    def _find_types(self, tags, type_list):
         found_types = []
         for item in type_list:
             tag, value = item[0].split('=')
@@ -381,31 +367,309 @@ class OSMMapsProvider(BaseMapsProvider):
             raise ValueError
 
     def disambiguate_titles(self, source):
+        lang_code = get_language()
         entities = Entity.objects.filter(source=source)
         inferred_names = {}
+        if '-' in lang_code:
+            tags_to_try = ('name-%s' % lang_code, 'name-%s' % lang_code.split('-')[0], 'name', 'operator')
+        else:
+            tags_to_try = ('name-%s' % lang_code, 'name', 'operator')
         for entity in entities:
-            inferred_name = entity.metadata['osm']['tags'].get('name') or entity.metadata['osm']['tags'].get('operator')
+            inferred_name = None
+            for tag_to_try in tags_to_try:
+                if entity.metadata['osm']['tags'].get(tag_to_try):
+                    inferred_name = entity.metadata['osm']['tags'].get(tag_to_try)
+                    break
             if not inferred_name:
                 continue
             if not inferred_name in inferred_names:
                 inferred_names[inferred_name] = set()
             inferred_names[inferred_name].add(entity)
-
+        
         for inferred_name, entities in inferred_names.items():
             if len(entities) > 1:
                 for entity in entities:
-                    if entity.metadata['osm']['tags'].get('addr:street'):
-                        entity.title = u"%s, %s" % (inferred_name, entity.metadata['osm']['tags'].get('addr:street'))
-                        continue
-
+                    if entity.metadata['osm']['tags'].get('addr_street'):
+                        title = u"%s, %s" % (inferred_name, entity.metadata['osm']['tags'].get('addr_street'))
+                    else:
+                        try:
+                            place_name = reverse_geocode(entity.location[0], entity.location[1])[0]['name']
+                            if place_name:
+                                title = u"%s, %s" % (inferred_name, place_name)
+                                entity.save()
+                            else:
+                                title = inferred_name
+                        except:
+                            self.output.write("Couldn't geocode for %s\n" % inferred_name)
+                            title = inferred_name
                     try:
-                        name = reverse_geocode(entity.location[0], entity.location[1])[0]['name']
-                        if name:
-                            entity.title = u"%s, %s" % (inferred_name, name)
-                            entity.save()
-                    except:
-                        self.output.write("Couldn't geocode for %s\n" % inferred_name)
+                        name = entity.names.get(language_code=lang_code)
+                    except EntityName.DoesNotExist:
+                        name = entity.names.create(language_code=lang_code,
+                                                   title=title)
+                    else:
+                        name.title = title
+                    finally:
+                        name.save()
 
 if __name__ == '__main__':
     provider = OSMMapsProvider()
     provider.import_data()
+
+# IGNORE BELOW HERE! These are dummy EntityType definitions that exist so they
+# get picked up as ready to translate
+# THIS CODE DOES NOTHING, CHANGING HERE WON'T DO WHAT YOU THINK IT DOES
+DUMMY = {
+    'atm': {
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop('ATM'),
+        'verbose_name_plural': ugettext_noop('ATMs'),
+        'verbose_name_singular': ugettext_noop('an ATM')
+    },
+    'bank': {
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop('bank'),
+        'verbose_name_plural': ugettext_noop('banks'),
+        'verbose_name_singular': ugettext_noop('a bank')
+    },
+    'bar': {
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop('bar'),
+        'verbose_name_plural': ugettext_noop('bars'),
+        'verbose_name_singular': ugettext_noop('a bar')
+    },
+    'bench': {
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop('bench'),
+        'verbose_name_plural': ugettext_noop('benches'),
+        'verbose_name_singular': ugettext_noop('a bench')
+    },
+    'bicycle-parking': {
+        'category': ugettext_noop('Transport'),
+        'verbose_name': ugettext_noop('bicycle rack'),
+        'verbose_name_plural': ugettext_noop('bicycle racks'),
+        'verbose_name_singular': ugettext_noop('a bicycle rack')
+    },
+    'cafe': {
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop(u'café'),
+        'verbose_name_plural': ugettext_noop(u'cafés'),
+        'verbose_name_singular': ugettext_noop(u'a café')
+    },
+    'car-park': {
+        'category': ugettext_noop('Transport'),
+        'verbose_name': ugettext_noop('car park'),
+        'verbose_name_plural': ugettext_noop('car parks'),
+        'verbose_name_singular': ugettext_noop('a car park')
+    },
+    'cathedral': {
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop('cathedral'),
+        'verbose_name_plural': ugettext_noop('cathedrals'),
+        'verbose_name_singular': ugettext_noop('a cathedral')
+    },
+    'chapel': {
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop('chapel'),
+        'verbose_name_plural': ugettext_noop('chapels'),
+        'verbose_name_singular': ugettext_noop('a chapel')
+    },
+    'church': {
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop('church'),
+        'verbose_name_plural': ugettext_noop('churches'),
+        'verbose_name_singular': ugettext_noop('a church')
+    },
+    'cinema': {
+        'category': ugettext_noop('Leisure'),
+        'verbose_name': ugettext_noop('cinema'),
+        'verbose_name_plural': ugettext_noop('cinemas'),
+        'verbose_name_singular': ugettext_noop('a cinema')
+    },
+    'cycle-shop': {
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop('cycle shop'),
+        'verbose_name_plural': ugettext_noop('cycle shops'),
+        'verbose_name_singular': ugettext_noop('a cycle shop')
+    },
+    'dispensing-pharmacy': {
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop('dispensing pharmacy'),
+        'verbose_name_plural': ugettext_noop('dispensing pharmacies'),
+        'verbose_name_singular': ugettext_noop('a dispensing pharmacy')
+    },
+    'doctors': {
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop("doctor's surgery"),
+        'verbose_name_plural': ugettext_noop("doctors' surgeries"),
+        'verbose_name_singular': ugettext_noop("a doctor's surgery")
+    },
+    'fast-food': {
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop('fast food outlet'),
+        'verbose_name_plural': ugettext_noop('fast food outlets'),
+        'verbose_name_singular': ugettext_noop('a fast food outlet')
+    },
+    'food': {
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop('place to eat'),
+        'verbose_name_plural': ugettext_noop('places to eat'),
+        'verbose_name_singular': ugettext_noop('a place to eat')
+    },
+    'hospital': {
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop('hospital'),
+        'verbose_name_plural': ugettext_noop('hospitals'),
+        'verbose_name_singular': ugettext_noop('a hospital')
+    },
+    'ice-cream': {
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop(u'ice cream café'),
+        'verbose_name_plural': ugettext_noop(u'ice cream cafés'),
+        'verbose_name_singular': ugettext_noop(u'an ice cream café')
+    },
+    'ice-rink': {
+        'category': ugettext_noop('Leisure'),
+        'verbose_name': ugettext_noop('ice rink'),
+        'verbose_name_plural': ugettext_noop('ice rinks'),
+        'verbose_name_singular': ugettext_noop('an ice rink')
+    },
+    'library': {
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop('library'),
+        'verbose_name_plural': ugettext_noop('libraries'),
+        'verbose_name_singular': ugettext_noop('a library')
+    },
+    'mandir': {
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop('mandir'),
+        'verbose_name_plural': ugettext_noop('mandirs'),
+        'verbose_name_singular': ugettext_noop('a mandir')
+    },
+    'medical': {
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop('place relating to health'),
+        'verbose_name_plural': ugettext_noop('places relating to health'),
+        'verbose_name_singular': ugettext_noop('a place relating to health')
+    },
+    'mosque': {
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop('mosque'),
+        'verbose_name_plural': ugettext_noop('mosques'),
+        'verbose_name_singular': ugettext_noop('a mosque')
+    },
+    'museum': {
+        'category': ugettext_noop('Leisure'),
+        'verbose_name': ugettext_noop('museum'),
+        'verbose_name_plural': ugettext_noop('museums'),
+        'verbose_name_singular': ugettext_noop('a museum')
+    },
+    'park': {
+        'category': ugettext_noop('Leisure'),
+        'verbose_name': ugettext_noop('park'),
+        'verbose_name_plural': ugettext_noop('parks'),
+        'verbose_name_singular': ugettext_noop('a park')
+    },
+    'park-and-ride': {
+        'category': ugettext_noop('Transport'),
+        'verbose_name': ugettext_noop('park and ride'),
+        'verbose_name_plural': ugettext_noop('park and rides'),
+        'verbose_name_singular': ugettext_noop('a park and ride')
+    },
+    'pharmacy': {
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop('pharmacy'),
+        'verbose_name_plural': ugettext_noop('pharmacies'),
+        'verbose_name_singular': ugettext_noop('a pharmacy')
+    },
+    'place-of-worship': {
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop('place of worship'),
+        'verbose_name_plural': ugettext_noop('places of worship'),
+        'verbose_name_singular': ugettext_noop('a place of worship')
+    },
+    'post-box': {
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop('post box'),
+        'verbose_name_plural': ugettext_noop('post boxes'),
+        'verbose_name_singular': ugettext_noop('a post box')
+    },
+    'post-office': {
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop('post office'),
+        'verbose_name_plural': ugettext_noop('post offices'),
+        'verbose_name_singular': ugettext_noop('a post office')
+    },
+    'pub': {
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop('pub'),
+        'verbose_name_plural': ugettext_noop('pubs'),
+        'verbose_name_singular': ugettext_noop('a pub')
+    },
+    'public-library': {
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop('public library'),
+        'verbose_name_plural': ugettext_noop('public libraries'),
+        'verbose_name_singular': ugettext_noop('a public library')
+    },
+    'punt-hire': {
+        'category': ugettext_noop('Leisure'),
+        'verbose_name': ugettext_noop('place to hire punts'),
+        'verbose_name_plural': ugettext_noop('places to hire punts'),
+        'verbose_name_singular': ugettext_noop('a place to hire punts')
+    },
+    'recycling': {
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop('recycling facility'),
+        'verbose_name_plural': ugettext_noop('recycling facilities'),
+        'verbose_name_singular': ugettext_noop('a recycling facility')
+    },
+    'restaurant': {
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop('restaurant'),
+        'verbose_name_plural': ugettext_noop('restaurants'),
+        'verbose_name_singular': ugettext_noop('a restaurant')
+    },
+    'shop': {
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop('shop'),
+        'verbose_name_plural': ugettext_noop('shops'),
+        'verbose_name_singular': ugettext_noop('a shop')
+    },
+    'sport': {
+        'category': ugettext_noop('Leisure'),
+        'verbose_name': ugettext_noop('place relating to sport'),
+        'verbose_name_plural': ugettext_noop('places relating to sport'),
+        'verbose_name_singular': ugettext_noop('a place relating to sport')
+    },
+    'sports-centre': {
+        'category': ugettext_noop('Leisure'),
+        'verbose_name': ugettext_noop('sports centre'),
+        'verbose_name_plural': ugettext_noop('sports centres'),
+        'verbose_name_singular': ugettext_noop('a sports centre')
+    },
+    'swimming-pool': {
+        'category': ugettext_noop('Leisure'),
+        'verbose_name': ugettext_noop('swimming pool'),
+        'verbose_name_plural': ugettext_noop('swimming pools'),
+        'verbose_name_singular': ugettext_noop('a swimming pool')
+    },
+    'synagogue': {
+        'category': ugettext_noop('Amenities'),
+        'verbose_name': ugettext_noop('synagogue'),
+        'verbose_name_plural': ugettext_noop('synagogues'),
+        'verbose_name_singular': ugettext_noop('a synagogue')
+    },
+    'taxi-rank': {
+        'category': ugettext_noop('Transport'),
+        'verbose_name': ugettext_noop('taxi rank'),
+        'verbose_name_plural': ugettext_noop('taxi ranks'),
+        'verbose_name_singular': ugettext_noop('a taxi rank')
+    },
+    'theatre': {
+        'category': ugettext_noop('Leisure'),
+        'verbose_name': ugettext_noop('theatre'),
+        'verbose_name_plural': ugettext_noop('theatres'),
+        'verbose_name_singular': ugettext_noop('a theatre')
+    }
+}

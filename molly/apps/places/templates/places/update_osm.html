@@ -1,53 +1,47 @@
 {% extends "places/base.html" %}
-{% load molly_maps %}{% load molly_utils %}
+{% load molly_maps %}{% load molly_utils %}{% load i18n %}
 
-{% block title %}Update {{ entity.title }}{% endblock %}
+{% block title %}
+{% blocktrans with entity.title as title %}Update {{ title }}{% endblocktrans %}
+{% endblock %}
 
 {% block extrahead %}{{ block.super }}
-<meta name="robots" content="noindex"/>{% endblock %}
+<meta name="robots" content="noindex"/>
+{% endblock %}
 
 {% block content %}
 
 <div class="section">
-  <h2>Important information</h2>
+  <h2>{% trans "Important information" %}</h2>
   
   <div class="article"><div class="bubble pad-5">
     <p>
-      Thank you for wanting to improve the data provided by {{ site_name }}.
-      However, before you submit any changes, you should be aware of the
-      following terms.
+    {% blocktrans %}Thank you for wanting to improve the data provided by {{ site_name }}. However, before you submit any changes, you should be aware of the following terms.{% endblocktrans %}
     </p>
     
-    <p style="margin-top:0.5em;">
-      Your contribution will be released into the Public Domain, and then
-      submitted to OpenStreetMap by {{ site_name }}.
+    <p>
+    {% blocktrans %}Your contribution will be released into the Public Domain, and then submitted to OpenStreetMap by {{ site_name }}.{% endblocktrans %}
     </p>
     
-    <p style="margin-top:0.5em;">
-      Your changes will be checked by a member of the {{ site_name }} team
-      before being uploaded. {{ site_name }} may tidy or normalise the data you
-      provide before they are uploaded using the {{ site_name }} OSM account.
+    <p>
+    {% blocktrans %}Your changes will be checked by a member of the {{ site_name }} team before being uploaded. {{ site_name }} may tidy or normalise the data you provide before they are uploaded using the {{ site_name }} OSM account.{% endblocktrans %}
     </p>
     
-    <p style="margin-top:0.5em;">
-      If you would like to be named as the original author of the changes,
-      please provide your name and tick the attribution box. Your e-mail
-      address will never be submitted to OSM, but may be used by us to clarify
-      any changes you provide.
+    <p>
+    {% blocktrans %}If you would like to be named as the original author of the changes, please provide your name and tick the attribution box. Your e-mail address will never be submitted to OSM, but may be used by us to clarify any changes you provide.{% endblocktrans %}
     </p>
     
-    <p style="margin-top:0.5em;">
-      You may be interested to read <a href="{% url places:static-openstreetmap %}">further information about
-      OpenStreetMap and other ways in which one may contribute</a>.
+    <p>
+    {% url places:static-openstreetmap as osm_url %}
+    {% blocktrans %}You may be interested to read <a href="{{ osm_url }}">further information about OpenStreetMap and other ways in which one may contribute</a>.{% endblocktrans %}
     </p>
   </div></div>
 </div>
 
 <div class="section">
-  <h2>Map</h2>
+  <h2>{% trans "Map" %}</h2>
   <div class="note"><div class="bubble pad-10">
-    You are submitting an update to the {{ entity.entity_type.verbose_name }}
-    <em>&quot;{{ entity.title }}&quot;</em>.
+	{% blocktrans with entity.primary_type.verbose_name as type_name and entity.title as title %}You are submitting an update to the {{ type_name }} <em>&quot;{{ title }}&quot;</em>.{% endblocktrans %}
   </div>
   
   {% render_location_map entity.location %}
@@ -58,15 +52,14 @@
 <form method="post" action=".">
   {% csrf_token %}
     <p>
-      Not all fields will be relevant to the item you are updating, and all
-      fields are optional.
+    {% trans "Not all fields will be relevant to the item you are updating, and all fields are optional." %}
     </p>
       
 <table>
   <tbody>
     <tr>
       <th colspan="2">
-        Provide your name and tick the box to be attributed for the change.
+        {% trans "Provide your name and tick the box to be attributed for the change." %}
       </th>
     </tr>
     <tr>
@@ -80,7 +73,7 @@
     
     <tr>
       <th colspan="2">
-        Your e-mail address is useful should we want to clarify any change you make.
+        {% trans "Your e-mail address is useful should we want to clarify any change you make." %}
       </th>
     </tr>
     <tr>
@@ -90,7 +83,7 @@
     
     <tr>
       <th colspan="2">
-        The following are general properties for most types of item.
+        {% trans "The following are general properties for most types of item." %}
       </th>
     </tr>
     <tr>
@@ -120,8 +113,7 @@
     
     <tr>
       <th colspan="2">
-        This next two about food apply mostly to pubs. For things that obviously serve food (e.g.
-        restaurants), feel free to leave this empty.
+        {% trans "This next two about food apply mostly to pubs. For things that obviously serve food (e.g. restaurants), feel free to leave this empty." %}
       </th>
     </tr>
     <tr>
@@ -135,8 +127,7 @@
 
     <tr>
       <th colspan="2">
-        If there is an ATM accessible at all hours here, please set this. This
-        may be left blank if you are editing an ATM.
+	{% trans "If there is an ATM accessible at all hours here, please set this. This may be left blank if you are editing an ATM." %}
       </th>
     </tr>
     <tr>
@@ -146,8 +137,7 @@
 
     <tr>
       <th colspan="2">
-        The following only apply to post boxes. The reference is normally
-        printed at the bottom of the details on the post box.
+	{% trans "The following only apply to post boxes. The reference is normally printed at the bottom of the details on the post box." %}
       </th>
     </tr>
     <tr>
@@ -161,7 +151,7 @@
 
     <tr>
       <th colspan="2">
-        For car parks and bicycle parking, please provide the number of spaces.
+        {% trans "For car parks and bicycle parking, please provide the number of spaces." %}
       </th>
     </tr>
     <tr>
@@ -171,8 +161,7 @@
 
     <tr>
       <th colspan="2">
-        If you have any other information you think should be included, please
-        tell us about it here.
+        {% trans "If you have any other information you think should be included, please tell us about it here." %}
       </th>
     </tr>
     <tr>
@@ -182,13 +171,12 @@
   <tfoot>
     <tr>
       <th colspan="2">
-        If you are happy with your changes and agree to the terms above, you
-        may now click 'Submit'.
+        {% trans "If you are happy with your changes and agree to the terms above, you may now click 'Submit'." %}
       </th>
     </tr>
     <tr>
       <th colspan="2">
-        <input type="submit" value="Submit"/>
+        <input type="submit" value='{% trans "Submit" %}'/>
       </th>
     </tr>
   </tfoot>

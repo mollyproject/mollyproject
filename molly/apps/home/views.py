@@ -6,12 +6,15 @@ from django.conf import settings
 from django.template import loader, Context, RequestContext
 from django import forms
 from django.shortcuts import render_to_response
+from django.utils.translation import ugettext as _
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
 from molly.favourites import get_favourites
 from molly.wurfl import device_parents
 from molly import conf
+from molly.conf.applications import app_by_application_name, has_app_by_application_name
+from molly.apps.weather.models import Weather
 
 from models import UserMessage
 from forms import UserMessageFormSet
@@ -25,7 +28,7 @@ class IndexView(BaseView):
     def breadcrumb(self, request, context):
         return Breadcrumb(self.conf.local_name,
                           None,
-                          'Home',
+                          _('Home'),
                           lazy_reverse('index'))
 
     def handle_GET(self, request, context):
@@ -53,12 +56,17 @@ class IndexView(BaseView):
         
         if not request.session.get('home:opera_mini_warning', False) \
           and request.browser.mobile_browser == u'Opera Mini':
-            messages.append("""Please note that the "Mobile View" on Opera Mini
-                            does not display this site correctly. To ensure
-                            correct operation of this site, ensure "Mobile View"
-                            is set to Off in Opera settings""")
+            messages.append(_("""Please note that the "Mobile View" on Opera Mini does not display this site correctly. To ensure correct operation of this site, ensure "Mobile View" is set to Off in Opera settings"""))
             request.session['home:opera_mini_warning'] = True
 
+        # TODO Add back in messages from the developers 
+        
+        if has_app_by_application_name('molly.apps.weather'):
+            weather_id = app_by_application_name('molly.apps.weather').location_id
+            weather = Weather.objects.get(ptype='o', location_id=weather_id)
+        else:
+            weather = None
+        
         applications = [{
             'application_name': app.application_name,
             'local_name': app.local_name,
@@ -80,6 +88,7 @@ class IndexView(BaseView):
             'is_christmas': datetime.now().month == 12,
             'messages': messages,
             'favourites': get_favourites(request),
+            'weather': weather,
         }
         return self.render(request, context, 'home/index',
                            expires=timedelta(minutes=10))
@@ -113,13 +122,14 @@ class StaticDetailView(BaseView):
             'title': title,
             'content': t.render(Context()),
         })
-        return self.render(request, context, 'home/static_detail')
+        return self.render(request, context, 'home/static_detail',
+                           expires=timedelta(days=365))
 
 class UserMessageView(BaseView):
     @BreadcrumbFactory
     def breadcrumb(self, request, context):
         return Breadcrumb(
-            self.conf.local_name, None, 'View messages from the developers',
+            self.conf.local_name, None, _('View messages from the developers'),
             lazy_reverse('messages')
         )
 

@@ -1,30 +1,26 @@
-import re, simplejson, urllib2
+import re
+import simplejson
+import urllib2
 from itertools import chain
 
 from django.core.urlresolvers import reverse
 from django.db.models import Q
+from django.utils.translation import ugettext as _
 
 from views import NearbyDetailView, EntityDetailView
-from models import Entity, EntityType
+from models import Entity, EntityType, EntityName, EntityTypeName
+
 
 class ApplicationSearch(object):
+
     def __init__(self, conf):
         self.conf = conf
 
     def perform_search(self, request, query, is_single_app_search):
         return chain(
-            self.nearby_search(request, query, is_single_app_search),
             self.entity_search(request, query, is_single_app_search),
             self.entity_type_search(request, query, is_single_app_search),
         )
-
-    def nearby_search(self, request, query, is_single_app_search):
-        # TODO: Complete
-        query = query.lower().split(' near ')
-        if len(query) != 2:
-            return []
-
-        return []
 
     def entity_search(self, request, query, is_single_app_search):
         entities = Entity.objects.all()
@@ -39,7 +35,7 @@ class ApplicationSearch(object):
             )
 
         entities = chain(
-            Entity.objects.filter(title__iexact = query),
+            (en.entity for en in EntityName.objects.filter(title__iexact = query)),
             entities,
         )
 
@@ -52,11 +48,9 @@ class ApplicationSearch(object):
             result.update(EntityDetailView(self.conf).get_metadata(request, entity.identifier_scheme, entity.identifier_value))
             yield result
 
-
     def entity_type_search(self, request, query, is_single_app_search):
-        entity_types = EntityType.objects.filter(
-            Q(verbose_name__iexact = query) | Q(verbose_name_plural__iexact = query)
-        )
+        entity_types = (etn.entity_type for etn in EntityTypeName.objects.filter(
+            Q(verbose_name__iexact = query) | Q(verbose_name_plural__iexact = query)))
 
         for entity_type in entity_types:
             result = {

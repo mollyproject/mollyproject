@@ -1,4 +1,7 @@
+from datetime import timedelta
+
 from django.http import Http404
+from django.utils.translation import ugettext as _
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
@@ -9,7 +12,7 @@ class IndexView(BaseView):
         return Breadcrumb(
             self.conf.local_name,
             None,
-            'Maps',
+            _('Maps'),
             lazy_reverse('maps:osm-about'),
         )
 
@@ -22,7 +25,7 @@ class TouchMapLiteView(BaseView):
         return Breadcrumb(
             self.conf.local_name,
             None,
-            'Maps',
+            _('Maps'),
             lazy_reverse('maps:touchmaplite'),
         )
 
@@ -30,4 +33,5 @@ class TouchMapLiteView(BaseView):
         context.update({
             'zoom_controls': True,
         })
-        return self.render(request, context, 'maps/touchmaplite/map')
+        return self.render(request, context, 'maps/touchmaplite/map',
+                           expires=timedelta(days=365))

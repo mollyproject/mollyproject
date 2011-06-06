@@ -1,14 +1,17 @@
 import simplejson
 import hashlib
 import urllib2
+from datetime import timedelta
 
 from django.http import HttpResponse
+from django.utils.translation import ugettext as _
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
 from molly.apps.contact.providers import TooManyResults
 
 from .forms import GenericContactForm
+
 
 
 class IndexView(BaseView):
@@ -18,7 +21,7 @@ class IndexView(BaseView):
         return Breadcrumb(
             self.conf.local_name,
             None,
-            'Contact search',
+            _('Contact search'),
             lazy_reverse('index'),
         )
 
@@ -29,7 +32,8 @@ class IndexView(BaseView):
         }
 
     def handle_GET(self, request, context):
-        return self.render(request, context, 'contact/index')
+        return self.render(request, context, 'contact/index',
+                           expires=timedelta(days=28))
 
 
 class ResultListView(IndexView):
@@ -39,7 +43,7 @@ class ResultListView(IndexView):
         return Breadcrumb(
             self.conf.local_name,
             None,
-            'Contact search',
+            _('Contact search'),
             lazy_reverse('result_list'),
         )
 
@@ -59,7 +63,7 @@ class ResultListView(IndexView):
                 people = provider.perform_query(**query)
             except TooManyResults:
                 return self.handle_error(request, context,
-                                         "Your search returned too many results.")
+                                         _("Your search returned too many results."))
 
             context.update({
                 'results': people,
@@ -67,7 +71,8 @@ class ResultListView(IndexView):
             })
 
         context['form'] = form
-        return self.render(request, context, 'contact/result_list')
+        return self.render(request, context, 'contact/result_list',
+                           expires=timedelta(days=7))
 
     def handle_error(self, request, context, message):
         context.update({
@@ -84,7 +89,7 @@ class ResultDetailView(BaseView):
         return Breadcrumb(
             self.conf.local_name,
             None,
-            'Contact search',
+            _('Contact search'),
             lazy_reverse('result_detail', id),
         )
 

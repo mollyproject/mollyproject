@@ -1,0 +1,336 @@
+atm:
+  category: Amenities
+  parent-types: []
+  show_in_category_list: false
+  show_in_nearby_list: true
+  verbose_name: ATM
+  verbose_name_plural: ATMs
+  verbose_name_singular: an ATM
+bank:
+  category: Amenities
+  parent-types: []
+  show_in_category_list: true
+  show_in_nearby_list: true
+  verbose_name: bank
+  verbose_name_plural: banks
+  verbose_name_singular: a bank
+bar:
+  category: Amenities
+  parent-types: []
+  show_in_category_list: true
+  show_in_nearby_list: true
+  verbose_name: bar
+  verbose_name_plural: bars
+  verbose_name_singular: a bar
+bench:
+  category: Amenities
+  parent-types: []
+  show_in_category_list: false
+  show_in_nearby_list: true
+  verbose_name: bench
+  verbose_name_plural: benches
+  verbose_name_singular: a bench
+bicycle-parking:
+  category: Transport
+  parent-types: []
+  show_in_category_list: false
+  show_in_nearby_list: true
+  verbose_name: bicycle rack
+  verbose_name_plural: bicycle racks
+  verbose_name_singular: a bicycle rack
+cafe:
+  category: Amenities
+  parent-types: [food]
+  show_in_category_list: false
+  show_in_nearby_list: false
+  verbose_name: !!python/unicode "caf\xE9"
+  verbose_name_plural: !!python/unicode "caf\xE9s"
+  verbose_name_singular: !!python/unicode "a caf\xE9"
+car-park:
+  category: Transport
+  parent-types: []
+  show_in_category_list: false
+  show_in_nearby_list: true
+  verbose_name: car park
+  verbose_name_plural: car parks
+  verbose_name_singular: a car park
+cathedral:
+  category: Amenities
+  parent-types: [place-of-worship]
+  show_in_category_list: false
+  show_in_nearby_list: false
+  verbose_name: cathedral
+  verbose_name_plural: cathedrals
+  verbose_name_singular: a cathedral
+chapel:
+  category: Amenities
+  parent-types: [place-of-worship]
+  show_in_category_list: false
+  show_in_nearby_list: false
+  verbose_name: chapel
+  verbose_name_plural: chapels
+  verbose_name_singular: a chapel
+church:
+  category: Amenities
+  parent-types: [place-of-worship]
+  show_in_category_list: false
+  show_in_nearby_list: false
+  verbose_name: church
+  verbose_name_plural: churches
+  verbose_name_singular: a church
+cinema:
+  category: Leisure
+  parent-types: []
+  show_in_category_list: true
+  show_in_nearby_list: true
+  verbose_name: cinema
+  verbose_name_plural: cinemas
+  verbose_name_singular: a cinema
+cycle-shop:
+  category: Amenities
+  parent-types: [shop]
+  show_in_category_list: false
+  show_in_nearby_list: false
+  verbose_name: cycle shop
+  verbose_name_plural: cycle shops
+  verbose_name_singular: a cycle shop
+dispensing-pharmacy:
+  category: Amenities
+  parent-types: [pharmacy]
+  show_in_category_list: false
+  show_in_nearby_list: false
+  verbose_name: dispensing pharmacy
+  verbose_name_plural: dispensing pharmacies
+  verbose_name_singular: a dispensing pharmacy
+doctors:
+  category: Amenities
+  parent-types: [medical]
+  show_in_category_list: false
+  show_in_nearby_list: false
+  verbose_name: doctor's surgery
+  verbose_name_plural: doctors' surgeries
+  verbose_name_singular: a doctor's surgery
+fast-food:
+  category: Amenities
+  parent-types: [food]
+  show_in_category_list: false
+  show_in_nearby_list: false
+  verbose_name: fast food outlet
+  verbose_name_plural: fast food outlets
+  verbose_name_singular: a fast food outlet
+food:
+  category: Amenities
+  parent-types: []
+  show_in_category_list: true
+  show_in_nearby_list: true
+  verbose_name: place to eat
+  verbose_name_plural: places to eat
+  verbose_name_singular: a place to eat
+hospital:
+  category: Amenities
+  parent-types: [medical]
+  show_in_category_list: false
+  show_in_nearby_list: false
+  verbose_name: hospital
+  verbose_name_plural: hospitals
+  verbose_name_singular: a hospital
+ice-cream:
+  category: Amenities
+  parent-types: [cafe, food]
+  show_in_category_list: false
+  show_in_nearby_list: false
+  verbose_name: !!python/unicode "ice cream caf\xE9"
+  verbose_name_plural: !!python/unicode "ice cream caf\xE9s"
+  verbose_name_singular: !!python/unicode "an ice cream caf\xE9"
+ice-rink:
+  category: Leisure
+  parent-types: [sport]
+  show_in_category_list: false
+  show_in_nearby_list: false
+  verbose_name: ice rink
+  verbose_name_plural: ice rinks
+  verbose_name_singular: an ice rink
+library:
+  category: Amenities
+  parent-types: []
+  show_in_category_list: true
+  show_in_nearby_list: true
+  verbose_name: library
+  verbose_name_plural: libraries
+  verbose_name_singular: a library
+mandir:
+  category: Amenities
+  parent-types: [place-of-worship]
+  show_in_category_list: false
+  show_in_nearby_list: false
+  verbose_name: mandir
+  verbose_name_plural: mandirs
+  verbose_name_singular: a mandir
+medical:
+  category: Amenities
+  parent-types: []
+  show_in_category_list: true
+  show_in_nearby_list: true
+  verbose_name: place relating to health
+  verbose_name_plural: places relating to health
+  verbose_name_singular: a place relating to health
+mosque:
+  category: Amenities
+  parent-types: [place-of-worship]
+  show_in_category_list: false
+  show_in_nearby_list: false
+  verbose_name: mosque
+  verbose_name_plural: mosques
+  verbose_name_singular: a mosque
+museum:
+  category: Leisure
+  parent-types: []
+  show_in_category_list: false
+  show_in_nearby_list: false
+  verbose_name: museum
+  verbose_name_plural: museums
+  verbose_name_singular: a museum
+park:
+  category: Leisure
+  parent-types: []
+  show_in_category_list: false
+  show_in_nearby_list: false
+  verbose_name: park
+  verbose_name_plural: parks
+  verbose_name_singular: a park
+park-and-ride:
+  category: Transport
+  parent-types: [car-park]
+  show_in_category_list: false
+  show_in_nearby_list: false
+  verbose_name: park and ride
+  verbose_name_plural: park and rides
+  verbose_name_singular: a park and ride
+pharmacy:
+  category: Amenities
+  parent-types: [medical]
+  show_in_category_list: false
+  show_in_nearby_list: false
+  verbose_name: pharmacy
+  verbose_name_plural: pharmacies
+  verbose_name_singular: a pharmacy
+place-of-worship:
+  category: Amenities
+  parent-types: []
+  show_in_category_list: false
+  show_in_nearby_list: false
+  verbose_name: place of worship
+  verbose_name_plural: places of worship
+  verbose_name_singular: a place of worship
+post-box:
+  category: Amenities
+  parent-types: []
+  show_in_category_list: false
+  show_in_nearby_list: true
+  verbose_name: post box
+  verbose_name_plural: post boxes
+  verbose_name_singular: a post box
+post-office:
+  category: Amenities
+  parent-types: []
+  show_in_category_list: false
+  show_in_nearby_list: true
+  verbose_name: post office
+  verbose_name_plural: post offices
+  verbose_name_singular: a post office
+pub:
+  category: Amenities
+  parent-types: []
+  show_in_category_list: true
+  show_in_nearby_list: true
+  verbose_name: pub
+  verbose_name_plural: pubs
+  verbose_name_singular: a pub
+public-library:
+  category: Amenities
+  parent-types: [library]
+  show_in_category_list: true
+  show_in_nearby_list: true
+  verbose_name: public library
+  verbose_name_plural: public libraries
+  verbose_name_singular: a public library
+punt-hire:
+  category: Leisure
+  parent-types: []
+  show_in_category_list: false
+  show_in_nearby_list: false
+  verbose_name: place to hire punts
+  verbose_name_plural: places to hire punts
+  verbose_name_singular: a place to hire punts
+recycling:
+  category: Amenities
+  parent-types: []
+  show_in_category_list: false
+  show_in_nearby_list: true
+  verbose_name: recycling facility
+  verbose_name_plural: recycling facilities
+  verbose_name_singular: a recycling facility
+restaurant:
+  category: Amenities
+  parent-types: [food]
+  show_in_category_list: false
+  show_in_nearby_list: false
+  verbose_name: restaurant
+  verbose_name_plural: restaurants
+  verbose_name_singular: a restaurant
+shop:
+  category: Amenities
+  parent-types: []
+  show_in_category_list: false
+  show_in_nearby_list: false
+  verbose_name: shop
+  verbose_name_plural: shops
+  verbose_name_singular: a shop
+sport:
+  category: Leisure
+  parent-types: []
+  show_in_category_list: false
+  show_in_nearby_list: false
+  verbose_name: place relating to sport
+  verbose_name_plural: places relating to sport
+  verbose_name_singular: a place relating to sport
+sports-centre:
+  category: Leisure
+  parent-types: [sport]
+  show_in_category_list: false
+  show_in_nearby_list: false
+  verbose_name: sports centre
+  verbose_name_plural: sports centres
+  verbose_name_singular: a sports centre
+swimming-pool:
+  category: Leisure
+  parent-types: [sport]
+  show_in_category_list: false
+  show_in_nearby_list: false
+  verbose_name: swimming pool
+  verbose_name_plural: swimming pools
+  verbose_name_singular: a swimming pool
+synagogue:
+  category: Amenities
+  parent-types: [place-of-worship]
+  show_in_category_list: false
+  show_in_nearby_list: false
+  verbose_name: synagogue
+  verbose_name_plural: synagogues
+  verbose_name_singular: a synagogue
+taxi-rank:
+  category: Transport
+  parent-types: []
+  show_in_category_list: false
+  show_in_nearby_list: false
+  verbose_name: taxi rank
+  verbose_name_plural: taxi ranks
+  verbose_name_singular: a taxi rank
+theatre:
+  category: Leisure
+  parent-types: []
+  show_in_category_list: true
+  show_in_nearby_list: true
+  verbose_name: theatre
+  verbose_name_plural: theatres
+  verbose_name_singular: a theatre

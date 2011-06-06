@@ -1,22 +1,20 @@
-{% extends "sakai/base.html" %}
+{% extends "sakai/base.html" %}{% load i18n %}
 
 {% block content %}
-
-
 
 <div class="section">
   <div class="content pad-10">
     <dl>
-      <dt>Name:</dt>
+      <dt>{% trans "Name" %}:</dt>
       <dd>{{ user_details.displayName }}</dd>
-      <dt>E-mail address:</dt>
+      <dt>{% trans "E-mail address" %}:</dt>
       <dd>{{ user_details.email }}</dd>
-      <dt>Username:</dt>
+      <dt>{% trans "Username" %}:</dt>
       <dd>{{ user_details.displayId }}</dd>
     </dl>
   </div>
 </div>
-      
+
 {{ user_details }}
 
 {% endblock %}

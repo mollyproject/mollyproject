@@ -1,8 +1,8 @@
 {% load molly_utils %}{% if train_station.metadata.ldb %}
-
+{% load i18n %}
 <div class="section" id="ldb">
   <div class="header">
-    <h2>{{ train_station.title }} ({% if board %}{{ board }}{% else %}departures{% endif %}) - {{ train_station.metadata.ldb.generatedAt|localize_utc|date:"H:i:s" }}</h2>
+    <h2>{{ train_station.title }} ({% if board %}{% trans board %}{% else %}{% trans "departures" %}{% endif %}) - {{ train_station.metadata.ldb.generatedAt|localize_utc|date:"H:i:s" }}</h2>
   </div>
   
   {% if train_station.metadata.ldb.nrccMessages.message %}
@@ -16,33 +16,33 @@
   <table class="content no-round-bottom">
     <thead>
       <tr>
-        <th>{% ifequal board "arrivals" %}Origin{% else %}Destination{% endifequal %}</th>
+        <th>
+            {% ifequal board "arrivals" %}
+                    {% trans "Origin" %}
+            {% else %}
+                    {% trans "Destination" %}
+            {% endifequal %}
+	</th>
         {% if train_station.metadata.ldb.platformAvailable %}
-        <th>Plat.</th>
+        <th>{% trans "Plat." %}</th>
         {% endif %}
-        <th>Scheduled</th>
-        <th>Expected</th>
+        <th>{% trans "Scheduled" %}</th>
+        <th>{% trans "Expected" %}</th>
       </tr>
     </thead>
     <tbody>
       {% if train_station.metadata.ldb.error %}
         <tr>
           <td colspan="{% if train_station.metadata.ldb.platformAvailable %}4{% else %}3{% endif %}">
-            <p>
-              There is currently a problem retrieving live departure information from the National Rail web site.
-            </p>
-            <p>
-              Departure information may still be accessed
-              <a href="http://pda.ojp.nationalrail.co.uk/en/pj/ldbboard/dep/{{ train_station.identifiers.crs }}">directly
-              from their web site</a>.
-            </p>
+            <p>{% trans "There is currently a problem retrieving live departure information from the National Rail web site." %}</p>
+            <p>{% blocktrans with train_station.identifiers.crs as crs %}Departure information may still be accessed<a href="http://pda.ojp.nationalrail.co.uk/en/pj/ldbboard/dep/{{ crs }}">directly from their web site</a>.{% endblocktrans %}</p>
           </td>
         </tr>
       {% else %}
         {% for service in train_station.metadata.ldb.trainServices.service %}
           <tr>
             <td>
-              <a href="{{ train_station.get_absolute_url }}service?id={{ service.serviceID|urlencode }}" style="color: inherit;" rel="nofollow">
+              <a href="{{ train_station.get_absolute_url }}service?id={{ service.serviceID|urlencode }}" class="inherit-color" rel="nofollow">
                 {# This isn't that straight-forward - trains can split and go to multiple destinations #}
                 {% ifequal board "arrivals" %}
                   {% for location in service.origin.location %}
@@ -61,7 +61,7 @@
                     {% if location.via %}<br /><small>{{ location.via }}</small>{% if not forloop.last %}<br />{% endif %}{% endif %}
                   {% endfor %}
                 {% endifequal %}
-                {% if service.isCircularRoute %}<br /><small>(Circular Route)</small>{% endif %}</a>
+                {% if service.isCircularRoute %}<br /><small>({% trans "Circular Route" %})</small>{% endif %}</a>
             </td>
             {% if train_station.metadata.ldb.platformAvailable %} 
             <td>{{ service.platform }}</td>
@@ -76,7 +76,13 @@
           </tr>
         {% empty %}
           <tr>
-            <td colspan="{% if train_station.metadata.ldb.platformAvailable %}4{% else %}3{% endif %}">There are currently no scheduled {{ board }}.</td>
+            <td colspan="{% if train_station.metadata.ldb.platformAvailable %}4{% else %}3{% endif %}">
+                {% ifequal board "arrivals" %}
+                    There are currently no scheduled arrivals.
+                {% else %}
+                    There are currently no scheduled departures.
+                {% endifequal%}
+	    </td>
           </tr>
         {% endfor %}
       {% endif %}
@@ -85,12 +91,12 @@
   <ul class="link-list">
     {% if board %}
       {% ifequal board "departures" %}
-        <li><a class="ldb-board" href="{{ train_station.get_absolute_url }}?board=arrivals">View arrivals board</a></li>
+        <li><a class="ldb-board" href="{{ train_station.get_absolute_url }}?board=arrivals">{% trans "View arrivals board" %}</a></li>
       {% else %}
-        <li><a class="ldb-board" href="{{ train_station.get_absolute_url }}?board=departures">View departures board</a></li>
+        <li><a class="ldb-board" href="{{ train_station.get_absolute_url }}?board=departures">{% trans "View departures board" %}</a></li>
       {% endifequal %}
     {% else %}
-      <li><a class="ldb-board" href="{{ train_station.get_absolute_url }}?board=arrivals">View arrivals board</a></li>
+      <li><a class="ldb-board" href="{{ train_station.get_absolute_url }}?board=arrivals">{% trans "View arrivals board" %}</a></li>
     {% endif %}
   </ul>
 </div>

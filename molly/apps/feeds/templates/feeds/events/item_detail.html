@@ -1,36 +1,38 @@
 {% extends "feeds/events/base.html" %}{% load molly_maps %}
-
+{% load i18n %}
 {% block breadcrumbs %}
 {{ block.super }}
             <li><a href="{% url events:index %}">
-                <img src="{{ STATIC_URL }}images/index-icons/rss-bc.png" alt="News"/>
+                <img src="{{ STATIC_URL }}images/index-icons/rss-bc.png" alt='{% trans "Events" %}'/>
             </a></li>
             <li><a href="{% url events:item-list item.feed.slug %}">
                 &hellip;
             </a></li>
 {% endblock %}
 
-{% block pagetitle %}Event{% endblock %}
-{% block title %}Event: {{ item.title }}{% endblock %}
+{% block pagetitle %}{% trans "Event" %}{% endblock %}
+{# Significant whitespace on line below #}
+{% block title %}{% trans "Event" %}: {{ item.title }}{% endblock %}
 
 {% block content %}
 
 <div class="section">
     <h2>{{ item.title }}</h2>
     
-    <div class="article"><div class="bubble pad-5" style="margin: 2px;">
+    <div class="article"><div class="bubble pad-5">
         {{ description|safe }}
         <br />
         
         <small><em>
             {{ item.last_modified_local|date:"j M Y \a\t H:m" }}<br />
-            Link: <a href="{{ item.link }}" title="{{ item.title }}">{{ item.link }}</a>
+			{# Significant whitespace on line below #}
+            {% trans "Link:" %} <a href="{{ item.link }}" title="{{ item.title }}">{{ item.link }}</a>
         </em></small>
     </div></div>
 </div>
 
 <div class="section">
-    <h2>Location</h2>
+    <h2>{% trans "Location" %}</h2>
 {% if item.location_point %}
     {% render_location_map item.location_point %}
 {% endif %}
@@ -45,19 +47,11 @@
 {% endif %}
         <li>
             <a class="external-mobile" href="{{ item.location_mobile_url }}">
-                <em>{{ item.location_name }}</em> at Daily Info
+                <em>{{ item.location_name }}</em>
             </a>
         </li>
     </ul>
-    <!-- <div class="article"> -->
     
-</div>
-
-<div class="section">
-  <div class="article">
-    This information is provided courtesy of
-    <a href="http://www.dailyinfo.co.uk/phone/">Daily Info</a>.
-  </div>
 </div>
 
 {% endblock %}

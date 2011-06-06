@@ -1,12 +1,13 @@
-{% extends "geolocation/base.html" %}
+{% extends "geolocation/base.html" %}{% load i18n %}
 
 {% block content %}
 
 <div class="section">
-  <h2>Location required</h2>
+  <h2>{% trans "Location required" %}</h2>
 
   <div class="note"><div class="bubble pad-10">
-    To be able to use this feature you need to <a href="{% url geolocation:index %}?return_url={{ return_url|urlencode }}">choose a location</a>.
+    {% url geolocation:index as geolocation_url %}
+    {% blocktrans with return_url|urlencode as return_url %}To be able to use this feature you need to <a href="{{ geolocation_url }}?return_url={{ return_url }}">choose a location</a>.{% endblocktrans %}
   </div></div>
 </div>
 

@@ -1,14 +1,15 @@
 {% extends "feeds/news/base.html" %}{% load molly_utils %}
-
+{% load i18n %}
 {% block breadcrumbs %}
 {{ block.super }}
             <li><a href="{% url news:index %}">
-                <img src="{{ STATIC_URL }}images/index-icons/rss-bc.png" alt="News"/>
+                <img src="{{ STATIC_URL }}images/index-icons/rss-bc.png" alt='{% trans "News" %}'/>
             </a></li>
 {% endblock %}
 
-{% block pagetitle %}News feed{% endblock %}
-{% block title %}News feed: {{ feed.title }}{% endblock %}
+{% block pagetitle %}{% trans "News feed" %}{% endblock %}
+{# Significant whitespace on next line #}
+{% block title %}{% trans "News feed" %}: {{ feed.title }}{% endblock %}
 
 {% block content %}
 
@@ -18,7 +19,7 @@
 </div>
     <ul class="link-list">
 {% for item in feed.item_set.all %}
-        <li {% if forloop.last %}class="round-bottom"{% endif %}>
+        <li>
             <a href="{{ item.get_absolute_url }}">
                 {{ item.title }}<br />
                 <small><em>

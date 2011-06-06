@@ -1,84 +1,79 @@
+/* Molly's root smart.css */
+
+/*** Generic ***/
+
 body {
     background:#bbc4ce url('../../site/images/gradients/backdrop-iphone.png') repeat-x top;
     font-family: "Liberation Sans", sans-serif;
-    font-size:9pt;
+    font-size:0.75em;
     -webkit-text-size-adjust: none;
     text-align: left;
     margin: 0;
 }
 
-/* Index Page Specific
-    - 1 CSS 2.1 Selector
-    - 4 Webkit Only Tags
-    -- Written in order of use on index.html
-*/
-div#index-header {
-    width:100%;
-    height:51px;
-}
-div#index-title {
-    position:absolute;
-    top:0;
-    left:0;
-}
-div#index-search {
-    position:absolute;
-    top: 0;
-    right:5px;
+a img {
+  border:0;
 }
 
-/* CSS 2.1 */
-div#index-search input[type="text"] {
-    float: left;
-    /* Total height - 27px inc 2px border + 1px padding: does not correspond with 34px high search button, but displays correctly on iphone */
-    height: 24px;
-    width: 125px;
-    font-size:1.2em;
-    border: 2px solid #dddddd;
-    -webkit-border-top-left-radius: 5px;     -moz-border-radius-topleft: 5px;
-    -webkit-border-bottom-left-radius: 5px;    -moz-border-radius-bottomleft: 0px;
-    -webkit-border-top-right-radius:0;     -moz-border-radius-topright: 0px;
-    -webkit-border-bottom-right-radius:0;     -moz-border-radius-bottomright: 0px;
+small {
+  font-size:90%;
 }
 
-/* icon-menu & menu-x handles the menu icons on the front page 
-    - this section would ideally be rewritten to handle a little more gracefully on varied sizes of screens */
-ol.icon-menu {
-    list-style:none;
-    margin: 0;
-    padding:5px;
-}
-ol.icon-menu li {
-    display:inline-block;
-    background-repeat:no-repeat;
-    background-position:center 10px;
-    vertical-align:top;
-}
-ol.icon-menu li a {
-    width: 60px;
-    height:2em;
-    padding:4px;
-    padding-top: 75px;
+.invisible {display:none;}
+.center {text-align:center;}
+.clear {clear:both;}
+.inherit-color {color:inherit;}
+.no-border {border:0;}
+
+h2 {
     text-align:center;
-    display:block;
-    text-decoration:none;
-    color: #002147;
+    padding: 5px 0; margin: 0;
 }
-li#menu-contact {background-image:url('../../site/images/index-icons/contact.png');}
-li#menu-places {background-image:url('../../site/images/index-icons/places.png');}
-li#menu-podcasts {background-image:url('../../site/images/index-icons/podcasts.png');}
-li#menu-webcams {background-image:url('../../site/images/index-icons/webcams.png');}
-li#menu-news {background-image:url('../../site/images/index-icons/news.png');}
-li#menu-events {background-image:url('../../site/images/index-icons/events.png');}
-li#menu-results {background-image:url('../../site/images/index-icons/results.png');}
-li#menu-library {background-image:url('../../site/images/index-icons/library.png');}
-li#menu-weather {background-image:url('../../site/images/index-icons/weather.png');}
-li#menu-weblearn {background-image:url('../../site/images/index-icons/weblearn.png');}
-li#menu-service_status {background-image:url('../../site/images/index-icons/service_status.png');}
-li#menu-service-status {background-image:url('../../site/images/index-icons/service_status.png');}
-li#menu-transport {background-image:url('../../site/images/index-icons/transport.png');}
-/* End Index Page Specific */
 
+h3 {
+    color:#222;
+    padding: 5px 5px; margin: 0;
+    text-align: center;
+    text-shadow:2px 2px 2px #ccc;
+}
+
+div.bubble {
+    color:#002147;
+    background-color:#ffffff;
+    padding: 0;
+    margin: 10px;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    border-radius: 8px;
+}
+
+div.note {
+    text-align:center;
+    padding: 5px;
+    font-size: 1em;
+}
+div.note a{
+    color: #002B4C;;
+}
+
+.round-top {
+    -webkit-border-top-left-radius: 8px;
+    -webkit-border-top-right-radius: 8px;
+    -moz-border-radius-topleft: 8px;
+    -moz-border-radius-topright: 8px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+div.pad-10{padding: 10px;}
+div.pad-5 {padding:5px;}
+
+div.no-round-bottom, ul.no-round-bottom,li.no-round-bottom,
+table.no-round-bottom > *:last-child > tr:last-child > *:last-child,
+table.no-round-bottom > *:last-child > tr:last-child > *:first-child {
+    -webkit-border-bottom-left-radius: 0px !important;   -moz-border-radius-bottomleft: 0px !important;     border-bottom-left-radius: 0px !important;
+    -webkit-border-bottom-right-radius: 0px !important;  -moz-border-radius-bottomright: 0px !important;    border-bottom-right-radius: 0px !important;
+}
+/* End Generic */
 
 /* Breadcrumb Trail Styles */
 div#bc-header {
@@ -105,7 +100,7 @@ ol#bc li {
     overflow:hidden;
 }
 ol#bc li a {
-    font-size:12pt;
+    font-size:1em;
     vertical-align: top;
     color: #ffffff;
     text-decoration:none;
@@ -123,7 +118,7 @@ div#bc-title h1 {
     line-height:30px;
     padding-top: 0px;
     float:left;
-    font-size:12pt;
+    font-size:1.2em;
     text-align:left;
     color:#ffffff;
     white-space: nowrap;
@@ -150,9 +145,6 @@ div#bc-title h1.feature_vote-header {  background-image:url('../../site/images/i
 div#bc-title h1.auth-header {  background-image:url('../../site/images/index-icons/auth-bc.png');}
 /* End Breadcrumb Trail Styles */
 
-
-
-
 /* Standard List Styles */
 /* Content-List */
 ul.content-list, ul.link-list, ol.search-results {
@@ -174,7 +166,7 @@ ul.content-list a {color: #00f;}
 ul.content-list h3 {
     color:#222;
     text-align:left;
-    font-size:10pt;
+    font-size:0.8em;
     padding:0;
     margin-bottom:5px;
 }
@@ -195,7 +187,7 @@ ul.link-list, ol.search-results {
     color:#ffffff;
 }
 ul.link-list li, ol.search-results li {
-    font-size:12pt;
+    font-size:1.3em;
     border-top:1px solid #98a1ac;
     padding: 10px;
     display:block;
@@ -211,6 +203,14 @@ ul.link-list li a, ol.search-results li a {
     background-repeat: no-repeat;
     background-image:url('../../site/images/icons/list-arrow.png'); /* Default background image */
 }
+
+ol.search-results li a img {
+    float:left;
+    border:0;
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+
 ul.link-list li a.go-back, ol.search-results li a.go-back {
     background-image:url('../../site/images/icons/list-arrow-left.png'); /* Default background image */
 }
@@ -223,7 +223,6 @@ ul li.page-break {
 ul.stand-alone {
     margin: 10px;
 }
-
 
 /* Background images primarily for list items */
 ul.link-list li a.phone {background-image:url('../../site/images/icons/list-phone.png');}
@@ -254,7 +253,7 @@ div.osm-license {
     top: auto;
     right: 0;
     bottom: 0;
-    font-size: 8pt;
+    font-size: 0.7em;
     text-align:right;
     padding: 2px;
     background: #ffffff;
@@ -264,54 +263,17 @@ div.osm-license {
 /* End Webcams/Maps */
 
 
-/* News Articles */
+/* News/Events/Library/Places(OSM) Articles */
 div.article {
     text-align:left;
     color: #000000;
-    font-size:10pt;
+    font-size:0.8em;
     margin: 0;
     padding: 2px;
 }
 /* End News Articles */
 
-
-/* Weather */
-div.weather-icon {
-    display:inline-block;
-    width: 128px;
-    vertical-align:top;
-}
-div.weather-live-info {
-    display:inline-block;
-    vertical-align: top;
-    width: 150px;
-    padding: 0; margin: 0;
-    background-color: transparent;
-    border-left:0;
-    font-size:10pt;
-    color:#000000;
-    text-align: left;
-}
-
-table.weather-forecast {
-    padding: 20px;
-    width: 100%;
-    color:#000000;
-}
-/* End Weather */
-
-/* Library Search */
-div#library-search ul li{
-    border: none;
-    padding: 5px 0;
-    text-align:center;
-    font-size:10pt;
-    display:block;
-    background: none;
-}
-/* End Library */
-
-/* Forms/Search */
+/* Contact Search Form + Feedback Form */
 div.form {
     text-align: center;
     padding:5px; margin: 0;
@@ -340,7 +302,7 @@ div.form button[type="submit"] {
     font-size: 1.3em;
     min-height: 1.3em;
 }
-/* End Forms/Search */
+/* Contact Search Form + Feedback Form */
 
 
 /* New Standard Search Form */
@@ -351,7 +313,6 @@ table.search {
 table tbody td {padding: 0; margin: 0;}
 table tbody tr {padding: 0; margin: 0;}
 
-/* CSS 2.1 */
 table.search * input[type="text"] {
     float:left;
     width:100%;
@@ -367,7 +328,7 @@ table.search * input[type="text"] {
 	border-top-left-radius: 5px; border-bottom-left-radius: 5px; 
 	border-top-right-radius: 0; border-bottom-right-radius: 0;
 }
-/* CSS 2.1 */
+
 table.search * input[type="image"] {
     position: relative;
     margin:0; padding:0;
@@ -375,8 +336,6 @@ table.search * input[type="image"] {
     float:left;
 }
 /* End New Standard Search Form */
-
-
 
 
 /* Help Bubble */
@@ -412,30 +371,7 @@ table.search * input[type="image"] {
 }
 /* End Help Bubble */
 
-
-/* RTI */
-table.real-time-information {
-    width: 100%;
-    background: #121C28;
-    color: #FFBF00;
-    border: 2px solid #FFBF00;
-    -webkit-border-radius: 8px;
-    -moz-border-radius: 8px;
-    border-radius: 8px;
-
-    padding: 2px 0;
-}
-
-table.real-time-information tr {
-    border-collapse: collapse;
-    border-top: 1px solid #FFBF00;
-}
-/* End RTI */
-
-
-
 /* Input Buttons */
-/* CSS 2.1 */
 button, input[type="submit"], input[type="reset"] {
     display: inline-block;
     color: #fff;
@@ -448,74 +384,10 @@ button, input[type="submit"], input[type="reset"] {
     -moz-box-shadow: 0px 0px 2px rgba(0,0,0,0.5);
     -webkit-border-radius: 5px;
     -webkit-box-shadow: 0px 0px 2px rgba(0,0,0,0.5);
+    border-radius: 5px;
+    box-shadow: 0px 0px 2px rgba(0,0,0,0.5);
 }
 /* END Input Buttons */
-
-
-/*** Generic ***/
-.invisible {display:none;}
-.center {text-align:center;}
-
-h2 {
-    text-align:center;
-    padding: 5px 0; margin: 0;
-}
-
-h3 {
-    color:#222;
-    padding: 5px 5px; margin: 0;
-    text-align: center;
-    text-shadow:2px 2px 2px #ccc;
-}
-
-div.bubble {
-    color:#002147;
-    background-color:#ffffff;
-    padding: 0;
-    margin: 10px;
-    -webkit-border-radius: 8px;
-    -moz-border-radius: 8px;
-    border-radius: 8px;
-}
-
-div.note {
-    text-align:center;
-    padding: 5px;
-    font-size: 12pt;
-}
-div.note a{
-    color: #002B4C;;
-}
-
-.round-top {
-    -webkit-border-top-left-radius: 8px;
-    -webkit-border-top-right-radius: 8px;
-    -moz-border-radius-topleft: 8px;
-    -moz-border-radius-topright: 8px;
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
-}
-.round-bottom {
-    -webkit-border-bottom-left-radius: 8px;
-    -webkit-border-bottom-right-radius: 8px;
-    -moz-border-radius-bottomleft: 8px;
-    -moz-border-radius-bottomright: 8px;
-    border-bottom-left-radius: 8px;
-    border-bottom-right-radius: 8px;
-}
-div.pad-10{padding: 10px;}
-div.pad-5 {padding:5px;}
-
-div.no-round-bottom, ul.no-round-bottom,li.no-round-bottom,
-table.no-round-bottom > *:last-child > tr:last-child > *:last-child,
-table.no-round-bottom > *:last-child > tr:last-child > *:first-child {
-    -webkit-border-bottom-left-radius: 0px !important;   -moz-border-radius-bottomleft: 0px !important;     border-bottom-left-radius: 0px !important;
-    -webkit-border-bottom-right-radius: 0px !important;  -moz-border-radius-bottomright: 0px !important;    border-bottom-right-radius: 0px !important;
-}
-
-div.vote-box span {padding:0;}
-/* End Generic */
-
 
 /* Form sections */
 div.form-section {
@@ -536,7 +408,7 @@ div.form-section h2 {
     color: #222;
     text-shadow: 2px 2px 2px #ccc;
     text-align: center;
-    font-size: 11pt;
+    font-size: 0.95em;
     padding-top: 8px;
 }
 
@@ -612,21 +484,6 @@ div.form-section p.submit-buttons input:first-child {
 }
 /* End form section */
 
-/* Feature Vote */
-div.vote-box {
-    text-align: center;
-    font-weight: bold;
-    width:35px;
-    margin:0 0 5px 5px;
-}
-ul.content-list li.superuser-comment {
-	border: 2px solid #465347;
-	border-width: 2px 0 2px 0;
-	background-color:#CFE8D9;
-}
-/* End Feature Vote */
-
-
 /* Section formatting 
 	Layout (11 August 2010) - possibly a little broken
 	
@@ -652,6 +509,7 @@ div.header {
     color:#222;
     padding:5px;
     border-top:1px solid rgba(255, 255, 255, 0.33);
+    border-bottom: 1px solid #888;
     border-left:1px solid rgba(255, 255, 255, 0.33);
     background-color: #dfdfdf;
     background:-moz-linear-gradient(top, #fff, #dfdfdf);
@@ -668,7 +526,7 @@ div.header h2 {
     color: #222;
     text-shadow: 2px 2px 2px #ccc;
     text-align: left;
-    font-size: 11pt;
+    font-size: 1.1em;
     padding-top: 3px;
 }
 
@@ -688,8 +546,7 @@ div.section-content {
 /* End Section Formatting */
 
 
-/* Sakai bits */
-
+/* Sakai */
 span.sakai-compulsory-question {
     font-weight: bold;
     color: #ff0000;
@@ -737,8 +594,55 @@ div.sakai-error-message p:first-child, div.sakai-notice-message p:first-child {
     margin-top: 0;
 }
 
+tr.poll-option td.poll-choice {
+    font-size: 2em;
+    width: 35px;
+    text-align: center;
+}
 
-.header {border-bottom: 1px solid #888;}
+tr.poll-option td.poll-choice label {
+    display: block;
+    padding: 10px;
+    margin: 8px;
+    border: 1px solid #888;
+    width: 1.1em;
+    line-height: 1.1em;
+    vertical-align: middle;
+    border-radius: 8px; -webkit-border-radius: 8px; -moz-border-radius: 8px;
+}
+
+tr.poll-option td.poll-choice label input {
+    font-size: 2.8em;
+}
+
+tr.poll-option td.vote-count {
+    text-align: center;
+    font-size: 1.2em;
+    width: 102px;
+}
+
+tr.poll-option td.vote-count span {
+    white-space: nowrap;
+}
+
+tr.poll-option td.vote-count div.vote-box {
+    min-width: 40px;
+    max-width: 100px;
+    background-color: #cfcfcf;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid #888;
+}
+
+tr.poll-option td.vote-count div.vote-box div.vote-box-voted {
+    height: 10px;
+    background-color: #e5f0e1;
+}
+
+tfoot.may-vote tr td {
+    padding: 10px;
+}
+/* End Sakai */
 
 table.content {
     border-spacing:0;
@@ -804,121 +708,99 @@ div.button > a {
     /*text-shadow: 0 -1px 1px #000;*/
 }
 
-
-a img {
-  border:0;
-}
-
-small {
-  font-size:90%;
-}
-
-#favourite-bit
-{
+#favourite-bit {
     position: absolute;
     right: 0px;
     padding: 5px;
 }
 
 #favourite, .favourite,
-#unfavourite, .unfavourite
-{
+#unfavourite, .unfavourite {
     background-color: transparent !important;
     border: 0 !important;
     text-shadow: none !important;
     -webkit-box-shadow: none !important;
     -moz-box-shadow: none !important;
+    box-shadow: none !important;
     height: 20px !important;
     width: 20px !important;
     cursor: pointer !important;
     text-indent:-999em; /* Hack to not show the text on a button when we're showing the image */
 }
 
-#favourite, .favourite
-{
+#favourite, .favourite {
     background-image: url('../../favourites/images/star-grey.png') !important;
 }
 
-#unfavourite, .unfavourite
-{
+#unfavourite, .unfavourite {
     background-image: url('../../favourites/images/star.png') !important;
 }
 
-.with-favourite
-{
+.with-favourite {
     margin-right: 28px !important;
 }
 
-.as-text-link
-{
+/*.as-text-link,
+#bottom-links button {
     background: none !important;
     border: 0 !important;
     -moz-box-shadow: none !important;
     -webkit-box-shadow: none !important;
+    box-shadow: none !important;
     padding: 0 !important;
     color: #000000 !important;
     text-shadow: none !important;
     cursor: pointer;
-}
+}*/
 
-.link-list .as-text-link
-{
+.link-list .as-text-link {
     color: #ffffff !important;
 }
 
-.current-location-box
-{
+.current-location-box {
     padding: 0 8px;
 }
 
-.current-location-box p
-{
+.current-location-box p {
     padding: 2px;
     line-height: 17px;
     min-height: 34px;
     margin: 0;
 }
 
-.location
-{
+.location {
     font-weight: bold;
 }
 
-.current-location-box .update-location-opener
-{
+.current-location-box .update-location-opener {
     float: right;
 }
 
-.location-automatic-list li
-{
+.location-automatic-list li {
     padding-left: 35px !important;
     background-image: url('../../geolocation/images/location-white.png');
     background-repeat: no-repeat;
     background-position: 5px center;
 }
 
-.update-location-name-container
-{
+.update-location-name-container {
     margin-right: 110px;
     padding-left: 5px;
     margin-bottom: 2px;
 }
 
-.update-location-name
-{
+.update-location-name {
     width: 100%;
     padding: 5px 0 5px 3px;
 }
 
-.update-location
-{
+.update-location {
     position: absolute;
     top: 0px;
     right: 0px;
 }
 
-.cancel-update
-{
+.cancel-update {
     position: absolute;
     top: -34px;
     right: 5px;
@@ -926,8 +808,7 @@ small {
     text-decoration: underline;
 }
 
-.favourite-location-form
-{
+.favourite-location-form {
     position: absolute;
     top: 0;
     right: 2px;
@@ -935,40 +816,35 @@ small {
     padding: 8px;
 }
 
-.update-location-lists .link-list li
-{
+.update-location-lists .link-list li {
     position: relative;
     overflow: hidden;
 }
 
-.location-box .header
-{
+.location-box .header {
     border-bottom: none !important;
 }
 
-.location-box .header h2
-{
+.location-box .header h2 {
     background-image: none !important;
 }
 
-.location-box .section-content
-{
+.location-box .section-content {
     padding: 0;
     border-top: none !important;
 }
 
-.location-box
-{
+.location-box {
     background-color: #DFDFDF !important;
 }
 
-.automatic-update-button
-{
+.automatic-update-button {
     background-color: transparent !important;
     border: 0 !important;
     text-shadow: none !important;
     -webkit-box-shadow: none !important;
     -moz-box-shadow: none !important;
+    box-shadow: none !important;
     width: 25px !important;
     cursor: pointer !important;
     text-indent:-999em; /* Hack to not show the text on a button when we're showing the image */
@@ -978,14 +854,12 @@ small {
     margin-right: 5px;
 }
 
-.slippy-map
-{
+.slippy-map {
     text-align: center;
     padding-right: 60px;
 }
 
-.map
-{
+.map {
     border: 1px solid #000000;
 }
 
@@ -1006,3 +880,83 @@ small {
 .favourite-link .additional {
     font-size: 0.9em;
 }
+
+/* Botton Links bottom-links 
+   Used to create buttons on non opt-out pages (most) for feedback, sharing etc
+*/
+
+div#bottom-links {
+   margin-top: 0.9em;
+   margin-bottom: 0.9em;
+   padding: 5px; 
+}
+
+div#bottom-links div.full-width, 
+div#bottom-links div.half-width {
+   margin-top: 0.1em;
+   margin-bottom: 0.2em;
+   float: left;
+   /* Width gets overwritten for some devices */
+   width: 50%;
+}
+
+div#bottom-links div.full-width {
+    margin-top: 0.1em;
+    margin-bottom: 0.2em;
+    width: 100%;
+}
+
+div#bottom-links div#rim-left {
+    width: 49%;
+    float: left;
+}
+
+div#bottom-links div#rim-right {
+    width: 49%;
+    float: right;
+}
+
+div#bottom-links div.full-width a, 
+div#bottom-links div.half-width a {
+    margin:0 0.2em 0 0.2em; 
+    background-color:white; 
+    padding:0.6em; 
+    text-align:center; 
+    display:block;
+    border-radius: 0.4em;
+    -webkit-border-radius:0.4em; 
+    -moz-border-radius:0.4em;
+}
+
+div.language-selector button {
+    min-width: 7em;
+    min-height: 2.5em;
+    background-color: #fff;
+    color: #00e !important;
+    text-decoration: underline;
+    font-weight: normal;
+    font-family: "Liberation Sans",sans-serif;
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    -moz-box-shadow: none !important;
+    border: 0;
+    cursor: pointer;
+}
+
+div.half-width button {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: #fff;
+    color: #00e !important;
+    text-decoration: underline;
+    font-weight: normal;
+    font-family: "Liberation Sans",sans-serif;
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    -moz-box-shadow: none !important;
+    border: 0;
+    cursor: pointer;
+}
+/* End Bottom Links */

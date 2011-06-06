@@ -1,4 +1,5 @@
 from django.contrib.gis.geos import Point
+from django.utils.translation import ugettext as _
 
 from molly.conf import app_by_application_name
 
@@ -15,7 +16,7 @@ class IndexView(BaseView):
         return Breadcrumb(
             self.conf.local_name,
             None,
-            'Transport',
+            _('Transport'),
             lazy_reverse('%s:index' % self.conf.local_name),
         )
     

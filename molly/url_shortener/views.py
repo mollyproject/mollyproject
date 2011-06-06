@@ -1,8 +1,11 @@
-import random, re
+import random
+import re
+from datetime import timedelta
 
 from django.http import Http404
 from django.core.urlresolvers import resolve, reverse
 from django.shortcuts import get_object_or_404
+from django.utils.translation import ugettext as _
 
 from molly.utils.views import BaseView
 
@@ -55,7 +58,7 @@ class IndexView(BaseView):
                 breadcrumb[1],
                 (breadcrumb[4], context['path']),
                 breadcrumb[1] == (breadcrumb[4], context['path']),
-                'Shorten link',
+                _('Shorten link'),
             )
         else:
             index = (view.conf.title, reverse('%s:index' % view.conf.local_name))
@@ -64,7 +67,7 @@ class IndexView(BaseView):
                 index,
                 (u'Back\u2026', context['path']),
                 context['path'] == index[1],
-                'Shorten link',
+                _('Shorten link'),
             )
 
     def handle_GET(self, request, context):
@@ -90,4 +93,5 @@ class IndexView(BaseView):
 
         context['url'] = request.build_absolute_uri('/' + context['shortened_url'].slug)
 
-        return self.render(request, context, 'url_shortener/index')
+        return self.render(request, context, 'url_shortener/index',
+                           expires=timedelta(days=365))

@@ -1,6 +1,7 @@
 from __future__ import division
 from datetime import datetime
 from django import template
+from django.utils.translation import ugettext as _
 
 register = template.Library()
 
@@ -29,4 +30,10 @@ def signup_status(ts, event):
 
 @register.filter
 def signup_status_human(value):
-    return {'signed-up': 'Signed Up', 'on-waiting-list': 'On Waiting List', 'waiting-list': 'Waiting List Available', 'full': 'Full', 'available': 'Available'}[value]
+    return {
+        'signed-up': _('Signed Up'),
+        'on-waiting-list': _('On Waiting List'),
+        'waiting-list': _('Waiting List Available'),
+        'full': _('Full'),
+        'available': _('Available')
+    }[value]

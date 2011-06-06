@@ -2,7 +2,7 @@ from email.utils import formatdate
 from time import mktime
 from inspect import isfunction
 import logging, itertools
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from slimmer.slimmer import xhtml_slimmer
 from urlparse import urlparse, urlunparse, parse_qs
 from urllib import urlencode
@@ -19,6 +19,7 @@ from django.template.loader_tags import BlockNode, ExtendsNode
 from django.shortcuts import render_to_response
 from django.core.urlresolvers import reverse, resolve, NoReverseMatch
 from django.conf import settings
+from django.utils.translation import ugettext as _
 
 logger = logging.getLogger('core.requests')
 
@@ -107,14 +108,14 @@ class BaseView(object):
 
     def not_acceptable(self, request):
         response = HttpResponse(
-            "The desired media type is not supported for this resource.",
+            _("The desired media type is not supported for this resource."),
             mimetype="text/plain")
         response.status_code = 406
         return response
 
     def bad_request(self, request):
         response = HttpResponse(
-            'Your request was malformed.',
+            _('Your request was malformed.'),
             status=400)
         return response
 
@@ -267,22 +268,31 @@ class BaseView(object):
                 if expires is not None:
                     response['Expires'] = formatdate(
                         mktime((datetime.now() + expires).timetuple()))
+                    
+                    # if expires is negative, then consider this to be no-cache
+                    if expires < timedelta(seconds=0):
+                        response['Cache-Control'] = 'no-cache'
+                    else:
+                        response['Cache-Control'] = 'max-age=%d' % \
+                                (expires.seconds + expires.days * 24 * 3600)
+                    
                 return response
         else:
             if 'format' not in request.REQUEST:
                 tried_mimetypes = list(itertools.chain(*[r.mimetypes
                                                          for r in renderers]))
                 response = HttpResponse(
-                  "Your Accept header didn't contain any supported media " +
-                  "ranges.\n\nSupported ranges are:\n\n * %s\n" % '\n * '.join(
+                  _("Your Accept header didn't contain any supported media ranges.") + \
+                  "\n\n" + _("Supported ranges are:") + \
+                  "\n\n * %s\n" % '\n * '.join(
                       sorted('%s (%s)' % (f[0].value, f[1].format) for f in
                       self.FORMATS_BY_MIMETYPE if not f[0] in tried_mimetypes)),
                 mimetype="text/plain")
             else:
                 print self.FORMATS
                 response = HttpResponse(
-                  "Unable to render this document in this format.\n\n"+
-                  "Supported formats are:\n\n * %s\n" \
+                  _("Unable to render this document in this format.") + "\n\n" +
+                  _("Supported formats are") + ":\n\n * %s\n" \
                                 % '\n * '.join(self.FORMATS.keys()),
                   mimetype="text/plain")
             response.status_code = 406 # Not Acceptable

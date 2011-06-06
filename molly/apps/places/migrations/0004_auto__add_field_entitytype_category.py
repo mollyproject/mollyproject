@@ -11,7 +11,7 @@ class Migration(SchemaMigration):
     def forwards(self, orm):
         
         # Adding field 'EntityType.category'
-        default, _ = EntityTypeCategory.objects.get_or_create(name='Uncategorised')
+        default, created = EntityTypeCategory.objects.get_or_create(name='Uncategorised')
         db.add_column('places_entitytype', 'category', self.gf('django.db.models.fields.related.ForeignKey')(default=default.pk, to=orm['places.EntityTypeCategory']), keep_default=False)
 
 

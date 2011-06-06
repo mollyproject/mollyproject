@@ -13,12 +13,17 @@ function refreshTransport(data){
         if (entity.metadata.park_and_ride) {
             if (entity.metadata.park_and_ride.unavailable) {
                 spaces = '?'
-                $('.park-and-ride:last').append('<p><em>Space information currently unavailable</em></p>')
+                $('.park-and-ride:last').append('<p><em>' + gettext('Space information currently unavailable') + '</em></p>')
             } else {
                 $('.park-and-ride:last').append('<div class="capacity-bar"><div style="width: ' + entity.metadata.park_and_ride.percentage.toString() + '%; height:7px;background-color: #960300;">&nbsp;</div></div>')
                 spaces = entity.metadata.park_and_ride.spaces.toString()
             }
-            $('.park-and-ride:last').append('<p>Spaces: ' + spaces + ' / ' + entity.metadata.park_and_ride.capacity + '</p>')
+            // Translators: Spaces: Free spaces / Capactity
+            var spaces = interpolate(gettext('Spaces: %(spaces)s / %(capacity)s'),
+                                     { spaces: spaces,
+                                       capacity: entity.metadata.park_and_ride.capacity },
+                                     true)
+            $('.park-and-ride:last').append('<p>' + spaces + '</p>')
         }
         if (i < (data.park_and_rides.length - 1) || i%2 == 1) {
             $('.park-and-ride:last').css('float', 'left')
@@ -41,7 +46,11 @@ function refreshTransport(data){
             entity = data.nearby[type].entities[i]
             tbody.append('<tr class="sub-section-divider"><th colspan="3"><a href="' + entity._url  + '" style="color:inherit;">' + entity.title + '</a></th></tr>')
             if (entity.distance) {
-                tbody.find('th').append('<small>(about ' + Math.ceil(entity.distance/10)*10 + 'm ' + entity.bearing + ')</small>')
+                // Translators: e.g., about 100 metres NW
+                var about = interpolate(gettext('about %(distance)s %(bearing)s'),
+                                        { distance: Math.ceil(entity.distance/10)*10,
+                                          bearing: entity.bearing }, true)
+                tbody.find('th').append('<small>(' + about + ')</small>')
             }
             if (entity.metadata.real_time_information) {
                 if (entity.metadata.real_time_information.pip_info.length > 0) {
@@ -72,8 +81,10 @@ function refreshTransport(data){
                         }
                     }
                 } else {
-                    tbody.append('<tr><td colspan="3">There is currently no departure information from this stop</td></tr>')
+                    tbody.append('<tr><td colspan="3">' + gettext('Sorry, there is currently no real time information for this stop.') + '</td></tr>')
                 }
+            } else {
+                tbody.append('<tr><td colspan="3">' + gettext('Sorry, there is currently no real time information for this stop.') + '</td></tr>')
             }
         }
     }

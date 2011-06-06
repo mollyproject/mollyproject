@@ -1,6 +1,7 @@
 from django import forms
 
 from django.forms.models import BaseModelFormSet, modelformset_factory
+from django.utils.translation import ugettext_lazy as _
 
 from .models import ExternalServiceToken, UserSession
 
@@ -17,15 +18,15 @@ class TrueEmptyTuple(tuple):
 
 class PreferencesForm(forms.Form):
     old_pin = forms.RegexField(r'[0-9a-zA-Z]{4,}',
-        label='Old PIN',
+        label=_('Old PIN'),
         required=False,
         widget=forms.PasswordInput())
     new_pin_a = forms.RegexField(r'[0-9a-zA-Z]{4,}',
-        label='New PIN',
+        label=_('New PIN'),
         required=False,
         widget=forms.PasswordInput())
     new_pin_b = forms.RegexField(r'[0-9a-zA-Z]{4,}',
-        label='Repeat PIN',
+        label=_('Repeat PIN'),
         required=False,
         widget=forms.PasswordInput())
 

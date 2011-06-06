@@ -1,5 +1,6 @@
 import urllib
 from xml.dom import minidom
+from django.utils.translation import ugettext as _
 
 from molly.apps.transport.providers import BaseTransitLineStatusProvider
 
@@ -27,6 +28,6 @@ class TubeStatusProvider(BaseTransitLineStatusProvider):
                 statuses.append(line_status)
         
         return {
-                'service_name': 'London Underground',
+                'service_name': _('London Underground'),
                 'line_statuses': statuses,
             }

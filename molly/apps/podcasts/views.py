@@ -1,9 +1,13 @@
 import urllib
+from datetime import timedelta
 from xml.etree import ElementTree as ET
 
 from django.http import HttpResponse, Http404
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
+from django.utils.translation import ugettext as _
+from django.utils.translation import get_language
+from django.db.models import Q
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
@@ -16,25 +20,27 @@ from molly.apps.podcasts.models import Podcast, PodcastCategory
 class IndexView(BaseView):
     def get_metadata(self, request):
         return {
-            'title': 'Podcasts',
-            'additional': 'Browse and listen to podcasts from around the University.'
+            'title': _('Podcasts'),
+            'additional': _('Browse and listen to podcasts from around the University.')
         }
         
     @BreadcrumbFactory
     def breadcrumb(self, request, context):
         return Breadcrumb(self.conf.local_name, None,
-                          'Podcasts', lazy_reverse('index'))
+                          _('Podcasts'), lazy_reverse('index'))
         
     def handle_GET(self, request, context):
         show_itunesu_link = request.session.get('podcasts:use_itunesu') == None
         if 'show_itunesu_link' in request.GET:
             show_itunesu_link = request.GET['show_itunesu_link'] != 'false'
-    
+        
+        # TODO: Only show non-empty categories?
         context.update({
             'categories': PodcastCategory.objects.all(),
             'show_itunesu_link': show_itunesu_link,
         })
-        return self.render(request, context, 'podcasts/index')
+        return self.render(request, context, 'podcasts/index',
+                           expires=timedelta(days=7))
 
 class CategoryDetailView(BaseView):
     def get_metadata(self, request, category, medium=None):
@@ -44,19 +50,35 @@ class CategoryDetailView(BaseView):
         category = get_object_or_404(PodcastCategory, slug=category)
         return {
             'title': category.name,
-            'additional': '<strong>Podcast category</strong>'
+            'additional': '<strong>' + _('Podcast category') + '</strong>'
         }
         
     def initial_context(self, request, category, medium=None):
         category = get_object_or_404(PodcastCategory, slug=category)
+        
+        # Only actually care about showing podcasts in the right language, not
+        # dialect, so only match on before the -
+        lang_code = get_language()
+        if '-' in lang_code:
+            lang_code = lang_code.split('-')[0]
+        
+        # Show all podcasts with no language
         podcasts = Podcast.objects.filter(category=category)
-        if medium:
+        if medium not in (None, 'all'):
             podcasts = podcasts.filter(medium=medium)
+    
+        all_podcasts = podcasts.count()
+        if medium != 'all':
+            podcasts = podcasts.filter(
+                Q(language__startswith=lang_code) | Q(language=None)
+            )
+        lang_podcasts = podcasts.count()
     
         return {
             'category': category,
             'podcasts': podcasts,
             'medium': medium,
+            'more_in_all': lang_podcasts != all_podcasts,
         }
 
     @BreadcrumbFactory
@@ -71,7 +93,8 @@ class CategoryDetailView(BaseView):
                           url)
         
     def handle_GET(self, request, context, category, medium=None):
-        return self.render(request, context, 'podcasts/category_detail')
+        return self.render(request, context, 'podcasts/category_detail',
+                           expires=timedelta(hours=4))
 
 class PodcastDetailView(BaseView):
     class RespondThus(Exception):
@@ -89,10 +112,10 @@ class PodcastDetailView(BaseView):
         
         return {
             'title': podcast.title,
-            'category': 'podcast',
-            'category_display': 'podcast',
+            'category': _('podcast'),
+            'category_display': _('podcast'),
             'last_updated': podcast.last_updated,
-            'additional': '<strong>Podcast</strong> %s' % podcast.last_updated.strftime('%d %b %Y')
+            'additional': '<strong>' + _('Podcast') + '</strong> %s' % podcast.last_updated.strftime('%d %b %Y')
         }
         
     def initial_context(self, request, slug=None, podcast=None):
@@ -129,7 +152,8 @@ class PodcastDetailView(BaseView):
         context.update({
             'items': items,
         })
-        return self.render(request, context, 'podcasts/podcast_detail')
+        return self.render(request, context, 'podcasts/podcast_detail',
+                           expires=timedelta(hours=1))
 
 class ITunesURedirectView(BaseView):
     breadcrumb = NullBreadcrumb
@@ -151,6 +175,7 @@ class ITunesURedirectView(BaseView):
                     reverse('podcasts:index') + '?show_itunesu_link=false',
                     request)
         else:
+            # TODO Remove hard link to Oxford's iTunes U library
             return self.redirect(
                 "http://deimos.apple.com/WebObjects/Core.woa/Browse/ox-ac-uk-public",
                 request)
