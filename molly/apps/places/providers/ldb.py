@@ -108,7 +108,7 @@ class LiveDepartureBoardPlacesProvider(BaseMapsProvider):
             'locationName': service['locationName'],
             'crs': service['crs'],
             'st': service['std'] if 'std' in service else service['sta'],
-            'et': service['etd'] if 'etd' in service else service['eta'],
+            'et': service['etd'] if 'etd' in service else service['eta'] if 'eta' in service else '',
             'at': service['atd'] if 'atd' in service else '',
         }]
         
