@@ -73,6 +73,11 @@
             </td>
           </tr>
         {% endif %}
+        {% if point.service_change %}
+            <tr>
+                <td colspan="3">{% blocktrans with point.service_change as service_type %}This service is then continued by {{ service_type }}.{% endblocktrans %}
+            </tr>
+        {% endif %}
         <tr{% if point.at %} class="grey"{% endif %}>
           <td>{{ point.stop_num }} <a href="{{ point.entity.get_absolute_url }}" class="inherit-color">{{ point.locationName }}</a></td>
           <td>{{ point.st }}</td>
