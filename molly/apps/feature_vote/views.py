@@ -55,9 +55,6 @@ class IndexView(BaseView):
     def handle_POST(self, request, context):
         form = context['form']
 
-        if request.POST.get('csrf') != request.session['feature_vote:csrf']:
-            return HttpResponseForbidden()
-
         if 'vote_up' in request.POST or 'vote_down' in request.POST:
             feature = get_object_or_404(Feature, id = request.POST.get('id', 0))
             previous_vote = request.session['feature_vote:votes'].get(feature.id, 0)
@@ -107,16 +104,12 @@ class FeatureDetailView(BaseView):
         )
 
     def initial_context(self, request, id):
-        # TODO Replace following with Django CSRF
-        if not 'feature_vote:csrf' in request.session:
-            request.session['feature_vote:csrf'] = ''.join(random.choice('0123456789abcdef') for i in range(8))
         if not 'feature_vote:votes' in request.session:
             request.session['feature_vote:votes'] = {}
         feature = get_object_or_404(Feature, id=id, is_public=True)
         feature.vote = request.session['feature_vote:votes'].get(feature.id, 0)
         return {
             'feature': feature,
-            'csrf': request.session['feature_vote:csrf'],
         }
 
     def handle_GET(self, request, context, id):

@@ -2,7 +2,6 @@
 <div class="vote-box">
   <form method="post" action="{% url feature_vote:index %}">
     {% csrf_token %}
-    <input type="hidden" name="csrf" value="{{ csrf }}"/>
     <input type="hidden" name="id" value="{{ feature.id }}"/>
     <input type="hidden" name="return_url" value="{{ full_path }}"/>
     {% ifequal feature.vote 1 %}
