@@ -21,7 +21,7 @@ from django.core.urlresolvers import reverse, resolve, NoReverseMatch
 from django.conf import settings
 from django.utils.translation import ugettext as _
 
-logger = logging.getLogger('core.requests')
+logger = logging.getLogger(__name__)
 
 from molly.utils.http import MediaType, HttpResponseSeeOther
 from molly.utils.simplify import (simplify_value, simplify_model,

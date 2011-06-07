@@ -4,7 +4,7 @@ from molly.apps.search.providers import BaseSearchProvider
 
 from molly.conf import all_apps
 
-logger = logging.getLogger('molly.providers.apps.search.application_search')
+logger = logging.getLogger(__name__)
 
 class ApplicationSearchProvider(BaseSearchProvider):
     def __init__(self, local_names=None):

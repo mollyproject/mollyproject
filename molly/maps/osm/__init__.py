@@ -26,7 +26,7 @@ MARKER_COLORS = (
 
 MARKER_RANGE = xrange(1, 100)
 
-logger = logging.getLogger('molly.osm.generation')
+logger = logging.getLogger(__name__)
 
 def get_or_create_map(generator, args):
     """
@@ -140,7 +140,7 @@ def get_or_create_map(generator, args):
                 generated_map.delete()
             age = (datetime.now()-youngest)
             age = age.days*24 + age.seconds/3600.0
-            logger.debug("Cleared out old maps, youngest is %f hours", age)
+            logger.info("Cleared out old maps, youngest is %f hours", age)
     
     return hash, metadata
     

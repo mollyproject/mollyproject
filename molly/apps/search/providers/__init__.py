@@ -5,7 +5,7 @@ from django.http import Http404
 from django.views.generic.simple import redirect_to
 
 
-logger = logging.getLogger('molly.apps.search.providers')
+logger = logging.getLogger(__name__)
 
 class BaseSearchProvider(object):
     

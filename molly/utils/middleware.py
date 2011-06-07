@@ -3,7 +3,7 @@ import logging
 from django.http import Http404
 from django.core.exceptions import ImproperlyConfigured, PermissionDenied
 
-logger = logging.getLogger("molly.utils.middleware")
+logger = logging.getLogger(__name__)
 
 class ErrorHandlingMiddleware(object):
     def process_exception(self, request, exception):

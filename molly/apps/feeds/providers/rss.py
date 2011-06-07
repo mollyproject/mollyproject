@@ -13,7 +13,7 @@ def parse_date(s):
 def struct_to_datetime(s):
     return datetime.fromtimestamp(time.mktime(s))
 
-logger = logging.getLogger('molly.apps.providers.feeds.rss')
+logger = logging.getLogger(__name__)
 
 class RSSFeedsProvider(BaseFeedsProvider):
     verbose_name = 'RSS'
