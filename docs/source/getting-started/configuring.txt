@@ -85,6 +85,14 @@ Required Settings for Molly
 The following settings are all standard Django settings, but must be configured
 in a particular way for Molly to operate correctly:
 
+`CSRF_FAILURE_VIEW <https://docs.djangoproject.com/en/dev/ref/settings/#csrf-failure-view>`_
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+To render a nice page when a CSRF validation failure occurs, Molly ships with a
+default page for these circumstances. Django must be told to use this page::
+
+    CSRF_FAILURE_VIEW = 'molly.utils.views.CSRFFailureView'
+
 `INSTALLED_APPS <http://docs.djangoproject.com/en/dev/ref/settings/#installed-apps>`_
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 

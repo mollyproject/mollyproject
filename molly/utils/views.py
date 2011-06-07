@@ -507,3 +507,12 @@ def handler500(request):
     response = render_to_response('500.html', context)
     response.status_code = 500
     return response
+
+class CSRFFailureView(BaseView):
+    
+    def handle_GET(self, request, context, reason=''):
+        logger.info('CSRF validation failure: %s', reason)
+        return self.render(request, context, 'csrf_failure')
+    
+    def handle_POST(self, *args, **kwargs):
+        return self.handle_GET(*args, **kwargs)

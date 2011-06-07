@@ -1,0 +1,18 @@
+{% extends "base.html" %}{% load i18n %}
+
+{% block scripts %}
+{% endblock %}
+
+{% block pagetitle %}{% trans "Validation failure" %}{% endblock %}
+{% block title %}{% trans "Validation failure" %}{% endblock %}
+
+{% block content %}
+<div class="section">
+<h2>{% trans "Validation failure" %}</h2>
+    <div class="note"><div class="bubble pad-10">
+        <p>{% trans "Sorry, but there was a validation error processing this request. This may be due to an unauthorised request, or you may have cookies disabled." %}</p>
+    </div></div>
+</div>
+{% endblock %}
+
+
