@@ -59,6 +59,11 @@ configured freely for Molly to operate normally
   ``django.contrib.gis``; PostGIS is recommended: ``django.contrib.gis.db.backends.postgis``
 * `DEBUG <http://docs.djangoproject.com/en/dev/ref/settings/#debug>`_
 * `LANGUAGE_CODE <http://docs.djangoproject.com/en/dev/ref/settings/#language-code>`_
+* `LANGUAGES <http://docs.djangoproject.com/en/dev/ref/settings/#languages>`_ - this
+  is the list of languages which Molly will display to its users as selectable. If
+  not set, this will default to Django's default, which is probably not what you want.
+* `LOCALE_PATHS <https://docs.djangoproject.com/en/dev/ref/settings/#locale-paths>`_ - this
+  is where Molly will find any translation files you have prepared
 * `MANAGERS <http://docs.djangoproject.com/en/dev/ref/settings/#managers>`_
   Molly gives this setting no special meaning, so it is recommended you set
   this to the same as ADMINS
@@ -73,9 +78,6 @@ configured freely for Molly to operate normally
   server to do it, for more information see :doc:`deploying`).
 * `TEMPLATE_DEBUG <http://docs.djangoproject.com/en/dev/ref/settings/#template-debug>`_
 * `TIME_ZONE <http://docs.djangoproject.com/en/dev/ref/settings/#time-zone>`_
-* `USE_18N <http://docs.djangoproject.com/en/dev/ref/settings/#use-i18n>`_
-  at present Molly has no i18n support, so this is only used for built-in
-  Django apps (such as the admin panels)
 
 Required Settings for Molly
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -101,12 +103,22 @@ therefore be at least::
         'django.contrib.gis',
         'django.contrib.comments',
         'molly.batch_processing',
-        'staticfiles',
+        'django.contrib.staticfiles',
         'compress',
         'south',
     )
 
 With any additional non-Molly apps being added to the bottom of the list.
+
+`LOGGING_CONFIG <https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-LOGGING_CONFIG>`_
+
+.. note:: It is likely Molly will move to Django's logging functionality at some
+          point in the future.
+
+This should be set to None, in order to suppress Django's default logging capabilities
+and to use Molly's built-in system::
+
+    LOGGING_CONFIG = None
 
 `MIDDLEWARE_CLASSES <http://docs.djangoproject.com/en/dev/ref/settings/#middleware-classes>`_
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -131,6 +143,7 @@ A typical setup may look like this::
         'molly.wurfl.middleware.WurflMiddleware',
         'django.middleware.common.CommonMiddleware',
         'django.contrib.sessions.middleware.SessionMiddleware',
+        'django.middleware.locale.LocaleMiddleware',
         'molly.utils.middleware.ErrorHandlingMiddleware',
         'django.contrib.auth.middleware.AuthenticationMiddleware',
         'molly.auth.middleware.SecureSessionMiddleware',
@@ -195,7 +208,7 @@ A typical setup looks like this::
         'django.core.context_processors.auth',
         'django.core.context_processors.debug',
         'django.core.context_processors.request',
-        'django.core.context_processors.i18n',
+        'molly.utils.context_processors.languages',
         'molly.utils.context_processors.ssl_media',
         'django.contrib.messages.context_processors.messages',
         'molly.wurfl.context_processors.wurfl_device',
@@ -236,6 +249,15 @@ be set to the following value::
         'django.template.loaders.eggs.load_template_source',
         'molly.utils.template_loaders.MollyDefaultLoader'
     )
+
+
+`USE_18N <http://docs.djangoproject.com/en/dev/ref/settings/#use-i18n>`_
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+This settings enables Django's i18n support. As Molly has full i18n support, it
+is recommended you set this to True::
+
+    USE_I18N = True
 
 `django-compress Settings <http://code.google.com/p/django-compress/wiki/Configuration>`_
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

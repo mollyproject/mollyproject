@@ -121,11 +121,11 @@ def get_or_create_map(generator, args):
             # This means a race error was generated, but because of the
             # functional nature of generator, we can carry on here
             logger.debug("Map generated: %s, took %.5f seconds (with race)",
-                         (hash, time.time()-start_time))
+                         hash, time.time()-start_time)
             transaction.savepoint_rollback(savepoint)
         else:
             logger.debug("Map generated: %s, took %.5f seconds",
-                         (hash, time.time()-start_time))
+                         hash, time.time()-start_time)
             transaction.savepoint_commit(savepoint)
         
         # If there are any maps older than a week, regenerate them
