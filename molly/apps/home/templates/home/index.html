@@ -67,16 +67,12 @@
 {% endblock header %}
 
 {% block content %}
-        {# Display messages to the user such as warnings for Opera Mini #}
-    {% if messages %}
-    <div class="section">
-      <ul class="content-list">
-        {% for message in messages %}
-          <li>{{ message|sanitize_html }}</li>
-        {% endfor %}
-      </ul>
-    </div>
-    {% endif %}
+    {# Display messages to the user such as warnings for Opera Mini #}
+    {% for message in messages %}
+      <div class="bubble pad-10">
+	{% if message.url %}<a href="{{ message.url }}">{% endif %}{{ message.body|sanitize_html }}{% if message.url %}</a>{% endif %}
+      </div>
+    {% endfor %}
 
     {# The main icon bubble for non-featurephones, access keys are defined in the view #}
     <div class="bubble">
