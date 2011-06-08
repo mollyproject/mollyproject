@@ -32,32 +32,6 @@
         <!-- Opera Mobile -->
         <device user_agent="Opera/9.80 (S60; SymbOS; Opera Mobi/499; U) Presto/2.4.18 Version/10.009" fall_back="generic_opera_mobi" id="opera_mobi_ver10"/>
 	
-	<!-- IOS 4.2.1, temporary patch until it gets into the main WURFL -->
-	<device id="apple_iphone_ver4_2_1" user_agent="Mozilla/5.0 (iPhone; U; CPU iPhone OS 4_2_1 like Mac OS X; en_us) AppleWebKit/533.17.9 (KHTML, like Gecko)" fall_back="apple_iphone_ver4_2">
-	  <group id="product_info">
-	    <capability name="device_os_version" value="4.2.1"/>
-	    <capability name="model_extra_info" value="4.2.1"/>
-	    <capability name="release_date" value="2010_november"/>
-	  </group>
-	</device>
-	
-	<device id="apple_ipad_ver1_sub421" user_agent="Mozilla/5.0 (iPad; U; CPU iPhone OS 4_2_1 like Mac OS X; en_us) AppleWebKit/533.17.9 (KHTML, like Gecko)" fall_back="apple_ipad_ver1_sub42">
-	  <group id="product_info">
-	    <capability name="device_os_version" value="4.2.1"/>
-	    <capability name="release_date" value="2010_november"/>
-	  </group>
-	</device>
-	
-	<device id="apple_ipod_touch_ver4_2_1" user_agent="Mozilla/5.0 (iPod; U; CPU iPhone OS 4_2_1 like Mac OS X; en_us) AppleWebKit/533.17.9 (KHTML, like Gecko)" fall_back="apple_ipod_touch_ver4_1">
-	  <group id="product_info">
-	    <capability name="device_os_version" value="4.2.1"/>
-	    <capability name="model_extra_info" value="4.2.1"/>
-	    <capability name="release_date" value="2010_november"/>
-	  </group>
-	</device>
-	
-	<device id="apple_ipod_touch_ver4_2_1_subua" user_agent="Mozilla/5.0 (iPod touch; U; CPU iPhone OS 4_2_1 like Mac OS X; en_us) AppleWebKit/533.17.9 (KHTML, like Gecko)" fall_back="apple_ipod_touch_ver4_2_1"/>
-    
     </devices>
 
 </wurfl_patch>
