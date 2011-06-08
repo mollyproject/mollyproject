@@ -32,6 +32,15 @@
         <!-- Opera Mobile -->
         <device user_agent="Opera/9.80 (S60; SymbOS; Opera Mobi/499; U) Presto/2.4.18 Version/10.009" fall_back="generic_opera_mobi" id="opera_mobi_ver10"/>
 	
+        <!-- Firefox mobile (Fennec) -->
+        <device user_agent="Mozilla/5.0 (Android; Linux armv7l; rv:2.0) Gecko/20110103 Firefox/4.0 Fennec/4.0" fall_back="generic_android" id="browser_fennec_firefox_release40">
+            <group id="product_info">
+                <capability name="brand_name" value="firefox"/>
+                <capability name="mobile_browser" value="Mobile Firefox"/>
+                <capability name="browser_id" value=""/>
+            </group>
+        </device>
+        
     </devices>
 
 </wurfl_patch>
