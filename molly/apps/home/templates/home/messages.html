@@ -10,44 +10,34 @@
   <div class="header">
     <h2>{% trans "Messages from the developers" %}</h2>
   </div>
-  <div class="section-content"><div class="note"><div class="bubble pad-10">
+  <div class="note"><div class="bubble pad-10">
     {% blocktrans  %}The developers would like to thank you for using {{ site_name }}, and would like to ask your help in making it better.{% endblocktrans %}
   </div></div>
-
-
-<form method="post" action=".">
-  {% csrf_token %}
-
-{{ formset.management_form }}
-
-{% for form in formset.forms %}
-
-{{ form.id }}
-
-  <ul>
-    <li class="non-link-item top">
-      {{ form.instance.message|linebreaks }}
- 	  {# Significant whitespace on next line #}
-      <small>{% trans "Left for you on:" %} <em>{{ form.instance.when|date:"D j M Y, g:i A" }}</em></small><br/>
-    </li>
-    <li>
-      <a href="{% url feedback:index %}?referer={{ path }}&#35;{{ form.instance.when|date:"YmdHis" }}">{% trans "Respond to this message" %}</a>
-    </li>
-    <li class="non-link-item">
-      {{ form.DELETE }} {{ form.DELETE.label_tag }}
-    </li>
-
-  </ul>
-</div>
-</div>
-
-{% endfor %}
-
-<div class="center">
-  <input type="submit" value='{% trans "Delete selected" %}'/>
-</div>
-
-</form>
+  <form method="post" action=".">
+    {% csrf_token %}
+    {{ formset.management_form }}
+    <ul class="content-list">
+      {% for form in formset.forms %}
+        {{ form.id }}
+        <li>
+          {{ form.instance.message|linebreaks }}
+          {# Significant whitespace on next line #}
+          <small>{% trans "Left for you on:" %} <em>{{ form.instance.when|date:"DATETIME_FORMAT" }}</em></small><br/>
+        </li>
+        <li>
+          <a href="{% url feedback:index %}?referer={{ path }}&#35;{{ form.instance.when|date:"YmdHis" }}">{% trans "Respond to this message" %}</a>
+        </li>
+        <li>
+          {{ form.DELETE }} {{ form.DELETE.label_tag }}
+        </li>
+      {% endfor %}
+      <li>
+        <div class="center">
+          <input type="submit" value='{% trans "Delete selected" %}'/>
+        </div>
+      </li>
+    </ul>
+  </form>
 </div>
 {% else %}
 
@@ -55,9 +45,9 @@
   <div class="header">
     <h2>{% trans "Messages from the developers" %}</h2>
   </div>
-  <div class="section-content"><div class="note"><div class="bubble pad-10">
+  <div class="note"><div class="bubble pad-10">
     {% trans "You have no messages" %}
-  </div></div></div>
+  </div></div>
 </div>
 </div>
 
