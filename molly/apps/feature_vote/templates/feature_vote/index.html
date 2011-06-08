@@ -3,74 +3,70 @@
 {% block content %}
 
 <div class="bubble pad-5">
-{% if submitted %}
-  <p><strong>{% trans "Thank you for submitting a feature request! It is pending moderation, and should appear shortly." %}</strong></p>
-{% else %}
-  <p>
-  {% blocktrans %}Do you have something you'd like to see added to {{ site_name }}?{% endblocktrans %}
-  </p>
-  
-  <p>
-    {% blocktrans %}You can vote or comment on existing suggestions, or use the <a href="#submit-feature">form at the bottom of the page</a> to add a new suggestion.{% endblocktrans %}
-  </p>
-{% endif %}
+    {% if submitted %}
+        <p><strong>{% trans "Thank you for submitting a feature request! It is pending moderation, and should appear shortly." %}</strong></p>
+    {% else %}
+        <p>{% blocktrans %}Do you have something you'd like to see added to {{ site_name }}?{% endblocktrans %}</p> 
+        <p>{% blocktrans %}You can vote or comment on existing suggestions, or use the <a href="#submit-feature">form at the bottom of the page</a> to add a new suggestion.{% endblocktrans %}</p>
+    {% endif %}
 </div>
 
 <div class="section">
-  <div class="header">
-  <h2>{% trans "Current suggestions" %}</h2>
-</div>
-{% if features %}
-  <ul class="content-list">
-{% for feature in features %}{% get_comment_count for feature as comment_count %}
-    <li>
-      {% include "feature_vote/vote.html" %}
-      <h3><a href="{% url feature_vote:feature-detail feature.id %}">{{ feature.title }}</a></h3>
-       
-      <p><small>
-    {% blocktrans with feature.user_name as user_name and feature.created|timesince as created_timesince %}by {{ user_name }}, added {{ created_timesince }} ago{% endblocktrans %}
-      </small></p>
-      <p>{{ feature.description|truncatewords:20 }}</p>
-      <p>
-      {% blocktrans count comment_count as comment_count %}one comment.{% plural %}{{ comment_count }} comments.{% endblocktrans %}
-        <a href="{% url feature_vote:feature-detail feature.id %}">
-          {% if comment_count %}{% trans "Read more&hellip;" %}{% else %}{% trans "Be the first to comment&hellip;" %}{% endif %}
-        </a>
-      </p>
-    </li>
-{% endfor %}
-  </ul>
-{% else %}
-  <div class="section-content">
-    <p>{% trans "There are no features to vote on yet." %}</p>
-  </div>
-{% endif %}
-
+    <div class="header">
+        <h2>{% trans "Current suggestions" %}</h2>
+    </div>
+    {% if features %}
+        <ul class="content-list">
+        {% for feature in features %}{% get_comment_count for feature as comment_count %}
+            <li>
+                {% include "feature_vote/vote.html" %}
+                <h3><a href="{% url feature_vote:feature-detail feature.id %}">{{ feature.title }}</a></h3>
+                {% if feature.implemented_on %}
+                    <p><strong>{% blocktrans with feature.implemented_on|date:"DATE_FORMAT" as implemented_on %}This feature was implemented on {{ implemented_on }}{% endblocktrans %}</strong></p>
+                {% endif %}
+                <p><small>
+                    {% blocktrans with feature.user_name as user_name and feature.created|timesince as created_timesince %}by {{ user_name }}, added {{ created_timesince }} ago{% endblocktrans %}
+                </small></p>
+                <p>{{ feature.description|truncatewords:20 }}</p>
+                <p>
+                    {% blocktrans count comment_count as comment_count %}one comment.{% plural %}{{ comment_count }} comments.{% endblocktrans %}
+                    <a href="{% url feature_vote:feature-detail feature.id %}">
+                        {% if comment_count %}{% trans "Read more&hellip;" %}{% else %}{% trans "Be the first to comment&hellip;" %}{% endif %}
+                    </a>
+                </p>
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <div class="section-content">
+            <p>{% trans "There are no features to vote on yet." %}</p>
+        </div>
+    {% endif %}
 </div>
 
 <div class="form-section" id="submit-feature">
-  <div class="header">
-  <h2>{% trans "Suggest a feature" %}</h2>
-  </div>
-  <form method="post" action=".">
-    {% csrf_token %}
-    <dl>
-      <dt>{{ form.user_name.label_tag }}:</dt>
-      <dd>{{ form.user_name.errors }}{{ form.user_name }}</dd>
-      <dt>{{ form.user_email.label_tag }}:</dt>
-      <dd>{{ form.user_email.errors }}{{ form.user_email }}</dd>
-      <dt>{{ form.title.label_tag }}:</dt>
-      <dd>{{ form.title.errors }}{{ form.title }}</dd>
-      <dt>{{ form.description.label_tag }}:</dt>
-      <dd>{{ form.description.errors }}{{ form.description }}</dd>
-    </dl>
-    
-    <p class="submit-buttons">
-      <input type="submit" value='{% trans "Submit" %}'/>
-    </p>
-    
-    <div class="clear"></div>
-  </form>
+    <div class="header">
+        <h2>{% trans "Suggest a feature" %}</h2>
+    </div>
+    <form method="post" action=".">
+        {% csrf_token %}
+        <dl>
+            <dt>{{ form.user_name.label_tag }}:</dt>
+            <dd>{{ form.user_name.errors }}{{ form.user_name }}</dd>
+            
+            <dt>{{ form.user_email.label_tag }}:</dt>
+            <dd>{{ form.user_email.errors }}{{ form.user_email }}</dd>
+            
+            <dt>{{ form.title.label_tag }}:</dt>
+            <dd>{{ form.title.errors }}{{ form.title }}</dd>
+            
+            <dt>{{ form.description.label_tag }}:</dt>
+            <dd>{{ form.description.errors }}{{ form.description }}</dd>
+        </dl>
+        
+        <p class="submit-buttons"><input type="submit" value='{% trans "Submit" %}'/></p>
+        <div class="clear"></div>
+    </form>
 </div>
 
 {% endblock %}

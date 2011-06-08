@@ -118,6 +118,12 @@ function capture_outbound()  {
         $(form).append('<input type="hidden" name="' + $(this).attr('name') + '" value="' + $(this).attr('value') + '" />')
         return true;
     })
+    $('form:not(.has-ajax-handler) input[type="image"]').click(function(e){
+        var form = $(this).parents('form');
+        $(form).find('input[type="hidden"][name="' + $(this).attr('name') + '"]').remove()
+        $(form).append('<input type="hidden" name="' + $(this).attr('name') + '" value="' + $(this).attr('value') + '" />')
+        return true;
+    })
     
     // Intercept all links with an href
     $('a[href]:not(.has-ajax-handler)').unbind('click')
