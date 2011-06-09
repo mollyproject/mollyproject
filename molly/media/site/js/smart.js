@@ -26,24 +26,34 @@ function to_absolute(url) {
 function display_loading_screen(){
     $('body').append('<div id="loading"></div>')
     $('#loading').height($('html').height())
+    $('body').append('<button id="loading-cancel">Cancel</button>')
+    $('#loading-cancel').click(function(){
+        async_load_xhr.abort();
+        async_load_xhr = null;
+        clear_loading_screen();
+    })
     display_spinner()
 }
 
 /* reposition the spinner when the page is scrolled - on iPhone only */
 function display_spinner(){
     offset = window.innerHeight / 2
+    cancel_offset = window.innerHeight * 0.7
     if (navigator.userAgent.match(/iPhone/i) ||
         navigator.userAgent.match(/iPod/i) ||
         navigator.userAgent.match(/iPad/i)) {
         offset += window.pageYOffset
+        cancel_offset += window.pageYOffset
     }
     $('#loading').css('background-position', '50% ' + offset + 'px')
+    $('#loading-cancel').css('top', cancel_offset + 'px')
 }
 
 $(window).scroll(display_spinner)
 
 function clear_loading_screen(){
     $('#loading').remove();
+    $('#loading-cancel').remove();
 }
 
 // Callback method that swaps in the asynchronously loaded bits to the page, and fades it in
@@ -55,6 +65,7 @@ function async_load_callback(data, textStatus, xhr) {
 }
 
 function ajax_failure() {
+    async_load_xhr = null;
     $('#loading')
         .html('<p style="position:fixed; top: 10%; width:100%; margin:0 auto; text-align:center;">' + gettext('Error loading page - please try again.') + '</p>')
         .css({'font-size': '20px', 'font-weight': 'bold'})
@@ -64,6 +75,8 @@ function ajax_failure() {
             }, 1200);
         });
 }
+
+async_load_xhr = null;
 
 function async_load(url, query, meth) {
     
@@ -75,12 +88,13 @@ function async_load(url, query, meth) {
     display_loading_screen()
   
     query['format'] = 'fragment';
-    $.ajax({
+    async_load_xhr = $.ajax({
             'url': to_absolute(url),
             'data': query,
             'type': meth,
             'dataType': 'json',
             'success': function(data, textStatus, xhr) {
+                async_load_xhr = null;
                 if (data.redirect) {
                     window.location = data.redirect;
                     return true;

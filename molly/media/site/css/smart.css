@@ -871,12 +871,20 @@ div.button > a {
     left: 0;
     background-color: #ccc;
     background-image: url('../../site/images/loading.gif');
-    background-position: center center;
+    background-position: 20% center;
     background-repeat: no-repeat;
     opacity: 0.75;
     z-index: 100;
 }
 
+#loading-cancel {
+    position: fixed;
+    top: 70%;
+    left: 50%;
+    width: 100px;
+    margin-left: -50px;
+    z-index: 200;
+}
 .favourite-link .additional {
     font-size: 0.9em;
 }

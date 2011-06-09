@@ -1,4 +1,5 @@
 function refreshTransport(data){
+    transportAjax = null;
     clear_loading_screen()
     $('#park_and_rides .section-content').empty()
     for (var i in data.park_and_rides) {
@@ -104,7 +105,9 @@ function refreshTransport(data){
         enableNearbySwitcher();
     }
     
-    rebuildLDB($('#ldb'), data)
+    rebuildLDB($('#ldb'), data);
+    transportLDBButtons()
+    capture_outbound();
     
     ul = $('#travel_news .content-list')
     ul.empty()
@@ -116,7 +119,7 @@ function refreshTransport(data){
 }
 
 function ajaxTransportUpdate(){
-    $.ajax({
+    transportAjax = $.ajax({
         url: current_url,
         data: $.extend({ format: 'json', board: board }, transportViews),
         dataType: 'json',
@@ -126,9 +129,12 @@ function ajaxTransportUpdate(){
 
 var transportTimer = null;
 var transportViews = {};
+var transportAjax = null;
 
 function transportRefreshTimer(){
-    ajaxTransportUpdate();
+    if (transportAjax == null) {
+        ajaxTransportUpdate();
+    }
     transportTimer = setTimeout(transportRefreshTimer, 30000);
 }
 
@@ -137,38 +143,64 @@ function enableNearbySwitcher(){
         display_loading_screen()
         var results_type = $(this).parents('.section').attr('id');
         transportViews[results_type] = 'nearby'
-        $.ajax({
+        transportAjax = $.ajax({
             url: current_url,
             data: $.extend({ format: 'json', board: board }, transportViews),
             dataType: 'json',
-            success: refreshTransport,
+            success: function(data){async_load_xhr = null;refreshTransport(data)},
             error: ajax_failure
         })
+        async_load_xhr = transportAjax;
         return false;
     })
     $('.favourites-switcher').click(function(){
         display_loading_screen()
         var results_type = $(this).parents('.section').attr('id');
         transportViews[results_type] = 'favourites'
-        $.ajax({
+        transportAjax = $.ajax({
             url: current_url,
             data: $.extend({ format: 'json', board: board }, transportViews),
             dataType: 'json',
-            success: refreshTransport,
+            success: function(data){async_load_xhr = null;refreshTransport(data)},
             error: ajax_failure
         })
+        async_load_xhr = transportAjax;
         return false;
     })
+}
+
+function transportLDBButtons(){
+    $('.ldb-board').click(function(){
+        display_loading_screen()
+        transportAjax = $.ajax({
+            url: $(this).attr('href'),
+            data: $.extend({ format: 'json' }, transportViews),
+            dataType: 'json',
+            success: function(data){
+                transportAjax = null;
+                refreshTransport(data);
+                clear_loading_screen();
+                async_load_xhr = null;
+            },
+            error: ajax_failure
+        })
+        async_load_xhr = transportAjax;
+        return false;
+    })
+    $('.ldb-board').addClass('has-ajax-handler')
 }
 
 $(document).bind('molly-page-change', function(event, url){
     if (url == '/transport/') {
         transportTimer = setTimeout(transportRefreshTimer, 30000)
         $(document).bind('molly-location-update', ajaxTransportUpdate)
-        setupLDBButtons();
+        transportLDBButtons();
         enableNearbySwitcher();
     } else {
         $(document).unbind('molly-location-update', ajaxTransportUpdate)
+        if (transportAjax != null) {
+            transportAjax.abort()
+        }
         clearTimeout(transportTimer)
     }
 });
