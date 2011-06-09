@@ -1,4 +1,5 @@
 function refreshTransport(data){
+    clear_loading_screen()
     $('#park_and_rides .section-content').empty()
     for (var i in data.park_and_rides) {
         var entity = data.park_and_rides[i]
@@ -87,6 +88,20 @@ function refreshTransport(data){
                 tbody.append('<tr><td colspan="3">' + gettext('Sorry, there is currently no real time information for this stop.') + '</td></tr>')
             }
         }
+        if (data.nearby[type].results_type == 'Favourite') {
+            $('.switcher').html('<a href="?' + type + '=nearby" class="nearby-switcher has-ajax-handler">' +
+                                interpolate(gettext('View nearby %(entitytype)s'), {
+                                    entitytype: data.nearby[type].type.verbose_name_plural
+                                }, true) +
+                                '</a>')
+        } else {
+            $('.switcher').html('<a href="?' + type + '=favourites" class="favourites-switcher has-ajax-handler">' +
+                                interpolate(gettext('View favourite %(entitytype)s'), {
+                                    entitytype: data.nearby[type].type.verbose_name_plural
+                                }, true) +
+                                '</a>')
+        }
+        enableNearbySwitcher();
     }
     
     rebuildLDB($('#ldb'), data)
@@ -103,24 +118,55 @@ function refreshTransport(data){
 function ajaxTransportUpdate(){
     $.ajax({
         url: current_url,
-        data: { format: 'json', board: board },
+        data: $.extend({ format: 'json', board: board }, transportViews),
         dataType: 'json',
         success: refreshTransport
     })
 }
 
 var transportTimer = null;
+var transportViews = {};
 
 function transportRefreshTimer(){
-    ajaxTransportUpdate()
-    transportTimer = setTimeout(transportRefreshTimer, 30000)
+    ajaxTransportUpdate();
+    transportTimer = setTimeout(transportRefreshTimer, 30000);
+}
+
+function enableNearbySwitcher(){
+    $('.nearby-switcher').click(function(){
+        display_loading_screen()
+        var results_type = $(this).parents('.section').attr('id');
+        transportViews[results_type] = 'nearby'
+        $.ajax({
+            url: current_url,
+            data: $.extend({ format: 'json', board: board }, transportViews),
+            dataType: 'json',
+            success: refreshTransport,
+            error: ajax_failure
+        })
+        return false;
+    })
+    $('.favourites-switcher').click(function(){
+        display_loading_screen()
+        var results_type = $(this).parents('.section').attr('id');
+        transportViews[results_type] = 'favourites'
+        $.ajax({
+            url: current_url,
+            data: $.extend({ format: 'json', board: board }, transportViews),
+            dataType: 'json',
+            success: refreshTransport,
+            error: ajax_failure
+        })
+        return false;
+    })
 }
 
 $(document).bind('molly-page-change', function(event, url){
     if (url == '/transport/') {
-        transportRefreshTimer()
+        transportTimer = setTimeout(transportRefreshTimer, 30000)
         $(document).bind('molly-location-update', ajaxTransportUpdate)
         setupLDBButtons();
+        enableNearbySwitcher();
     } else {
         $(document).unbind('molly-location-update', ajaxTransportUpdate)
         clearTimeout(transportTimer)
