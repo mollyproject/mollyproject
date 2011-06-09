@@ -174,6 +174,7 @@
                     {% for language_code, language_name in LANGUAGES %}
                     {% if language_code != LANGUAGE_CODE %}
                     <form action="{% url set-language %}" method="post" class="has-ajax-handler">
+			<input type="hidden" name="next" value="{{ full_path|urlencode }}" />
                         {% csrf_token %}<a>
                         <button type="submit" name="language" value="{{ language_code }}">
                         {{ language_name }}
