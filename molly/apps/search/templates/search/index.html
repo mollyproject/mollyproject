@@ -36,7 +36,7 @@
     {% if results %}
   	<ol class="search-results">
 	{% for result in results %}
-	    <li class=">
+	    <li>
                 <a href="{{ result.url }}">
                     {% if result.application %}
                         <img src="{{ STATIC_URL }}site/images/index-icons/{{ result.application }}-bc.png" />
