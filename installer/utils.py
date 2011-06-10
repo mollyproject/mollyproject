@@ -5,6 +5,10 @@
 #################################
 
 import os
+from subprocess import Popen, PIPE
+import logging
+
+logger = logging.getLogger(__name__)
 
 def fullsplit(path, result=None):
     """
@@ -42,3 +46,31 @@ def get_packages_and_data(root_dir):
 #################################
 # END borrowed from Django      #
 #################################
+
+def quiet_exec(command, logprefix):
+    process = Popen(command, stdout=PIPE, stderr=PIPE)
+    stdoutdata, stderrdata = process.communicate()
+    logger.debug('%s: %s: STDOUT: %s', logprefix, (' ').join(command), stdoutdata)
+    logger.debug('%s: %s: STDERR: %s', logprefix, (' ').join(command), stderrdata)
+    if process.returncode != 0:
+        raise CommandFailed((' ').join(command), process.returncode, stdoutdata, stderrdata)
+
+
+class CommandFailed(Exception):
+    
+    def __init__(self, command, retcode, stdout, stderr):
+        self.command = command
+        self.stdout = stdout
+        self.stderr = stderr
+        self.retcode = retcode
+    
+    def __str__(self):
+        return """CommandFailed: %s" 
+STDOUT
+
+%s
+
+STDERR
+
+%s
+""" % (self.command, self.stdout, self.stderr)

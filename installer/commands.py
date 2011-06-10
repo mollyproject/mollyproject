@@ -1,8 +1,11 @@
+import os
+
 from distutils.core import Command
-from distutils.errors import DistutilsArgError
+from distutils.errors import DistutilsArgError, DistutilsExecError
 
 from installer.deploy import deploy
 from installer.virtualenv import Virtualenv
+from installer.sysprep import SysPreparer
 
 class DeployCommand(Command):
     
@@ -27,3 +30,21 @@ class DeployCommand(Command):
     
     def run(self):
         deploy(Virtualenv(self.virtualenv), self.site_path, self.development)
+
+
+class SysprepCommand(Command):
+    
+    description = "installs system level dependencies for Molly"
+    
+    user_options = []
+    
+    def initialize_options(self):
+        pass
+    
+    def finalize_options(self):
+        if os.getuid() != 0:
+            raise DistutilsExecError('This command can only be run as root')
+    
+    def run(self):
+        sysprepper = SysPreparer()
+        sysprepper.sysprep()

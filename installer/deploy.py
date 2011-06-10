@@ -7,7 +7,7 @@ import sys
 import logging
 import shutil
 
-from installer.virtualenv import CommandFailed
+from installer.utils import CommandFailed
 
 logger = logging.getLogger(__name__)
 

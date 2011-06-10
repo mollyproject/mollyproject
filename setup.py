@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # Bootstrap setup tools
 import ez_setup
 ez_setup.use_setuptools()
@@ -9,7 +10,7 @@ import os
 from molly import __version__ as molly_version
 
 from installer.utils import get_packages_and_data
-from installer.commands import DeployCommand
+from installer.commands import DeployCommand, SysprepCommand
 
 print """
                                  ;Ok;                                         
@@ -104,6 +105,7 @@ setup(
     ],
     cmdclass = {
         'deploy': DeployCommand,
+        'sysprep': SysprepCommand,
     }
 )
 

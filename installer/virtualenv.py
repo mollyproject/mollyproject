@@ -8,6 +8,7 @@ from subprocess import Popen, PIPE
 import logging
 import shutil
 
+from installer.utils import quiet_exec
 from installer import PIP_PACKAGES
 
 try:
@@ -38,12 +39,7 @@ class Virtualenv(object):
         if wait:
             sh_command = ['bash','-c',command]
             if quiet:
-                process = Popen(sh_command, stdout=PIPE, stderr=PIPE)
-                stdoutdata, stderrdata = process.communicate()
-                logger.debug('%s: %s: STDOUT: %s', logprefix, command, stdoutdata)
-                logger.debug('%s: %s: STDERR: %s', logprefix, command, stderrdata)
-                if process.returncode != 0:
-                    raise CommandFailed(process.returncode, stdoutdata, stderrdata)
+                quiet_exec(sh_command, logprefix)
             else:
                 process = Popen(sh_command)
                 process.wait()
@@ -81,14 +77,6 @@ class Virtualenv(object):
 
 class NotAVirtualenvError(Exception):
     pass
-
-
-class CommandFailed(Exception):
-    
-    def __init__(self, retcode, stdout, stderr):
-        self.stdout = stdout
-        self.stderr = stderr
-        self.retcode = retcode
 
 
 def virtualenv_for_molly(path, force=False):
