@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-02 15:23+0100\n"
+"POT-Creation-Date: 2011-06-10 11:37+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -143,7 +143,7 @@ msgstr ""
 msgid "News"
 msgstr ""
 
-#: apps/desktop/templates/desktop/index.html:337 apps/places/views.py:45
+#: apps/desktop/templates/desktop/index.html:337 apps/places/views.py:46
 msgid "Places"
 msgstr ""
 
@@ -222,24 +222,28 @@ msgstr ""
 msgid "Help develop our software (the Molly Project)"
 msgstr ""
 
-#: apps/feature_vote/forms.py:6 apps/feature_vote/models.py:12
+#: apps/feature_vote/forms.py:6 apps/feature_vote/models.py:14
 #: apps/places/forms.py:12
 msgid "Your name"
 msgstr ""
 
-#: apps/feature_vote/forms.py:7 apps/feature_vote/models.py:15
+#: apps/feature_vote/forms.py:7 apps/feature_vote/models.py:20
 msgid "Feature title"
 msgstr ""
 
-#: apps/feature_vote/models.py:13
+#: apps/feature_vote/models.py:17
 #: apps/sakai/templates/sakai/direct/index.html:10
 msgid "E-mail address"
 msgstr ""
 
-#: apps/feature_vote/models.py:16
+#: apps/feature_vote/models.py:23
 #: apps/library/templates/library/item_detail.html:31
 #: apps/library/templates/library/item_holdings_detail.html:31
 msgid "Description"
+msgstr ""
+
+#: apps/feature_vote/models.py:45
+msgid "Date this feature was implemented"
 msgstr ""
 
 #: apps/feature_vote/views.py:31
@@ -297,8 +301,8 @@ msgstr ""
 msgid "There aren't any comments yet"
 msgstr ""
 
-#: apps/feature_vote/templates/feature_vote/feature_detail.html:67
-#: apps/feature_vote/templates/feature_vote/index.html:70
+#: apps/feature_vote/templates/feature_vote/feature_detail.html:68
+#: apps/feature_vote/templates/feature_vote/index.html:67
 #: apps/feedback/templates/feedback/index.html:37
 #: apps/places/templates/places/update_osm.html:179
 #: auth/templates/auth/index.html:133 auth/templates/auth/timed_out.html:23
@@ -311,65 +315,70 @@ msgid ""
 "should appear shortly."
 msgstr ""
 
-#: apps/feature_vote/templates/feature_vote/index.html:10
+#: apps/feature_vote/templates/feature_vote/index.html:9
 #, python-format
 msgid "Do you have something you'd like to see added to %(site_name)s?"
 msgstr ""
 
-#: apps/feature_vote/templates/feature_vote/index.html:14
+#: apps/feature_vote/templates/feature_vote/index.html:10
 msgid ""
 "You can vote or comment on existing suggestions, or use the <a href="
 "\"#submit-feature\">form at the bottom of the page</a> to add a new "
 "suggestion."
 msgstr ""
 
-#: apps/feature_vote/templates/feature_vote/index.html:21
+#: apps/feature_vote/templates/feature_vote/index.html:16
 msgid "Current suggestions"
 msgstr ""
 
-#: apps/feature_vote/templates/feature_vote/index.html:31
+#: apps/feature_vote/templates/feature_vote/index.html:25
+#, python-format
+msgid "This feature was implemented on %(implemented_on)s"
+msgstr ""
+
+#: apps/feature_vote/templates/feature_vote/index.html:28
 #, python-format
 msgid "by %(user_name)s, added %(created_timesince)s ago"
 msgstr ""
 
-#: apps/feature_vote/templates/feature_vote/index.html:35
+#: apps/feature_vote/templates/feature_vote/index.html:32
 #, python-format
 msgid "one comment."
 msgid_plural "%(comment_count)s comments."
 msgstr[0] ""
 msgstr[1] ""
 
-#: apps/feature_vote/templates/feature_vote/index.html:37
+#: apps/feature_vote/templates/feature_vote/index.html:34
 msgid "Read more&hellip;"
 msgstr ""
 
-#: apps/feature_vote/templates/feature_vote/index.html:37
+#: apps/feature_vote/templates/feature_vote/index.html:34
 msgid "Be the first to comment&hellip;"
 msgstr ""
 
-#: apps/feature_vote/templates/feature_vote/index.html:45
+#: apps/feature_vote/templates/feature_vote/index.html:42
 msgid "There are no features to vote on yet."
 msgstr ""
 
-#: apps/feature_vote/templates/feature_vote/index.html:53
-#: apps/home/templates/home/index.html:139 templates/base.html:189
-#: templates/base.html.py:213
+#: apps/feature_vote/templates/feature_vote/index.html:49
+#: apps/home/templates/home/index.html:135 templates/base.html:174
+#: templates/base.html.py:199
 msgid "Suggest a feature"
 msgstr ""
 
-#: apps/feature_vote/templates/feature_vote/vote.html:9
+#: apps/feature_vote/templates/feature_vote/vote.html:8
 msgid "Vote up (already voted)"
 msgstr ""
 
-#: apps/feature_vote/templates/feature_vote/vote.html:11
+#: apps/feature_vote/templates/feature_vote/vote.html:10
 msgid "Vote Up"
 msgstr ""
 
-#: apps/feature_vote/templates/feature_vote/vote.html:15
+#: apps/feature_vote/templates/feature_vote/vote.html:14
 msgid "Vote down (already voted)"
 msgstr ""
 
-#: apps/feature_vote/templates/feature_vote/vote.html:17
+#: apps/feature_vote/templates/feature_vote/vote.html:16
 msgid "Vote down"
 msgstr ""
 
@@ -377,8 +386,8 @@ msgstr ""
 msgid "Your e-mail address (optional)"
 msgstr ""
 
-#: apps/feedback/forms.py:8 apps/feedback/views.py:19 templates/base.html:176
-#: templates/base.html.py:183 templates/base.html:210
+#: apps/feedback/forms.py:8 apps/feedback/views.py:19 templates/base.html:161
+#: templates/base.html.py:168 templates/base.html:196
 msgid "Feedback"
 msgstr ""
 
@@ -394,32 +403,32 @@ msgstr ""
 msgid "You may wish to go back to the home page."
 msgstr ""
 
-#: apps/feeds/models.py:44
+#: apps/feeds/models.py:45
 msgid "Feed title"
 msgstr ""
 
 #. Translators: A unit e.g. 'oucs' or short form of a department name.
-#: apps/feeds/models.py:47
+#: apps/feeds/models.py:48
 msgid "Unit to which the feed belongs to"
 msgstr ""
 
-#: apps/feeds/models.py:48
+#: apps/feeds/models.py:49
 msgid "URL of RSS feed"
 msgstr ""
 
-#: apps/feeds/models.py:49
+#: apps/feeds/models.py:50
 msgid "Slug of feed, e.g. oucs-news"
 msgstr ""
 
-#: apps/feeds/models.py:101
+#: apps/feeds/models.py:102
 msgid "Title of feed item"
 msgstr ""
 
-#: apps/feeds/models.py:103
+#: apps/feeds/models.py:104
 msgid "Description of feed item"
 msgstr ""
 
-#: apps/feeds/models.py:104
+#: apps/feeds/models.py:105
 msgid "URL to feed item"
 msgstr ""
 
@@ -531,35 +540,39 @@ msgstr ""
 msgid "News:"
 msgstr ""
 
-#: apps/home/views.py:59
+#: apps/home/views.py:60
+msgid "You have a message from the developers"
+msgstr ""
+
+#: apps/home/views.py:67
 msgid ""
 "Please note that the \"Mobile View\" on Opera Mini does not display this "
 "site correctly. To ensure correct operation of this site, ensure \"Mobile "
 "View\" is set to Off in Opera settings"
 msgstr ""
 
-#: apps/home/views.py:132
+#: apps/home/views.py:138
 msgid "View messages from the developers"
 msgstr ""
 
-#: apps/home/templates/home/index.html:120 favourites/views.py:41
+#: apps/home/templates/home/index.html:116 favourites/views.py:45
 #: favourites/templates/favourites/index.html:7
 msgid "Favourites"
 msgstr ""
 
-#: apps/home/templates/home/index.html:132
+#: apps/home/templates/home/index.html:128
 msgid "Manage Favourites"
 msgstr ""
 
-#: apps/home/templates/home/index.html:141 templates/static/about.html:3
+#: apps/home/templates/home/index.html:137 templates/static/about.html:3
 msgid "About this site"
 msgstr ""
 
-#: apps/home/templates/home/index.html:143
+#: apps/home/templates/home/index.html:139
 msgid "Read messages from the developers"
 msgstr ""
 
-#: apps/home/templates/home/index.html:145
+#: apps/home/templates/home/index.html:141
 msgid "Provide feedback"
 msgstr ""
 
@@ -569,7 +582,7 @@ msgstr ""
 
 #: apps/home/templates/home/messages.html:4
 #: apps/home/templates/home/messages.html:11
-#: apps/home/templates/home/messages.html:56
+#: apps/home/templates/home/messages.html:46
 msgid "Messages from the developers"
 msgstr ""
 
@@ -580,19 +593,19 @@ msgid ""
 "like to ask your help in making it better."
 msgstr ""
 
-#: apps/home/templates/home/messages.html:31
+#: apps/home/templates/home/messages.html:25
 msgid "Left for you on:"
 msgstr ""
 
-#: apps/home/templates/home/messages.html:34
+#: apps/home/templates/home/messages.html:28
 msgid "Respond to this message"
 msgstr ""
 
-#: apps/home/templates/home/messages.html:47
+#: apps/home/templates/home/messages.html:36
 msgid "Delete selected"
 msgstr ""
 
-#: apps/home/templates/home/messages.html:59
+#: apps/home/templates/home/messages.html:49
 msgid "You have no messages"
 msgstr ""
 
@@ -887,45 +900,45 @@ msgstr ""
 msgid "NW"
 msgstr ""
 
-#: apps/places/views.py:37
+#: apps/places/views.py:38
 msgid "places"
 msgstr ""
 
-#: apps/places/views.py:38
+#: apps/places/views.py:39
 msgid ""
 "Find University buildings and units, along with bus stops and local amenities"
 msgstr ""
 
-#: apps/places/views.py:61
+#: apps/places/views.py:62
 msgid "Find things nearby"
 msgstr ""
 
-#: apps/places/views.py:62
+#: apps/places/views.py:63
 msgid "Search for things based on your current location"
 msgstr ""
 
-#: apps/places/views.py:70
+#: apps/places/views.py:71
 msgid "Things nearby"
 msgstr ""
 
-#: apps/places/views.py:182
+#: apps/places/views.py:163
 #: apps/places/templates/places/entity_without_location.html:4
 #: apps/places/templates/places/entity_without_location.html:12
 #, python-format
 msgid "Things near %(title)s"
 msgstr ""
 
-#: apps/places/views.py:187
+#: apps/places/views.py:168
 #, python-format
 msgid "%(entity_type)s near %(entity)s"
 msgstr ""
 
-#: apps/places/views.py:192
+#: apps/places/views.py:173
 #, python-format
 msgid "%(et)s nearby"
 msgstr ""
 
-#: apps/places/views.py:204
+#: apps/places/views.py:185
 #, python-format
 msgid "<strong>%(number)d %(entity_type)s</strong> within 1km"
 msgstr ""
@@ -1919,7 +1932,7 @@ msgid "Travel Alert"
 msgstr ""
 
 #: apps/places/templates/places/entity_detail.html:30
-#: apps/places/templates/places/service_details.html:120
+#: apps/places/templates/places/service_details.html:125
 #: apps/places/templates/places/update_osm.html:42
 msgid "Map"
 msgstr ""
@@ -2023,20 +2036,20 @@ msgstr ""
 
 #: apps/places/templates/places/service_details.html:42
 #: apps/places/templates/places/service_details.html:58
-#: apps/places/templates/places/service_details.html:90
+#: apps/places/templates/places/service_details.html:95
 msgid "Calling Point"
 msgstr ""
 
 #: apps/places/templates/places/service_details.html:43
 #: apps/places/templates/places/service_details.html:59
-#: apps/places/templates/places/service_details.html:91
+#: apps/places/templates/places/service_details.html:96
 #: apps/places/templates/places/metadata/ldb.html:29
 msgid "Scheduled"
 msgstr ""
 
 #: apps/places/templates/places/service_details.html:44
 #: apps/places/templates/places/service_details.html:60
-#: apps/places/templates/places/service_details.html:92
+#: apps/places/templates/places/service_details.html:97
 msgid "Expected / Actual"
 msgstr ""
 
@@ -2045,7 +2058,12 @@ msgstr ""
 msgid "This train then merges with a train from %(location)s"
 msgstr ""
 
-#: apps/places/templates/places/service_details.html:85
+#: apps/places/templates/places/service_details.html:78
+#, python-format
+msgid "This service is then continued by %(service_type)s."
+msgstr ""
+
+#: apps/places/templates/places/service_details.html:90
 #, python-format
 msgid "This train then splits to go to %(destination)s"
 msgstr ""
@@ -2865,8 +2883,8 @@ msgstr ""
 msgid "Device"
 msgstr ""
 
-#: apps/stats/templates/stats/popular_devices.html:14 templates/base.html:179
-#: templates/base.html.py:184 templates/base.html:211
+#: apps/stats/templates/stats/popular_devices.html:14 templates/base.html:164
+#: templates/base.html.py:169 templates/base.html:197
 msgid "Share"
 msgstr ""
 
@@ -3135,11 +3153,11 @@ msgstr ""
 msgid "Webcam"
 msgstr ""
 
-#: apps/webcams/templates/webcams/webcam_detail.html:24
+#: apps/webcams/templates/webcams/webcam_detail.html:25
 msgid "Webcam Image"
 msgstr ""
 
-#: apps/webcams/templates/webcams/webcam_detail.html:28
+#: apps/webcams/templates/webcams/webcam_detail.html:29
 msgid ""
 "Unfortunately, this webcam is currently unavailable. Please try again later."
 msgstr ""
@@ -3391,7 +3409,7 @@ msgid_plural "%(count)d services"
 msgstr[0] ""
 msgstr[1] ""
 
-#: batch_processing/admin.py:19
+#: batch_processing/admin.py:15
 msgid "Run selected batch jobs"
 msgstr ""
 
@@ -3611,8 +3629,15 @@ msgid ""
 "(1); return false;\">going back</a> or returning to the home page."
 msgstr ""
 
-#: templates/base.html:152
-msgid "You have a message from the developers!"
+#: templates/csrf_failure.html:6 templates/csrf_failure.html.py:7
+#: templates/csrf_failure.html:11
+msgid "Validation failure"
+msgstr ""
+
+#: templates/csrf_failure.html:13
+msgid ""
+"Sorry, but there was a validation error processing this request. This may be "
+"due to an unauthorised request, or you may have cookies disabled."
 msgstr ""
 
 #: templates/registration/logged_out.html:8

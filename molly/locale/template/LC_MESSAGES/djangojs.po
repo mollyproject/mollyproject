@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-01 13:10+0100\n"
+"POT-Creation-Date: 2011-06-10 11:37+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,52 +17,52 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: apps/library/static/library/js/smart.js:33 media/site/js/dummy.js:49
+#: apps/library/static/library/js/smart.js:34 media/site/js/dummy.js:49
 msgid "Author"
 msgstr ""
 
-#: apps/library/static/library/js/smart.js:34 media/site/js/dummy.js:50
+#: apps/library/static/library/js/smart.js:35 media/site/js/dummy.js:50
 msgid "Publisher"
 msgstr ""
 
-#: apps/library/static/library/js/smart.js:35 media/site/js/dummy.js:51
+#: apps/library/static/library/js/smart.js:36 media/site/js/dummy.js:51
 msgid "Edition"
 msgstr ""
 
-#: apps/library/static/library/js/smart.js:36 media/site/js/dummy.js:52
+#: apps/library/static/library/js/smart.js:37 media/site/js/dummy.js:52
 msgid "Libraries"
 msgstr ""
 
-#: apps/places/static/places/js/smart.js:116 media/site/js/dummy.js:26
+#: apps/places/static/places/js/smart.js:133 media/site/js/dummy.js:26
 msgid "%(entities_found)s within %(distance)sm"
 msgstr ""
 
-#: apps/places/static/places/js/smart.js:338
-#: apps/places/static/places/js/smart.js:344 media/site/js/dummy.js:41
+#: apps/places/static/places/js/smart.js:358
+#: apps/places/static/places/js/smart.js:364 media/site/js/dummy.js:41
 msgid "There are currently no scheduled %(board)s."
 msgstr ""
 
-#: apps/places/static/places/js/smart.js:352 media/site/js/dummy.js:42
+#: apps/places/static/places/js/smart.js:372 media/site/js/dummy.js:42
 msgid "View arrivals board"
 msgstr ""
 
-#: apps/places/static/places/js/smart.js:354 media/site/js/dummy.js:43
+#: apps/places/static/places/js/smart.js:374 media/site/js/dummy.js:43
 msgid "View departures board"
 msgstr ""
 
 #. Translators: Space as in car parking spaces
-#: apps/transport/static/transport/js/smart.js:16 media/site/js/dummy.js:45
+#: apps/transport/static/transport/js/smart.js:18 media/site/js/dummy.js:45
 msgid "Space information currently unavailable"
 msgstr ""
 
 #. Translators: Spaces: Free spaces / Capactity
 #. Translators: Space as in car parking spaces
-#: apps/transport/static/transport/js/smart.js:22 media/site/js/dummy.js:47
+#: apps/transport/static/transport/js/smart.js:24 media/site/js/dummy.js:47
 msgid "Spaces: %(spaces)s / %(capacity)s"
 msgstr ""
 
 #. Translators: e.g., about 100 metres NW
-#: apps/transport/static/transport/js/smart.js:50 media/site/js/dummy.js:48
+#: apps/transport/static/transport/js/smart.js:52 media/site/js/dummy.js:48
 msgid "about %(distance)s %(bearing)s"
 msgstr ""
 
@@ -210,4 +210,12 @@ msgstr ""
 
 #: media/site/js/dummy.js:53
 msgid "Error loading page - please try again."
+msgstr ""
+
+#: media/site/js/dummy.js:54
+msgid "View nearby %(entitytype)s"
+msgstr ""
+
+#: media/site/js/dummy.js:55
+msgid "View favourite %(entitytype)s"
 msgstr ""
