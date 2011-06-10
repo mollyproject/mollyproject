@@ -45,7 +45,8 @@ class Virtualenv(object):
                 if process.returncode != 0:
                     raise CommandFailed(process.returncode, stdoutdata, stderrdata)
             else:
-                process = Popen(sh_command).wait()
+                process = Popen(sh_command)
+                process.wait()
                 if process.returncode != 0:
                     raise CommandFailed(process.returncode, None, None)
         else:

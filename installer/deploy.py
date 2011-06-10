@@ -57,6 +57,7 @@ def deploy(venv, site_path, development=False):
     print "DONE!"
     
     # Do syncdb
+    venv("python %s/manage.py sync_and_migrate" % site_path, quiet=False)
     
     # Okay, now build media
     print "Building media... (this may take some time)",
