@@ -11,7 +11,8 @@ from installer.utils import CommandFailed
 
 logger = logging.getLogger(__name__)
 
-def deploy(venv, site_path, development=False):
+def deploy(venv, site_path, development=False, listen_externally=False,
+           dev_server_port=8000):
     """
     Take the site in "site_path" and deploy it into the virtualenv. The
     development argument specifies whether or not this should be a development
@@ -80,6 +81,9 @@ def deploy(venv, site_path, development=False):
     # Start dev server
     if development:
         try:
-            venv('python %s/manage.py runserver' % site_path, wait=True, quiet=False)
+            if listen_externally:
+                venv('python %s/manage.py runserver 0.0.0.0:%s' % (site_path, dev_server_port), wait=True, quiet=False)
+            else:
+                venv('python %s/manage.py runserver %s' % (site_path, dev_server_port), wait=True, quiet=False)
         except CommandFailed:
             pass
