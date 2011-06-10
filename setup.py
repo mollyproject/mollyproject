@@ -4,10 +4,12 @@ ez_setup.use_setuptools()
 
 from setuptools import setup
 from distutils.command.install import INSTALL_SCHEMES
+import os
 
 from molly import __version__ as molly_version
 
 from installer.utils import get_packages_and_data
+from installer.commands import DeployCommand
 
 print """
                                  ;Ok;                                         
@@ -99,7 +101,10 @@ setup(
     ],
     dependency_links = [
         'http://pylevenshtein.googlecode.com/files/python-Levenshtein-0.10.1.tar.bz2#egg=python-Levenshtein'
-    ]
+    ],
+    cmdclass = {
+        'deploy': DeployCommand,
+    }
 )
 
 

@@ -26,7 +26,6 @@ class Virtualenv(object):
         if not os.path.exists(os.path.join(path, 'bin', 'activate')):
             raise NotAVirtualenvError()
         else:
-            logger.debug('Creating a virtualenv in %s', self.path)
             self.path = path
 
     def __call__(self, command, wait=True, quiet=True):
@@ -39,14 +38,14 @@ class Virtualenv(object):
         if wait:
             sh_command = ['bash','-c',command]
             if quiet:
-                process = Popen(sh_command, stdout=PIPE, stderr=PIPE, cwd=path)
+                process = Popen(sh_command, stdout=PIPE, stderr=PIPE)
                 stdoutdata, stderrdata = process.communicate()
                 logger.debug('%s: %s: STDOUT: %s', logprefix, command, stdoutdata)
                 logger.debug('%s: %s: STDERR: %s', logprefix, command, stderrdata)
                 if process.returncode != 0:
                     raise CommandFailed(process.returncode, stdoutdata, stderrdata)
             else:
-                process = Popen(sh_command, cwd=path).wait()
+                process = Popen(sh_command).wait()
                 if process.returncode != 0:
                     raise CommandFailed(process.returncode, None, None)
         else:
@@ -54,7 +53,7 @@ class Virtualenv(object):
                 sh_command = ['bash', '-c', '%s >/dev/null' % command]
             else:
                 sh_command = ['bash', '-c', command]
-            Popen(sh_command, cwd=path)
+            Popen(sh_command)
     
     @staticmethod
     def create(path, force=False, python=sys.executable):

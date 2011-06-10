@@ -1,6 +1,8 @@
 # Try and detect which distro we are, and import appropriately. If we don't
 # support this distro, then raise NotImplementedError
 
+import platform
+
 if not hasattr(platform, 'linux_distribution'):
     if not hasattr(platform, 'dist'):
         distribution, distribution_version, distribution_id = (None, None, None)
