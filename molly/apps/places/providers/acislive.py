@@ -1,10 +1,14 @@
-import threading, urllib
+import threading
+import urllib
 from datetime import datetime
 from lxml import etree
 import re
+import logging
 
-from molly.apps.places.models import EntityType
+from molly.apps.places.models import EntityType, Route
 from molly.apps.places.providers import BaseMapsProvider
+
+logger = logging.getLogger(__name__)
 
 class ACISLiveMapsProvider(BaseMapsProvider):
     """
@@ -177,6 +181,7 @@ class ACISLiveMapsProvider(BaseMapsProvider):
             'destination': s[1],
             'next': s[2][0],
             'following': [f[0] for f in s[3]],
+            'route': self._get_route(s[0], entity)
         } for s in services]
         
         entity.metadata['real_time_information'] = {
@@ -184,6 +189,9 @@ class ACISLiveMapsProvider(BaseMapsProvider):
             'pip_info': pip_info,
         }
         entity.metadata['meta_refresh'] = 30
+    
+    def _get_route(self, service, entity):
+        return Route.objects.filter(service_id=service, stops=entity).exists()
 
 class NoACISLiveInstanceException(Exception):
     """

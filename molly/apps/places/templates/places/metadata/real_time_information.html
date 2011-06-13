@@ -30,7 +30,11 @@
     <tbody id="bus_times">
     {% for service in entity.metadata.real_time_information.services %}
         <tr>
-            <td rowspan="2" class="service-id" >{{ service.service }}</td>
+            <td rowspan="2" class="service-id" >
+                {% if service.route %}<a href="{{ entity.get_absolute_url }}service?route={{ service.service|urlencode }}">{% endif %}
+                    {{ service.service }}
+                {% if service.route %}</a>{% endif %}
+            </td>
             <td>{{ service.destination }}</td>
             <td>{{ service.next }}</td>
         </tr>

@@ -7,8 +7,9 @@ from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.utils.translation import ugettext as _
 
+from molly.apps.places import get_point
 from views import NearbyDetailView, EntityDetailView
-from models import Entity, EntityType, EntityName, EntityTypeName
+from models import Entity, EntityType, EntityName, EntityTypeName, Route, StopOnRoute
 
 
 class ApplicationSearch(object):
@@ -18,6 +19,7 @@ class ApplicationSearch(object):
 
     def perform_search(self, request, query, is_single_app_search):
         return chain(
+            self.bus_service_search(request, query, is_single_app_search),
             self.entity_search(request, query, is_single_app_search),
             self.entity_type_search(request, query, is_single_app_search),
         )
@@ -59,4 +61,20 @@ class ApplicationSearch(object):
                 'redirect_if_sole_result': True,
             }
             result.update(NearbyDetailView(self.conf).get_metadata(request, entity_type.slug))
+            yield result
+    
+    def bus_service_search(self, request, query, is_single_app_search):
+        routes = Route.objects.filter(service_id__iexact=query)
+        stops = Entity.objects.filter(stoponroute__route__in=routes)
+        location = get_point(request, None)
+        if location:
+            stops = stops.distance(location).order_by('distance')
+        
+        for stop in stops:
+            result = {
+                'url': stop.get_absolute_url(),
+                'application': self.conf.local_name,
+                'redirect_if_sole_result': True,
+            }
+            result.update(EntityDetailView(self.conf).get_metadata(request, stop.identifier_scheme, stop.identifier_value))
             yield result

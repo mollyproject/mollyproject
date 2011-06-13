@@ -184,11 +184,24 @@ class LiveDepartureBoardPlacesProvider(BaseMapsProvider):
             # This service arrives here
             title = service['sta'] + ' from ' + ' and '.join(sources)
         
+        messages = []
+        
+        if 'disruptionReason' in service:
+            messages.append(service['disruptionReason'])
+        
+        if 'overdueMessage' in service:
+            messages.append(service['overdueMessage'])
+        
         return {
             'title': title,
             'entities': stop_entities,
             'ldb': service,
-            'calling_points': calling_points
+            'calling_points': calling_points,
+            'has_timetable': True,
+            'has_realtime': True,
+            'operator': service['operator'],
+            'platform': service['platform'],
+            'messages': messages
         }
     
     def transform_suds(self, o):
