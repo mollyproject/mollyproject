@@ -71,7 +71,12 @@ function refreshTransport(data){
                         service = entity.metadata.real_time_information.services[j]
                         tbody.append('<tr></tr>')
                         tr = tbody.find('tr:last')
-                        tr.append('<td style="text-align: center;"><big>' + service.service + '</big></td>')
+                        if (service.route) {
+                            var route_link = '<a href="' + entity._url + 'service?route=' + encodeURIComponent(service.service) + '">' + service.service + '</a>'
+                        } else {
+                            var route_link = service.service
+                        }
+                        tr.append('<td style="text-align: center;"><big>' + route_link + '</big></td>')
                         tr.append('<td>' + service.destination + '</td>')
                         tr.append('<td>' + service.next + '</td>')
                         td = tr.find('td:last')

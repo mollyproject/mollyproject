@@ -219,7 +219,7 @@ function rebuildRTI(elem, metadata){
         for (var i in metadata.services) {
             var service = metadata.services[i]
             if (service.route) {
-                var route_link = '<a href="service/?route=' + encodeURIComponent(service.service) + '">' + service.service + '</a>'
+                var route_link = '<a href="service?route=' + encodeURIComponent(service.service) + '">' + service.service + '</a>'
             } else {
                 var route_link = service.service
             }

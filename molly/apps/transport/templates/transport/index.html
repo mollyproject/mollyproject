@@ -70,7 +70,11 @@
             {% if entity.metadata.real_time_information.services %}
                 {% for service in entity.metadata.real_time_information.services %}
                     <tr>
-                        <td class="center"><big>{{ service.service }}</big></td>
+                        <td class="center"><big>
+                            {% if service.route %}<a href="{{ entity.get_absolute_url }}service?route={{ service.service|urlencode }}">{% endif %}
+                                {{ service.service }}
+                            {% if service.route %}</a>{% endif %}
+                        </big></td>
                         <td>{{ service.destination }}</td>
                         <td>{{ service.next }}{% if service.following %}<small>, {{ service.following.0 }}{% if service.following.1 %}, &hellip;{% endif %}</small>{% endif %}</td>
                     </tr>
