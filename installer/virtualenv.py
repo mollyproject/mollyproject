@@ -8,7 +8,7 @@ from subprocess import Popen, PIPE
 import logging
 import shutil
 
-from installer.utils import quiet_exec
+from installer.utils import quiet_exec, CommandFailed
 from installer import PIP_PACKAGES
 
 try:
