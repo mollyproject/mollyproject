@@ -20,4 +20,8 @@ tbody#bus_times td.service-id {
     font-size: 2em;
     text-align: center;
 }
+
+td.service-id a {
+    color: inherit;
+}
 /* End RTI */

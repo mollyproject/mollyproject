@@ -218,8 +218,13 @@ function rebuildRTI(elem, metadata){
         tbody = elem.find('tbody')
         for (var i in metadata.services) {
             var service = metadata.services[i]
+            if (service.route) {
+                var route_link = '<a href="service/?route=' + encodeURIComponent(service.service) + '">' + service.service + '</a>'
+            } else {
+                var route_link = service.service
+            }
             tbody.append('<tr>' + 
-            '<td class="center" rowspan="2" style="font-size:200%;">' + service.service + '</td>' +
+            '<td class="center" rowspan="2" style="font-size:200%;">' + route_link + '</td>' +
             '<td>' + service.destination + '</td>' +
             '<td>' + service.next + '</td>' +
             '</tr><tr class="notopborder"><td colspan="2"><small>' + gettext('Next') + ': </small></td></tr>')
