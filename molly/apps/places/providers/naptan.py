@@ -168,7 +168,8 @@ class NaptanContentHandler(ContentHandler):
         
         if (common_name or '').endswith(' DEL') or \
            (indicator or '').lower() == 'not in use' or \
-           (common_name or '').endswith('(to define route)'):
+           (common_name or '').endswith('(to define route)') or \
+           (common_name or '').endswith('to def rte'):
             # In the NaPTAN list, but indicates it's an unused stop
             return
         
