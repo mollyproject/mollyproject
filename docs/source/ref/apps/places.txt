@@ -39,6 +39,9 @@ Sample::
                      lat_north=52.1, lat_south=51.5,
                      lon_west=-1.6, lon_east=-1.0
             ),
+            Provider('molly.apps.places.providers.ACISLiveRouteProvider',
+                urls = ('http://www.oxontime.com',),
+            ),
             Provider('molly.apps.places.providers.LiveDepartureBoardPlacesProvider',
                 token = 'MyNationalRailToken'
             ),
@@ -99,6 +102,18 @@ The areas supported by this provider are:
  * Wessex
  * West Yorkshire
  * Cardiff
+ 
+:class:`molly.apps.places.providers.ACISLiveRouteProvider`
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+This provider scrapes an ACIS Live instance to try and get route data for the
+real-time routes ACIS Live knows about. It is heavily recommended you consult
+with your council before enabling this, as it makes a lot of requests!
+
+This has one option:
+
+ * urls (optional, defaults to all instances): the base URLs of the ACIS Live
+   instances to be scraped for route data
 
 :class:`molly.apps.places.providers.BBCTPEGPlacesProvider`
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
