@@ -9,7 +9,7 @@ class BaseMapsProvider(object):
         pass
 
 from naptan import NaptanMapsProvider
-from acislive import ACISLiveMapsProvider
+from acislive import ACISLiveMapsProvider, ACISLiveRouteProvider
 from osm import OSMMapsProvider
 from postcodes import PostcodesMapsProvider
 from ldb import LiveDepartureBoardPlacesProvider

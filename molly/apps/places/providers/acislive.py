@@ -6,6 +6,7 @@ import re
 import logging
 from string import ascii_lowercase
 from urllib2 import urlopen
+import random
 
 from django.http import Http404
 
@@ -14,6 +15,7 @@ from molly.apps.places.providers import BaseMapsProvider
 from molly.apps.places import get_entity
 from molly.apps.places.providers.naptan import NaptanMapsProvider
 from molly.utils.i18n import set_name_in_language
+from molly.conf.settings import batch
 
 logger = logging.getLogger(__name__)
 
