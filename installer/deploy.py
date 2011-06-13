@@ -6,6 +6,7 @@ import os
 import sys
 import logging
 import shutil
+from distutils.errors import DistutilsSetupError
 
 from installer.utils import CommandFailed
 
@@ -28,6 +29,9 @@ def deploy(venv, site_path, development=False, listen_externally=False,
         
         site_name = os.path.split(site_path)[-1]
         site_deploy_path = os.path.join(venv.path, site_name)
+        
+        if os.path.normpath(os.path.abspath(site_path)) == os.path.normpath(os.path.abspath(site_deploy_path)):
+            raise DistutilsSetupError('You can not deploy from a deployed site - your site should live outside of your Molly deployment')
         
         if os.path.exists(site):
             logger.debug('Removing %s as it already exists in the install location',

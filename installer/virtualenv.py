@@ -9,12 +9,6 @@ import logging
 import shutil
 
 from installer.utils import quiet_exec, CommandFailed
-from installer import PIP_PACKAGES
-
-try:
-    from installer.sysprep import PYTHON26
-except ImportError:
-    PYTHON26 = sys.executable
     
 logger = logging.getLogger(__name__)
 
@@ -24,6 +18,7 @@ class Virtualenv(object):
     """
     
     def __init__(self, path):
+        path = os.path.abspath(path)
         if not os.path.exists(os.path.join(path, 'bin', 'activate')):
             raise NotAVirtualenvError()
         else:
@@ -73,27 +68,9 @@ class Virtualenv(object):
             logger.debug('Using virtualenv to create')
             command = 'virtualenv --python="%s" --distribute --no-site-packages %s' % (python, path)
         Virtualenv._exec(command, 'Create')
+        return Virtualenv(path)
 
 
 class NotAVirtualenvError(Exception):
     pass
 
-
-def virtualenv_for_molly(path, force=False):
-    
-    # Create the virtualenv
-    print "Creating a virtualenv for Molly...",
-    venv = Virtualenv.create(path, force, PYTHON26)
-    print "DONE!"
-    
-    # Now install our Molly prereqs
-    
-    print "Installing Python dependencies:"
-    pip = os.path.join(path, 'bin', 'pip')
-    for name, package in PIP_PACKAGES:
-        print " * " + name + '...',
-        sys.stdout.flush()
-        venv('pip install -U %s' % package)
-        print "DONE!"
-    print
-    return venv

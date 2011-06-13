@@ -4,8 +4,15 @@ from distutils.core import Command
 from distutils.errors import DistutilsArgError, DistutilsExecError
 
 from installer.deploy import deploy
-from installer.virtualenv import Virtualenv
+from installer.virtualenv import Virtualenv, NotAVirtualenvError
 from installer.sysprep import SysPreparer
+from installer import PIP_PACKAGES
+
+try:
+    from installer.sysprep import PYTHON26
+except ImportError:
+    import sys
+    PYTHON26 = sys.executable
 
 class DeployCommand(Command):
     
@@ -57,3 +64,43 @@ class SysprepCommand(Command):
     def run(self):
         sysprepper = SysPreparer()
         sysprepper.sysprep()
+
+
+class CreateVirtualenvCommand(Command):
+    
+    description = "creates a virtualenv for Molly"
+    
+    user_options = [
+        ('virtualenv=', 'i', 'The path to the virtualenv to create [default=None]'),
+        ('force', 'f', 'Force installing, even if virtualenv already exists [default=False]'),
+    ]
+    
+    def initialize_options(self):
+        self.virtualenv = None
+        self.force = False
+    
+    def finalize_options(self):
+        if self.virtualenv is None:
+            raise DistutilsArgError("You must specify a path to create the virtualenv in")
+    
+    def run(self):
+        # Create the virtualenv
+        print "Creating a virtualenv for Molly...",
+        try:
+            venv = Virtualenv.create(self.virtualenv, self.force, PYTHON26)
+        except NotAVirtualenvError:
+            raise DistutilsArgError('Virtualenv already exists here, use -f to force install')
+        print "DONE!"
+        
+        # Now install our Molly prereqs
+        
+        print "Installing Python dependencies:"
+        pip = os.path.join(self.virtualenv, 'bin', 'pip')
+        for name, package in PIP_PACKAGES:
+            print " * " + name + '...',
+            sys.stdout.flush()
+            venv('pip install -U %s' % package)
+            print "DONE!"
+        print
+        return venv
+
