@@ -243,7 +243,7 @@ class ACISLiveRouteProvider(BaseMapsProvider):
                     logger.info('Removed route not found on system: %s', route)
                     route.delete()
     
-    def _scrape_search(self, url, search_page, found_routes):
+    def _scrape_search(self, url, search_page, found_routes, output):
         results = etree.parse(urlopen(search_page), parser = etree.HTMLParser())
         for tr in results.find('.//table').findall('tr')[1:]:
             try:
@@ -270,7 +270,7 @@ class ACISLiveRouteProvider(BaseMapsProvider):
                         route.operator = operator
                         route.service_name = destination
                         route.save()
-                    self._scrape(route, link)
+                    self._scrape(route, link, output)
         
         return found_routes
     
