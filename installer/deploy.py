@@ -33,10 +33,10 @@ def deploy(venv, site_path, development=False, listen_externally=False,
         if os.path.normpath(os.path.abspath(site_path)) == os.path.normpath(os.path.abspath(site_deploy_path)):
             raise DistutilsSetupError('You can not deploy from a deployed site - your site should live outside of your Molly deployment')
         
-        if os.path.exists(site):
+        if os.path.exists(site_deploy_path):
             logger.debug('Removing %s as it already exists in the install location',
                          site_deploy_path)
-            shutil.rmtree(site)
+            shutil.rmtree(site_deploy_path)
         shutil.copytree(site_path, site_deploy_path)
     
     else:
