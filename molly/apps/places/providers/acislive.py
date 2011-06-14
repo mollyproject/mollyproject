@@ -235,12 +235,12 @@ class ACISLiveRouteProvider(BaseMapsProvider):
             # Try and find all bus routes in the system
             for term in list(ascii_lowercase) + map(str, range(0,9)):
                 found_routes = self._scrape_search(
-                    url, self.SEARCH_PAGE % (url, term), found_routes)
+                    url, self.SEARCH_PAGE % (url, term), found_routes, output)
             
             # Now try and find buses that don't exist on that system any more
             for route in Route.objects.filter(external_ref__startswith=url):
                 if route.external_ref not in found_routes:
-                    logger.info('Remove route not found on system: %s', route)
+                    logger.info('Removed route not found on system: %s', route)
                     route.delete()
     
     def _scrape_search(self, url, search_page, found_routes):
