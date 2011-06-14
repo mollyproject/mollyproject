@@ -173,11 +173,11 @@ function refreshRTI(data){
         setupLDBButtons()
         capture_outbound();
     }
-    for (var i in data.entity.associations) {
-        for (var j in data.entity.associations[i].entities) {
-            var entity = data.entity.associations[i].entities[j]
+    for (var i in data.associations) {
+        for (var j in data.associations[i].entities) {
+            var entity = data.associations[i].entities[j]
             if (typeof(entity.metadata.real_time_information) != 'undefined') {
-                rebuildRTI($('#' + entity.identifier), entity.metadata.real_time_information)
+                rebuildRTI($('#' + entity.identifier_scheme + '-' + entity.identifier_value), entity.metadata.real_time_information)
             }
         }
     }
@@ -224,7 +224,7 @@ function rebuildRTI(elem, metadata){
                 var route_link = service.service
             }
             tbody.append('<tr>' + 
-            '<td class="center" rowspan="2" style="font-size:200%;">' + route_link + '</td>' +
+            '<td class="service-id" rowspan="2">' + route_link + '</td>' +
             '<td>' + service.destination + '</td>' +
             '<td>' + service.next + '</td>' +
             '</tr><tr class="notopborder"><td colspan="2"><small>' + gettext('Next') + ': </small></td></tr>')
