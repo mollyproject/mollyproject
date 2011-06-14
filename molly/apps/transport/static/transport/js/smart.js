@@ -17,7 +17,7 @@ function refreshTransport(data){
                 spaces = '?'
                 $('.park-and-ride:last').append('<p><em>' + gettext('Space information currently unavailable') + '</em></p>')
             } else {
-                $('.park-and-ride:last').append('<div class="capacity-bar"><div style="width: ' + entity.metadata.park_and_ride.percentage.toString() + '%; height:7px;background-color: #960300;">&nbsp;</div></div>')
+                $('.park-and-ride:last').append('<div class="capacity-bar"><div class="capacity-bar-red" style="width: ' + entity.metadata.park_and_ride.percentage.toString() + '%;">&nbsp;</div></div>')
                 spaces = entity.metadata.park_and_ride.spaces.toString()
             }
             // Translators: Spaces: Free spaces / Capactity
@@ -46,7 +46,7 @@ function refreshTransport(data){
         tbody.empty()
         for (var i in data.nearby[type].entities) {
             entity = data.nearby[type].entities[i]
-            tbody.append('<tr class="sub-section-divider"><th colspan="3"><a href="' + entity._url  + '" style="color:inherit;">' + entity.title + '</a></th></tr>')
+            tbody.append('<tr class="sub-section-divider"><th colspan="3"><a href="' + entity._url  + '" class="inherit-color">' + entity.title + '</a></th></tr>')
             if (entity.distance) {
                 // Translators: e.g., about 100 metres NW
                 var about = interpolate(gettext('about %(distance)s %(bearing)s'),
@@ -76,7 +76,7 @@ function refreshTransport(data){
                         } else {
                             var route_link = service.service
                         }
-                        tr.append('<td style="text-align: center;"><big>' + route_link + '</big></td>')
+                        tr.append('<td class="center"><big>' + route_link + '</big></td>')
                         tr.append('<td>' + service.destination + '</td>')
                         tr.append('<td>' + service.next + '</td>')
                         td = tr.find('td:last')
@@ -117,7 +117,7 @@ function refreshTransport(data){
     ul = $('#travel_news .content-list')
     ul.empty()
     for (var i in data.travel_alerts) {
-        ul.append('<li><a href="' + data.travel_alerts[i]._url + '" style="color: inherit;">' + data.travel_alerts[i].title + '</a></li>')
+        ul.append('<li><a href="' + data.travel_alerts[i]._url + '" class="inherit-color">' + data.travel_alerts[i].title + '</a></li>')
     }
     
     capture_outbound();
