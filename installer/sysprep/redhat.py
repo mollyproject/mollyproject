@@ -9,9 +9,14 @@ else:
     distribution, distribution_version, distribution_id = platform.linux_distribution()
 
 from installer.utils import quiet_exec
-from installer.sysprep.packagekit import PackagekitSysPreparer
+from installer.sysprep.packagekit import PackagekitSysPreparer, postgres_setup
 
 PYTHON26 = '/usr/bin/python26'
+
+POSTGIS_PATH = '/usr/share/pgsql/postgresql/contrib/lwpostgis.sql'
+SPATIAL_REF_SYS_PATH = '/usr/share/pgsql/postgresql/contrib/spatial_ref_sys.sql'
+PG_HBA_PATH = '/var/lib/pgsql/data/pg_hba.conf'
+POSTGRES_SERVICE = 'postgresql'
 
 class SysPreparer(PackagekitSysPreparer):
     

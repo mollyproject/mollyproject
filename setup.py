@@ -10,7 +10,9 @@ import os
 from molly import __version__ as molly_version
 
 from installer.utils import get_packages_and_data
-from installer.commands import DeployCommand, SysprepCommand, CreateVirtualenvCommand
+from installer.commands import (DeployCommand, SysprepCommand,
+                                CreateVirtualenvCommand, DBPrepCommand,
+                                DBCreateCommand)
 
 print """
                                  ;Ok;                                         
@@ -104,11 +106,10 @@ setup(
         'http://pylevenshtein.googlecode.com/files/python-Levenshtein-0.10.1.tar.bz2#egg=python-Levenshtein'
     ],
     cmdclass = {
-        'deploy': DeployCommand,
         'sysprep': SysprepCommand,
+        'dbprep': DBPrepCommand,
+        'dbcreate': DBCreateCommand,
         'createvirtualenv': CreateVirtualenvCommand,
+        'deploy': DeployCommand,
     }
 )
-
-
-

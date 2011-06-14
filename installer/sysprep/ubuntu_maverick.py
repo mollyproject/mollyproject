@@ -1,5 +1,10 @@
 from installer.sysprep.ubuntu import AptSysPreparer
 
+POSTGIS_PATH = '/usr/share/postgresql/8.4/contrib/postgis-1.5/postgis.sql'
+SPATIAL_REF_SYS_PATH = '/usr/share/postgresql/8.4/contrib/postgis-1.5/spatial_ref_sys.sql'
+PG_HBA_PATH = '/etc/postgresql/8.4/main/pg_hba.conf'
+POSTGRES_SERVICE = 'postgresql'
+
 class SysPreparer(AptSysPreparer):
     
     PACKAGES = [

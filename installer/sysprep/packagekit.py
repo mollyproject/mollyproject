@@ -2,7 +2,6 @@
 Wrapper for installations on packagekit/yum distributions
 """
 
-from subprocess import Popen
 from installer.utils import quiet_exec
 
 try:
@@ -54,3 +53,15 @@ else:
         
         def sysprep(self):
             self._install()
+
+
+def postgres_setup():
+    if os.getuid() != 0:
+        print "Can't start postgres - not root, skipping..."
+    else:
+        print "Starting Postgres...",
+        sys.stdout.flush()
+        quiet_exec(['chkconfig', 'postgresql', 'on'], 'dbprep')
+        quiet_exec(['service', 'postgresql', 'initdb'], 'dbprep')
+        quiet_exec(['service', 'postgresql', 'start'], 'dbprep')
+        print "DONE!"
