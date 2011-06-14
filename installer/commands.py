@@ -31,7 +31,7 @@ class DeployCommand(Command):
         self.virtualenv = None
         self.development = False
         self.listen_externally = False
-        self.dev_server_port = 8000
+        self.port = None
     
     def finalize_options(self):
         if self.site_path is None:
@@ -40,8 +40,10 @@ class DeployCommand(Command):
             raise DistutilsArgError("You must specify a virtualenv for the site to be deployed into")
         if self.listen_externally and not self.development:
             raise DistutilsArgError("You can not listen externally when in non-development mode, only development installs start the server!")
-        if self.dev_server_port and not self.development:
+        if self.port and not self.development:
             raise DistutilsArgError("You specify a port when in non-development mode, only development installs start the server!")
+        if self.port is None:
+            self.port = 8000
     
     def run(self):
         deploy(Virtualenv(self.virtualenv), self.site_path, self.development,

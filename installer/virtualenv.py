@@ -18,7 +18,7 @@ class Virtualenv(object):
     """
     
     def __init__(self, path):
-        path = os.path.abspath(path)
+        path = os.path.abspath(os.path.normpath(path))
         if not os.path.exists(os.path.join(path, 'bin', 'activate')):
             raise NotAVirtualenvError()
         else:
