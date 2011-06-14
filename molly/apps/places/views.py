@@ -16,6 +16,7 @@ from django.core.urlresolvers import reverse
 from django.template.defaultfilters import capfirst
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.utils.translation import ugettext as _
+from django.utils.translation import ungettext
 from django.contrib.gis.measure import D
 
 from molly.utils.views import BaseView, ZoomableView
@@ -243,7 +244,16 @@ class EntityDetailView(ZoomableView, FavouritableView):
         distance, bearing = entity.get_distance_and_bearing_from(user_location)
         additional = '<strong>%s</strong>' % capfirst(entity.primary_type.verbose_name)
         if distance:
-            additional += ', about %dm %s' % (int(math.ceil(distance/10)*10), bearing)
+            additional += ', ' + _('about %(distance)dm %(bearing)s') % {
+                                    'distance': int(math.ceil(distance/10)*10),
+                                    'bearing': bearing }
+        routes = sorted(set(sor.route.service_id for sor in entity.stoponroute_set.all()))
+        if routes:
+            additional += ', ' + ungettext('service %(services)s stops here',
+                                           'services %(services)s stop here',
+                                           len(routes)) % {
+                                                'services': ' '.join(routes)
+                                            }
         return {
             'title': entity.title,
             'additional': additional,
