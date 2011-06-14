@@ -1,6 +1,7 @@
 import os
 import string
 from random import choice
+from shutil import copytree
 
 from distutils.core import Command
 from distutils.errors import DistutilsArgError, DistutilsExecError
@@ -192,3 +193,26 @@ class DBCreateCommand(Command):
         print "Database: %s" % self.molly_database
         print
         print "Please make a note of these, as you will need to place them in your settings.py"
+
+
+class SiteCreateCommand(Command):
+    
+    description = "creates a new template site for Molly"
+    
+    user_options = [
+        ('site=', 's', 'The folder to save the site template into [default=None]'),
+    ]
+    
+    def initialize_options(self):
+        self.site = None
+    
+    def finalize_options(self):
+        if self.site is None:
+            raise DistutilsArgError('You must specify a path to where the site is to be created')
+    
+    def run(self):
+        copytree(os.path.join(os.path.dirname(__file__), 'data'), self.site)
+        os.makedirs(os.path.join(site, 'site_media'))
+        os.makedirs(os.path.join(site, 'compiled_media'))
+        print "Template created at", os.path.abspath(self.site)
+

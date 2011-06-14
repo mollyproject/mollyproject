@@ -65,6 +65,20 @@ Creating your database
 Creating a site template
 ------------------------
 
+Once your site template has been created, the following files are created which
+are only templates and require you to edit them:
+
+ * ``settings.py`` - following the configuration guide;
+ * ``apache/molly.wsgi`` - if you are deploying Molly as a WSGI app, then you
+   will need to change the DJANGO_SETTINGS_MODULE setting in this file;
+ * ``apache/httpd.conf`` - this is a sample Apache config file;
+ * ``templates/base.html`` - this is a sample template override - for more
+   information about this, please see the customising guide.
+
+You will also have a ``compiled_media`` folder, which should be ignored, and a
+``site_media`` folder, which is where you should put any overrides for media on
+your site.
+
 Creating a Virtualenv for Molly
 -------------------------------
 
