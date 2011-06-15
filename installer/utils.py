@@ -65,7 +65,7 @@ class CommandFailed(Exception):
         self.retcode = retcode
     
     def __str__(self):
-        return """CommandFailed: %s" 
+        return """CommandFailed: %s
 STDOUT
 
 %s
