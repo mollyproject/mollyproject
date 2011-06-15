@@ -4,8 +4,8 @@
 
 body {
     background:#bbc4ce url('../../site/images/gradients/backdrop-iphone.png') repeat-x top;
-    font-family: "Liberation Sans", sans-serif;
-    font-size:0.75em;
+    font-size: 0.75em;
+    font-family: "Liberation Sans", Arial, sans-serif;
     -webkit-text-size-adjust: none;
     text-align: left;
     margin: 0;
