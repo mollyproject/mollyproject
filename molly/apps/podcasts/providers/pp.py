@@ -1,10 +1,16 @@
 from lxml import etree
 from datetime import datetime
-import urllib, re, email, random
+import urllib
+import re
+import email
+import random
+
+from django.conf import settings
 
 from molly.conf.settings import batch
 from molly.apps.podcasts.providers import BasePodcastsProvider
 from molly.apps.podcasts.models import Podcast, PodcastItem, PodcastCategory, PodcastEnclosure
+from molly.utils.i18n import set_name_in_language
 
 from rss import RSSPodcastsProvider
 
@@ -26,7 +32,7 @@ class PodcastProducerPodcastsProvider(RSSPodcastsProvider):
             slug = link.attrib['href'].split('/')[-1]
             
             category, created = PodcastCategory.objects.get_or_create(slug=slug)
-            category.name = category_elem.find(atom('title')).text
+            set_name_in_language(category, lang_code, name=category_elem.find(atom('title')).text)
             category.order = i
             category.save()
             

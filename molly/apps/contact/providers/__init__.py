@@ -1,4 +1,5 @@
 from molly.apps.contact.forms import GenericContactForm
+from django.utils.translation import ugettext as _
 
 class BaseContactProvider(object):
 
@@ -14,7 +15,7 @@ class BaseContactProvider(object):
         the medium on the ``normalize_query`` method, and the description is
         what is shown to the user.
         """
-        return (('all', 'Search'), )
+        return (('all', _('Search')), )
 
     @property
     def form(self):

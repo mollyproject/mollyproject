@@ -14,6 +14,7 @@ function getParameterByName( name, qs ){
 }
 
 function handleLibraryAJAX(data){
+    library_ajax = null;
     $('.current-page').html(data.page.number)
     qs = '?title=' + getParameterByName('title', $('a.next').attr('href')) + '&amp;' +
          'author=' + getParameterByName('author', $('a.next').attr('href')) + '&amp;' +
@@ -25,14 +26,14 @@ function handleLibraryAJAX(data){
         $('a.next').remove()
     }
     for (i in data.page.objects) {
-        item = data.page.objects[i]
-        $('#item-list').append('<li><a href="/library/item:' + item.control_number + '">' +
+        var item = data.page.objects[i]
+        $('#item-list').append('<li><a href="/library/item:' + item.control_number + '/">' +
                                item.title + 
                                '</a></li>')
-        if (item.author != null) $('#item-list li:last a').append('<br/><small><strong>Author:</strong> ' + item.author + '</small>')
-        if (item.publisher != null) $('#item-list li:last a').append('<br/><small><strong>Publisher:</strong> ' + item.publisher + '</small>')
-        if (item.edition != null) $('#item-list li:last a').append('<br/><small><strong>Edition:</strong> ' + item.edition + '</small>')
-        $('#item-list li:last a').append('<br/><small><strong>Libraries:</strong> ' + item.holding_libraries + '</small>')
+        if (item.author != null) $('#item-list li:last a').append('<br/><small><strong>' + gettext('Author') + ':</strong> ' + item.author + '</small>')
+        if (item.publisher != null) $('#item-list li:last a').append('<br/><small><strong>' + gettext('Publisher') + ':</strong> ' + item.publisher + '</small>')
+        if (item.edition != null) $('#item-list li:last a').append('<br/><small><strong>' + gettext('Edition') + ':</strong> ' + item.edition + '</small>')
+        $('#item-list li:last a').append('<br/><small><strong>' + gettext('Libraries') + ':</strong> ' + item.holding_libraries + '</small>')
         if (i == 0) {
             $('#item-list li:last').addClass('page-break')
         }
@@ -40,11 +41,17 @@ function handleLibraryAJAX(data){
     $('.result-number').html($('#item-list li').length)
 }
 
+library_ajax = null;
+
 $(document).bind('molly-page-change', function(event, url){
     
-    if (url == '/library/search/') {
+    if (library_ajax != null) {
+        library_ajax.abort();
+    }
+    
+    if (url.match(/^\/library\/search\//)) {
         $('a.next').click(function(){
-            $.ajax({
+            library_ajax = $.ajax({
                 url: $(this).attr('href'),
                 data: { format: 'json' },
                 dataType: 'json',

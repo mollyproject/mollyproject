@@ -1,4 +1,6 @@
 function refreshTransport(data){
+    transportAjax = null;
+    clear_loading_screen()
     $('#park_and_rides .section-content').empty()
     for (var i in data.park_and_rides) {
         var entity = data.park_and_rides[i]
@@ -13,12 +15,17 @@ function refreshTransport(data){
         if (entity.metadata.park_and_ride) {
             if (entity.metadata.park_and_ride.unavailable) {
                 spaces = '?'
-                $('.park-and-ride:last').append('<p><em>Space information currently unavailable</em></p>')
+                $('.park-and-ride:last').append('<p><em>' + gettext('Space information currently unavailable') + '</em></p>')
             } else {
-                $('.park-and-ride:last').append('<div class="capacity-bar"><div style="width: ' + entity.metadata.park_and_ride.percentage.toString() + '%; height:7px;background-color: #960300;">&nbsp;</div></div>')
+                $('.park-and-ride:last').append('<div class="capacity-bar"><div class="capacity-bar-red" style="width: ' + entity.metadata.park_and_ride.percentage.toString() + '%;">&nbsp;</div></div>')
                 spaces = entity.metadata.park_and_ride.spaces.toString()
             }
-            $('.park-and-ride:last').append('<p>Spaces: ' + spaces + ' / ' + entity.metadata.park_and_ride.capacity + '</p>')
+            // Translators: Spaces: Free spaces / Capactity
+            var spaces = interpolate(gettext('Spaces: %(spaces)s / %(capacity)s'),
+                                     { spaces: spaces,
+                                       capacity: entity.metadata.park_and_ride.capacity },
+                                     true)
+            $('.park-and-ride:last').append('<p>' + spaces + '</p>')
         }
         if (i < (data.park_and_rides.length - 1) || i%2 == 1) {
             $('.park-and-ride:last').css('float', 'left')
@@ -39,9 +46,13 @@ function refreshTransport(data){
         tbody.empty()
         for (var i in data.nearby[type].entities) {
             entity = data.nearby[type].entities[i]
-            tbody.append('<tr class="sub-section-divider"><th colspan="3"><a href="' + entity._url  + '" style="color:inherit;">' + entity.title + '</a></th></tr>')
+            tbody.append('<tr class="sub-section-divider"><th colspan="3"><a href="' + entity._url  + '" class="inherit-color">' + entity.title + '</a></th></tr>')
             if (entity.distance) {
-                tbody.find('th').append('<small>(about ' + Math.ceil(entity.distance/10)*10 + 'm ' + entity.bearing + ')</small>')
+                // Translators: e.g., about 100 metres NW
+                var about = interpolate(gettext('about %(distance)s %(bearing)s'),
+                                        { distance: Math.ceil(entity.distance/10)*10,
+                                          bearing: entity.bearing }, true)
+                tbody.find('th').append('<small>(' + about + ')</small>')
             }
             if (entity.metadata.real_time_information) {
                 if (entity.metadata.real_time_information.pip_info.length > 0) {
@@ -60,7 +71,12 @@ function refreshTransport(data){
                         service = entity.metadata.real_time_information.services[j]
                         tbody.append('<tr></tr>')
                         tr = tbody.find('tr:last')
-                        tr.append('<td style="text-align: center;"><big>' + service.service + '</big></td>')
+                        if (service.route) {
+                            var route_link = '<a href="' + entity._url + 'service?route=' + encodeURIComponent(service.service) + '">' + service.service + '</a>'
+                        } else {
+                            var route_link = service.service
+                        }
+                        tr.append('<td class="center"><big>' + route_link + '</big></td>')
                         tr.append('<td>' + service.destination + '</td>')
                         tr.append('<td>' + service.next + '</td>')
                         td = tr.find('td:last')
@@ -72,46 +88,124 @@ function refreshTransport(data){
                         }
                     }
                 } else {
-                    tbody.append('<tr><td colspan="3">There is currently no departure information from this stop</td></tr>')
+                    tbody.append('<tr><td colspan="3">' + gettext('Sorry, there is currently no real time information for this stop.') + '</td></tr>')
                 }
+            } else {
+                tbody.append('<tr><td colspan="3">' + gettext('Sorry, there is currently no real time information for this stop.') + '</td></tr>')
             }
         }
+        if (data.nearby[type].results_type == 'Favourite') {
+            $('.switcher').html('<a href="?' + type + '=nearby" class="nearby-switcher has-ajax-handler">' +
+                                interpolate(gettext('View nearby %(entitytype)s'), {
+                                    entitytype: data.nearby[type].type.verbose_name_plural
+                                }, true) +
+                                '</a>')
+        } else {
+            $('.switcher').html('<a href="?' + type + '=favourites" class="favourites-switcher has-ajax-handler">' +
+                                interpolate(gettext('View favourite %(entitytype)s'), {
+                                    entitytype: data.nearby[type].type.verbose_name_plural
+                                }, true) +
+                                '</a>')
+        }
+        enableNearbySwitcher();
     }
     
-    rebuildLDB($('#ldb'), data)
+    rebuildLDB($('#ldb'), data);
+    transportLDBButtons()
+    capture_outbound();
     
     ul = $('#travel_news .content-list')
     ul.empty()
     for (var i in data.travel_alerts) {
-        ul.append('<li><a href="' + data.travel_alerts[i]._url + '" style="color: inherit;">' + data.travel_alerts[i].title + '</a></li>')
+        ul.append('<li><a href="' + data.travel_alerts[i]._url + '" class="inherit-color">' + data.travel_alerts[i].title + '</a></li>')
     }
     
     capture_outbound();
 }
 
 function ajaxTransportUpdate(){
-    $.ajax({
+    transportAjax = $.ajax({
         url: current_url,
-        data: { format: 'json', board: board },
+        data: $.extend({ format: 'json', board: board }, transportViews),
         dataType: 'json',
         success: refreshTransport
     })
 }
 
 var transportTimer = null;
+var transportViews = {};
+var transportAjax = null;
 
 function transportRefreshTimer(){
-    ajaxTransportUpdate()
-    transportTimer = setTimeout(transportRefreshTimer, 30000)
+    if (transportAjax == null) {
+        ajaxTransportUpdate();
+    }
+    transportTimer = setTimeout(transportRefreshTimer, 30000);
+}
+
+function enableNearbySwitcher(){
+    $('.nearby-switcher').click(function(){
+        display_loading_screen()
+        var results_type = $(this).parents('.section').attr('id');
+        transportViews[results_type] = 'nearby'
+        transportAjax = $.ajax({
+            url: current_url,
+            data: $.extend({ format: 'json', board: board }, transportViews),
+            dataType: 'json',
+            success: function(data){async_load_xhr = null;refreshTransport(data)},
+            error: ajax_failure
+        })
+        async_load_xhr = transportAjax;
+        return false;
+    })
+    $('.favourites-switcher').click(function(){
+        display_loading_screen()
+        var results_type = $(this).parents('.section').attr('id');
+        transportViews[results_type] = 'favourites'
+        transportAjax = $.ajax({
+            url: current_url,
+            data: $.extend({ format: 'json', board: board }, transportViews),
+            dataType: 'json',
+            success: function(data){async_load_xhr = null;refreshTransport(data)},
+            error: ajax_failure
+        })
+        async_load_xhr = transportAjax;
+        return false;
+    })
+}
+
+function transportLDBButtons(){
+    $('.ldb-board').click(function(){
+        display_loading_screen()
+        transportAjax = $.ajax({
+            url: $(this).attr('href'),
+            data: $.extend({ format: 'json' }, transportViews),
+            dataType: 'json',
+            success: function(data){
+                transportAjax = null;
+                refreshTransport(data);
+                clear_loading_screen();
+                async_load_xhr = null;
+            },
+            error: ajax_failure
+        })
+        async_load_xhr = transportAjax;
+        return false;
+    })
+    $('.ldb-board').addClass('has-ajax-handler')
 }
 
 $(document).bind('molly-page-change', function(event, url){
     if (url == '/transport/') {
-        transportRefreshTimer()
+        transportTimer = setTimeout(transportRefreshTimer, 30000)
         $(document).bind('molly-location-update', ajaxTransportUpdate)
-        setupLDBButtons();
+        transportLDBButtons();
+        enableNearbySwitcher();
     } else {
         $(document).unbind('molly-location-update', ajaxTransportUpdate)
+        if (transportAjax != null) {
+            transportAjax.abort()
+        }
         clearTimeout(transportTimer)
     }
 });

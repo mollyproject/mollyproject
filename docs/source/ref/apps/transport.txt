@@ -12,6 +12,9 @@ Configuration
  * train_station: A string in the form 'scheme:value' identifying the entity to
    use as the train station on the page (this is the same form as in
    /places/scheme:value/)
+ * train_station_nearest: A boolean (defaulting to False) specifying that if
+   the user has a location set, whether or not they should instead be shown
+   their closest rail station instead.
  * nearby: A dictionaries of entity types where values are in the form:
    (entity-type-slug, number to show). The keys form the values of the div ids
    in the rendered remplate.
@@ -42,7 +45,101 @@ Providers
 This is a provider which provides the current running Tube line status. It has
 no options.
 
+Writing Your Own Providers
+--------------------------
+
+The Transport app chiefly uses providers from the places app, however, if you
+want to show current "transit line" status, then you can do this by writing
+a custom provider and providing that to the ``transit_status_provider`` setting.
+
+Transit status providers are simple and only have to provide one method,
+following the format below:
+
+.. autoclass:: molly.apps.transport.providers.BaseTransitLineStatusProvider
+
+    .. automethod :: molly.apps.transport.providers.BaseTransitLineStatusProvider.get_status
+
+
 Views
 -----
 
-.. todo:: Complete
+``index``
+"""""""""
+
+The transport app only has one page, and subsequentally, one view.  This view
+lives at the ``/`` URL of this app and is handled by
+:class:`molly.apps.transport.views.IndexView`.
+This view is location sensitive, and accepts one parameter in the GET request.
+
+ * board: The 'board' to be rendered for the train station, either ``arrivals``
+   or ``departures``.
+
+This view renders ``transport/index.html`` providing the following context:
+
+ * ``location``: The location of the current user
+ * ``train_station`` (only if set in the config): The train station entity to
+   render the departure/arrivals board for.
+ * ``park_and_rides``: A list of entities specified in the park and ride setting
+ * ``transit_status``: If set, represents the transit status to be rendered.
+   * ``transit_status.service_name``: the name of the transit line service
+     being rendered
+   * ``transit_status.line_statuses``: a list of line statuses:
+     * ``transit_status.line_statuses.*.line_id``: an identifier from the
+       service of this line (not necessarily human readable)
+     * ``transit_status.line_statuses.*.line_name``: a human readable or "well
+       known" name for this line.
+     * ``transit_status.line_statuses.*.status``: A short summary of the status
+       of this line
+     * ``transit_status.line_statuses.*.disruption_reason``: Optional, and
+       contains a more detailed description of any problems on the line
+ * ``nearby``: a dictionary of transport-related nearby things, as specified
+   in the config file. The keys represent an identifier, and the values are
+   structured as dictionaries like so:
+   * ``nearby.*.type``: the EntityType for these objects
+   * ``nearby.*.entities``: the list of Entities to be rendered
+   * ``nearby.*.results_type``: A string, either "Favourite" or "Nearby"
+     indicating whether or not these places are nearby, or favourites.
+ * ``travel_alerts``: An optional list of entities, ordered by distance from the
+   user of current travel alerts.
+
+Where entities are referred to, the full documentation is as laid out in
+:doc:`ref/apps/places`
+ 
+ Templates
+ ---------
+ 
+ ``transport/index.html``
+ """"""""""""""""""""""""
+ 
+ This template contains the following blocks:
+ 
+  * ``transport-links``: A list of buttons which canbe used to jump to
+    particular parts of the page. This defaults to Bus Stops, Park and Rides,
+    Rail Stations and Travel Alerts. If any of those things are not being
+    rendered, then they are hidden. Any additional anchors should be added to
+    this block.
+ 
+ Styling
+ -------
+ 
+ transport/css/smart.css
+ """""""""""""""""""""""
+ 
+ This is an overridable CSS file. It defines CSS selectors for the anchor
+ buttons at the top of the page, park and ride capacity indicators, background
+ images for the appropriate sections and styling for London Underground transit
+ status displays.
+ 
+ Media
+ -----
+ 
+ The following images are bundled in the ``transport/images/`` directory:
+ 
+  * ``bus.png``, ``bus.svg`` and ``bus-small.png``: Icons to indicate the
+    section of the page dealing with bus stops, in various forms.
+  * ``pride.png``, ``pride.svg`` and ``pride-small.png``: Icons to indicate the
+    park and ride section of the page.
+  * ``train.png``, ``train.svg`` and ``train-small.png``: Icons to indicate the
+    rail station section of the page.
+  * ``warn.png``, ``warn.svg`` and ``warn-small.png``: Icons to indicate the
+    travel alerts section of the page.

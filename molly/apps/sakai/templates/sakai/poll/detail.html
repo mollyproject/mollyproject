@@ -1,4 +1,4 @@
-{% extends "sakai/base.html" %}{% load molly_sakai %}{% load molly_utils %}
+{% extends "sakai/base.html" %}{% load molly_sakai %}{% load molly_utils %}{% load i18n %}
 
 {% block content %}
 
@@ -23,30 +23,30 @@
       <div class="sakai-error-message">
         <p>
           {% if poll.hasClosed %}
-            You are unable to vote in this poll as it closed {{ poll.voteClose|timesince }} ago.
+              {% blocktrans with poll.voteClose|timesince as time_since_closed %}You are unable to vote in this poll as it closed {{ time_since_closed }} ago.{% endblocktrans %}
           {% else %}
-            This poll has not yet opened. Please try again in {{ poll.voteOpen|timeuntil }}.
+              {% blocktrans with poll.voteOpen|timeuntil as time_until_open %}This poll has not yet opened. Please try again in {{ time_until_open }}.{% endblocktrans %}
           {% endif %}
         </p>
       </div>
     {% endif %}
     {% if not poll.hasVoted and poll.isOpen %}
       <div class="sakai-notice-message">
-        This poll closes {{ poll.voteClose|timeuntil }} from now.
+        {% blocktrans with pollvoteClose|timeuntil as time_until_close %}This poll closes {{ time_until_close }} from now.{% endblocktrans %}
       </div>
     {% endif %}
     {% if poll.minOptions > 1 %}
       <div class="sakai-notice-message">
         {% if poll.maxOptions > poll.minOptions %}
-          <p>You must select at least {{ poll.minOptions }} and at most {{ poll.maxOptions }} options.</p>
+          <p>{% blocktrans with poll.minOptions as min_options and poll.maxOptions as max_options %}You must select at least {{ min_options }} and at most {{ max_options }} options.{% endblocktrans %}</p>
         {% else %}
-          <p>You must select {{ poll.minOptions }} options.</p>
+          <p>{% blocktrans with poll.minOptions as options %}You must select {{ options }} options.{% endblocktrans %}</p>
         {% endif %}
       </div>
     {% else %}
       {% if poll.maxOptions > 1 %}
         <div class="sakai-notice-message">
-          <p>You can select up to {{ poll.maxOptions }} options.</p>
+          <p>{% blocktrans with poll.maxOptions as max_options %}You can select up to {{ max_options }} options.{% endblocktrans %}</p>
         </div>
       {% endif %}
     {% endif %}
@@ -61,56 +61,56 @@
   <table class="content">
     <thead>
       <tr>
-        <th>Vote</th>
-        <th>Option detail</th>
-{% if vote_count %}
-        <th>Results</th>
-{% endif %}
+        <th>{% trans "Vote" %}</th>
+        <th>{% trans "Option detail" %}</th>
+        {% if vote_count %}
+          <th>{% trans "Results" %}</th>
+        {% endif %}
       </tr>
     </thead>
+    
     <tbody>
-
-{% for option in options %}
-      <tr>
-        <td style="text-align:center; font-size:200%; width:35px">
-{% if poll.mayVote %}
-          <label style="display:block; padding:10px; margin:8px; -moz-border-radius:8px; border:1px solid #888; width:1.1em; line-height:1.1em; vertical-align:middle">
-            <input
-              type="{{ poll.maxOptions|pluralize:"radio,checkbox" }}"
-              name="pollOption" id="pollOption-{{ option.id }}"
-              value="{{ option.id }}"
-              style="font-size:30px;"
-            />
-          </label>
-{% else %}
-          {% if option.votedFor %}
-            <img src="{{ STATIC_URL }}sakai-polls/images/voted.png" alt="&#10007;"/>
-          {% endif %}
-{% endif %}
-        </td>
-        <td>
-          {{ option.text|sanitize_html }}
-        </td>
-{% if vote_count %}
-        <td style="text-align:center; font-size:120%; width:102px;">
-          <span style="white-space:nowrap;">{{ option.voteCount }} ({% widthratio option.voteCount vote_count 100 %}%)</span><br/>
-          <div style="min-width:40px; max-width:100px; background-color: #cfcfcf; margin-left:auto; margin-right:auto; border:1px solid #888">
-            <div style="width:{% widthratio option.voteCount vote_count 100 %}%; height:10px; background-color:#e5f0e1;"></div>
-          </div>
-        </td>
-{% endif %}
-     </tr>
-{% endfor %}
+        {% for option in options %}
+            <tr class="poll-option">
+                <td class="poll-choice">
+                    {% if poll.mayVote %}
+                    <label>
+                        <input
+                          type="{{ poll.maxOptions|pluralize:"radio,checkbox" }}"
+                          name="pollOption" id="pollOption-{{ option.id }}"
+                          value="{{ option.id }}"
+                        />
+                    </label>
+                    {% else %}
+                        {% if option.votedFor %}
+                            <img src="{{ STATIC_URL }}sakai-polls/images/voted.png" alt="&#10007;"/>
+                        {% endif %}
+                    {% endif %}
+                </td>
+                <td>
+                    {{ option.text|sanitize_html }}
+                </td>
+                {% if vote_count %}
+                    <td class="vote-count">
+                        <span>{{ option.voteCount }} ({% widthratio option.voteCount vote_count 100 %}%)</span><br/>
+                        <div class="vote-box">
+                            <div class="vote-box-voted" style="width:{% widthratio option.voteCount vote_count 100 %}%;"></div>
+                        </div>
+                    </td>
+                {% endif %}
+            </tr>
+        {% endfor %}
     </tbody>
-{% if poll.mayVote %}
-    <tfoot>
-      <tr>
-        <td colspan="{% if vote_count %}3{% else %}2{% endif %}" style="text-align:center; padding:10px">
-          <input type="submit" value="Vote"/>
-        </td>
-      </tr>
-    </tfoot>
-{% endif %}
+    
+    {% if poll.mayVote %}
+        <tfoot class="may-vote">
+            <tr>
+                <td colspan="{% if vote_count %}3{% else %}2{% endif %}" class="center">
+                    <input type="submit" value="{% trans "Vote" %}"/>
+                </td>
+            </tr>
+        </tfoot>
+    {% endif %}
   </table>
 </div>
 

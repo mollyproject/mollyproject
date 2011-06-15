@@ -23,10 +23,20 @@ Providers
 :class:`molly.apps.contact.providers.LDAPContactProvider`
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-This queries an LDAP server for contact details. It takes two options:
+This queries an LDAP server for contact details. It takes three options:
 
  * url: The URL to the LDAP server to use
  * base_dn: The base DN to use when searching the LDAP tree
+ * phone_prefix (optional, defaults to blank): A prefix to add to phone numbers,
+   e.g., if your LDAP servers only store extension numbers, you can add the
+   prefix to make it externally callable here (e.g., '+44190443'). This is not
+   used when ``phone_formatter`` is set.
+ * phone_formatter (optional, defaults to nothing): A custom "number formatter".
+   The option expects to have a callable (either a function defined elsewhere
+   in your settings file, or a lambda defined there) which is called with the
+   raw phone number from LDAP and is expected to return a normalised phone
+   number. Use this is you need more advanced logic than the phone_prefix option
+   can give you.
 
 Writing Your Own Providers
 --------------------------

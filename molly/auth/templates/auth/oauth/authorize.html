@@ -1,35 +1,28 @@
-{% extends "auth/secure.html" %}
+{% extends "auth/secure.html" %}{% load i18n %}
 
 {% block content %}
 
 <div class="section">
   <div class="header">
-    <h2>Redirecting to {{ service_name }}&hellip;</h2>
+    <h2>{% blocktrans %}Redirecting to {{ service_name }}{% endblocktrans %}&hellip;</h2>
   </div>
   
   <div class="section-content">
     <p style="font-size:1.2em">
-      This page provides information from {{ service_name }}, requiring you to allow access from {{ site_name }} to your {{ service_name }} account.
+      {% blocktrans %}This page provides information from {{ service_name }}, requiring you to allow access from {{ site_name }} to your {{ service_name }} account.{% endblocktrans %}
     </p>
     <p style="font-size:1.2em">
-      Select <strong>Proceed&hellip;</strong> to be redirected to
-      {{ service_name }} to confirm that you agree that access should be
-      granted. If this page is not what you expected, select
-      <strong>Cancel</strong>.
+      {% blocktrans %}Select <strong>Proceed&hellip;</strong> to be redirected to {{ service_name }} to confirm that you agree that access should be granted. If this page is not what you expected, select<strong>Cancel</strong>.{% endblocktrans %}
     </p>
     <p>
-      To revoke access from {{ site_name }} in the future, head to <em>Trusted
-      Applications</em> within <em>My Workspace</em> in {{ service_name }}.
-      If you wish to remove access from one of your devices, head to
-      <em>Security preferences</em> at the bottom of any authenticated page
-      on {{ site_name }}.
+      {% blocktrans %}To revoke access from {{ site_name }} in the future, you can do so from within {{ service_name }} (refer to the {{ service_name }} documentation for information on how to do this). If you wish to remove access from one of your devices, head to <em>Security preferences</em> at the bottom of any authenticated page on {{ site_name }}.{% endblocktrans %}
     </p>
     
     <div class="button">
-      <a href="{{ authorize_url }}">Proceed&hellip;</a>
+      <a href="{{ authorize_url }}">{% trans "Proceed&hellip;" %}</a>
     </div>
     <div class="button">
-      <a href="{{ return_url }}">Cancel</a>
+      <a href="{{ return_url }}">{% trans "Cancel" %}</a>
     </div>
   </div>
 </div>

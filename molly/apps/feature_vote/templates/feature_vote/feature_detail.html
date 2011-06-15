@@ -1,12 +1,16 @@
 {% extends "feature_vote/base.html" %}{% load comments %}
-
+{% load i18n %}
 {% block content %}
 
 <div class="section">
   <div class="header">
     <h2>{{ feature.title }}</h2>
     {% include "feature_vote/vote.html" %}
- <p style="margin-top:0;"><small>Suggested by {{ feature.user_name }}; added {{ feature.created|timesince }} ago</small></p>
+  <p>
+    <small>
+        {% blocktrans with feature.user_name as user_name and feature.created|timesince as timesince_created %}Suggested by {{ user_name }}; added {{ timesince_created }} ago{% endblocktrans %}
+    </small>
+  </p>
 
     <p>{{ feature.description|linebreaksbr }}</p>
   </div>
@@ -15,32 +19,35 @@
 {% if comments %}
 
   <ul class="content-list">
-{% for comment in comments %}
-    <li{% if comment.user.is_superuser %} class="superuser-comment"{% endif %}>
-      <h3>Posted by {{ comment.user_name }}{% if comment.user.is_superuser %} ({{ site_name }} team member){% endif %}; {{ comment.submit_date|timesince }} ago</h3>
-      
-      
-
-      <p>{{ comment.comment|linebreaksbr }}</p>
-    </li>
-{% endfor %}
+    {% for comment in comments %}
+        <li{% if comment.user.is_superuser %} class="superuser-comment"{% endif %}>
+            <h3>
+                {% if comment.user.is_superuser %}
+                    {% blocktrans with comment.user_name as username and comment.submit_date|timesince as timesince %}Posted by {{ user_name }} ({{ site_name }} team member) {{ timesince }} ago{% endblocktrans %}
+                {% else %}
+                    {% blocktrans with comment.user_name as username and comment.submit_date|timesince as timesince %}Posted by {{ user_name }} {{ timesince }} ago{% endblocktrans %}
+                {% endif %}
+            </h3>
+            <p>{{ comment.comment|linebreaksbr }}</p>
+        </li>
+    {% endfor %}
   </ul>
 
 {% else %}
 
   <div class="section-content">
-    <p>There aren't yet any comments</p>
+	<p>{% trans "There aren't any comments yet" %}</p>
   </div>
 {% endif %}
 </div>
 
-
 <div class="form-section">
   {% get_comment_form for feature as form %}
   <div class="header">
-  <h2>Add a comment</h2>
+    <h2>{% trans "Add a comment" %}</h2>
   </div>
-  <form method="post" action="{% comment_form_target %}">
+  {# It doesn't have an AJAX handler, but this is handled by Django, not by us, so we can't give proper responses #}
+  <form method="post" action="{% comment_form_target %}" class="has-ajax-handler">
     {% csrf_token %}
     {{ form.content_type }}
     {{ form.object_pk }}
@@ -58,10 +65,10 @@
     </dl>
     
     <p class="submit-buttons">
-      <input type="submit" value="Submit"/>
+      <input type="submit" value="{% trans 'Submit' %}" />
     </p>
 
-    <div style="clear:both"></div>
+    <div class="clear"></div>
   </form>
 </div>
 

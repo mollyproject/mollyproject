@@ -1,13 +1,13 @@
-{% extends "sakai/base.html" %}
+{% extends "sakai/base.html" %}{% load i18n %}
 
 {% block content %}
 
 <div class="section">
     <div class="header">
-        <h2>Permission Denied</h2>
+        <h2>{% trans "Permission Denied" %}</h2>
     </div>
     <div class="section-content">
-        <p>You don't have permission to see this item.</p>
+        <p>{% trans "You don't have permission to see this item." %}</p>
     </div>
 </div>
 

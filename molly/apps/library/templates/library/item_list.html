@@ -1,10 +1,10 @@
-{% extends "library/base.html" %}
+{% extends "library/base.html" %}{% load i18n %}
 
 {% block content %}
 
 {% if error_message %}
     <div class="header">
-        <h2>There was an error with your search</h2>
+        <h2>{% trans "There was an error with your search" %}</h2>
     </div>
     <div class="section-content">
         <p><strong>{{ error_message }}</strong></p>
@@ -17,11 +17,11 @@
 {% if page %}
 <div class="section">
 <div class="header">
-<h2>Result list <small>(unsorted)</small></h2>
+<h2>{% trans "Result list" %} <small>({% trans "unsorted" %})</small></h2>
 </div>
 {% if removed %}
 <div class="note"><div class="bubble pad-10">
-    The following common word{{ removed|length|pluralize:" was,s were" }} not included in your query:
+{% blocktrans count removed|length as num_removed %}The following common word was not included in your query:{% plural %}The following common words were not included in your query:{% endblocktrans %}
     {% for w in removed %}{% if forloop.last %}{% if not forloop.first %}and {% endif %}<em>{{ w }}</em>{% else %}<em>{{ w }}</em>, {% endif %}{% endfor %}
 </div></div>
 {% endif %}
@@ -29,15 +29,14 @@
 <div class="note">
 
 {% if page.has_previous %}
-    <a href="?title={{ search_form.cleaned_data.title|urlencode }}&author={{ search_form.cleaned_data.author|urlencode }}&isbn={{ search_form.cleaned_data.isbn|urlencode }}&page={{ page.previous_page_number }}" title="Previous page" class="prev">
-        Previous</a>
+    <a href="?title={{ search_form.cleaned_data.title|urlencode }}&author={{ search_form.cleaned_data.author|urlencode }}&isbn={{ search_form.cleaned_data.isbn|urlencode }}&page={{ page.previous_page_number }}" title="{% trans "Previous page" %}" class="prev">
+        {% trans "Previous" %}</a>
 {% endif %}
 
-    Showing results {{ page.start_index }} to <span class="result-number">{{ page.end_index }}</span> of {{ results.object_list|length }}. Page <span class="current-page">{{ page.number }}</span> of {{ results.num_pages }}.
-
+{% blocktrans with page.start_index as first_result and page.end_index as last_result and results.object_list|length as num_results and page.number as page_number and results.num_pages as number_of_pages %}Showing results {{ first_result }} to <span class="result-number">{{ last_result }}</span> of {{ num_results }}. Page <span class="current-page">{{ page_number }}</span> of {{ number_of_pages }}.{% endblocktrans %}
 {% if page.has_next %}
-    <a href="?title={{ search_form.cleaned_data.title|urlencode }}&author={{ search_form.cleaned_data.author|urlencode }}&isbn={{ search_form.cleaned_data.isbn|urlencode }}&page={{ page.next_page_number }}" title="Next page" class="next">
-        Next
+    <a href="?title={{ search_form.cleaned_data.title|urlencode }}&author={{ search_form.cleaned_data.author|urlencode }}&isbn={{ search_form.cleaned_data.isbn|urlencode }}&page={{ page.next_page_number }}" title="{% trans "Next page" %}" class="next">
+        {% trans "Next" %}
     </a>
 {% endif %}
 
@@ -48,10 +47,10 @@
 <li>
     <a href="{% url library:item-detail item.control_number %}">
         {{ item  }}{% if item.author %}
-        <br/><small><strong>Author:</strong> {{ item.author }}</small>{% endif %}
-        <br/><small><strong>Publisher:</strong> {{ item.publisher }}</small>{% if item.edition %}
-        <br/><small><strong>Edition:</strong> {{ item.edition }}</small>{% endif %}
-        <br/><small><strong>Libraries:</strong> {{ item.holding_libraries }}</small>
+        <br/><small><strong>{% trans "Author" %}:</strong> {{ item.author }}</small>{% endif %}
+        <br/><small><strong>{% trans "Publisher" %}:</strong> {{ item.publisher }}</small>{% if item.edition %}
+        <br/><small><strong>{% trans "Edition" %}:</strong> {{ item.edition }}</small>{% endif %}
+        <br/><small><strong>{% trans "Libraries" %}:</strong> {{ item.holding_libraries }}</small>
     </a>
 </li>
 {% endfor %}
@@ -59,14 +58,14 @@
 
 <div class="note">
 {% if page.has_previous %}
-    <a href="?title={{ search_form.cleaned_data.title|urlencode }}&author={{ search_form.cleaned_data.author|urlencode }}&isbn={{ search_form.cleaned_data.isbn|urlencode }}&page={{ page.previous_page_number }}" title="Previous page" class="prev">
-        Previous</a>
+    <a href="?title={{ search_form.cleaned_data.title|urlencode }}&author={{ search_form.cleaned_data.author|urlencode }}&isbn={{ search_form.cleaned_data.isbn|urlencode }}&page={{ page.previous_page_number }}" title="{% trans "Previous page" %}" class="prev">
+        {% trans "Previous" %}</a>
 {% endif %}
 
-    Showing results {{ page.start_index }} to <span class="result-number">{{ page.end_index }}</span> of {{ results.object_list|length }}. Page <span class="current-page">{{ page.number }}</span> of {{ results.num_pages }}.
+{% blocktrans with page.start_index as first_result and page.end_index as last_result and results.object_list|length as num_results and page.number as page_number and results.num_pages as number_of_pages %}Showing results {{ first_result }} to <span class="result-number">{{ last_result }}</span> of {{ num_results }}. Page <span class="current-page">{{ page_number }}</span> of {{ number_of_pages }}.{% endblocktrans %}
 {% if page.has_next %}
-    <a href="?title={{ search_form.cleaned_data.title|urlencode }}&author={{ search_form.cleaned_data.author|urlencode }}&isbn={{ search_form.cleaned_data.isbn|urlencode }}&page={{ page.next_page_number }}" title="Next page" class="next">
-        Next
+    <a href="?title={{ search_form.cleaned_data.title|urlencode }}&author={{ search_form.cleaned_data.author|urlencode }}&isbn={{ search_form.cleaned_data.isbn|urlencode }}&page={{ page.next_page_number }}" title="{% trans "Next page" %}" class="next">
+        {% trans "Next" %}
     </a>
 {% endif %}
 </div>

@@ -1,11 +1,16 @@
+import logging
+
 from django.http import Http404
 from django.core.urlresolvers import resolve
+from django.utils.translation import ugettext as _
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import lazy_reverse, Breadcrumb, BreadcrumbFactory
 
 from molly.favourites import get_favourites
 from molly.favourites.models import Favourite
+
+logger = logging.getLogger(__name__)
 
 class FavouritableView(BaseView):
     """
@@ -37,7 +42,7 @@ class IndexView(BaseView):
         return Breadcrumb(
             self.conf.local_name,
             None,
-            'Favourites',
+            _('Favourites'),
             lazy_reverse('index'),
         )
     
@@ -59,7 +64,7 @@ class IndexView(BaseView):
         
         # Alter favourites list
         if 'URL' in request.POST:
-            
+            print request.POST
             if 'favourite' in request.POST:
                 # Add
                 try:
@@ -67,20 +72,18 @@ class IndexView(BaseView):
                 except Http404:
                     # This means that they tried to save a URL that doesn't exist
                     # or isn't on our site
+                    logger.debug('Attempted to favourite a non-existant URL')
                     return self.redirect(lazy_reverse('favourites:index'), request)
                 else:
                     if request.user.is_anonymous():
+                        logger.debug('User is anonymous, storing favourites in session')
                         if 'favourites' not in request.session:
                             request.session['favourites'] = set()
                         request.session['favourites'].add(request.POST['URL'])
                         request.session.modified = True
                     else:
-                        if request.user.is_anonymous():
-                            if request.POST['URL'] in request.session.get('favourites', set()):
-                                request.session['favourites'].remove(request.POST['URL'])
-                                request.session.modified = True
-                        else:
-                            Favourite(user=request.user, url=request.POST['URL']).save()
+                        logger.debug('User is logged in, storing favourites in database')
+                        Favourite(user=request.user, url=request.POST['URL']).save()
             
             elif 'unfavourite' in request.POST:
                 if not request.user.is_anonymous():
@@ -98,7 +101,7 @@ class IndexView(BaseView):
         
             # If the source was the favourites page, redirect back there
             if 'return_to_favourites' in request.POST:
-                return self.handle_GET(request, context)
+                return self.redirect(lazy_reverse('favourites:index'), request)
             
             # else the source
             else:

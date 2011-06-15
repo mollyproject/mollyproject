@@ -1,8 +1,10 @@
+from datetime import timedelta
 from xml.sax.saxutils import escape
-from datetime import date
+
 from django.core.paginator import Paginator, EmptyPage, InvalidPage
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+from django.utils.translation import ugettext as _
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
@@ -12,36 +14,49 @@ from ..models import Feed, Item
 class IndexView(BaseView):
     def get_metadata(self, request):
         return {
-            'title': 'Events',
-            'additional': 'Upcoming events from across the University and city',
+            'title': _('Events'),
+            'additional': _('View events from across the University.'),
         }
-        
+
     @BreadcrumbFactory
     def breadcrumb(self, request, context):
         return Breadcrumb(
-            self.conf.local_name, None, 'Events', lazy_reverse('events:index')
+            self.conf.local_name, None, _('Events'), lazy_reverse('events:index')
         )
-        
+
     def handle_GET(self, request, context):
         feeds = Feed.events.all()
-        context['feeds'] = feeds
-        return self.render(request, context, 'feeds/events/index')
+        
+        # Only actually care about showing feeds in the right language, not
+        # dialect, so only match on before the -
+        lang_code = get_language()
+        if '-' in lang_code:
+            lang_code = lang_code.split('-')[0]
+        
+        all_feeds = feeds.count()
+        if 'all' not in request.GET:
+            feeds = feeds.filter(
+                Q(language__startswith=lang_code) | Q(language=None)
+            )
+        lang_feeds = feeds.count()
+        
+        context= {
+            'feeds': feeds,
+            'more_in_all': lang_feeds != all_feeds,
+        }
+        return self.render(request, context, 'feeds/events/index',
+                           expires=timedelta(days=7))
 
 class ItemListView(BaseView):
     def get_metadata(self, request, slug):
         feed = get_object_or_404(Feed.events, slug=slug)
-        
+
+        # Translators: Feed last modified [date format] otherwise _('never_updated')
+        last_modified = feed.last_modified.strftime('%a, %d %b %Y') if feed.last_modified else _('never updated')
         return {
             'last_modified': feed.last_modified,
             'title': feed.title,
-            'additional': '<strong>Events feed</strong> %s' % feed.last_modified.strftime('%a, %d %b %Y'),
-        }
-    
-    def initial_context(self, request, slug):
-        feed = get_object_or_404(Feed.events, slug=slug)
-        return {
-            'feed': feed,
-            'items': feed.item_set.filter(dt_start__gte=date.today()).order_by('dt_start'),
+            'additional': '<strong>Events feed</strong>, %s' % last_modified,
         }
 
     @BreadcrumbFactory
@@ -49,29 +64,25 @@ class ItemListView(BaseView):
         return Breadcrumb(
             self.conf.local_name,
             lazy_parent('index'),
-            context['feed'].title,
-            lazy_reverse('events:item_list', args=[slug])
+            _('News feed'),
+            lazy_reverse('item-list', args=[slug])
         )
-        
+
     def handle_GET(self, request, context, slug):
+        feed = get_object_or_404(Feed.events, slug=slug)
+        context['feed'] = feed
         return self.render(request, context, 'feeds/events/item_list')
 
 class ItemDetailView(BaseView):
     def get_metadata(self, request, slug, id):
-        item = get_object_or_404(Item.events, feed__slug=slug, id=id)
-        
+        item = get_object_or_404(Item, feed__slug=slug, id=id)
+
+        last_modified = item.last_modified.strftime('%a, %d %b %Y') if item.last_modified else _('never updated')
         return {
             'last_modified': item.last_modified,
             'title': item.title,
-            'additional': '<strong>News item</strong>, %s, %s' % (escape(item.feed.title), item.last_modified.strftime('%a, %d %b %Y')),
-        }
-
-    def initial_context(self, request, slug, id):
-        item = get_object_or_404(Item.events, feed__slug=slug, id=id)
-        return {
-            'item': item,
-            'feed': item.feed,
-            'zoom': self.get_zoom(request),
+            'additional': '<strong>Events item</strong>, %s, %s' % (escape(item.feed.title), last_modified),
+            'feed_title': escape(item.feed.title),
         }
 
     @BreadcrumbFactory
@@ -79,12 +90,14 @@ class ItemDetailView(BaseView):
         return Breadcrumb(
             self.conf.local_name,
             lazy_parent('item-list', slug=slug),
-            context['item'].title,
-            lazy_reverse('events:item_detail', args=[slug,id])
+            _('Events item'),
+            lazy_reverse('item-detail', args=[slug,id])
         )
-        
+
     def handle_GET(self, request, context, slug, id):
+        item = get_object_or_404(Item, feed__slug=slug, id=id)
         context.update({
-            'description': context['item'].get_description_display(request.device)
+            'item': item,
+            'description': item.get_description_display(request.device)
         })
         return self.render(request, context, 'feeds/events/item_detail')

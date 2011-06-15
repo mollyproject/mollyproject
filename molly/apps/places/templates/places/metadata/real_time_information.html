@@ -1,4 +1,6 @@
 {% load molly_utils %}
+{% load i18n %}
+
 {% if entity.metadata.real_time_information %}
 <div id="{{ entity.identifier_scheme }}-{{ entity.identifier_value }}">
     {% if entity.metadata.real_time_information.pip_info %}
@@ -10,7 +12,7 @@
     {% else %}
     <ul class="content-list no-round-bottom">
         {% if not entity.metadata.real_time_information.services %}
-            <li>Sorry, there is currently no bus time information for this stop.</li>
+            <li>{% trans "Sorry, there is currently no real time information for this stop." %}</li>
         {% endif %}
     </ul>
     {% endif %}
@@ -18,22 +20,29 @@
  <div class="section-content no-round-bottom">
   <div class="pad-5">
    <table class="real-time-information">
-    <thead style="display:none;">
+    <thead class="invisible">
         <tr>
-            <th>Service</th>
-            <th>Destination</th>
-            <th>Expected</th>
+            <th>{% trans "Service" %}</th>
+            <th>{% trans "Destination" %}</th>
+            <th>{% trans "Expected" %}</th>
         </tr>
     </thead>
     <tbody id="bus_times">
     {% for service in entity.metadata.real_time_information.services %}
         <tr>
-            <td rowspan="2" style="font-size:200%; text-align:center;">{{ service.service }}</td>
+            <td rowspan="2" class="service-id" >
+                {% if service.route %}<a href="{{ entity.get_absolute_url }}service?route={{ service.service|urlencode }}">{% endif %}
+                    {{ service.service }}
+                {% if service.route %}</a>{% endif %}
+            </td>
             <td>{{ service.destination }}</td>
             <td>{{ service.next }}</td>
         </tr>
         <tr class="notopborder">
-            <td colspan="2"><small>Next: {% if service.following %}{{ service.following|join:", " }}{% else %}<em>No further info</em>{% endif %}</small></td>
+			{# Translators: Next as in next service #}
+            <td colspan="2"><small>
+				{% trans "Next" %}: {% if service.following %}{{ service.following|join:", " }}{% else %}<em>{% trans "No further info" %}</em>{% endif %}
+			</small></td>
         </tr>
     {% endfor %}
     </tbody>

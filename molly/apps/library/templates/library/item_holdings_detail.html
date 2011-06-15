@@ -1,4 +1,4 @@
-{% extends "library/base.html" %}{% load molly_maps %}
+{% extends "library/base.html" %}{% load molly_maps %}{% load i18n %}
 
 {% block content %}
 
@@ -10,25 +10,25 @@
     <table>
 {% if item.author %}
         <tr>
-            <th>Author:</th>
+            <th>{% trans "Author" %}:</th>
             <td>{{ item.author }}</td>
         </tr>
 {% endif %}
 {% if item.publisher %}
         <tr>
-            <th>Publisher:</th>
+            <th>{% trans "Publisher" %}:</th>
             <td>{{ item.publisher }}</td>
         </tr>
 {% endif %}
 {% if item.edition %}
         <tr>
-            <th>Edition:</th>
+            <th>{% trans "Edition" %}:</th>
             <td>{{ item.edition }}</td>
         </tr>
 {% endif %}
 {% if item.description %}
         <tr>
-            <th>Description:</th>
+            <th>{% trans "Description" %}:</th>
             <td>{{ item.description }}</td>
         </tr>
 {% endif %}
@@ -37,7 +37,8 @@
 {% for isbn in item.isbns %}
         <tr>
 {% if forloop.first %}
-            <th{% ifnotequal item.isbns|length 1 %} rowspan="{{ item.isbns|length }}"{% endifnotequal %}>ISBN{{ item.isbns|pluralize }}:</th>
+            <th{% ifnotequal item.isbns|length 1 %} rowspan="{{ item.isbns|length }}"{% endifnotequal %}>
+                {% blocktrans count item.isbns|length as count %}ISBN{% plural %}ISBNs{% endblocktrans %}:</th>
 {% endif %}
             <td>{{ isbn }}</td>
         </tr>
@@ -48,7 +49,8 @@
 {% for issn in item.issns %}
         <tr>
 {% if forloop.first %}
-            <th{% ifnotequal item.issns|length 1 %} rowspan="{{ item.issns|length }}"{% endifnotequal %}>ISSN{{ item.issns|pluralize }}:</th>
+            <th{% ifnotequal item.issns|length 1 %} rowspan="{{ item.issns|length }}"{% endifnotequal %}>
+                {% blocktrans count item.issns|length as count %}ISSN{% plural %}ISSNs{% endblocktrans %}:</th>
 {% endif %}
             <td>{{ issn }}</td>
         </tr>
@@ -71,7 +73,7 @@
 {% for book in books %}
     {# non-link-item #}
     <li>
-      Shelfmark: <em>{{ book.shelfmark }}</em>, availability: <em>{{ book.availability_display }}</em>{% if book.materials_specified %}, issue: <em>{{ book.materials_specified }}</em>{% endif %}
+      {% trans "Shelfmark" %}: <em>{{ book.shelfmark }}</em>, {% trans "availability" %}: <em>{{ book.availability_display }}</em>{% if book.materials_specified %}, {% trans "issue" %}: <em>{{ book.materials_specified }}</em>{% endif %}
     </li>
 {% endfor %}
     </ul>

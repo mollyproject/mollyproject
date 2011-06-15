@@ -2,6 +2,7 @@ import simplejson
 import urllib2
 import feedparser
 import logging
+from datetime import timedelta
 
 from django.http import Http404, HttpResponse
 from django.template import loader, TemplateDoesNotExist, RequestContext
@@ -12,7 +13,6 @@ from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import NullBreadcrumb
 
 logger = logging.getLogger(__name__)
-
 
 class IndexView(BaseView):
     
@@ -30,17 +30,20 @@ class IndexView(BaseView):
             'blog_feed': self._cache(self._get_blog_feed, 'blog',
                                         args=[getattr(self.conf,
                                         'blog_rss_url')], timeout=300),
-            'twitter_username': getattr(self.conf, 'twitter_username'),
+            'blog_url': getattr(self.conf, 'blog_url', None),
+            'facebook_url': getattr(self.conf, 'facebook_url', None),
+            'twitter_username': getattr(self.conf, 'twitter_username', None),
             'twitter_url': ('http://twitter.com/' +
                             self.conf.twitter_username)
-                            if getattr(self.conf, 'twitter_username')
+                            if getattr(self.conf, 'twitter_username', None)
                             else None,
         }
 
     def handle_GET(self, request, context):
         # Can't render fragment
         if 'fragment' in self.FORMATS: del self.FORMATS['fragment']
-        return self.render(request, context, 'desktop/index')
+        return self.render(request, context, 'desktop/index',
+                           expires=timedelta(days=1))
 
     def _cache(self, f, key, args=None, kwargs=None, timeout=None):
         key = '.'.join(['molly', self.conf.local_name, key])

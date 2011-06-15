@@ -1,0 +1,91 @@
+/* Index Page Specific
+    - 1 CSS 2.1 Selector
+    - 4 Webkit Only Tags
+    -- Written in order of use on index.html
+*/
+div#index-header {
+    width:100%;
+    height:51px;
+}
+div#index-title {
+    position:absolute;
+    top:0;
+    left:0;
+}
+div#index-search {
+    position:absolute;
+    top: 0;
+    right:5px;
+}
+
+/* CSS 2.1 */
+div#index-search input[type="text"] {
+    float: left;
+    /* Total height - 27px inc 2px border + 1px padding: does not correspond with 34px high search button, but displays correctly on iphone */
+    height: 24px;
+    width: 125px;
+    font-size:1.2em;
+    border: 2px solid #dddddd;
+    border-bottom-left-radius:5px;
+    border-top-left-radius:5px;
+    -webkit-border-top-left-radius: 5px;     -moz-border-radius-topleft: 5px;
+    -webkit-border-bottom-left-radius: 5px;    -moz-border-radius-bottomleft: 0px;
+    -webkit-border-top-right-radius:0;     -moz-border-radius-topright: 0px;
+    -webkit-border-bottom-right-radius:0;     -moz-border-radius-bottomright: 0px;
+}
+
+/* icon-menu & menu-x handles the menu icons on the front page 
+    - this section would ideally be rewritten to handle a little more gracefully on varied sizes of screens */
+ol.icon-menu {
+    list-style:none;
+    margin: 0;
+    padding:5px;
+}
+ol.icon-menu li {
+    display:inline-block;
+    background-repeat:no-repeat;
+    background-position:center 10px;
+    vertical-align:top;
+}
+ol.icon-menu li a {
+    width: 60px;
+    height:2em;
+    padding:4px;
+    padding-top: 75px;
+    text-align:center;
+    display:block;
+    text-decoration:none;
+    color: #002147;
+}
+li#menu-contact {background-image:url('../../site/images/index-icons/contact.png');}
+li#menu-places {background-image:url('../../site/images/index-icons/places.png');}
+li#menu-podcasts {background-image:url('../../site/images/index-icons/podcasts.png');}
+li#menu-webcams {background-image:url('../../site/images/index-icons/webcams.png');}
+li#menu-news {background-image:url('../../site/images/index-icons/news.png');}
+li#menu-events {background-image:url('../../site/images/index-icons/events.png');}
+li#menu-results {background-image:url('../../site/images/index-icons/results.png');}
+li#menu-library {background-image:url('../../site/images/index-icons/library.png');}
+li#menu-weather {background-image:url('../../site/images/index-icons/weather.png');}
+li#menu-weblearn {background-image:url('../../site/images/index-icons/weblearn.png');}
+li#menu-service_status {background-image:url('../../site/images/index-icons/service_status.png');}
+/* The following line is here for legacy reasons */
+li#menu-service-status {background-image:url('../../site/images/index-icons/service_status.png');}
+li#menu-transport {background-image:url('../../site/images/index-icons/transport.png');}
+
+div#quick-info table {
+    width:100%;
+    text-align: center;
+}
+
+div#quick-info table tbody tr td.half-width {
+    width: 50%;
+}
+
+div#quick-info table tbody tr td.weather {
+    font-size: 1.2em;
+}
+
+div#quick-info table tbody tr td.weather img {
+    vertical-align: middle;
+}
+/* End Index Page Specific */

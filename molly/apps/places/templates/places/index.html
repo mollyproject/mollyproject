@@ -1,26 +1,26 @@
 {% extends "places/base.html" %}{% load molly_utils %}{% load molly_search %}
-
+{% load i18n %}
 {% block content %}
 
 {# Places Search #}
 {% search_form %}
 <form method="get" action="{% url search:index %}">
     <!-- Doing the devil's work below: couldn't get a CSS design to work with Blackberry 8900 so using Tables as a last resort. Tim F -->
-<h2 class="invisible">Search Places</h2>    
+<h2 class="invisible">{% trans "Search Places" %}</h2>    
 <table class="search"><tbody>
         <tr><td>
-                <label style="display:none;" for="id_query">Search Places Box</label>
+                <label class="invisible" for="id_query">{% trans "Search Places" %}</label>
                 {{ search_form.query }}
         </td><td>
-                <input type="hidden" name="application" value="places" title="Search Places" />
+                <input type="hidden" name="application" value="places" title='{% trans "Search Places" %}' />
                 {% ifequal style_group "dumb" %}
-                    <button type="submit">Go!</button>
+                    <button type="submit">{% trans "Go!" %}</button>
                 {% else %}
-                	<input type="image" src="{{ STATIC_URL }}site/images/buttons/search-button.png" title="Search" alt="Search" />
+                	<input type="image" src="{{ STATIC_URL }}site/images/buttons/search-button.png" title='{% trans "Search" %}' alt='{% trans "Search" %}' />
                 {% endifequal %}
         </td></tr>    
         <tr><td>
-                <p class="help-bubble top">Search by place name, bus stop number e.g. E7 or 69323498 or postcode</p>
+                <p class="help-bubble top">{% trans "Search by place name, bus stop number e.g. E7 or 69323498 or postcode" %}</p>
         </td><td></td></tr></tbody>
 </table>
 </form>
@@ -31,12 +31,12 @@
 {# Points of Interest #}
 <div class="section" id="poi-category-selector">
 <div class="header">
-  <h2>Points of Interest</h2>
+  <h2>{% trans "Points of Interest" %}</h2>
   {% include "geolocation/update_location_embed.html" %}
 </div>
   <ul class="link-list category-list">
-    <li class="nearby"><a href="{% url places:nearby-list %}">Nearby</a></li>
-    <li class="categories"><a href="{% url places:category-list %}">By Category</a></li>
+    <li class="nearby"><a href="{% url places:nearby-list %}">{% trans "Nearby" %}</a></li>
+    <li class="categories"><a href="{% url places:category-list %}">{% trans "By Category" %}</a></li>
   </ul>
 </div>
 {# End Points of Interest #}

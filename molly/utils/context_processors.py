@@ -2,12 +2,24 @@ from urlparse import urlparse, urlunparse, parse_qs
 from urllib import urlencode
 
 from django.conf import settings
+from django.utils.translation import ugettext as _
+
+from molly.utils.i18n import override
 
 def site_name(request):
     return {
         'site_name': settings.SITE_NAME if hasattr(settings, 'SITE_NAME') else 'Molly Project'
     }
-    
+
+def languages(request):
+    languages = []
+    for language_code, language_name in settings.LANGUAGES:
+        with override(language_code):
+            languages.append((language_code, _(language_name)))
+    return {
+        'LANGUAGES': languages,
+    }
+
 def full_path(request):
     scheme, netloc, path, params, query, fragment = \
         urlparse(request.get_full_path())

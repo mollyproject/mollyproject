@@ -13,6 +13,7 @@ from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import render_to_response
 from django.template import RequestContext
+from django.utils.translation import ugettext_lazy as _
 
 from molly.auth.models import UserIdentifier
 from molly.auth.oauth.clients import OAuthHTTPError
@@ -56,10 +57,11 @@ class IndexView(SakaiView):
 
     @BreadcrumbFactory
     def breadcrumb(self, request, context):
+        # TODO Remove 'WebLearn' as the standard name for Sakai 
         return Breadcrumb(
             self.conf.local_name,
             None,
-            'WebLearn',
+            _('WebLearn'),
             lazy_reverse('index'),
         )
 
@@ -102,7 +104,7 @@ class SignupIndexView(SakaiView):
         return Breadcrumb(
             self.conf.local_name,
             lazy_parent('index'),
-            'Sign-ups',
+            _('Sign-ups'),
             lazy_reverse('signup-index'),
         )
 
@@ -171,7 +173,7 @@ class SignupEventView(SakaiView):
             else:
                 context = {
                     'permission_denied': True,
-                    'text': 'Permission Denied'
+                    'text': _('Permission Denied')
                 }
                 return context
         
@@ -226,7 +228,7 @@ class DirectView(SakaiView):
         return Breadcrumb(
             self.conf.local_name,
             lazy_parent('index'),
-            'User information',
+            _('User information'),
             lazy_reverse('direct-index'),
         )
 
@@ -296,7 +298,7 @@ class PollDetailView(SakaiView):
                 context = {
                     'poll': {
                         'permission_denied': True,
-                        'text': 'Permission Denied'
+                        'text': _('Permission Denied')
                     }
                 }
                 return context
@@ -386,7 +388,7 @@ class EvaluationIndexView(SakaiView):
         return Breadcrumb(
             self.conf.local_name,
             lazy_parent('index'),
-            'Surveys',
+            _('Surveys'),
             lazy_reverse('evaluation-index'),
         )
 
@@ -425,7 +427,7 @@ class EvaluationDetailView(SakaiView):
         # The evaluations tool doesn't give us a non-OK status if we need to authenticate. Instead,
         # we need to check for the login box (handily picked out by the XSL stylesheet).
         if evaluation.find('.//require_auth').text == 'true':
-            raise OAuthHTTPError(urllib2.HTTPError(url, 403, 'Authentication required', {}, StringIO()))
+            raise OAuthHTTPError(urllib2.HTTPError(url, 403, _('Authentication required'), {}, StringIO()))
 
         context = {
             'evaluation': evaluation,

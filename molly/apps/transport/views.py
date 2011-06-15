@@ -1,4 +1,5 @@
 from django.contrib.gis.geos import Point
+from django.utils.translation import ugettext as _
 
 from molly.conf import app_by_application_name
 
@@ -15,7 +16,7 @@ class IndexView(BaseView):
         return Breadcrumb(
             self.conf.local_name,
             None,
-            'Transport',
+            _('Transport'),
             lazy_reverse('%s:index' % self.conf.local_name),
         )
     
@@ -57,17 +58,35 @@ class IndexView(BaseView):
         for context_key in getattr(self.conf, 'nearby', {}):
             type_slug, count = self.conf.nearby[context_key]
             et = EntityType.objects.get(slug=type_slug)
+            
             favourites = filter(
                 lambda e: e is not None and et in e.all_types_completion.all(),
                 [f.metadata.get('entity') for f in get_favourites(request)])
             
-            if len(favourites) == 0:
+            if request.GET.get(context_key) == 'nearby':
+                
                 if location:
                     es = et.entities_completion.filter(location__isnull=False).distance(location).order_by('distance')[:count]
                 else:
                     es = []
+                results_type = 'Nearby'
+                
+            elif request.GET.get(context_key) == 'favourites':
+                
+                es = favourites    
+                results_type = 'Favourite'
+                
             else:
-                es = favourites
+                
+                if len(favourites) == 0:
+                    if location:
+                        es = et.entities_completion.filter(location__isnull=False).distance(location).order_by('distance')[:count]
+                    else:
+                        es = []
+                else:
+                    es = favourites
+                
+                results_type = 'Favourite' if len(favourites) > 0 else 'Nearby'
             
             for e in (e for e in es if hasattr(e, 'distance')):
                 _, e.bearing = entity.get_distance_and_bearing_from(location)
@@ -76,7 +95,7 @@ class IndexView(BaseView):
             context['nearby'][context_key] = {
                 'type': et,
                 'entities': es,
-                'results_type': 'Favourite' if len(favourites) > 0 else 'Nearby'
+                'results_type': results_type,
             }
             
         if getattr(self.conf, 'travel_alerts', False):

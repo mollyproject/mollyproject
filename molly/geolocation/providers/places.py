@@ -4,7 +4,7 @@ from itertools import chain
 import simplejson
 
 from molly.geolocation.providers import BaseGeolocationProvider
-from molly.apps.places.models import Entity
+from molly.apps.places.models import Entity, EntityName
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +25,7 @@ class PlacesGeolocationProvider(BaseGeolocationProvider):
             )
 
         entities = chain(
-            Entity.objects.filter(title__iexact = query,
+            Entity.objects.filter(names__title__iexact = query,
                                   location__isnull = False),
             entities,
         )

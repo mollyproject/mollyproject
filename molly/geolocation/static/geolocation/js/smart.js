@@ -1,6 +1,6 @@
 // Molly Geolocation code
 function submitAutomaticLocation(position, method) {
-  $('.location').html('Location found; please wait while we put a name to it.')
+  $('.location').html(gettext('Location found; please wait while we put a name to it.'))
   $('.location-accuracy').hide()
   $.post(base+'geolocation/', {
     csrfmiddlewaretoken: $(csrfToken).find('[name=csrfmiddlewaretoken]').val(),
@@ -26,20 +26,20 @@ function locationFailure(d) {
   $('.location-accuracy').hide()
   // Show error
   if (d.code == 1) { // PERMISSION_DENIED
-    $('.location').html('<i>You did not give permission for the site to know your location.</i>');
+    $('.location').html('<i>' + gettext('You did not give permission for the site to know your location.') + '</i>');
     $.post(base+'geolocation/', {
       csrfmiddlewaretoken: $(csrfToken).find('[name=csrfmiddlewaretoken]').val(),
       method: 'denied'
     });
   } else if (d.code == 2 || d.code == 3) { // POSITION_UNAVAILABLE / TIMEOUT
-    $('.location').html('<i>We couldn\'t get a fix on your location right now</i>')
+    $('.location').html('<i>' + gettext("We couldn't get a fix on your location right now") + '</i>')
     $.post(base+'geolocation/', {
       csrfmiddlewaretoken: $(csrfToken).find('[name=csrfmiddlewaretoken]').val(),
       method: 'error'
     });
   } else {
     // Unknown error
-    $('.location').html('<i>An error occurred: ' + d.message + '</i>')
+    $('.location').html('<i>' + gettext('An error occurred') + ': ' + d.message + '</i>')
   }
   // Default back to location after 5 seconds
   window.setTimeout(function() {
@@ -51,16 +51,16 @@ function locationFailure(d) {
 $(document).bind('molly-page-change', function(){
   if(geo_position_js.init()) {
     // Add automatic location buttons if geolocation API is available
-    $('.update-location-form').append('<ul class="link-list location-automatic-list"><li><input type="submit" value="Get location automatically" class="automatic-update as-text-link" /></li></ul>');
+    $('.update-location-form').append('<ul class="link-list location-automatic-list"><li><input type="submit" value="' + gettext('Get location automatically') + '" class="automatic-update as-text-link" /></li></ul>');
     if ($('.favourite-locations-list').length + $('.historic-locations-list').length) {
       $('.location-automatic-list').addClass('no-round-bottom')
     }
-    $('.current-location-box p').prepend('<input type="submit" value="Determine location automatically" class="automatic-update automatic-update-button" />')
+    $('.current-location-box p').prepend('<input type="submit" value="' + gettext('Determine location automatically') + '" class="automatic-update automatic-update-button" />')
     $('.automatic-update, .location-automatic-list').click(function(){
       $('.update-location-box').slideUp();
       $('.current-location-box').slideDown();
       $('.alternate-location-box').slideUp();
-      $('.location').html('Please wait while we attempt to determine your location&hellip;')    
+      $('.location').html(gettext('Please wait while we attempt to determine your location&hellip;'))
       $('.location-accuracy').hide()
       geo_position_js.getCurrentPosition(automaticLocationAndSave, locationFailure, {
         enableHighAccuracy: true,
@@ -72,7 +72,7 @@ $(document).bind('molly-page-change', function(){
   }
   
   // Switch to update view from display
-  $('.update-location-form').append('<input type="button" value="Cancel Update" class="cancel-update as-text-link" />');
+  $('.update-location-form').append('<input type="button" value="' + gettext('Cancel Update') + '" class="cancel-update as-text-link" />');
   $('.current-location-box form input').click(function(){
     $('.current-location-box').hide();
     $('.cancel-update').click(function(){
@@ -91,7 +91,7 @@ $(document).bind('molly-page-change', function(){
     $('.update-location-box').slideUp();
     $('.alternate-location-box').slideUp();
     $('.current-location-box').slideDown();
-    $('.location').html('Please wait while we attempt to determine your location&hellip;')
+    $('.location').html(gettext('Please wait while we attempt to determine your location&hellip;'))
     $.post(base+'geolocation/', {
       csrfmiddlewaretoken: $(this).find('[name=csrfmiddlewaretoken]').val(),
       format: 'json',
@@ -106,14 +106,15 @@ $(document).bind('molly-page-change', function(){
 
   // Detect in placeholder tag is supported
   if ('placeholder' in document.createElement('input')) {
-    $('.update-location-name').attr('placeholder', 'e.g., OX2 6NN, kebl, St Clements')
+    // Translators: Examples of what can be entered into the 'Set location' field, e.g., postcode, partial match, street name
+    $('.update-location-name').attr('placeholder', gettext('e.g., OX2 6NN, kebl, St Clements'))
   } else {
     $('.update-location-name').focus(function(){
       $(this).val('');
       $(this).css('color', '#000000')
       $(this).unbind('focus')
     });
-    $('.update-location-name').val('e.g., OX2 6NN, kebl, St Clements')
+    $('.update-location-name').val(gettext('e.g., OX2 6NN, kebl, St Clements'))
     $('.update-location-name').css('color', '#a3a3a3')
   }
 });
@@ -163,7 +164,7 @@ function specificLocationForm(location, favourite) {
       f += '    <input type="hidden" name="action" value="remove"/>'
          + '    <input type="hidden" name="id" value="'+location.id+'"/>'
          + '    <input type="hidden" name="return_url" value="'+window.location.pathname+'"/>'
-         + '    <input type="submit" class="unfavourite" value="(Remove from favourites)"/>'
+         + '    <input type="submit" class="unfavourite" value="(' + gettext('Remove from favourites') + ')"/>'
     } else {
       f += '    <input type="hidden" name="action" value="add"/>'
          + '    <input type="hidden" name="accuracy" value="'+location.accuracy+'"/>'
@@ -171,7 +172,7 @@ function specificLocationForm(location, favourite) {
          + '    <input type="hidden" name="latitude" value="'+location.location[1]+'"/>'
          + '    <input type="hidden" name="return_url" value="'+window.location.pathname+'"/>'
          + '    <input type="hidden" name="name" value="'+location.name+'"/>'
-         + '    <input type="submit" class="favourite" value="(Add as favourite)"/>'
+         + '    <input type="submit" class="favourite" value="(' + gettext('Add as favourite') + ')"/>'
     }
     f += '  </form>'
   }
@@ -219,13 +220,15 @@ function locationFound(data) {
   if (data.name) {
     $('.location').html(data.name)
     locationName = data.name
-    $('.location-accuracy').html('within approx. ' + Math.round(data.accuracy) + 'm')
+    var within = interpolate(gettext('within approx. %(accuracy)sm'),
+                             { accuracy: Math.round(data.accuracy) }, true);
+    $('.location-accuracy').html(within)
     $('.location-accuracy').show()
     
     if (data.alternatives != null && data.alternatives.length > 0) {
       $('.alternate-location-box').empty()
       $('.alternate-location-box').append( '<div class="header">'
-                                         + '  <h2>Or did you mean&hellip;</h2>'
+                                         + '  <h2>' + gettext('Or did you mean&hellip;') + '</h2>'
                                          + '</div>'
                                          + '<ul class="alternate-locations-list link-list">'
                                          + '</ul>');
@@ -241,7 +244,7 @@ function locationFound(data) {
     if (data.favourites.length > 0) {
       $('.location-automatic-list').addClass('no-round-bottom')
       $('.update-location-lists').append( '<div class="header">'
-                                        + '  <h2>Or select a favourite location</h2>'
+                                        + '  <h2>' + gettext('Or select a favourite location') + '</h2>'
                                         + '</div>'
                                         + '<ul class="favourite-locations-list link-list">'
                                         + '</ul>');
@@ -253,13 +256,13 @@ function locationFound(data) {
       $('.location-automatic-list').addClass('no-round-bottom')
       $('.favourite-locations-list').addClass('no-round-bottom')
       $('.update-location-lists').append( '<div class="header">'
-                                        + '  <h2>Or select from history</h2>'
+                                        + '  <h2>' + gettext('Or select from history') + '</h2>'
                                         + '</div>'
                                         + '<ul class="historic-locations-list link-list">'
                                         + '<li>'
                                         + '    <form class="specific-location-form" method="post" action="'+base+'geolocation/clear/">'
                                         +        csrfToken
-                                        + '      <input type="submit" value="Clear history" class="as-text-link" />'
+                                        + '      <input type="submit" value="' + gettext('Clear history') + '" class="as-text-link" />'
                                         + '    </form>'
                                         + '</li>'
                                         + '</ul>');
@@ -393,7 +396,7 @@ function handleBlackBerryLocationTimeout()
 {
 	if(bb_blackberryTimeout_id!=-1)
 	{
-		bb_errorCallback({message:"Timeout error", code:3});
+		bb_errorCallback({message:gettext("Timeout error"), code:3});
 	}
 }
 function handleBlackBerryLocation()
@@ -406,7 +409,7 @@ function handleBlackBerryLocation()
                 {
                         //http://dev.w3.org/geo/api/spec-source.html#position_unavailable_error
                         //POSITION_UNAVAILABLE (numeric value 2)
-                        bb_errorCallback({message:"Position unavailable", code:2});
+                        bb_errorCallback({message:gettext("Position unavailable"), code:2});
                 }
                 else
                 {  
@@ -494,7 +497,7 @@ var geo_position_js=function() {
                                             },errorCallback,$.extend(options, {timeout: 5000}));
                                         }, 5000);
                                     } else {
-                                        errorCallback({message: 'There is already a location request pending', code: -1})
+                                        errorCallback({message: gettext('There is already a location request pending'), code: -1})
                                     }
                                 }
                         }
@@ -545,15 +548,15 @@ var geo_position_js=function() {
                                             onFailure: function(e){
                                                                 if (e.errorCode==1)
                                                                 {
-                                                                        errorCallback({code:3,message:"Timeout"});
+                                                                        errorCallback({code:3,message:gettext("Timeout error")});
                                                                 }
                                                                 else if (e.errorCode==2)
                                                                 {
-                                                                        errorCallback({code:2,message:"Position Unavailable"});
+                                                                        errorCallback({code:2,message:gettext("Position unavailable")});
                                                                 }
                                                                 else
                                                                 {
-                                                                        errorCallback({code:0,message:"Unknown Error: webOS-code"+errorCode});
+                                                                        errorCallback({code:0,message:gettext("Unknown Error") + ": webOS-code"+errorCode});
                                                                 }
                                                         }
                                             });
@@ -570,7 +573,7 @@ var geo_position_js=function() {
                                         function callback(transId, eventCode, result) {
                                             if (eventCode == 4)
                                                 {
-                                                errorCallback({message:"Position unavailable", code:2});
+                                                errorCallback({message:gettext("Position unavailable"), code:2});
                                             }
                                                 else
                                                 {

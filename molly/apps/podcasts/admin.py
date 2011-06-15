@@ -1,8 +1,15 @@
 from django.contrib import admin
 from models import *
 
+class PodcastCategoryNameInline(admin.TabularInline):
+    model = PodcastCategoryName
+    fk_name = "podcast_category"
+
 class PodcastCategoryAdmin(admin.ModelAdmin):
     list_display = ('slug', 'name')
+    inlines = [
+        PodcastCategoryNameInline,
+    ]
 
 class PodcastAdmin(admin.ModelAdmin):
     list_display = ('category', 'title')

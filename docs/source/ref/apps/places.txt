@@ -39,6 +39,9 @@ Sample::
                      lat_north=52.1, lat_south=51.5,
                      lon_west=-1.6, lon_east=-1.0
             ),
+            Provider('molly.apps.places.providers.ACISLiveRouteProvider',
+                urls = ('http://www.oxontime.com',),
+            ),
             Provider('molly.apps.places.providers.LiveDepartureBoardPlacesProvider',
                 token = 'MyNationalRailToken'
             ),
@@ -99,6 +102,18 @@ The areas supported by this provider are:
  * Wessex
  * West Yorkshire
  * Cardiff
+ 
+:class:`molly.apps.places.providers.ACISLiveRouteProvider`
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+This provider scrapes an ACIS Live instance to try and get route data for the
+real-time routes ACIS Live knows about. It is heavily recommended you consult
+with your council before enabling this, as it makes a lot of requests!
+
+This has one option:
+
+ * urls (optional, defaults to all instances): the base URLs of the ACIS Live
+   instances to be scraped for route data
 
 :class:`molly.apps.places.providers.BBCTPEGPlacesProvider`
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -149,6 +164,102 @@ following options, all of which are optional:
    not set imports all)
  * url: The URL to the OpenStreetMap dataset to be imported (defaults to the
    England dataset)
+ * entity_type_data_file: A YAML file (see below) which contains the entity
+   type definitions for the OSM importer
+ * osm_tags_data_file: A YAML file (see below) which contains the OSM tags to be
+   imported, and how they map to Molly's entity types (defined in
+   entity_type_data_file)
+
+Entity Type data files
+^^^^^^^^^^^^^^^^^^^^^^
+
+This file defines a dictionary in YAML entity-type definitions for Molly, where
+the key is the slug of the entity type to be created. Any entity type which you
+want an OSM type to be matched to should exist in this file.
+
+Each definition defines the name of the entity type, the singular and plural
+forms of it, the name of the category it belongs to, and defaults for whether or
+not they are shown in the nearby and category lists (these can be overriden by
+the database, and these settings are only respected on first import). Also
+included are a list of parent types (e.g., "ice cream cafe" objects also belong
+to the "food" type, so "food" is a parent of "ice cream cafe").
+
+This file is optional, and Molly ships with a sensible set of defaults (see
+:file:`molly/apps/places/providers/data/osm-entity-types.yaml`).
+
+.. info:: Note for translators! This file isn't in Python, so isn't marked up!
+          You will, however, still want the names in here to be translated, so
+          you need to make sure your .po files include things defined here.
+
+Example:
+
+.. code-block:: yaml
+
+    bank:
+      category: Amenities
+      parent-types: []
+      show_in_category_list: true
+      show_in_nearby_list: true
+      verbose_name: bank
+      verbose_name_plural: banks
+      verbose_name_singular: a bank
+    church:
+      category: Amenities
+      parent-types: [place-of-worship]
+      show_in_category_list: false
+      show_in_nearby_list: false
+      verbose_name: church
+      verbose_name_plural: churches
+      verbose_name_singular: a church
+
+The example above defines two entity types for the OSM importer to deal with.
+The OSM tag data file can then refer to the slugs (the keys: e.g., 'bank' and
+'church') when mapping OSM tags to Molly entity types.
+
+OSM tag data files
+^^^^^^^^^^^^^^^^^^^^^^
+
+This file defines which OSM tags are to be imported, and also which entity types
+in Molly they map on to. Each entity in the list contains at least two keys:
+'entity-type' and 'osm-tag'. This means OSM items which have a tag which matches
+osm-tag will be imported, and assigned to entity-type.
+
+In this file, you can also define subtags, which allow for specialisations of
+OSM tags and Molly types. For example, you may have an OSM item of type
+'place_of_worship', but in Molly represent different faiths as different types.
+In this case, you can look at the religion tag, to determine a more specialised
+entity type to tag with. Another way to think about this is as an AND clause for
+the OSM tags. e.g.,
+
+.. code-block:: yaml
+
+    - entity-type: place-of-worship
+      osm-tag: amenity=place_of_worship
+      subtags:
+      - {entity-type: chapel, osm-tag: place_of_worship=chapel}
+
+In this case, OSM entities which have tags 'amenity=place_of_worship' AND
+'place_of_worship=chapel' will be imported with the entity type of 'chapel', and
+entities which only have a tag 'amenity=place_of_worship' will be imported with
+the entity type 'place-of-worship'.
+
+.. note:: All entity types referred to here must be defined in the corresponding
+          OSM entity type data file.
+
+Example:
+
+.. code-block:: yaml
+
+    - {entity-type: museum, osm-tag: amenity=museum}
+    - entity-type: car-park
+      osm-tag: amenity=parking
+      subtags:
+      - {entity-type: park-and-ride, osm-tag: park_ride=bus}
+
+In the example above, this imports OSM items with a tag 'amenity=museum' as
+the Molly entity type 'museum', OSM items with a tag 'amenity=parking' as entity
+type 'car-park', and OSM items with the tags 'amenity=parking' AND
+'park_ride=bus' as entity type 'park-and-ride'.
 
 :class:`molly.apps.places.providers.PostcodesMapsProvider`
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""

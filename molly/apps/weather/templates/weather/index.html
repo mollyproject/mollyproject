@@ -1,45 +1,47 @@
-{% extends "weather/base.html" %}
+{% extends "weather/base.html" %}{% load i18n %}
 
 {% block pagetitleclass %}weather-header with-icon{% endblock %}
-{% block pagetitle %}Weather{% endblock %}
-{% block title %}Weather{% endblock %}
-
+{% block pagetitle %}{% trans "Weather" %}{% endblock %}
+{% block title %}{% trans "Weather" %}{% endblock %}
 
 {% block content %}
 
 <div class="section">
     <div class="header">
-        <h2>{% block location %}{{ observation.name }}{% endblock %} <small>at {{ observation.observed_date|date:"H:i" }}</small></h2>
+        <h2>{% block location %}{{ observation.name }}{% endblock %}
+	    <small>{% blocktrans with observation.observed_date|date:"H:i" as observation_time %}at {{ observation_time }}{% endblocktrans %}</small>
+	</h2>
     </div>
-	<div class="note">
-		<div class="weather-icon">
+    
+    <div class="note">
+	<div class="weather-icon">
 	    <img src="{{ STATIC_URL }}weather/images/{{ observation.icon }}.png" alt="{{ observation.get_outlook_display|capfirst }}"/><br/>
-	    </div>
-		<div class="weather-live-info">
-          <span style="font-size: 36pt;">{{ observation.temperature }}&deg;C</span><br/>
-          {{ observation.wind_speed }}mph {{ observation.wind_direction }}<br/>
-          {{ observation.humidity }}% Relative Humidity<br/>
-          {{ observation.pressure }} mbar and {{ observation.get_pressure_state_display }}<br/>
-          {{ observation.get_visibility_display|capfirst }}
-		</div>
 	</div>
+	<div class="weather-live-info">
+	    <span>
+		{% blocktrans with observation.temperature as temperature %} {{ temperature }}&deg;C{% endblocktrans %}</span><br/>
+		{% blocktrans with observation.wind_speed as wind_speed and observation.wind_direction as wind_direction %}{{ wind_speed }}mph {{ wind_direction }}{% endblocktrans %}<br/>
+		{% blocktrans with observation.humidity as humidity %}{{ humidity }}% Relative Humidity{% endblocktrans %}<br/>
+		{% blocktrans with observation.pressure as pressure and observation.get_pressure_state_display as pressure_change %}{{ pressure }} mbar and {{ pressure_change }}{% endblocktrans %}<br/>
+	</div>
+    </div>
 
 </div>
-	
+
 <div class="section">
-<div class="header">
-    <h2>Forecast</h2>
-</div>
+    <div class="header">
+	<h2>{% trans "Forecast" %}</h2>
+    </div>
     <table class="weather-forecast">
         <tbody>
-{% for forecast in forecasts %}
+	    {% for forecast in forecasts %}
             <tr>
-                <td style="font-size:12pt">{{ forecast.observed_date|date:"l" }}</td>
-                <td><img src="{{ STATIC_URL }}weather/images/{{ forecast.icon }}_small.png" alt="{{ forecast.get_outlook_display|capfirst }}" style="height:2.5em; width:2.5em;"/></td>
-                <td style="font-size:12pt">{{ forecast.max_temperature }}&deg;C</td>
-                <td>{{ forecast.min_temperature }}&deg;C</td>
+                <td class="large-text">{{ forecast.observed_date|date:"l" }}</td>
+                <td><img src="{{ STATIC_URL }}weather/images/{{ forecast.icon }}_small.png" alt="{{ forecast.get_outlook_display|capfirst }}"/></td>
+                <td class="large-text">{% blocktrans with forecast.max_temperature as temperature %}{{ temperature }}&deg;C{% endblocktrans %}</td>
+                <td>{% blocktrans with forecast.min_temperature as temperature %}{{ temperature }}&deg;C{% endblocktrans %}</td>
             </tr>
-{% endfor %}
+	    {% endfor %}
         </tbody>
     </table>
 </div>

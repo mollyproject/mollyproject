@@ -3,10 +3,13 @@ from lxml import etree
 
 from django.contrib.gis.geos import Point, LineString
 from django.conf import settings
+from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_noop
 
 from molly.apps.places.providers import BaseMapsProvider
 from molly.apps.places.models import Source, Entity, EntityType, EntityTypeCategory
 from molly.conf.settings import batch
+from molly.utils.i18n import override, set_name_in_language
 
 class BBCTPEGResolver(etree.Resolver):
     """
@@ -71,7 +74,6 @@ class BBCTPEGPlacesProvider(BaseMapsProvider):
                 entities[id] = entity
             
             entity.source = source
-            entity.title = message.find('summary').text
             entity.primary_type = entity_type
             
             locs = map(self._wgs84_to_point, road_traffic_message.findall('location_container/location_coordinates/WGS84'))
@@ -95,6 +97,8 @@ class BBCTPEGPlacesProvider(BaseMapsProvider):
             }
             
             entity.save(identifiers={'bbc-tpeg': id})
+            set_name_in_language(entity, 'en',
+                                 title = message.find('summary').text)
             entity.all_types = [entity_type]
             entity.update_all_types_completion()
             seen.add(entity.pk)
@@ -119,14 +123,22 @@ class BBCTPEGPlacesProvider(BaseMapsProvider):
         return source
     
     def _get_entity_type(self):
-        entity_type, created = EntityType.objects.get_or_create(slug='travel-alert')
-        category, _ = EntityTypeCategory.objects.get_or_create(name='Transport')
-        entity_type.verbose_name = 'travel alert'
-        entity_type.verbose_name_plural = 'travel alerts'
-        entity_type.article = 'a'
+        try:
+            entity_type = EntityType.objects.get(slug='travel-alert')
+            created = False
+        except EntityType.DoesNotExist:
+            entity_type = EntityType(slug='travel-alert')
+            created = True
+        category, etc_created = EntityTypeCategory.objects.get_or_create(name=ugettext_noop('Transport'))
         if created:
             entity_type.show_in_nearby_list = False
             entity_type.show_in_category_list = False
         entity_type.category = category
         entity_type.save()
+        for lang_code, lang_name in settings.LANGUAGES:
+            with override(lang_code):
+                set_name_in_language(entity_type, lang_code,
+                                     verbose_name=_('travel alert'),
+                                     verbose_name_singular=_('a travel alert'),
+                                     verbose_name_plural=_('travel alerts'))
         return entity_type

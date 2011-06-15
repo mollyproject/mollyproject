@@ -2,7 +2,7 @@
 Contains a utility method to send an e-mail based on a Django template.
 """
 
-from django.template import Context, loader
+from django.template import RequestContext, loader
 from django.core.mail import EmailMessage
 from django.conf import settings
 
@@ -20,7 +20,7 @@ def send_email(request, context, template_name, cls=None, to_email=None):
     else:
         from_email = settings.DEFAULT_FROM_EMAIL
 
-    email_context = Context({
+    email_context = RequestContext(request, {
         'from_email': from_email,
         'to_email': to_email,
     })

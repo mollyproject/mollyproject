@@ -1,5 +1,5 @@
-<div class="form-section">
-  <h2 class="invisible">Search libraries</h2>
+{% load i18n %}<div class="form-section">
+  <h2 class="invisible">{% trans "Search libraries" %}</h2>
   <form method="get" action="{% url library:search %}">
 
     <dl>
@@ -12,15 +12,15 @@
     </dl>
 
     <p class="submit-buttons">
-      <input type="submit" value="Search"/><br />
-      <input type="reset" value="Reset Form"/>
+      <input type="submit" value="{% trans "Search" %}"/><br />
+      <input type="reset" value="{% trans "Reset Form" %}"/>
     </p>
 
     <p class="help-bubble">
-      Search the library by either some subset of title and author, or by ISBN.{% if not device.has_qwerty_keyboard %}
-      You may use a '*' in place of an 'X' in an ISBN.{% endif %}
+      {% trans "Search the library by either some subset of title and author, or by ISBN." %}{% if not device.has_qwerty_keyboard %}
+      {% trans "You may use a '*' in place of an 'X' in an ISBN." %}{% endif %}
     </p>
 
-    <div style="clear:both"></div>
+    <div class="clear"></div>
   </form>
 </div>

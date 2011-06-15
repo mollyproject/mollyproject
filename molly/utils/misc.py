@@ -1,4 +1,7 @@
-import urllib2, sys, os.path, imp
+import urllib2
+import sys
+import os.path
+import imp
 
 class AnyMethodRequest(urllib2.Request):
     def __init__(self, url, data=None, headers={}, origin_req_host=None, unverifiable=None, method=None):
@@ -12,6 +15,7 @@ class AnyMethodRequest(urllib2.Request):
             return "POST"
         else:
             return "GET"
+
 
 def get_norm_sys_path():
     """

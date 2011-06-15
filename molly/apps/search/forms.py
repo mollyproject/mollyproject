@@ -1,4 +1,6 @@
 from django import forms
+from django.utils.translation import ugettext_lazy as _
+
 from molly.conf import all_apps
 
 # We can't pick up the list of applications when this module is imported, as
@@ -24,11 +26,11 @@ class SearchForm(object):
     @classmethod
     def _get_search_form_class(self):
         APPLICATION_CHOICES = (
-            ('', 'Show all'),
+            ('', _('Show all')),
         ) + tuple((app.local_name, app.title) for app in all_apps() if app.application_name)
 
         class SearchForm(forms.Form):
-            query = forms.CharField(label='Search')
+            query = forms.CharField(label=_('Search'))
             application = forms.ChoiceField(
                 label='Filter',
                 widget=forms.HiddenInput(),

@@ -3,6 +3,8 @@ from xml.dom import minidom
 from collections import defaultdict
 import threading
 
+from django.utils.translation import ugettext_lazy as _
+
 from molly.apps.places.providers import BaseMapsProvider
 
 class TubeRealtimeProvider(BaseMapsProvider):
@@ -10,11 +12,32 @@ class TubeRealtimeProvider(BaseMapsProvider):
     Populates tube station entities with real-time departure information
     """
     
+    TRACKERNET_STATUS_URL = 'http://cloud.tfl.gov.uk/TrackerNet/StationStatus'
     TRACKERNET_PREDICTION_URL = 'http://cloud.tfl.gov.uk/TrackerNet/PredictionDetailed/%s/%s'
+    
+    def get_statuses(self):
+        statuses = {}
+        xml = minidom.parseString(urlopen(self.TRACKERNET_STATUS_URL).read())
+        for stationstatus in xml.getElementsByTagName('StationStatus'):
+            name = stationstatus.getElementsByTagName('Station')[0].getAttribute('Name')
+            status = stationstatus.getElementsByTagName('Status')[0].getAttribute('Description')
+            status += ' ' + stationstatus.getAttribute('StatusDetails')
+            statuses[name] = status
+        return statuses
     
     def augment_metadata(self, entities, **kwargs):
         threads = []
-        for entity in entities:
+        
+        for entity in filter(lambda e: e.primary_type.slug == 'tube-station', entities):
+            
+            # Try and match up entity with StationStatus name
+            for station, status in self.get_statuses().items():
+                if entity.title.startswith(station):
+                    entity.metadata['real_time_information'] = {
+                        'pip_info': [status] if status != 'Open ' else [],
+                    }
+            if 'real_time_information' not in entity.metadata:
+                entity.metadata['real_time_information'] = {}
             
             if 'london-underground-identifiers' in entity.metadata:
                 thread = threading.Thread(target=self.get_times, args=[entity])
@@ -28,7 +51,8 @@ class TubeRealtimeProvider(BaseMapsProvider):
         
         services = []
         
-        for line, station in entity.metadata['london-underground-identifiers']:
+        station = entity.metadata['london-underground-identifiers']['station-code']
+        for line in entity.metadata['london-underground-identifiers']['line-codes']:
             next_info = defaultdict(list)
             
             xml = minidom.parseString(urlopen(self.TRACKERNET_PREDICTION_URL % (line, station)).read())
@@ -47,10 +71,9 @@ class TubeRealtimeProvider(BaseMapsProvider):
         services.sort(key=lambda s: s['etas'][0])
         for service in services:
             etas = [round(e/60) for e in service['etas']]
-            etas = ['DUE' if e == 0 else '%d mins' % e for e in etas]
+            # Translators: This refers to arrival times of trains, in minutes
+            etas = [_('DUE') if e == 0 else _('%d mins') % e for e in etas]
             service['next'] = etas[0]
             service['following'] = etas[1:]
-        entity.metadata['real_time_information'] = {
-            'services': services,
-        }
+        entity.metadata['real_time_information']['services'] = services
         entity.metadata['meta_refresh'] = 30

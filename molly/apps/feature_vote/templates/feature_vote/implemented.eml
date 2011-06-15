@@ -1,0 +1,18 @@
+Subject: {{ site_name }} - Your feature has been implemented!
+
+You may like to know that on {{ feature.implemented_on|date:"DATE_FORMAT" }},
+the {{ site_name }} developers implemented the feature that you suggested!
+
+The feature you suggested is included below:
+
+Title
+=====
+
+{{ feature.title }}
+
+Description
+===========
+
+{{ feature.description }}
+
+Thanks for helping to make {{ site_name }} even better!

@@ -16,7 +16,142 @@ Sample::
         display_to_user = False,
     ),
 
+Use
+---
+
+This app has a Django admin interface, under 'Feature vote' in the admin panel.
+When you get a feature request (which is sent to the admins as defined in the
+config) by e-mail, you can then go into the admin panel and either edit it to
+make it public, by editing the individual issue and ticking 'Is public' and
+clicking 'Save'. You can also delete features from here (e.g., spam).
+
+When a feature is implemented, you can do this by setting the date of when it is
+implemented in the same edit screen. After 4 weeks, the feature will disappear
+from the suggestions screen. Also, marking a feature as implemented will notify
+the original user by e-mail of this, as well as letting all users who voted know
+by a message on the home page.
+
+``Feature``
+-----------
+
+
+.. autoclass:: molly.apps.feature_vote.models.Feature
+
+    .. autoattribute :: molly.apps.feature_vote.models.Feature.user_name
+    .. autoattribute :: molly.apps.feature_vote.models.Feature.user_email
+    .. autoattribute :: molly.apps.feature_vote.models.Feature.title
+    .. autoattribute :: molly.apps.feature_vote.models.Feature.description
+    .. autoattribute :: molly.apps.feature_vote.models.Feature.up_vote
+    .. autoattribute :: molly.apps.feature_vote.models.Feature.down_vote
+    .. autoattribute :: molly.apps.feature_vote.models.Feature.created
+    .. autoattribute :: molly.apps.feature_vote.models.Feature.last_commented
+    .. autoattribute :: molly.apps.feature_vote.models.Feature.is_public
+    .. autoattribute :: molly.apps.feature_vote.models.Feature.is_removed
+    .. autoattribute :: molly.apps.feature_vote.models.Feature.implemented_on
+    .. autoattribute :: molly.apps.feature_vote.models.Feature.notifications_sent
+    .. autoattribute :: molly.apps.feature_vote.models.Feature.net_votes
+    .. automethod :: molly.apps.feature_vote.models.Feature.check_remove
+    .. attribute :: molly.apps.feature_vote.models.Feature.vote
+    
+       This attribute only exists when rendered by ``index``, and it contains
+       the way the current user voted (-1, 0 or 1), or 0 if they've not voted
+       yet.
+
 Views
 -----
 
-.. todo:: Complete
+``index``
+"""""""""
+
+This view lives at the ``/`` URL of this app and is handled by
+:class:`molly.apps.feature_vote.views.IndexView`.
+
+This view renders the list of currently active features, and handles voting
+(via POST) on these features, as well as submission of new features. New
+features which are submitted are e-mailed to the admins using the template
+``feature_vote/feature_create.eml``.
+
+The template used to render requests is ``feature_vote/index.html``, and the
+context procided to this template consists of:
+
+* features - a list of currently public and active Feature objects
+* form - A Django form for new feature submission
+* submitted - a Boolean indicating whether or not the user just submitted a new
+  idea
+
+``feature-detail``
+""""""""""""""""""
+
+This view lives at the ``/:id:/`` URL of this app and is handled by
+:class:`molly.apps.feature_vote.views.FeatureDetailView`. It takes one argument,
+id, which is the ID of the specific feature to be rendered. Non-existant or
+non-public features throw a 404.
+
+This view renders detail about a particular feature. The template used to render
+this file is ``feature_vote/feature_detail.html``. The following things are
+provided in the context:
+
+* feature - the feature object being detailed
+
+Templates
+---------
+
+``feature_vote/feature_create.eml``
+"""""""""""""""""""""""""""""""""""
+
+This is the template used for e-mails sent to the site administrators when a new
+feature is submitted. The following things are in the context:
+
+* name - the name of the submitting user
+* email - the e-mail of the submitting user
+* title - the title of the submitted idea
+* description - the description of the submitted idea
+* feature - the feature object which was submitted
+
+This template has no blocks.
+
+``feature_vote/feature_detail.html``
+""""""""""""""""""""""""""""""""""""
+
+This template has no blocks.
+
+``feature_vote/implemented.eml``
+""""""""""""""""""""""""""""""""
+
+This is the template used when notifying a submitting user that their idea has
+been implemented on the site. It has one thing in the context:
+
+* feature - the feature object which the user submitted and has been implemented
+
+This template has no blocks.
+
+``feature_vote/index.html``
+"""""""""""""""""""""""""""
+
+This template has no blocks.
+
+``feature_vote/vote.html``
+""""""""""""""""""""""""""
+
+This is used by ``feature_vote/index.html`` and ``feature_vote/feature_detail.html``
+to abstract the voting box (up and down arrows) on features. It has no blocks.
+
+Styling
+-------
+
+``feature_vote/css/smart.css``
+""""""""""""""""""""""""""""""
+
+This file defines the styling for the voting box, and how comments from
+superusers are displayed.
+
+Media
+-----
+
+The following images come with this app, and they correspond to the up
+and down voting arrows, in both an active and disabled ("voted") state.
+
+* ``feature_vote/images/vote-up.png``
+* ``feature_vote/images/vote-down.png``
+* ``feature_vote/images/vote-up-voted.png``
+* ``feature_vote/images/vote-down-voted.png``

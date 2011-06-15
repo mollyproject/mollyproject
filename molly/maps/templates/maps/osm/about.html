@@ -1,30 +1,26 @@
-{% extends "base.html" %}
+{% extends "base.html" %}{% load i18n %}
 
 {% block content %}
 
-<div class="bubble pad-10">
-  <p>
-    OpenStreetMap (OSM) is a community-led mapping project providing free geographic data to anyone who wants to use them.
-  </p>
+<div class="section-nopad">
+  <h2>{% trans "OpenStreetMap" %}</h2>
 
-  <p>
-    {{ site_name }} uses OSM data under the Creative Commons Attribution-Share Alike (CC-BY-SA) 2.0 license to provide maps and points-of-interest data.
-  </p>
-
-  <p>
-    Should you wish to contribute to OSM, you can either submit corrections though {{ site_name }} (there's a Suggest a correction link at the bottom of each OSM-derived page), or set up an OSM account and edit directly. For more information on getting started, see the Beginners' Guide (link below) on the OpenStreetMap website.
-  </p>
-
-  <p>
-    Here are some useful links you may want to browse from a non-mobile browser:
-
-    <ol>
-      <li><a href="http://creativecommons.org/licenses/by-ca/2.0/">Creative Commons Attribution-Share Alike 2.0 license</a></li>
-      <li><a href="http://www.openstreetmap.org/">The OpenStreetMap website</a></li>
-      <li><a href="http://wiki.openstreetmap.org/">The OpenStreetMap wiki</a></li>
-      <li><a href="http://wiki.openstreetmap.org/wiki/Beginners%27_Guide">The OSM Beginners' Guide</a></li>
-    </ol>
-  </p>
+  <div class="section-content">
+    <p>{% trans "OpenStreetMap (OSM) is a community-led mapping project providing free geographic data to anyone who wants them." %}</p>
+    <p>{% blocktrans %}{{ site_name }} uses OSM data under the Creative Commons Attribution-Share Alike (CC-BY-SA) 2.0 license to provide maps and points-of-interest data.{% endblocktrans %}</p> 
+    <p>{% blocktrans %}Should you wish to contribute to OSM, you can either submit corrections though {{ site_name }} (there's a <em>Suggest a correction</em> link at the bottom of each OSM-derived page), or set up an OSM account and edit directly. For more information on getting started, see the Beginners' Guide (link below) on the OpenStreetMap website.{% endblocktrans %}</p>
+    <p>{% blocktrans %}Here are some useful links you may want to browse from a non-mobile browser:{% endblocktrans %}</p>
+    <dl>
+      <dt>{% trans "Creative Commons Attribution-Share Alike 2.0 license" %}</dt>
+      <dd><a href="http://creativecommons.org/licenses/by-ca/2.0/">http://creativecommons.org/licenses/by-ca/2.0/</a></dd>
+      <dt>{% trans "The OpenStreetMap website" %}</dt>
+      <dd><a href="http://www.openstreetmap.org/">http://www.openstreetmap.org/</a></dd>
+      <dt>{% trans "The OpenStreetMap wiki" %}</dt>
+      <dd><a href="http://wiki.openstreetmap.org/">http://wiki.openstreetmap.org/</a></dd>
+      <dt>{% trans "The OSM Beginners' Guide" %}</dt>
+      <dd><a href="http://wiki.openstreetmap.org/wiki/Beginners%27_Guide">http://wiki.openstreetmap.org/wiki/Beginners%27_Guide</a></dd>
+    </dl>
+  </div>
 </div>
 
 {% endblock %}

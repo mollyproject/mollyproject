@@ -1,23 +1,27 @@
+{% load i18n %}
 <div class="location-box section" id="location-box">
     <div class="header location-box-header">
-        <h2>Your Location</h2>
+        <h2>{% trans "Your Location" %}</h2>
     </div>
     <div class="section-content">
         <div class="current-location-box" style="position:relative;{% if request.GET.update or geolocation_alternatives %}display:none;{% endif %}">
             <form method="get" action="{% url geolocation:index %}">
                 {% if return_url %}<input type="hidden" name="return_url" value="{{ return_url }}"/>{% endif %}
-                <input type="submit" name="update" value="Update" class="update-location-opener" />
+                <input type="submit" name="update" value="{% trans "Update" %}" class="update-location-opener" />
             </form>
             <p>
                 {% if location_error %}<em>{{ location_error }}</em><br/>{% endif %}
-                <span class="location">{{ geolocation.name|default:"No location known" }}</span><br/>
-                <span class="location-accuracy">{% if geolocation.accuracy %}within approx. {{ geolocation.accuracy|floatformat:"0" }} m{% endif %}</span>
+                <span class="location">
+                    {% if geolocation.name %}{{ geolocation.name }}{% else %}{% trans "No location known" %}{% endif %}</span><br/>
+                <span class="location-accuracy">{% if geolocation.accuracy %}
+                    {% blocktrans with geolocation.accuracy|floatformat:"0" as accuracy %}within approx. {{ accuracy }} m{% endblocktrans %}
+                    {% endif %}</span>
             </p>
         </div>
         <div class="alternate-location-box"{% if not geolocation_alternatives %} style="display:none;"{% endif %}>
             {% if geolocation_alternatives %}
                 <div class="header">
-                    <h2>Did you mean&hellip;</h2>
+                    <h2>{% trans "Did you mean&hellip;" %}</h2>
                 </div>
                 <ul class="alternate-locations-list link-list">
                     <li>
@@ -49,7 +53,7 @@
                 </ul>
             {% endif %}
                 <div class="header">
-                    <h2>Or search again:</h2>
+                    <h2>{% trans "Or search again:" %}</h2>
                 </div>
         </div>
         <div class="update-location-box" style="position:relative;{% if not request.GET.update and not geolocation_alternatives %}display:none;{% endif %}">
@@ -59,16 +63,17 @@
                 <div class="update-location-name-container">
                     <input type="text" name="name" class="update-location-name" />
                     {% ifnotequal style_group "smart" %}
-                    <p>e.g., OX2 6NN, kebl, St Clements</p>
+                    {# Translators: This refers to sample things to be entered in the 'Set Location' box, postcode, building ID, street name #}
+                    <p>{% trans "e.g., OX2 6NN, kebl, St Clements" %}</p>
                     {% endifnotequal %}
                 </div>
                 <input name="method" type="hidden" value="geocoded" />
-                <input type="submit" value="Set Location" class="update-location" />
+                <input type="submit" value="{% trans "Set Location" %}" class="update-location" />
             </form>
             <div class="update-location-lists">
                 {% if geolocation.favourites %}
                     <div class="header">
-                        <h2>Favourite Locations</h2>
+                        <h2>{% trans "Favourite Locations" %}</h2>
                     </div>
                     <ul class="favourite-locations-list link-list{% if geolocation.history %} no-round-bottom{% endif %}">
                       {% for id, favourite in geolocation.favourites.items %}
@@ -88,7 +93,7 @@
                                 <input type="hidden" name="action" value="remove"/>
                                 <input type="hidden" name="id" value="{{ id }}"/>
                                 <input type="hidden" name="return_url" value="{% if return_url %}{{ return_url }}{% else %}{% url geolocation:index %}{% endif %}"/>
-                                <input type="submit" class="unfavourite" value="(Remove from favourites)"/>
+                                <input type="submit" class="unfavourite" value="{% trans "(Remove from favourites)" %}"/>
                             </form>
                         </li>
                       {% endfor %}
@@ -96,7 +101,7 @@
                 {% endif %}
                 {% if geolocation.history %}
                     <div class="header">
-                        <h2>Location History</h2>
+                        <h2>{% trans "Location History" %}</h2>
                     </div>
                     <ul class="historic-locations-list link-list">
                       {% for history in geolocation.history %}
@@ -119,7 +124,7 @@
                                 <input type="hidden" name="latitude" value="{{ history.location.1 }}"/>
                                 <input type="hidden" name="return_url" value="{% if return_url %}{{ return_url }}{% else %}{% url geolocation:index %}{% endif %}"/>
                                 <input type="hidden" name="name" value="{{ history.name }}"/>
-                                <input type="submit" class="favourite" value="(Add as favourite)"/>
+                                <input type="submit" class="favourite" value="{% trans "(Add as favourite)" %}"/>
                             </form>
                         </li>
                       {% endfor %}
@@ -127,7 +132,7 @@
                             <form class="specific-location-form" method="post" action="{% url geolocation:clear %}">
                               {% csrf_token %}
                               <input name="return_url" type="hidden" value="{% if return_url %}{{ return_url }}{% else %}{% url geolocation:index %}{% endif %}"/>
-                              <input class="as-text-link" type="submit" value="Clear history" />
+                              <input class="as-text-link" type="submit" value="{% trans "Clear history" %}" />
                             </form>
                         </li>
                     </ul>

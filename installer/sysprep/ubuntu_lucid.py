@@ -1,0 +1,30 @@
+from installer.sysprep.ubuntu import AptSysPreparer
+
+POSTGIS_PATH = '/usr/share/postgresql/8.4/contrib/postgis.sql'
+SPATIAL_REF_SYS_PATH = '/usr/share/postgresql/8.4/contrib/spatial_ref_sys.sql'
+PG_HBA_PATH = '/etc/postgresql/8.4/main/pg_hba.conf'
+POSTGRES_SERVICE = 'postgresql-8.4'
+
+class SysPreparer(AptSysPreparer):
+    
+    PACKAGES = [
+            'python-pip',
+            'build-essential',
+            'postgis',
+            'python-gdal',
+            'proj',
+            'libgeos-3.1.0',
+            'binutils',
+            'libgdal1-1.6.0',
+            'postgresql-8.4',
+            'postgresql-8.4-postgis',
+            'postgresql-server-dev-8.4',
+            'python-setuptools',
+            'python-dev',
+            'libxslt-dev',
+            'libldap2-dev',
+            'libsasl2-dev',
+            'libjpeg-dev',
+            'imagemagick',
+            'git-core',
+        ]

@@ -1,5 +1,8 @@
+from datetime import timedelta
+
 from django.core.paginator import Paginator
 from django.http import Http404
+from django.utils.translation import ugettext as _
 
 from molly.utils.views import BaseView, ZoomableView
 from molly.utils.breadcrumbs import *
@@ -15,8 +18,8 @@ class IndexView(BaseView):
     
     def get_metadata(self, request):
         return {
-            'title': 'Library search',
-            'additional': "View libraries' contact information and find library items.",
+            'title': _('Library search'),
+            'additional': _("View libraries' contact information and find library items."),
         }
     
     def initial_context(self, request):
@@ -26,10 +29,11 @@ class IndexView(BaseView):
     
     @BreadcrumbFactory
     def breadcrumb(self, request, context):
-        return Breadcrumb(self.conf.local_name, None, 'Library search', lazy_reverse('index'))
+        return Breadcrumb(self.conf.local_name, None, _('Library search'), lazy_reverse('index'))
     
     def handle_GET(self, request, context):
-        return self.render(request, context, 'library/index')
+        return self.render(request, context, 'library/index',
+                           expires=timedelta(days=28))
 
 class SearchDetailView(BaseView):
     """
@@ -49,9 +53,9 @@ class SearchDetailView(BaseView):
     @BreadcrumbFactory
     def breadcrumb(self, request, context):
         if 'item' in context or context['search_form'].is_valid():
-            title = 'Search Results'
+            title = _('Search Results')
         else:
-            title = 'Library search'
+            title = _('Library search')
         return Breadcrumb(
             self.conf.local_name,
             lazy_parent('index'),
@@ -97,7 +101,8 @@ class SearchDetailView(BaseView):
             'results': paginator,
             'page': page,
         })
-        return self.render(request, context, 'library/item_list')
+        return self.render(request, context, 'library/item_list',
+                           expires=timedelta(hours=1))
     
     def handle_error(self, request, context, message):
         context['error_message'] = message
@@ -127,7 +132,7 @@ class ItemDetailView(ZoomableView):
         return Breadcrumb(
             self.conf.local_name,
             lazy_parent('search'),
-            'Search result',
+            _('Search result'),
             lazy_reverse('item-detail', args=[control_number]),
         )
 
@@ -211,7 +216,7 @@ class ItemHoldingsView(ZoomableView):
         return Breadcrumb(
             self.conf.local_name,
             lazy_parent('item-detail', control_number=control_number),
-            'Item holdings information',
+            _('Item holdings information'),
             lazy_reverse('item-holdings-detail', args=[control_number,sublocation]),
         )
 

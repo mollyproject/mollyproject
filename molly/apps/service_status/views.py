@@ -1,25 +1,27 @@
 import logging
+from django.utils.translation import ugettext as _
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
 
 logger = logging.getLogger(__name__)
 
+
 class IndexView(BaseView):
     """
-    View to display the service status information.
+    View to display service status information
     """
 
     def get_metadata(self, request):
         return {
-            'title': 'Service Status',
-            'additional': 'Check whether IT services are available',
+            'title': _('Service status'),
+            'additional': _('Check whether services are available'),
         }
 
     @BreadcrumbFactory
     def breadcrumb(self, request, context):
         return Breadcrumb('service_status', None,
-                          'Service Status',
+                          _('Service Status'),
                           lazy_reverse('index'))
 
     def handle_GET(self, request, context):
@@ -40,4 +42,3 @@ class IndexView(BaseView):
         context['services'] = services
 
         return self.render(request, context, 'service_status/index')
-

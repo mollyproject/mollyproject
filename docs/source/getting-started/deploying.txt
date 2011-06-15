@@ -13,7 +13,7 @@ Local Testing Installs
 ----------------------
 
 There are two ways to start up the Django development server. If you do a
-development install of Molly (pass the ``-d`` flag to ``quickinstall``), then
+development install of Molly (pass the ``-d`` flag to ``setup.py deploy``), then
 the development server will automatically start at the end of the install.
 
 The alternative way is to start the server by hand. There are two steps to this,

@@ -1,10 +1,10 @@
 {% load molly_osm %}{% load molly_utils %}
-
-{% if entity|osm_tags or entity.metadata.osm.tags.phone or entity.metadata.osm.tags.wikipedia or entity.metadata.osm.tags.url %}
+{% load i18n %}
+{% if entity|osm_tags or entity.metadata.osm.tags.phone or entity.metadata.osm.tags.wikipedia or entity.metadata.osm.tags.website_mobile or entity.metadata.osm.tags.website or entity.metadata.osm.tags.url %}
 
 <div class="section">
   <div class="header">
-    <h2>Information from OpenStreetMap</h2>
+    <h2>{% trans "Information from OpenStreetMap" %}</h2>
   </div>
   {% if entity|osm_tags %}
   <div class="section-content no-round-bottom">
@@ -23,28 +23,45 @@
     {% if entity.metadata.osm.tags.phone %}
       <li>
           <a class="phone" href="{{ entity.metadata.osm.tags.phone|telephone_uri }}">
-              Call <em>{{ entity.title }}</em><br/>
-              <small>{{ entity.metadata.osm.tags.phone|telephone:"nolink" }}</small>
+            {% blocktrans with entity.title as title %}Call <em>{{ title }}</em>{% endblocktrans %}
+            <br/>
+            <small>{{ entity.metadata.osm.tags.phone|telephone:"nolink" }}</small>
           </a>
       </li>
     {% endif %}
     {% if entity.metadata.osm.tags.wikipedia %}
       <li>
           <a class="external-mobile" href="{{ entity.metadata.osm.tags.wikipedia|osm_tag_wikipedia_uri|urlencode }}">
-              Wikipedia article
+              {% trans "Wikipedia article" %}
           </a>
       </li>
     {% endif %}
-    {% if entity.metadata.osm.tags.url %}
-      <li>
-          <a class="external" href="{{ entity.metadata.osm.tags.url|escape }}">
-              Website
-          </a>
-      </li>
+    {% if entity.metadata.osm.tags.website_mobile %}
+          <li>
+              <a class="external" href="{{ entity.metadata.osm.tags.website_mobile|escape }}">
+                  {% trans "Website" %}
+              </a>
+          </li>
+    {% else %}
+      {% if entity.metadata.osm.tags.website %}
+          <li>
+              <a class="external" href="{{ entity.metadata.osm.tags.website|escape }}">
+                  {% trans "Website" %}
+              </a>
+          </li>
+      {% else %}
+        {% if entity.metadata.osm.tags.url %}
+          <li>
+              <a class="external" href="{{ entity.metadata.osm.tags.url|escape }}">
+                  {% trans "Website" %}
+              </a>
+          </li>
+        {% endif %}
+      {% endif %}
     {% endif %}
     <li>
       <a href="{% url places:entity-update entity.identifier_scheme entity.identifier_value %}">
-        Suggest a correction
+        {% trans "Suggest a correction" %}
       </a>
     </li>
   </ul>

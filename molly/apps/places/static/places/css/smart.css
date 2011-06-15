@@ -1,0 +1,27 @@
+/* RTI */
+table.real-time-information {
+    width: 100%;
+    background: #121C28;
+    color: #FFBF00;
+    border: 2px solid #FFBF00;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    border-radius: 8px;
+
+    padding: 2px 0;
+}
+
+table.real-time-information tr {
+    border-collapse: collapse;
+    border-top: 1px solid #FFBF00;
+}
+
+tbody#bus_times td.service-id {
+    font-size: 2em;
+    text-align: center;
+}
+
+td.service-id a {
+    color: inherit;
+}
+/* End RTI */

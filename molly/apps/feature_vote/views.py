@@ -3,6 +3,7 @@ import random
 from django.shortcuts import get_object_or_404
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseForbidden
+from django.utils.translation import ugettext as _
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
@@ -27,24 +28,20 @@ class IndexView(BaseView):
         return Breadcrumb(
             self.conf.local_name,
             None,
-            'Feature suggestions',
+            _('Feature suggestions'),
             lazy_reverse('index'),
         )
 
     def initial_context(self, request):
-        if not 'feature_vote:csrf' in request.session:
-            request.session['feature_vote:csrf'] = ''.join(random.choice('0123456789abcdef') for i in range(8))
-        if not 'feature_vote:votes' in request.session:
-            request.session['feature_vote:votes'] = {}
-
-        features = list(Feature.objects.filter(is_public=True))
+        for feature in Feature.objects.filter(is_public=True, is_removed=False):
+            feature.check_remove(request)
+        features = list(Feature.objects.filter(is_public=True, is_removed=False))
         for feature in features:
             feature.vote = request.session['feature_vote:votes'].get(feature.id, 0)
 
         return {
             'features': features,
             'form': FeatureForm(request.POST or None),
-            'csrf': request.session['feature_vote:csrf'],
             'submitted': request.GET.get('submitted') == 'true',
         }
 
@@ -54,9 +51,12 @@ class IndexView(BaseView):
     def handle_POST(self, request, context):
         form = context['form']
 
-        if request.POST.get('csrf') != request.session['feature_vote:csrf']:
-            return HttpResponseForbidden()
-
+        if 'vote_up.x' in request.POST:
+            request.POST['vote_up'] = request.POST['vote_up.x']
+        
+        if 'vote_down.x' in request.POST:
+            request.POST['vote_down'] = request.POST['vote_down.x']
+        
         if 'vote_up' in request.POST or 'vote_down' in request.POST:
             feature = get_object_or_404(Feature, id = request.POST.get('id', 0))
             previous_vote = request.session['feature_vote:votes'].get(feature.id, 0)
@@ -106,15 +106,12 @@ class FeatureDetailView(BaseView):
         )
 
     def initial_context(self, request, id):
-        if not 'feature_vote:csrf' in request.session:
-            request.session['feature_vote:csrf'] = ''.join(random.choice('0123456789abcdef') for i in range(8))
         if not 'feature_vote:votes' in request.session:
             request.session['feature_vote:votes'] = {}
         feature = get_object_or_404(Feature, id=id, is_public=True)
         feature.vote = request.session['feature_vote:votes'].get(feature.id, 0)
         return {
             'feature': feature,
-            'csrf': request.session['feature_vote:csrf'],
         }
 
     def handle_GET(self, request, context, id):

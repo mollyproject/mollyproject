@@ -4,6 +4,8 @@ from xml.dom import minidom
 from PyZ3950 import zoom
 from PyZ3950.zmarc import MARC, MARC8_to_Unicode
 
+from django.utils.translation import ugettext_lazy
+
 from molly.apps.library.models import LibrarySearchResult, Library
 from molly.apps.library.providers import BaseLibrarySearchProvider
 
@@ -27,6 +29,7 @@ class SearchResult(LibrarySearchResult):
         return {
             '_type': 'z3950.Item',
             '_pk': self.control_number,
+            'control_number': self.control_number,
             'title': self.title,
             'publisher': self.publisher,
             'author': self.author,
@@ -121,7 +124,7 @@ class USMARCSearchResult(SearchResult):
             self.libraries[library].append( {
                 'due': due_date,
                 'availability': availability,
-                'availability_display': datum['y'][0] if 'y' in datum else None,
+                'availability_display': ugettext_lazy(datum['y'][0]) if 'y' in datum else None,
                 'shelfmark': shelfmark,
                 'materials_specified': materials_specified,
             } )
@@ -225,7 +228,7 @@ class XMLSearchResult(SearchResult):
             self.libraries[library].append( {
                 'due': None,
                 'availability': LibrarySearchResult.AVAIL_UNKNOWN,
-                'availability_display': 'Availability Unknown',
+                'availability_display': ugettext_lazy('Availability Unknown'),
                 'shelfmark': shelfmark,
                 'materials_specified': note,
             } )

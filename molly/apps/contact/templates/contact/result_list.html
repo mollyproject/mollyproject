@@ -1,8 +1,7 @@
 {# Search form results list #}
-
 {% extends "contact/base.html" %}{% load molly_utils %}
-
-{% block title %}Contact search{% if query %}: {{ query }}{% endif %}{% endblock %}
+{% load i18n %}
+{% block title %}{% trans "Contact Search" %}{% if query %}: {{ query }}{% endif %}{% endblock %}
 
 {% block content %}
 
@@ -11,7 +10,7 @@
 {% if form.is_valid %}
 <div class="section">
   <div class="header">
-    <h2>Results</h2>
+    <h2>{% trans "Results" %}</h2>
   </div>
     {% if message %}
       <div class="section-content no-round-bottom">
@@ -22,9 +21,10 @@
     {% endif %}
     <div class="section-content{% if results %} no-round-bottom{% endif %}">
       <div class="note"><div class="bubble pad-10">
-        Your search returned {{ results|length }} item{{ results|length|pluralize }}.
+        {% blocktrans count results|length as counter %}Your search returned one item.{% plural %}Your search returned {{ counter }} items.{% endblocktrans %}
+		{# If there are too many results suggest that the user uses more specific criteria #}
         {% if results|length|gte:40 %}
-          Try adding an initial to get more specific results.
+          {% trans "Try adding an initial to get more specific results." %}
         {% endif %}
       </div></div>
     </div>

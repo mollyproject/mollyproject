@@ -1,10 +1,10 @@
-{% extends "base.html" %}
+{% extends "base.html" %}{% load i18n %}
 
 {% block content %}
 
 <div class="section">
   <div class="header">
-    <h2>Favourites</h2>
+    <h2>{% trans "Favourites" %}</h2>
   </div>
     
     <table class="content">
@@ -18,13 +18,13 @@
                 <input type="hidden" name="URL" value="{{ favourite.url|escape }}" />
                 <input type="hidden" name="return_to_favourites" value="True" />
                 {% csrf_token %}
-                <input type="submit" name="unfavourite" value="Unfavourite" />
+                <input type="submit" name="unfavourite" value="{% trans "Unfavourite" %}" />
             </form>
           </td>
         </tr>
         {% empty %}
         <tr>
-          <td colspan="2" style="text-align:center;"><em>You haven't favourited anything yet!</em></td>
+          <td colspan="2" class="center"><em>{% trans "You haven't favourited anything yet!" %}</em></td>
         </tr>
         {% endfor %}
       </tbody>

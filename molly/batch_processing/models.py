@@ -5,7 +5,7 @@ import logging
 from datetime import datetime
 from StringIO import StringIO
 
-from django.db import models
+from django.db import models, IntegrityError, transaction
 
 from molly.conf import all_apps, app_by_local_name
 
@@ -32,6 +32,7 @@ class Batch(models.Model):
     last_run = models.DateTimeField(null=True, blank=True)
     pending = models.BooleanField(default=False)
     currently_running = models.BooleanField(default=False)
+    last_run_failed = models.BooleanField(default=False)
     log = models.TextField(blank=True)
 
     def get_metadata(self):
@@ -62,7 +63,6 @@ class Batch(models.Model):
             self.pending = False
             self.save()
             
-            
             providers = app_by_local_name(self.local_name).providers
             for provider in providers:
                 if provider.class_path == self.provider_name:
@@ -74,10 +74,19 @@ class Batch(models.Model):
             
             self.metadata = method(self.metadata, output)
         except Exception, e:
+            if isinstance(e, IntegrityError):
+                transaction.rollback()
             if output.getvalue():
                 output.write("\n\n")
             traceback.print_exc(file=output)
-            logger.exception('Batch %r threw an uncaught exception' % self.title)
+            if self.last_run_failed:
+                log = logger.info('Batch %r threw an uncaught exception (repeat failure)' % self.title,
+                                  exc_info=True)
+            else:
+                logger.exception('Batch %r threw an uncaught exception' % self.title)
+            self.last_run_failed = True
+        else:
+            self.last_run_failed = False
         finally:
             self.log = output.getvalue()
             self.last_run = datetime.utcnow()

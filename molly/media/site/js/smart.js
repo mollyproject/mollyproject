@@ -1,6 +1,6 @@
 /* Consistent asynchronous page loading */
 
-var current_url = window.location.pathname;
+var current_url = window.location.pathname + window.location.search;
 
 /* This is a work around for the back button being broken in Opera
  * http://www.opera.com/support/kb/view/827/
@@ -8,6 +8,7 @@ var current_url = window.location.pathname;
 history.navigationMode = 'compatible';
 
 function to_absolute(url) {
+    url = url.split('#')[0]
     if (url.match(/https?\:\/\//)) {
         return url;
     } else if (url.substr(0, 1) == "/") {
@@ -25,24 +26,34 @@ function to_absolute(url) {
 function display_loading_screen(){
     $('body').append('<div id="loading"></div>')
     $('#loading').height($('html').height())
+    $('body').append('<button id="loading-cancel">Cancel</button>')
+    $('#loading-cancel').click(function(){
+        async_load_xhr.abort();
+        async_load_xhr = null;
+        clear_loading_screen();
+    })
     display_spinner()
 }
 
 /* reposition the spinner when the page is scrolled - on iPhone only */
 function display_spinner(){
     offset = window.innerHeight / 2
+    cancel_offset = window.innerHeight * 0.7
     if (navigator.userAgent.match(/iPhone/i) ||
         navigator.userAgent.match(/iPod/i) ||
         navigator.userAgent.match(/iPad/i)) {
         offset += window.pageYOffset
+        cancel_offset += window.pageYOffset
     }
     $('#loading').css('background-position', '50% ' + offset + 'px')
+    $('#loading-cancel').css('top', cancel_offset + 'px')
 }
 
 $(window).scroll(display_spinner)
 
 function clear_loading_screen(){
     $('#loading').remove();
+    $('#loading-cancel').remove();
 }
 
 // Callback method that swaps in the asynchronously loaded bits to the page, and fades it in
@@ -54,8 +65,9 @@ function async_load_callback(data, textStatus, xhr) {
 }
 
 function ajax_failure() {
+    async_load_xhr = null;
     $('#loading')
-        .html('<p style="position:fixed; top: 10%; width:100%; margin:0 auto; text-align:center;">Error loading page - please try again.</p>')
+        .html('<p style="position:fixed; top: 10%; width:100%; margin:0 auto; text-align:center;">' + gettext('Error loading page - please try again.') + '</p>')
         .css({'font-size': '20px', 'font-weight': 'bold'})
         .fadeTo('fast', 0.9, function() {
             setTimeout(function() {
@@ -63,6 +75,8 @@ function ajax_failure() {
             }, 1200);
         });
 }
+
+async_load_xhr = null;
 
 function async_load(url, query, meth) {
     
@@ -74,12 +88,13 @@ function async_load(url, query, meth) {
     display_loading_screen()
   
     query['format'] = 'fragment';
-    $.ajax({
+    async_load_xhr = $.ajax({
             'url': to_absolute(url),
             'data': query,
             'type': meth,
             'dataType': 'json',
             'success': function(data, textStatus, xhr) {
+                async_load_xhr = null;
                 if (data.redirect) {
                     window.location = data.redirect;
                     return true;
@@ -89,6 +104,7 @@ function async_load(url, query, meth) {
                 if (!!(window.history && history.pushState)) {
                     history.pushState(null, null, to_absolute(current_url))
                 } else {
+                    already_doing_hash_reload = false;
                     window.location.hash = current_url;
                 }
                 return async_load_callback(data, textStatus, xhr);
@@ -110,7 +126,7 @@ function capture_outbound()  {
             }
             return async_load($(this).attr('action'), datamap, $(this).attr('method'));
         });
-    $('form:not(.has-ajax-handler) button[type="submit"]').click(function(e){
+    $('form:not(.has-ajax-handler) button[type="submit"], form:not(.has-ajax-handler) input[type="submit"], form:not(.has-ajax-handler) input[type="image"]').click(function(e){
         var form = $(this).parents('form');
         $(form).find('input[type="hidden"][name="' + $(this).attr('name') + '"]').remove()
         $(form).append('<input type="hidden" name="' + $(this).attr('name') + '" value="' + $(this).attr('value') + '" />')
@@ -125,11 +141,25 @@ function capture_outbound()  {
 }
 
 $(window).load(function() {
+    already_doing_hash_reload = false;
     function check_hash_change(){
-        if (window.location.hash && window.location.hash.substr(1) != current_url) {
+        // Can't use window.location.hash directly because of
+        // https://bugzilla.mozilla.org/show_bug.cgi?id=483304
+        var pathpart = window.location.href.split('#');
+        if (pathpart.length == 1) {
+            pathpart = '';
+        } else {
+            pathpart = pathpart[1]
+        }
+        if (!already_doing_hash_reload && (window.location.hash && pathpart != current_url)) {
+            already_doing_hash_reload = true;
             async_load(window.location.hash.substr(1), {}, "GET");
         }
-        if (typeof(window.opera)!='undefined'){
+        if (!already_doing_hash_reload && (!window.location.hash && current_url != window.location.pathname + window.location.search)) {
+            already_doing_hash_reload = true;
+            async_load(window.location.pathname + window.location.search, {}, "GET");
+        }
+        if (!!!(window.history && history.pushState)) {
             setTimeout(check_hash_change, 100);
         }
     }
@@ -139,7 +169,7 @@ $(window).load(function() {
     
     if (!!(window.history && history.pushState)) {
       window.addEventListener('popstate', function(e, state){
-        if (current_url != window.location.pathname) {
+        if (current_url != window.location.pathname + window.location.search) {
           async_load(window.location.href, {}, 'GET');
         }
       }, false)
