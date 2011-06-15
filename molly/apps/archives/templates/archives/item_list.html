@@ -1,0 +1,76 @@
+{% extends "archives/base.html" %}
+
+{% block content %}
+
+{% if error_message %}
+<div class="section">
+    <div class="header">
+        <h2>There was an error with your search</h2>
+    </div>
+    <div class="section-content">
+        <p><strong>{{ error_message }}</strong></p>
+    </div>
+</div>
+{% endif %}
+
+{% if search_form %}{% include "archives/search_form.html" %}{% endif %}
+
+{% if page %}
+<div class="section">
+<div class="header">
+<h2>Result list <small>(sorted by relevance)</small></h2>
+</div>
+
+<div class="note">
+
+{% if page.has_previous %}
+    <a href="?index={{ search_form.cleaned_data.index|urlencode }}&relation={{ search_form.cleaned_data.relation|urlencode }}&value={{ search_form.cleaned_data.value|urlencode }}&page={{ page.previous_page_number }}" title="Previous page" class="prev">
+        Previous</a>
+{% endif %}
+
+    Showing results {{ page.start_index }} to {{ page.end_index }} of {{ results.object_list|length }}. Page {{ page.number }} of {{ results.num_pages }}.
+
+{% if page.has_next %}
+    <a href="?index={{ search_form.cleaned_data.index|urlencode }}&relation={{ search_form.cleaned_data.relation|urlencode }}&value={{ search_form.cleaned_data.value|urlencode }}&page={{ page.next_page_number }}" title="Next page" class="next">
+        Next
+    </a>
+{% endif %}
+
+</div>
+
+<ul class="link-list no-round-bottom">
+{% for item in page.object_list %}
+<li{% if forloop.last %} class="no-round-bottom"{% endif %}>
+        {% if item.id %}
+        <br/><small><strong>ID:</strong>
+        {% if item.collectionId %}{{ item.collectionId }}/{% endif %}{{ item.id }}
+        </small>
+        {% endif %}
+        <br/><small><strong>Title:</strong> {{ item.title }}</small>
+        {% if item.creator %}
+        <br/><small><strong>Creator:</strong> {{ item.creator }}</small>
+        {% endif %}
+        {% if item.date %}
+        <br/><small><strong>Date(s):</strong> {{ item.date }}</small>
+        {% endif %}
+</li>
+{% endfor %}
+</ul>
+
+<div class="note">
+{% if page.has_previous %}
+    <a href="?title={{ search_form.cleaned_data.title|urlencode }}&author={{ search_form.cleaned_data.author|urlencode }}&isbn={{ search_form.cleaned_data.isbn|urlencode }}&page={{ page.previous_page_number }}" title="Previous page" class="prev">
+        Previous</a>
+{% endif %}
+
+    Showing results {{ page.start_index }} to {{ page.end_index }} of {{ results.object_list|length }}. Page {{ page.number }} of {{ results.num_pages }}.
+{% if page.has_next %}
+    <a href="?title={{ search_form.cleaned_data.index|urlencode }}&relation={{ search_form.cleaned_data.relation|urlencode }}&value={{ search_form.cleaned_data.value|urlencode }}&page={{ page.next_page_number }}" title="Next page" class="next">
+        Next
+    </a>
+{% endif %}
+</div>
+</div>
+{% endif %}
+
+{% endblock %}

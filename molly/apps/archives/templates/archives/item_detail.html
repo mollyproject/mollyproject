@@ -1,0 +1,41 @@
+{% extends "archives/base.html" %}
+{% load molly_maps %}
+{% block content %}
+
+<div class="section">
+<div class="header">
+    <h2>{{ item.title }}</h2>
+</div>
+    <div class="article"><div class="bubble pad-5">
+    <table>
+{% if item.title %}
+        <tr>
+            <th>Title:</th>
+            <td>{{ item.title }}</td>
+        </tr>
+{% endif %}
+{% if item.creator %}
+        <tr>
+            <th>Creator:</th>
+            <td>{{ item.creator }}</td>
+        </tr>
+{% endif %}
+{% if item.date %}
+        <tr>
+            <th>Date:</th>
+            <td>{{ item.date }}</td>
+        </tr>
+{% endif %}
+{% if item.description %}
+        <tr>
+            <th>Description:</th>
+            <td>{{ item.description }}</td>
+        </tr>
+{% endif %}
+
+    </table>
+    </div></div>
+
+</div>
+
+{% endblock %}
