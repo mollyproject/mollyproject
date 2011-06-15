@@ -73,13 +73,15 @@ def deploy(venv, site_path, development=False, listen_externally=False,
         logger.info("Building Wurfl file")
         venv("python %s/manage.py update_wurfl" % site_path)
     venv("python %s/manage.py generate_markers --lazy" % site_path)
-    if development:
+    if development and os.name != 'nt':
+        # Windows can't symlink
         venv("python %s/manage.py collectstatic --noinput -l" % site_path)
     else:
         venv("python %s/manage.py collectstatic --noinput" % site_path)
     venv("python %s/manage.py synccompress" % site_path)
     #venv("python %s/manage.py generate_cache_manifest" % site_path)
-    venv("python %s/manage.py create_crontab | crontab" % site_path)
+    if os.name != 'nt':
+        venv("python %s/manage.py create_crontab | crontab" % site_path)
     print "DONE!"
     
     # Start dev server
