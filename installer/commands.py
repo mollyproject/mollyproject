@@ -8,13 +8,12 @@ from distutils.errors import DistutilsArgError, DistutilsExecError
 
 from installer.deploy import deploy
 from installer.virtualenv import Virtualenv, NotAVirtualenvError
-from installer.sysprep import SysPreparer
 from installer.dbcreate import create
 from installer import PIP_PACKAGES
 
 try:
     from installer.sysprep import PYTHON26
-except ImportError:
+except NotImplementedError:
     import sys
     PYTHON26 = sys.executable
 
@@ -53,23 +52,43 @@ class DeployCommand(Command):
         deploy(Virtualenv(self.virtualenv), self.site_path, self.development,
                self.listen_externally, self.port)
 
-
-class SysprepCommand(Command):
+try:    
+    from installer.sysprep import SysPreparer
+except NotImplementedError:
     
-    description = "installs system level dependencies for Molly"
+    class SysprepCommand(Command):
+        
+        description = "installs system level dependencies for Molly"
+        
+        user_options = []
+        
+        def initialize_options(self):
+            pass
+        
+        def finalize_options(self):
+            raise DistutilsExecError('This command is not supported on this system')
+        
+        def run(self):
+            pass
     
-    user_options = []
+else:
     
-    def initialize_options(self):
-        pass
-    
-    def finalize_options(self):
-        if os.getuid() != 0:
-            raise DistutilsExecError('This command can only be run as root')
-    
-    def run(self):
-        sysprepper = SysPreparer()
-        sysprepper.sysprep()
+    class SysprepCommand(Command):
+        
+        description = "installs system level dependencies for Molly"
+        
+        user_options = []
+        
+        def initialize_options(self):
+            pass
+        
+        def finalize_options(self):
+            if os.getuid() != 0:
+                raise DistutilsExecError('This command can only be run as root')
+        
+        def run(self):
+            sysprepper = SysPreparer()
+            sysprepper.sysprep()
 
 
 class CreateVirtualenvCommand(Command):
@@ -154,7 +173,7 @@ class DBPrepCommandImpl(AbstractDBPrepCommand):
 try:
     from installer.sysprep import postgres_setup
     from installer.dbprep import configure_pg_hba, create_postgis_template
-except ImportError:
+except NotImplementedError:
     
     DBPrepCommand = NullDBPrepCommand
     
