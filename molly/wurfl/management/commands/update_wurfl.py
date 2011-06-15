@@ -54,7 +54,13 @@ class Command(NoArgsCommand):
             gen_filename = os.path.join(tempdir, 'wurfl.py')
             ET.ElementTree(root).write(out_filename)
 
-            subprocess.call(['wurfl2python.py', out_filename, '-o', gen_filename])
+            if os.name == 'nt':
+                # Windows can't handle shebangs
+                subprocess.call([sys.executable,
+                    os.path.join(os.path.dirname(sys.executable), 'wurfl2python.py'),
+                    out_filename, '-o', gen_filename])
+            else:
+                subprocess.call(['wurfl2python.py', out_filename, '-o', gen_filename])
             
             shutil.move(gen_filename, final_filename)
 
