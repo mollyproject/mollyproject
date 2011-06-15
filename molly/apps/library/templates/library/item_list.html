@@ -45,7 +45,7 @@
 <ul class="link-list no-round-bottom" id="item-list">
 {% for item in page.object_list %}
 <li>
-    <a href="{% url library:item-detail item.control_number %}">
+    <a href="{% url library:item-detail item.control_number|urlencode:"" %}">
         {{ item  }}{% if item.author %}
         <br/><small><strong>{% trans "Author" %}:</strong> {{ item.author }}</small>{% endif %}
         <br/><small><strong>{% trans "Publisher" %}:</strong> {{ item.publisher }}</small>{% if item.edition %}
