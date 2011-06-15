@@ -209,15 +209,15 @@ class NaptanContentHandler(ContentHandler):
                     
                     if indicator is None and self.meta['stop-type'] in ('AIR', 'FTD', 'RSE', 'TMU', 'BCE'):
                         # Translators: This is referring to public transport entities
-                        indicator = ugettext('Entrance to %s') % common_name
+                        title = ugettext('Entrance to %s') % common_name
                     
                     elif indicator is None and self.meta['stop-type'] in ('FBT',):
                         # Translators: This is referring to ferry ports
-                        indicator = ugettext('Berth at %s') % common_name
+                        title = ugettext('Berth at %s') % common_name
                     
                     elif indicator is None and self.meta['stop-type'] in ('RPL','PLT'):
                         # Translators: This is referring to rail and metro stations
-                        indicator = ugettext('Platform at %s') % common_name
+                        title = ugettext('Platform at %s') % common_name
                     
                     elif indicator is not None:
                         title = indicator + ' ' + common_name
