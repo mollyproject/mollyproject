@@ -70,7 +70,11 @@
             {% if entity.metadata.real_time_information.services %}
                 {% for service in entity.metadata.real_time_information.services %}
                     <tr>
-                        <td class="center"><big>{{ service.service }}</big></td>
+                        <td class="center"><big>
+                            {% if service.route %}<a href="{{ entity.get_absolute_url }}service?route={{ service.service|urlencode }}">{% endif %}
+                                {{ service.service }}
+                            {% if service.route %}</a>{% endif %}
+                        </big></td>
                         <td>{{ service.destination }}</td>
                         <td>{{ service.next }}{% if service.following %}<small>, {{ service.following.0 }}{% if service.following.1 %}, &hellip;{% endif %}</small>{% endif %}</td>
                     </tr>
@@ -85,7 +89,7 @@
     </table>
     {% ifequal data.results_type _("Favourite") %}
     <ul class="link-list">
-        <li><a href="{% url places:nearby-detail data.type.slug %}">
+        <li class="switcher"><a href="?{{ type }}=nearby" class="nearby-switcher has-ajax-handler">
             {% blocktrans with data.type.verbose_name_plural as entity_type %}View nearby {{ entity_type }}{% endblocktrans %}
         </a></li>
     </ul>

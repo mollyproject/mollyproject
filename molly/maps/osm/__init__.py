@@ -26,7 +26,7 @@ MARKER_COLORS = (
 
 MARKER_RANGE = xrange(1, 100)
 
-logger = logging.getLogger('molly.osm.generation')
+logger = logging.getLogger(__name__)
 
 def get_or_create_map(generator, args):
     """
@@ -121,11 +121,11 @@ def get_or_create_map(generator, args):
             # This means a race error was generated, but because of the
             # functional nature of generator, we can carry on here
             logger.debug("Map generated: %s, took %.5f seconds (with race)",
-                         (hash, time.time()-start_time))
+                         hash, time.time()-start_time)
             transaction.savepoint_rollback(savepoint)
         else:
             logger.debug("Map generated: %s, took %.5f seconds",
-                         (hash, time.time()-start_time))
+                         hash, time.time()-start_time)
             transaction.savepoint_commit(savepoint)
         
         # If there are any maps older than a week, regenerate them
@@ -140,7 +140,7 @@ def get_or_create_map(generator, args):
                 generated_map.delete()
             age = (datetime.now()-youngest)
             age = age.days*24 + age.seconds/3600.0
-            logger.debug("Cleared out old maps, youngest is %f hours", age)
+            logger.info("Cleared out old maps, youngest is %f hours", age)
     
     return hash, metadata
     

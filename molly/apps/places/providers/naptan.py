@@ -16,7 +16,7 @@ from django.conf import settings
 from django.contrib.gis.geos import Point
 from django.utils.translation import ugettext_noop as _
 from django.utils.translation import ugettext, get_language
-from molly.utils.i18n import override
+from molly.utils.i18n import override, set_name_in_language
 
 from molly.apps.places.providers import BaseMapsProvider
 from molly.apps.places.models import EntityType, Entity, EntityGroup, Source, EntityTypeCategory
@@ -167,7 +167,9 @@ class NaptanContentHandler(ContentHandler):
                     ('common-name', 'indicator', 'locality-ref', 'street')]
         
         if (common_name or '').endswith(' DEL') or \
-          (indicator or '').lower() == 'not in use':
+           (indicator or '').lower() == 'not in use' or \
+           (common_name or '').endswith('(to define route)') or \
+           (common_name or '').endswith('to def rte'):
             # In the NaPTAN list, but indicates it's an unused stop
             return
         
@@ -190,29 +192,32 @@ class NaptanContentHandler(ContentHandler):
                     indicator = {
                         # Translators: This is referring to bus stop location descriptions
                         'opp': ugettext('Opposite'),
+                        'Opp': ugettext('Opposite'),
                         'opposite': ugettext('Opposite'),
                         # Translators: This is referring to bus stop location descriptions
                         'adj': ugettext('Adjacent'),
                         # Translators: This is referring to bus stop location descriptions
                         'outside': ugettext('Outside'),
                         'o/s': ugettext('Outside'),
+                        'O/s': ugettext('Outside'),
                         # Translators: This is referring to bus stop location descriptions
                         'nr': ugettext('Near'),
+                        'Nr': ugettext('Near'),
                         # Translators: This is referring to bus stop location descriptions
                         'inside': ugettext('Inside'),
                     }.get(indicator, indicator)
                     
                     if indicator is None and self.meta['stop-type'] in ('AIR', 'FTD', 'RSE', 'TMU', 'BCE'):
                         # Translators: This is referring to public transport entities
-                        indicator = ugettext('Entrance to %s') % common_name
+                        title = ugettext('Entrance to %s') % common_name
                     
                     elif indicator is None and self.meta['stop-type'] in ('FBT',):
                         # Translators: This is referring to ferry ports
-                        indicator = ugettext('Berth at %s') % common_name
+                        title = ugettext('Berth at %s') % common_name
                     
                     elif indicator is None and self.meta['stop-type'] in ('RPL','PLT'):
                         # Translators: This is referring to rail and metro stations
-                        indicator = ugettext('Platform at %s') % common_name
+                        title = ugettext('Platform at %s') % common_name
                     
                     elif indicator is not None:
                         title = indicator + ' ' + common_name
@@ -223,13 +228,31 @@ class NaptanContentHandler(ContentHandler):
                     
                     if street != None and street != '-' \
                                  and not common_name.startswith(street):
+                        # Deal with all-caps street names
+                        if street.upper() == street:
+                            fixedstreet = ''
+                            wordstart = True
+                            for letter in street:
+                                if wordstart:
+                                    wordstart = False
+                                    fixedstreet += letter
+                                    continue
+                                elif letter == ' ':
+                                    wordstart = True
+                                    fixedstreet += letter
+                                    continue
+                                else:
+                                    fixedstreet += letter.lower()
+                            street = fixedstreet
+                        
                         title += ', ' + street
                     
                     locality_lang = self.nptg_localities.get(locality)
                     if locality_lang != None:
                         for lang in (lang_code, 'en', 'cy'):
                             if lang in locality_lang:
-                                title += ', ' + locality_lang[lang]
+                                if locality_lang[lang] != street:
+                                    title += ', ' + locality_lang[lang]
                                 break
                     
                     names[lang_code] = title

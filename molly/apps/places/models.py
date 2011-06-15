@@ -351,3 +351,40 @@ class EntityName(models.Model):
     
     class Meta:
         unique_together = ('entity', 'language_code')
+
+class Route(models.Model):
+    """
+    A class representing a route which a public transport service takes
+    """
+    
+    # A publically displayed "ID" for this service, e.g., "4C"
+    service_id = models.TextField()
+    
+    # The operator of this service, e.g., "Oxford Bus Company" or "First"
+    operator = models.TextField(null=True, blank=True)
+    
+    # A longer name for this service, e.g., "4 to City & Abingdon"
+    service_name = models.TextField(null=True, blank=False)
+    
+    # A primary key used in the external dataset
+    external_ref = models.TextField()
+    
+    stops = models.ManyToManyField(Entity, through='StopOnRoute')
+    
+    def __unicode__(self):
+        return u'%s: %s' % (self.service_id, self.service_name)
+    
+class StopOnRoute(models.Model):
+    
+    entity = models.ForeignKey(Entity)
+    route = models.ForeignKey(Route)
+    
+    # The number stop which this is on this route
+    order = models.IntegerField()
+    
+    class Meta:
+        ordering = ['order']
+    
+    def __unicode__(self):
+        return self.entity.title
+

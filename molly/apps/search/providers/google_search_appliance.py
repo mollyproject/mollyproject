@@ -10,7 +10,7 @@ from django.core.urlresolvers import Resolver404, reverse
 
 from molly.apps.search.providers import BaseSearchProvider
 
-logger = logging.getLogger("molly.providers.search.google_search_appliance")
+logger = logging.getLogger(__name__)
 
 class GSASearchProvider(BaseSearchProvider):
 

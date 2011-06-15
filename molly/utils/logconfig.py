@@ -78,7 +78,9 @@ class EmailHandler(logging.Handler):
         send_email(request, context, 'utils/log_record.eml', cls=self)
 
 def configure_logging(conf):
-    logger = logging.getLogger()
+    
+    # We only care about stuff Molly complains about at this point
+    logger = logging.getLogger('molly')
     
     if settings.DEBUG:
         # This checks if we're using the dev server - can't log to stderr
@@ -87,11 +89,18 @@ def configure_logging(conf):
         # can't do it the preferred way however, as we don't have access to a
         # request object here
         if sys.argv[1] == 'runserver':
+            
+            # when in debug mode, log Molly at debug level to stdout
             handler = StreamHandler()
             logger.setLevel(logging.DEBUG)
+            
+            # Log everyone else at info level
+            logging.getLogger().setLevel(logging.INFO)
         else:
             return
     else:
+        
+        # When not in debug mode, e-mail warnings and above to admins
         handler = EmailHandler()
         handler.setLevel(logging.WARNING)
     logger.addHandler(handler)

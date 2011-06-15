@@ -91,12 +91,12 @@
   <ul class="link-list">
     {% if board %}
       {% ifequal board "departures" %}
-        <li><a class="ldb-board" href="{{ train_station.get_absolute_url }}?board=arrivals">{% trans "View arrivals board" %}</a></li>
+        <li><a class="ldb-board" href="?board=arrivals">{% trans "View arrivals board" %}</a></li>
       {% else %}
-        <li><a class="ldb-board" href="{{ train_station.get_absolute_url }}?board=departures">{% trans "View departures board" %}</a></li>
+        <li><a class="ldb-board" href="?board=departures">{% trans "View departures board" %}</a></li>
       {% endifequal %}
     {% else %}
-      <li><a class="ldb-board" href="{{ train_station.get_absolute_url }}?board=arrivals">{% trans "View arrivals board" %}</a></li>
+      <li><a class="ldb-board" href="?board=arrivals">{% trans "View arrivals board" %}</a></li>
     {% endif %}
   </ul>
 </div>

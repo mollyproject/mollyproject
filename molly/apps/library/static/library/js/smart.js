@@ -14,6 +14,7 @@ function getParameterByName( name, qs ){
 }
 
 function handleLibraryAJAX(data){
+    library_ajax = null;
     $('.current-page').html(data.page.number)
     qs = '?title=' + getParameterByName('title', $('a.next').attr('href')) + '&amp;' +
          'author=' + getParameterByName('author', $('a.next').attr('href')) + '&amp;' +
@@ -40,11 +41,17 @@ function handleLibraryAJAX(data){
     $('.result-number').html($('#item-list li').length)
 }
 
+library_ajax = null;
+
 $(document).bind('molly-page-change', function(event, url){
+    
+    if (library_ajax != null) {
+        library_ajax.abort();
+    }
     
     if (url.match(/^\/library\/search\//)) {
         $('a.next').click(function(){
-            $.ajax({
+            library_ajax = $.ajax({
                 url: $(this).attr('href'),
                 data: { format: 'json' },
                 dataType: 'json',

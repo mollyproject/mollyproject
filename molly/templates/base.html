@@ -136,20 +136,6 @@
 
     <div class="content">
 
-    {% comment %}
-        The following displays a box and link to a user if the developers have sent said person a message.
-        An admin can send a user a message based on the user's session key via the admin UI. 
-    {% endcomment %}
-    {% if unread_user_messages %}
-        <div class="section">
-        <div class="bubble pad-10">
-            <a href="{% url home:messages %}">
-            {% trans "You have a message from the developers!" %}
-            </a>
-        </div>
-        </div>
-    {% endif %}
-
     {# content block for a child page's content #}
     {% block content %}
     {% endblock content %}
@@ -188,6 +174,7 @@
                     {% for language_code, language_name in LANGUAGES %}
                     {% if language_code != LANGUAGE_CODE %}
                     <form action="{% url set-language %}" method="post" class="has-ajax-handler">
+			<input type="hidden" name="next" value="{{ full_path|urlencode }}" />
                         {% csrf_token %}<a>
                         <button type="submit" name="language" value="{{ language_code }}">
                         {{ language_name }}

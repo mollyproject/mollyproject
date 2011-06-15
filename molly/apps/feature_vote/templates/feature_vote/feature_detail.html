@@ -8,7 +8,7 @@
     {% include "feature_vote/vote.html" %}
   <p>
     <small>
-        {% blocktrans with feature.user_name as user_name feature.created|timesince as timesince_created %}Suggested by {{ user_name }}; added {{ timesince_created }} ago{% endblocktrans %}
+        {% blocktrans with feature.user_name as user_name and feature.created|timesince as timesince_created %}Suggested by {{ user_name }}; added {{ timesince_created }} ago{% endblocktrans %}
     </small>
   </p>
 
@@ -23,9 +23,9 @@
         <li{% if comment.user.is_superuser %} class="superuser-comment"{% endif %}>
             <h3>
                 {% if comment.user.is_superuser %}
-                    {% blocktrans with comment.user_name as username comment.submit_date|timesince as timesince %}Posted by {{ user_name }} ({{ site_name }} team member) {{ timesince }} ago{% endblocktrans %}
+                    {% blocktrans with comment.user_name as username and comment.submit_date|timesince as timesince %}Posted by {{ user_name }} ({{ site_name }} team member) {{ timesince }} ago{% endblocktrans %}
                 {% else %}
-                    {% blocktrans with comment.user_name as username comment.submit_date|timesince as timesince %}Posted by {{ user_name }} {{ timesince }} ago{% endblocktrans %}
+                    {% blocktrans with comment.user_name as username and comment.submit_date|timesince as timesince %}Posted by {{ user_name }} {{ timesince }} ago{% endblocktrans %}
                 {% endif %}
             </h3>
             <p>{{ comment.comment|linebreaksbr }}</p>
@@ -44,9 +44,10 @@
 <div class="form-section">
   {% get_comment_form for feature as form %}
   <div class="header">
-  <h2>{% trans "Add a comment" %}</h2>
+    <h2>{% trans "Add a comment" %}</h2>
   </div>
-  <form method="post" action="{% comment_form_target %}">
+  {# It doesn't have an AJAX handler, but this is handled by Django, not by us, so we can't give proper responses #}
+  <form method="post" action="{% comment_form_target %}" class="has-ajax-handler">
     {% csrf_token %}
     {{ form.content_type }}
     {{ form.object_pk }}
@@ -64,7 +65,7 @@
     </dl>
     
     <p class="submit-buttons">
-      <input type="submit" value="{% trans 'Submit' %}"/>
+      <input type="submit" value="{% trans 'Submit' %}" />
     </p>
 
     <div class="clear"></div>

@@ -11,7 +11,7 @@
   <div class="header">
     {# Defines an H2 title which defines which category this page is showing #}
     <h2>
-      {% blocktrans count count as count and entity_types.0.verbose_name as name and entity_types.0.verbose_name_plural as name_plural %}Found {{ count }} {{ name }}{% plural %}Found {{ count }} {{ name_plural }}{% endblocktrans %}
+      {% blocktrans with entity_types.0.verbose_name as name and entity_types.0.verbose_name_plural as name_plural count count as count %}Found {{ count }} {{ name }}{% plural %}Found {{ count }} {{ name_plural }}{% endblocktrans %}
   
       {# Also show other categories if this is an 'and' search #}
       {% ifnotequal entity_types|length 1 %}

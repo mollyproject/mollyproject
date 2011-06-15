@@ -55,7 +55,6 @@ a custom provider and providing that to the ``transit_status_provider`` setting.
 Transit status providers are simple and only have to provide one method,
 following the format below:
 
-
 .. autoclass:: molly.apps.transport.providers.BaseTransitLineStatusProvider
 
     .. automethod :: molly.apps.transport.providers.BaseTransitLineStatusProvider.get_status

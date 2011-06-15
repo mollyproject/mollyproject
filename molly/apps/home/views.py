@@ -51,15 +51,21 @@ class IndexView(BaseView):
             and request.REQUEST.get('format') is None):
             return self.redirect(reverse('desktop:index'), request)
         
-        # Add any one-off messages to be shown to this user
         messages = []
+        # Add any one-off messages to be shown to this user
+        if UserMessage.objects.filter(
+                read=False, session_key=request.session.session_key).count():
+            messages.append({
+                'url': reverse('home:messages'),
+                'body': _('You have a message from the developers')
+            })
         
+        # Warn users who use Opera devices
         if not request.session.get('home:opera_mini_warning', False) \
           and request.browser.mobile_browser == u'Opera Mini':
-            messages.append(_("""Please note that the "Mobile View" on Opera Mini does not display this site correctly. To ensure correct operation of this site, ensure "Mobile View" is set to Off in Opera settings"""))
+            messages.append(
+                { 'body': _("""Please note that the "Mobile View" on Opera Mini does not display this site correctly. To ensure correct operation of this site, ensure "Mobile View" is set to Off in Opera settings""") })
             request.session['home:opera_mini_warning'] = True
-
-        # TODO Add back in messages from the developers 
         
         if has_app_by_application_name('molly.apps.weather'):
             weather_id = app_by_application_name('molly.apps.weather').location_id

@@ -21,7 +21,7 @@ from django.core.urlresolvers import reverse, resolve, NoReverseMatch
 from django.conf import settings
 from django.utils.translation import ugettext as _
 
-logger = logging.getLogger('core.requests')
+logger = logging.getLogger(__name__)
 
 from molly.utils.http import MediaType, HttpResponseSeeOther
 from molly.utils.simplify import (simplify_value, simplify_model,
@@ -507,3 +507,12 @@ def handler500(request):
     response = render_to_response('500.html', context)
     response.status_code = 500
     return response
+
+class CSRFFailureView(BaseView):
+    
+    def handle_GET(self, request, context, reason=''):
+        logger.info('CSRF validation failure: %s', reason)
+        return self.render(request, context, 'csrf_failure')
+    
+    def handle_POST(self, *args, **kwargs):
+        return self.handle_GET(*args, **kwargs)

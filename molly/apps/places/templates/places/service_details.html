@@ -3,36 +3,65 @@
 {% load i18n %}
 {% block content %}
 
-{% if train_service %}
+{% if multiple_routes %}
+    
+<div class="section">
+    <div class="header">
+        <h2>{% trans "Multiple routes found" %}</h2>
+    </div>
+    <div class="section-content no-round-bottom">
+        <p>{% trans "Multiple routes with the same number were found from this stop. This could be due to this stop serving two different directions. Please select exactly which route you want from the list below." %}
+    </div>
+    <ul class="link-list">
+        {% for route in multiple_routes %}
+            <li><a href="{{ entity.get_absolute_url }}service?routeid={{ route.pk }}">{{ route }}</a></li>
+        {% endfor %}
+    </ul>
+</div>
+    
+{% else %}
+
 <div class="section">
   <div class="header">
-    <h2>{% trans "Live Train Information" %}
-    {% if train_service.ldb.generatedAt %} - {{ train_service.ldb.generatedAt|localize_utc|date:"H:i:s" }}{% endif %}</h2>
+    {% if train_service.ldb %}
+        <h2>{% trans "Live Train Information" %}
+        {% if train_service.ldb.generatedAt %} - {{ train_service.ldb.generatedAt|localize_utc|date:"H:i:s" }}{% endif %}</h2>
+    {% else %}
+        <h2>{% trans "Route Information" %}</h2>
+    {% endif %}
   </div>
   {% if train_service.error %}
   
   <ul class="content-list">
     <li>
-	{% blocktrans with entity.identifiers.crs as crs %}There is currently a problem retrieving live departure information from the National Rail web site. Departure information may still be accessed<a href="http://pda.ojp.nationalrail.co.uk/en/pj/ldbboard/dep/{{ crs }}">directly from their web site</a>.{% endblocktrans %}
+        {% if entity.identifiers.crs %}
+            {% blocktrans with entity.identifiers.crs as crs %}There is currently a problem retrieving live departure information from the National Rail web site. Departure information may still be accessed<a href="http://pda.ojp.nationalrail.co.uk/en/pj/ldbboard/dep/{{ crs }}">directly from their web site</a>.{% endblocktrans %}
+        {% else %}
+            {% trans "There is currently an error getting route information." %}
+        {% endif %}
     </li>
   </ul>
   
   {% else %}
   
   <ul class="content-list no-round-bottom">
+    {% if service.operator %}
+        <li>
+            {% blocktrans with service.operator as operator %}Operated by {{ operator }}{% endblocktrans %}
+        </li>
+    {% endif %}
+    {% if service.platform %}
     <li>
-	{% blocktrans with train_service.ldb.operator as operator %}Operated by {{ operator }}{% endblocktrans %}
-    </li>
-    {% if train_service.ldb.platform %}
-    <li>
-	{% blocktrans with train_service.ldb.platform as platform %}Calling at platform {{ platform }}{% endblocktrans %}
+	{% blocktrans with service.platform as platform %}Calling at platform {{ platform }}{% endblocktrans %}
     </li>
     {% endif %}
-    {% if train_service.ldb.disruptionReason %}
-	<li>{{ train_service.ldb.disruptionReason|sanitize_html }}</li>
-    {% endif %}
-    {% if train_service.ldb.overdueMessage %}
-        <li>{{ train_service.ldb.overdueMessage|sanitize_html }}</li>
+    {% for message in service.messages %}
+        <li>{{ message|sanitize_html }}
+    {% endfor %}
+    {% if not service.has_timetable %}
+        <li><div class="note">
+            {% trans "Not all services necessarily call at all stops, particularly in the early morning and late at night. Always check local timetables." %}
+        </div></li>
     {% endif %}
   </ul>
 
@@ -40,32 +69,50 @@
     <thead>
       <tr>
         <th>{% trans "Calling Point" %}</th>
-        <th>{% trans "Scheduled" %}</th>
-        <th>{% trans "Expected / Actual" %}</th>
+        {% if service.has_timetable %}
+            <th>{% trans "Scheduled" %}</th>
+        {% endif %}
+        {% if service.has_realtime %}
+            <th>{% trans "Expected / Actual" %}</th>
+        {% endif %}
       </tr>
     </thead>
     <tbody>
-      {% for point in train_service.calling_points %}
+      {% for point in service.calling_points %}
         {% if point.joining %}
           <tr>
             <td colspan="3">
                 <p>
-		    {% blocktrans with point.joining.0.locationName as location %}This train then merges with a train from {{ location }}{% endblocktrans %}
+		    {% blocktrans with point.joining.0.entity.title as location %}This service then merges with a service from {{ location }}{% endblocktrans %}
 		</p>
                 <table class="content">
                   <thead>
                     <tr>
                       <th>{% trans "Calling Point" %}</th>
-                      <th>{% trans "Scheduled" %}</th>
-                      <th>{% trans "Expected / Actual" %}</th>
+                        {% if service.has_timetable %}
+                            <th>{% trans "Scheduled" %}</th>
+                        {% endif %}
+                        {% if service.has_realtime %}
+                            <th>{% trans "Expected / Actual" %}</th>
+                        {% endif %}
                     </tr>
                   </thead>
                   <tbody>
                     {% for joining_point in point.joining %}
                     <tr{% if joining_point.at %} class="grey"{% endif %}>
-                      <td>{{ joining_point.stop_num }} <a href="{{ joining_point.entity.get_absolute_url }}" class="inherit-color">{{ joining_point.locationName }}</a></td>
-                      <td>{{ joining_point.st }}</td>
-                      <td>{{ joining_point.et }}{{ joining_point.at }}</td>
+                      <td>{{ joining_point.stop_num }} <a href="{{ joining_point.entity.get_absolute_url }}" class="inherit-color">
+                        {% ifequal joining_point.entity.title|slice:"-12:" "Rail Station" %}
+                            {{ joining_point.entity.title|slice:":-13" }}
+                        {% else %}
+                            {{ joining_point.entity.title }}
+                        {% endifequal %}
+                      </a></td>
+                      {% if service.has_timetable %}
+                        <td>{{ joining_point.st }}</td>
+                      {% endif %}
+                      {% if service.has_realtime %}
+                        <td>{{ joining_point.et }}{{ joining_point.at }}</td>
+                      {% endif %}
                     </tr>
                     {% endfor %}
                   </tbody>
@@ -73,31 +120,60 @@
             </td>
           </tr>
         {% endif %}
+        {% if point.service_change %}
+            <tr>
+                <td colspan="3">{% blocktrans with point.service_change as service_type %}This service is then continued by {{ service_type }}.{% endblocktrans %}
+            </tr>
+        {% endif %}
         <tr{% if point.at %} class="grey"{% endif %}>
-          <td>{{ point.stop_num }} <a href="{{ point.entity.get_absolute_url }}" class="inherit-color">{{ point.locationName }}</a></td>
-          <td>{{ point.st }}</td>
-          <td>{{ point.et }}{{ point.at }}</td>
+          <td>{{ point.stop_num }} <a href="{{ point.entity.get_absolute_url }}" class="inherit-color">
+                {% ifequal point.entity.title|slice:"-12:" "Rail Station" %}
+                    {{ point.entity.title|slice:":-13" }}
+                {% else %}
+                    {{ point.entity.title }}
+                {% endifequal %}
+          </a></td>
+            {% if service.has_timetable %}
+              <td>{{ point.st }}</td>
+            {% endif %}
+            {% if service.has_realtime %}
+              <td>{{ point.et }}{{ point.at }}</td>
+            {% endif %}
         </tr>
         {% if point.splitting %}
           <tr>
             <td colspan="3">
                 <p>
-		    {% blocktrans with point.splitting.destination as destination %}This train then splits to go to {{ destination }}{% endblocktrans %}
+		    {% blocktrans with point.splitting.destination as destination %}This service then splits to go to {{ destination }}{% endblocktrans %}
 		</p>
                 <table class="content">
                   <thead>
                     <tr>
                       <th>{% trans "Calling Point" %}</th>
-                      <th>{% trans "Scheduled" %}</th>
-                      <th>{% trans "Expected / Actual" %}</th>
+                        {% if service.has_timetable %}
+                            <th>{% trans "Scheduled" %}</th>
+                        {% endif %}
+                        {% if service.has_realtime %}
+                            <th>{% trans "Expected / Actual" %}</th>
+                        {% endif %}
                     </tr>
                   </thead>
                   <tbody>
                     {% for splitting_point in point.splitting.list %}
                     <tr{% if splitting_point.at %} class="grey"{% endif %}>
-                      <td>{{ splitting_point.stop_num }} <a href="{{ splitting_point.entity.get_absolute_url }}" class="inherit-color">{{ splitting_point.locationName }}</a></td>
+                      <td>{{ splitting_point.stop_num }} <a href="{{ splitting_point.entity.get_absolute_url }}" class="inherit-color">
+                        {% ifequal splitting_point.entity.title|slice:"-12:" "Rail Station" %}
+                            {{ splitting_point.entity.title|slice:":-13" }}
+                        {% else %}
+                            {{ splitting_point.entity.title }}
+                        {% endifequal %}
+                      </a></td>
+                    {% if service.has_timetable %}
                       <td>{{ splitting_point.st }}</td>
-                      <td>{{ splitting_point.et }}{{ splitting_point.at }}</td>
+                    {% endif %}
+                    {% if service.has_realtime %}
+                      <td>{{ splitting_point.et }}{{ point.at }}</td>
+                    {% endif %}
                     </tr>
                     {% endfor %}
                   </tbody>
@@ -112,8 +188,6 @@
 
 </div>
 
-{% endif %}
-
 {% if map %}
 <div class="section">
     <div class="header">
@@ -123,6 +197,8 @@
     {% render_map map %}
     </div>
 </div>
+{% endif %}
+
 {% endif %}
 
 {% endblock %}

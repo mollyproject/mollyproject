@@ -2,21 +2,29 @@ function capfirst(s) {
     return s.substr(0,1).toUpperCase() + s.substr(1)
 }
 
+entitydetail_ajax = null;
 entitydetail_ajax_refresh = null;
 
 $(document).bind('molly-page-change', function(event, url){
     
-    clearTimeout(entitydetail_ajax_refresh)
+    clearTimeout(entitydetail_ajax_refresh);
+    if (entitydetail_ajax != null) {
+        entitydetail_ajax.abort();
+    }
     
     if (url == '/places/') {
         // IndexView
         $('.nearby a').click(function(){
             display_loading_screen()
-            $.ajax({
+            async_load_xhr = $.ajax({
                 url: $(this).attr('href'),
                 data: { format: 'json' },
                 dataType: 'json',
-                success: function(data){parse_results(data, true);clear_loading_screen();},
+                success: function(data){
+                    parse_results(data, true);
+                    clear_loading_screen();
+                    async_load_xhr = null;
+                },
                 error: ajax_failure
             })
             return false;
@@ -30,7 +38,11 @@ $(document).bind('molly-page-change', function(event, url){
                 url: $(this).attr('href'),
                 data: { format: 'json' },
                 dataType: 'json',
-                success: function(data){parse_results(data, false);clear_loading_screen();},
+                success: function(data){
+                    parse_results(data, false);
+                    clear_loading_screen();
+                    async_load_xhr = null;
+                },
                 error: ajax_failure
             })
             return false;
@@ -66,6 +78,7 @@ $(document).bind('molly-page-change', function(event, url){
                         }
                     }
                     clear_loading_screen()
+                    async_load_xhr = null;
                 },
                 error: ajax_failure
             })
@@ -78,23 +91,27 @@ $(document).bind('molly-page-change', function(event, url){
         // Entity detail view
         
         entitydetail_ajax_refresh = setTimeout(function(){
-        $.ajax({
-            url: to_absolute(current_url),
-            data: { format: 'json' },
-            dataType: 'json',
-            success: refreshRTI
-        })
+            entitydetail_ajax = $.ajax({
+                url: to_absolute(current_url),
+                data: { format: 'json' },
+                dataType: 'json',
+                success: refreshRTI
+            })
         }, 30000) // default to 30 seconds here because we don't actually know
                   // what the refresh frequency is - future requests will be
                   // spaced correctly
         
         $('.nearby a').click(function(){
             display_loading_screen()
-            $.ajax({
+            async_load_xhr = $.ajax({
                 url: $(this).attr('href'),
                 data: { format: 'json' },
                 dataType: 'json',
-                success: function(data){parse_results(data, true);clear_loading_screen();},
+                success: function(data){
+                    parse_results(data, true);
+                    clear_loading_screen();
+                    async_load_xhr = null;
+                },
                 error: ajax_failure
             })
             return false;
@@ -145,6 +162,7 @@ function getTimestamp(date){
 }
 
 function refreshRTI(data){
+    entitydetail_ajax = null;
     var now = new Date();
     $('.update-time').html(getTimestamp(now))
     if (typeof(data.entity.metadata.real_time_information) != 'undefined') {
@@ -152,18 +170,20 @@ function refreshRTI(data){
     }
     if (typeof(data.entity.metadata.ldb) != 'undefined') {
         rebuildLDB($('#' + data.entity.identifier_scheme + '-' + data.entity.identifier_value), data)
+        setupLDBButtons()
+        capture_outbound();
     }
-    for (var i in data.entity.associations) {
-        for (var j in data.entity.associations[i].entities) {
-            var entity = data.entity.associations[i].entities[j]
+    for (var i in data.associations) {
+        for (var j in data.associations[i].entities) {
+            var entity = data.associations[i].entities[j]
             if (typeof(entity.metadata.real_time_information) != 'undefined') {
-                rebuildRTI($('#' + entity.identifier), entity.metadata.real_time_information)
+                rebuildRTI($('#' + entity.identifier_scheme + '-' + entity.identifier_value), entity.metadata.real_time_information)
             }
         }
     }
     if (data.entity.metadata.meta_refresh) {
         entitydetail_ajax_refresh = setTimeout(function(){
-            $.ajax({
+            entitydetail_ajax = $.ajax({
                 url: to_absolute(current_url),
                 data: { format: 'json', board: board },
                 dataType: 'json',
@@ -198,8 +218,13 @@ function rebuildRTI(elem, metadata){
         tbody = elem.find('tbody')
         for (var i in metadata.services) {
             var service = metadata.services[i]
+            if (service.route) {
+                var route_link = '<a href="service?route=' + encodeURIComponent(service.service) + '">' + service.service + '</a>'
+            } else {
+                var route_link = service.service
+            }
             tbody.append('<tr>' + 
-            '<td class="center" rowspan="2" style="font-size:200%;">' + service.service + '</td>' +
+            '<td class="service-id" rowspan="2">' + route_link + '</td>' +
             '<td>' + service.destination + '</td>' +
             '<td>' + service.next + '</td>' +
             '</tr><tr class="notopborder"><td colspan="2"><small>' + gettext('Next') + ': </small></td></tr>')
@@ -349,22 +374,26 @@ function rebuildLDB(elem, data){
     elem.append('<ul class="link-list"></ul>');
     ul = elem.find('ul:last')
     if (board == 'departures') {
-        ul.append('<li><a class="ldb-board" href="' + data.train_station._url + '?board=arrivals">' + gettext('View arrivals board') + '</a></li>')
+        ul.append('<li><a class="ldb-board" href="' + current_url + '?board=arrivals">' + gettext('View arrivals board') + '</a></li>')
     } else {
-        ul.append('<li><a class="ldb-board" href="' + data.train_station._url + '?board=departures">' + gettext('View departures board') + '</a></li>')
+        ul.append('<li><a class="ldb-board" href="' + current_url + '?board=departures">' + gettext('View departures board') + '</a></li>')
     }
-    setupLDBButtons()
-    capture_outbound();
 }
 
 function setupLDBButtons(){
     $('.ldb-board').click(function(){
         display_loading_screen()
-        $.ajax({
+        async_load_xhr = $.ajax({
             url: $(this).attr('href'),
             data: { format: 'json' },
             dataType: 'json',
-            success: function(data){rebuildLDB($('#ldb'), data);clear_loading_screen();},
+            success: function(data){
+                rebuildLDB($('#ldb'), data);
+                clear_loading_screen();
+                setupLDBButtons()
+                capture_outbound();
+                async_load_xhr = null;
+            },
             error: ajax_failure
         })
         return false;

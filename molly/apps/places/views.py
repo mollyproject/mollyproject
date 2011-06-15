@@ -16,6 +16,7 @@ from django.core.urlresolvers import reverse
 from django.template.defaultfilters import capfirst
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.utils.translation import ugettext as _
+from django.utils.translation import ungettext
 from django.contrib.gis.measure import D
 
 from molly.utils.views import BaseView, ZoomableView
@@ -26,7 +27,7 @@ from molly.geolocation.views import LocationRequiredView
 from molly.maps import Map
 from molly.maps.osm.models import OSMUpdate
 
-from molly.apps.places.models import Entity, EntityType
+from molly.apps.places.models import Entity, EntityType, Route
 from molly.apps.places import get_entity, get_point
 from molly.apps.places.forms import UpdateOSMForm
 
@@ -243,7 +244,16 @@ class EntityDetailView(ZoomableView, FavouritableView):
         distance, bearing = entity.get_distance_and_bearing_from(user_location)
         additional = '<strong>%s</strong>' % capfirst(entity.primary_type.verbose_name)
         if distance:
-            additional += ', about %dm %s' % (int(math.ceil(distance/10)*10), bearing)
+            additional += ', ' + _('about %(distance)dm %(bearing)s') % {
+                                    'distance': int(math.ceil(distance/10)*10),
+                                    'bearing': bearing }
+        routes = sorted(set(sor.route.service_id for sor in entity.stoponroute_set.all()))
+        if routes:
+            additional += ', ' + ungettext('service %(services)s stops here',
+                                           'services %(services)s stop here',
+                                           len(routes)) % {
+                                                'services': ' '.join(routes)
+                                            }
         return {
             'title': entity.title,
             'additional': additional,
@@ -557,51 +567,105 @@ class ServiceDetailView(BaseView):
 
     def initial_context(self, request, scheme, value):
 
-        try:
-            service_id = request.GET['id']
-        except KeyError:
-            raise Http404
-
         context = super(ServiceDetailView, self).initial_context(request)
-        entity = get_entity(scheme, value)
-
-        # Add live information from the providers
-        for provider in reversed(self.conf.providers):
-            provider.augment_metadata((entity, ))
-
-        # If we have no way of getting further journey details, 404
-        if 'service_details' not in entity.metadata:
-            raise Http404
-
-        # Deal with train service data
-        if entity.metadata['service_type'] == 'ldb':
-
-            # LDB has + in URLs, but Django converts that to space
-            service = entity.metadata['service_details'](service_id.replace(' ', '+'))
+        
+        service_id = request.GET.get('id')
+        route_id = request.GET.get('route')
+        route_pk = request.GET.get('routeid')
+        
+        if service_id or route_id or route_pk:
+            entity = get_entity(scheme, value)
+        else:
+            raise Http404()
+        
+        context.update({
+            'entity': entity,
+        })
+        
+        if service_id:
+            # Add live information from the providers
+            for provider in reversed(self.conf.providers):
+                provider.augment_metadata((entity, ))
+    
+            # If we have no way of getting further journey details, 404
+            if 'service_details' not in entity.metadata:
+                raise Http404
+    
+            # Deal with train service data
+            if entity.metadata['service_type'] == 'ldb':
+                # LDB has + in URLs, but Django converts that to space
+                service = entity.metadata['service_details'](service_id.replace(' ', '+'))
+            else:
+                service = entity.metadata['service_details'](service_id)
+            
             if service is None:
                 raise Http404
             if 'error' in service:
                 context.update({
                     'title': 'An error occurred',
-                    'entity': entity,
-                    'train_service': {
+                    'service': {
                         'error': service['error'],
                     },
                 })
                 return context
 
             context.update({
-                'entity': entity,
-                'train_service': service,
+                'service': service,
                 'title': service['title'],
                 'zoom_controls': False,
             })
-
+        
+        elif route_id or route_pk:
+            
+            if route_id:
+            
+                try:
+                    route = get_object_or_404(Route, service_id=route_id, stops=entity)
+                except Route.MultipleObjectsReturned:
+                    context.update({
+                        'title': _('Multiple routes found'),
+                        'multiple_routes': Route.objects.filter(service_id=route_id, stops=entity)
+                    })
+                    return context
+            
+            else:
+                
+                print route_pk
+                route = get_object_or_404(Route, id=route_pk)
+            
+            i = 1
+            calling_points = []
+            previous = True
+            for stop in route.stoponroute_set.all():
+                if stop.entity == entity:
+                    previous = False
+                calling_point = {
+                    'entity': stop.entity,
+                    'at': previous
+                }
+                if stop.entity.location is not None:
+                    calling_point['stop_num'] = i
+                    i += 1
+                calling_points.append(calling_point)
+            service = {
+                    'entities': route.stops.all(),
+                    'operator': route.operator,
+                    'has_timetable': False,
+                    'has_realtime': False,
+                    'calling_points': calling_points
+                }
+            if entity not in service['entities']:
+                raise Http404()
+            context.update({
+                'title': '%s: %s' % (route.service_id, route.service_name),
+                'service': service                
+            })
+        
         map = Map(
             centre_point = (entity.location[0], entity.location[1],
                             'green', entity.title),
             points = [(e.location[0], e.location[1], 'red', e.title)
-                for e in service['entities']],
+                for e in service['entities'] if e.location is not None],
             min_points = len(service['entities']),
             zoom = None,
             width = request.map_width,
@@ -609,7 +673,8 @@ class ServiceDetailView(BaseView):
         )
 
         context.update({
-            'map': map})
+                'map': map
+            })
 
         return context
 

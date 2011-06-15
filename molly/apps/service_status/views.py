@@ -4,7 +4,7 @@ from django.utils.translation import ugettext as _
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
 
-logger = logging.getLogger("molly.apps.service_status.views")
+logger = logging.getLogger(__name__)
 
 
 class IndexView(BaseView):

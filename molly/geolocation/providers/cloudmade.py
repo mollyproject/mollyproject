@@ -8,7 +8,7 @@ from django.contrib.gis.geos import Point
 
 from molly.geolocation.providers import BaseGeolocationProvider
 
-logger = logging.getLogger('molly.contrib.generic.cloudmade')
+logger = logging.getLogger(__name__)
 
 class CloudmadeGeolocationProvider(BaseGeolocationProvider):
     REVERSE_GEOCODE_URL = 'http://geocoding.cloudmade.com/%(api_key)s/geocoding/closest/%(type)s/%(lat)f,%(lon)f.js'
