@@ -39,7 +39,7 @@ class Virtualenv(object):
                 process = Popen(sh_command)
                 process.wait()
                 if process.returncode != 0:
-                    raise CommandFailed(process.returncode, None, None)
+                    raise CommandFailed(command, process.returncode, None, None)
         else:
             if quiet:
                 sh_command = ['bash', '-c', '%s >/dev/null' % command]
@@ -73,4 +73,3 @@ class Virtualenv(object):
 
 class NotAVirtualenvError(Exception):
     pass
-
