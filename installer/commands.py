@@ -13,7 +13,7 @@ from installer import PIP_PACKAGES
 
 try:
     from installer.sysprep import PYTHON26
-except NotImplementedError:
+except (NotImplementedError, ImportError):
     import sys
     PYTHON26 = sys.executable
 
