@@ -1,10 +1,10 @@
+# -*- coding: utf-8 -*-
 import re
 
 from django import forms
 from django.forms.util import ErrorList
 
 from molly.conf import applications
-
 from molly.geolocation import geocode, reverse_geocode
 
 METHOD_CHOICES = (
@@ -75,7 +75,7 @@ class LocationUpdateForm(forms.Form):
                             self.cleaned_data['longitude'],
                             self.cleaned_data['latitude'])[0]['name']
                     except:
-                        cleaned_data['name'] = None
+                        cleaned_data['name'] = u"↝ %f, %f" % (self.cleaned_data['longitude'], self.cleaned_data['latitude'])
         elif cleaned_data['method'] in ('denied', 'error'):
             for key in ('latitude', 'longitude', 'accuracy'):
                 if cleaned_data.get(key) is None:
