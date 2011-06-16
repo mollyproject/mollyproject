@@ -61,7 +61,11 @@
         page of the User interface. 
     {% endcomment %}
     {% if device|device_has_parent:"apple_generic" or device.device_os == "Android" %}
+        {% comment %}
+        Temporarily disable this as the lack of browser chrome is resulting in
+        confused users
         <meta name="apple-mobile-web-app-capable" content="yes">
+        {% endcomment %}
         <link rel="apple-touch-icon" href="{{ STATIC_URL }}site/images/apple-touch-icon.png"/>
         <link rel="apple-touch-icon" sizes="72x72" href="{{ STATIC_URL }}site/images/apple-touch-icon-72px.png"/>
         <link rel="apple-touch-icon" sizes="114x114" href="{{ STATIC_URL }}site/images/apple-touch-icon-114px.png"/>
