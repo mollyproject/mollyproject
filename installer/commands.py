@@ -39,8 +39,10 @@ class DeployCommand(Command):
     def finalize_options(self):
         if self.site_path is None:
             raise DistutilsArgError("You must specify a path to the site to be deployed")
+        self.site_path = os.path.abspath(self.site_path)
         if self.virtualenv is None:
             raise DistutilsArgError("You must specify a virtualenv for the site to be deployed into")
+        self.virtualenv = os.path.abspath(self.virtualenv)
         if self.listen_externally and not self.development:
             raise DistutilsArgError("You can not listen externally when in non-development mode, only development installs start the server!")
         if self.port and not self.development:
