@@ -25,7 +25,7 @@ def full_path(request):
         urlparse(request.get_full_path())
     args = []
     for k, vs in parse_qs(query).items():
-        if k == 'format':
+        if k in ('format', 'language_code'):
             continue
         else:
             for v in vs:

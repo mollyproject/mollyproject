@@ -9,7 +9,7 @@
 	<div class="center language-selector">
 	<form action="{% url set-language %}" method="post" class="has-ajax-handler">
 	    {% csrf_token %}
-	    <input type="hidden" name="next" value="{{ full_path|urlencode }}" />
+	    <input type="hidden" name="next" value="{{ full_path }}" />
 		{% for language_code, language_name in LANGUAGES %}
 		    {% if language_code != LANGUAGE_CODE %}
 			    <button type="submit" name="language" value="{{ language_code }}">
