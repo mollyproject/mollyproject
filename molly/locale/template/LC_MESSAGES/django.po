@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-10 11:37+0100\n"
+"POT-Creation-Date: 2011-06-16 12:59+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -143,7 +143,7 @@ msgstr ""
 msgid "News"
 msgstr ""
 
-#: apps/desktop/templates/desktop/index.html:337 apps/places/views.py:46
+#: apps/desktop/templates/desktop/index.html:337 apps/places/views.py:47
 msgid "Places"
 msgstr ""
 
@@ -258,7 +258,7 @@ msgid "Comment submitted"
 msgstr ""
 
 #: apps/feature_vote/templates/comments/posted.html:9 apps/home/views.py:31
-#: templates/base.html:102 templates/base.html.py:103 templates/base.html:127
+#: templates/base.html:107 templates/base.html.py:108 templates/base.html:132
 #: templates/registration/logged_out.html:4
 #: templates/registration/password_change_done.html:4
 #: templates/registration/password_change_form.html:4
@@ -361,8 +361,8 @@ msgid "There are no features to vote on yet."
 msgstr ""
 
 #: apps/feature_vote/templates/feature_vote/index.html:49
-#: apps/home/templates/home/index.html:135 templates/base.html:174
-#: templates/base.html.py:199
+#: apps/home/templates/home/index.html:135 templates/base.html:179
+#: templates/base.html.py:204
 msgid "Suggest a feature"
 msgstr ""
 
@@ -386,8 +386,8 @@ msgstr ""
 msgid "Your e-mail address (optional)"
 msgstr ""
 
-#: apps/feedback/forms.py:8 apps/feedback/views.py:19 templates/base.html:161
-#: templates/base.html.py:168 templates/base.html:196
+#: apps/feedback/forms.py:8 apps/feedback/views.py:19 templates/base.html:166
+#: templates/base.html.py:173 templates/base.html:201
 msgid "Feedback"
 msgstr ""
 
@@ -792,7 +792,7 @@ msgstr ""
 
 #: apps/library/templates/library/item_list.html:39
 #: apps/library/templates/library/item_list.html:68
-#: apps/places/templates/places/metadata/real_time_information.html:40
+#: apps/places/templates/places/metadata/real_time_information.html:44
 msgid "Next"
 msgstr ""
 
@@ -900,50 +900,67 @@ msgstr ""
 msgid "NW"
 msgstr ""
 
-#: apps/places/views.py:38
+#: apps/places/views.py:39
 msgid "places"
 msgstr ""
 
-#: apps/places/views.py:39
+#: apps/places/views.py:40
 msgid ""
 "Find University buildings and units, along with bus stops and local amenities"
 msgstr ""
 
-#: apps/places/views.py:62
+#: apps/places/views.py:63
 msgid "Find things nearby"
 msgstr ""
 
-#: apps/places/views.py:63
+#: apps/places/views.py:64
 msgid "Search for things based on your current location"
 msgstr ""
 
-#: apps/places/views.py:71
+#: apps/places/views.py:72
 msgid "Things nearby"
 msgstr ""
 
-#: apps/places/views.py:163
+#: apps/places/views.py:164
 #: apps/places/templates/places/entity_without_location.html:4
 #: apps/places/templates/places/entity_without_location.html:12
 #, python-format
 msgid "Things near %(title)s"
 msgstr ""
 
-#: apps/places/views.py:168
+#: apps/places/views.py:169
 #, python-format
 msgid "%(entity_type)s near %(entity)s"
 msgstr ""
 
-#: apps/places/views.py:173
+#: apps/places/views.py:174
 #, python-format
 msgid "%(et)s nearby"
 msgstr ""
 
-#: apps/places/views.py:185
+#: apps/places/views.py:186
 #, python-format
 msgid "<strong>%(number)d %(entity_type)s</strong> within 1km"
 msgstr ""
 
-#: apps/places/providers/bbc_tpeg.py:132 apps/places/providers/naptan.py:757
+#: apps/places/views.py:247
+#, python-format
+msgid "about %(distance)dm %(bearing)s"
+msgstr ""
+
+#: apps/places/views.py:252
+#, python-format
+msgid "service %(services)s stops here"
+msgid_plural "services %(services)s stop here"
+msgstr[0] ""
+msgstr[1] ""
+
+#: apps/places/views.py:626
+#: apps/places/templates/places/service_details.html:10
+msgid "Multiple routes found"
+msgstr ""
+
+#: apps/places/providers/bbc_tpeg.py:132 apps/places/providers/naptan.py:780
 #: apps/places/providers/osm.py:448 apps/places/providers/osm.py:460
 #: apps/places/providers/osm.py:574 apps/places/providers/osm.py:664
 #: apps/transport/views.py:19
@@ -963,393 +980,395 @@ msgid "travel alerts"
 msgstr ""
 
 #. Translators: This is referring to bus stop location descriptions
-#: apps/places/providers/naptan.py:192 apps/places/providers/naptan.py:193
+#: apps/places/providers/naptan.py:194 apps/places/providers/naptan.py:195
+#: apps/places/providers/naptan.py:196
 msgid "Opposite"
 msgstr ""
 
 #. Translators: This is referring to bus stop location descriptions
-#: apps/places/providers/naptan.py:195
+#: apps/places/providers/naptan.py:198
 msgid "Adjacent"
 msgstr ""
 
 #. Translators: This is referring to bus stop location descriptions
-#: apps/places/providers/naptan.py:197 apps/places/providers/naptan.py:198
+#: apps/places/providers/naptan.py:200 apps/places/providers/naptan.py:201
+#: apps/places/providers/naptan.py:202
 msgid "Outside"
 msgstr ""
 
 #. Translators: This is referring to bus stop location descriptions
-#: apps/places/providers/naptan.py:200
+#: apps/places/providers/naptan.py:204 apps/places/providers/naptan.py:205
 msgid "Near"
 msgstr ""
 
 #. Translators: This is referring to bus stop location descriptions
-#: apps/places/providers/naptan.py:202
+#: apps/places/providers/naptan.py:207
 msgid "Inside"
 msgstr ""
 
 #. Translators: This is referring to public transport entities
-#: apps/places/providers/naptan.py:207
+#: apps/places/providers/naptan.py:212
 #, python-format
 msgid "Entrance to %s"
 msgstr ""
 
 #. Translators: This is referring to ferry ports
-#: apps/places/providers/naptan.py:211
+#: apps/places/providers/naptan.py:216
 #, python-format
 msgid "Berth at %s"
 msgstr ""
 
 #. Translators: This is referring to rail and metro stations
-#: apps/places/providers/naptan.py:215
+#: apps/places/providers/naptan.py:220
 #, python-format
 msgid "Platform at %s"
 msgstr ""
 
-#: apps/places/providers/naptan.py:288
+#: apps/places/providers/naptan.py:311
 msgid "bus stop"
 msgstr ""
 
-#: apps/places/providers/naptan.py:289
+#: apps/places/providers/naptan.py:312
 msgid "a bus stop"
 msgstr ""
 
-#: apps/places/providers/naptan.py:290
+#: apps/places/providers/naptan.py:313
 msgid "bus stops"
 msgstr ""
 
-#: apps/places/providers/naptan.py:296 apps/places/providers/osm.py:665
+#: apps/places/providers/naptan.py:319 apps/places/providers/osm.py:665
 msgid "taxi rank"
 msgstr ""
 
-#: apps/places/providers/naptan.py:297 apps/places/providers/osm.py:667
+#: apps/places/providers/naptan.py:320 apps/places/providers/osm.py:667
 msgid "a taxi rank"
 msgstr ""
 
-#: apps/places/providers/naptan.py:298 apps/places/providers/osm.py:666
+#: apps/places/providers/naptan.py:321 apps/places/providers/osm.py:666
 msgid "taxi ranks"
 msgstr ""
 
-#: apps/places/providers/naptan.py:304
+#: apps/places/providers/naptan.py:327
 msgid "rail station"
 msgstr ""
 
-#: apps/places/providers/naptan.py:305
+#: apps/places/providers/naptan.py:328
 msgid "a rail station"
 msgstr ""
 
-#: apps/places/providers/naptan.py:306
+#: apps/places/providers/naptan.py:329
 msgid "rail stations"
 msgstr ""
 
-#: apps/places/providers/naptan.py:312
+#: apps/places/providers/naptan.py:335
 msgid "heritage rail station"
 msgstr ""
 
-#: apps/places/providers/naptan.py:313
+#: apps/places/providers/naptan.py:336
 msgid "a heritage rail station"
 msgstr ""
 
-#: apps/places/providers/naptan.py:314
+#: apps/places/providers/naptan.py:337
 msgid "heritage rail stations"
 msgstr ""
 
-#: apps/places/providers/naptan.py:325
+#: apps/places/providers/naptan.py:348
 msgid "bus station entrance"
 msgstr ""
 
-#: apps/places/providers/naptan.py:326
+#: apps/places/providers/naptan.py:349
 msgid "a bus station entrance"
 msgstr ""
 
-#: apps/places/providers/naptan.py:327
+#: apps/places/providers/naptan.py:350
 msgid "bus station entrances"
 msgstr ""
 
-#: apps/places/providers/naptan.py:336
+#: apps/places/providers/naptan.py:359
 msgid "rail station entrance"
 msgstr ""
 
-#: apps/places/providers/naptan.py:337
+#: apps/places/providers/naptan.py:360
 msgid "a rail station entrance"
 msgstr ""
 
-#: apps/places/providers/naptan.py:338
+#: apps/places/providers/naptan.py:361
 msgid "rail station entrances"
 msgstr ""
 
-#: apps/places/providers/naptan.py:344
+#: apps/places/providers/naptan.py:367
 msgid "rail platform"
 msgstr ""
 
-#: apps/places/providers/naptan.py:345
+#: apps/places/providers/naptan.py:368
 msgid "a rail platform"
 msgstr ""
 
-#: apps/places/providers/naptan.py:346
+#: apps/places/providers/naptan.py:369
 msgid "rail platforms"
 msgstr ""
 
 #. Translators: This is the generic term for rapid transit systems
-#: apps/places/providers/naptan.py:353
+#: apps/places/providers/naptan.py:376
 msgid "metro station entrance"
 msgstr ""
 
 #. Translators: This is the generic term for rapid transit systems
-#: apps/places/providers/naptan.py:355
+#: apps/places/providers/naptan.py:378
 msgid "a metro station entrance"
 msgstr ""
 
 #. Translators: This is the generic term for rapid transit systems
-#: apps/places/providers/naptan.py:357
+#: apps/places/providers/naptan.py:380
 msgid "metro station entrances"
 msgstr ""
 
 #. Translators: This is the generic term for rapid transit systems
-#: apps/places/providers/naptan.py:364
+#: apps/places/providers/naptan.py:387
 msgid "metro station platform"
 msgstr ""
 
 #. Translators: This is the generic term for rapid transit systems
-#: apps/places/providers/naptan.py:366
+#: apps/places/providers/naptan.py:389
 msgid "a metro station platform"
 msgstr ""
 
 #. Translators: This is the generic term for rapid transit systems
-#: apps/places/providers/naptan.py:368
+#: apps/places/providers/naptan.py:391
 msgid "metro station platforms"
 msgstr ""
 
 #. Translators: This is the generic term for rapid transit systems
-#: apps/places/providers/naptan.py:375
+#: apps/places/providers/naptan.py:398
 msgid "metro station"
 msgstr ""
 
 #. Translators: This is the generic term for rapid transit systems
-#: apps/places/providers/naptan.py:377
+#: apps/places/providers/naptan.py:400
 msgid "a metro station"
 msgstr ""
 
 #. Translators: This is the generic term for rapid transit systems
-#: apps/places/providers/naptan.py:379
+#: apps/places/providers/naptan.py:402
 msgid "metro stations"
 msgstr ""
 
 #. Translators: This is the Blackpool tram system
-#: apps/places/providers/naptan.py:391
+#: apps/places/providers/naptan.py:414
 msgid "tramway stop"
 msgstr ""
 
 #. Translators: This is the Blackpool tram system
-#: apps/places/providers/naptan.py:393
+#: apps/places/providers/naptan.py:416
 msgid "a tramway stop"
 msgstr ""
 
 #. Translators: This is the Blackpool tram system
-#: apps/places/providers/naptan.py:395
+#: apps/places/providers/naptan.py:418
 msgid "tramway stops"
 msgstr ""
 
-#: apps/places/providers/naptan.py:403 apps/places/providers/naptan.py:488
+#: apps/places/providers/naptan.py:426 apps/places/providers/naptan.py:511
 msgid "tram stop"
 msgstr ""
 
-#: apps/places/providers/naptan.py:404 apps/places/providers/naptan.py:489
+#: apps/places/providers/naptan.py:427 apps/places/providers/naptan.py:512
 msgid "a tram stop"
 msgstr ""
 
-#: apps/places/providers/naptan.py:405 apps/places/providers/naptan.py:490
+#: apps/places/providers/naptan.py:428 apps/places/providers/naptan.py:513
 msgid "tram stops"
 msgstr ""
 
 #. Translators: This is the Docklands Light Railway
-#: apps/places/providers/naptan.py:415
+#: apps/places/providers/naptan.py:438
 msgid "DLR station"
 msgstr ""
 
 #. Translators: This is the Docklands Light Railway
-#: apps/places/providers/naptan.py:417
+#: apps/places/providers/naptan.py:440
 msgid "a DLR station"
 msgstr ""
 
 #. Translators: This is the Docklands Light Railway
-#: apps/places/providers/naptan.py:419
+#: apps/places/providers/naptan.py:442
 msgid "DLR stations"
 msgstr ""
 
 #. Translators: This is the Glasgow Subway
-#: apps/places/providers/naptan.py:434
+#: apps/places/providers/naptan.py:457
 msgid "Subway station"
 msgstr ""
 
 #. Translators: This is the Glasgow Subway
-#: apps/places/providers/naptan.py:436
+#: apps/places/providers/naptan.py:459
 msgid "a Subway station"
 msgstr ""
 
 #. Translators: This is the Glasgow Subway
-#: apps/places/providers/naptan.py:438
+#: apps/places/providers/naptan.py:461
 msgid "Subway stations"
 msgstr ""
 
 #. Translators: This is the Gatwick airport shuttle
-#: apps/places/providers/naptan.py:446
+#: apps/places/providers/naptan.py:469
 msgid "shuttle station"
 msgstr ""
 
 #. Translators: This is the Gatwick airport shuttle
-#: apps/places/providers/naptan.py:448
+#: apps/places/providers/naptan.py:471
 msgid "a shuttle station"
 msgstr ""
 
 #. Translators: This is the Gatwick airport shuttle
-#: apps/places/providers/naptan.py:450
+#: apps/places/providers/naptan.py:473
 msgid "shuttle stations"
 msgstr ""
 
 #. Translators: This is the London Underground (Tube)
-#: apps/places/providers/naptan.py:464
+#: apps/places/providers/naptan.py:487
 msgid "Underground station"
 msgstr ""
 
 #. Translators: This is the London Underground (Tube)
-#: apps/places/providers/naptan.py:466
+#: apps/places/providers/naptan.py:489
 msgid "an Underground station"
 msgstr ""
 
 #. Translators: This is the London Underground (Tube)
-#: apps/places/providers/naptan.py:468
+#: apps/places/providers/naptan.py:491
 msgid "Underground stations"
 msgstr ""
 
 #. Translators: This is the Manchester tram system
-#: apps/places/providers/naptan.py:475
+#: apps/places/providers/naptan.py:498
 msgid "Metrolink station"
 msgstr ""
 
 #. Translators: This is the Manchester tram system
-#: apps/places/providers/naptan.py:477
+#: apps/places/providers/naptan.py:500
 msgid "a Metrolink station"
 msgstr ""
 
 #. Translators: This is the Manchester tram system
-#: apps/places/providers/naptan.py:479
+#: apps/places/providers/naptan.py:502
 msgid "Metrolink stations"
 msgstr ""
 
 #. Translators: This is the Sheffield tram system
-#: apps/places/providers/naptan.py:510
+#: apps/places/providers/naptan.py:533
 msgid "Supertram stop"
 msgstr ""
 
 #. Translators: This is the Sheffield tram system
-#: apps/places/providers/naptan.py:512
+#: apps/places/providers/naptan.py:535
 msgid "a Supertram stop"
 msgstr ""
 
 #. Translators: This is the Sheffield tram system
-#: apps/places/providers/naptan.py:514
+#: apps/places/providers/naptan.py:537
 msgid "Supertram stops"
 msgstr ""
 
 #. Translators: This is the Tyne & Wear metro system
-#: apps/places/providers/naptan.py:522
+#: apps/places/providers/naptan.py:545
 msgid "Metro station"
 msgstr ""
 
 #. Translators: This is the Tyne & Wear metro system
-#: apps/places/providers/naptan.py:524
+#: apps/places/providers/naptan.py:547
 msgid "a Metro station"
 msgstr ""
 
 #. Translators: This is the Tyne & Wear metro system
-#: apps/places/providers/naptan.py:526
+#: apps/places/providers/naptan.py:549
 msgid "Metro stations"
 msgstr ""
 
 #. Translators: This is the Midland Metro system
-#: apps/places/providers/naptan.py:538
+#: apps/places/providers/naptan.py:561
 msgid "Midland Metro stop"
 msgstr ""
 
 #. Translators: This is the Midland Metro system
-#: apps/places/providers/naptan.py:540
+#: apps/places/providers/naptan.py:563
 msgid "a Midland Metro stop"
 msgstr ""
 
 #. Translators: This is the Midland Metro system
-#: apps/places/providers/naptan.py:542
+#: apps/places/providers/naptan.py:565
 msgid "Midland Metro stops"
 msgstr ""
 
-#: apps/places/providers/naptan.py:550
+#: apps/places/providers/naptan.py:573
 msgid "airport"
 msgstr ""
 
-#: apps/places/providers/naptan.py:551
+#: apps/places/providers/naptan.py:574
 msgid "an airport"
 msgstr ""
 
-#: apps/places/providers/naptan.py:552
+#: apps/places/providers/naptan.py:575
 msgid "airports"
 msgstr ""
 
-#: apps/places/providers/naptan.py:558
+#: apps/places/providers/naptan.py:581
 msgid "airport entrance"
 msgstr ""
 
-#: apps/places/providers/naptan.py:559
+#: apps/places/providers/naptan.py:582
 msgid "an airport entrance"
 msgstr ""
 
-#: apps/places/providers/naptan.py:560
+#: apps/places/providers/naptan.py:583
 msgid "airport entrances"
 msgstr ""
 
-#: apps/places/providers/naptan.py:566
+#: apps/places/providers/naptan.py:589
 msgid "ferry terminal"
 msgstr ""
 
-#: apps/places/providers/naptan.py:567
+#: apps/places/providers/naptan.py:590
 msgid "a ferry terminal"
 msgstr ""
 
-#: apps/places/providers/naptan.py:568
+#: apps/places/providers/naptan.py:591
 msgid "ferry terminals"
 msgstr ""
 
-#: apps/places/providers/naptan.py:574
+#: apps/places/providers/naptan.py:597
 msgid "ferry terminal entrance"
 msgstr ""
 
-#: apps/places/providers/naptan.py:575
+#: apps/places/providers/naptan.py:598
 msgid "a ferry terminal entrance"
 msgstr ""
 
-#: apps/places/providers/naptan.py:576
+#: apps/places/providers/naptan.py:599
 msgid "ferry terminal entrances"
 msgstr ""
 
-#: apps/places/providers/naptan.py:582
+#: apps/places/providers/naptan.py:605
 msgid "ferry berth"
 msgstr ""
 
-#: apps/places/providers/naptan.py:583
+#: apps/places/providers/naptan.py:606
 msgid "a ferry berth"
 msgstr ""
 
-#: apps/places/providers/naptan.py:584
+#: apps/places/providers/naptan.py:607
 msgid "ferry berths"
 msgstr ""
 
-#: apps/places/providers/naptan.py:590
+#: apps/places/providers/naptan.py:613
 msgid "public transport access node"
 msgstr ""
 
-#: apps/places/providers/naptan.py:591
+#: apps/places/providers/naptan.py:614
 msgid "a public transport access node"
 msgstr ""
 
-#: apps/places/providers/naptan.py:592
+#: apps/places/providers/naptan.py:615
 msgid "public transport access nodes"
 msgstr ""
 
@@ -1932,7 +1951,7 @@ msgid "Travel Alert"
 msgstr ""
 
 #: apps/places/templates/places/entity_detail.html:30
-#: apps/places/templates/places/service_details.html:125
+#: apps/places/templates/places/service_details.html:194
 #: apps/places/templates/places/update_osm.html:42
 msgid "Map"
 msgstr ""
@@ -2011,11 +2030,22 @@ msgstr ""
 msgid "(%(quantity)s within %(distance)sm)"
 msgstr ""
 
-#: apps/places/templates/places/service_details.html:9
+#: apps/places/templates/places/service_details.html:13
+msgid ""
+"Multiple routes with the same number were found from this stop. This could "
+"be due to this stop serving two different directions. Please select exactly "
+"which route you want from the list below."
+msgstr ""
+
+#: apps/places/templates/places/service_details.html:27
 msgid "Live Train Information"
 msgstr ""
 
-#: apps/places/templates/places/service_details.html:16
+#: apps/places/templates/places/service_details.html:30
+msgid "Route Information"
+msgstr ""
+
+#: apps/places/templates/places/service_details.html:38
 #, python-format
 msgid ""
 "There is currently a problem retrieving live departure information from the "
@@ -2024,48 +2054,58 @@ msgid ""
 "from their web site</a>."
 msgstr ""
 
-#: apps/places/templates/places/service_details.html:24
+#: apps/places/templates/places/service_details.html:40
+msgid "There is currently an error getting route information."
+msgstr ""
+
+#: apps/places/templates/places/service_details.html:50
 #, python-format
 msgid "Operated by %(operator)s"
 msgstr ""
 
-#: apps/places/templates/places/service_details.html:28
+#: apps/places/templates/places/service_details.html:55
 #, python-format
 msgid "Calling at platform %(platform)s"
 msgstr ""
 
-#: apps/places/templates/places/service_details.html:42
-#: apps/places/templates/places/service_details.html:58
-#: apps/places/templates/places/service_details.html:95
+#: apps/places/templates/places/service_details.html:63
+msgid ""
+"Not all services necessarily call at all stops, particularly in the early "
+"morning and late at night. Always check local timetables."
+msgstr ""
+
+#: apps/places/templates/places/service_details.html:71
+#: apps/places/templates/places/service_details.html:91
+#: apps/places/templates/places/service_details.html:152
 msgid "Calling Point"
 msgstr ""
 
-#: apps/places/templates/places/service_details.html:43
-#: apps/places/templates/places/service_details.html:59
-#: apps/places/templates/places/service_details.html:96
+#: apps/places/templates/places/service_details.html:73
+#: apps/places/templates/places/service_details.html:93
+#: apps/places/templates/places/service_details.html:154
 #: apps/places/templates/places/metadata/ldb.html:29
 msgid "Scheduled"
 msgstr ""
 
-#: apps/places/templates/places/service_details.html:44
-#: apps/places/templates/places/service_details.html:60
-#: apps/places/templates/places/service_details.html:97
+#: apps/places/templates/places/service_details.html:76
+#: apps/places/templates/places/service_details.html:96
+#: apps/places/templates/places/service_details.html:157
 msgid "Expected / Actual"
 msgstr ""
 
-#: apps/places/templates/places/service_details.html:53
+#: apps/places/templates/places/service_details.html:86
 #, python-format
-msgid "This train then merges with a train from %(location)s"
+msgid "This service then merges with a service from %(location)s"
 msgstr ""
 
-#: apps/places/templates/places/service_details.html:78
+#: apps/places/templates/places/service_details.html:125
 #, python-format
 msgid "This service is then continued by %(service_type)s."
 msgstr ""
 
-#: apps/places/templates/places/service_details.html:90
+#: apps/places/templates/places/service_details.html:147
 #, python-format
-msgid "This train then splits to go to %(destination)s"
+msgid "This service then splits to go to %(destination)s"
 msgstr ""
 
 #: apps/places/templates/places/update_osm.html:5
@@ -2263,14 +2303,14 @@ msgstr ""
 #. Translators: As in, car parking spaces
 #: apps/places/templates/places/metadata/park_and_ride.html:11
 #: apps/places/templates/places/metadata/park_and_ride.html:18
-#: apps/transport/templates/transport/index.html:120
-#: apps/transport/templates/transport/index.html:125
+#: apps/transport/templates/transport/index.html:124
+#: apps/transport/templates/transport/index.html:129
 msgid "Spaces"
 msgstr ""
 
 #. Translators: As in, car parking spaces
 #: apps/places/templates/places/metadata/park_and_ride.html:16
-#: apps/transport/templates/transport/index.html:123
+#: apps/transport/templates/transport/index.html:127
 msgid "Space information currently unavailable"
 msgstr ""
 
@@ -2282,7 +2322,7 @@ msgstr ""
 msgid "Service"
 msgstr ""
 
-#: apps/places/templates/places/metadata/real_time_information.html:40
+#: apps/places/templates/places/metadata/real_time_information.html:44
 msgid "No further info"
 msgstr ""
 
@@ -2883,8 +2923,8 @@ msgstr ""
 msgid "Device"
 msgstr ""
 
-#: apps/stats/templates/stats/popular_devices.html:14 templates/base.html:164
-#: templates/base.html.py:169 templates/base.html:197
+#: apps/stats/templates/stats/popular_devices.html:14 templates/base.html:169
+#: templates/base.html.py:174 templates/base.html:202
 msgid "Share"
 msgstr ""
 
@@ -2922,7 +2962,7 @@ msgstr ""
 
 #: apps/transport/templates/transport/index.html:14
 #: apps/transport/templates/transport/index.html:33
-#: apps/transport/templates/transport/index.html:99
+#: apps/transport/templates/transport/index.html:103
 msgid "Park and Rides"
 msgstr ""
 
@@ -2937,7 +2977,7 @@ msgid "Travel News"
 msgstr ""
 
 #: apps/transport/templates/transport/index.html:58
-#: apps/transport/templates/transport/index.html:86
+#: apps/transport/templates/transport/index.html:90
 #: favourites/templates/favourite.html:22
 msgid "Favourite"
 msgstr ""
@@ -2947,16 +2987,16 @@ msgstr ""
 msgid "(about %(distance)sm %(bearing)s)"
 msgstr ""
 
-#: apps/transport/templates/transport/index.html:80
+#: apps/transport/templates/transport/index.html:84
 msgid "There is currently no real time information from this stop."
 msgstr ""
 
-#: apps/transport/templates/transport/index.html:89
+#: apps/transport/templates/transport/index.html:93
 #, python-format
 msgid "View nearby %(entity_type)s"
 msgstr ""
 
-#: apps/transport/templates/transport/index.html:142
+#: apps/transport/templates/transport/index.html:146
 msgid "Travel alerts"
 msgstr ""
 
