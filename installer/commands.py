@@ -169,9 +169,13 @@ class DBPrepCommandImpl(AbstractDBPrepCommand):
         if self.configure_security:
             configure_pg_hba()
     
-
 try:
     from installer.sysprep import postgres_setup
+except ImportError:
+    def postgres_setup(*args, **kwargs):
+        pass
+
+try:
     from installer.dbprep import configure_pg_hba, create_postgis_template
 except NotImplementedError:
     
