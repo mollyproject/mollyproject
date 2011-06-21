@@ -236,8 +236,8 @@ class SiteCreateCommand(Command):
             raise DistutilsArgError('You must specify a path to where the site is to be created')
     
     def run(self):
-        copytree(os.path.join(os.path.dirname(__file__), 'data'), self.site)
-        os.makedirs(os.path.join(site, 'site_media'))
-        os.makedirs(os.path.join(site, 'compiled_media'))
+        copytree(os.path.join(os.path.dirname(__file__), 'site'), self.site)
+        os.makedirs(os.path.join(self.site, 'site_media'))
+        os.makedirs(os.path.join(self.site, 'compiled_media'))
         print "Template created at", os.path.abspath(self.site)
 
