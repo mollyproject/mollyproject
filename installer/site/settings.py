@@ -456,7 +456,7 @@ APPLICATIONS = [
                      # most specific file for your needs will improve running
                      # time. http://download.geofabrik.de/osm/ contains country
                      # and region specific data dumps
-                     #url='http://download.geofabrik.de/osm/europe/great_britain/england.osm.bz2'
+                     #url='http://download.geofabrik.de/osm/europe/great_britain/england.osm.bz2',
                      
                      # The following setting specifies that instead of using the
                      # default mapping from OSM tags to entity types inside of
