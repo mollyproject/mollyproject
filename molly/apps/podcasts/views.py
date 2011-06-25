@@ -34,10 +34,10 @@ class IndexView(BaseView):
         if 'show_itunesu_link' in request.GET:
             show_itunesu_link = request.GET['show_itunesu_link'] != 'false'
         
-        # TODO: Only show non-empty categories?
         context.update({
             'categories': PodcastCategory.objects.filter(podcast__isnull=False),
             'show_itunesu_link': show_itunesu_link,
+            'podcasts': Podcast.objects.filter(category__isnull=True)
         })
         return self.render(request, context, 'podcasts/index',
                            expires=timedelta(days=7))
