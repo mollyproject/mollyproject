@@ -5,6 +5,8 @@ from django.core.paginator import Paginator, EmptyPage, InvalidPage
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext as _
+from django.utils.translation import get_language
+from django.db.models import Q
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
@@ -21,7 +23,7 @@ class IndexView(BaseView):
     @BreadcrumbFactory
     def breadcrumb(self, request, context):
         return Breadcrumb(
-            self.conf.local_name, None, _('Events'), lazy_reverse('events:index')
+            self.conf.local_name, None, _('Events'), lazy_reverse('index')
         )
 
     def handle_GET(self, request, context):
@@ -64,7 +66,7 @@ class ItemListView(BaseView):
         return Breadcrumb(
             self.conf.local_name,
             lazy_parent('index'),
-            _('News feed'),
+            _('Events feed'),
             lazy_reverse('item-list', args=[slug])
         )
 
