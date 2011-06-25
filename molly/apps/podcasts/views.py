@@ -36,7 +36,7 @@ class IndexView(BaseView):
         
         # TODO: Only show non-empty categories?
         context.update({
-            'categories': PodcastCategory.objects.all(),
+            'categories': PodcastCategory.objects.filter(podcast__isnull=False),
             'show_itunesu_link': show_itunesu_link,
         })
         return self.render(request, context, 'podcasts/index',
