@@ -727,18 +727,10 @@ class NaptanMapsProvider(BaseMapsProvider):
     def _import_from_http(self):
         
         # Get NPTG localities
-        f, filename =  tempfile.mkstemp()
-        os.close(f)
-        urllib.urlretrieve(self.HTTP_NTPG_URL, filename)
-        archive = zipfile.ZipFile(filename)
-        if hasattr(archive, 'open'):
-            f = archive.open('Localities.csv')
-            falt = archive.open('LocalityAlternativeNames.csv')
-        else:
-            f = StringIO(archive.read('Localities.csv'))
-            falt = StringIO(archive.read('LocalityAlternativeNames.csv'))
+        archive = zipfile.ZipFile(StringIO(urllib.urlopen(self.HTTP_NTPG_URL).read()))
+        f = StringIO(archive.read('Localities.csv'))
+        falt = StringIO(archive.read('LocalityAlternativeNames.csv'))
         localities = self._get_nptg_alt_names(falt, self._get_nptg(f))
-        os.unlink(filename)
         
         f, filename = tempfile.mkstemp()
         os.close(f)
