@@ -81,7 +81,10 @@ def deploy(venv, site_path, development=False, listen_externally=False,
     venv("python %s/manage.py synccompress" % site_deploy_path)
     #venv("python %s/manage.py generate_cache_manifest" % site_deploy_path)
     if os.name != 'nt':
-        venv("python %s/manage.py create_crontab | crontab" % site_deploy_path)
+        pipe = ' | crontab'
+    else:
+        pipe = ''
+    venv("python %s/manage.py create_crontab%s" % (site_deploy_path, pipe))
     print "DONE!"
     
     # Start dev server
