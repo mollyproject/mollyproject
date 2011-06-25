@@ -24,18 +24,28 @@ class PostcodesMapsProvider(BaseMapsProvider):
         self.codepoint_path = codepoint_path
         self.import_areas = import_areas
 
+    CODEPOINT_OPEN_URL = 'http://freepostcodes.org.uk/static/code-point-open/codepo_gb.zip'
+
+    def _download_codepoint_open(self):
+
+            archive_url = urllib2.urlopen(self.CODEPOINT_OPEN_URL)
+            archive_file = open(self.codepoint_path, 'wb')
+            archive_file.write(archive_url.read())
+            archive_file.close()
+
     @batch('%d 12 1 1 *' % random.randint(0, 59))
     def import_data(self, metadata, output):
 
         entity_type, source = self._get_entity_type(), self._get_source()
-
-        if not os.path.exists(self.codepoint_path):
-            archive_url = urllib2.urlopen('http://freepostcodes.org.uk/static/code-point-open/codepo_gb.zip')
-            archive_file = open(self.codepoint_path, 'w')
-            archive_file.write(archive_url.read())
-            archive_file.close()
         
-        archive = zipfile.ZipFile(self.codepoint_path)
+        if not os.path.exists(self.codepoint_path):
+            self._download_codepoint_open()
+        
+        try:
+            archive = zipfile.ZipFile(self.codepoint_path)
+        except zipfile.BadZipfile:
+            self._download_codepoint_open()
+            archive = zipfile.ZipFile(self.codepoint_path)
         
         if self.import_areas:
             filenames = ['Code-Point Open/Data/%s.csv' % code.lower() for code in self.import_areas]
