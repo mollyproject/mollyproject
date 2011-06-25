@@ -173,7 +173,7 @@ class DBPrepCommandImpl(AbstractDBPrepCommand):
     
 try:
     from installer.sysprep import postgres_setup
-except ImportError:
+except (ImportError, NotImplementedError):
     def postgres_setup(*args, **kwargs):
         pass
 
