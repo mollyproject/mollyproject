@@ -9,12 +9,12 @@ def create(dba_user, dba_pass, username, password, database):
     
     creds = []
     if dba_user:
-        creds += ['-U', username]
+        creds += ['-U', dba_user]
     if dba_pass:
-        os.environ['PGPASSWORD'] = password
+        os.environ['PGPASSWORD'] = dba_pass
     
     try:
-        quiet_exec(['psql','-c',"CREATE USER %s WITH PASSWORD '%s';" % (username, password)], 'dbcreate')
+        quiet_exec(['psql'] + creds + ['-c',"CREATE USER %s WITH PASSWORD '%s';" % (username, password)], 'dbcreate')
     except CommandFailed:
         pass
     
