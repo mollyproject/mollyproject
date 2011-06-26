@@ -49,7 +49,6 @@ class RSSFeedsProvider(BaseFeedsProvider):
         feed.save()
         
         items = set()
-        print feed_data
         for x_item in feed_data.entries:
             if hasattr(x_item, 'id'):
                 guid = x_item.id

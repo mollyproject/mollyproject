@@ -630,7 +630,6 @@ class ServiceDetailView(BaseView):
             
             else:
                 
-                print route_pk
                 route = get_object_or_404(Route, id=route_pk)
             
             i = 1
