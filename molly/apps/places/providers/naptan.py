@@ -117,7 +117,7 @@ class NaptanContentHandler(ContentHandler):
             sa.save()
             for lang_code, name in self.names.items():
                 if lang_code is None: lang_code = 'en'
-                set_name_in_language(entity, lang_code, name=name)
+                set_name_in_language(sa, lang_code, title=name)
         
         elif name == 'CommonName':
             if self.lang not in self.names:
