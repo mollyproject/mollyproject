@@ -168,7 +168,7 @@ class NaptanContentHandler(ContentHandler):
         
         if (common_name or '').endswith(' DEL') or \
            (indicator or '').lower() == 'not in use' or \
-           'to define route ' in (common_name or '') or \
+           'to define route' in (common_name or '') or \
            'to def rte' in (common_name or '') or \
            'to def route' in (common_name or '') or \
            'def.rte' in (common_name or ''):
