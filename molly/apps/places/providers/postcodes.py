@@ -67,12 +67,30 @@ class PostcodesMapsProvider(BaseMapsProvider):
         j = 0
         for i, line in enumerate(reader):
             postcode_abbrev, (easting, northing) = line[0], line[10:12]
-            if postcode_abbrev[-4] != ' ':
-                postcode = '%s %s' % (postcode_abbrev[:-3], postcode_abbrev[-3:])
+            postcode_abbrev = postcode_abbrev.replace(' ', '')
+            
+            # Now try to figure out where to put the space in
+            if re.match(r'[A-Z][0-9]{2}[A-Z]{2}', postcode_abbrev):
+                # A9 9AA
+                postcode = '%s %s' % (postcode_abbrev[:2], postcode_abbrev[2:])
+            elif re.match(r'[A-Z][0-9]{3}[A-Z]{2}', postcode_abbrev):
+                # A99 9AA
+                postcode = '%s %s' % (postcode_abbrev[:3], postcode_abbrev[3:])
+            elif re.match(r'[A-Z]{2}[0-9]{2}[A-Z]{2}', postcode_abbrev):
+                # AA9 9AA
+                postcode = '%s %s' % (postcode_abbrev[:3], postcode_abbrev[3:])
+            elif re.match(r'[A-Z]{2}[0-9]{3}[A-Z]{2}', postcode_abbrev):
+                # AA99 9AA
+                postcode = '%s %s' % (postcode_abbrev[:4], postcode_abbrev[4:])
+            elif re.match(r'[A-Z][0-9][A-Z][0-9][A-Z]{2}', postcode_abbrev):
+                # A9A 9AA
+                postcode = '%s %s' % (postcode_abbrev[:3], postcode_abbrev[3:])
+            elif re.match(r'[A-Z]{2}[0-9][A-Z][0-9][A-Z]{2}', postcode_abbrev):
+                # AA9A 9AA
+                postcode = '%s %s' % (postcode_abbrev[:4], postcode_abbrev[4:])
             else:
                 postcode = postcode_abbrev
-            postcode_abbrev = postcode_abbrev.replace(' ', '')
-                
+            
             try:
                 easting, northing = int(easting), int(northing)
             except ValueError:
