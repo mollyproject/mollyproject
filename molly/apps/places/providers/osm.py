@@ -204,7 +204,6 @@ Complete
         ))
 
 class OSMMapsProvider(BaseMapsProvider):
-    SHELL_CMD = "wget -O- %s --quiet | bunzip2"
 
     def __init__(self, lat_north=None, lat_south=None,
                  lon_west=None, lon_east=None,
@@ -276,14 +275,11 @@ class OSMMapsProvider(BaseMapsProvider):
         new_etag = response.headers['ETag'][1:-1]
         self.output = output
         
-        if False and new_etag == old_etag:
+        if not settings.DEBUG and new_etag == old_etag:
             output.write('OSM data not updated. Not updating.\n')
             return
         
-        p = subprocess.Popen([self.SHELL_CMD % self._url], shell=True,
-            stdin=subprocess.PIPE, stdout=subprocess.PIPE, close_fds=True)
-        
-        parser = make_parser()
+        parser = make_parser(['xml.sax.xmlreader.IncrementalParser'])
         parser.setContentHandler(OSMHandler(self._get_source(),
                                             self._get_entity_types(),
                                             lambda tags, type_list=None: self._find_types(tags, self._osm_tags if type_list is None else type_list),
@@ -292,7 +288,14 @@ class OSMMapsProvider(BaseMapsProvider):
                                             self._lat_south,
                                             self._lon_west,
                                             self._lon_east))
-        parser.parse(p.stdout)
+        
+        # Parse in 8k chunks
+        osm = urllib2.urlopen(self._url)
+        buffer = osm.read(8192)
+        bunzip = bz2.BZ2Decompressor()
+        while buffer:
+            parser.feed(bunzip.decompress(buffer))
+            buffer = osm.read(8192)
         
         for lang_code, lang_name in settings.LANGUAGES:
             with override(lang_code):
