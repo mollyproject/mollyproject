@@ -168,8 +168,10 @@ class NaptanContentHandler(ContentHandler):
         
         if (common_name or '').endswith(' DEL') or \
            (indicator or '').lower() == 'not in use' or \
-           (common_name or '').endswith('(to define route)') or \
-           (common_name or '').endswith('to def rte'):
+           'to define route ' in (common_name or '') or \
+           'to def rte' in (common_name or '') or \
+           'to def route' in (common_name or '') or \
+           'def.rte' in (common_name or ''):
             # In the NaPTAN list, but indicates it's an unused stop
             return
         
@@ -188,24 +190,28 @@ class NaptanContentHandler(ContentHandler):
                             common_name = self.names[lang]
                             break
                 
-                    # Convert indicator to a friendlier format
-                    indicator = {
-                        # Translators: This is referring to bus stop location descriptions
-                        'opp': ugettext('Opposite'),
-                        'Opp': ugettext('Opposite'),
-                        'opposite': ugettext('Opposite'),
-                        # Translators: This is referring to bus stop location descriptions
-                        'adj': ugettext('Adjacent'),
-                        # Translators: This is referring to bus stop location descriptions
-                        'outside': ugettext('Outside'),
-                        'o/s': ugettext('Outside'),
-                        'O/s': ugettext('Outside'),
-                        # Translators: This is referring to bus stop location descriptions
-                        'nr': ugettext('Near'),
-                        'Nr': ugettext('Near'),
-                        # Translators: This is referring to bus stop location descriptions
-                        'inside': ugettext('Inside'),
-                    }.get(indicator, indicator)
+                    # Expand abbreviations in indicators
+                    if indicator is not None:
+                        parts = []
+                        for part in indicator.split():
+                            parts.append({
+                                # Translators: This is referring to bus stop location descriptions
+                                'op': ugettext('Opposite'),
+                                'opp': ugettext('Opposite'),
+                                'opposite': ugettext('Opposite'),
+                                # Translators: This is referring to bus stop location descriptions
+                                'adj': ugettext('Adjacent'),
+                                # Translators: This is referring to bus stop location descriptions
+                                'outside': ugettext('Outside'),
+                                'o/s': ugettext('Outside'),
+                                # Translators: This is referring to bus stop location descriptions
+                                'nr': ugettext('Near'),
+                                # Translators: This is referring to bus stop location descriptions
+                                'inside': ugettext('Inside'),
+                                # Translators: This is referring to bus stop location descriptions
+                                'stp': ugettext('Stop'),
+                            }.get(part.lower(), part))
+                        indicator = ' '.join(parts)
                     
                     if indicator is None and self.meta['stop-type'] in ('AIR', 'FTD', 'RSE', 'TMU', 'BCE'):
                         # Translators: This is referring to public transport entities
@@ -219,15 +225,15 @@ class NaptanContentHandler(ContentHandler):
                         # Translators: This is referring to rail and metro stations
                         title = ugettext('Platform at %s') % common_name
                     
-                    elif indicator is not None:
+                    elif indicator is not None and indicator.lower() != 'none' \
+                        and indicator not in common_name:
                         title = indicator + ' ' + common_name
                     
                     else:
-                        
                         title = common_name
                     
                     if street != None and street != '-' \
-                                 and not common_name.startswith(street):
+                                 and street not in common_name:
                         # Deal with all-caps street names
                         if street.upper() == street:
                             fixedstreet = ''
@@ -732,17 +738,15 @@ class NaptanMapsProvider(BaseMapsProvider):
         falt = StringIO(archive.read('LocalityAlternativeNames.csv'))
         localities = self._get_nptg_alt_names(falt, self._get_nptg(f))
         
-        f, filename = tempfile.mkstemp()
-        os.close(f)
-        urllib.urlretrieve(self.HTTP_URL, filename)
-        archive = zipfile.ZipFile(filename)
-        if hasattr(archive, 'open'):
-            f = archive.open('NaPTAN.xml')
-        else:
-            f = StringIO(archive.read('NaPTAN.xml'))
-        self._import_from_pipe(f, localities, areas=self._areas)
-        archive.close()
-        os.unlink(filename)
+        with tempfile.TemporaryFile() as temp:
+            temp.write(urllib.urlopen(self.HTTP_URL).read())
+            archive = zipfile.ZipFile(temp)
+            if hasattr(archive, 'open'):
+                f = archive.open('NaPTAN.xml')
+            else:
+                f = StringIO(archive.read('NaPTAN.xml'))
+            self._import_from_pipe(f, localities, areas=self._areas)
+            archive.close()
 
     def _import_from_pipe(self, pipe_r, localities, areas=None):
         parser = make_parser()
