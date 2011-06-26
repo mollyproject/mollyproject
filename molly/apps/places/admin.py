@@ -30,7 +30,7 @@ class EntityGroupAdmin(admin.ModelAdmin):
 
 
 class EntityAdmin(admin.OSMGeoAdmin):
-    list_display = ('absolute_url', 'primary_type')
+    list_display = ('title', 'absolute_url', 'primary_type')
     list_filter = ('source', 'primary_type', )
     inlines = [
         EntityNameInline,
