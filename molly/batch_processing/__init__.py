@@ -153,7 +153,7 @@ if os.name == 'nt':
                 project_path = os.path.dirname(imp.find_module('settings')[1])
             
             command = "'%s' '%s' run_batch '%s' '%s' '%s'" % (
-                sys.executable,
+                os.path.join(os.path.dirname(sys.executable), 'pythonw.exe'),
                 os.path.abspath(os.path.join(project_path, 'manage.py')),
                 batch.local_name,
                 batch.provider_name,
