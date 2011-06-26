@@ -82,7 +82,7 @@ class ExternalImageSized(models.Model):
                     resized.convert('RGB').save(self.get_filename(), format='jpeg')
                     self.content_type = 'image/jpeg'
                 except IOError:
-                    open(self.get_filename(), 'w').write(data.getvalue())
+                    open(self.get_filename(), 'wb').write(data.getvalue())
                     self.content_type = response.headers['content-type']
 
             self.external_image.width = size[0]
