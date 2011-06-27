@@ -6,7 +6,8 @@ from PyZ3950.zmarc import MARC, MARC8_to_Unicode
 
 from django.utils.translation import ugettext_lazy
 
-from molly.apps.library.models import LibrarySearchResult, Library
+from molly.apps.library.models import (LibrarySearchResult, Library,
+                                       LibrarySearchError)
 from molly.apps.library.providers import BaseLibrarySearchProvider
 
 class SearchResult(LibrarySearchResult):
@@ -393,10 +394,10 @@ class Z3950(BaseLibrarySearchProvider):
             results = self.Results(connection.search(z3950_query), self._wrapper)
         except zoom.Bib1Err as e:
             # 31 = Resources exhausted - no results available 
-            if e.condition in (31, 108):
+            if e.condition in (31,):
                 return []
             else:
-                raise
+                raise LibrarySearchError(e.message)
         else:
             return results
     

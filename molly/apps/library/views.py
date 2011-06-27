@@ -9,7 +9,7 @@ from molly.utils.breadcrumbs import *
 from molly.maps import Map
 
 from molly.apps.library.forms import SearchForm
-from molly.apps.library.models import LibrarySearchQuery
+from molly.apps.library.models import LibrarySearchQuery, LibrarySearchError
 
 class IndexView(BaseView):
     """
@@ -81,7 +81,10 @@ class SearchDetailView(BaseView):
             return self.handle_error(request, context, e.msg)
         
         # Call provider
-        results = self.conf.provider.library_search(query)
+        try:
+            results = self.conf.provider.library_search(query)
+        except LibrarySearchError as e:
+            return self.handle_error(request, context, e.message)
         
         # Paginate results
         paginator = Paginator(results, 10)
@@ -119,7 +122,7 @@ class ItemDetailView(ZoomableView):
         context = super(ItemDetailView, self).initial_context(request)
         item = self.conf.provider.control_number_search(control_number)
         if item is None:
-            raise Http404
+            raise Http404()
         
         context.update({
             'item': item,
