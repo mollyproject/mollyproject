@@ -115,6 +115,20 @@ This has one option:
  * urls (optional, defaults to all instances): the base URLs of the ACIS Live
    instances to be scraped for route data
 
+:class:`molly.apps.places.providers.AtcoCifTimetableProvider`
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+.. note :: This only implements ATCO-CIF as far as TfGM data is concerned. There
+           are no other public releases of ATCO-CIF data to test against.
+
+This imports ATCO-CIF (public transport timetable and route) data. This allows
+for bus routes to be rendered, as well as scheduled departure times from a bus
+stop.
+
+This has one optional option:
+
+ * url: A .zip file containing the .CIF files to be imported
+
 :class:`molly.apps.places.providers.BBCTPEGPlacesProvider`
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
 

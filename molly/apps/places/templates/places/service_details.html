@@ -62,6 +62,12 @@
         <li><div class="note">
             {% trans "Not all services necessarily call at all stops, particularly in the early morning and late at night. Always check local timetables." %}
         </div></li>
+	{% else %}
+		{% if not service.has_realtime %}
+			<li><div class="note">
+				{% trans "The information shown below is scheduled information only. Always check local information for any service changes." %}
+			</div></li>
+		{% endif %}
     {% endif %}
   </ul>
 

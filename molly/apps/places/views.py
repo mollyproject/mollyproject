@@ -5,7 +5,7 @@ from itertools import chain
 import simplejson
 import copy
 import math
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 from suds import WebFault
 
@@ -27,7 +27,7 @@ from molly.geolocation.views import LocationRequiredView
 from molly.maps import Map
 from molly.maps.osm.models import OSMUpdate
 
-from molly.apps.places.models import Entity, EntityType, Route
+from molly.apps.places.models import Entity, EntityType, Route, Journey
 from molly.apps.places import get_entity, get_point
 from molly.apps.places.forms import UpdateOSMForm
 
@@ -572,8 +572,9 @@ class ServiceDetailView(BaseView):
         service_id = request.GET.get('id')
         route_id = request.GET.get('route')
         route_pk = request.GET.get('routeid')
+        journey = request.GET.get('journey')
         
-        if service_id or route_id or route_pk:
+        if service_id or route_id or route_pk or journey:
             entity = get_entity(scheme, value)
         else:
             raise Http404()
@@ -650,6 +651,54 @@ class ServiceDetailView(BaseView):
                     'entities': route.stops.all(),
                     'operator': route.operator,
                     'has_timetable': False,
+                    'has_realtime': False,
+                    'calling_points': calling_points
+                }
+            if entity not in service['entities']:
+                raise Http404()
+            context.update({
+                'title': '%s: %s' % (route.service_id, route.service_name),
+                'service': service                
+            })
+        
+        elif journey:
+            
+            journey = get_object_or_404(Journey, id=journey)
+            route = journey.route
+            entity_passed = False
+            i = 1
+            calling_points = []
+            
+            for stop in journey.scheduledstop_set.all():
+                
+                if stop.entity == entity:
+                    entity_passed = True
+                
+                if not entity_passed and stop.std < datetime.now().time():
+                    
+                    calling_point = {
+                        'entity': stop.entity,
+                        'st': stop.std.strftime('%H:%M'),
+                        'at': True
+                    }
+                
+                else:
+                    
+                    calling_point = {
+                        'entity': stop.entity,
+                        'st': (stop.sta if entity_passed else stop.std).strftime('%H:%M'),
+                        'at': False
+                    }
+                
+                if stop.entity.location is not None:
+                    calling_point['stop_num'] = i
+                    i += 1
+                calling_points.append(calling_point)
+            
+            service = {
+                    'entities': [s.entity for s in journey.scheduledstop_set.all()],
+                    'operator': journey.route.operator,
+                    'has_timetable': True,
                     'has_realtime': False,
                     'calling_points': calling_points
                 }

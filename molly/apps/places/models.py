@@ -1,6 +1,9 @@
-import simplejson
-
+from calendar import weekday, monthrange
+from datetime import date, timedelta
 from math import atan2, degrees
+
+import simplejson
+from dateutil.easter import easter
 
 from django.conf import settings
 from django.contrib.gis.db import models
@@ -381,6 +384,172 @@ class StopOnRoute(models.Model):
     
     # The number stop which this is on this route
     order = models.IntegerField()
+    
+    class Meta:
+        ordering = ['order']
+    
+    def __unicode__(self):
+        return self.entity.title
+
+class Journey(models.Model):
+    """
+    This is a scheduled public transport journey between entities
+    """
+    
+    # The route this journey runs on (note that the stops RelatedManager should
+    # contain where the bus actually stops - if it's different from the
+    # indicated route)
+    route = models.ForeignKey(Route)
+    
+    # A primary key used in the external dataset
+    external_ref = models.TextField()
+    
+    # Any notes relating to this journey
+    notes = models.TextField(null=True, blank=True)
+    
+    runs_on_monday = models.BooleanField()
+    runs_on_tuesday = models.BooleanField()
+    runs_on_wednesday = models.BooleanField()
+    runs_on_thursday = models.BooleanField()
+    runs_on_friday = models.BooleanField()
+    runs_on_saturday = models.BooleanField()
+    runs_on_sunday = models.BooleanField()
+    runs_in_termtime = models.BooleanField()
+    runs_in_school_holidays = models.BooleanField()
+    runs_on_bank_holidays = models.BooleanField()
+    runs_on_non_bank_holidays = models.BooleanField()
+    runs_from = models.DateField()
+    runs_until = models.DateField()
+    
+    def get_bank_holidays(self, year):
+        
+        def nth_dow_to_day((m, dow, n), y):
+            """
+            Figures out the day of the nth day-of-week in the month m and year y as an
+            integer
+            
+            e.g., 2nd Wednesday in July 2010:
+                  nth_dow_to_day((7, 3, 2), 2010)
+            
+            Conversion from GUTime
+            https://github.com/cnorthwood/ternip/blob/master/ternip/rule_engine/normalisation_functions/date_functions.py
+            """
+            
+            if dow == 7:
+                dow = 0
+            
+            first_dow, num_days = monthrange(y, m) # the dow of the first of the month
+            first_dow += 1
+            if first_dow == 7:
+                first_dow = 0
+            
+            shift = dow - first_dow
+            if shift < 0:
+                shift += 7
+            
+            if n == -1:
+                while (shift + (7 * n) - 6) <= num_days:
+                    n += 1
+                n -= 1
+            return date(y, m, shift + (7 * n) - 6)
+        
+        bank_holidays = [
+            date(year, 1, 1), # New Year's Day
+            easter(year) - timedelta(days=2), # Good Friday
+            easter(year) + timedelta(days=1), # Easter Monday
+            nth_dow_to_day((5, 1, 1), year), # May Day
+            nth_dow_to_day((5, 1, -1), year) if year != 2012 else date(2012, 6, 4), # Spring Bank Holiday
+            nth_dow_to_day((8, 1, -1), year), # Late Summer Bank Holiday
+            date(year, 12, 25), # Christmas Day
+            date(year, 12, 26), # Boxing Day
+        ]
+        if year == 2011:
+            bank_holidays.append(date(2011, 4, 29)) # Royal Wedding
+        if year == 2012:
+            bank_holidays.append(date(2012, 6, 5)) # Diamond Jubilee
+        
+        # Now figure out if any of those are on a weekend and if so add the
+        # Monday 'day in lieu' day
+        for bank_holiday in bank_holidays[:]:
+            if weekday(bank_holiday.year, bank_holiday.month, bank_holiday.day) == 5:
+                new_date = bank_holiday + timedelta(days=2)
+            elif weekday(bank_holiday.year, bank_holiday.month, bank_holiday.day) == 6:
+                new_date = bank_holiday + timedelta(days=1)
+            else:
+                continue
+            # Deal with the case of Christmas Day and Boxing Day both being on
+            # a weekend
+            while new_date in bank_holidays:
+                new_date += timedelta(days=1)
+            bank_holidays.append(new_date)
+        return bank_holidays
+    
+    def runs_on(self, date):
+        """
+        Checks if the service runs on the given date
+        """
+        if date < self.runs_from:
+            # Before this service starts
+            return False
+        
+        if date > self.runs_until:
+            # After this service finished
+            return False
+        
+        if date in self.get_bank_holidays(date.year):
+            # Bank holiday
+            return self.runs_on_bank_holidays
+        elif self.runs_on_non_bank_holidays:
+            
+            # TODO: Check for term time - fortunately this flag appears to be
+            # unused in Greater Manchester. If more places release ATCO-CIF
+            # dumps that do implement this, we should do this at a later date
+            
+            day = ['monday',
+                   'tuesday',
+                   'wednesday',
+                   'thursday',
+                   'friday',
+                   'saturday',
+                   'sunday'][weekday(date.year, date.month, date.day)]
+            
+            return getattr(self, 'runs_on_%s' % day)
+        
+        else:
+            # Not a bank holiday, but this is a bank holiday only service
+            return False
+    
+    vehicle = models.TextField()
+    
+    def __unicode__(self):
+        return self.route.__unicode__()
+
+class ScheduledStop(models.Model):
+    """
+    This is a scheduled route stop
+    """
+    
+    entity = models.ForeignKey(Entity)
+    journey = models.ForeignKey(Journey)
+    
+    order = models.IntegerField()
+    
+    sta = models.TimeField(verbose_name=_('Scheduled time of arrival'),
+                           null=True, blank=True)
+    
+    std = models.TimeField(verbose_name=_('Scheduled time of departure'),
+                           null=True, blank=True)
+    
+    times_estimated = models.BooleanField()
+    fare_stage = models.BooleanField()
+    activity = models.CharField(max_length=1, choices=(
+            ('O', _('Service starts here')),
+            ('B', _('Scheduled stop')),
+            ('P', _('Service picks up here only')),
+            ('D', _('Service does not pick up here')),
+            ('N', _('Service does not stop here')),
+            ('F', _('Service finishes here')),
+        ), default='B')
     
     class Meta:
         ordering = ['order']

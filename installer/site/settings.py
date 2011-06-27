@@ -487,6 +487,14 @@ APPLICATIONS = [
             #    # This URL is the URL to the TPEG feed to be imported
             #    url='http://www.bbc.co.uk/travelnews/tpeg/en/local/rtm/oxford_tpeg.xml',
             #),
+            
+            # The following provider takes timetable and route dumps in ATCO-CIF
+            # format and imports those into Molly, allowing for scheduled bus
+            # departures to be shown alongside the bus stop
+            
+            #Provider('molly.apps.places.providers.AtcoCifTimetableProvider',
+            #    url = 'http://store.datagm.org.uk/sets/TfGM/GMPTE_CIF.zip'
+            #),
         ],
         
         # This setting can be used to associate entities with each other. At
