@@ -29,7 +29,7 @@ def full_path(request):
             continue
         else:
             for v in vs:
-                args.append((k, v))
+                args.append((k.encode('utf-8'), v.encode('utf-8')))
     query = urlencode(args)
     uri = urlunparse((scheme, netloc, path, params, query, fragment))
     return {
