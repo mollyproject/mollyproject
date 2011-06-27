@@ -24,7 +24,12 @@ class ExternalImageView(BaseView):
 
     def handle_GET(self, request, context, slug):
         eis = get_object_or_404(ExternalImageSized, slug=slug)
-        response = HttpResponse(open(eis.get_filename(), 'rb').read(), mimetype=eis.content_type.encode('ascii'))
+        try:
+            response = HttpResponse(open(eis.get_filename(), 'rb').read(),
+                                    mimetype=eis.content_type.encode('ascii'))
+        except IOError:
+            eis.delete()
+            raise Http404()
 
         response['ETag'] = slug
         response['Expires'] = formatdate(mktime((datetime.now() + timedelta(days=7)).timetuple()))
