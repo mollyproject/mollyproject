@@ -1,6 +1,10 @@
-import unittest, sys, inspect
+import sys
+import inspect
+
+from django.utils import unittest
 from django.conf import settings
 from django.utils.importlib import import_module
+
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import NullBreadcrumb
 

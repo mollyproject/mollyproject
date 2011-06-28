@@ -1,4 +1,5 @@
-import unittest
+import sys
+from django.utils import unittest
 
 from django.core.management import call_command
 from django.test.client import Client
@@ -12,7 +13,7 @@ class PodcastsTestCase(unittest.TestCase):
             opml = OPMLPodcastsProvider(url = 'http://www.bbc.co.uk/radio/opml/bbc_podcast_opml_v2.xml',
                                         rss_re = r'http://downloads.bbc.co.uk/podcasts/(.+)/rss.xml')
             opml.class_path = 'molly.providers.apps.podcasts.opml.OPMLPodcastsProvider'
-            opml.import_data(None, None)
+            opml.import_data({}, sys.stdout)
         
     def testPodcasts(self):
         podcasts = Podcast.objects.all()
