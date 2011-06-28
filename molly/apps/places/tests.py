@@ -6,11 +6,11 @@ from molly.apps.places.models import Journey
 
 class AtcoCifTestCase(unittest.TestCase):
     
-    def testBankHolidaysNormal(self):
+    def testBankHolidays(self):
         j = Journey()
         
         # 10 bank hols in 2010
-        hols = p.get_bank_holidays(2010)
+        hols = j.get_bank_holidays(2010)
         self.assertEquals(len(hols), 10)
         self.assertTrue(date(2010, 1, 1) in hols) # New Year's Day
         self.assertTrue(date(2010, 4, 2) in hols) # Good Friday
@@ -23,9 +23,9 @@ class AtcoCifTestCase(unittest.TestCase):
         self.assertTrue(date(2010, 12, 27) in hols) # Christmas Day (in lieu)
         self.assertTrue(date(2010, 12, 28) in hols) # Boxing Day (in lieu)
         
-        # 12 bank hols in 2011
-        hols = p.get_bank_holidays(2011)
-        self.assertEquals(len(hols), 12)
+        # 11 bank hols in 2011
+        hols = j.get_bank_holidays(2011)
+        self.assertEquals(len(hols), 11)
         self.assertTrue(date(2011, 1, 1) in hols) # New Year's Day
         self.assertTrue(date(2011, 1, 3) in hols) # New Year's Day (in lieu)
         self.assertTrue(date(2011, 4, 22) in hols) # Good Friday
@@ -38,9 +38,9 @@ class AtcoCifTestCase(unittest.TestCase):
         self.assertTrue(date(2011, 12, 26) in hols) # Christmas Day (in lieu)
         self.assertTrue(date(2011, 12, 27) in hols) # Boxing Day
         
-        # 11 bank hols in 2012
-        hols = p.get_bank_holidays(2012)
-        self.assertEquals(len(hols), 11)
+        # 10 bank hols in 2012
+        hols = j.get_bank_holidays(2012)
+        self.assertEquals(len(hols), 10)
         self.assertTrue(date(2012, 1, 1) in hols) # New Year's Day
         self.assertTrue(date(2012, 1, 2) in hols) # New Year's Day (in lieu)
         self.assertTrue(date(2012, 4, 6) in hols) # Good Friday
