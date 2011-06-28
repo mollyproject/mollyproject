@@ -93,14 +93,16 @@ def configure_logging(conf):
             # when in debug mode, log Molly at debug level to stdout
             handler = StreamHandler()
             logger.setLevel(logging.DEBUG)
+            logger.addHandler(handler)
             
             # Log everyone else at info level
             logging.getLogger().setLevel(logging.INFO)
         else:
             return
-    else:
+    elif len(sys.argv) < 2 or sys.argv[1] != 'test':
+        # Don't do this when running unit tests
         
         # When not in debug mode, e-mail warnings and above to admins
         handler = EmailHandler()
         handler.setLevel(logging.WARNING)
-    logger.addHandler(handler)
+        logger.addHandler(handler)
