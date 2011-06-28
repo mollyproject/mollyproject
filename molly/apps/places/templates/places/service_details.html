@@ -106,7 +106,7 @@
                   <tbody>
                     {% for joining_point in point.joining %}
                     <tr{% if joining_point.at %} class="grey"{% endif %}>
-                      <td>{{ joining_point.stop_num }} <a href="{{ joining_point.entity.get_absolute_url }}" class="inherit-color">
+                      <td>{{ joining_point.stop_num }} <a href="{{ joining_point.entity.get_absolute_url }}" class="subtle-link">
                         {% ifequal joining_point.entity.title|slice:"-12:" "Rail Station" %}
                             {{ joining_point.entity.title|slice:":-13" }}
                         {% else %}
@@ -132,7 +132,7 @@
             </tr>
         {% endif %}
         <tr{% if point.at %} class="grey"{% endif %}>
-          <td>{{ point.stop_num }} <a href="{{ point.entity.get_absolute_url }}" class="inherit-color">
+          <td>{{ point.stop_num }} <a href="{{ point.entity.get_absolute_url }}" class="subtle-link">
                 {% ifequal point.entity.title|slice:"-12:" "Rail Station" %}
                     {{ point.entity.title|slice:":-13" }}
                 {% else %}
@@ -167,7 +167,7 @@
                   <tbody>
                     {% for splitting_point in point.splitting.list %}
                     <tr{% if splitting_point.at %} class="grey"{% endif %}>
-                      <td>{{ splitting_point.stop_num }} <a href="{{ splitting_point.entity.get_absolute_url }}" class="inherit-color">
+                      <td>{{ splitting_point.stop_num }} <a href="{{ splitting_point.entity.get_absolute_url }}" class="subtle-link">
                         {% ifequal splitting_point.entity.title|slice:"-12:" "Rail Station" %}
                             {{ splitting_point.entity.title|slice:":-13" }}
                         {% else %}

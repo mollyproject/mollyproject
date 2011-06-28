@@ -46,7 +46,7 @@ function refreshTransport(data){
         tbody.empty()
         for (var i in data.nearby[type].entities) {
             entity = data.nearby[type].entities[i]
-            tbody.append('<tr class="sub-section-divider"><th colspan="3"><a href="' + entity._url  + '" class="inherit-color">' + entity.title + '</a></th></tr>')
+            tbody.append('<tr class="sub-section-divider"><th colspan="3"><a href="' + entity._url  + '" class="subtle-link">' + entity.title + '</a></th></tr>')
             if (entity.distance) {
                 // Translators: e.g., about 100 metres NW
                 var about = interpolate(gettext('about %(distance)s %(bearing)s'),
@@ -117,7 +117,7 @@ function refreshTransport(data){
     ul = $('#travel_news .content-list')
     ul.empty()
     for (var i in data.travel_alerts) {
-        ul.append('<li><a href="' + data.travel_alerts[i]._url + '" class="inherit-color">' + data.travel_alerts[i].title + '</a></li>')
+        ul.append('<li><a href="' + data.travel_alerts[i]._url + '" class="subtle-link">' + data.travel_alerts[i].title + '</a></li>')
     }
     
     capture_outbound();
