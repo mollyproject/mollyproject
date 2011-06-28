@@ -304,9 +304,20 @@ class ACISLiveRouteProvider(BaseMapsProvider):
                 entity.update_all_types_completion()
             
             else:
-                # TODO: Change identifier lookup based on ACIS region
+                if stop_code.startswith('340'):
+                    # Oxontime uses NaPTAN code
+                    scheme = 'naptan'
+                elif stop_code.startswith('450'):
+                    # West Yorkshire uses plate code
+                    scheme = 'plate'
+                else:
+                    # Everyone else uses ATCO
+                    scheme = 'atco'
+                    if stop_code.startswith('370'):
+                        # Except South Yorkshire, which mangles the code
+                        stop_code = '3700%s' % stop_code[3:]
                 try:
-                    entity = get_entity('naptan', stop_code)
+                    entity = get_entity(scheme, stop_code)
                     if entity.source == self._get_source():
                         # Raise Http404 if this is a bus stop we came up with,
                         # so any name changes, etc, get processed
