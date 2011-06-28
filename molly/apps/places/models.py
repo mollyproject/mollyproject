@@ -54,15 +54,15 @@ class EntityType(models.Model):
     
     @property
     def verbose_name(self):
-        return name_in_language(self, 'verbose_name')
+        return name_in_language(self, 'verbose_name', self.slug)
     
     @property
     def verbose_name_singular(self):
-        return name_in_language(self, 'verbose_name_singular')
+        return name_in_language(self, 'verbose_name_singular', self.slug)
     
     @property
     def verbose_name_plural(self):
-        return name_in_language(self, 'verbose_name_plural')
+        return name_in_language(self, 'verbose_name_plural', self.slug)
     
     show_in_nearby_list = models.BooleanField()
     show_in_category_list = models.BooleanField()
@@ -150,7 +150,8 @@ class Entity(models.Model):
     
     @property
     def title(self):
-        return name_in_language(self, 'title')
+        return name_in_language(self, 'title',
+                    '%s:%s' % (self.identifier_scheme, self.identifier_value))
     
     source = models.ForeignKey(Source)
 
