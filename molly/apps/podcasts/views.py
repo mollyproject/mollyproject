@@ -35,7 +35,8 @@ class IndexView(BaseView):
             show_itunesu_link = request.GET['show_itunesu_link'] != 'false'
         
         context.update({
-            'categories': PodcastCategory.objects.filter(podcast__isnull=False),
+            'categories': [c for c in PodcastCategory.objects.all()
+                                        if c.podcast_set.all().count() > 0],
             'show_itunesu_link': show_itunesu_link,
             'podcasts': Podcast.objects.filter(category__isnull=True)
         })
