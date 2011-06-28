@@ -1,4 +1,5 @@
 import random
+from operator import attrgetter
 
 from django.shortcuts import get_object_or_404
 from django.core.urlresolvers import reverse
@@ -9,8 +10,8 @@ from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
 from molly.utils import send_email
 
-from .models import Feature
-from .forms import FeatureForm
+from molly.apps.feature_vote.models import Feature
+from molly.apps.feature_vote.forms import FeatureForm
 
 
 class IndexView(BaseView):
@@ -35,8 +36,9 @@ class IndexView(BaseView):
     def initial_context(self, request):
         for feature in Feature.objects.filter(is_public=True, is_removed=False):
             feature.check_remove(request)
-        features = list(Feature.objects.filter(is_public=True, is_removed=False))
-        for feature in features:
+        features = Feature.objects.filter(is_public=True, is_removed=False)
+        for feature in sorted(features[:], key=attrgetter('net_votes'),
+                              reverse=True):
             feature.vote = request.session['feature_vote:votes'].get(feature.id, 0)
 
         return {
