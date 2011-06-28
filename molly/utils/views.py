@@ -514,5 +514,5 @@ class CSRFFailureView(BaseView):
         logger.info('CSRF validation failure: %s', reason)
         return self.render(request, context, 'csrf_failure')
     
-    def handle_POST(self, *args, **kwargs):
-        return self.handle_GET(*args, **kwargs)
+    def handle_POST(self, request, context, reason=''):
+        return self.handle_GET(request, context, reason)
