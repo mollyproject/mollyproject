@@ -46,7 +46,7 @@ class Command(NoArgsCommand):
             os.close(f)
             
             filename = os.path.join(marker_dir, '%s-%d.png' % (color[0], index))
-            subprocess.check_call(['convert', '-background', 'none', infile, filename], shell=True)
+            subprocess.check_call('convert -background none "%s" "%s"' % (infile, filename), shell=True)
             os.unlink(infile)
         
         template = open(os.path.join(os.path.dirname(__file__), 'markers', 'star-base.svg')).read()
@@ -62,5 +62,5 @@ class Command(NoArgsCommand):
             os.close(f)
             
             filename = os.path.join(marker_dir, '%s-star.png' % color[0])
-            subprocess.check_call(['convert', '-background', 'none', infile, filename], shell=True)
+            subprocess.check_call('convert -background none "%s" "%s"' % (infile, filename), shell=True)
             os.unlink(infile)
