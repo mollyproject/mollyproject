@@ -41,8 +41,11 @@
     <meta name="format-detection" content="telephone=no" />
     <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
 
-    {# Provide the minified CSS file appropriate to class of device #}
-    {% compressed_css style_group %}
+    {# This is wrapped in an if to stop unit tests (which don't have style_group defined) failing #}
+    {% if style_group %}
+        {# Provide the minified CSS file appropriate to class of device #}
+        {% compressed_css style_group %}
+    {% endif %}
     {# If the device supports SVGs, add the following CSS file that gives SVG icons rather than .png #}
     {% if device|device_has_parent:"apple_iphone_ver4" or browser.svgt_1_1 %}
         {% compressed_css 'svg' %}
