@@ -1,3 +1,6 @@
+import re
+from operator import itemgetter
+
 from django.contrib.gis.geos import Point
 from django.utils.translation import ugettext as _
 
@@ -8,7 +11,7 @@ from molly.utils.breadcrumbs import *
 from molly.favourites import get_favourites
 
 from molly.apps.places import get_entity
-from molly.apps.places.models import Entity, EntityType
+from molly.apps.places.models import Entity, EntityType, Route
 
 class IndexView(BaseView):
     @BreadcrumbFactory
@@ -26,6 +29,8 @@ class IndexView(BaseView):
         location = request.session.get('geolocation:location')
         if location:
             location = Point(location, srid=4326)
+        
+        selected_routes = request.GET.getlist('route')
         
         context, entities = {'location':location}, set()
         
@@ -63,10 +68,21 @@ class IndexView(BaseView):
                 lambda e: e is not None and et in e.all_types_completion.all(),
                 [f.metadata.get('entity') for f in get_favourites(request)])
             
-            if request.GET.get(context_key) == 'nearby':
+            if selected_routes:
                 
                 if location:
-                    es = et.entities_completion.filter(location__isnull=False).distance(location).order_by('distance')[:count]
+                    es = et.entities_completion.filter(
+                        location__isnull=False, route__service_id__in=selected_routes)
+                    es = es.distinct().distance(location).order_by('distance')[:count]
+                else:
+                    es = []
+                results_type = 'Nearby'
+                
+            elif request.GET.get(context_key) == 'nearby':
+                
+                if location:
+                    es = et.entities_completion.filter(location__isnull=False)
+                    es = es.distance(location).order_by('distance')[:count]
                 else:
                     es = []
                 results_type = 'Nearby'
@@ -80,7 +96,8 @@ class IndexView(BaseView):
                 
                 if len(favourites) == 0:
                     if location:
-                        es = et.entities_completion.filter(location__isnull=False).distance(location).order_by('distance')[:count]
+                        es = et.entities_completion.filter(location__isnull=False)
+                        es = es.distance(location).order_by('distance')[:count]
                     else:
                         es = []
                 else:
@@ -111,10 +128,29 @@ class IndexView(BaseView):
         places_conf = app_by_application_name('molly.apps.places')
         for provider in reversed(places_conf.providers):
             provider.augment_metadata(entities,
-                                      board=request.GET.get('board', 'departures'))
+                                      board=request.GET.get('board', 'departures'),
+                                      routes=selected_routes)
         
         context['board'] = request.GET.get('board', 'departures')
+        routes = Route.objects.values_list('service_id').distinct()
+        
+        # Now sort routes numerically
+        def bus_route_sorter(route):
+            start_nums = re.match('([0-9]+)([A-Z]?)', route)
+            letter_nums = re.match('([A-Z]+)([0-9]+)([A-Z]?)', route)
+            if start_nums:
+                return int(start_nums.group(1)), start_nums.group(2)
+            elif letter_nums:
+                return letter_nums.group(1), int(letter_nums.group(2)), letter_nums.group(2)
+            else:
+                return route
+        
+        context['routes'] = sorted(map(itemgetter(0), routes), key=bus_route_sorter)
+        context['selectedroutes'] = selected_routes
+        
+        
         return context
     
     def handle_GET(self, request, context):
         return self.render(request, context, 'transport/index')
+

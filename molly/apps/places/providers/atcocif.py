@@ -257,7 +257,7 @@ class AtcoCifTimetableProvider(BaseMapsProvider):
     def _get_entity_type(self):
         return NaptanMapsProvider(None)._get_entity_types()['BCT']
     
-    def augment_metadata(self, entities, **kwargs):
+    def augment_metadata(self, entities, routes=[], **kwargs):
         
         # Some routes finish the day after they start on, but for the
         # "does this service run today" question, they consider the day
@@ -283,6 +283,10 @@ class AtcoCifTimetableProvider(BaseMapsProvider):
                 continue
             
             services = defaultdict(list)
+            calling_services = entity.scheduledstop_set.all()
+            if routes:
+                calling_services = calling_services.filter(route__service_id__in=routes)
+            
             for stop in entity.scheduledstop_set.filter(
                 Q(sta__gte=today.time()) | Q(sta__lt=time(4))):
                 
