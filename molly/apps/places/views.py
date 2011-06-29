@@ -289,7 +289,6 @@ class EntityDetailView(ZoomableView, FavouritableView):
 
         context.update({
             'entity': entity,
-            'train_station': entity, # This allows the ldb metadata to be portable
             'board': board,
             'entity_types': entity.all_types.all(),
             'associations': associations,

@@ -1,0 +1,78 @@
+{% extends "transport/base.html" %}{% load molly_utils %}{% load i18n %}
+
+{% block content %}
+{{ block.super }}
+
+{% if transit_status %}
+    {% include "places/metadata/transit_status.html" %}
+{% endif %}
+
+<div class="section">
+    <div class="header">
+        <h2>{% trans "Show routes" %}</h2>
+    </div>
+    <form action="{{ full_path }}" method="get" class="form-section">
+        <select name="route" multiple="multiple">
+            {% for route in routes %}
+                <option{% if route in selectedroutes %} selected="selected"{% endif %}>{{ route }}</option>
+            {% endfor %}
+        </select>
+        <input type="submit" value="Show" />
+    </form>
+</div>
+
+<div class="section">
+    <div class="header">
+        <h2>{% trans results_type %} {{ type.verbose_name_plural }} - {% now "G:i:s "%}</h2>
+    </div>
+    <table class="content{% if results_type == _("Favourite") or has_favourites %} no-round-bottom{% endif %}">
+        <tbody>
+        {% for entity in entities %}
+            <tr class="sub-section-divider"><th colspan="3"><a href="{{ entity.get_absolute_url }}" class="subtle-link">
+                {{ entity.title }}
+                {% if entity.distance %}<small>
+                    {% blocktrans with entity.distance.m|round_up_10 as distance and entity.bearing as bearing %}(about {{ distance }}m {{ bearing }}){% endblocktrans %}
+                </small>{% endif %}
+            </a></th></tr>
+            {% if entity.metadata.real_time_information.pip_info %}
+                <tr><td colspan="3">{{ entity.metadata.real_time_information.pip_info|join:"<br/>" }}</td></tr>
+            {% endif %}
+            {% if entity.metadata.real_time_information.services %}
+                {% for service in entity.metadata.real_time_information.services %}
+                    <tr>
+                        <td class="center"><big>
+                            {% if service.route %}<a href="{{ entity.get_absolute_url }}service?route={{ service.service|urlencode }}" class="subtle-link">{% endif %}
+                                {{ service.service }}
+                            {% if service.route %}</a>{% endif %}
+                        </big></td>
+                        <td>{{ service.destination }}</td>
+                        <td>{{ service.next }}{% if service.following %}<small>, {{ service.following.0 }}{% if service.following.1 %}, &hellip;{% endif %}</small>{% endif %}</td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                {% if not entity.metadata.real_time_information.pip_info %}
+                    <tr><td colspan="3">{% trans "There is currently no real time information from this stop." %}</td></tr>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+        </tbody>
+    </table>
+    {% ifequal results_type _("Favourite") %}
+    <ul class="link-list">
+        <li class="switcher"><a href="?show=nearby" class="nearby-switcher has-ajax-handler">
+            {% blocktrans with type.verbose_name_plural as entity_type %}View nearby {{ entity_type }}{% endblocktrans %}
+        </a></li>
+    </ul>
+    {% else %}
+        {% if has_favourites %}
+            <ul class="link-list">
+                <li class="switcher"><a href="?show=favourites" class="nearby-switcher has-ajax-handler">
+                    {% blocktrans with type.verbose_name_plural as entity_type %}View favourite {{ entity_type }}{% endblocktrans %}
+                </a></li>
+            </ul>
+        {% endif %}
+    {% endifequal %}
+
+</div>
+
+{% endblock %}

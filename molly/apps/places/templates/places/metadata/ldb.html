@@ -1,13 +1,13 @@
-{% load molly_utils %}{% if train_station.metadata.ldb %}
+{% load molly_utils %}{% if entity.metadata.ldb %}
 {% load i18n %}
 <div class="section" id="ldb">
   <div class="header">
-    <h2>{{ train_station.title }} ({% if board %}{% trans board %}{% else %}{% trans "departures" %}{% endif %}) - {{ train_station.metadata.ldb.generatedAt|localize_utc|date:"H:i:s" }}</h2>
+    <h2>{{ entity.title }} ({% if board %}{% trans board %}{% else %}{% trans "departures" %}{% endif %}) - {{ entity.metadata.ldb.generatedAt|localize_utc|date:"H:i:s" }}</h2>
   </div>
   
-  {% if train_station.metadata.ldb.nrccMessages.message %}
+  {% if entity.metadata.ldb.nrccMessages.message %}
   <ul class="content-list no-round-bottom">
-    {% for message in train_station.metadata.ldb.nrccMessages.message %}
+    {% for message in entity.metadata.ldb.nrccMessages.message %}
       <li>{{ message|sanitize_html }}</li>
     {% endfor %}
   </ul>
@@ -23,7 +23,7 @@
                     {% trans "Destination" %}
             {% endifequal %}
 	</th>
-        {% if train_station.metadata.ldb.platformAvailable %}
+        {% if entity.metadata.ldb.platformAvailable %}
         <th>{% trans "Plat." %}</th>
         {% endif %}
         <th>{% trans "Scheduled" %}</th>
@@ -31,18 +31,18 @@
       </tr>
     </thead>
     <tbody>
-      {% if train_station.metadata.ldb.error %}
+      {% if entity.metadata.ldb.error %}
         <tr>
-          <td colspan="{% if train_station.metadata.ldb.platformAvailable %}4{% else %}3{% endif %}">
+          <td colspan="{% if entity.metadata.ldb.platformAvailable %}4{% else %}3{% endif %}">
             <p>{% trans "There is currently a problem retrieving live departure information from the National Rail web site." %}</p>
-            <p>{% blocktrans with train_station.identifiers.crs as crs %}Departure information may still be accessed<a href="http://pda.ojp.nationalrail.co.uk/en/pj/ldbboard/dep/{{ crs }}">directly from their web site</a>.{% endblocktrans %}</p>
+            <p>{% blocktrans with entity.identifiers.crs as crs %}Departure information may still be accessed<a href="http://pda.ojp.nationalrail.co.uk/en/pj/ldbboard/dep/{{ crs }}">directly from their web site</a>.{% endblocktrans %}</p>
           </td>
         </tr>
       {% else %}
-        {% for service in train_station.metadata.ldb.trainServices.service %}
+        {% for service in entity.metadata.ldb.trainServices.service %}
           <tr>
             <td>
-              <a href="{{ train_station.get_absolute_url }}service?id={{ service.serviceID|urlencode }}" class="subtle-link" rel="nofollow">
+              <a href="{{ entity.get_absolute_url }}service?id={{ service.serviceID|urlencode }}" class="subtle-link" rel="nofollow">
                 {# This isn't that straight-forward - trains can split and go to multiple destinations #}
                 {% ifequal board "arrivals" %}
                   {% for location in service.origin.location %}
@@ -63,7 +63,7 @@
                 {% endifequal %}
                 {% if service.isCircularRoute %}<br /><small>({% trans "Circular Route" %})</small>{% endif %}</a>
             </td>
-            {% if train_station.metadata.ldb.platformAvailable %} 
+            {% if entity.metadata.ldb.platformAvailable %} 
             <td>{{ service.platform }}</td>
             {% endif %}
             {% ifequal board "arrivals" %}
@@ -76,7 +76,7 @@
           </tr>
         {% empty %}
           <tr>
-            <td colspan="{% if train_station.metadata.ldb.platformAvailable %}4{% else %}3{% endif %}">
+            <td colspan="{% if entity.metadata.ldb.platformAvailable %}4{% else %}3{% endif %}">
                 {% ifequal board "arrivals" %}
                     There are currently no scheduled arrivals.
                 {% else %}

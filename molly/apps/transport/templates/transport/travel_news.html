@@ -1,0 +1,18 @@
+{% extends "transport/base.html" %}{% load i18n %}
+
+{% block content %}
+{{ block.super }}
+
+<div class="section" id="travel_news">
+    <div class="header">
+        <h2>{% trans "Travel alerts" %}</h2>
+    </div>
+  
+    <ul class="content-list">
+    {% for alert in travel_alerts %}
+        <li><a href="{{ alert.get_absolute_url }}" class="subtle-link">{{ alert.title }}</a></li>
+    {% endfor %}
+    </ul>
+</div>
+
+{% endblock %}
