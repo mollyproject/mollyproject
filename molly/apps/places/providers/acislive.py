@@ -87,7 +87,13 @@ class ACISLiveMapsProvider(BaseMapsProvider):
         @return: A tuple of base URL, identifier for realtime info, identifier
                  for messages
         """
-        if entity.identifiers['atco'][:3] in self.ACISLIVE_URLS:
+        
+        if entity.identifiers.get('naptan', '').startswith('272'):
+            # Made up Oxontime codes
+            return ('http://www.oxontime.com/',
+                    entity.identifiers.get('naptan'), None)
+        
+        if entity.identifiers.get('atco', '')[:3] in self.ACISLIVE_URLS:
             base, departures, messages = self.ACISLIVE_URLS[entity.identifiers['atco'][:3]]
             return base, departures(entity), messages(entity)
         else:
@@ -112,7 +118,10 @@ class ACISLiveMapsProvider(BaseMapsProvider):
                  there is no known messages URL for that stop
         """
         base, departures, messages = self.get_acislive_base(entity)
-        return base + 'pip/stop_simulator_message.asp?NaPTAN=%s' % messages
+        if messages:
+            return base + 'pip/stop_simulator_message.asp?NaPTAN=%s' % messages
+        else:
+            return None
         
     
     def augment_metadata(self, entities, **kwargs):
@@ -135,6 +144,7 @@ class ACISLiveMapsProvider(BaseMapsProvider):
 
         try:
             realtime_url = self.get_realtime_url(entity)
+            print realtime_url
             xml = etree.parse(urllib.urlopen(realtime_url),
                               parser = etree.HTMLParser())
         except (TypeError, IOError):
