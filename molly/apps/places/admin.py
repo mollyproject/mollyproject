@@ -1,6 +1,6 @@
 from django.contrib.gis import admin
 from models import (Entity, EntityName, EntityType, EntityTypeName, EntityGroup,
-                    EntityGroupName)
+                    EntityGroupName, Route, StopOnRoute, Journey)
 
 class EntityTypeNameInline(admin.TabularInline):
     model = EntityTypeName
@@ -36,7 +36,17 @@ class EntityAdmin(admin.OSMGeoAdmin):
         EntityNameInline,
     ]
 
+class StopOnRouteInline(admin.StackedInline):
+    model = StopOnRoute
+    fk_name = 'route'
+
+class RouteAdmin(admin.ModelAdmin):
+    inlines = [
+        StopOnRouteInline
+    ]
 
 admin.site.register(Entity, EntityAdmin)
 admin.site.register(EntityType, EntityTypeAdmin)
 admin.site.register(EntityGroup, EntityGroupAdmin)
+admin.site.register(Route, RouteAdmin)
+admin.site.register(Journey)
