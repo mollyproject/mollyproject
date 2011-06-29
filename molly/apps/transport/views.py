@@ -194,8 +194,9 @@ class PublicTransportView(TransportView):
             raise Http404()
         
         # If service status provider is set, then include those too:
-        if hasattr(self.conf, 'transit_status_provider'):
-            context['transit_status'] = self.conf.transit_status_provider.get_status()
+        if hasattr(self.conf, '%s_status_provider' % key):
+            provider = getattr(self.conf, '%s_status_provider' % key)
+            context['line_status'] = provider.get_status()
         
         type_slug, count = self.conf.nearby[key]
         et = EntityType.objects.get(slug=type_slug)
@@ -213,46 +214,33 @@ class PublicTransportView(TransportView):
             else:
                 es = []
             results_type = 'Nearby'
-            
-        elif request.GET.get('show') == 'nearby':
+        
+        else:
             
             if location:
                 es = et.entities_completion.filter(location__isnull=False)
                 es = es.distance(location).order_by('distance')[:count]
             else:
                 es = []
-            results_type = 'Nearby'
-            
-        elif request.GET.get('show') == 'favourites':
-            
-            es = favourites    
-            results_type = 'Favourite'
-            
-        else:
-            
-            if len(favourites) == 0:
-                if location:
-                    es = et.entities_completion.filter(location__isnull=False)
-                    es = es.distance(location).order_by('distance')[:count]
-                else:
-                    es = []
-            else:
-                es = favourites
-            
-            results_type = 'Favourite' if len(favourites) > 0 else 'Nearby'
         
         for e in (e for e in es if hasattr(e, 'distance')):
             distance, e.bearing = e.get_distance_and_bearing_from(location)
         
         self.augment_metadata(es, routes=selected_routes)
         
+        for e in (e for e in favourites if hasattr(e, 'distance')):
+            distance, e.bearing = e.get_distance_and_bearing_from(location)
+        self.augment_metadata(favourites)
+        
         context.update({
             'type': et,
             'entities': es,
-            'results_type': results_type,
-            'has_favourites': len(favourites) > 0,
+            'favourites': favourites
         })
-        routes = Route.objects.values_list('service_id').distinct()
+        
+        # Only show routes which serve this type of thing
+        routes = Route.objects.filter(stoponroute__entity__all_types_completion=et)
+        routes = routes.values_list('service_id').distinct()
         
         # Now sort routes numerically
         def bus_route_sorter(route):
@@ -266,7 +254,7 @@ class PublicTransportView(TransportView):
                 return route
         
         context['routes'] = sorted(map(itemgetter(0), routes), key=bus_route_sorter)
-        context['selectedroutes'] = selected_routes
+        context['selected_routes'] = selected_routes
         
         return context
     

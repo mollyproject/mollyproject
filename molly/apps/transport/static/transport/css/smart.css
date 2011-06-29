@@ -1,10 +1,8 @@
-
-
 ul#transport-links {
     list-style: none;
     margin: 5px 0 0 0;
     padding: 5px;
-    text-align:center;
+    text-align: center;
 }
 
 ul li.transport-link {
@@ -153,4 +151,27 @@ ul li.transport-link a img { border: 0; }
     /* Waterloo and City */
     background: #70c3ce;
     color: #113b92;
+}
+
+#route-picker {
+    position: absolute;
+    top: 0.2em;
+    right: 0.5em;
+    text-align: right;
+}
+
+#route-picker select {
+    -webkit-appearance: listbox;
+}
+
+#route-picker input {
+    vertical-align: top;
+}
+
+#entities-nearby {
+    position: relative
+}
+
+#entities-nearby .header {
+    padding-right: 5em;
 }

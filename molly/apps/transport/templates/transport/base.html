@@ -1,28 +1,28 @@
-{% extends "base.html" %}{% load i18n %}{% load molly_utils %}
+{% extends "base.html" %}{% load i18n %}{% load molly_utils %}{% load molly_search %}
 
 {% block content %}
 
 {% block transport-links %}
 
-<ul id="transport-links">
-    {% if public_transport.bus %}
-    <li class="transport-link">
-        <a href="{% url transport:public-transport 'bus' %}"><img src="{{ STATIC_URL }}transport/images/bus.{% svg_or_png %}" alt="{% trans "Bus Stops" %}"  width="48" height="48" /></a></li>
-    {% endif %}
-    {% if park_and_rides %}
-    <li class="transport-link">
-        <a href="{% url transport:park-and-ride %}"><img src="{{ STATIC_URL }}transport/images/pride.{% svg_or_png %}" alt="{% trans "Park and Rides" %}" width="48" height="48" /></a></li>
-    {% endif %}
-    {% if train_station %}
-    <li class="transport-link">
-        <a href="{% url transport:rail %}"><img src="{{ STATIC_URL }}transport/images/train.{% svg_or_png %}" alt="{% trans "Train Departure Boards" %}" width="48" height="48" /></a></li>
-    {% endif %}
-    {% if travel_alerts %}
-    <li class="transport-link">
-        <a href="{% url transport:travel-news %}"><img src="{{ STATIC_URL }}transport/images/warn.{% svg_or_png %}" alt="{% trans "Travel News" %}" width="48" height="48" /></a></li>
-    {% endif %}
-</ul>
-
+    <ul id="transport-links">
+        {% if public_transport.bus %}
+        <li class="transport-link">
+            <a href="{% url transport:public-transport 'bus' %}"><img src="{{ STATIC_URL }}transport/images/bus.{% svg_or_png %}" alt="{% trans "Bus Stops" %}"  width="48" height="48" /></a></li>
+        {% endif %}
+        {% if park_and_rides %}
+        <li class="transport-link">
+            <a href="{% url transport:park-and-ride %}"><img src="{{ STATIC_URL }}transport/images/pride.{% svg_or_png %}" alt="{% trans "Park and Rides" %}" width="48" height="48" /></a></li>
+        {% endif %}
+        {% if train_station %}
+        <li class="transport-link">
+            <a href="{% url transport:rail %}"><img src="{{ STATIC_URL }}transport/images/train.{% svg_or_png %}" alt="{% trans "Train Departure Boards" %}" width="48" height="48" /></a></li>
+        {% endif %}
+        {% if travel_alerts %}
+        <li class="transport-link">
+            <a href="{% url transport:travel-news %}"><img src="{{ STATIC_URL }}transport/images/warn.{% svg_or_png %}" alt="{% trans "Travel News" %}" width="48" height="48" /></a></li>
+        {% endif %}
+    </ul>
+    
 {% endblock %}
 
 {% include "geolocation/update_location_embed.html" %}
