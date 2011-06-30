@@ -1,8 +1,13 @@
 from django.contrib.auth.models import User
+from django.dispatch import Signal
 
 from molly.conf import app_by_application_name
 from molly.auth.models import UserIdentifier, UserSession, ExternalServiceToken
 from molly.favourites.models import Favourite
+
+# A signal for finding out when two users were merged. First argument is the
+# users who are being deleted, the second is the user they are being merged into
+unifying_users = Signal(providing_args=['users', 'into'])
 
 def unify_users(request):
     user = request.user
@@ -22,8 +27,8 @@ def unify_users(request):
 
     root_user = min(users, key=lambda u:u.date_joined)
     
-    # Also need to update favourites
-    Favourite.objects.filter(user__in=users).update(user=root_user)
+    # Send signals to anyone else who needs to be merged
+    unifying_users.send_robust(self, users=users - root_user, into=root_user)
     
     # Need to do the root_user first, otherwise if it's after the current user,
     # tokens get assigned from the current user to the root user, and then

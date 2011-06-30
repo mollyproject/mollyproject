@@ -4,7 +4,15 @@ Utilities to help handling favourites
 
 from django.http import Http404
 from django.core.urlresolvers import resolve
+from django.dispatch import receiver
+
+from molly.auth import unifying_users
 from molly.favourites.models import Favourite
+
+@receiver(unifying_users)
+def unify_users(sender, users, into):
+    # Update favourites when merging users
+    Favourite.objects.filter(user__in=users).update(user=root_user)
 
 def get_favourites(request):
     """
