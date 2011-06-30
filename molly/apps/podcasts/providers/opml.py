@@ -15,11 +15,12 @@ from molly.apps.podcasts.providers.rss import RSSPodcastsProvider
 logger = logging.getLogger(__name__)
 
 class OPMLPodcastsProvider(RSSPodcastsProvider):
-    def __init__(self, url, rss_re):
+    def __init__(self, url, rss_re, lang_code='en'):
         self.url = url
         self.medium = None
         self.rss_re = re.compile(rss_re)
         self._category = None
+        self.lang_code = lang_code
 
     CATEGORY_ORDERS = {}
 
@@ -41,7 +42,7 @@ class OPMLPodcastsProvider(RSSPodcastsProvider):
         slug = slugify(cat)
         
         podcast_category, created = PodcastCategory.objects.get_or_create(slug=slug)
-        set_name_in_language(podcast_category, lang_code, name=cat)
+        set_name_in_language(podcast_category, self.lang_code, name=cat)
         
         try:
             podcast_category.order = self.CATEGORY_ORDERS[slug]
