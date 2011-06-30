@@ -41,7 +41,7 @@ class OPMLPodcastsProvider(RSSPodcastsProvider):
         slug = slugify(cat)
         
         podcast_category, created = PodcastCategory.objects.get_or_create(slug=slug)
-        set_name_in_language(category, lang_code, name=cat)
+        set_name_in_language(podcast_category, lang_code, name=cat)
         
         try:
             podcast_category.order = self.CATEGORY_ORDERS[slug]
