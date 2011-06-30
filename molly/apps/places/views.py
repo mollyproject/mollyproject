@@ -5,6 +5,7 @@ from itertools import chain
 import simplejson
 import copy
 import math
+from urllib import unquote
 from datetime import datetime, timedelta
 
 from suds import WebFault
@@ -312,7 +313,7 @@ class EntityDetailView(ZoomableView, FavouritableView):
     def handle_GET(self, request, context, scheme, value):
         entity = context['entity']
 
-        if entity.absolute_url != request.path:
+        if unquote(entity.absolute_url) != request.path:
             return self.redirect(entity.absolute_url, request, 'perm')
 
         entities = []
