@@ -4,6 +4,7 @@ from collections import namedtuple, defaultdict
 from datetime import datetime, date, time, timedelta
 from logging import getLogger
 from operator import itemgetter
+from StringIO import StringIO
 from urllib2 import urlopen
 from zipfile import ZipFile
 
@@ -38,7 +39,7 @@ class AtcoCifTimetableProvider(BaseMapsProvider):
     def import_data(self, metadata, output):
         
         deleted_routes = set(Route.objects.filter(external_ref__startswith=self._url).values_list('external_ref'))
-        archive = ZipFile(urlopen(self._url))
+        archive = ZipFile(StringIO(urlopen(self._url).read()))
         for file in archive.namelist():
             routes = self._import_cif(archive.open(file))
             self._import_routes(routes)

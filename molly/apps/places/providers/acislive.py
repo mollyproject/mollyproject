@@ -285,7 +285,6 @@ class ACISLiveRouteProvider(BaseMapsProvider):
         return found_routes
     
     def _scrape(self, route, url, output):
-        self._output.write(route)
         url += '&showall=1'
         service = etree.parse(urlopen(url), parser = etree.HTMLParser())
         route.stops.clear()
