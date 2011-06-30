@@ -12,7 +12,7 @@ from molly.favourites.models import Favourite
 @receiver(unifying_users)
 def unify_users(sender, users, into, **kwargs):
     # Update favourites when merging users
-    Favourite.objects.filter(user__in=users).update(user=root_user)
+    Favourite.objects.filter(user__in=users).update(user=into)
 
 def get_favourites(request):
     """
