@@ -3,7 +3,6 @@ from django.dispatch import Signal
 
 from molly.conf import app_by_application_name
 from molly.auth.models import UserIdentifier, UserSession, ExternalServiceToken
-from molly.favourites.models import Favourite
 
 # A signal for finding out when two users were merged. First argument is the
 # users who are being deleted, the second is the user they are being merged into

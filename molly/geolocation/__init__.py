@@ -25,7 +25,8 @@ def _cached(getargsfunc):
 
             i = 0
             while i < len(results):
-                loc, name = Point(results[i]['location'], srid=4326).transform(settings.SRID, clone=True), results[i]['name']
+                loc = Point(results[i]['location'], srid=4326).transform(settings.SRID, clone=True)
+                name = results[i]['name']
                 if any((r['name'] == name and Point(r['location'], srid=4326).transform(settings.SRID, clone=True).distance(loc) < 100) for r in results[:i]):
                     results[i:i+1] = []
                 else:
@@ -41,10 +42,10 @@ def _cached(getargsfunc):
                     results = filtered_results
 
             try:
-                geocode, created = Geocode.objects.get_or_create(local_name = app.local_name,
+                geocode, created = Geocode.objects.get_or_create(local_name=app.local_name,
                                                             **args)
             except Geocode.MultipleObjectsReturned:
-                Geocode.objects.filter(local_name = app.local_name, **args).delete()
+                Geocode.objects.filter(local_name=app.local_name, **args).delete()
                 geocode, created = Geocode.objects.get_or_create(local_name = app.local_name,
                                                             **args)
             geocode.results = results
