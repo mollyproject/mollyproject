@@ -55,7 +55,7 @@
         {% if routes %}
             <form id="route-picker">
                 <select name="route" multiple="multiple">
-                    {% for route in routes %}
+                    {% for route in route_ids %}
                         <option>{{ route }}</option>
                     {% endfor %}
                 </select>
@@ -64,7 +64,7 @@
             </form>
             {% if selected_routes %}
                 <p>{% blocktrans count selected_routes|length as num_routes %}Only showing stops on the following route:{% plural %}Only showing stops on the following routes:{% endblocktrans %}
-                {% for selected_route in selected_routes%}
+                {% for selected_route in selected_routes %}
                  {{ selected_route }}{% if not forloop.last %}, {% endif %}
                 {% endfor %}
                 </p>
@@ -111,6 +111,20 @@
         {% endfor %}
         </tbody>
     </table>
+</div>
+
+<div class="section">
+    <div class="header">
+        <h2>{% trans "Routes" %}</h2>
+    </div>
+    <ul class="link-list">
+        {% for route in routes %}
+            <li><a href="{% url places:route route.service_id route.pk %}">{{ route }}
+            {% if route.nearest %}<br /><small><em>{% trans "Closest stop:" %} {{ route.nearest.title }}
+                {% if route.nearest_distance and route.nearest_bearing %}{% blocktrans with route.nearest_distance|round_up_10 as distance and route.nearest_bearing as bearing %}(about {{ distance }}m {{ bearing }}){% endblocktrans %}{% endif %}
+            </em></small>{% endif %}</a></li>
+        {% endfor %}
+    </ul>
 </div>
 
 {% endblock %}

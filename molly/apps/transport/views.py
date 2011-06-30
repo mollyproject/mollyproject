@@ -239,8 +239,8 @@ class PublicTransportView(TransportView):
         })
         
         # Only show routes which serve this type of thing
-        routes = Route.objects.filter(stoponroute__entity__all_types_completion=et)
-        routes = routes.values_list('service_id').distinct()
+        routes = Route.objects.filter(stoponroute__entity__all_types_completion=et).distinct()
+        route_ids = routes.values_list('service_id').distinct()
         
         # Now sort routes numerically
         def bus_route_sorter(route):
@@ -253,8 +253,16 @@ class PublicTransportView(TransportView):
             else:
                 return route
         
-        context['routes'] = sorted(map(itemgetter(0), routes), key=bus_route_sorter)
+        context['route_ids'] = sorted(map(itemgetter(0), route_ids), key=bus_route_sorter)
         context['selected_routes'] = selected_routes
+        
+        if location:
+            routes = list(routes)
+            for route in routes:
+                route.nearest = Entity.objects.filter(route=route).distance(location).order_by('distance')[0]
+                route.nearest_distance, route.nearest_bearing = route.nearest.get_distance_and_bearing_from(location)
+        
+        context['routes'] = sorted(routes, key=lambda x: bus_route_sorter(x.service_id))
         
         return context
     
