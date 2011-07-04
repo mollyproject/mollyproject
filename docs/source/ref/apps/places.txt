@@ -25,9 +25,6 @@ Sample::
     Application('molly.apps.places', 'places', 'Places',
         providers = [
             Provider('molly.apps.places.providers.NaptanMapsProvider',
-                method='ftp',
-                username='journeywebusername',
-                password='journeywebpassword',
                 areas=('329',)
             ),
             Provider('molly.apps.places.providers.PostcodesMapsProvider',
@@ -154,13 +151,10 @@ required and 2 optional options:
 """""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 This imports entities from the NaPTAN (bus stops, etc) database. This has the
-following options:
+following option:
 
- * method: 'ftp' or 'http' - the method to get the data (FTP is better)
  * areas (optional): a list of `ATCO area codes <http://www.dft.gov.uk/naptan/smsPrefixes.htm>`_
    which to import the data from
- * username (required if using FTP): The FTP username for journeyweb.org.uk
- * password (required if using FTP): The FTP password for journeyweb.org.uk
 
 :class:`molly.apps.places.providers.OSMMapsProvider`
 """"""""""""""""""""""""""""""""""""""""""""""""""""

@@ -6,8 +6,12 @@ import tempfile
 import random
 import re
 import csv
+from warnings import warn
 from collections import defaultdict
-from StringIO import StringIO
+try:
+    from cStringIO import StringIO
+except:
+    from StringIO import StringIO
 
 from xml.sax import ContentHandler, make_parser
 import yaml
@@ -625,9 +629,11 @@ class NaptanMapsProvider(BaseMapsProvider):
     }
 
 
-    def __init__(self, method, areas=None, username=None, password=None):
+    def __init__(self, method=None, areas=None, username=None, password=None):
         self._username, self._password = username, password
         self._method = method
+        if self._method:
+            warn('method is deprecated, only HTTP is now supported', DeprecationWarning)
         
         # Add 910 because we always want to import railway stations
         if areas is not None:
@@ -644,93 +650,6 @@ class NaptanMapsProvider(BaseMapsProvider):
 
         self._source = self._get_source()
         self._entity_types = self._get_entity_types()
-
-        if self._method == 'http':
-            self._import_from_http()
-        elif self._method == 'ftp':
-            self._import_from_ftp()
-        
-        return metadata
-    
-    def _connect_to_ftp(self):
-        return ftplib.FTP(self.FTP_SERVER,
-            self._username,
-            self._password,
-        )
-    
-    def _import_from_ftp(self):
-        def data_chomper(f):
-            def chomp(data):
-                os.write(f, data)
-            return chomp
-
-        ftp = self._connect_to_ftp()
-        
-        files = {}
-        
-        # Get NPTG localities
-        f, filename =  tempfile.mkstemp()
-        ftp.cwd("/V2/NPTG/")
-        ftp.retrbinary('RETR nptgcsv.zip', data_chomper(f))
-        os.close(f)
-        archive = zipfile.ZipFile(filename)
-        if hasattr(archive, 'open'):
-            f = archive.open('Localities.csv')
-            falt = archive.open('LocalityAlternativeNames.csv')
-        else:
-            f = StringIO(archive.read('Localities.csv'))
-            falt = StringIO(archive.read('LocalityAlternativeNames.csv'))
-        localities = self._get_nptg_alt_names(falt, self._get_nptg(f))
-        os.unlink(filename)
-        
-        if self._areas is None:
-            f, filename = tempfile.mkstemp()
-            
-            try:
-                ftp.cwd("/V2/complete/")
-                ftp.retrbinary('RETR NaPTAN.xml', data_chomper(f))
-            except ftplib.error_temp:
-                ftp = self._connect_to_ftp()
-                ftp.cwd("/V2/complete/")
-                ftp.retrbinary('RETR NaPTAN.xml', data_chomper(f))
-            
-            ftp.quit()
-            os.close(f)
-            
-            f = open(filename)
-            self._import_from_pipe(f, localities)
-            os.unlink(filename)
-            
-        else:
-            for area in self._areas:
-                f, filename = tempfile.mkstemp()
-                files[area] = filename
-            
-                try:
-                    ftp.cwd("/V2/%s/" % area)
-                    ftp.retrbinary('RETR NaPTAN%sxml.zip' % area, data_chomper(f))
-                except ftplib.error_temp:
-                    ftp = self._connect_to_ftp()
-                    ftp.cwd("/V2/%s/" % area)
-                    ftp.retrbinary('RETR NaPTAN%sxml.zip' % area, data_chomper(f))
-                os.close(f)
-            
-            try:
-                ftp.quit()
-            except ftplib.error_temp:
-                pass
-            
-            for (area, filename) in files.items():
-                archive = zipfile.ZipFile(filename)
-                if hasattr(archive, 'open'):
-                    f = archive.open('NaPTAN%d.xml' % int(area))
-                else:
-                    f = StringIO(archive.read('NaPTAN%d.xml' % int(area)))
-                self._import_from_pipe(f, localities)
-                archive.close()
-                os.unlink(filename)
-
-    def _import_from_http(self):
         
         # Get NPTG localities
         archive = zipfile.ZipFile(StringIO(urllib.urlopen(self.HTTP_NTPG_URL).read()))

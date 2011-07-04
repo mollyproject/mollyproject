@@ -376,17 +376,7 @@ APPLICATIONS = [
             # The NaPTAN is the database of 'Public Transport Access Nodes',
             # that is, places on the public transport network, e.g., train
             # stations, bus stops, etc...
-            Provider('molly.apps.places.providers.NaptanMapsProvider',
-                # Method specifies how the Naptan database should be downloaded
-                # HTTP is the default and requires no additional configuration,
-                # however is slightly more memory intensive than the FTP method
-                method='http',
-                # If you have FTP access to journeyweb, you can also specify
-                #method='ftp'
-                # and then specify the FTP username and password below:
-                #username='user',
-                #password='password',
-                
+            Provider('molly.apps.places.providers.NaptanMapsProvider',                
                 # This specifies which areas of the NaPTAN are to be imported.
                 # The full list of codes is available at http://www.dft.gov.uk/naptan/smsPrefixes.htm
                 # and the 'ATCO' column is the relevant code here. Also available
