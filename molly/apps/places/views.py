@@ -104,7 +104,7 @@ class NearbyListView(LocationRequiredView):
 
         categorised_entity_types = defaultdict(list)
         for et in filter(lambda et: et.entities_found > 0, entity_types):
-            categorised_entity_types[et.category.name].append(et)
+            categorised_entity_types[_(et.category.name)].append(et)
         # Need to do this other Django evalutes .items as ['items']
         categorised_entity_types = dict(categorised_entity_types.items())
 
@@ -463,7 +463,7 @@ class CategoryListView(BaseView):
     def initial_context(self, request):
         categorised_entity_types = defaultdict(list)
         for et in EntityType.objects.filter(show_in_category_list=True):
-            categorised_entity_types[et.category.name].append(et)
+            categorised_entity_types[_(et.category.name)].append(et)
         # Need to do this other Django evalutes .items as ['items']
         categorised_entity_types = dict(categorised_entity_types.items())
         return {
