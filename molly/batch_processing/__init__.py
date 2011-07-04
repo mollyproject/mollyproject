@@ -128,7 +128,7 @@ if os.name == 'nt':
                         times = times.split('-')[0]
                     else:
                         times, second = hour.split(',')[:2]
-                        frequency = int(second) - int(times)
+                        frequency = str(int(second) - int(times))
                     
                     args = ['/sc', 'HOURLY',
                             '/mo', frequency,
@@ -145,7 +145,7 @@ if os.name == 'nt':
                         times = times.split('-')[0]
                     else:
                         times, second = minute.split(',')[:2]
-                        frequency = int(second) - int(times)
+                        frequency = str(int(second) - int(times))
                     
                     args = ['/sc', 'MINUTE',
                             '/mo', frequency,
