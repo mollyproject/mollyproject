@@ -130,7 +130,7 @@ if os.name == 'nt':
                         times, second = hour.split(',')[:2]
                         frequency = int(second) - int(times)
                     
-                    args = ['/sc', 'HOUR',
+                    args = ['/sc', 'HOURLY',
                             '/mo', frequency,
                             '/st', '%s:%s:00' % (next_hour(minute), minute.rjust(2, '0'))]
                 
