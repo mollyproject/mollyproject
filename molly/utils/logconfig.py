@@ -88,7 +88,7 @@ def configure_logging(conf):
         # http://stackoverflow.com/questions/1291755/how-can-i-tell-whether-my-django-application-is-running-on-development-server-or
         # can't do it the preferred way however, as we don't have access to a
         # request object here
-        if sys.argv[1] == 'runserver':
+        if len(sys.argv) > 1 and sys.argv[1] == 'runserver':
             
             # when in debug mode, log Molly at debug level to stdout
             handler = StreamHandler()
