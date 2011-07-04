@@ -8,6 +8,7 @@ from string import ascii_lowercase
 from urllib2 import urlopen
 import random
 
+from django.db import transaction
 from django.http import Http404
 
 from molly.apps.places.models import Route, StopOnRoute, Entity, Source, EntityType
@@ -267,20 +268,21 @@ class ACISLiveRouteProvider(BaseMapsProvider):
                 destination = destination[0].text
                 if link not in found_routes:
                     found_routes.add(link)
-                    route, created = Route.objects.get_or_create(
-                        external_ref=link,
-                        defaults={
-                            'service_id': service,
-                            'operator': operator,
-                            'service_name': destination,
-                        }
-                    )
-                    if not created:
-                        route.service_id = service
-                        route.operator = operator
-                        route.service_name = destination
-                        route.save()
-                    self._scrape(route, link, output)
+                    with transaction.commit_on_success():
+                        route, created = Route.objects.get_or_create(
+                            external_ref=link,
+                            defaults={
+                                'service_id': service,
+                                'operator': operator,
+                                'service_name': destination,
+                            }
+                        )
+                        if not created:
+                            route.service_id = service
+                            route.operator = operator
+                            route.service_name = destination
+                            route.save()
+                        self._scrape(route, link, output)
         
         return found_routes
     

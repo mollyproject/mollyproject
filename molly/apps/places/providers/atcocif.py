@@ -9,9 +9,10 @@ from urllib2 import urlopen
 from zipfile import ZipFile
 
 from django.http import Http404
+from django.db import transaction
 from django.db.models import Q
 
-from molly.apps.places import get_entity
+from molly.apps.places import EntityCache
 from molly.apps.places.models import (Entity, Route, StopOnRoute, Source,
                                       Journey, ScheduledStop)
 from molly.apps.places.providers import BaseMapsProvider, NaptanMapsProvider
@@ -34,6 +35,8 @@ class AtcoCifTimetableProvider(BaseMapsProvider):
         URL to an ATCO-CIF zip to be used
         """
         self._url = url
+        self._cache = EntityCache()
+        self._entity_type = NaptanMapsProvider(None)._get_entity_types()['BCT']
     
     @batch('%d 10 * * wed' % random.randint(0, 59))
     def import_data(self, metadata, output):
@@ -41,7 +44,9 @@ class AtcoCifTimetableProvider(BaseMapsProvider):
         deleted_routes = set(Route.objects.filter(external_ref__startswith=self._url).values_list('external_ref'))
         archive = ZipFile(StringIO(urlopen(self._url).read()))
         for file in archive.namelist():
+            output.write(file)
             routes = self._import_cif(archive.open(file))
+            output.write(': %d routes in file\n' % len(routes))
             self._import_routes(routes)
             deleted_routes -= set(self._url + route['number'] + route['description'] for route in routes)
         archive.close()
@@ -56,10 +61,14 @@ class AtcoCifTimetableProvider(BaseMapsProvider):
     def _parse_cif_time(self, timestring):
         return time(int(timestring[0:2]) % 24, int(timestring[2:4]))
     
+    @transaction.commit_on_success
     def _import_cif(self, cif):
         """
         Parse a CIF file
         """
+        
+        # Clear cache once per file - avoid high memory usage
+        self._cache = EntityCache()
         
         routes = []
         
@@ -112,7 +121,7 @@ class AtcoCifTimetableProvider(BaseMapsProvider):
                 # Journey start
                 try:
                     this_journey['stops'].append({
-                        'entity': get_entity('atco', line[2:14].strip()),
+                        'entity': self._cache['atco:%s' % line[2:14].strip()],
                         'sta': None,
                         'std': self._parse_cif_time(line[14:18]),
                         'activity': 'O',
@@ -126,7 +135,7 @@ class AtcoCifTimetableProvider(BaseMapsProvider):
                 # Journey intermediate stop
                 try:
                     this_journey['stops'].append({
-                        'entity': get_entity('atco', line[2:14].strip()),
+                        'entity': self._cache['atco:%s' % line[2:14].strip()],
                         'sta': self._parse_cif_time(line[14:18]),
                         'std': self._parse_cif_time(line[18:22]),
                         'activity': line[22],
@@ -140,7 +149,7 @@ class AtcoCifTimetableProvider(BaseMapsProvider):
                 # Journey complete
                 try:
                     this_journey['stops'].append({
-                        'entity': get_entity('atco', line[2:14].strip()),
+                        'entity': self._cache['atco:%s' % line[2:14].strip()],
                         'sta': self._parse_cif_time(line[14:18]),
                         'std': None,
                         'activity': 'F',
@@ -168,7 +177,7 @@ class AtcoCifTimetableProvider(BaseMapsProvider):
                 stop_code = line[3:15].strip()
                 
                 try:
-                    entity = get_entity('atco', stop_code)
+                    entity = self._cache['atco:%s' % stop_code]
                     if entity.source == self._get_source():
                         # Raise Http404 if this is a bus stop we came up with,
                         # so any name changes, etc, get processed
@@ -182,7 +191,7 @@ class AtcoCifTimetableProvider(BaseMapsProvider):
                     except Entity.DoesNotExist:
                         entity = Entity(source=self._get_source())
                     identifiers = { 'atco': stop_code }
-                    entity_type = self._get_entity_type()
+                    entity_type = self._entity_type
                     entity.primary_type = entity_type
                     entity.save(identifiers=identifiers)
                     set_name_in_language(entity, 'en', title=line[15:63].strip())
@@ -254,9 +263,6 @@ class AtcoCifTimetableProvider(BaseMapsProvider):
         source, created = Source.objects.get_or_create(module_name=__name__,
                                                        name='ATCO-CIF Importer')
         return source
-    
-    def _get_entity_type(self):
-        return NaptanMapsProvider(None)._get_entity_types()['BCT']
     
     def augment_metadata(self, entities, **kwargs):
         

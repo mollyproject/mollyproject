@@ -16,15 +16,16 @@ except:
 from xml.sax import ContentHandler, make_parser
 import yaml
 
+from django.db import transaction
 from django.conf import settings
 from django.contrib.gis.geos import Point
 from django.utils.translation import ugettext_noop as _
 from django.utils.translation import ugettext, get_language
-from molly.utils.i18n import override, set_name_in_language
 
 from molly.apps.places.providers import BaseMapsProvider
 from molly.apps.places.models import EntityType, Entity, EntityGroup, Source, EntityTypeCategory
 from molly.conf.settings import batch
+from molly.utils.i18n import override, set_name_in_language
 
 class NaptanContentHandler(ContentHandler):
 
@@ -667,6 +668,7 @@ class NaptanMapsProvider(BaseMapsProvider):
             self._import_from_pipe(f, localities, areas=self._areas)
             archive.close()
 
+    @transaction.commit_on_success
     def _import_from_pipe(self, pipe_r, localities, areas=None):
         parser = make_parser()
         parser.setContentHandler(NaptanContentHandler(self._entity_types, self._source, localities, areas))
