@@ -8,7 +8,7 @@ import urllib2
 import os.path
 import re
 
-from django.db import transaction
+from django.db import transaction, reset_queries
 from django.conf import settings
 from django.contrib.gis.geos import Point
 from django.utils.translation import ugettext_noop
@@ -54,6 +54,7 @@ class PostcodesMapsProvider(BaseMapsProvider):
             filenames = [path for path in archive.namelist() if re.match(r'Code\-Point Open\/Data\/[a-z]{1,2}.csv', path)]
 
         for filename in filenames:
+            reset_queries()
             with transaction.commit_on_success():
                 if hasattr(archive, 'open'):
                     f = archive.open(filename)

@@ -9,6 +9,7 @@ import yaml
 
 from xml.sax import saxutils, handler, make_parser
 
+from django.db import reset_queries
 from django.contrib.gis.geos import Point, LineString, LinearRing
 from django.conf import settings
 from django.utils.translation import ugettext as _
@@ -107,6 +108,8 @@ class OSMHandler(handler.ContentHandler):
             # Ignore disused and under-construction entities
             if self.tags.get('life_cycle', 'in_use') != 'in_use' or self.tags.get('disused') in ('1', 'yes', 'true'):
                 return
+            
+            reset_queries()
             
             try:
                 entity = Entity.objects.get(source=self.source,

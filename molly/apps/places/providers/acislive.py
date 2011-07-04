@@ -8,7 +8,7 @@ from string import ascii_lowercase
 from urllib2 import urlopen
 import random
 
-from django.db import transaction
+from django.db import transaction, reset_queries
 from django.http import Http404
 
 from molly.apps.places.models import Route, StopOnRoute, Entity, Source, EntityType
@@ -257,6 +257,7 @@ class ACISLiveRouteProvider(BaseMapsProvider):
     def _scrape_search(self, url, search_page, found_routes, output):
         results = etree.parse(urlopen(search_page), parser = etree.HTMLParser())
         for tr in results.find('.//table').findall('tr')[1:]:
+            reset_queries()
             try:
                 service, operator, destination = tr.findall('td')
             except ValueError:

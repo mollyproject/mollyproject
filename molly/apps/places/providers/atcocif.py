@@ -9,7 +9,7 @@ from urllib2 import urlopen
 from zipfile import ZipFile
 
 from django.http import Http404
-from django.db import transaction
+from django.db import transaction, reset_queries
 from django.db.models import Q
 
 from molly.apps.places import EntityCache
@@ -69,6 +69,9 @@ class AtcoCifTimetableProvider(BaseMapsProvider):
         
         # Clear cache once per file - avoid high memory usage
         self._cache = EntityCache()
+        
+        # Also reset SQL queries log
+        reset_queries()
         
         routes = []
         
