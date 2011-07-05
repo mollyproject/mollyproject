@@ -133,7 +133,8 @@ class NaptanContentHandler(ContentHandler):
                 self.names[self.lang] = self.meta['name']
 
     def endDocument(self):
-        pass
+        # Delete all entities which have been deleted in the NaPTAN
+        Entity.objects.filter(source=self.source).exclude(id__in=(e.id for e in self.entities)).delete()
 
     def characters(self, text):
         top = tuple(self.name_stack[3:])
@@ -723,9 +724,7 @@ class NaptanMapsProvider(BaseMapsProvider):
             if stop_type.startswith('MET') and stop_type != 'MET' and entity_type.slug != self.RAIL_STATION_DEFINITION['slug']:
                 entity_type.subtype_of.add(entity_types['MET'])
         
-
         return entity_types
-
 
     def _get_source(self):
         try:
