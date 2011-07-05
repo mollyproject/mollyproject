@@ -489,6 +489,7 @@ class Journey(models.Model):
         """
         Checks if the service runs on the given date
         """
+        
         if date < self.runs_from:
             # Before this service starts
             return False
@@ -500,6 +501,7 @@ class Journey(models.Model):
         if date in self.get_bank_holidays(date.year):
             # Bank holiday
             return self.runs_on_bank_holidays
+        
         elif self.runs_on_non_bank_holidays:
             
             # TODO: Check for term time - fortunately this flag appears to be

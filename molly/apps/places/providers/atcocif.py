@@ -48,7 +48,7 @@ class AtcoCifTimetableProvider(BaseMapsProvider):
             routes = self._import_cif(archive.open(file))
             output.write(': %d routes in file\n' % len(routes))
             self._import_routes(routes)
-            deleted_routes -= set(self._url + route['number'] + route['description'] for route in routes)
+            deleted_routes -= set(self._url + route['id'] for route in routes)
         archive.close()
         
         for route in deleted_routes:
@@ -162,6 +162,14 @@ class AtcoCifTimetableProvider(BaseMapsProvider):
                 except Http404:
                     pass
             
+            elif line[:2] == 'ZL':
+                # Route ID
+                route_id = line[2:]
+            
+            elif line[:2] == 'ZD':
+                # Days route ID
+                route_id += line[18:-1]
+            
             elif line[:2] == 'ZS':
                 # Route
                 
@@ -169,8 +177,9 @@ class AtcoCifTimetableProvider(BaseMapsProvider):
                     routes[-1]['journies'].append(this_journey)
                 
                 routes.append({
+                    'id': route_id,
                     'number': line[10:14].strip(),
-                    'description': line[14:],
+                    'description': line[14:-1],
                     'stops': [],
                     'journies': []
                 })
@@ -210,9 +219,8 @@ class AtcoCifTimetableProvider(BaseMapsProvider):
     
     def _import_routes(self, routes):
         for r in routes:
-            external_ref = self._url + r['number'] + r['description']
             route, created = Route.objects.get_or_create(
-                external_ref=external_ref,
+                external_ref=self._url + r['id'],
                 defaults={
                     'service_id': r['number'],
                     'service_name': r['description'],
@@ -299,18 +307,18 @@ class AtcoCifTimetableProvider(BaseMapsProvider):
                 if not stop.journey.runs_on(today.date()):
                     continue
                 
-                services[stop.journey.route].append((stop.journey, stop.std if stop.std else stop.sta))
+                services[(stop.journey.route.service_id, stop.journey.route.service_name)].append((stop.journey, stop.std if stop.std else stop.sta))
             
             services = ((route, sorted(ss, key=itemgetter(1), cmp=midnight_4am))
                 for route, ss in services.items())
             
             services = [{
-                'service': route.service_id,
-                'destination': route.service_name,
+                'service': service_id,
+                'destination': service_name,
                 'next': ss[0][1].strftime('%H:%M'),
                 'following': map(lambda t: t[1].strftime('%H:%M'), ss[1:4]),
                 'journey': ss[0][0]
-            } for route, ss in sorted(services, key=lambda x: x[1][0][1])]
+            } for (service_id, service_name), ss in sorted(services, key=lambda x: x[1][0][1])]
             
             entity.metadata['real_time_information'] = {
                 'services': services,
