@@ -134,10 +134,9 @@ class ACISLiveMapsProvider(BaseMapsProvider):
             if bus_et not in entity.all_types.all():
                 continue
             
-            self.get_times(entity)
-            #thread = threading.Thread(target=self.get_times, args=[entity])
-            #thread.start()
-            #threads.append(thread)
+            thread = threading.Thread(target=self.get_times, args=[entity])
+            thread.start()
+            threads.append(thread)
         
         for thread in threads:
             thread.join()
