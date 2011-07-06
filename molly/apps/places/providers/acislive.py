@@ -316,7 +316,8 @@ class ACISLiveRouteProvider(BaseMapsProvider):
                 entity.update_all_types_completion()
             
             else:
-                if stop_code.startswith('693') or stop_code.startswith('272') or stop_code.startswith('734'):
+                if stop_code.startswith('693') or stop_code.startswith('272') \
+                  or stop_code.startswith('734') or stop_code.startswith('282'):
                     # Oxontime uses NaPTAN code
                     scheme = 'naptan'
                 elif stop_code.startswith('450'):
