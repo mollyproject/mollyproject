@@ -339,7 +339,7 @@ class ACISLiveRouteProvider(BaseMapsProvider):
                     # the fake bus stops Oxontime made up for the TUBE route
                     try:
                         entity = Entity.objects.get(source=self._get_source(),
-                                                    _identifiers__scheme='naptan',
+                                                    _identifiers__scheme=scheme,
                                                     _identifiers__value=stop_code)
                     except Entity.DoesNotExist:
                         entity = Entity(source=self._get_source())
