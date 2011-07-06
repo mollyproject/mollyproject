@@ -620,12 +620,13 @@ class ServiceDetailView(BaseView):
             
             if route_id:
             
-                try:
-                    route = get_object_or_404(Route, service_id=route_id, stops=entity)
-                except Route.MultipleObjectsReturned:
+                route = entity.route_set.filter(service_id=route_id).distinct()
+                if route.count() == 0:
+                    raise Http404()
+                elif route.count() > 1:
                     context.update({
                         'title': _('Multiple routes found'),
-                        'multiple_routes': entity.route_set.filter(service_id=route_id).distinct()
+                        'multiple_routes': route
                     })
                     return context
             
