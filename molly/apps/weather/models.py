@@ -108,7 +108,7 @@ class Weather(models.Model):
 
     def icon(self):
         now = datetime.now().time()
-        if now > time(7) or now > time(21):
+        if now < time(7) or now > time(21):
             night = '_night'
         else:
             night = ''

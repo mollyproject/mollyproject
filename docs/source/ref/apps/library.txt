@@ -39,7 +39,9 @@ the Z39.50 protocol. It supports the following options:
  * charset (optional, defaults to UTF-8): The encoding to use when communicating
    with the server
  * control_number_key (optional, defaults to 12): The 'use attribute' to query
-   on when doing a control number lookup
+   on when doing a control number lookup,
+ * results_encoding (optional, defaults to marc8): The encoding results come
+   back in. Valid values are 'marc8' and 'unicode'.
 
 Writing Your Own Providers
 --------------------------

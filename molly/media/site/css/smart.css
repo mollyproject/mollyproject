@@ -4,8 +4,8 @@
 
 body {
     background:#bbc4ce url('../../site/images/gradients/backdrop-iphone.png') repeat-x top;
-    font-family: "Liberation Sans", sans-serif;
-    font-size:0.75em;
+    font-size: 0.8em;
+    font-family: "Liberation Sans", Arial, sans-serif;
     -webkit-text-size-adjust: none;
     text-align: left;
     margin: 0;
@@ -22,7 +22,7 @@ small {
 .invisible {display:none;}
 .center {text-align:center;}
 .clear {clear:both;}
-.inherit-color {color:inherit;}
+.subtle-link {color:inherit;}
 .no-border {border:0;}
 
 h2 {
@@ -118,7 +118,7 @@ div#bc-title h1 {
     line-height:30px;
     padding-top: 0px;
     float:left;
-    font-size:1.2em;
+    font-size:1.3em;
     text-align:left;
     color:#ffffff;
     white-space: nowrap;
@@ -166,7 +166,7 @@ ul.content-list a {color: #00f;}
 ul.content-list h3 {
     color:#222;
     text-align:left;
-    font-size:0.8em;
+    font-size:1em;
     padding:0;
     margin-bottom:5px;
 }
@@ -267,7 +267,6 @@ div.osm-license {
 div.article {
     text-align:left;
     color: #000000;
-    font-size:0.8em;
     margin: 0;
     padding: 2px;
 }
@@ -659,7 +658,6 @@ table.content > * > tr.sub-section-divider > th, table.content > thead > tr > th
 
     padding: 5px 5px 5px 7px;
     border: 0;
-    font-size: 1.1em;
 }
 
 table.content > * > tr > * {
@@ -740,8 +738,7 @@ div.button > a {
     margin-right: 28px !important;
 }
 
-/*.as-text-link,
-#bottom-links button {
+.as-text-link {
     background: none !important;
     border: 0 !important;
     -moz-box-shadow: none !important;
@@ -751,7 +748,7 @@ div.button > a {
     color: #000000 !important;
     text-shadow: none !important;
     cursor: pointer;
-}*/
+}
 
 .link-list .as-text-link {
     color: #ffffff !important;

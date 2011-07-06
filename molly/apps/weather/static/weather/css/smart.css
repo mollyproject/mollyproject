@@ -11,13 +11,12 @@ div.weather-live-info {
     padding: 0; margin: 0;
     background-color: transparent;
     border-left:0;
-    font-size:0.8em;
     color:#000000;
     text-align: left;
 }
 
 div.weather-live-info span {
-    font-size: 3em;
+    font-size: 3rem;
 }
 
 table.weather-forecast {
@@ -27,7 +26,7 @@ table.weather-forecast {
 }
 
 table.weather-forecast tbody tr td.large-text {
-    font-size: 1em;
+    font-size: 1rem;
 }
 
 table.weather-forecast tbody tr td img {

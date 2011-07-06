@@ -39,8 +39,6 @@ class Application(object):
         for key in kwargs.copy():
             if key == 'provider':
                 self.providers += (kwargs.pop(key),)
-            elif key.endswith('provider'):
-                self.providers += (kwargs[key],)
 
     def get(self):
         if self.conf:

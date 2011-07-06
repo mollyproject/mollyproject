@@ -1,19 +1,19 @@
 import os
 import string
 from random import choice
+from shutil import copytree
 
 from distutils.core import Command
 from distutils.errors import DistutilsArgError, DistutilsExecError
 
 from installer.deploy import deploy
 from installer.virtualenv import Virtualenv, NotAVirtualenvError
-from installer.sysprep import SysPreparer
 from installer.dbcreate import create
 from installer import PIP_PACKAGES
 
 try:
     from installer.sysprep import PYTHON26
-except ImportError:
+except (NotImplementedError, ImportError):
     import sys
     PYTHON26 = sys.executable
 
@@ -39,8 +39,10 @@ class DeployCommand(Command):
     def finalize_options(self):
         if self.site_path is None:
             raise DistutilsArgError("You must specify a path to the site to be deployed")
+        self.site_path = os.path.abspath(self.site_path)
         if self.virtualenv is None:
             raise DistutilsArgError("You must specify a virtualenv for the site to be deployed into")
+        self.virtualenv = os.path.abspath(self.virtualenv)
         if self.listen_externally and not self.development:
             raise DistutilsArgError("You can not listen externally when in non-development mode, only development installs start the server!")
         if self.port and not self.development:
@@ -52,23 +54,43 @@ class DeployCommand(Command):
         deploy(Virtualenv(self.virtualenv), self.site_path, self.development,
                self.listen_externally, self.port)
 
-
-class SysprepCommand(Command):
+try:    
+    from installer.sysprep import SysPreparer
+except NotImplementedError:
     
-    description = "installs system level dependencies for Molly"
+    class SysprepCommand(Command):
+        
+        description = "installs system level dependencies for Molly"
+        
+        user_options = []
+        
+        def initialize_options(self):
+            pass
+        
+        def finalize_options(self):
+            raise DistutilsExecError('This command is not supported on this system')
+        
+        def run(self):
+            pass
     
-    user_options = []
+else:
     
-    def initialize_options(self):
-        pass
-    
-    def finalize_options(self):
-        if os.getuid() != 0:
-            raise DistutilsExecError('This command can only be run as root')
-    
-    def run(self):
-        sysprepper = SysPreparer()
-        sysprepper.sysprep()
+    class SysprepCommand(Command):
+        
+        description = "installs system level dependencies for Molly"
+        
+        user_options = []
+        
+        def initialize_options(self):
+            pass
+        
+        def finalize_options(self):
+            if os.getuid() != 0:
+                raise DistutilsExecError('This command can only be run as root')
+        
+        def run(self):
+            sysprepper = SysPreparer()
+            sysprepper.sysprep()
 
 
 class CreateVirtualenvCommand(Command):
@@ -149,11 +171,15 @@ class DBPrepCommandImpl(AbstractDBPrepCommand):
         if self.configure_security:
             configure_pg_hba()
     
-
 try:
     from installer.sysprep import postgres_setup
+except (ImportError, NotImplementedError):
+    def postgres_setup(*args, **kwargs):
+        pass
+
+try:
     from installer.dbprep import configure_pg_hba, create_postgis_template
-except ImportError:
+except NotImplementedError:
     
     DBPrepCommand = NullDBPrepCommand
     
@@ -192,3 +218,26 @@ class DBCreateCommand(Command):
         print "Database: %s" % self.molly_database
         print
         print "Please make a note of these, as you will need to place them in your settings.py"
+
+
+class SiteCreateCommand(Command):
+    
+    description = "creates a new template site for Molly"
+    
+    user_options = [
+        ('site=', 's', 'The folder to save the site template into [default=None]'),
+    ]
+    
+    def initialize_options(self):
+        self.site = None
+    
+    def finalize_options(self):
+        if self.site is None:
+            raise DistutilsArgError('You must specify a path to where the site is to be created')
+    
+    def run(self):
+        copytree(os.path.join(os.path.dirname(__file__), 'site'), self.site)
+        os.makedirs(os.path.join(self.site, 'site_media'))
+        os.makedirs(os.path.join(self.site, 'compiled_media'))
+        print "Template created at", os.path.abspath(self.site)
+

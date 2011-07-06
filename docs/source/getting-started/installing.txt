@@ -59,11 +59,96 @@ following packages, or their equivalent on your platform, are available:
 Configuring PostgreSQL
 ----------------------
 
+Molly requires Postgis to be installed into the database in order to work
+correctly. A convenience script is included in Molly to create such a database
+on supported platforms (Ubuntu, Fedora and CentOS)::
+
+    ./setup.py dbprep --create-template
+
+This script expects to be able to access the database as a super user. You can
+either do this by running the script as a user which has superuser access to the
+database (e.g., the ``postgres`` user on many systems), or by specifying a
+superuser name and password on the command line which will be used to
+authenticate to Postgres, e.g.,::
+
+    ./setup.py dbprep --create-template -u admin -p admin
+
+.. seealso:: `The Django documentation <http://docs.djangoproject.com/en/dev/ref/contrib/gis/install/#spatialdb-template>`_
+             contains information on how to create a spatial database template
+             by hand, if you would like to do it that way.
+
+Molly also includes a convenience function to create a ``pg_hba.conf`` which
+includes a default security configuration for Molly to access the database. If
+you already have a working Postgres database, or want to configure security by
+hand, then skip this step.
+
+.. warning:: This will override your existing ``pg_hba.conf`` and may break an
+             existing PostgreSQL installation. It is recommended you do this
+             only on a new, blank installation, and when Molly is the only user
+             of the database.
+
+.. code-block::
+
+    sudo ./setup.py dbprep --configure-security
+
 Creating your database
 ----------------------
 
+As a convenience function, Molly provides a command to automatically create a
+database user and database for Molly to use::
+
+    ./setup.py dbcreate
+
+.. warning:: This will delete any database called ``molly`` that already exists
+
+By default, if running as a superuser, this will create a database called
+``molly`` and a user called ``molly`` which has access to this database. A
+randomly generated password is used, which is shown to you at the end of the
+script (you will need to enter this into your ``settings.py``, so make a note of
+it). In order to customise the username, database name or password used, then
+the following options can be used:
+
+* ``-c``: Specifies the name of the created database user
+* ``-d``: Specifies the name of the database to create
+* ``-w``: Specifies the name of the password to use for the created database user
+
+As with the ``dbprep`` command, this can also take superuser credentials which
+are used to run these commands, if the current user doesn't have credentials.
+
+.. note:: If you want to configure your database by hand, then please ensure
+          that the database Molly uses is created from a Postgis template.
+
 Creating a site template
 ------------------------
+
+Molly has the distinction between the core of Molly, and a Molly site. The core
+of Molly is the upstream Python package and associated data, whereas a site
+is a Django project which contains your settings for Molly, as well as any
+media, templates and other customisations to the Molly core. In order to get
+started with Molly, you will need to create a site.
+
+The ``sitecreate`` command will create a template site which you can then go and
+customise to your exact requirements. This site folder is used as an argument to
+the ``deploy`` command to tell Molly which site to deploy.
+
+This argument takes one option, ``-s``, which specifies the path to create the
+template in::
+
+    ./setup.py sitecreate -s /PATH/TO/MY/SITE
+
+Once your site template has been created, the following files are created which
+are only templates and require you to edit them:
+
+ * ``settings.py`` - following the configuration guide;
+ * ``apache/molly.wsgi`` - if you are deploying Molly as a WSGI app, then you
+   will need to change the DJANGO_SETTINGS_MODULE setting in this file;
+ * ``apache/httpd.conf`` - this is a sample Apache config file;
+ * ``templates/base.html`` - this is a sample template override - for more
+   information about this, please see the customising guide.
+
+You will also have a ``compiled_media`` folder, which should be ignored, and a
+``site_media`` folder, which is where you should put any overrides for media on
+your site.
 
 Creating a Virtualenv for Molly
 -------------------------------
@@ -126,113 +211,6 @@ A number of additional options are available here too:
 Updating Molly
 --------------
 
-To update Molly using the quick-installer, you simply need to run the
-quickinstall script from the new version pointing it to the same location. This
-will recognise that the installation already exists and will update as
-appropriate.
-
-When you are asked for Molly's database name, if you created the database using
-the quick installer, this will default to 'molly'.
-
-The Hard Way
-------------
-
-If you can't, or don't want to, use the Molly quick installer, you can install
-Molly by hand as a standard Python package.
-
-System Prerequisites
-""""""""""""""""""""
-
-
-You need to decide how you would like Molly to be installed - globally on the
-system, or to a directory using a Python virtualenv. If you decide to install it
-into a Python virtualenv, then you can create one like so::
-
-    virtualenv --distribute --no-site-packages PATH-TO-DIRECTORY
-    source PATH-TO-DIRECTORY/bin/activate
-
-(note, if you're installing Molly globally, some systems call "pip"
-"pip-python", so you may need to use that instead)
-
-Molly uses forks of 2 packages in PyPI so these must be manually installed
-first::
-
-    pip install -U git+http://github.com/oucs/PyZ3950.git#egg=PyZ3950
-    pip install -U git+git://github.com/mikelim/django-compress.git#egg=django-compress
-
-And sometimes PIL fails to install when being installed as a dependency, so::
-
-    pip install -U PIL
-
-Now you are ready to install Molly. This can be done by running::
-
-    python setup.py install
-
-in the Molly directory. This will install Molly in your environment, as well as
-pulling in any further dependencies, and you're almost ready to go.
-
-The next step is to prepare the Postgres database for Molly. You will first need
-to create a spatial template
-(`the Django documentation covers how to do this <http://docs.djangoproject.com/en/dev/ref/contrib/gis/install/#spatialdb-template>`_),
-and then use this to create a database for Molly::
-
-    sudo -u postgres createdb -T template_postgis molly
-
-You'll then need to create a user for Molly to connect as::
-
-    sudo -u postgres createuser molly -P
-
-You will be asked to enter a password, and you can choose 'n' for the remaining
-questions. You will also need to configure Postgres for MD5 based
-authentication. This can be done by adding the following line::
-
-    local       molly        molly                md5
-
-to the pg_hba.conf (in /var/lib/pgsql/data on Fedora/Red Hat,
-/etc/postgresql/8.4/main on Ubuntu/Debian) - above the lines ending "ident".
-
-Finally, you'll need to give the molly user access to the molly database::
-
-    sudo -u postgres psql -c "GRANT ALL ON DATABASE molly TO molly;"
-
-Once this is done, you're now ready to configure Molly. If you don't already
-have a Molly site, you will need to create one to do this, this can be done by
-running::
-
-    django-admin createproject site
-
-Which will create a site in a folder called "site". You will then need to
-configure this to use Molly (the :doc:`configuring guide <tutorial/configuring>`
-may help you, or alternatively the config_generator.py script in the scripts/
-folder will generate a typical settings.py).
-
-Once you have a site, you need to update the database. If you're installing into
-a blank database, run the following commands in the site folder::
-
-    python manage.py syncdb --all
-    python manage.py migrate --fake
-
-You should also be asked to create a superuser. Never run those commands on an
-instantiated database though, otherwise it may become out of sync. If your
-database is not blank, then run::
-
-    python manage.py syncdb
-    python manage.py migrate
-
-At this point, you should also make sure that the cache directory exists, and is
-writeable to the user Molly is running as.
-
-You can now build Molly's media::
-
-    python manage.py update_wurfl
-    python manage.py collectstatic
-    python manage.py synccompress
-    python manage.py generate_cache_manifest
-    python manage.py generate_markers
-
-And, if you would like the batch jobs to run when scheduled::
-
-    python manage.py create_crontab | crontab
-
-And tada! Molly is installed and ready to go (so configure Apache, or run the
-development server: python manage.py runserver)
+To update Molly, you simply need to rerun the ``./setup.py deploy` command in
+the new Molly folder. This will recognise that the installation already exists
+and will update as appropriate.

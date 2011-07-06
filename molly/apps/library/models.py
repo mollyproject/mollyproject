@@ -223,9 +223,16 @@ class Library(object):
         if hasattr(app_by_local_name('library'), 'library_identifier'):
             library_identifier = app_by_local_name('library').library_identifier
             try:
-                return get_entity(library_identifier, self.location[1])
+                return get_entity(library_identifier, self.location[-1])
             except (Http404, Entity.MultipleObjectsReturned):
                 return None
         else:
             return None
 
+class LibrarySearchError(Exception):
+    
+    def __init__(self, message):
+        self.message = message
+    
+    def __repr__(self):
+        return '%s: %s' % (self.__class__.__name__, self.message)

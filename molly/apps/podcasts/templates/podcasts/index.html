@@ -46,18 +46,36 @@
 </form>
 {# End Podcasts Search #}
 
-<div class="section" >
-{% block listdef %}
-  <div class="header">
-	<h2>{% trans "By category" %}</h2>
-  </div>
-{% endblock %}
+{% if categories %}
+	<div class="section" >
+	{% block listdef %}
+	  <div class="header">
+		<h2>{% trans "By category" %}</h2>
+	  </div>
+	{% endblock %}
+	
+	
+	<ul class="link-list">
+	{% for category in categories %}
+		<li>
+		<a href="{{ category.get_absolute_url }}">{% trans category.name %}</a></li>
+	{% endfor %}
+	</ul></div>
+{% endif %}
 
+{% if podcasts %}
+	<div class="section" >
+	  <div class="header">
+		<h2>{% trans "Podcasts" %}</h2>
+	  </div>
+	
+	
+	<ul class="link-list">
+	{% for podcast in podcasts %}
+		{% include "podcasts/podcast.html" %}
+	{% endfor %}
+	</ul>
+	</div>
+{% endif %}
 
-<ul class="link-list">
-{% for category in categories %}
-    <li>
-	<a href="{{ category.get_absolute_url }}">{% trans category.name %}</a></li>
-{% endfor %}
-</ul></div>
 {% endblock %}

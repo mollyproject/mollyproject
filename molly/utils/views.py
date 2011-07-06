@@ -20,6 +20,7 @@ from django.shortcuts import render_to_response
 from django.core.urlresolvers import reverse, resolve, NoReverseMatch
 from django.conf import settings
 from django.utils.translation import ugettext as _
+from django.views.debug import technical_500_response
 
 logger = logging.getLogger(__name__)
 
@@ -54,6 +55,18 @@ def renderer(format, mimetypes=(), priority=0):
                           for mimetype in mimetypes)
         return f
     return g
+
+def tidy_query_string(url):
+    scheme, netloc, path, params, query, fragment = urlparse(url)
+    args = []
+    for k, vs in parse_qs(query).items():
+        if k in ('format', 'language_code'):
+            continue
+        else:
+            for v in vs:
+                args.append((k.encode('utf-8'), v.encode('utf-8')))
+    query = urlencode(args)
+    return urlunparse((scheme, netloc, path, params, query, fragment))
 
 class ViewMetaclass(type):
     def __new__(mcs, name, bases, attrs):
@@ -265,7 +278,7 @@ class BaseView(object):
             except NotImplementedError:
                 continue
             else:
-                if expires is not None:
+                if expires is not None and not settings.DEBUG:
                     response['Expires'] = formatdate(
                         mktime((datetime.now() + expires).timetuple()))
                     
@@ -289,7 +302,6 @@ class BaseView(object):
                       self.FORMATS_BY_MIMETYPE if not f[0] in tried_mimetypes)),
                 mimetype="text/plain")
             else:
-                print self.FORMATS
                 response = HttpResponse(
                   _("Unable to render this document in this format.") + "\n\n" +
                   _("Supported formats are") + ":\n\n * %s\n" \
@@ -374,27 +386,17 @@ class BaseView(object):
         body = render_blocks_to_string(template_name + '.html', context,
                                        RequestContext(request))
         
-        scheme, netloc, path, params, query, fragment = \
-            urlparse(request.get_full_path())
-        args = []
-        for k, vs in parse_qs(query).items():
-            if k == 'format':
-                continue
-            else:
-                for v in vs:
-                    args.append((k, v))
-        query = urlencode(args)
-        uri = urlunparse((scheme, netloc, path, params, query, fragment))
+        uri = tidy_query_string(request.get_full_path())
         
         try:
             title = xhtml_slimmer(body['whole_title'])
-        except Exception:
+        except:
             logger.warn('Slimmer failed to slim title', exc_info=True)
             title = body['whole_title']
         
         try:
             pagebody = xhtml_slimmer(body['body'])
-        except Exception:
+        except:
             logger.warn('Slimmer failed to slim body', exc_info=True)
             pagebody = body['body']
         
@@ -484,24 +486,37 @@ def ReverseView(request):
     except KeyError:
         return HttpResponseBadRequest()
 
-def handler500(request):
+def handler500(request, exc_info=None):
+    
     context = {
         'request': request,
     }
+
+    if exc_info and (request.user.is_superuser or settings.DEBUG):
+        # Now try and return this as a redirect if we're using fragment rendering
+        if request.GET.get('format') == 'fragment':
+            try:
+                return HttpResponse(simplejson.dumps({
+                        'redirect': tidy_query_string(request.build_absolute_uri())
+                    }), mimetype="application/json")
+            except:
+                pass
+        
+        return technical_500_response(request, *exc_info)
 
     # This will make things prettier if we can manage it.
     # No worries if we can't.
     try:
         from molly.wurfl.context_processors import device_specific_media
         context.update(device_specific_media(request))
-    except Exception, e:
+    except:
         pass
     
     # This will make stop mixed content warnings if we can manage it
     try:
         from molly.utils.context_processors import ssl_media
         context.update(ssl_media(request))
-    except Exception, e:
+    except:
         context.update({'STATIC_URL': settings.STATIC_URL})
 
     response = render_to_response('500.html', context)
@@ -514,5 +529,5 @@ class CSRFFailureView(BaseView):
         logger.info('CSRF validation failure: %s', reason)
         return self.render(request, context, 'csrf_failure')
     
-    def handle_POST(self, *args, **kwargs):
-        return self.handle_GET(*args, **kwargs)
+    def handle_POST(self, request, context, reason=''):
+        return self.handle_GET(request, context, reason)

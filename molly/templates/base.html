@@ -41,8 +41,11 @@
     <meta name="format-detection" content="telephone=no" />
     <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
 
-    {# Provide the minified CSS file appropriate to class of device #}
-    {% compressed_css style_group %}
+    {# This is wrapped in an if to stop unit tests (which don't have style_group defined) failing #}
+    {% if style_group %}
+        {# Provide the minified CSS file appropriate to class of device #}
+        {% compressed_css style_group %}
+    {% endif %}
     {# If the device supports SVGs, add the following CSS file that gives SVG icons rather than .png #}
     {% if device|device_has_parent:"apple_iphone_ver4" or browser.svgt_1_1 %}
         {% compressed_css 'svg' %}
@@ -61,7 +64,11 @@
         page of the User interface. 
     {% endcomment %}
     {% if device|device_has_parent:"apple_generic" or device.device_os == "Android" %}
+        {% comment %}
+        Temporarily disable this as the lack of browser chrome is resulting in
+        confused users
         <meta name="apple-mobile-web-app-capable" content="yes">
+        {% endcomment %}
         <link rel="apple-touch-icon" href="{{ STATIC_URL }}site/images/apple-touch-icon.png"/>
         <link rel="apple-touch-icon" sizes="72x72" href="{{ STATIC_URL }}site/images/apple-touch-icon-72px.png"/>
         <link rel="apple-touch-icon" sizes="114x114" href="{{ STATIC_URL }}site/images/apple-touch-icon-114px.png"/>

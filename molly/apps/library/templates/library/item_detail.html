@@ -83,7 +83,15 @@
         <tr class="sub-section-divider">
             <th colspan="2">
                 {% if library.marker_number %}{{ library.marker_number }}. {% endif %}
-                <a href="{% url library:item-holdings-detail control_number,library.location.1 %}">{{ library.location|join:" - " }}</a>
+                {% with library.location|slice:"-1:" as location_code %}
+                    <a href="{% url library:item-holdings-detail control_number,location_code.0 %}">
+                        {% if library.get_entity %}
+                            {{ library.get_entity.title }}
+                        {% else %}
+                            {{ library.location|join:" - " }}
+                        {% endif %}
+                    </a>
+                {% endwith %}
             </td>
         </tr>
 

@@ -12,7 +12,7 @@ from molly import __version__ as molly_version
 from installer.utils import get_packages_and_data
 from installer.commands import (DeployCommand, SysprepCommand,
                                 CreateVirtualenvCommand, DBPrepCommand,
-                                DBCreateCommand)
+                                DBCreateCommand, SiteCreateCommand)
 
 print """
                                  ;Ok;                                         
@@ -109,6 +109,7 @@ setup(
         'sysprep': SysprepCommand,
         'dbprep': DBPrepCommand,
         'dbcreate': DBCreateCommand,
+        'sitecreate': SiteCreateCommand,
         'createvirtualenv': CreateVirtualenvCommand,
         'deploy': DeployCommand,
     }

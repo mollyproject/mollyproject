@@ -6,7 +6,7 @@
     {% if entity.metadata.real_time_information.pip_info %}
     <ul class="content-list no-round-bottom">
         <li>{% for info in entity.metadata.real_time_information.pip_info %}
- 	{{ info|sanitize_html }}{% if not forloop.last %}<br/>{% endif %}
+    {{ info|sanitize_html }}{% if not forloop.last %}<br/>{% endif %}
         {% endfor %}</li>
     </ul>
     {% else %}
@@ -32,17 +32,19 @@
         <tr>
             <td rowspan="2" class="service-id" >
                 {% if service.route %}<a href="{{ entity.get_absolute_url }}service?route={{ service.service|urlencode }}">{% endif %}
+                {% if service.journey %}<a href="{{ entity.get_absolute_url }}service?journey={{ service.journey.pk }}">{% endif %}
                     {{ service.service }}
+                {% if service.journey %}</a>{% endif %}
                 {% if service.route %}</a>{% endif %}
             </td>
             <td>{{ service.destination }}</td>
             <td>{{ service.next }}</td>
         </tr>
         <tr class="notopborder">
-			{# Translators: Next as in next service #}
+            {# Translators: Next as in next service #}
             <td colspan="2"><small>
-				{% trans "Next" %}: {% if service.following %}{{ service.following|join:", " }}{% else %}<em>{% trans "No further info" %}</em>{% endif %}
-			</small></td>
+                {% trans "Next" %}: {% if service.following %}{{ service.following|join:", " }}{% else %}<em>{% trans "No further info" %}</em>{% endif %}
+            </small></td>
         </tr>
     {% endfor %}
     </tbody>

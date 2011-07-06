@@ -88,19 +88,21 @@ def configure_logging(conf):
         # http://stackoverflow.com/questions/1291755/how-can-i-tell-whether-my-django-application-is-running-on-development-server-or
         # can't do it the preferred way however, as we don't have access to a
         # request object here
-        if sys.argv[1] == 'runserver':
+        if len(sys.argv) > 1 and sys.argv[1] == 'runserver':
             
             # when in debug mode, log Molly at debug level to stdout
             handler = StreamHandler()
             logger.setLevel(logging.DEBUG)
+            logger.addHandler(handler)
             
             # Log everyone else at info level
             logging.getLogger().setLevel(logging.INFO)
         else:
             return
-    else:
+    elif len(sys.argv) < 2 or sys.argv[1] != 'test':
+        # Don't do this when running unit tests
         
         # When not in debug mode, e-mail warnings and above to admins
         handler = EmailHandler()
         handler.setLevel(logging.WARNING)
-    logger.addHandler(handler)
+        logger.addHandler(handler)

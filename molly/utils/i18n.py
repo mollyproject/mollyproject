@@ -8,7 +8,7 @@ from django.core.urlresolvers import reverse
 
 from molly.utils.views import BaseView
 
-def name_in_language(obj, field):
+def name_in_language(obj, field, default=None):
     """
     Assuming the object follows the Molly pattern for i18n data (related manager
     called names, and the related object has a language_code field), then get
@@ -20,10 +20,21 @@ def name_in_language(obj, field):
         try:
             return getattr(obj.names.get(language_code=settings.LANGUAGE_CODE), field)
         except ObjectDoesNotExist:
-            if '-' in settings.LANGUAGE_CODE:
-                return getattr(obj.names.get(language_code=settings.LANGUAGE_CODE.split('-')[0]), field)
+            try:
+                if '-' in settings.LANGUAGE_CODE:
+                    language_code = settings.LANGUAGE_CODE.split('-')[0]
+                    return getattr(obj.names.get(language_code=language_code),
+                                   field)
+            except ObjectDoesNotExist:
+                if default:
+                    return default
+                else:
+                    raise
             else:
-                raise
+                if default:
+                    return default
+                else:
+                    raise
 
 def set_name_in_language(obj, lang, **fields):
     """
@@ -228,6 +239,7 @@ def javascript_catalog(request, domain='djangojs', packages=None):
     for k, v in pdict.items():
         src.append("catalog['%s'] = [%s];\n" % (javascript_quote(k), ','.join(["''"]*(v+1))))
     src.extend(csrc)
+    src.append("""var language_code = '%s'""" % locale)
     src.append(LibFoot)
     src.append(InterPolate)
     src.append(LibFormatHead)

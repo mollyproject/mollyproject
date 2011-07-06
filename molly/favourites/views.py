@@ -64,7 +64,6 @@ class IndexView(BaseView):
         
         # Alter favourites list
         if 'URL' in request.POST:
-            print request.POST
             if 'favourite' in request.POST:
                 # Add
                 try:

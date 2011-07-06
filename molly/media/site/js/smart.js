@@ -88,6 +88,7 @@ function async_load(url, query, meth) {
     display_loading_screen()
   
     query['format'] = 'fragment';
+    query['language_code'] = language_code;
     async_load_xhr = $.ajax({
             'url': to_absolute(url),
             'data': query,
@@ -176,3 +177,17 @@ $(window).load(function() {
     }
 });
 
+// http://stackoverflow.com/questions/901115/get-querystring-values-with-jquery
+function getParameterByName( name, qs ){
+  
+    name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+    var regexS = "[\\?&]"+name+"=([^&#]*)";
+    var regex = new RegExp( regexS );
+    var results = regex.exec( qs );
+    if ( results == null ) {
+        return "";
+    }
+    else {
+        return results[1].replace(/\+/g, " ");
+    }
+}

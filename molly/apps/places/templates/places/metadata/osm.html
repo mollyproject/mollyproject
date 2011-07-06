@@ -8,14 +8,12 @@
   </div>
   {% if entity|osm_tags %}
   <div class="section-content no-round-bottom">
-    <div class="article"><div class="bubble pad-5">
       <dl>
         {% for tag,content in entity|osm_tags %}
           <dt>{{ tag|capfirst }}:</dt>
           <dd>{{ content }}</dd>
         {% endfor %}
       </dl>
-    </div></div>
   </div>
   {% endif %}
 

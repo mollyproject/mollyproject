@@ -117,7 +117,6 @@ class LiveDepartureBoardPlacesProvider(BaseMapsProvider):
                 calling_points[-1]['service_change'] = ugettext_lazy(service['subsequentCallingPoints']['callingPointList'][0]['_serviceType'])
         
         if len(service['previousCallingPoints']):
-            print service['previousCallingPoints']['callingPointList']
             if service['serviceType'] != service['previousCallingPoints']['callingPointList'][0]['_serviceType']:
                 calling_points[-1]['service_change'] = ugettext_lazy(service['serviceType'])
         

@@ -1,5 +1,5 @@
 {% extends "feeds/events/base.html" %}{% load molly_maps %}
-{% load i18n %}
+{% load i18n %}{% load molly_utils %}
 {% block breadcrumbs %}
 {{ block.super }}
             <li><a href="{% url events:index %}">
@@ -31,27 +31,40 @@
     </div></div>
 </div>
 
+{% if item.venue %}
 <div class="section">
-    <h2>{% trans "Location" %}</h2>
-{% if item.location_point %}
-    {% render_location_map item.location_point %}
-{% endif %}
-
-    <ul>
-{% if item.location_entity %}
-        <li>
-            <a href="{{ item.location_entity.get_absolute_url }}">
-                {{ item.location_entity.title }}
-            </a>
-        </li>
-{% endif %}
-        <li>
-            <a class="external-mobile" href="{{ item.location_mobile_url }}">
-                <em>{{ item.location_name }}</em>
-            </a>
-        </li>
+	<div class="header">
+		<h2>{{ item.venue.name }}</h2>
+	</div>
+	{% if item.venue.address %}
+		<div class="pad-5"><div class="note">
+			<p>{{ item.venue.address }}</p>
+		</div></div>
+	{% endif %}
+	{% if item.venue.location %}
+		{% render_location_map item.venue.location %}
+	{% endif %}
+	
+    <ul class="link-list">
+		{% if item.venue.entity %}
+			<li>
+				<a href="{{ item.venue.entity.get_absolute_url }}">
+					{{ item.venue.entity.title }}
+				</a>
+			</li>
+		{% endif %}
+		{% if item.venue.telephone %}
+			<li>
+				<a class="phone" href="{{ item.venue.telephone|telephone_uri }}">
+				  {% blocktrans with item.venue.name as title %}Call <em>{{ title }}</em>{% endblocktrans %}
+				  <br/>
+				  <small>{{ item.venue.telephone|telephone:"nolink" }}</small>
+				</a>
+			</li>
+		{% endif %}
     </ul>
     
 </div>
+{% endif %}
 
 {% endblock %}

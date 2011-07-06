@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-10 11:37+0100\n"
+"POT-Creation-Date: 2011-07-06 10:58+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,37 +17,24 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: apps/library/static/library/js/smart.js:34 media/site/js/dummy.js:49
+#: apps/library/static/library/js/smart.js:18 media/site/js/dummy.js:49
 msgid "Author"
 msgstr ""
 
-#: apps/library/static/library/js/smart.js:35 media/site/js/dummy.js:50
+#: apps/library/static/library/js/smart.js:19 media/site/js/dummy.js:50
 msgid "Publisher"
 msgstr ""
 
-#: apps/library/static/library/js/smart.js:36 media/site/js/dummy.js:51
+#: apps/library/static/library/js/smart.js:20 media/site/js/dummy.js:51
 msgid "Edition"
 msgstr ""
 
-#: apps/library/static/library/js/smart.js:37 media/site/js/dummy.js:52
+#: apps/library/static/library/js/smart.js:21 media/site/js/dummy.js:52
 msgid "Libraries"
 msgstr ""
 
 #: apps/places/static/places/js/smart.js:133 media/site/js/dummy.js:26
 msgid "%(entities_found)s within %(distance)sm"
-msgstr ""
-
-#: apps/places/static/places/js/smart.js:358
-#: apps/places/static/places/js/smart.js:364 media/site/js/dummy.js:41
-msgid "There are currently no scheduled %(board)s."
-msgstr ""
-
-#: apps/places/static/places/js/smart.js:372 media/site/js/dummy.js:42
-msgid "View arrivals board"
-msgstr ""
-
-#: apps/places/static/places/js/smart.js:374 media/site/js/dummy.js:43
-msgid "View departures board"
 msgstr ""
 
 #. Translators: Space as in car parking spaces
@@ -206,6 +193,18 @@ msgstr ""
 
 #: media/site/js/dummy.js:40
 msgid "Circular Route"
+msgstr ""
+
+#: media/site/js/dummy.js:41
+msgid "There are currently no scheduled %(board)s."
+msgstr ""
+
+#: media/site/js/dummy.js:42
+msgid "View arrivals board"
+msgstr ""
+
+#: media/site/js/dummy.js:43
+msgid "View departures board"
 msgstr ""
 
 #: media/site/js/dummy.js:53

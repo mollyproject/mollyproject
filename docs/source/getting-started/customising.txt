@@ -33,7 +33,7 @@ the media provided by that app, and its location.
              apps contain a complete list of media.
 
 Other ways of finding media include looking at the URL of the image, and then
-removing the URL component, e.g., if your STATIC_URL is set to '/media/' and
+removing the URL component, e.g., if your STATIC_URL is set to '/compiled_media/' and
 the URL of the image is '/media/weather/images/cloudy5.png', then the file to
 place into the site_media folder is 'weather/images/cloudy5.png'. Alternatively,
 looking in 'molly/media/' or 'molly/apps/APP/static/' will also find the media

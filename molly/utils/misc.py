@@ -28,7 +28,7 @@ def get_norm_sys_path():
     # Find the path to the first package containing the settings module.
     # Once we have it, normalise it and add it to our sys_path if it isn't
     # already there.
-    try:    
+    try:
         project_path = imp.find_module(os.environ['DJANGO_SETTINGS_MODULE'].split('.')[0])[1]
     except ImportError:
         project_path = os.path.dirname(imp.find_module('settings')[1])

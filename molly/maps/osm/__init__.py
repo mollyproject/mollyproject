@@ -129,14 +129,13 @@ def get_or_create_map(generator, args):
             transaction.savepoint_commit(savepoint)
         
         # If there are any maps older than a week, regenerate them
-        to_delete = GeneratedMap.objects.filter(generated__lt=datetime.now()-timedelta(weeks=1))
+        to_delete = GeneratedMap.objects.filter(
+          generated__lt=datetime.now()-timedelta(weeks=1)).order_by('generated')
         if to_delete.count() > 0:
             # But only clear up 50 at a time
-            youngest = None
+            youngest = to_delete[0].last_accessed
             to_delete = to_delete[:50]
             for generated_map in to_delete:
-                if not youngest:
-                    youngest = generated_map.last_accessed
                 generated_map.delete()
             age = (datetime.now()-youngest)
             age = age.days*24 + age.seconds/3600.0
