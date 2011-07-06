@@ -6,21 +6,26 @@ import tempfile
 import random
 import re
 import csv
+from warnings import warn
 from collections import defaultdict
-from StringIO import StringIO
+try:
+    from cStringIO import StringIO
+except:
+    from StringIO import StringIO
 
 from xml.sax import ContentHandler, make_parser
 import yaml
 
+from django.db import transaction
 from django.conf import settings
 from django.contrib.gis.geos import Point
 from django.utils.translation import ugettext_noop as _
 from django.utils.translation import ugettext, get_language
-from molly.utils.i18n import override, set_name_in_language
 
 from molly.apps.places.providers import BaseMapsProvider
 from molly.apps.places.models import EntityType, Entity, EntityGroup, Source, EntityTypeCategory
 from molly.conf.settings import batch
+from molly.utils.i18n import override, set_name_in_language
 
 class NaptanContentHandler(ContentHandler):
 
@@ -128,7 +133,8 @@ class NaptanContentHandler(ContentHandler):
                 self.names[self.lang] = self.meta['name']
 
     def endDocument(self):
-        pass
+        # Delete all entities which have been deleted in the NaPTAN
+        Entity.objects.filter(source=self.source).exclude(id__in=(e.id for e in self.entities)).delete()
 
     def characters(self, text):
         top = tuple(self.name_stack[3:])
@@ -625,9 +631,11 @@ class NaptanMapsProvider(BaseMapsProvider):
     }
 
 
-    def __init__(self, method, areas=None, username=None, password=None):
+    def __init__(self, method=None, areas=None, username=None, password=None):
         self._username, self._password = username, password
         self._method = method
+        if self._method:
+            warn('method is deprecated, only HTTP is now supported', DeprecationWarning)
         
         # Add 910 because we always want to import railway stations
         if areas is not None:
@@ -636,101 +644,10 @@ class NaptanMapsProvider(BaseMapsProvider):
 
     @batch('%d 10 * * mon' % random.randint(0, 59))
     def import_data(self, metadata, output):
-        method, username, password = self._method, self._username, self._password
-        if not method in ('http', 'ftp',):
-            raise ValueError("mode must be either 'http' or 'ftp'")
-        if (method == 'ftp') == (username is None or password is None):
-            raise ValueError("username and password must be provided iff mode is 'ftp'")
+        username, password = self._username, self._password
 
         self._source = self._get_source()
         self._entity_types = self._get_entity_types()
-
-        if self._method == 'http':
-            self._import_from_http()
-        elif self._method == 'ftp':
-            self._import_from_ftp()
-        
-        return metadata
-    
-    def _connect_to_ftp(self):
-        return ftplib.FTP(self.FTP_SERVER,
-            self._username,
-            self._password,
-        )
-    
-    def _import_from_ftp(self):
-        def data_chomper(f):
-            def chomp(data):
-                os.write(f, data)
-            return chomp
-
-        ftp = self._connect_to_ftp()
-        
-        files = {}
-        
-        # Get NPTG localities
-        f, filename =  tempfile.mkstemp()
-        ftp.cwd("/V2/NPTG/")
-        ftp.retrbinary('RETR nptgcsv.zip', data_chomper(f))
-        os.close(f)
-        archive = zipfile.ZipFile(filename)
-        if hasattr(archive, 'open'):
-            f = archive.open('Localities.csv')
-            falt = archive.open('LocalityAlternativeNames.csv')
-        else:
-            f = StringIO(archive.read('Localities.csv'))
-            falt = StringIO(archive.read('LocalityAlternativeNames.csv'))
-        localities = self._get_nptg_alt_names(falt, self._get_nptg(f))
-        os.unlink(filename)
-        
-        if self._areas is None:
-            f, filename = tempfile.mkstemp()
-            
-            try:
-                ftp.cwd("/V2/complete/")
-                ftp.retrbinary('RETR NaPTAN.xml', data_chomper(f))
-            except ftplib.error_temp:
-                ftp = self._connect_to_ftp()
-                ftp.cwd("/V2/complete/")
-                ftp.retrbinary('RETR NaPTAN.xml', data_chomper(f))
-            
-            ftp.quit()
-            os.close(f)
-            
-            f = open(filename)
-            self._import_from_pipe(f, localities)
-            os.unlink(filename)
-            
-        else:
-            for area in self._areas:
-                f, filename = tempfile.mkstemp()
-                files[area] = filename
-            
-                try:
-                    ftp.cwd("/V2/%s/" % area)
-                    ftp.retrbinary('RETR NaPTAN%sxml.zip' % area, data_chomper(f))
-                except ftplib.error_temp:
-                    ftp = self._connect_to_ftp()
-                    ftp.cwd("/V2/%s/" % area)
-                    ftp.retrbinary('RETR NaPTAN%sxml.zip' % area, data_chomper(f))
-                os.close(f)
-            
-            try:
-                ftp.quit()
-            except ftplib.error_temp:
-                pass
-            
-            for (area, filename) in files.items():
-                archive = zipfile.ZipFile(filename)
-                if hasattr(archive, 'open'):
-                    f = archive.open('NaPTAN%d.xml' % int(area))
-                else:
-                    f = StringIO(archive.read('NaPTAN%d.xml' % int(area)))
-                self._import_from_pipe(f, localities)
-                archive.close()
-                os.unlink(filename)
-
-    def _import_from_http(self):
         
         # Get NPTG localities
         archive = zipfile.ZipFile(StringIO(urllib.urlopen(self.HTTP_NTPG_URL).read()))
@@ -748,6 +665,7 @@ class NaptanMapsProvider(BaseMapsProvider):
             self._import_from_pipe(f, localities, areas=self._areas)
             archive.close()
 
+    @transaction.commit_on_success
     def _import_from_pipe(self, pipe_r, localities, areas=None):
         parser = make_parser()
         parser.setContentHandler(NaptanContentHandler(self._entity_types, self._source, localities, areas))
@@ -806,9 +724,7 @@ class NaptanMapsProvider(BaseMapsProvider):
             if stop_type.startswith('MET') and stop_type != 'MET' and entity_type.slug != self.RAIL_STATION_DEFINITION['slug']:
                 entity_type.subtype_of.add(entity_types['MET'])
         
-
         return entity_types
-
 
     def _get_source(self):
         try:

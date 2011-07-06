@@ -122,8 +122,21 @@ if os.name == 'nt':
                         '/st', '%s:%s:00' % (hour.rjust(2, '0'), minute.rjust(2, '0'))]
             
             elif hour != '*':
-                args = ['/sc', 'DAILY',
-                        '/st', '%s:%s:00' % (hour.rjust(2, '0'), minute.rjust(2, '0'))]
+                if '/' in hour or ',' in hour:
+                    if '/' in hour:
+                        times, frequency = hour.split('/')
+                        times = times.split('-')[0]
+                    else:
+                        times, second = hour.split(',')[:2]
+                        frequency = str(int(second) - int(times))
+                    
+                    args = ['/sc', 'HOURLY',
+                            '/mo', frequency,
+                            '/st', '%s:%s:00' % (next_hour(minute), minute.rjust(2, '0'))]
+                
+                else:
+                    args = ['/sc', 'DAILY',
+                            '/st', '%s:%s:00' % (hour.rjust(2, '0'), minute.rjust(2, '0'))]
             
             elif minute != '*':
                 if '/' in minute or ',' in minute:
@@ -132,7 +145,7 @@ if os.name == 'nt':
                         times = times.split('-')[0]
                     else:
                         times, second = minute.split(',')[:2]
-                        frequency = int(second) - int(times)
+                        frequency = str(int(second) - int(times))
                     
                     args = ['/sc', 'MINUTE',
                             '/mo', frequency,

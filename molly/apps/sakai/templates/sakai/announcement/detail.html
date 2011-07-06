@@ -16,10 +16,9 @@
             <p>{% blocktrans count announcement.attachments|length as attachments %}This announcement has {{ attachments }} attachment.{% plural %}This announcement has {{ attachments }} attachments.{% endblocktrans %}</p>
             <ul>
                 {% for attachment in announcement.attachments %}
-                    <li>{{ attachment }}</li>
+                    <li><a href="{{ attachment.url }}">{{ attachment.name }}</a></li>
                 {% endfor %}
             </ul>
-            <p>{% trans "Please use WebLearn on a desktop PC to retrieve them." %}</p>
         </div>
     {% endif %}
     </div>

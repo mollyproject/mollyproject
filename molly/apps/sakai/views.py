@@ -493,24 +493,9 @@ class AnnouncementView(SakaiView):
     
     def initial_context(self, request, id):
         
-        # Sakai's announcement API is currently broken...
-        #
-        #response = request.urlopen(self.build_url('direct/announcement/%s.json' % id))
-        #return {
-        #    'announcement': simplejson.load(response)
-        #}
-        
-        # Hacky workaround
-        response = simplejson.load(request.urlopen(
-            self.build_url('direct/announcement/user.json')))
-        found = None
-        for announcement in response['announcement_collection']:
-            if announcement['id'] == id:
-                found = announcement
-        if found is None:
-            raise Http404()
+        response = request.urlopen(self.build_url('direct/announcement/%s.json' % id))
         return {
-            'announcement': found
+            'announcement': simplejson.load(response)
         }
     
     def handle_GET(self, request, context, id):

@@ -8,6 +8,7 @@ from string import ascii_lowercase
 from urllib2 import urlopen
 import random
 
+from django.db import transaction, reset_queries
 from django.http import Http404
 
 from molly.apps.places.models import Route, StopOnRoute, Entity, Source, EntityType
@@ -132,8 +133,8 @@ class ACISLiveMapsProvider(BaseMapsProvider):
             
             if bus_et not in entity.all_types.all():
                 continue
-                
-            thread = threading.Thread(target=self.get_times, args=[entity, routes])
+            
+            thread = threading.Thread(target=self.get_times, args=[entity])
             thread.start()
             threads.append(thread)
         
@@ -259,6 +260,7 @@ class ACISLiveRouteProvider(BaseMapsProvider):
     def _scrape_search(self, url, search_page, found_routes, output):
         results = etree.parse(urlopen(search_page), parser = etree.HTMLParser())
         for tr in results.find('.//table').findall('tr')[1:]:
+            reset_queries()
             try:
                 service, operator, destination = tr.findall('td')
             except ValueError:
@@ -270,25 +272,25 @@ class ACISLiveRouteProvider(BaseMapsProvider):
                 destination = destination[0].text
                 if link not in found_routes:
                     found_routes.add(link)
-                    route, created = Route.objects.get_or_create(
-                        external_ref=link,
-                        defaults={
-                            'service_id': service,
-                            'operator': operator,
-                            'service_name': destination,
-                        }
-                    )
-                    if not created:
-                        route.service_id = service
-                        route.operator = operator
-                        route.service_name = destination
-                        route.save()
-                    self._scrape(route, link, output)
+                    with transaction.commit_on_success():
+                        route, created = Route.objects.get_or_create(
+                            external_ref=link,
+                            defaults={
+                                'service_id': service,
+                                'operator': operator,
+                                'service_name': destination,
+                            }
+                        )
+                        if not created:
+                            route.service_id = service
+                            route.operator = operator
+                            route.service_name = destination
+                            route.save()
+                        self._scrape(route, link, output)
         
         return found_routes
     
     def _scrape(self, route, url, output):
-        self._output.write(route)
         url += '&showall=1'
         service = etree.parse(urlopen(url), parser = etree.HTMLParser())
         route.stops.clear()

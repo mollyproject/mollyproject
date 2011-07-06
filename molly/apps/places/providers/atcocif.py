@@ -4,13 +4,15 @@ from collections import namedtuple, defaultdict
 from datetime import datetime, date, time, timedelta
 from logging import getLogger
 from operator import itemgetter
+from StringIO import StringIO
 from urllib2 import urlopen
 from zipfile import ZipFile
 
 from django.http import Http404
+from django.db import transaction, reset_queries
 from django.db.models import Q
 
-from molly.apps.places import get_entity
+from molly.apps.places import EntityCache
 from molly.apps.places.models import (Entity, Route, StopOnRoute, Source,
                                       Journey, ScheduledStop)
 from molly.apps.places.providers import BaseMapsProvider, NaptanMapsProvider
@@ -33,16 +35,20 @@ class AtcoCifTimetableProvider(BaseMapsProvider):
         URL to an ATCO-CIF zip to be used
         """
         self._url = url
+        self._cache = EntityCache()
+        self._entity_type = NaptanMapsProvider(None)._get_entity_types()['BCT']
     
     @batch('%d 10 * * wed' % random.randint(0, 59))
     def import_data(self, metadata, output):
         
         deleted_routes = set(Route.objects.filter(external_ref__startswith=self._url).values_list('external_ref'))
-        archive = ZipFile(urlopen(self._url))
+        archive = ZipFile(StringIO(urlopen(self._url).read()))
         for file in archive.namelist():
+            output.write(file)
             routes = self._import_cif(archive.open(file))
+            output.write(': %d routes in file\n' % len(routes))
             self._import_routes(routes)
-            deleted_routes -= set(self._url + route['number'] + route['description'] for route in routes)
+            deleted_routes -= set(self._url + route['id'] for route in routes)
         archive.close()
         
         for route in deleted_routes:
@@ -55,10 +61,17 @@ class AtcoCifTimetableProvider(BaseMapsProvider):
     def _parse_cif_time(self, timestring):
         return time(int(timestring[0:2]) % 24, int(timestring[2:4]))
     
+    @transaction.commit_on_success
     def _import_cif(self, cif):
         """
         Parse a CIF file
         """
+        
+        # Clear cache once per file - avoid high memory usage
+        self._cache = EntityCache()
+        
+        # Also reset SQL queries log
+        reset_queries()
         
         routes = []
         
@@ -111,7 +124,7 @@ class AtcoCifTimetableProvider(BaseMapsProvider):
                 # Journey start
                 try:
                     this_journey['stops'].append({
-                        'entity': get_entity('atco', line[2:14].strip()),
+                        'entity': self._cache['atco:%s' % line[2:14].strip()],
                         'sta': None,
                         'std': self._parse_cif_time(line[14:18]),
                         'activity': 'O',
@@ -125,7 +138,7 @@ class AtcoCifTimetableProvider(BaseMapsProvider):
                 # Journey intermediate stop
                 try:
                     this_journey['stops'].append({
-                        'entity': get_entity('atco', line[2:14].strip()),
+                        'entity': self._cache['atco:%s' % line[2:14].strip()],
                         'sta': self._parse_cif_time(line[14:18]),
                         'std': self._parse_cif_time(line[18:22]),
                         'activity': line[22],
@@ -139,7 +152,7 @@ class AtcoCifTimetableProvider(BaseMapsProvider):
                 # Journey complete
                 try:
                     this_journey['stops'].append({
-                        'entity': get_entity('atco', line[2:14].strip()),
+                        'entity': self._cache['atco:%s' % line[2:14].strip()],
                         'sta': self._parse_cif_time(line[14:18]),
                         'std': None,
                         'activity': 'F',
@@ -149,6 +162,14 @@ class AtcoCifTimetableProvider(BaseMapsProvider):
                 except Http404:
                     pass
             
+            elif line[:2] == 'ZL':
+                # Route ID
+                route_id = line[2:]
+            
+            elif line[:2] == 'ZD':
+                # Days route ID
+                route_id += line[18:-1]
+            
             elif line[:2] == 'ZS':
                 # Route
                 
@@ -156,8 +177,9 @@ class AtcoCifTimetableProvider(BaseMapsProvider):
                     routes[-1]['journies'].append(this_journey)
                 
                 routes.append({
+                    'id': route_id,
                     'number': line[10:14].strip(),
-                    'description': line[14:],
+                    'description': line[14:-1],
                     'stops': [],
                     'journies': []
                 })
@@ -167,7 +189,7 @@ class AtcoCifTimetableProvider(BaseMapsProvider):
                 stop_code = line[3:15].strip()
                 
                 try:
-                    entity = get_entity('atco', stop_code)
+                    entity = self._cache['atco:%s' % stop_code]
                     if entity.source == self._get_source():
                         # Raise Http404 if this is a bus stop we came up with,
                         # so any name changes, etc, get processed
@@ -181,7 +203,7 @@ class AtcoCifTimetableProvider(BaseMapsProvider):
                     except Entity.DoesNotExist:
                         entity = Entity(source=self._get_source())
                     identifiers = { 'atco': stop_code }
-                    entity_type = self._get_entity_type()
+                    entity_type = self._entity_type
                     entity.primary_type = entity_type
                     entity.save(identifiers=identifiers)
                     set_name_in_language(entity, 'en', title=line[15:63].strip())
@@ -197,9 +219,8 @@ class AtcoCifTimetableProvider(BaseMapsProvider):
     
     def _import_routes(self, routes):
         for r in routes:
-            external_ref = self._url + r['number'] + r['description']
             route, created = Route.objects.get_or_create(
-                external_ref=external_ref,
+                external_ref=self._url + r['id'],
                 defaults={
                     'service_id': r['number'],
                     'service_name': r['description'],
@@ -293,18 +314,18 @@ class AtcoCifTimetableProvider(BaseMapsProvider):
                 if not stop.journey.runs_on(today.date()):
                     continue
                 
-                services[stop.journey.route].append((stop.journey, stop.std if stop.std else stop.sta))
+                services[(stop.journey.route.service_id, stop.journey.route.service_name)].append((stop.journey, stop.std if stop.std else stop.sta))
             
             services = ((route, sorted(ss, key=itemgetter(1), cmp=midnight_4am))
                 for route, ss in services.items())
             
             services = [{
-                'service': route.service_id,
-                'destination': route.service_name,
+                'service': service_id,
+                'destination': service_name,
                 'next': ss[0][1].strftime('%H:%M'),
                 'following': map(lambda t: t[1].strftime('%H:%M'), ss[1:4]),
                 'journey': ss[0][0]
-            } for route, ss in sorted(services, key=lambda x: x[1][0][1])]
+            } for (service_id, service_name), ss in sorted(services, key=lambda x: x[1][0][1])]
             
             entity.metadata['real_time_information'] = {
                 'services': services,

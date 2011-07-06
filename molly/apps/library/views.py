@@ -98,6 +98,11 @@ class SearchDetailView(BaseView):
         
         page = paginator.page(page_index)
         
+        # Add cover image
+        if hasattr(self.conf, 'additional_metadata_provider'):
+            
+            self.conf.additional_metadata_provider.annotate(page.object_list)
+        
         # Render results page
         context.update({
             'removed': query.removed,
@@ -195,7 +200,7 @@ class ItemHoldingsView(ZoomableView):
         # Find which particular library we're interested in
         library = None
         for item_library in item.libraries:
-            if item_library.location[1] == sublocation:
+            if item_library.location[-1] == sublocation:
                 library = item_library
         
         if library is None:
