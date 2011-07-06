@@ -302,7 +302,6 @@ class BaseView(object):
                       self.FORMATS_BY_MIMETYPE if not f[0] in tried_mimetypes)),
                 mimetype="text/plain")
             else:
-                print self.FORMATS
                 response = HttpResponse(
                   _("Unable to render this document in this format.") + "\n\n" +
                   _("Supported formats are") + ":\n\n * %s\n" \
