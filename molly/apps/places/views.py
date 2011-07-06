@@ -625,7 +625,7 @@ class ServiceDetailView(BaseView):
                 except Route.MultipleObjectsReturned:
                     context.update({
                         'title': _('Multiple routes found'),
-                        'multiple_routes': Route.objects.filter(service_id=route_id, stops=entity)
+                        'multiple_routes': entity.route_set.filter(service_id=route_id).distinct()
                     })
                     return context
             
@@ -711,7 +711,7 @@ class ServiceDetailView(BaseView):
         
         map = Map(
             centre_point = (entity.location[0], entity.location[1],
-                            'green', entity.title),
+                            'green', entity.title) if entity.location else None,
             points = [(e.location[0], e.location[1], 'red', e.title)
                 for e in service['entities'] if e.location is not None],
             min_points = len(service['entities']),
