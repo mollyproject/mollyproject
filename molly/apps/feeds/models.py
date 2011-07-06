@@ -142,8 +142,7 @@ class Item(models.Model):
             return reverse('news:item-detail', args=[self.feed.slug, self.id])
         else:
             return reverse('events:item-detail', args=[self.feed.slug, self.id])
-        
-        
+    
     def get_description_display(self, device):
         html = etree.fromstring('<div>%s</div>' % self.description, parser=etree.HTMLParser())
         for img in html.findall('.//img'):

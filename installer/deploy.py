@@ -62,7 +62,7 @@ def deploy(venv, site_path, development=False, listen_externally=False,
     print "DONE!"
     
     # Do syncdb
-    venv("python %s/manage.py sync_and_migrate" % site_path, quiet=False)
+    venv("python %s/manage.py sync_and_migrate" % site_deploy_path, quiet=False)
     
     # Okay, now build media
     print "Building media... (this may take some time)",
@@ -71,23 +71,28 @@ def deploy(venv, site_path, development=False, listen_externally=False,
         venv('python -c "from molly.wurfl import wurfl_data"')
     except CommandFailed:
         logger.info("Building Wurfl file")
-        venv("python %s/manage.py update_wurfl" % site_path)
-    venv("python %s/manage.py generate_markers --lazy" % site_path)
-    if development:
-        venv("python %s/manage.py collectstatic --noinput -l" % site_path)
+        venv("python %s/manage.py update_wurfl" % site_deploy_path)
+    venv("python %s/manage.py generate_markers --lazy" % site_deploy_path)
+    if development and os.name != 'nt':
+        # Windows can't symlink
+        venv("python %s/manage.py collectstatic --noinput -l" % site_deploy_path)
     else:
-        venv("python %s/manage.py collectstatic --noinput" % site_path)
-    venv("python %s/manage.py synccompress" % site_path)
-    #venv("python %s/manage.py generate_cache_manifest" % site_path)
-    venv("python %s/manage.py create_crontab | crontab" % site_path)
+        venv("python %s/manage.py collectstatic --noinput" % site_deploy_path)
+    venv("python %s/manage.py synccompress" % site_deploy_path)
+    #venv("python %s/manage.py generate_cache_manifest" % site_deploy_path)
+    if os.name != 'nt':
+        pipe = ' | crontab'
+    else:
+        pipe = ''
+    venv("python %s/manage.py create_crontab%s" % (site_deploy_path, pipe))
     print "DONE!"
     
     # Start dev server
     if development:
         try:
             if listen_externally:
-                venv('python %s/manage.py runserver 0.0.0.0:%s' % (site_path, dev_server_port), wait=True, quiet=False)
+                venv('python %s/manage.py runserver 0.0.0.0:%s' % (site_deploy_path, dev_server_port), wait=True, quiet=False)
             else:
-                venv('python %s/manage.py runserver %s' % (site_path, dev_server_port), wait=True, quiet=False)
+                venv('python %s/manage.py runserver %s' % (site_deploy_path, dev_server_port), wait=True, quiet=False)
         except CommandFailed:
             pass

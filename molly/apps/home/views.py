@@ -69,7 +69,10 @@ class IndexView(BaseView):
         
         if has_app_by_application_name('molly.apps.weather'):
             weather_id = app_by_application_name('molly.apps.weather').location_id
-            weather = Weather.objects.get(ptype='o', location_id=weather_id)
+            try:
+                weather = Weather.objects.get(ptype='o', location_id=weather_id)
+            except Weather.DoesNotExist:
+                weather = None
         else:
             weather = None
         

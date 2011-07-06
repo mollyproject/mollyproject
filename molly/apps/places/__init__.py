@@ -9,6 +9,13 @@ def get_entity(scheme, value):
                              _identifiers__scheme=scheme,
                              _identifiers__value=value)
 
+class EntityCache(dict):
+    
+    def __missing__(self, key):
+        scheme, value = key.split(':')
+        self[key] = get_entity(scheme, value)
+        return self[key]
+
 def get_point(request, entity):
     if entity and entity.location:
         point = entity.location

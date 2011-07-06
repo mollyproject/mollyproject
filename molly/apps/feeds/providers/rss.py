@@ -57,7 +57,15 @@ class RSSFeedsProvider(BaseFeedsProvider):
         
         items = set()
         for x_item in feed_data.entries:
-            guid, last_modified = x_item.id, datetime(*x_item.date_parsed[:7])
+            if hasattr(x_item, 'id'):
+                guid = x_item.id
+            else:
+                # Some stupid feeds don't have any GUIDs, fall back to the URL
+                # and hope it's unique
+                guid = x_item.link
+            
+            last_modified = datetime(*x_item.date_parsed[:7])
+            
             
             for i in items:
                 if i.guid == guid:

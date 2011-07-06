@@ -8,6 +8,7 @@ from string import ascii_lowercase
 from urllib2 import urlopen
 import random
 
+from django.db import transaction, reset_queries
 from django.http import Http404
 
 from molly.apps.places.models import Route, StopOnRoute, Entity, Source, EntityType
@@ -87,7 +88,13 @@ class ACISLiveMapsProvider(BaseMapsProvider):
         @return: A tuple of base URL, identifier for realtime info, identifier
                  for messages
         """
-        if entity.identifiers['atco'][:3] in self.ACISLIVE_URLS:
+        
+        if entity.identifiers.get('naptan', '').startswith('272'):
+            # Made up Oxontime codes
+            return ('http://www.oxontime.com/',
+                    entity.identifiers.get('naptan'), None)
+        
+        if entity.identifiers.get('atco', '')[:3] in self.ACISLIVE_URLS:
             base, departures, messages = self.ACISLIVE_URLS[entity.identifiers['atco'][:3]]
             return base, departures(entity), messages(entity)
         else:
@@ -112,7 +119,10 @@ class ACISLiveMapsProvider(BaseMapsProvider):
                  there is no known messages URL for that stop
         """
         base, departures, messages = self.get_acislive_base(entity)
-        return base + 'pip/stop_simulator_message.asp?NaPTAN=%s' % messages
+        if messages:
+            return base + 'pip/stop_simulator_message.asp?NaPTAN=%s' % messages
+        else:
+            return None
         
     
     def augment_metadata(self, entities, **kwargs):
@@ -123,7 +133,7 @@ class ACISLiveMapsProvider(BaseMapsProvider):
             
             if bus_et not in entity.all_types.all():
                 continue
-                
+            
             thread = threading.Thread(target=self.get_times, args=[entity])
             thread.start()
             threads.append(thread)
@@ -246,6 +256,7 @@ class ACISLiveRouteProvider(BaseMapsProvider):
     def _scrape_search(self, url, search_page, found_routes, output):
         results = etree.parse(urlopen(search_page), parser = etree.HTMLParser())
         for tr in results.find('.//table').findall('tr')[1:]:
+            reset_queries()
             try:
                 service, operator, destination = tr.findall('td')
             except ValueError:
@@ -257,25 +268,25 @@ class ACISLiveRouteProvider(BaseMapsProvider):
                 destination = destination[0].text
                 if link not in found_routes:
                     found_routes.add(link)
-                    route, created = Route.objects.get_or_create(
-                        external_ref=link,
-                        defaults={
-                            'service_id': service,
-                            'operator': operator,
-                            'service_name': destination,
-                        }
-                    )
-                    if not created:
-                        route.service_id = service
-                        route.operator = operator
-                        route.service_name = destination
-                        route.save()
-                    self._scrape(route, link, output)
+                    with transaction.commit_on_success():
+                        route, created = Route.objects.get_or_create(
+                            external_ref=link,
+                            defaults={
+                                'service_id': service,
+                                'operator': operator,
+                                'service_name': destination,
+                            }
+                        )
+                        if not created:
+                            route.service_id = service
+                            route.operator = operator
+                            route.service_name = destination
+                            route.save()
+                        self._scrape(route, link, output)
         
         return found_routes
     
     def _scrape(self, route, url, output):
-        self._output.write(route)
         url += '&showall=1'
         service = etree.parse(urlopen(url), parser = etree.HTMLParser())
         route.stops.clear()
@@ -304,9 +315,20 @@ class ACISLiveRouteProvider(BaseMapsProvider):
                 entity.update_all_types_completion()
             
             else:
-                # TODO: Change identifier lookup based on ACIS region
+                if stop_code.startswith('340'):
+                    # Oxontime uses NaPTAN code
+                    scheme = 'naptan'
+                elif stop_code.startswith('450'):
+                    # West Yorkshire uses plate code
+                    scheme = 'plate'
+                else:
+                    # Everyone else uses ATCO
+                    scheme = 'atco'
+                    if stop_code.startswith('370'):
+                        # Except South Yorkshire, which mangles the code
+                        stop_code = '3700%s' % stop_code[3:]
                 try:
-                    entity = get_entity('naptan', stop_code)
+                    entity = get_entity(scheme, stop_code)
                     if entity.source == self._get_source():
                         # Raise Http404 if this is a bus stop we came up with,
                         # so any name changes, etc, get processed
@@ -338,3 +360,4 @@ class ACISLiveRouteProvider(BaseMapsProvider):
     
     def _get_entity_type(self):
         return NaptanMapsProvider(None)._get_entity_types()['BCT']
+

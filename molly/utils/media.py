@@ -46,8 +46,8 @@ def get_compress_groups(STATIC_ROOT):
                 else:
                     continue
                 
-                path = filename.split('/')[1:-1]
-                output_filename = filename.split('/')[-1].rsplit('.', 1)
+                path = filename.split(os.sep)[1:-1]
+                output_filename = filename.split(os.sep)[-1].rsplit('.', 1)
                 group = '-'.join(path + [output_filename[0],])
                 if group.startswith('css-') or group.startswith('js-'):
                     group = group.split('-', 1)[1]

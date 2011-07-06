@@ -89,7 +89,7 @@ class IndexView(BaseView):
                 results_type = 'Favourite' if len(favourites) > 0 else 'Nearby'
             
             for e in (e for e in es if hasattr(e, 'distance')):
-                _, e.bearing = entity.get_distance_and_bearing_from(location)
+                distance, e.bearing = e.get_distance_and_bearing_from(location)
             
             entities |= set(es)
             context['nearby'][context_key] = {

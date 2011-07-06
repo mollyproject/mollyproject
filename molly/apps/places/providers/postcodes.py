@@ -8,6 +8,7 @@ import urllib2
 import os.path
 import re
 
+from django.db import transaction, reset_queries
 from django.conf import settings
 from django.contrib.gis.geos import Point
 from django.utils.translation import ugettext_noop
@@ -24,18 +25,28 @@ class PostcodesMapsProvider(BaseMapsProvider):
         self.codepoint_path = codepoint_path
         self.import_areas = import_areas
 
+    CODEPOINT_OPEN_URL = 'http://freepostcodes.org.uk/static/code-point-open/codepo_gb.zip'
+
+    def _download_codepoint_open(self):
+
+            archive_url = urllib2.urlopen(self.CODEPOINT_OPEN_URL)
+            archive_file = open(self.codepoint_path, 'wb')
+            archive_file.write(archive_url.read())
+            archive_file.close()
+
     @batch('%d 12 1 1 *' % random.randint(0, 59))
     def import_data(self, metadata, output):
 
         entity_type, source = self._get_entity_type(), self._get_source()
-
-        if not os.path.exists(self.codepoint_path):
-            archive_url = urllib2.urlopen('http://freepostcodes.org.uk/static/code-point-open/codepo_gb.zip')
-            archive_file = open(self.codepoint_path, 'w')
-            archive_file.write(archive_url.read())
-            archive_file.close()
         
-        archive = zipfile.ZipFile(self.codepoint_path)
+        if not os.path.exists(self.codepoint_path):
+            self._download_codepoint_open()
+        
+        try:
+            archive = zipfile.ZipFile(self.codepoint_path)
+        except zipfile.BadZipfile:
+            self._download_codepoint_open()
+            archive = zipfile.ZipFile(self.codepoint_path)
         
         if self.import_areas:
             filenames = ['Code-Point Open/Data/%s.csv' % code.lower() for code in self.import_areas]
@@ -43,26 +54,46 @@ class PostcodesMapsProvider(BaseMapsProvider):
             filenames = [path for path in archive.namelist() if re.match(r'Code\-Point Open\/Data\/[a-z]{1,2}.csv', path)]
 
         for filename in filenames:
-            if hasattr(archive, 'open'):
-                f = archive.open(filename)
-            else:
-                f = tempfile.TemporaryFile()
-                f.write(archive.read(filename))
-                f.seek(0)
-            reader = csv.reader(f)
-            self._load_from_csv(reader, entity_type, source)
-            del f
+            reset_queries()
+            with transaction.commit_on_success():
+                if hasattr(archive, 'open'):
+                    f = archive.open(filename)
+                else:
+                    f = tempfile.TemporaryFile()
+                    f.write(archive.read(filename))
+                    f.seek(0)
+                reader = csv.reader(f)
+                self._load_from_csv(reader, entity_type, source)
+                del f
 
     def _load_from_csv(self, reader, entity_type, source):
         j = 0
         for i, line in enumerate(reader):
             postcode_abbrev, (easting, northing) = line[0], line[10:12]
-            if postcode_abbrev[-4] != ' ':
-                postcode = '%s %s' % (postcode_abbrev[:-3], postcode_abbrev[-3:])
+            postcode_abbrev = postcode_abbrev.replace(' ', '')
+            
+            # Now try to figure out where to put the space in
+            if re.match(r'[A-Z][0-9]{2}[A-Z]{2}', postcode_abbrev):
+                # A9 9AA
+                postcode = '%s %s' % (postcode_abbrev[:2], postcode_abbrev[2:])
+            elif re.match(r'[A-Z][0-9]{3}[A-Z]{2}', postcode_abbrev):
+                # A99 9AA
+                postcode = '%s %s' % (postcode_abbrev[:3], postcode_abbrev[3:])
+            elif re.match(r'[A-Z]{2}[0-9]{2}[A-Z]{2}', postcode_abbrev):
+                # AA9 9AA
+                postcode = '%s %s' % (postcode_abbrev[:3], postcode_abbrev[3:])
+            elif re.match(r'[A-Z]{2}[0-9]{3}[A-Z]{2}', postcode_abbrev):
+                # AA99 9AA
+                postcode = '%s %s' % (postcode_abbrev[:4], postcode_abbrev[4:])
+            elif re.match(r'[A-Z][0-9][A-Z][0-9][A-Z]{2}', postcode_abbrev):
+                # A9A 9AA
+                postcode = '%s %s' % (postcode_abbrev[:3], postcode_abbrev[3:])
+            elif re.match(r'[A-Z]{2}[0-9][A-Z][0-9][A-Z]{2}', postcode_abbrev):
+                # AA9A 9AA
+                postcode = '%s %s' % (postcode_abbrev[:4], postcode_abbrev[4:])
             else:
                 postcode = postcode_abbrev
-            postcode_abbrev = postcode_abbrev.replace(' ', '')
-                
+            
             try:
                 easting, northing = int(easting), int(northing)
             except ValueError:

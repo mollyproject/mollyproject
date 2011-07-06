@@ -5,7 +5,7 @@ from itertools import chain
 import simplejson
 import copy
 import math
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 from suds import WebFault
 
@@ -28,13 +28,9 @@ from molly.geolocation.views import LocationRequiredView
 from molly.maps import Map
 from molly.maps.osm.models import OSMUpdate
 
-<<<<<<< HEAD
 from molly.routing import generate_route, ALLOWED_ROUTING_TYPES
 
-from molly.apps.places.models import Entity, EntityType
-=======
-from molly.apps.places.models import Entity, EntityType, Route
->>>>>>> i18n
+from molly.apps.places.models import Entity, EntityType, Route, Journey
 from molly.apps.places import get_entity, get_point
 from molly.apps.places.forms import UpdateOSMForm
 
@@ -100,33 +96,6 @@ class NearbyListView(LocationRequiredView):
             # For each et, get the entities that belong to it
             et.max_distance = 0
             et.entities_found = 0
-<<<<<<< HEAD
-        
-        # For each entity...
-        for e in entities:
-            for et in e.all_types.all():
-                try:
-                    # Check if this entity is in one of the entity types to show
-                    # if not - throws KeyError
-                    et = entity_types_lookup[et]
-                    
-                    # Check if this entity fits within the selection criteria
-                    # if it doesn't, then remove it from being considered for
-                    # future entities
-                    if (e.distance.m ** 0.75) * (et.entities_found + 1) > 500:
-                        del entity_types_lookup[et]
-                        continue
-                    et.max_distance = humanise_distance(e.distance.m)
-                    et.entities_found += 1
-                except KeyError:
-                    pass
-            
-            # Stop when we've considered all entity types, or are more than 5km
-            # away
-            if len(entity_types) == 0 or e.distance.m > 5000:
-                break
-        
-=======
             es = et.entities_completion.filter(location__isnull=False,
                                                location__distance_lt=(point, D(km=5))).distance(point).order_by('distance')
             for e in es:
@@ -136,10 +105,9 @@ class NearbyListView(LocationRequiredView):
                 et.max_distance = e.distance.m
                 et.entities_found += 1
 
->>>>>>> i18n
         categorised_entity_types = defaultdict(list)
         for et in filter(lambda et: et.entities_found > 0, entity_types):
-            categorised_entity_types[et.category.name].append(et)
+            categorised_entity_types[_(et.category.name)].append(et)
         # Need to do this other Django evalutes .items as ['items']
         categorised_entity_types = dict(categorised_entity_types.items())
 
@@ -278,11 +246,8 @@ class EntityDetailView(ZoomableView, FavouritableView):
         distance, bearing = entity.get_distance_and_bearing_from(user_location)
         additional = '<strong>%s</strong>' % capfirst(entity.primary_type.verbose_name)
         if distance:
-<<<<<<< HEAD
-            additional += ', about %s %s' % (humanise_distance(distance), bearing)
-=======
             additional += ', ' + _('about %(distance)dm %(bearing)s') % {
-                                    'distance': int(math.ceil(distance/10)*10),
+                                    'distance': humanise_distance(distance),
                                     'bearing': bearing }
         routes = sorted(set(sor.route.service_id for sor in entity.stoponroute_set.all()))
         if routes:
@@ -291,7 +256,6 @@ class EntityDetailView(ZoomableView, FavouritableView):
                                            len(routes)) % {
                                                 'services': ' '.join(routes)
                                             }
->>>>>>> i18n
         return {
             'title': entity.title,
             'additional': additional,
@@ -501,7 +465,7 @@ class CategoryListView(BaseView):
     def initial_context(self, request):
         categorised_entity_types = defaultdict(list)
         for et in EntityType.objects.filter(show_in_category_list=True):
-            categorised_entity_types[et.category.name].append(et)
+            categorised_entity_types[_(et.category.name)].append(et)
         # Need to do this other Django evalutes .items as ['items']
         categorised_entity_types = dict(categorised_entity_types.items())
         return {
@@ -666,8 +630,9 @@ class ServiceDetailView(BaseView):
         service_id = request.GET.get('id')
         route_id = request.GET.get('route')
         route_pk = request.GET.get('routeid')
+        journey = request.GET.get('journey')
         
-        if service_id or route_id or route_pk:
+        if service_id or route_id or route_pk or journey:
             entity = get_entity(scheme, value)
         else:
             raise Http404()
@@ -724,7 +689,6 @@ class ServiceDetailView(BaseView):
             
             else:
                 
-                print route_pk
                 route = get_object_or_404(Route, id=route_pk)
             
             i = 1
@@ -745,6 +709,54 @@ class ServiceDetailView(BaseView):
                     'entities': route.stops.all(),
                     'operator': route.operator,
                     'has_timetable': False,
+                    'has_realtime': False,
+                    'calling_points': calling_points
+                }
+            if entity not in service['entities']:
+                raise Http404()
+            context.update({
+                'title': '%s: %s' % (route.service_id, route.service_name),
+                'service': service                
+            })
+        
+        elif journey:
+            
+            journey = get_object_or_404(Journey, id=journey)
+            route = journey.route
+            entity_passed = False
+            i = 1
+            calling_points = []
+            
+            for stop in journey.scheduledstop_set.all():
+                
+                if stop.entity == entity:
+                    entity_passed = True
+                
+                if not entity_passed and stop.std < datetime.now().time():
+                    
+                    calling_point = {
+                        'entity': stop.entity,
+                        'st': stop.std.strftime('%H:%M'),
+                        'at': True
+                    }
+                
+                else:
+                    
+                    calling_point = {
+                        'entity': stop.entity,
+                        'st': (stop.sta if entity_passed else stop.std).strftime('%H:%M'),
+                        'at': False
+                    }
+                
+                if stop.entity.location is not None:
+                    calling_point['stop_num'] = i
+                    i += 1
+                calling_points.append(calling_point)
+            
+            service = {
+                    'entities': [s.entity for s in journey.scheduledstop_set.all()],
+                    'operator': journey.route.operator,
+                    'has_timetable': True,
                     'has_realtime': False,
                     'calling_points': calling_points
                 }

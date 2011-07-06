@@ -5,6 +5,7 @@ from django.conf import settings
 from django.utils.translation import ugettext as _
 
 from molly.utils.i18n import override
+from molly.utils.views import tidy_query_string
 
 def site_name(request):
     return {
@@ -21,19 +22,8 @@ def languages(request):
     }
 
 def full_path(request):
-    scheme, netloc, path, params, query, fragment = \
-        urlparse(request.get_full_path())
-    args = []
-    for k, vs in parse_qs(query).items():
-        if k == 'format':
-            continue
-        else:
-            for v in vs:
-                args.append((k, v))
-    query = urlencode(args)
-    uri = urlunparse((scheme, netloc, path, params, query, fragment))
     return {
-        'full_path': uri,
+        'full_path': tidy_query_string(request.get_full_path()),
     }
 
 def google_analytics(request):
