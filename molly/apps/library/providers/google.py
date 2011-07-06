@@ -13,7 +13,7 @@ class GoogleBooksProvider(BaseMetadataProvider):
     
     # There's a double % here, because this is doing to be sprintf'd twice -
     # once now, and then once later to build the query
-    BOOK_SEARCH_ENDPOINT = 'https://www.googleapis.com/books/v1/volumes?q=%%s&key=%s' % settings.API_KEYS['google_books']
+    BOOK_SEARCH_ENDPOINT = 'https://www.googleapis.com/books/v1/volumes?q=%%s&key=%s' % settings.API_KEYS.get('google_books', '')
     
     def annotate(self, books):
         """
