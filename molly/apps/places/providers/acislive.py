@@ -236,6 +236,7 @@ class ACISLiveRouteProvider(BaseMapsProvider):
         
         self._output = output
         
+        
         # Searching can flag up the same results again and again, so store
         # which ones we've found
         found_routes = set()
@@ -315,7 +316,7 @@ class ACISLiveRouteProvider(BaseMapsProvider):
                 entity.update_all_types_completion()
             
             else:
-                if stop_code.startswith('340'):
+                if stop_code.startswith('693'):
                     # Oxontime uses NaPTAN code
                     scheme = 'naptan'
                 elif stop_code.startswith('450'):
@@ -342,7 +343,7 @@ class ACISLiveRouteProvider(BaseMapsProvider):
                                                     _identifiers__value=stop_code)
                     except Entity.DoesNotExist:
                         entity = Entity(source=self._get_source())
-                    identifiers = { 'naptan': stop_code }
+                    identifiers = {scheme: stop_code}
                     entity_type = self._get_entity_type()
                     entity.primary_type = entity_type
                     entity.save(identifiers=identifiers)
