@@ -38,8 +38,8 @@ class SearchResult(LibrarySearchResult):
             'edition': self.edition,
             'copies': self.copies,
             'holding_libraries': self.holding_libraries,
-            'isbns': simplify_value(self.isbns()),
-            'issns': simplify_value(self.issns()),
+            'isbns': simplify_value(self.isbns),
+            'issns': simplify_value(self.issns),
             'holdings': simplify_value(self.libraries),
         }
 
@@ -54,7 +54,7 @@ class USMARCSearchResult(SearchResult):
     USM_PHYSICAL_DESCRIPTION = 300
     USM_LOCATION = 852
 
-    def __init__(self, result):
+    def __init__(self, result, results_encoding):
         self.str = str(result)
         self.metadata = {self.USM_LOCATION: []}
 
@@ -87,8 +87,9 @@ class USMARCSearchResult(SearchResult):
                     m[subfield_id] = []
                 m[subfield_id].append(content)
             self.metadata[heading].append(m)
-
-        self.metadata = marc_to_unicode(self.metadata)
+        
+        if results_encoding == 'marc8':
+            self.metadata = marc_to_unicode(self.metadata)
 
         self.libraries = {}
 
@@ -148,13 +149,15 @@ class USMARCSearchResult(SearchResult):
     edition = _metadata_property(USM_EDITION)
     copies = property(lambda self: len(self.metadata[self.USM_LOCATION]))
     holding_libraries = property(lambda self: len(self.libraries))
-
+    
+    @property
     def isbns(self):
         if self.USM_ISBN in self.metadata:
             return [a.get('a', ["%s (invalid)" % a.get('z', ['Unknown'])[0]])[0] for a in self.metadata[self.USM_ISBN]]
         else:
             return []
 
+    @property
     def issns(self):
         if self.USM_ISSN in self.metadata:
             return [a['a'][0] for a in self.metadata[self.USM_ISSN]]
@@ -257,7 +260,7 @@ class XMLSearchResult(SearchResult):
         
         return (location, location_code, shelfmark, note)
     
-    def __init__(self, result):
+    def __init__(self, result, results_encoding):
     
         self.id = ''
         self.control_number = ''
@@ -301,13 +304,15 @@ class Z3950(BaseLibrarySearchProvider):
         A thing that pretends to be a list for lazy parsing of search results
         """
         
-        def __init__(self, results, wrapper):
+        def __init__(self, results, wrapper, results_encoding):
             self.results = results
             self._wrapper = wrapper
+            self._results_encoding = results_encoding
         
         def __iter__(self):
             for result in self.results:
-                yield self._wrapper(result)
+                yield self._wrapper(result,
+                                    results_encoding=self._results_encoding)
         
         def __len__(self):
             return len(self.results)
@@ -316,13 +321,15 @@ class Z3950(BaseLibrarySearchProvider):
             if isinstance(key, slice):
                 if key.step:
                     raise NotImplementedError("Stepping not supported")
-                return map(self._wrapper,
-                           self.results.__getslice__(key.start, key.stop))
+                return (self._wrapper(r, results_encoding=self._results_encoding) \
+                        for r in self.results.__getslice__(key.start, key.stop))
             else:
-                return self._wrapper(self.results[key])
+                return self._wrapper(self.results[key],
+                                     results_encoding=self._results_encoding)
     
     def __init__(self, host, database, port=210, syntax='USMARC',
-                 charset='UTF-8', control_number_key='12'):
+                 charset='UTF-8', control_number_key='12',
+                 results_encoding='marc8'):
         """
         @param host: The hostname of the Z39.50 instance to connect to
         @type host: str
@@ -337,6 +344,8 @@ class Z3950(BaseLibrarySearchProvider):
         @type charset: str
         @param control_number_key: The use attribute for the control number when
                                    querying
+        @param results_encoding: The encoding (either unicode or marc8) of data
+                                 this server returns
         """
         
         # Could create a persistent connection here
@@ -350,6 +359,7 @@ class Z3950(BaseLibrarySearchProvider):
         }.get(syntax, syntax)
         self._control_number_key = control_number_key
         self._charset = charset
+        self._results_encoding = results_encoding
     
     def _make_connection(self):
         """
@@ -391,7 +401,8 @@ class Z3950(BaseLibrarySearchProvider):
         z3950_query = zoom.Query('CCL', 'and'.join(z3950_query))
         
         try:
-            results = self.Results(connection.search(z3950_query), self._wrapper)
+            results = self.Results(connection.search(z3950_query),
+                                   self._wrapper, self._results_encoding)
         except zoom.Bib1Err as e:
             # 31 = Resources exhausted - no results available 
             if e.condition in (31,):
@@ -415,7 +426,8 @@ class Z3950(BaseLibrarySearchProvider):
         z3950_query = zoom.Query(
             'CCL', '(1,%s)="%s"' % (self._control_number_key, control_number))
         connection = self._make_connection()
-        results = self.Results(connection.search(z3950_query), self._wrapper)
+        results = self.Results(connection.search(z3950_query), self._wrapper,
+                               self._results_encoding)
         if len(results) > 0:
             return results[0]
         else:
