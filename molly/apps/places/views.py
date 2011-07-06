@@ -631,6 +631,8 @@ class ServiceDetailView(BaseView):
                         'multiple_routes': route
                     })
                     return context
+                else:
+                    route = route[0]
             
             else:
                 
