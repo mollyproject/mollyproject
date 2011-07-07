@@ -326,6 +326,8 @@ class BaseView(object):
     @renderer(format="json", mimetypes=('application/json',))
     def render_json(self, request, context, template_name):
         context = simplify_value(context)
+        resolved = resolve(request.path)
+        context['view_name'] = '%s:%s' % (':'.join(resolved.namespaces), resolved.url_name)
         return HttpResponse(simplejson.dumps(context),
                             mimetype="application/json")
 

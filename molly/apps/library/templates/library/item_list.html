@@ -57,20 +57,6 @@
         {% endfor %}
     </ul>
 
-    <ul class="link-list no-round-bottom" id="item-list">
-        {% for item in page.object_list %}
-            <li>
-                <a href="{% url library:item-detail item.control_number %}">
-                    {{ item  }}{% if item.author %}
-                    <br/><small><strong>{% trans "Author" %}:</strong> {{ item.author }}</small>{% endif %}
-                    <br/><small><strong>{% trans "Publisher" %}:</strong> {{ item.publisher }}</small>{% if item.edition %}
-                    <br/><small><strong>{% trans "Edition" %}:</strong> {{ item.edition }}</small>{% endif %}
-                    <br/><small><strong>{% trans "Libraries" %}:</strong> {{ item.holding_libraries }}</small>
-                </a>
-            </li>
-        {% endfor %}
-    </ul>
-
     <div class="note">
         {% if page.has_previous %}
             <a href="?title={{ search_form.cleaned_data.title|urlencode }}&author={{ search_form.cleaned_data.author|urlencode }}&isbn={{ search_form.cleaned_data.isbn|urlencode }}&page={{ page.previous_page_number }}" title="{% trans "Previous page" %}" class="prev">

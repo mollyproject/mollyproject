@@ -2,7 +2,7 @@
 {% load i18n %}
 
 {% if entity.metadata.real_time_information %}
-<div id="{{ entity.identifier_scheme }}-{{ entity.identifier_value }}">
+<div id="rti-{{ entity.identifier_scheme }}-{{ entity.identifier_value }}">
     {% if entity.metadata.real_time_information.pip_info %}
     <ul class="content-list no-round-bottom">
         <li>{% for info in entity.metadata.real_time_information.pip_info %}
