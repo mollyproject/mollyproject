@@ -16,3 +16,4 @@ from ldb import LiveDepartureBoardPlacesProvider
 from bbc_tpeg import BBCTPEGPlacesProvider
 from tfl import TubeRealtimeProvider
 from atcocif import AtcoCifTimetableProvider
+from timetables import TimetableAnnotationProvider
