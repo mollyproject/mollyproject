@@ -689,7 +689,6 @@ class ServiceDetailView(BaseView):
                 
                 else:
                     
-                    print stop.sta, stop.std
                     calling_point = {
                         'entity': stop.entity,
                         # Show arrival time (if it exists, else departure time)

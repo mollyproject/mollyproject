@@ -93,8 +93,9 @@
                     <tr>
                         <td class="center"><big>
                             {% if service.route %}<a href="{{ entity.get_absolute_url }}service?route={{ service.service|urlencode }}" class="subtle-link">{% endif %}
+                            {% if service.journey %}<a href="{{ entity.get_absolute_url }}service?journey={{ service.journey.id }}" class="subtle-link">{% endif %}
                                 {{ service.service }}
-                            {% if service.route %}</a>{% endif %}
+                            {% if service.route or service.journey %}</a>{% endif %}
                         </big></td>
                         <td>{{ service.destination }}</td>
                         <td>{{ service.next }}{% if service.following %}<small>, {{ service.following.0 }}{% if service.following.1 %}, &hellip;{% endif %}</small>{% endif %}</td>
