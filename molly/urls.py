@@ -13,8 +13,8 @@ urlpatterns = patterns('',
     (r'^adm/', include(admin.site.urls)), # Admin site
     (r'^comments/', include('django.contrib.comments.urls')), # Django comments
     (r'', applications.home.urls), # Home default
-    (r'reverse', ReverseView, {}, 'reverse'),
-    (r'set-language/$', SetLanguageView, {}, 'set-language'), # Change language view
+    (r'^reverse', ReverseView, {}, 'reverse'),
+    (r'^set-language/$', SetLanguageView, {}, 'set-language'), # Change language view
     (r'^jsi18n/$', javascript_catalog,
      {'packages': settings.INSTALLED_APPS}, 'js-i18n')) # JS i18n catalogues
 
