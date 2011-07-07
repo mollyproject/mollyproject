@@ -23,13 +23,13 @@ class TimetableAnnotationProvider(BaseMapsProvider):
         today = datetime.now()
         if today.time() < time(4):
             today -= timedelta(days=1)
-        
+            
         def midnight_4am(left, right):
             """
             Search comparison function where before 4 am is later than midnight
             """
-            return cmp(left.hour if left.hour >= 4 else left.hour + 24,
-                       right.hour if right.hour >= 4 else right.hour + 24)
+            return cmp((left.hour if left.hour >= 4 else left.hour + 24, left.minute, left.second),
+                       (right.hour if right.hour >= 4 else right.hour + 24, right.minute, right.second))
         
         for entity in entities:
             
