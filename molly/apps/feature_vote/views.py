@@ -34,8 +34,12 @@ class IndexView(BaseView):
         )
 
     def initial_context(self, request):
+        if not 'feature_vote:votes' in request.session:
+            request.session['feature_vote:votes'] = {}
+        
         for feature in Feature.objects.filter(is_public=True, is_removed=False):
             feature.check_remove(request)
+        
         features = Feature.objects.filter(is_public=True, is_removed=False)
         for feature in sorted(features[:], key=attrgetter('net_votes'),
                               reverse=True):

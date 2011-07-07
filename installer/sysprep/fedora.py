@@ -30,4 +30,5 @@ class SysPreparer(PackagekitSysPreparer):
                 'gcc',
                 'make',
                 'git',
+                'libyaml',
             ]

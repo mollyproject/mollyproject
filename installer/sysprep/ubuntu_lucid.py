@@ -27,4 +27,5 @@ class SysPreparer(AptSysPreparer):
             'libjpeg-dev',
             'imagemagick',
             'git-core',
+            'libyaml',
         ]

@@ -60,6 +60,7 @@ function clear_loading_screen(){
 function async_load_callback(data, textStatus, xhr) {
     $('body').html(data.body);
     $('title').html(data.title);
+    $('html, body').scrollTop(0)
     $(document).trigger('molly-page-change', [current_url])
     capture_outbound();
 }
