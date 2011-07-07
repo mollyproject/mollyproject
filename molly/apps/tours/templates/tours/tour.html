@@ -1,0 +1,37 @@
+{% extends "tours/base.html" %}
+
+{% block content %}
+<div class="section">
+    {% for entity in entities %}
+        {% if not entity.location %}
+            <div class="note"><div class="pad-5">
+                <p>The next {{ entity.primary_type.verbose_name }} does not have a location, so we can't generate directions.</p>
+            </div></div>
+        {% endif %}
+        <div class="header">
+            <h2><a href="{{ entity.get_absolute_url }}">{{ entity.title }}</a></h2>
+        </div>
+        <ul class="content-list no-round-bottom">
+            {% for direction in entity.directions_to_next.waypoints %}
+                <li>{{ direction.instruction }}</li>
+            {% endfor %}
+        </ul>
+    {% endfor %}
+</div>
+
+<div class="section">
+    <div class="header">
+        <h2>Add new stop</h2>
+    </div>
+    {% for entity_type, entities in attractions.items %}
+        <div class="header">
+            <h2>{{ entity_type.verbose_name_plural|capfirst }}</h2>
+        </div>
+        <ul class="link-list{% if not forloop.last %} no-round-bottom{% endif %}">
+            {% for entity in entities %}
+                <li><a href="{{ full_path }}{{ entity.identifier_scheme }}:{{ entity.identifier_value }}/">{{ entity.title }}</a></li>
+            {% endfor %}
+        </ul>
+    {% endfor %}
+</div>
+{% endblock %}
