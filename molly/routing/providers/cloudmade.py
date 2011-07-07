@@ -3,12 +3,13 @@ import simplejson
 
 from django.conf import settings
 from django.contrib.gis.geos import Point
+from django.utils.translation import get_language
 
 from molly.utils.templatetags.molly_utils import humanise_seconds
 
 CLOUDMADE_URL = 'http://routes.cloudmade.com/%s/api/0.3/' % settings.API_KEYS['cloudmade']
 
-def generate_route(start, end, type):
+def generate_route(points, type):
     """
     Given 2 Points, this will return a route between them. The route consists
     of a dictionary with the following keys:
@@ -25,10 +26,8 @@ def generate_route(start, end, type):
       taken here, and 'location', which is a Point describing the route to be
       taken
     
-    @param start: The start of the route
-    @type start: Point
-    @param end: The end of the route
-    @type end: Point
+    @param points: An ordered list of points to be included in this route
+    @type points: [Point]
     @param type: The type of route to generate (foot, car or bike)
     @type type: str
     @return: A dictionary containing the route and metadata associated with it
@@ -36,10 +35,8 @@ def generate_route(start, end, type):
     """
     
     # Build cloudmade request:
-    url = CLOUDMADE_URL + ','.join(
-        (','.join(map(str, reversed(start))), # start_point
-         ','.join(map(str, reversed(end)))) # end_point
-    ) + '/%s.js' % type # route_type.format
+    points = map(lambda p: ','.join(reversed(map(str, p))), points)
+    url = CLOUDMADE_URL + ','.join(points) + '/%s.js?lang=%s' % (type, get_language()[:2])
     
     json = simplejson.load(urlopen(url))
     

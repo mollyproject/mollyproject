@@ -247,7 +247,7 @@ class EntityDetailView(ZoomableView, FavouritableView):
         distance, bearing = entity.get_distance_and_bearing_from(user_location)
         additional = '<strong>%s</strong>' % capfirst(entity.primary_type.verbose_name)
         if distance:
-            additional += ', ' + _('about %(distance)dm %(bearing)s') % {
+            additional += ', ' + _('about %(distance)s %(bearing)s') % {
                                     'distance': humanise_distance(distance),
                                     'bearing': bearing }
         routes = sorted(set(sor.route.service_id for sor in entity.stoponroute_set.all()))
@@ -592,8 +592,8 @@ class EntityDirectionsView(LocationRequiredView, ZoomableView):
         
         user_location = request.session.get('geolocation:location')
         if context['entity'].location != None:
-            context['route'] = generate_route(user_location,
-                                              context['entity'].location,
+            context['route'] = generate_route([user_location,
+                                              context['entity'].location],
                                               context['type'])
             if not 'error' in context['route']:
                 context['map'] = Map(

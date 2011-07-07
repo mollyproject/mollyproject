@@ -6,7 +6,7 @@ from django.contrib.gis.geos import Point
 
 raise ImportError()
 
-def generate_route(start, end, type):
+def generate_route(points, type):
     """
     Given 2 Points, this will return a route between them. The route consists
     of a dictionary with the following keys:
@@ -23,10 +23,8 @@ def generate_route(start, end, type):
       taken here, and 'location', which is a Point describing the route to be
       taken
     
-    @param start: The start of the route
-    @type start: Point
-    @param end: The end of the route
-    @type end: Point
+    @param points: An ordered list of points to be included in this route
+    @type points: [Point]
     @param type: The type of route to generate (foot, car or bike)
     @type type: str
     @return: A dictionary containing the route and metadata associated with it

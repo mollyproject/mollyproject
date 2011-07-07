@@ -39,7 +39,7 @@ urlpatterns = patterns('',
         EntityDetailView, {},
         'entity'),
     
-    (r'^(?P<scheme>[a-z_\-]+):(?P<value>[\da-zA-Z]+)/directions/$',
+    (r'^(?P<scheme>[a-z_\-]+):(?P<value>[^/]+)/directions/$',
         EntityDirectionsView, {},
         'entity-directions'),
     
