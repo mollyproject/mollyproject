@@ -103,6 +103,10 @@ class SearchDetailView(BaseView):
             
             self.conf.additional_metadata_provider.annotate(page.object_list)
         
+        # Without this, the object_list doesn't render when using fragment
+        # rendering...
+        page.object_list = list(page.object_list)
+        
         # Render results page
         context.update({
             'removed': query.removed,

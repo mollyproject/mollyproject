@@ -166,10 +166,10 @@ function refreshRTI(data){
     var now = new Date();
     $('.update-time').html(getTimestamp(now))
     if (typeof(data.entity.metadata.real_time_information) != 'undefined') {
-        rebuildRTI($('#' + data.entity.identifier_scheme + '-' + data.entity.identifier_value), data.entity.metadata.real_time_information)
+        rebuildRTI($('#rti-' + data.entity.identifier_scheme + '-' + data.entity.identifier_value), data.entity.metadata.real_time_information)
     }
     if (typeof(data.entity.metadata.ldb) != 'undefined') {
-        rebuildLDB($('#' + data.entity.identifier_scheme + '-' + data.entity.identifier_value), data)
+        rebuildLDB($('#ldb-' + data.entity.identifier_scheme + '-' + data.entity.identifier_value), data.board, data.entity)
         setupLDBButtons()
         capture_outbound();
     }
@@ -177,7 +177,7 @@ function refreshRTI(data){
         for (var j in data.associations[i].entities) {
             var entity = data.associations[i].entities[j]
             if (typeof(entity.metadata.real_time_information) != 'undefined') {
-                rebuildRTI($('#' + entity.identifier_scheme + '-' + entity.identifier_value), entity.metadata.real_time_information)
+                rebuildRTI($('#rti-' + entity.identifier_scheme + '-' + entity.identifier_value), entity.metadata.real_time_information)
             }
         }
     }
@@ -243,32 +243,30 @@ function rebuildRTI(elem, metadata){
     }
 }
 
-function rebuildLDB(elem, data){
+function rebuildLDB(elem, board, train_station){
     elem.empty()
-    if (data.board) {
-        board = data.board
-    } else {
+    if (!board) {
         board = 'departures'
     }
     
-    if (data.train_station.metadata.ldb.error) {
-        elem.append('<div class="header"><h2>' + data.train_station.title + ' (' + gettext(board) + ')</h2></div>');
+    if (train_station.metadata.ldb.error) {
+        elem.append('<div class="header"><h2>' + train_station.title + ' (' + gettext(board) + ')</h2></div>');
     } else {
         // generatedAt comes from the server in UTC - cast to local time
-        var generated = new Date(Date.UTC(parseInt(data.train_station.metadata.ldb.generatedAt.slice(0,4)),
-				 parseInt(data.train_station.metadata.ldb.generatedAt.slice(5,7)),
-				 parseInt(data.train_station.metadata.ldb.generatedAt.slice(8,10)),
-				 parseInt(data.train_station.metadata.ldb.generatedAt.slice(11,13)),
-				 parseInt(data.train_station.metadata.ldb.generatedAt.slice(14,16)),
-				 parseInt(data.train_station.metadata.ldb.generatedAt.slice(17,19))))
-        elem.append('<div class="header"><h2>' + data.train_station.title + ' (' + gettext(board) + ') - ' + getTimestamp(generated) + '</h2></div>');
+        var generated = new Date(Date.UTC(parseInt(train_station.metadata.ldb.generatedAt.slice(0,4)),
+				 parseInt(train_station.metadata.ldb.generatedAt.slice(5,7)),
+				 parseInt(train_station.metadata.ldb.generatedAt.slice(8,10)),
+				 parseInt(train_station.metadata.ldb.generatedAt.slice(11,13)),
+				 parseInt(train_station.metadata.ldb.generatedAt.slice(14,16)),
+				 parseInt(train_station.metadata.ldb.generatedAt.slice(17,19))))
+        elem.append('<div class="header"><h2>' + train_station.title + ' (' + gettext(board) + ') - ' + getTimestamp(generated) + '</h2></div>');
     }
     
-    if (data.train_station.metadata.ldb.nrccMessages) {
+    if (train_station.metadata.ldb.nrccMessages) {
         elem.append('<ul class="content-list no-round-bottom"></ul>')
         ul = elem.find('ul:last')
-        for (var i in data.train_station.metadata.ldb.nrccMessages.message) {
-            ul.append('<li>' + data.train_station.metadata.ldb.nrccMessages.message[i] + '</li>')
+        for (var i in train_station.metadata.ldb.nrccMessages.message) {
+            ul.append('<li>' + train_station.metadata.ldb.nrccMessages.message[i] + '</li>')
         }
     }
     
@@ -279,7 +277,7 @@ function rebuildLDB(elem, data){
     } else {
         tr.append('<th>' + gettext('Destination') + '</th>')
     }
-    if (data.train_station.metadata.ldb.platformAvailable) {
+    if (train_station.metadata.ldb.platformAvailable) {
         // Translators: Platform
         tr.append('<th>' + gettext('Plat.') + '</th>')
         cols = '4'
@@ -290,13 +288,13 @@ function rebuildLDB(elem, data){
     tr.append('<th>' + gettext('Scheduled') + '</th><th>' + gettext('Expected') + '</th>')
     
     tbody = elem.find('.content tbody')
-    if (data.train_station.metadata.ldb.error) {
+    if (train_station.metadata.ldb.error) {
         tbody.append('<tr><td colspan="' + cols + '"><p>' + gettext('There is currently a problem retrieving live departure information from the National Rail web site.') + '</p>' +
                      '<p>' + gettext('Departure information may still be accessed <a href="http://pda.ojp.nationalrail.co.uk/"> directly from their web site</a>.') + '</p></td></tr>')
     }
-    if (data.train_station.metadata.ldb.trainServices) {
-        for (var i in data.train_station.metadata.ldb.trainServices.service) {
-            service = data.train_station.metadata.ldb.trainServices.service[i]
+    if (train_station.metadata.ldb.trainServices) {
+        for (var i in train_station.metadata.ldb.trainServices.service) {
+            service = train_station.metadata.ldb.trainServices.service[i]
             tbody.append('<tr></tr>')
             tr = tbody.find('tr:last')
             dest = ''
@@ -342,8 +340,8 @@ function rebuildLDB(elem, data){
             if (service.isCircularRoute) {
                 dest += '<br /><small>(' + gettext('Circular Route') + ')</small>'
             }
-            tr.append('<td><a href="' + data.train_station._url + 'service?id=' + encodeURIComponent(service.serviceID) + '" style="color: inherit;" rel="nofollow">' + dest + '</a></td>')
-            if (data.train_station.metadata.ldb.platformAvailable) {
+            tr.append('<td><a href="' + train_station._url + 'service?id=' + encodeURIComponent(service.serviceID) + '" style="color: inherit;" rel="nofollow">' + dest + '</a></td>')
+            if (train_station.metadata.ldb.platformAvailable) {
                 if (typeof(service.platform) != 'undefined') {
                     tr.append('<td>' + service.platform + '</td>')
                 } else {
@@ -358,7 +356,7 @@ function rebuildLDB(elem, data){
                 tr.append('<td>' + service.etd + '</td>')
             }
         }
-        if (data.train_station.metadata.ldb.trainServices.service.length == 0) {
+        if (train_station.metadata.ldb.trainServices.service.length == 0) {
             // Translations: board can be either arrivals or departures, already translated
             var no_scheduled = interpolate(gettext('There are currently no scheduled %(board)s.'),
                                            { board: gettext(board) }, true)
@@ -388,7 +386,11 @@ function setupLDBButtons(){
             data: { format: 'json' },
             dataType: 'json',
             success: function(data){
-                rebuildLDB($('#ldb'), data);
+                if (data.train_station) {
+                    rebuildLDB($('#ldb-' + data.train_station.identifier_scheme + '-' + data.train_station.identifier_value), data.board, data.train_station);
+                } else {
+                    rebuildLDB($('#ldb-' + data.entity.identifier_scheme + '-' + data.entity.identifier_value), data.board, data.entity);
+                }
                 clear_loading_screen();
                 setupLDBButtons()
                 capture_outbound();

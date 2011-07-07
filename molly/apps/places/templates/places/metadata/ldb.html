@@ -1,6 +1,6 @@
 {% load molly_utils %}{% if train_station.metadata.ldb %}
 {% load i18n %}
-<div class="section" id="ldb">
+<div class="section" id="ldb-{{ train_station.identifier_scheme }}-{{ train_station.identifier_value }}">
   <div class="header">
     <h2>{{ train_station.title }} ({% if board %}{% trans board %}{% else %}{% trans "departures" %}{% endif %}) - {{ train_station.metadata.ldb.generatedAt|localize_utc|date:"H:i:s" }}</h2>
   </div>
@@ -18,9 +18,9 @@
       <tr>
         <th>
             {% ifequal board "arrivals" %}
-                    {% trans "Origin" %}
+                {% trans "Origin" %}
             {% else %}
-                    {% trans "Destination" %}
+                {% trans "Destination" %}
             {% endifequal %}
 	</th>
         {% if train_station.metadata.ldb.platformAvailable %}

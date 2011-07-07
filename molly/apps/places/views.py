@@ -6,6 +6,7 @@ import simplejson
 import copy
 import math
 from datetime import datetime, timedelta
+from urllib import unquote
 
 from suds import WebFault
 
@@ -315,7 +316,8 @@ class EntityDetailView(ZoomableView, FavouritableView):
     def handle_GET(self, request, context, scheme, value):
         entity = context['entity']
 
-        if entity.absolute_url != request.path:
+        if unquote(entity.absolute_url) != request.path:
+            
             return self.redirect(entity.absolute_url, request, 'perm')
 
         entities = []
@@ -678,14 +680,17 @@ class ServiceDetailView(BaseView):
             
             if route_id:
             
-                try:
-                    route = get_object_or_404(Route, service_id=route_id, stops=entity)
-                except Route.MultipleObjectsReturned:
+                route = entity.route_set.filter(service_id=route_id).distinct()
+                if route.count() == 0:
+                    raise Http404()
+                elif route.count() > 1:
                     context.update({
                         'title': _('Multiple routes found'),
-                        'multiple_routes': Route.objects.filter(service_id=route_id, stops=entity)
+                        'multiple_routes': route
                     })
                     return context
+                else:
+                    route = route[0]
             
             else:
                 
@@ -742,9 +747,14 @@ class ServiceDetailView(BaseView):
                 
                 else:
                     
+                    print stop.sta, stop.std
                     calling_point = {
                         'entity': stop.entity,
-                        'st': (stop.sta if entity_passed else stop.std).strftime('%H:%M'),
+                        # Show arrival time (if it exists, else departure time)
+                        # if this stop is AFTER where we currently are, otherwise
+                        # show the time the bus left stops before this one (if
+                        # it exists)
+                        'st': ((stop.sta or stop.std) if entity_passed else (stop.std or stop.sta)).strftime('%H:%M'),
                         'at': False
                     }
                 
@@ -758,7 +768,8 @@ class ServiceDetailView(BaseView):
                     'operator': journey.route.operator,
                     'has_timetable': True,
                     'has_realtime': False,
-                    'calling_points': calling_points
+                    'calling_points': calling_points,
+                    'notes': journey.notes
                 }
             if entity not in service['entities']:
                 raise Http404()
@@ -767,20 +778,21 @@ class ServiceDetailView(BaseView):
                 'service': service                
             })
         
-        map = Map(
-            centre_point = (entity.location[0], entity.location[1],
-                            'green', entity.title),
-            points = [(e.location[0], e.location[1], 'red', e.title)
-                for e in service['entities'] if e.location is not None],
-            min_points = len(service['entities']),
-            zoom = None,
-            width = request.map_width,
-            height = request.map_height,
-        )
-
-        context.update({
-                'map': map
-            })
+        if entity.location or len(filter(lambda e: e.location is not None, service['entities'])):
+            map = Map(
+                centre_point = (entity.location[0], entity.location[1],
+                                'green', entity.title) if entity.location else None,
+                points = [(e.location[0], e.location[1], 'red', e.title)
+                    for e in service['entities'] if e.location is not None],
+                min_points = len(service['entities']),
+                zoom = None,
+                width = request.map_width,
+                height = request.map_height,
+            )
+    
+            context.update({
+                    'map': map
+                })
 
         return context
 

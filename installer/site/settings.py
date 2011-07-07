@@ -485,6 +485,11 @@ APPLICATIONS = [
             #Provider('molly.apps.places.providers.AtcoCifTimetableProvider',
             #    url = 'http://store.datagm.org.uk/sets/TfGM/GMPTE_CIF.zip'
             #),
+            
+            # The following provider takes timetable and route dumps from the
+            # multiple timetable sources and shows them on the entity page
+            
+            Provider('molly.apps.places.providers.TimetableAnnotationProvider'),
         ],
         
         # This setting can be used to associate entities with each other. At

@@ -110,7 +110,7 @@ function refreshTransport(data){
         enableNearbySwitcher();
     }
     
-    rebuildLDB($('#ldb'), data);
+    rebuildLDB($('#ldb-' + data.train_station.identifier_scheme + '-' + data.train_station.identifier_value), data.board, data.train_station);
     transportLDBButtons()
     capture_outbound();
     

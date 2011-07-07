@@ -3,45 +3,66 @@
 {% block content %}
 
 {% block transport-links %}
-{% if device|device_has_parent:"apple_generic" or browser.svgt_1_1 %}
-<ul id="transport-links">
-    {% if nearby.bus %}
-    <li class="transport-link">
-        <a href="#bus"><img src="{{ STATIC_URL }}transport/images/bus.svg" alt="{% trans "Bus Stops" %}"  width="48" height="48" /></a></li>
+
+{% ifnotequal style_group "dumb" %}
+    {% if device|device_has_parent:"apple_generic" or browser.svgt_1_1 %}
+        <ul id="transport-links">
+            {% if nearby.bus %}
+            <li class="transport-link">
+                <a href="#bus"><img src="{{ STATIC_URL }}transport/images/bus.svg" alt="{% trans "Bus Stops" %}"  width="48" height="48" /></a></li>
+            {% endif %}
+            {% if park_and_rides %}
+            <li class="transport-link">
+                <a href="#park_and_rides"><img src="{{ STATIC_URL }}transport/images/pride.svg" alt="{% trans "Park and Rides" %}" width="48" height="48" /></a></li>
+            {% endif %}
+            {% if train_station %}
+            <li class="transport-link">
+                <a href="#ldb"><img src="{{ STATIC_URL }}transport/images/train.svg" alt="{% trans "Train Departure Boards" %}" width="48" height="48" /></a></li>
+            {% endif %}
+            {% if travel_alerts %}
+            <li class="transport-link">
+                <a href="#travel_news"><img src="{{ STATIC_URL }}transport/images/warn.svg" alt="{% trans "Travel News" %}" width="48" height="48" /></a></li>
+            {% endif %}
+        </ul>
+    {% else %}
+        <ul id="transport-links">
+            {% if nearby.bus %}
+            <li class="transport-link">
+                <a href="#bus"><img src="{{ STATIC_URL }}transport/images/bus.png" alt="{% trans "Bus Stops" %}" width="48" height="48" /></a></li>
+            {% endif %}
+            {% if park_and_rides %}
+            <li class="transport-link">
+                <a href="#park_and_rides"><img src="{{ STATIC_URL }}transport/images/pride.png" alt="{% trans "Park and Rides" %}" width="48" height="48" /></a></li>
+            {% endif %}
+            {% if train_station %}
+            <li class="transport-link">
+                <a href="#ldb"><img src="{{ STATIC_URL }}transport/images/train.png" alt="{% trans "Train Departure Boards" %}" width="48" height="48" /></a></li>
+            {% endif %}
+            {% if travel_alerts %}
+            <li class="transport-link">
+                <a href="#travel_news"><img src="{{ STATIC_URL }}transport/images/warn.png" alt="{% trans "Travel News" %}" width="48" height="48" /></a></li>
+            {% endif %}
+        </ul>
     {% endif %}
-    {% if park_and_rides %}
-    <li class="transport-link">
-        <a href="#park_and_rides"><img src="{{ STATIC_URL }}transport/images/pride.svg" alt="{% trans "Park and Rides" %}" width="48" height="48" /></a></li>
-    {% endif %}
-    {% if train_station %}
-    <li class="transport-link">
-        <a href="#ldb"><img src="{{ STATIC_URL }}transport/images/train.svg" alt="{% trans "Train Departure Boards" %}" width="48" height="48" /></a></li>
-    {% endif %}
-    {% if travel_alerts %}
-    <li class="transport-link">
-        <a href="#travel_news"><img src="{{ STATIC_URL }}transport/images/warn.svg" alt="{% trans "Travel News" %}" width="48" height="48" /></a></li>
-    {% endif %}
-</ul>
 {% else %}
-<ul id="transport-links">
-    {% if nearby.bus %}
-    <li class="transport-link">
-        <a href="#bus"><img src="{{ STATIC_URL }}transport/images/bus.png" alt="{% trans "Bus Stops" %}" width="48" height="48" /></a></li>
-    {% endif %}
-    {% if park_and_rides %}
-    <li class="transport-link">
-        <a href="#park_and_rides"><img src="{{ STATIC_URL }}transport/images/pride.png" alt="{% trans "Park and Rides" %}" width="48" height="48" /></a></li>
-    {% endif %}
-    {% if train_station %}
-    <li class="transport-link">
-        <a href="#ldb"><img src="{{ STATIC_URL }}transport/images/train.png" alt="{% trans "Train Departure Boards" %}" width="48" height="48" /></a></li>
-    {% endif %}
-    {% if travel_alerts %}
-    <li class="transport-link">
-        <a href="#travel_news"><img src="{{ STATIC_URL }}transport/images/warn.png" alt="{% trans "Travel News" %}" width="48" height="48" /></a></li>
-    {% endif %}
-</ul>
-{% endif %}
+    
+    <ul id="transport-links">
+        {% if nearby.bus %}
+            <li class="transport-link"><a href="#bus">{% trans "Bus Stops" %}</a></li>
+        {% endif %}
+        {% if park_and_rides %}
+            <li class="transport-link"><a href="#park_and_rides">{% trans "Park and Rides" %}</a></li>
+        {% endif %}
+        {% if train_station %}
+            <li class="transport-link"><a href="#ldb">{% trans "Train Departure Boards" %}</a></li>
+        {% endif %}
+        {% if travel_alerts %}
+            <li class="transport-link"><a href="#travel_news">{% trans "Travel News" %}</a></li>
+        {% endif %}
+    </ul>
+    
+{% endifnotequal %}
+
 {% endblock %}
 
 {% include "geolocation/update_location_embed.html" %}
