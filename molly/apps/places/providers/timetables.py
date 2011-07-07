@@ -1,5 +1,5 @@
 from collections import namedtuple, defaultdict
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 from logging import getLogger
 from operator import itemgetter
 
@@ -38,8 +38,12 @@ class TimetableAnnotationProvider(BaseMapsProvider):
                 continue
             
             services = defaultdict(list)
-            for stop in entity.scheduledstop_set.filter(
-                Q(sta__gte=today.time()) | Q(sta__lt=time(4))):
+            if today.time() < time(22):
+                until = [Q(sta__gte=today.time()) | Q(std__gte=today.time()), Q(sta__lt=(today + timedelta(hours=2)).time()) | Q(std__lt=(today + timedelta(hours=2)).time())]
+            else:
+                until = [Q(sta__gte=today.time()) | Q(std__gte=today.time()) | Q(sta__lt=(today + timedelta(hours=2)).time()) | Q(std__lt=(today + timedelta(hours=2)).time())]
+            
+            for stop in entity.scheduledstop_set.filter(*until):
                 
                 if not stop.journey.runs_on(today.date()):
                     continue
