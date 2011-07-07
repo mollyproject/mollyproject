@@ -198,8 +198,8 @@ class LiveDepartureBoardPlacesProvider(BaseMapsProvider):
             'calling_points': calling_points,
             'has_timetable': True,
             'has_realtime': True,
-            'operator': service['operator'],
-            'platform': service['platform'],
+            'operator': service.get('operator'),
+            'platform': service.get('platform'),
             'messages': messages
         }
     
