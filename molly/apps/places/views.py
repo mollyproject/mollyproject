@@ -710,7 +710,8 @@ class ServiceDetailView(BaseView):
                     'operator': journey.route.operator,
                     'has_timetable': True,
                     'has_realtime': False,
-                    'calling_points': calling_points
+                    'calling_points': calling_points,
+                    'notes': journey.notes
                 }
             if entity not in service['entities']:
                 raise Http404()
