@@ -47,6 +47,10 @@ class CloudmadeGeolocationProvider(BaseGeolocationProvider):
             }]
 
     def geocode(self, query):
+        
+        if not query:
+            return []
+        
         if self.search_locality and not (', ' in query or ' near ' in query):
             query += ', %s' % self.search_locality
 
