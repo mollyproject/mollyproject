@@ -438,6 +438,12 @@ STATICFILES_DIRS_ setting::
 
     MARKER_DIR = os.path.join(CACHE_DIR, 'markers')
 
+NO_CACHE
+""""""""
+
+When set to true, then cache headers are suppressed from responses. This can be
+used as a workaround to a `MOLLY-177 <http://issues.mollyproject.org/browse/MOLLY-177>`_.
+
 SITE_NAME
 """""""""
 

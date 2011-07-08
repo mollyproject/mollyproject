@@ -278,7 +278,8 @@ class BaseView(object):
             except NotImplementedError:
                 continue
             else:
-                if expires is not None and not settings.DEBUG:
+                if expires is not None and not settings.DEBUG and \
+                  not getattr(settings, 'NO_CACHE', False):
                     response['Expires'] = formatdate(
                         mktime((datetime.now() + expires).timetuple()))
                     
