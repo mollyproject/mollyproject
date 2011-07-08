@@ -416,7 +416,7 @@ directory, and is optional.
 
 Sample::
 
-    CACHE_DIR = '/var/cache/molly-images' # This must be set, and there is no default
+    EXTERNAL_IMAGES_DIR = '/var/cache/molly-images'
 
 IDENTIFIER_SCHEME_PREFERENCE
 """"""""""""""""""""""""""""
