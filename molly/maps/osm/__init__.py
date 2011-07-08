@@ -24,7 +24,7 @@ MARKER_COLORS = (
     ('yellow', '#f0ff00', '#4b5000', '#000000'),
 )
 
-MARKER_RANGE = xrange(1, 100)
+MARKER_RANGE = xrange(1, 200)
 
 logger = logging.getLogger(__name__)
 
