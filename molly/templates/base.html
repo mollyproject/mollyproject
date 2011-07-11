@@ -80,7 +80,7 @@
     {# Favicon link #}
     <link rel="icon" type="image/png" href="{{ STATIC_URL }}site/images/favicon.png"/>
     
-    {% if device|device_has_parent:"generic_web_browser" or device.pointing_method == "touchscreen" and use_javascript and device.device_os != "Symbian" and device.device_os != "Symbian OS" %}
+    {% if use_slippy_maps %}
         {# These devices get slippy maps #}
         {% compressed_css "leaflet" %}
         {% compressed_js "leaflet" %}
