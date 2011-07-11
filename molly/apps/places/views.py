@@ -597,15 +597,17 @@ class EntityDirectionsView(LocationRequiredView, ZoomableView):
                                               context['type'])
             if not 'error' in context['route']:
                 context['map'] = Map(
-                    (context['entity'].location[0],
-                        context['entity'].location[1],
-                        'green', context['entity'].title),
+                    (user_location[0], user_location[1], 'green', ''),
                     [(w['location'][0], w['location'][1], 'red', w['instruction'])
                         for w in context['route']['waypoints']],
                     len(context['route']['waypoints']),
                     None,
                     request.map_width,
-                    request.map_height)
+                    request.map_height,
+                    extra_points=[(context['entity'].location[0],
+                                   context['entity'].location[1],
+                                   'red', context['entity'].title)],
+                    paths=[(context['route']['path'], '#3c3c3c')])
 
         return self.render(request, context, 'places/entity_directions')
 

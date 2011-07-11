@@ -72,7 +72,7 @@
             {{ forloop.counter }}. {{ entity.title }}<br />
             <small>
             {% if found_entity_types %}
-              {% blocktrans with entity.primary_type.verbose_name|capfirst as type_name and entity.distance.m|humanise_distance as distance and entity.bearing as bearing %}{{ type_name }}, about {{ distance }}m {{ bearing }}{% endblocktrans %}
+              {% blocktrans with entity.primary_type.verbose_name|capfirst as type_name and entity.distance.m|humanise_distance as distance and entity.bearing as bearing %}{{ type_name }}, about {{ distance }} {{ bearing }}{% endblocktrans %}
             {% else %}
               {% blocktrans with entity.distance.m|humanise_distance as distance and entity.bearing as bearing %}{{ distance }} {{ bearing }}{% endblocktrans %}
             {% endif %}

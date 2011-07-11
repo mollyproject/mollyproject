@@ -2,7 +2,7 @@ from urllib2 import urlopen
 import simplejson
 
 from django.conf import settings
-from django.contrib.gis.geos import Point
+from django.contrib.gis.geos import Point, LineString
 from django.utils.translation import get_language
 
 from molly.utils.templatetags.molly_utils import humanise_seconds
@@ -65,5 +65,6 @@ def generate_route(points, type):
         return {
             'total_time': json['route_summary']['total_time'],
             'total_distance': json['route_summary']['total_distance'],
-            'waypoints': waypoints
+            'waypoints': waypoints,
+            'path': LineString(map(lambda ps: Point(*ps), map(reversed, json['route_geometry'])))
         }

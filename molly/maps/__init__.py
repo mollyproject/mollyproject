@@ -6,10 +6,11 @@ from molly.maps.models import GeneratedMap
 class Map:
     """
     An object which represents a Map. This should be added to a context and then
-    passed to @C{render_map} in your template to get the appropriate HTML
+    passed to @C{render_map} in your template to get the appropriate HTML.
     """
     
-    def __init__(self, centre_point, points, min_points, zoom, width, height):
+    def __init__(self, centre_point, points, min_points, zoom, width, height,
+                 extra_points=[], paths=[]):
         """
         @param centre_point: A tuple of longitude, latitude, colour and title
                              corresponding to the "centre" of the map. This is
@@ -36,10 +37,19 @@ class Map:
         @type width: int
         @param height: The height of the generated map image, in pixels
         @type height: int
+        @param extra_points: Any extra points to be plotted in the same form as
+                             centre_points
+        @type extra_points: list
+        @param paths: A list of LineString, string tuples which contain any
+                      paths to be plotted on this map. The string is a HTML
+                      colour code for the path.
+        @type paths: list
         """
         
         self.centre_point = centre_point
+        self.extra_points = extra_points
         self.min_points = min_points
+        self.paths = paths
         self.width = width
         self.height = height
         
@@ -87,6 +97,12 @@ class Map:
              centre_point[3].encode('ascii', 'xmlcharrefreplace'))
         ] if centre_point != None else []
         
+        for point in self.extra_points:
+            markers.append((str(point[1]),
+                 str(point[0]),
+                 point[2] + '_star',
+                 point[3].encode('ascii', 'xmlcharrefreplace')))
+        
         for point in self.points:
             markers.append(
                     (str(point[0][1]),
@@ -94,6 +110,8 @@ class Map:
                      point[0][2] + '_' + str(point[1][0] + 1),
                      point[0][3].encode('ascii', 'xmlcharrefreplace'))
                 )
+        
+        self.lon_centre, self.lat_centre = lon_center, lat_center
         
         self.markers = markers
 

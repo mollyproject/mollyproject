@@ -6,7 +6,7 @@
                 <script type="text/javascript">
                     $(function(){
                         var map_{{ map.static_map_hash }} = new L.Map('map-{{ map.static_map_hash }}', {
-                            center: new L.LatLng({{ map.centre_point.1 }}, {{ map.centre_point.0 }}),
+                            center: new L.LatLng({{ map.lat_centre }}, {{ map.lon_centre }}),
                             zoom: {{ map.zoom }},
                             minZoom: {% if map.zoom < 10 %}{{ map.zoom }}{% else %}10{% endif %},
                             zoomControl: false,
@@ -37,6 +37,15 @@
                                     icon: new {{ icon }}()
                                 }))
                             {% endif %}
+                        {% endfor %}
+                        
+                        {% for path, colour in map.paths %}
+                            // create a red polyline from an arrays of LatLng points
+                            map_{{ map.static_map_hash }}.addLayer(new L.Polyline(
+                            [{% for point in path %}
+                                new L.LatLng({{ point.1 }}, {{ point.0 }}),
+                            {% endfor %}],
+                            {color: '{{ colour|escapejs }}'}))
                         {% endfor %}
                         
                         {# Bind our custom zoom handlers #}
