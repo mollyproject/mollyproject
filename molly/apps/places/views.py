@@ -95,7 +95,7 @@ class NearbyListView(LocationRequiredView):
         
         for et in entity_types:
             # For each et, get the entities that belong to it
-            et.max_distance = 0
+            et.max_distance = humanise_distance(0)
             et.entities_found = 0
             es = et.entities_completion.filter(location__isnull=False,
                                                location__distance_lt=(point, D(km=5))).distance(point).order_by('distance')
@@ -103,7 +103,7 @@ class NearbyListView(LocationRequiredView):
                 # Selection criteria for whether or not to count this entity
                 if (e.distance.m ** 0.75) * (et.entities_found + 1) > 500:
                     break
-                et.max_distance = e.distance.m
+                et.max_distance = humanise_distance(e.distance.m)
                 et.entities_found += 1
 
         categorised_entity_types = defaultdict(list)

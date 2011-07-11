@@ -68,9 +68,9 @@ def humanise_distance(value):
     if units == 'metric':
     
         if m >= 1000:
-            return '%.1f km' % round(float(m) / 1000, 2)
+            return '%.1fkm' % round(float(m) / 1000, 2)
         else:
-            return '%d m' % m
+            return '%dm' % m
     
     elif units == 'imperial':
         
@@ -85,7 +85,7 @@ def humanise_distance(value):
         if m >= 1000:
             return '%.1f miles' % round(float(m) / 1609.344, 2)
         else:
-            return '%d m' % m
+            return '%dm' % m
 
 @register.filter
 def humanise_seconds(seconds):
