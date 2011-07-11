@@ -15,11 +15,11 @@ function to_absolute(url) {
         return window.location.protocol + '//' + window.location.host + url;
     } else if (url.indexOf('?') != -1) {
         if (current_url.lastIndexOf('?') != -1) {
-            return current_url.substring(0, current_url.lastIndexOf('?')) + url;
+            return base.slice(0, -1) + current_url.substring(0, current_url.lastIndexOf('?')) + url;
         }
-        return current_url + url;
+        return base.slice(0, -1) + current_url + url;
     } else {
-        return current_url + url;
+        return base.slice(0, -1) + current_url + url;
     }
 }
 
