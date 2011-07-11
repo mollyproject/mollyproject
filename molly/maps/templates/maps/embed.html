@@ -19,6 +19,7 @@
                         {% for lat, lon, icon, title in map.markers %}
                             var {{ icon }} = L.Icon.extend({
                                 iconUrl: '{{ STATIC_URL }}markers/{{ icon }}.png',
+                                shadowUrl: null,
                                 {% ifequal icon|slice:"-4:" "star" %}
                                     iconSize: new L.Point(20, 20),
                                     iconAnchor: new L.Point(10, 10),
