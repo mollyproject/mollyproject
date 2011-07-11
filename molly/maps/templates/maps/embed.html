@@ -49,6 +49,13 @@
                             return false;
                         })
                         
+                        {% comment %}
+                        The next line makes this map globally accessible - this means that other scripts
+                        can access it - but only when this is the last map on the page, for pages which
+                        have multiple maps, this falls down.
+                        {% endcomment %}
+                        map = map_{{ map.static_map_hash }};
+                        
                     });
                 </script>
             </div>

@@ -48,6 +48,19 @@
     {% endif %}
     
     {% render_map map %}
+    {% if use_slippy_maps %}
+    <script type="text/javascript">
+        $(function(){
+            map.on('zoomend', function(e){
+                {# Have zoomed out past the limit we currently have entities for #}
+                if (e.target._zoom < e.target.options.zoom) {
+                    async_load(current_url, {zoom: e.target._zoom}, 'GET')
+                }
+            })
+        });
+    </script>
+    {% endif %}
+    
   </div>
 
   <ul class="link-list">
