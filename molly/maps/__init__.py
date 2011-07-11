@@ -83,7 +83,7 @@ class Map:
         markers = [
             (str(centre_point[1]),
              str(centre_point[0]),
-             centre_point[2] + '-star',
+             centre_point[2] + '_star',
              centre_point[3].encode('ascii', 'xmlcharrefreplace'))
         ] if centre_point != None else []
         
@@ -91,16 +91,11 @@ class Map:
             markers.append(
                     (str(point[0][1]),
                      str(point[0][0]),
-                     point[0][2] + '-' + str(point[1][0] + 1),
+                     point[0][2] + '_' + str(point[1][0] + 1),
                      point[0][3].encode('ascii', 'xmlcharrefreplace'))
                 )
         
-        self.slippy_map_parameters = urlencode({
-            'lon': lon_center,
-            'lat': lat_center,
-            'zoom': (self.zoom - 1) if len(self.points) > 0 else self.zoom,
-            'markers': '~'.join(map('|'.join, markers))
-        })
+        self.markers = markers
 
 def map_from_point(point, width, height, colour='green', title='', zoom=16):
     """
@@ -108,3 +103,4 @@ def map_from_point(point, width, height, colour='green', title='', zoom=16):
     a star
     """
     return Map((point[0], point[1], colour, title), [], 1, zoom, width, height)
+

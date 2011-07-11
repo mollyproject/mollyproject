@@ -46,6 +46,7 @@
         {# Provide the minified CSS file appropriate to class of device #}
         {% compressed_css style_group %}
     {% endif %}
+    
     {# If the device supports SVGs, add the following CSS file that gives SVG icons rather than .png #}
     {% if device|device_has_parent:"apple_iphone_ver4" or browser.svgt_1_1 %}
         {% compressed_css 'svg' %}
@@ -78,6 +79,12 @@
 
     {# Favicon link #}
     <link rel="icon" type="image/png" href="{{ STATIC_URL }}site/images/favicon.png"/>
+    
+    {% if device|device_has_parent:"generic_web_browser" or device.pointing_method == "touchscreen" and use_javascript and device.device_os != "Symbian" and device.device_os != "Symbian OS" %}
+        {# These devices get slippy maps #}
+        {% compressed_css "leaflet" %}
+        {% compressed_js "leaflet" %}
+    {% endif %} 
     
     {# Include ALL javascript (ignore filename) #}
     {% include "geolocation/js.html" %}
