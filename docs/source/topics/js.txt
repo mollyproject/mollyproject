@@ -31,15 +31,14 @@ the same session using AJAX, the document.ready event can not be relied upon to
 set up any functionality in your page.
 
 To work around this, Molly provides a new event which is called when an AJAX
-page change is triggered: 'molly-page-change', with two arguments, the URL of
-the new page and the Django identifier of the page (e.g., 'places:index').
-You will then probably want to check the url attribute or view_name attributes
-to ensure that it's a page that you should be handling.
+page change is triggered: 'molly-page-change', with one argument, the URL of the
+new page. You will then probably want to check the url attribute to ensure that
+it's a page that you should be handling.
 
 .. code-block:: javascript
 
-    $(document).bind('molly-page-change', function(event, url, view_name){
-        if (view_name == 'myapp:index') {
+    $(document).bind('molly-page-change', function(event, url){    
+        if (url == '/my-app/') {
             /* Set up my event handlers here */
         }
     });

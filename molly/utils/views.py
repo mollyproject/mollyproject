@@ -369,7 +369,7 @@ class BaseView(object):
             context = simplify_value(context)
             return HttpResponse(yaml.safe_dump(context),
                                 mimetype="application/x-yaml")
-    except ImportError:
+    except ImportError, e:
         pass
 
     @renderer(format="fragment")
@@ -386,8 +386,6 @@ class BaseView(object):
                     }),
                     mimetype="application/json")
             raise NotImplementedError
-        resolved = resolve(request.path)
-        context['view_name'] = '%s:%s' % (':'.join(resolved.namespaces), resolved.url_name)
         body = render_blocks_to_string(template_name + '.html', context,
                                        RequestContext(request))
         
