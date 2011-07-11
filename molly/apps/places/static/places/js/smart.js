@@ -5,14 +5,14 @@ function capfirst(s) {
 entitydetail_ajax = null;
 entitydetail_ajax_refresh = null;
 
-$(document).bind('molly-page-change', function(event, url){
+$(document).bind('molly-page-change', function(event, url, view_name){
     
     clearTimeout(entitydetail_ajax_refresh);
     if (entitydetail_ajax != null) {
         entitydetail_ajax.abort();
     }
     
-    if (url == '/places/') {
+    if (view_name == 'places:index') {
         // IndexView
         $('.nearby a').click(function(){
             display_loading_screen()
@@ -51,7 +51,7 @@ $(document).bind('molly-page-change', function(event, url){
         $('.categories a').addClass('has-ajax-handler')
     }
     
-    if (url.match(/^\/places\/category\/[^\/;]/)) {
+    if (view_name == 'places:category-detail') {
         // Category detail view
         $('li.next a').click(function(){
             display_loading_screen()
@@ -87,7 +87,7 @@ $(document).bind('molly-page-change', function(event, url){
         $('li.next a').addClass('has-ajax-handler')
     }
     
-    if (url.match(/^\/places\/[a-z_\-]+:[\da-zA-Z]+\/$/)) {
+    if (view_name == 'places:entity') {
         // Entity detail view
         
         entitydetail_ajax_refresh = setTimeout(function(){
