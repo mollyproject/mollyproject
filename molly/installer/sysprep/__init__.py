@@ -12,14 +12,14 @@ else:
     distribution, distribution_version, distribution_id = platform.linux_distribution()
 
 if distribution == 'Fedora':
-    from installer.sysprep.fedora import *
+    from molly.installer.sysprep.fedora import *
 elif distribution == 'redhat':
-    from installer.sysprep.rhel import *
+    from molly.installer.sysprep.rhel import *
 elif distribution == 'Ubuntu':
     if distribution_version == '10.04':
-        from installer.sysprep.ubuntu_lucid import *
+        from molly.installer.sysprep.ubuntu_lucid import *
     elif distribution_version == '10.10':
-        from installer.sysprep.ubuntu_maverick import *
+        from molly.installer.sysprep.ubuntu_maverick import *
     else:
         raise NotImplementedError()
 else:

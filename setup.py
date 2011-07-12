@@ -1,7 +1,15 @@
 #!/usr/bin/env python
 # Bootstrap setup tools
-import ez_setup
-ez_setup.use_setuptools()
+try:
+    from setuptools import setup
+except ImportError:
+    try:
+        import ez_setup
+    except ImportError:
+        print "Install failed: You don't have setuptools installed, and we couldn't install it for you"
+    else:
+        ez_setup.use_setuptools()
+        from setuptools import setup
 
 from setuptools import setup
 from distutils.command.install import INSTALL_SCHEMES
@@ -9,8 +17,8 @@ import os
 
 from molly import __version__ as molly_version
 
-from installer.utils import get_packages_and_data
-from installer.commands import (DeployCommand, SysprepCommand,
+from molly.installer.utils import get_packages_and_data
+from molly.installer.commands import (DeployCommand, SysprepCommand,
                                 CreateVirtualenvCommand, DBPrepCommand,
                                 DBCreateCommand, SiteCreateCommand)
 
@@ -78,6 +86,7 @@ setup(
         'Topic :: Education',
         'Topic :: Internet',
     ],
+    setup_requires = ["setuptools"],
     install_requires = [
         "python-Levenshtein",
         "pywurfl",

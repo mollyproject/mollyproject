@@ -8,7 +8,7 @@ import logging
 import shutil
 from distutils.errors import DistutilsSetupError
 
-from installer.utils import CommandFailed
+from molly.installer.utils import CommandFailed
 
 logger = logging.getLogger(__name__)
 
