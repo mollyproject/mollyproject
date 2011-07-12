@@ -8,7 +8,7 @@ from subprocess import Popen, PIPE
 import logging
 import shutil
 
-from installer.utils import quiet_exec, CommandFailed
+from molly.installer.utils import quiet_exec, CommandFailed
     
 logger = logging.getLogger(__name__)
 

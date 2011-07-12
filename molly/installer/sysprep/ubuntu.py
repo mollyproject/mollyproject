@@ -1,4 +1,4 @@
-from installer.utils import quiet_exec
+from molly.installer.utils import quiet_exec
 
 class AptSysPreparer(object):
     

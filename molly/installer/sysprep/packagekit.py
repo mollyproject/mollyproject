@@ -2,7 +2,7 @@
 Wrapper for installations on packagekit/yum distributions
 """
 
-from installer.utils import quiet_exec
+from molly.installer.utils import quiet_exec
 
 try:
     # Use the Packagekit library if this exists

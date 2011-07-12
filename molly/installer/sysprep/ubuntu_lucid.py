@@ -1,4 +1,4 @@
-from installer.sysprep.ubuntu import AptSysPreparer
+from molly.installer.sysprep.ubuntu import AptSysPreparer
 
 POSTGIS_PATH = '/usr/share/postgresql/8.4/contrib/postgis.sql'
 SPATIAL_REF_SYS_PATH = '/usr/share/postgresql/8.4/contrib/spatial_ref_sys.sql'
