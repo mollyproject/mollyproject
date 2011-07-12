@@ -54,7 +54,7 @@ def deploy(venv, site_path, development=False, listen_externally=False,
     # Okay, now install Molly
     print "Installing Molly...",
     sys.stdout.flush()
-    molly_setup = os.path.join(os.path.abspath(os.path.dirname(__file__)), '..', 'setup.py')
+    molly_setup = os.path.join(os.path.abspath(os.path.dirname(__file__)), '..', '..', 'setup.py')
     if development:
         venv('python %s develop' % molly_setup)
     else:
