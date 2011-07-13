@@ -26,12 +26,12 @@ def name_in_language(obj, field, default=None):
                     return getattr(obj.names.get(language_code=language_code),
                                    field)
             except ObjectDoesNotExist:
-                if default:
+                if default is not None:
                     return default
                 else:
                     raise
             else:
-                if default:
+                if default is not None:
                     return default
                 else:
                     raise

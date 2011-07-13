@@ -24,7 +24,7 @@ MARKER_COLORS = (
     ('yellow', '#f0ff00', '#4b5000', '#000000'),
 )
 
-MARKER_RANGE = xrange(1, 100)
+MARKER_RANGE = xrange(1, 200)
 
 logger = logging.getLogger(__name__)
 
@@ -133,13 +133,16 @@ def get_or_create_map(generator, args):
           generated__lt=datetime.now()-timedelta(weeks=1)).order_by('generated')
         if to_delete.count() > 0:
             # But only clear up 50 at a time
-            youngest = to_delete[0].last_accessed
-            to_delete = to_delete[:50]
-            for generated_map in to_delete:
-                generated_map.delete()
-            age = (datetime.now()-youngest)
-            age = age.days*24 + age.seconds/3600.0
-            logger.info("Cleared out old maps, youngest is %f hours", age)
+            try:
+                youngest = to_delete[0].last_accessed
+                to_delete = to_delete[:50]
+                for generated_map in to_delete:
+                    generated_map.delete()
+                age = (datetime.now()-youngest)
+                age = age.days*24 + age.seconds/3600.0
+                logger.info("Cleared out old maps, youngest is %f hours", age)
+            except IndexError:
+                logger.info("Maps disappeared whilst trying to delete - race condition?", exc_info=True)
     
     return hash, metadata
     

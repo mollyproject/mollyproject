@@ -59,6 +59,10 @@ following packages, or their equivalent on your platform, are available:
 Configuring PostgreSQL
 ----------------------
 
+.. warning:: The following installation instructions are unlikely to be suitable
+             for production databases. Experienced DBAs will want to skip
+             this section.
+
 Molly requires Postgis to be installed into the database in order to work
 correctly. A convenience script is included in Molly to create such a database
 on supported platforms (Ubuntu, Fedora and CentOS)::
@@ -77,29 +81,38 @@ authenticate to Postgres, e.g.,::
              contains information on how to create a spatial database template
              by hand, if you would like to do it that way.
 
-Molly also includes a convenience function to create a ``pg_hba.conf`` which
-includes a default security configuration for Molly to access the database. If
-you already have a working Postgres database, or want to configure security by
-hand, then skip this step.
+.. warning:: The next step will override your existing ``pg_hba.conf`` and may
+             break an existing PostgreSQL installation. It is recommended you do
+             this only on a new, blank installation, and when Molly is the only
+             user of the database.
 
-.. warning:: This will override your existing ``pg_hba.conf`` and may break an
-             existing PostgreSQL installation. It is recommended you do this
-             only on a new, blank installation, and when Molly is the only user
-             of the database.
-
-.. code-block::
+Many Linux distributions' default configuration for Postgres are not immediately
+usable by Molly - typically, they are not configured to allow users to connect
+to the database by password authentication. Molly includes a convenience
+function to create a ``pg_hba.conf`` which includes a default security
+configuration for Molly to access the database. If you already have a working
+Postgres database, or want to configure security by hand, then skip this step::
 
     sudo ./setup.py dbprep --configure-security
 
 Creating your database
 ----------------------
 
+.. note:: The function described below is simplistic and experienced DBAs may
+          prefer creating the database and permissions by hand. If you choose to
+          do so, then ensure you create the database for Molly from a Postgis
+          template.
+
+.. warning:: This will delete any database called ``molly`` that already exists
+             and change the password of any user called ``molly`` which exists.
+
 As a convenience function, Molly provides a command to automatically create a
 database user and database for Molly to use::
 
     ./setup.py dbcreate
 
-.. warning:: This will delete any database called ``molly`` that already exists
+.. info:: This assumes that the Postgis template is called ``template_postgis``,
+          which is the default and recommended value.
 
 By default, if running as a superuser, this will create a database called
 ``molly`` and a user called ``molly`` which has access to this database. A
@@ -114,9 +127,6 @@ the following options can be used:
 
 As with the ``dbprep`` command, this can also take superuser credentials which
 are used to run these commands, if the current user doesn't have credentials.
-
-.. note:: If you want to configure your database by hand, then please ensure
-          that the database Molly uses is created from a Postgis template.
 
 Creating a site template
 ------------------------

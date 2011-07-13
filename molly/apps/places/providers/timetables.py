@@ -1,7 +1,8 @@
 from collections import namedtuple, defaultdict
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 from logging import getLogger
 from operator import itemgetter
+
 from django.db.models import Q
 
 from molly.apps.places.providers import BaseMapsProvider
@@ -22,13 +23,13 @@ class TimetableAnnotationProvider(BaseMapsProvider):
         today = datetime.now()
         if today.time() < time(4):
             today -= timedelta(days=1)
-        
+            
         def midnight_4am(left, right):
             """
             Search comparison function where before 4 am is later than midnight
             """
-            return cmp(left.hour if left.hour >= 4 else left.hour + 24,
-                       right.hour if right.hour >= 4 else right.hour + 24)
+            return cmp((left.hour if left.hour >= 4 else left.hour + 24, left.minute, left.second),
+                       (right.hour if right.hour >= 4 else right.hour + 24, right.minute, right.second))
         
         for entity in entities:
             
@@ -37,24 +38,36 @@ class TimetableAnnotationProvider(BaseMapsProvider):
                 continue
             
             services = defaultdict(list)
-            for stop in entity.scheduledstop_set.filter(
-                Q(sta__gte=today.time()) | Q(sta__lt=time(4))):
+            if today.time() < time(22):
+                until = [Q(sta__gte=today.time()) | Q(std__gte=today.time()), Q(sta__lt=(today + timedelta(hours=2)).time()) | Q(std__lt=(today + timedelta(hours=2)).time())]
+            else:
+                until = [Q(sta__gte=today.time()) | Q(std__gte=today.time()) | Q(sta__lt=(today + timedelta(hours=2)).time()) | Q(std__lt=(today + timedelta(hours=2)).time())]
+            
+            for stop in entity.scheduledstop_set.filter(*until):
                 
                 if not stop.journey.runs_on(today.date()):
                     continue
                 
-                services[(stop.journey.route.service_id, stop.journey.route.service_name)].append((stop.journey, stop.std if stop.std else stop.sta))
+                service_id = stop.journey.route.service_id
+                destination = stop.journey.scheduledstop_set.all().reverse()[0].entity.title
+                
+                # Now try and tidy up destination
+                destination = destination.split(', ')[-1]
+                if '(' in destination:
+                    destination = destination[:destination.find('(')].strip()
+                
+                services[(service_id, destination)].append((stop.journey, stop.std or stop.sta))
             
             services = ((route, sorted(ss, key=itemgetter(1), cmp=midnight_4am))
                 for route, ss in services.items())
             
             services = [{
                 'service': service_id,
-                'destination': service_name,
+                'destination': destination,
                 'next': ss[0][1].strftime('%H:%M'),
                 'following': map(lambda t: t[1].strftime('%H:%M'), ss[1:4]),
                 'journey': ss[0][0]
-            } for (service_id, service_name), ss in sorted(services, key=lambda x: x[1][0][1])]
+            } for (service_id, destination), ss in sorted(services, key=lambda x: x[1][0][1])]
             
             entity.metadata['real_time_information'] = {
                 'services': services,

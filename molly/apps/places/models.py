@@ -124,7 +124,7 @@ class EntityGroup(models.Model):
     
     @property
     def title(self):
-        return name_in_language(self, 'title')
+        return name_in_language(self, 'title', '')
 
     source = models.ForeignKey(Source)
     ref_code = models.CharField(max_length=256)

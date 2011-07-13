@@ -428,7 +428,7 @@ directory, and is optional.
 
 Sample::
 
-    CACHE_DIR = '/var/cache/molly-images' # This must be set, and there is no default
+    EXTERNAL_IMAGES_DIR = '/var/cache/molly-images'
 
 IDENTIFIER_SCHEME_PREFERENCE
 """"""""""""""""""""""""""""
@@ -449,6 +449,12 @@ optional, but it may be useful to define it, as it needs to be referenced in the
 STATICFILES_DIRS_ setting::
 
     MARKER_DIR = os.path.join(CACHE_DIR, 'markers')
+
+NO_CACHE
+""""""""
+
+When set to true, then cache headers are suppressed from responses. This can be
+used as a workaround to a `MOLLY-177 <http://issues.mollyproject.org/browse/MOLLY-177>`_.
 
 SITE_NAME
 """""""""

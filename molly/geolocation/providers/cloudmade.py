@@ -27,12 +27,23 @@ class CloudmadeGeolocationProvider(BaseGeolocationProvider):
             'type': 'road',
         }
 
-        data = urllib2.urlopen(self.REVERSE_GEOCODE_URL % params)
-
-        json = simplejson.load(data)
+        try:
+            request_url = self.REVERSE_GEOCODE_URL % params
+            response = urllib2.urlopen(request_url)
+            if response.code != 200:
+                logger.error("Request to %s returned response code %d" % (request_url, response.code))
+                return []
+            json = simplejson.loads(response.read().replace('&apos;', "'"), 'utf8')
+        except urllib2.HTTPError, e:
+            logger.error("Cloudmade returned a non-OK response code %d", e.code)
+            return []
+        except urllib2.URLError, e:
+            logger.error("Encountered an error reaching Cloudmade: %s", str(e))
+            return []
         
         if not json:
             return []
+        
         else:
             name = json['features'][0]['properties'].get('name')
             try:
@@ -48,6 +59,10 @@ class CloudmadeGeolocationProvider(BaseGeolocationProvider):
             }]
 
     def geocode(self, query):
+        
+        if not query:
+            return []
+        
         if self.search_locality and not (', ' in query or ' near ' in query):
             query += ', %s' % self.search_locality
 
