@@ -229,7 +229,7 @@ MIDDLEWARE_CLASSES = (
     'molly.wurfl.middleware.WurflMiddleware', # This enables Molly's device detection capability (required)
     'django.middleware.common.CommonMiddleware', # This incorporates some convenience functions from Django (required)
     'django.contrib.sessions.middleware.SessionMiddleware', # This enables Django's session storage framework (required)
-    'django.middleware.locale.LocaleMiddleware', # This enables i18n support in Molly (required)
+    'molly.utils.middleware.CookieLocaleMiddleware', # This enables i18n support in Molly (required)
     'molly.utils.middleware.ErrorHandlingMiddleware', # This enables Molly's error handling and reporting framework
     'django.contrib.auth.middleware.AuthenticationMiddleware', # This allows for users to be logged in in Django (required)
     'molly.auth.middleware.SecureSessionMiddleware', # This adds the capability to have secure sessions (sessions which are HTTPS only)
