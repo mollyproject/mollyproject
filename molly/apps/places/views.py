@@ -552,7 +552,7 @@ class CategoryDetailView(BaseView):
         return self.render(request, context, 'places/category_detail',
                            expires=timedelta(days=1))
 
-class EntityDirectionsView(LocationRequiredView, ZoomableView):
+class EntityDirectionsView(LocationRequiredView):
     default_zoom = 16
 
     def get_metadata(self, request, scheme, value):
