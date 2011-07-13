@@ -151,7 +151,7 @@ A typical setup may look like this::
         'molly.wurfl.middleware.WurflMiddleware',
         'django.middleware.common.CommonMiddleware',
         'django.contrib.sessions.middleware.SessionMiddleware',
-        'django.middleware.locale.LocaleMiddleware',
+        'molly.utils.middleware.CookieLocaleMiddleware',
         'molly.utils.middleware.ErrorHandlingMiddleware',
         'django.contrib.auth.middleware.AuthenticationMiddleware',
         'molly.auth.middleware.SecureSessionMiddleware',

@@ -1,3 +1,5 @@
+from copy import copy
+
 from django.utils.translation import get_language
 from django.db.models import Model
 from django.conf import settings
@@ -36,6 +38,7 @@ def name_in_language(obj, field, default=None):
                 else:
                     raise
 
+
 def set_name_in_language(obj, lang, **fields):
     """
     Assuming the object follows the Molly pattern for i18n data (related manager
@@ -55,14 +58,26 @@ def set_name_in_language(obj, lang, **fields):
             setattr(name, k, v)
         name.save()
 
+
 class SetLanguageView(BaseView):
 
     def handle_GET(self, request, context):
         return self.render(request, context, 'i18n/index')
     
     def handle_POST(self, request, context):
-        # Do Django's built in language setter
-        return set_language(request)
+        if hasattr(request, 'session'):
+            # MOLLY-177: Force using cookies to set language
+            session = request.session
+            del request.session
+            ret = set_language(request)
+            request.session = session
+            return ret
+        
+        else:
+            
+            # Do Django's built in language setter
+            return set_language(request)
+
 
 # TODO: When Molly moves to Django 1.4, this can be removed
 
