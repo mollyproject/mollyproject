@@ -1,5 +1,5 @@
 {% load i18n %}
-{% if zoom_controls %}
+{% if zoom_controls or use_slippy_maps %}
     {% ifnotequal zoom 10 %}
         <a class="no-icon zoom-out has-ajax-handler" href="?zoom={{ map.zoom|add:"-1" }}" rel="nofollow">
             <img src="{{ STATIC_URL }}site/images/icons/zoom-out.png" alt="{% trans "Zoom out" %}"/>
