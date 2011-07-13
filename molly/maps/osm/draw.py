@@ -251,7 +251,8 @@ class PointSet(set):
         return extent[0] <= box[0] and extent[1] <= box[1]
         
 
-def get_fitted_map(centre_point, points, min_points, zoom, width, height, filename):
+def get_fitted_map(centre_point, points, min_points, zoom, width, height,
+                   extra_points, paths, filename):
     """
     Given a list of points and some minimum number of points, then a "fitted
     map" is generated, which is one which contains at least @C{min_points}, and
@@ -303,9 +304,13 @@ def get_fitted_map(centre_point, points, min_points, zoom, width, height, filena
     
     points = [p[0] for p in new_points]
     
+    # Include extra_points in bounding_box
+    points = list(extra_points) + points
+    min_points += len(extra_points)
+    
     # Include the central point in the points to be considered
     if centre_point:
-        points = [centre_point] + list(points)
+        points = [centre_point] + points
     
     # Get a set of the minimum points
     point_set, points = PointSet(points[:min_points+1]), points[min_points+1:]
@@ -324,12 +329,13 @@ def get_fitted_map(centre_point, points, min_points, zoom, width, height, filena
     else:
         point_set.remove(new_point)
     
+    points = [(p[0], p[1], p[2], None) for p in extra_points]
+    
     if centre_point:
-        used_points = point_set.ordered[1:]
-        points = [(centre_point[0], centre_point[1], centre_point[2], None)]
+        used_points = point_set.ordered[len(extra_points)+1:]
+        points.append((centre_point[0], centre_point[1], centre_point[2], None))
     else:
-        used_points = point_set.ordered[:]
-        points = []
+        used_points = point_set.ordered[len(extra_points):]
     
     for i, point in enumerate(used_points):
         points.append(

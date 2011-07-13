@@ -3,7 +3,7 @@ from urllib import urlencode
 from molly.maps.osm import fit_to_map
 from molly.maps.models import GeneratedMap
 
-class Map:
+class Map(object):
     """
     An object which represents a Map. This should be added to a context and then
     passed to @C{render_map} in your template to get the appropriate HTML.
@@ -57,7 +57,9 @@ class Map:
             self.static_map_hash, \
                 (self.points, self.zoom, lon_center, lat_center) = fit_to_map(
                     centre_point = centre_point,
+                    extra_points = extra_points,
                     points = points,
+                    paths = paths,
                     min_points = min_points,
                     zoom = zoom,
                     width = width,
@@ -73,7 +75,9 @@ class Map:
             # was stored, so we need to regenerate the map
             static_map_hash, metadata = fit_to_map(
                     centre_point = centre_point,
+                    extra_points = extra_points,
                     points = points,
+                    paths = paths,
                     min_points = min_points,
                     zoom = zoom,
                     width = width,
@@ -83,7 +87,9 @@ class Map:
             self.static_map_hash, \
                 (self.points, self.zoom, lon_center, lat_center) = fit_to_map(
                     centre_point = centre_point,
+                    extra_points = extra_points,
                     points = points,
+                    paths = paths,
                     min_points = min_points,
                     zoom = zoom,
                     width = width,
