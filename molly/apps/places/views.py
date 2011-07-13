@@ -567,7 +567,12 @@ class EntityDirectionsView(LocationRequiredView):
         entity = get_entity(scheme, value)
         
         allowed_types = ALLOWED_ROUTING_TYPES
-        type = request.GET.get('type', 'foot')
+        type = request.GET.get('type')
+        if type:
+            request.session['places:directions-type'] = type
+        else:
+            type = request.session.get('places:directions-type', 'foot')
+        
         if type not in allowed_types:
             type = 'foot'
         
