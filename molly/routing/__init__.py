@@ -12,12 +12,12 @@ else:
     ENGINES['bicycle'] = cloudmade
     ENGINES['car'] = cloudmade
 
-try:
-    from molly.routing.providers.cyclestreets import generate_route as cyclestreets
-except ImportError:
-    logger.info('Failed to import Cyclestreets routing engine')
-else:
-    ENGINES['bicycle'] = cyclestreets
+#try:
+#    from molly.routing.providers.cyclestreets import generate_route as cyclestreets
+#except ImportError:
+#    logger.info('Failed to import Cyclestreets routing engine')
+#else:
+#    ENGINES['bicycle'] = cyclestreets
 
 ALLOWED_ROUTING_TYPES = ENGINES.keys()
 
