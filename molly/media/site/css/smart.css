@@ -916,12 +916,12 @@ div#bottom-links div.full-width {
     width: 100%;
 }
 
-div#bottom-links div#rim-left {
+div#bottom-links div.rim-left {
     width: 49%;
     float: left;
 }
 
-div#bottom-links div#rim-right {
+div#bottom-links div.rim-right {
     width: 49%;
     float: right;
 }

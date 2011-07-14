@@ -138,14 +138,16 @@ class IndexView(SecureView):
                 form.save()
         
         return self.redirect('.', request)
-        
+
     
 class ClearSessionView(SecureView):
+    
     def initial_context(self, request):
         return {
             'return_url': request.REQUEST.get('return_url', '/'),
+            'suppress_clear_session_link': True,
         }
-        
+    
     @BreadcrumbFactory
     def breadcrumb(self, request, context):
         return Breadcrumb(
@@ -155,9 +157,10 @@ class ClearSessionView(SecureView):
             lazy_reverse('auth:clear-session'),
             
         )
-            
+     
     def handle_GET(self, request, context):
         return self.render(request, context, 'auth/clear_session')
+    
     def handle_POST(self, request, context):
         UserSession.objects.filter(secure_session_key = request.secure_session.session_key).delete()
         logout(request)

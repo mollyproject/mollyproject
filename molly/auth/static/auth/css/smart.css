@@ -1,0 +1,18 @@
+.secure-link-block {
+    line-height: 1.8em;
+    margin: 2px 10px 2px 10px;
+    background-color: #ffffbf;
+    padding: 10px 10px 10px 38px;
+    -webkit-border-radius: 6px;
+    -moz-border-radius: 6px;
+    display: block;
+    border-radius: 6px;
+    background-image: url('../../auth/images/padlock.png');
+    background-repeat: no-repeat;
+    background-position: 10px center;
+    text-align: center;
+}
+
+.secure-link-block a {
+    padding: 5px 1px;
+}
