@@ -130,9 +130,9 @@
     </div>
     {% endif %}
 
-    <ul class="stand-alone link-list round-top">
+    <ul class="stand-alone link-list">
         {% if "feature_vote"|app_is_loaded or "feature-suggestions"|app_is_loaded %}
-            <li class="round-top"><a href="{% url feature_vote:index %}">{% trans "Suggest a feature" %}</a></li>
+            <li><a href="{% url feature_vote:index %}">{% trans "Suggest a feature" %}</a></li>
         {% endif %}
         <li><a href="{% url home:static_about %}">{% trans "About this site" %}</a></li>
         {% if has_user_messages %}

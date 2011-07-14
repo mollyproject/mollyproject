@@ -25,3 +25,26 @@ td.service-id a {
     color: inherit;
 }
 /* End RTI */
+
+/* Directions list */
+
+ul.directions-list li {
+    font-size: 1.2em;
+    font-weight: bold;
+    padding-left: 40px;
+}
+
+ul.directions-list li .additional {
+    font-size: 0.8em;
+    font-weight: normal;
+}
+
+ul.directions-list li.direction-start {}
+ul.directions-list li.direction-left {}
+ul.directions-list li.direction-slight-left {}
+ul.directions-list li.direction-sharp-left {}
+ul.directions-list li.direction-right {}
+ul.directions-list li.direction-slight-right {}
+ul.directions-list li.direction-sharp-right {}
+ul.directions-list li.direction-turn-around {}
+ul.directions-list li.direction-straight {}

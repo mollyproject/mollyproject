@@ -1,0 +1,94 @@
+span.sakai-compulsory-question {
+    font-weight: bold;
+    color: #ff0000;
+}
+
+div.form-section dt.sakai-validation-error {
+    font-style: italic;
+    background-color: #dfdfdf;
+    background:-moz-linear-gradient(top, #fff, #dfdfdf);
+    background:-webkit-gradient(linear, left top, left bottom, from(#fff), to(#dfdfdf));
+    color:#ffffff;
+    padding:3px 8px;
+    margin-bottom: 8px;
+}
+
+div.sakai-error-message,
+div.sakai-notice-message {
+    margin:8px;
+    background-color:#ffffff;
+    padding:8px;
+    -moz-border-radius:8px;
+    -webkit-border-radius:8px;
+    border-radius:8px;
+}
+
+div.sakai-error-message {
+    border:2px solid red;
+    color: red;
+}
+
+div.sakai-notice-message {
+    border:2px solid #002147;
+    color: #002147;
+}
+
+
+div.sakai-error-message p,
+div.sakai-notice-message p {
+    margin: 1em 0 0 0;
+}
+
+div.sakai-error-message p:first-child,
+div.sakai-notice-message p:first-child {
+    margin-top: 0;
+}
+
+tr.poll-option td.poll-choice {
+    font-size: 2em;
+    width: 35px;
+    text-align: center;
+}
+
+tr.poll-option td.poll-choice label {
+    display: block;
+    padding: 10px;
+    margin: 8px;
+    border: 1px solid #888;
+    width: 1.1em;
+    line-height: 1.1em;
+    vertical-align: middle;
+    border-radius: 8px; -webkit-border-radius: 8px; -moz-border-radius: 8px;
+}
+
+tr.poll-option td.poll-choice label input {
+    font-size: 2.8em;
+}
+
+tr.poll-option td.vote-count {
+    text-align: center;
+    font-size: 1.2em;
+    width: 102px;
+}
+
+tr.poll-option td.vote-count span {
+    white-space: nowrap;
+}
+
+tr.poll-option td.vote-count div.vote-box {
+    min-width: 40px;
+    max-width: 100px;
+    background-color: #cfcfcf;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid #888;
+}
+
+tr.poll-option td.vote-count div.vote-box div.vote-box-voted {
+    height: 10px;
+    background-color: #e5f0e1;
+}
+
+tfoot.may-vote tr td {
+    padding: 10px;
+}

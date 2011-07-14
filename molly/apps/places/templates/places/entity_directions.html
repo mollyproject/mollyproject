@@ -27,10 +27,11 @@
 		   and cover {{ route.total_distance|humanise_distance }}.
 		</div></div></div>
             </div>
-            <ul class="content-list">
+            <ul class="directions-list content-list">
                 {% for waypoint in route.waypoints %}
-                <li>
-                    {{ waypoint.instruction }}
+                <li class="direction-{{ waypoint.waypoint_type }}">
+                    {{ waypoint.instruction }}<br />
+                    <span class="additional">{{ waypoint.additional }}</span>
                 </li>
                 {% endfor %}
             </ul>

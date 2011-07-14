@@ -1,0 +1,65 @@
+/* New Standard Search Form */
+table.search {
+    padding: 0 10px;
+    width:100%;
+}
+table tbody td {padding: 0; margin: 0;}
+table tbody tr {padding: 0; margin: 0;}
+
+table.search * input[type="text"] {
+    float:left;
+    width:100%;
+    height:30px;
+    border:0;
+    padding: 2px 0 2px 2px;
+    margin: 0;
+    font-size: 20px;
+    -webkit-border-top-left-radius: 5px; -webkit-border-bottom-left-radius: 5px; 
+    -webkit-border-top-right-radius:0; -webkit-border-bottom-right-radius:0; 
+    -moz-border-radius-topleft: 5px; -moz-border-radius-bottomleft: 5px;
+    -moz-border-radius-topright: 0px; -moz-border-radius-bottomright: 0px;
+    border-top-left-radius: 5px; border-bottom-left-radius: 5px; 
+    border-top-right-radius: 0; border-bottom-right-radius: 0;
+}
+
+table.search * input[type="image"] {
+    position: relative;
+    margin:0; padding:0;
+    border:0;
+    float:left;
+}
+/* End New Standard Search Form */
+
+
+/* Help Bubble - used for hints to search boxes */
+.help-bubble {
+    position:relative;
+    padding:6px;
+    margin:1em 0.5em 1em;
+    color:#000;
+    background:#dfdfdf;
+    width:auto;
+    background:-webkit-gradient(linear, left top, left bottom, from(#dfdfdf), to(#fff));
+    background:-moz-linear-gradient(top, #dfdfdf, #fff);
+    background:linear-gradient(top, #dfdfdf, #fff);
+    -moz-box-shadow: 2px 2px 2px #333; -webkit-box-shadow: 2px 2px 2px #333; box-shadow: 2px 2px 2px #333;
+    -moz-border-radius:10px; -webkit-border-radius:10px; border-radius:10px;
+}
+
+.help-bubble:after {
+    content:"\00a0";
+    display:block;
+    position:absolute;
+    z-index:-1;
+    top:-30px; /* value = - border-top-width - border-bottom-width */
+    left:40px; /* controls horizontal position */
+    width:0;
+    height:0;
+    border-width:18px 18px; /* vary these values to change the angle of the vertex */
+    border-style:solid;
+    border-color:#dfdfdf transparent transparent;
+    bottom:auto;
+	left:auto;
+	border-color:transparent transparent #dfdfdf;
+}
+/* End Help Bubble */

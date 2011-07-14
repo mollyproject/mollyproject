@@ -52,14 +52,14 @@
     {% endif %}
       
       <small>
-	  {# Significant whitespace on next line #}
-      {% trans "Published:" %} {{ item.published_date|date:"DATE_FORMAT" }}
+        {# Significant whitespace on next line #}
+        {% trans "Published:" %} {{ item.published_date|date:"DATE_FORMAT" }}
       </small><br />
     <div class="podcast-description">
       {{ item.description|safe }}
     </div>
     
-    <ul class="link-list round-top podcast-enclosures">
+    <ul class="link-list stand-alone podcast-enclosures">
     {% for enc in item.podcastenclosure_set.all %}
       <li class="podcast-enclosure">
         <a href="{{ enc.url }}{% block after_encurl %}{% endblock %}">

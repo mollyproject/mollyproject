@@ -3,7 +3,7 @@ import simplejson
 
 from django.conf import settings
 from django.contrib.gis.geos import Point, LineString
-from django.utils.translation import get_language
+from django.utils.translation import get_language, ugettext
 
 from molly.utils.templatetags.molly_utils import humanise_seconds
 
@@ -52,13 +52,28 @@ def generate_route(points, type):
             if i == 0:
                 (instruction, length, position, time, length_caption,
                  earth_direction, azimuth) = waypoint
+                turn_type = 'start'
             else:
                 (instruction, length, position, time, length_caption,
                  earth_direction, azimuth, turn_type, turn_angle) = waypoint
+                turn_type = {
+                        'C': 'straight',
+                        'TL': 'left',
+                        'TSLL': 'slight-left',
+                        'TSHL': 'sharp-left',
+                        'TR': 'right',
+                        'TSLR': 'slight-right',
+                        'TSHR': 'sharp-right',
+                        'TU': 'turn-around',
+                    }.get(turn_type)
             waypoints.append({
-                'instruction': '%s, heading %s for %s (taking approximately %s)' % (
-                    instruction, earth_direction, length_caption,
-                    humanise_seconds(time)),
+                'instruction': instruction,
+                'additional': ugettext('%(direction)s for %(distance)s (taking approximately %(time)s)') % {
+                        'direction': earth_direction,
+                        'distance': length_caption,
+                        'time': humanise_seconds(time)
+                    },
+                'waypoint_type': turn_type,
                 'location': points[position]
             })
         
