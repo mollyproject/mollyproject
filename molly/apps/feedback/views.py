@@ -26,7 +26,7 @@ class IndexView(BaseView):
     def handle_GET(self, request, context):
         context.update({
            'sent': request.GET.get('sent') == 'true',
-           'referer': request.GET.get('referer', ''),
+           'feedback_referrer': request.GET.get('referer', ''),
         })
         return self.render(request, context, 'feedback/index',
                            expires=timedelta(days=365))

@@ -4,7 +4,13 @@
 
   <div class="secure-link-block">
     <a href="{% url auth:index %}">{% trans "Security preferences" %}</a>
-    <a href="{% url auth:clear-session %}?return_url={{ full_path }}" rel="nofollow">{% trans "Clear secure session" %}</a><br/>
+    
+    {% if not suppress_clear_session_link %}
+        <a href="{% url auth:clear-session %}?return_url={{ full_path }}" rel="nofollow">
+    {% endif %}
+        {% trans "Clear secure session" %}
+    {% if not suppress_clear_session_link %}</a>{% endif %}<br/>
+    
     {% blocktrans with user|externalservicetoken_count as number_services count user.usersession_set.all.count as number_devices %}{{ number_services }} accessible from {{ number_devices }} device.{% plural %}{{ number_services }} accessible from {{ number_devices }} devices.{% endblocktrans %}
     <a href="{% url auth:index %}">{% trans "Change" %}</a>
   </div>
