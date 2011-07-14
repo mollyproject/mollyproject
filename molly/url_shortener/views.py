@@ -65,7 +65,7 @@ class IndexView(BaseView):
             return (
                 view.conf.local_name,
                 index,
-                (u'Back\u2026', context['path']),
+                (u'Back\u2026', context['share_path']),
                 context['share_path'] == index[1],
                 _('Shorten link'),
             )
