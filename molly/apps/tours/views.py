@@ -3,7 +3,7 @@ from molly.apps.places.models import EntityType
 from molly.utils.views import BaseView
 from molly.routing import generate_route
 
-class TourView(BaseView):
+class IndexView(BaseView):
     
     def handle_GET(self, request, context, entities):
         
@@ -27,3 +27,4 @@ class TourView(BaseView):
             entity.directions_to_next = generate_route([entity.location, next_entity.location], 'foot')
         
         return self.render(request, context, 'tours/tour')
+

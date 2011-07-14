@@ -1,11 +1,11 @@
 from django.conf.urls.defaults import *
 
-from views import TourView
+from views import IndexView
 
 urlpatterns = patterns('',
     
     (r'^(?P<entities>([a-z_\-]+:[^/]+/)*)$',
-        TourView, {},
+        IndexView, {},
         'index'),
     
     )
