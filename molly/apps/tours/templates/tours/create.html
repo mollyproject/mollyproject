@@ -2,21 +2,16 @@
 
 {% block content %}
 <div class="section">
-    {% for entity in entities %}
-        {% if not entity.location %}
-            <div class="note"><div class="pad-5">
-                <p>The next {{ entity.primary_type.verbose_name }} does not have a location, so we can't generate directions.</p>
-            </div></div>
-        {% endif %}
-        <div class="header">
-            <h2><a href="{{ entity.get_absolute_url }}">{{ entity.title }}</a></h2>
-        </div>
-        <ul class="content-list no-round-bottom">
-            {% for direction in entity.directions_to_next.waypoints %}
-                <li>{{ direction.instruction }}</li>
-            {% endfor %}
-        </ul>
-    {% endfor %}
+    <div class="header">
+        <h2>Current Stops</h2>
+    </div>
+    <ul class="content-list">
+        {% for entity in entities %}
+            {# todo: add delete #}
+            <li>{{ entity.title }}</li>
+        {% endfor %}
+    </ul>
+    {# todo: add save #}
 </div>
 
 <div class="section">
