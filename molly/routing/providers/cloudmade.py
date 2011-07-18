@@ -5,7 +5,7 @@ from django.conf import settings
 from django.contrib.gis.geos import Point, LineString
 from django.utils.translation import get_language, ugettext
 
-from molly.utils.templatetags.molly_utils import humanise_seconds
+from molly.utils.templatetags.molly_utils import humanise_seconds, humanise_distance
 
 try:
     CLOUDMADE_URL = 'http://routes.cloudmade.com/%s/api/0.3/' % settings.API_KEYS['cloudmade']
@@ -73,7 +73,7 @@ def generate_route(points, type):
                 'instruction': instruction,
                 'additional': ugettext('%(direction)s for %(distance)s (taking approximately %(time)s)') % {
                         'direction': earth_direction,
-                        'distance': length_caption,
+                        'distance': humanise_distance(length, False),
                         'time': humanise_seconds(time)
                     },
                 'waypoint_type': turn_type,
