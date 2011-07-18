@@ -350,7 +350,7 @@ class EntityUpdateView(ZoomableView):
         return Breadcrumb(
             'places',
             lazy_parent('entity', scheme=scheme, value=value),
-            'Update place',
+            _('Update place'),
             lazy_reverse('entity-update', args=[scheme, value]))
 
     def handle_GET(self, request, context, scheme, value):
@@ -423,7 +423,7 @@ class NearbyEntityListView(NearbyListView):
         return Breadcrumb(
             'places',
             lazy_parent('entity', scheme=scheme, value=value),
-            'Things near %s' % context['entity'].title,
+            _('Things near %s') % context['entity'].title,
             lazy_reverse('entity-nearby-list', args=[scheme, value]))
 
     def handle_GET(self, request, context, scheme, value):
@@ -448,9 +448,10 @@ class NearbyEntityDetailView(NearbyDetailView):
         return Breadcrumb(
             'places',
             lazy_parent('entity-nearby-list', scheme=scheme, value=value),
-            '%s near %s' % (
-                capfirst(entity_type.verbose_name_plural),
-                context['entity'].title, ),
+            _('%(entity_type)s near %(entity)s') % {
+                    'entity_type': capfirst(entity_type.verbose_name_plural),
+                    'entity': context['entity'].title
+                },
             lazy_reverse('places:entity_nearby_detail', args=[scheme, value, ptype]))
 
     def get_metadata(self, request, scheme, value, ptype):
@@ -479,7 +480,7 @@ class CategoryListView(BaseView):
         return Breadcrumb(
             'places',
             lazy_parent('index'),
-            'Categories',
+            -('Categories'),
             lazy_reverse('category-list'),
         )
 
@@ -558,7 +559,7 @@ class EntityDirectionsView(LocationRequiredView):
     def get_metadata(self, request, scheme, value):
         entity = get_entity(scheme, value)
         return {
-            'title': 'Directions to %s' % entity.title,
+            'title': _('Directions to %s') % entity.title,
             'entity': entity,
         }
 
@@ -589,7 +590,7 @@ class EntityDirectionsView(LocationRequiredView):
         return Breadcrumb(
             'places',
             lazy_parent('entity', scheme=scheme, value=value),
-            'Directions to %s' % context['entity'].title,
+            _('Directions to %s') % context['entity'].title,
             lazy_reverse('entity-directions', args=[scheme, value]),
         )
 
@@ -670,7 +671,7 @@ class ServiceDetailView(BaseView):
                 raise Http404
             if 'error' in service:
                 context.update({
-                    'title': 'An error occurred',
+                    'title': _('An error occurred'),
                     'service': {
                         'error': service['error'],
                     },
