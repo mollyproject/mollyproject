@@ -14,6 +14,17 @@ from django.utils.translation import ugettext_lazy as _
 
 from molly.utils.i18n import name_in_language
 
+# Translators: These are compass points
+COMPASS_POINTS = (_('N'), _('NE'), _('E'), _('SE'),
+                  _('S'), _('SW'), _('W'), _('NW'))
+
+def bearing_to_compass(bearing):
+    """
+    Translates a bearing in degrees to a human readable direction (N, S, E, etc)
+    """
+    compass_point = (int(bearing + 22.5) % 360) // 45
+    return COMPASS_POINTS[compass_point]
+
 class Source(models.Model):
     """
     Defines the data source of an Entity
@@ -92,6 +103,7 @@ class EntityType(models.Model):
                 e.save()
         else:
             super(EntityType, self).save(*args, **kwargs)
+
 
 class EntityTypeName(models.Model):
     entity_type = models.ForeignKey(EntityType, related_name='names')
@@ -214,9 +226,6 @@ class Entity(models.Model):
         self.__metadata = metadata
     metadata = property(get_metadata, set_metadata)
     
-    # Translators: These are compass points
-    COMPASS_POINTS = (_('N'), _('NE'), _('E'), _('SE'),
-                      _('S'), _('SW'), _('W'), _('NW'))
 
     def get_bearing(self, p1):
         """
@@ -224,9 +233,7 @@ class Entity(models.Model):
         """
         p2 = self.location
         lat_diff, lon_diff = p2[0] - p1[0], p2[1] - p1[1]
-        compass_point = int(((90 - degrees(atan2(lon_diff, lat_diff)) + 22.5)
-            % 360) // 45)
-        return self.COMPASS_POINTS[compass_point]
+        return bearing_to_compass(degrees(atan2(lon_diff, lat_diff)))
 
     def get_distance_and_bearing_from(self, point):
         """
