@@ -121,7 +121,10 @@ def humanise_seconds(seconds):
         if minutes == 0:
             return second_t
         else:
-            return '%s %s' % (minute_t, second_t)
+            if seconds:
+                return '%s %s' % (minute_t, second_t)
+            else:
+                return minute_t
     
     # 2 minutes to 5 mins: mins and secs, rounded up to 10
     elif (hours, minutes) < (0, 5):
@@ -136,7 +139,10 @@ def humanise_seconds(seconds):
         # Translators: Minutes
         minute_t = ungettext('%d min', '%d mins', minutes) % minutes
         
-        return '%s %s' % (minute_t, second_t)
+        if seconds:
+            return '%s %s' % (minute_t, second_t)
+        else:
+            return minute_t
     
     # 5 mins to 10 mins: mins and secs rounded to quarter mins
     elif (hours, minutes) < (0, 10):
@@ -146,7 +152,7 @@ def humanise_seconds(seconds):
             minutes += 1
         
         if seconds in (0,4):
-            return ungettext('%d min', '%d mins', minutes) % minutes
+            second_t = ''
         else:
             second_t = {
                 # Translators: A quarter minute
@@ -157,9 +163,11 @@ def humanise_seconds(seconds):
                 3: _(u'¾'),
             }.get(seconds)
         
-            # Translators: Minutes
-            minute_t = ungettext('%d min', '%d mins', minutes) % minutes
-            return '%s %s' % (minute_t, second_t)
+        # Translators: Minutes with fractions
+        return _('%(minutes)d%(seconds)s mins') % {
+            'minutes': minutes,
+            'seconds': second_t
+        }
     
     # 10mins-30mins: mins and secs rounded to half mins
     elif (hours, minutes) < (0, 30):
@@ -169,15 +177,17 @@ def humanise_seconds(seconds):
             minutes += 1
         
         if seconds in (0,2):
-            return ungettext('%d min', '%d mins', minutes) % minutes
+            second_t = ''
         else:
             # Translators: A half minute
             second_t = _(u'½')
-            
-            # Translators: Minutes
-            minute_t = ungettext('%d min', '%d mins', minutes) % minutes
-            
-            return '%s %s' % (minute_t, second_t)
+        
+        # Translators: Minutes with fractions
+        return _('%(minutes)d%(seconds)s mins') % {
+            'minutes': minutes,
+            # Translators: A half minute
+            'seconds': _(u'½')
+        }
         
     # 30mins+ mins (and hours)
     else:
