@@ -189,7 +189,6 @@ def get_map(points, width, height, filename, zoom=None, lon_center=None,
             int((tx - tx_min) * 256 - off[0] - ox),
             int((ty - ty_min) * 256 - off[1] - oy),
         )
-        print tx, ty, off
         image.paste(marker, (off[0], off[1]), marker)
     
     image.save(filename, 'png')
