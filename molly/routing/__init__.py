@@ -1,3 +1,6 @@
+import math
+from operator import itemgetter
+
 ENGINES = dict()
 
 import logging
@@ -54,3 +57,70 @@ def generate_route(points, type):
         }
     else:
         return generate_route(points, type)
+
+
+def optimise_points(points):
+    """
+    This algorithm takes some points and then tries to figure out the shortest
+    route between them.
+    
+    It uses "as the crow flies" distance, which may not necessarily be the best.
+    
+    Points should be a list of tuples, where the first element is the object
+    and the second element is the location of that object (first element is
+    ignored by this algorithm, but is useful for you to correlate the resulting
+    order with your original).
+    
+    This assumes that the first point is always the starting point of the user
+    """
+    
+    if len(points) > 10:
+        raise NotImplementedError()
+
+    def haversine(origin, destination):
+        """
+        Returns the distance between two points using the haversine formula
+        
+        http://www.platoscave.net/blog/2009/oct/5/calculate-distance-latitude-longitude-python/
+        
+        >>> int(haversine((-1.31017, 51.7459), (-1.199226, 51.749327)))
+        7647
+        """
+        
+        lon1, lat1 = map(math.radians, origin)
+        lon2, lat2 = map(math.radians, destination)
+        radius = 6371000 # Earth's radius in metres
+        
+        dlat = lat2-lat1
+        dlon = lon2-lon1
+        a = math.sin(dlat/2)**2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon/2)**2
+        c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
+        d = radius * c
+        
+        return d
+    
+    distances = {}
+    
+    for e, x in points:
+        for e, y in points:
+            distances[(x,y)] = haversine(x, y)
+    
+    def tsp_recurse(current, remaining):
+        weights = []
+        for point in remaining:
+            path = [point[0]]
+            weight = distances[(current, point[1])]
+            
+            next = set(remaining)
+            next.remove(point)
+            if next:
+                path_r, weight_r = tsp_recurse(point[1], next)
+                weight += weight_r
+                path += path_r
+            
+            weights.append((path, weight))
+        
+        return min(weights, key=itemgetter(1))
+    
+    return tsp_recurse(points[0][1], set(points[1:]))
+
