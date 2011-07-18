@@ -4,7 +4,7 @@ from molly.apps.places.models import Entity
 
 class Tour(models.Model):
     
-    stops = models.ManyToManyField(Entity)
+    stops = models.ManyToManyField(Entity, through='StopOnTour')
 
 class StopOnTour(models.Model):
     
