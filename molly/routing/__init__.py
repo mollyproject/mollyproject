@@ -40,6 +40,7 @@ def generate_route(points, type):
       'instruction', which is a human-readable description of the steps to be
       taken here, and 'location', which is a Point describing the route to be
       taken
+    * path: Representing the LineString this route follows
     
     @param points: An ordered list of points to be included in this route
     @type points: [Point]
@@ -122,5 +123,6 @@ def optimise_points(points):
         
         return min(weights, key=itemgetter(1))
     
-    return tsp_recurse(points[0][1], set(points[1:]))
+    path, weight = tsp_recurse(points[0][1], set(points[1:]))
+    return [points[0][0]] + path
 
