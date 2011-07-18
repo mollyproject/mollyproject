@@ -11,6 +11,7 @@
                 
                 ul.content-list
                 ul.link-list
+                ol.directions-list
                 div.section-content
                 div.form-section
     
@@ -184,6 +185,7 @@ div#bc-title h1.auth-header { background-image:url('../../site/images/index-icon
 /* Content-List */
 ul.content-list,
 ul.link-list,
+ol.directions-list,
 ol.search-results {
     border-left: 1px solid rgba(255, 255, 255, 0.33);
     list-style: none;
@@ -198,16 +200,22 @@ ol.search-results {
     border-bottom-right-radius: 8px;
 }
 
-ul.content-list {
+ul.content-list,
+ol.directions-list
+{
     background: #eee;
     background: -webkit-gradient(linear, left top, left bottom, from(#f3f3f3), to(#eee));
     background: -moz-linear-gradient(center top, #f3f3f3, #eee);
     color: #222;
 }
 
-ul.content-list a { color: #00f; }
+ul.content-list a,
+ol.directions-list a {
+    color: #00f;
+}
 
-ul.content-list h3 {
+ul.content-list h3,
+ol.directions-list h3 {
     color: #222;
     text-align: left;
     font-size: 1em;
@@ -215,7 +223,8 @@ ul.content-list h3 {
     margin-bottom: 5px;
 }
 
-ul.content-list li {
+ul.content-list li,
+ol.directions-list li {
     padding: 10px;
     border-top: 1px solid #98a1ac;
     background: none;
@@ -224,6 +233,7 @@ ul.content-list li {
 
 ul.content-list li:first-child,
 ul.link-list li:first-child,
+ol.directions-list li:first-child,
 ol.search-results li:first-child {
     border-top: none;
 }
@@ -489,7 +499,10 @@ div.header h2 {
 }
 
 /* CSS 2.1 */
-div.header + ul.content-list, div.header + form, div.header + div.section-content {
+div.header + ul.content-list,
+div.header + ol.directions-list,
+div.header + form,
+div.header + div.section-content {
     border-top: 1px solid rgb(152, 161, 172);
 }
 
