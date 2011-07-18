@@ -37,9 +37,18 @@ def generate_route(points, type):
     @rtype: dict
     """
     
+    def to_comma_string(p):
+        return ','.join(reversed(map(str, p)))
+    
     # Build cloudmade request:
-    points = map(lambda p: ','.join(reversed(map(str, p))), points)
-    url = CLOUDMADE_URL + ','.join(points) + '/%s.js?lang=%s' % (type, get_language()[:2])
+    urlpoints = to_comma_string(points[0])
+    
+    if points[1:-1]:
+        urlpoints += ',[' + ','.join(map(to_comma_string, points[1:-1])) + ']'
+    
+    urlpoints += ',' + to_comma_string(points[-1])
+    
+    url = CLOUDMADE_URL + '%s/%s.js?lang=%s' % (urlpoints, type, get_language()[:2])
     
     json = simplejson.load(urlopen(url))
     
