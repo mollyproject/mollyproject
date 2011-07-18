@@ -7,7 +7,10 @@ from django.utils.translation import get_language, ugettext
 
 from molly.utils.templatetags.molly_utils import humanise_seconds
 
-CLOUDMADE_URL = 'http://routes.cloudmade.com/%s/api/0.3/' % settings.API_KEYS['cloudmade']
+try:
+    CLOUDMADE_URL = 'http://routes.cloudmade.com/%s/api/0.3/' % settings.API_KEYS['cloudmade']
+except KeyError:
+    raise ImportError()
 
 def generate_route(points, type):
     """
@@ -83,3 +86,4 @@ def generate_route(points, type):
             'waypoints': waypoints,
             'path': LineString(map(lambda ps: Point(*ps), map(reversed, json['route_geometry'])))
         }
+
