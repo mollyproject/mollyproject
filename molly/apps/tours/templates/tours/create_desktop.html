@@ -9,8 +9,15 @@
     <h1>{% trans "Create a tour" %}</h1>
     <p>{% blocktrans %}Some instructions on how to create a tour here{% endblocktrans %}</p>
     
+    {% if tour %}
+        <p>Your tour has been created.</p>
+    {% endif %}
+    
     <div id="current-tour">
         <h2>{% trans "Current stops on your tour" %}</h2>
+        {% if optimised_entities %}
+            <p>{% trans 'Your route order has been optimised to minimise travelling distance - the order may have changed.' %}</p>
+        {% endif %}
         <ol id="poi-list">
             {% for entity in entities %}
                 {# Todo: Add remove link #}
@@ -21,6 +28,18 @@
             <input type="submit" value="{% trans 'Save' %}" />
         </form>
     </div>
+    
+    {% if suggestions %}
+        <div class="attractions-grouping">
+            <h2>{% trans "Suggestions" %}</h2>
+            <p>{% trans 'Your tour takes you near the following places, click on them to add them to your route:' %}</p>
+            <ul>
+                {% for entity in suggestions %}
+                    <li><a href="{{ full_path }}{{ entity.identifier_scheme }}:{{ entity.identifier_value }}/">{{ entity.title }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
     
     {% for entity_type, entities in attractions.items %}
         <div class="attractions-grouping">
