@@ -677,5 +677,17 @@ DUMMY = {
         'verbose_name': ugettext_noop('theatre'),
         'verbose_name_plural': ugettext_noop('theatres'),
         'verbose_name_singular': ugettext_noop('a theatre')
-    }
+    },
+    'tourist-information': {
+        'category': ugettext_noop('Leisure'),
+        'verbose_name': ugettext_noop('tourist information point'),
+        'verbose_name_plural': ugettext_noop('tourist information points'),
+        'verbose_name_singular': ugettext_noop('a tourist information point')
+    },
+    'tourist-attraction': {
+        'category': ugettext_noop('Leisure'),
+        'verbose_name': ugettext_noop('tourist attraction'),
+        'verbose_name_plural': ugettext_noop('tourist attractions'),
+        'verbose_name_singular': ugettext_noop('a tourist attraction')
+    },
 }
