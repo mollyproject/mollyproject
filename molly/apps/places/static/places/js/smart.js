@@ -130,7 +130,7 @@ function parse_results(data, nearby){
             '<ul class="link-list"></ul>')
         for (j in data.entity_types[category]) {
             var entity_type = data.entity_types[category][j]
-            var found_within_string = interpolate(gettext('%(entities_found)s within %(distance)sm'),
+            var found_within_string = interpolate(gettext('%(entities_found)s within %(distance)s'),
                                                   {
                                                     entities_found: entity_type.entities_found,
                                                     distance: entity_type.max_distance
