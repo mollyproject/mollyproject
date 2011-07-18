@@ -1,6 +1,6 @@
 from django.conf.urls.defaults import *
 
-from views import IndexView, CreateView, SaveView
+from views import IndexView, CreateView, SaveView, TourView
 
 urlpatterns = patterns('',
     
@@ -15,5 +15,13 @@ urlpatterns = patterns('',
     (r'^create/(?P<entities>([a-z_\-]+:[^/]+/)*)save/$',
         SaveView, {},
         'save'),
+    
+    (r'^(?P<tour>\d+)/$',
+        TourView, {},
+        'tour-start'),
+    
+    (r'^(?P<tour>\d+)/(?P<page>\d+)/$',
+        TourView, {},
+        'tour'),
     
     )

@@ -2,9 +2,12 @@ from django.core.urlresolvers import reverse
 from django.contrib.gis.measure import D
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
+from django.shortcuts import get_object_or_404
+from django.http import Http404
 
 from molly.apps.places import get_entity
 from molly.apps.places.models import Entity, EntityType
+from molly.maps import Map
 from molly.utils.breadcrumbs import *
 from molly.utils.views import BaseView
 from molly.wurfl import device_parents
@@ -109,9 +112,74 @@ class SaveView(CreateView):
         
         return super(SaveView, self).handle_GET(request, context, entities)
 
+class PdfView(BaseView):
+    pass
 
-# Todo: paper view
+class PodcastView(BaseView):
+    pass
 
-# Todo: podcast view
+class TourView(BaseView):
+    
+    @BreadcrumbFactory
+    def breadcrumb(self, request, context, tour, page=None):
+        
+        return Breadcrumb(
+            self.conf.local_name,
+            lazy_parent('index'),
+            context['stop'].entity.title if page else _('Tour'),
+            lazy_reverse('tour', args=(context['tour'].pk, page)),
+        )
+    
+    def initial_context(self, request, tour, page=None):
+        
+        context = super(TourView, self).initial_context(request)
+        tour = get_object_or_404(Tour, id=tour)
+        context.update({
+            'tour': tour,
+            'stops': StopOnTour.objects.filter(tour=tour)
+        })
+        
+        if page is not None:
+            stop = get_object_or_404(StopOnTour, tour=tour, order=page)
+            context['stop'] = stop
+            
+            try:
+                context['next_stop'] = StopOnTour.objects.get(tour=tour, order=int(page)+1)
+            except StopOnTour.DoesNotExist:
+                pass
+            
+            try:
+                context['previous_stop'] = StopOnTour.objects.get(tour=tour, order=int(page)-1)
+            except StopOnTour.DoesNotExist:
+                pass
+        
+        return context
+    
+    def handle_GET(self, request, context, tour, page=None):
+        
+        user_location = request.session.get('geolocation:location')
+        if user_location is None:
+            user_location = context['stop'].entity.location
+        
+        if 'next_stop' in context and \
+          context['next_stop'].entity.location is not None and \
+          user_location is not None:
+        
+            context['route'] = generate_route(
+                [user_location, context['next_stop'].entity.location], 'foot')
+            
+            context['route_map'] = Map(
+                (user_location[0], user_location[1], 'green', ''),
+                [(w['location'][0], w['location'][1], 'red', w['instruction'])
+                    for w in context['route']['waypoints']],
+                len(context['route']['waypoints']),
+                None,
+                request.map_width,
+                request.map_height,
+                extra_points=[(context['next_stop'].entity.location[0],
+                               context['next_stop'].entity.location[1],
+                               'red', context['next_stop'].entity.title)],
+                paths=[(context['route']['path'], '#3c3c3c')])
+        
+        return self.render(request, context, 'tours/tour')
 
-# Todo: Mobile tour view
