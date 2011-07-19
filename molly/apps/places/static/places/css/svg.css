@@ -1,0 +1,10 @@
+
+ol.directions-list li.direction-start { background-image: url('../../places/images/start.svg'); }
+ol.directions-list li.direction-left { background-image: url('../../places/images/turn-left.svg'); }
+ol.directions-list li.direction-slight-left { background-image: url('../../places/images/bear-left.svg'); }
+ol.directions-list li.direction-sharp-left { background-image: url('../../places/images/sharp-left.svg'); }
+ol.directions-list li.direction-right { background-image: url('../../places/images/turn-right.svg'); }
+ol.directions-list li.direction-slight-right { background-image: url('../../places/images/bear-right.svg'); }
+ol.directions-list li.direction-sharp-right { background-image: url('../../places/images/sharp-right.svg'); }
+ol.directions-list li.direction-turn-around { background-image: url('../../places/images/turn-around.svg'); }
+ol.directions-list li.direction-straight { background-image: url('../../places/images/straight-on.svg'); }

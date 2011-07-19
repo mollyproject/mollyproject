@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 15.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="52px"
+	 height="52px" viewBox="0 0 52 52" enable-background="new 0 0 52 52" xml:space="preserve">
+<g id="guides">
+</g>
+<g id="start" display="none">
+	
+		<circle display="inline" fill="#00A551" stroke="#231F20" stroke-width="6.7778" stroke-miterlimit="10" cx="26" cy="26" r="21.35"/>
+</g>
+<g id="turn_around" display="none">
+	<g display="inline">
+		<path fill="none" stroke="#231F20" stroke-width="5.2312" stroke-miterlimit="10" d="M37.019,17.062
+			c0-6.609-4.934-11.967-11.019-11.967c-6.085,0-11.019,5.357-11.019,11.967"/>
+		
+			<line fill="none" stroke="#231F20" stroke-width="5.2312" stroke-linecap="round" stroke-miterlimit="10" x1="37.019" y1="16.997" x2="37.019" y2="44.526"/>
+		<g>
+			<g>
+				
+					<line fill="none" stroke="#231F20" stroke-width="5.2312" stroke-miterlimit="10" x1="14.981" y1="17.062" x2="14.981" y2="40.86"/>
+				<g>
+					<polygon fill="#231F20" points="9.762,33.022 14.981,39.211 20.201,33.022 14.981,51 					"/>
+					<polygon fill="#FFFFFF" points="11.274,35.569 14.981,49.021 14.981,40.158 					"/>
+				</g>
+			</g>
+		</g>
+	</g>
+</g>
+<g id="sharp_right" display="none">
+	<g display="inline">
+		<g>
+			<polyline fill="none" stroke="#231F20" stroke-width="5.5827" stroke-linecap="round" stroke-linejoin="round" points="
+				25.937,47 25.937,5.302 40.596,25.268 			"/>
+			<g>
+				<polygon fill="#231F20" points="31.155,21.822 39.554,23.849 40.136,15.229 46.999,33.99 				"/>
+				<polygon fill="#FFFFFF" points="34.064,23.058 45.749,32.288 40.152,24.664 				"/>
+			</g>
+		</g>
+	</g>
+</g>
+<g id="sharp_left" display="none">
+	<g display="inline">
+		<g>
+			<polyline fill="none" stroke="#231F20" stroke-width="5.5827" stroke-linecap="round" stroke-linejoin="round" points="
+				25.999,47 25.999,5.302 11.34,25.268 			"/>
+			<g>
+				<polygon fill="#231F20" points="11.8,15.229 12.382,23.849 20.78,21.822 4.937,33.99 				"/>
+				<polygon fill="#FFFFFF" points="11.493,18.375 6.187,32.288 11.783,24.664 				"/>
+			</g>
+		</g>
+	</g>
+</g>
+<g id="turn_left" display="none">
+	<g display="inline">
+		<g>
+			<polyline fill="none" stroke="#231F20" stroke-width="6.3945" stroke-linecap="round" stroke-linejoin="round" points="
+				26.061,46.65 26.061,14.625 14.03,14.625 			"/>
+			<g>
+				<polygon fill="#231F20" points="22.652,8.882 15.844,14.625 22.652,20.368 2.875,14.625 				"/>
+				<polygon fill="#FFFFFF" points="19.851,10.546 5.052,14.625 14.802,14.625 				"/>
+			</g>
+		</g>
+	</g>
+</g>
+<g id="turn_right" display="none">
+	<g display="inline">
+		<g>
+			<polyline fill="none" stroke="#231F20" stroke-width="6.3945" stroke-linecap="round" stroke-linejoin="round" points="
+				25.875,46.65 25.875,14.625 37.906,14.625 			"/>
+			<g>
+				<polygon fill="#231F20" points="29.283,20.368 36.092,14.625 29.283,8.882 49.061,14.625 				"/>
+				<polygon fill="#FFFFFF" points="32.084,18.704 46.884,14.625 37.133,14.625 				"/>
+			</g>
+		</g>
+	</g>
+</g>
+<g id="bear_left">
+	<g>
+		<g>
+			<polyline fill="none" stroke="#231F20" stroke-width="5.017" stroke-linecap="round" stroke-linejoin="bevel" points="25.957,47 
+				25.957,24.872 25.634,23.965 12.375,11.597 			"/>
+			<g>
+				<polygon fill="#231F20" points="21.286,13.063 13.531,12.676 14.457,20.385 5.264,4.964 				"/>
+				<polygon fill="#FFFFFF" points="18.511,12.458 6.651,6.258 12.867,12.056 				"/>
+			</g>
+		</g>
+	</g>
+</g>
+<g id="bear_right" display="none">
+	<g display="inline">
+		<g>
+			<polyline fill="none" stroke="#231F20" stroke-width="5.017" stroke-linecap="round" stroke-linejoin="bevel" points="26.264,47 
+				26.264,24.872 26.587,23.965 39.846,11.597 			"/>
+			<g>
+				<polygon fill="#231F20" points="37.764,20.385 38.689,12.676 30.935,13.063 46.957,4.964 				"/>
+				<polygon fill="#FFFFFF" points="38.561,17.658 45.569,6.258 39.354,12.056 				"/>
+			</g>
+		</g>
+	</g>
+</g>
+<g id="straight_on" display="none">
+	<g display="inline">
+		<g>
+			
+				<line fill="none" stroke="#231F20" stroke-width="5.2997" stroke-linecap="round" stroke-miterlimit="10" x1="26" y1="47" x2="26" y2="14.648"/>
+			<g>
+				<polygon fill="#231F20" points="31.288,22.589 26,16.319 20.712,22.589 26,4.376 				"/>
+				<polygon fill="#FFFFFF" points="29.756,20.009 26,6.38 26,15.359 				"/>
+			</g>
+		</g>
+	</g>
+</g>
+</svg>
