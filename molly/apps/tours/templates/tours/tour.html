@@ -8,7 +8,7 @@
     
     {% if previous_stop %}
         <ul class="link-list stand-alone">
-            <li><a href="{% url tours:tour tour.id,previous_stop.order %}" class="go-back">{% blocktrans with previous_stop.entity.title as entity %}Go back to {{ entity }}{% endblocktrans %}</a></li>
+            <li><a href="{{previous_stop.get_absolute_url }}" class="go-back">{% blocktrans with previous_stop.entity.title as entity %}Go back to {{ entity }}{% endblocktrans %}</a></li>
         </ul>
     {% endif %}
     
@@ -65,15 +65,15 @@
     
     {% if next_stop %}
         <ul class="link-list stand-alone">
-            <li><a href="{% url tours:tour tour.id,next_stop.order %}">{% blocktrans with next_stop.entity.title as entity %}Go to {{ entity }}{% endblocktrans %}</a>
+            <li><a href="{{ next_stop.get_absolute_url }}">{% blocktrans with next_stop.entity.title as entity %}Go to {{ entity }}{% endblocktrans %}</a>
         </ul>
     {% endif %}
-    
+
 {% endif %}
 
 <div class="section">
     <div class="header">
-        <h2>{% trans 'Stops on route' %}</h2>
+        <h2>{% trans 'Stops on tour' %}</h2>
     </div>
     <ul class="link-list">
         {% for s in stops %}

@@ -14,7 +14,7 @@
         </div>
         <ul class="link-list">
             {% for tour in tours %}
-                <li>{{ tour }}</li>
+                <li><a href="{{ tour.get_absolute_url }}">{{ tour }}</a></li>
             {% endfor %}
         </ul>
     {% endif %}
