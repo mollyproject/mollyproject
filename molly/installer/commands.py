@@ -1,3 +1,4 @@
+import sys
 import os
 import string
 from random import choice
@@ -14,7 +15,6 @@ from molly.installer import PIP_PACKAGES
 try:
     from molly.installer.sysprep import PYTHON26
 except (NotImplementedError, ImportError):
-    import sys
     PYTHON26 = sys.executable
 
 class DeployCommand(Command):
