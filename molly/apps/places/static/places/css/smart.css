@@ -31,9 +31,11 @@ td.service-id a {
 ol.directions-list li {
     font-size: 1.2em;
     font-weight: bold;
-    padding-left: 40px;
+    padding-left: 55px;
     list-style-type: decimal;
     list-style-position: inside;
+    background-repeat: no-repeat;
+    background-position: left center;
 }
 
 ol.directions-list li .additional {
@@ -42,11 +44,11 @@ ol.directions-list li .additional {
 }
 
 ol.directions-list li.direction-start {}
-ol.directions-list li.direction-left {}
-ol.directions-list li.direction-slight-left {}
-ol.directions-list li.direction-sharp-left {}
-ol.directions-list li.direction-right {}
-ol.directions-list li.direction-slight-right {}
-ol.directions-list li.direction-sharp-right {}
-ol.directions-list li.direction-turn-around {}
-ol.directions-list li.direction-straight {}
+ol.directions-list li.direction-left { background-image: url('../../places/images/turn-left.png'); }
+ol.directions-list li.direction-slight-left { background-image: url('../../places/images/bear-left.png'); }
+ol.directions-list li.direction-sharp-left { background-image: url('../../places/images/sharp-left.png'); }
+ol.directions-list li.direction-right { background-image: url('../../places/images/turn-right.png'); }
+ol.directions-list li.direction-slight-right { background-image: url('../../places/images/bear-right.png'); }
+ol.directions-list li.direction-sharp-right { background-image: url('../../places/images/sharp-right.png'); }
+ol.directions-list li.direction-turn-around { background-image: url('../../places/images/turn-around.png'); }
+ol.directions-list li.direction-straight { background-image: url('../../places/images/straight-on.png'); }
