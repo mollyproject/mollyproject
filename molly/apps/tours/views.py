@@ -167,9 +167,10 @@ class TourView(BaseView):
         if user_location is None and 'previous_stop' in context:
             user_location = context['previous_stop'].entity.location
         
-        if context['stop'].entity.location is not None and \
+        if 'stop' in context and \
+          context['stop'].entity.location is not None and \
           user_location is not None:
-        
+            
             context['route'] = generate_route(
                 [user_location, context['stop'].entity.location], 'foot')
             
