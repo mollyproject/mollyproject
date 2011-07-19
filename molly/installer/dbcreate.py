@@ -3,6 +3,8 @@ Creates a database for Molly, and appropriate users, once given login
 information as super user, or by running as root.
 """
 
+import os
+
 from molly.installer.utils import quiet_exec, CommandFailed
 
 def create(dba_user, dba_pass, username, password, database):
