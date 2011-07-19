@@ -6,11 +6,12 @@
     {% compressed_css 'tours-desktop' %}
 </head>
 <body>
+    <!-- Icons on this page are from FamFamFam silk, CC-BY http://www.famfamfam.com/lab/icons/silk/ -->
     <h1>{% trans "Create a tour" %}</h1>
     <p>{% blocktrans %}Some instructions on how to create a tour here{% endblocktrans %}</p>
     
     {% if tour %}
-        <p>{% trans 'Your tour has been created.' %}</p>
+        <p><a href="{{ tour.get_absolute_url }}">{% trans 'Your tour has been created. Click here to go to the tour page.' %}</a></p>
     {% endif %}
     
     <div id="current-tour">
@@ -36,18 +37,18 @@
             <p>{% trans 'Your tour takes you near the following places, click on them to add them to your route:' %}</p>
             <ul>
                 {% for entity in suggestions %}
-                    <li><a href="{% url tours:create %}{% for e in entities %}{{ e.identifier_scheme }}:{{ e.identifier_value }}/{% endfor %}{{ entity.identifier_scheme }}:{{ entity.identifier_value }}/save/">{{ entity.title }}</a></li>
+                    <li id="{{ entity.identifier_scheme }}-{{ entity.identifier_value }}"{% if entity in entities %} class="selected"{% endif %}><a href="{% url tours:create %}{% for e in entities %}{{ e.identifier_scheme }}:{{ e.identifier_value }}/{% endfor %}{{ entity.identifier_scheme }}:{{ entity.identifier_value }}/save/">{{ entity.title }}</a></li>
                 {% endfor %}
             </ul>
         </div>
     {% endif %}
     
-    {% for entity_type, entities in attractions.items %}
+    {% for entity_type, attraction_entities in attractions.items %}
         <div class="attractions-grouping">
             <h2>{{ entity_type.verbose_name_plural|capfirst }}</h2>
             <ul>
-                {% for entity in entities %}
-                    <li><a href="{% url tours:create %}{% for e in entities %}{{ e.identifier_scheme }}:{{ e.identifier_value }}/{% endfor %}{{ entity.identifier_scheme }}:{{ entity.identifier_value }}/">{{ entity.title }}</a></li>
+                {% for entity in attraction_entities %}
+                    <li id="{{ entity.identifier_scheme }}-{{ entity.identifier_value }}"{% if entity in entities %} class="selected"{% endif %}><a href="{% url tours:create %}{% for e in entities %}{{ e.identifier_scheme }}:{{ e.identifier_value }}/{% endfor %}{{ entity.identifier_scheme }}:{{ entity.identifier_value }}/">{{ entity.title }}</a></li>
                 {% endfor %}
             </ul>
         </div>
