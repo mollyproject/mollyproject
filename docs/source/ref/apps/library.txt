@@ -41,7 +41,7 @@ the Z39.50 protocol. It supports the following options:
  * control_number_key (optional, defaults to 12): The 'use attribute' to query
    on when doing a control number lookup,
  * results_encoding (optional, defaults to marc8): The encoding results come
-   back in. Valid values are 'marc8' and 'unicode'.
+   back in. Valid values are 'marc8' and 'unicode'. Aleph needs 'unicode'.
 
 Writing Your Own Providers
 --------------------------
