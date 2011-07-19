@@ -451,3 +451,4 @@ def marc_to_unicode(x):
             else:
                 return y.decode('ascii').replace(u'\x1b', u'\xa0')
     return f(x)
+
