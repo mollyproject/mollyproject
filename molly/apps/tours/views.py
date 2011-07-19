@@ -157,16 +157,21 @@ class TourView(BaseView):
     
     def handle_GET(self, request, context, tour, page=None):
         
-        user_location = request.session.get('geolocation:location')
-        if user_location is None:
-            user_location = context['stop'].entity.location
+        if 'tours:visited' in request.session:
+            request.session['tours:visited'].add(context['tour'].id)
+        else:
+            request.session['tours:visited'] = set((context['tour'].id,))
+        request.session.save()
         
-        if 'next_stop' in context and \
-          context['next_stop'].entity.location is not None and \
+        user_location = request.session.get('geolocation:location')
+        if user_location is None and 'previous_stop' in context:
+            user_location = context['previous_stop'].entity.location
+        
+        if context['stop'].entity.location is not None and \
           user_location is not None:
         
             context['route'] = generate_route(
-                [user_location, context['next_stop'].entity.location], 'foot')
+                [user_location, context['stop'].entity.location], 'foot')
             
             context['route_map'] = Map(
                 (user_location[0], user_location[1], 'green', ''),
@@ -176,9 +181,9 @@ class TourView(BaseView):
                 None,
                 request.map_width,
                 request.map_height,
-                extra_points=[(context['next_stop'].entity.location[0],
-                               context['next_stop'].entity.location[1],
-                               'red', context['next_stop'].entity.title)],
+                extra_points=[(context['stop'].entity.location[0],
+                               context['stop'].entity.location[1],
+                               'red', context['stop'].entity.title)],
                 paths=[(context['route']['path'], '#3c3c3c')])
         
         return self.render(request, context, 'tours/tour')

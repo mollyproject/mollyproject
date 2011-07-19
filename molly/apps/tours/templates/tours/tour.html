@@ -8,7 +8,7 @@
     
     {% if previous_stop %}
         <ul class="link-list stand-alone">
-            <li><a href="{% url tours:tour tour.id,stop.order|add:"-1" %}" class="go-back">{% blocktrans with previous_stop.entity.title as entity %}Go back to {{ entity }}{% endblocktrans %}</a></li>
+            <li><a href="{% url tours:tour tour.id,previous_stop.order %}" class="go-back">{% blocktrans with previous_stop.entity.title as entity %}Go back to {{ entity }}{% endblocktrans %}</a></li>
         </ul>
     {% endif %}
     
@@ -20,9 +20,14 @@
     </div>
     
     {% if route %}
+        
         <div class="section">
             <div class="header">
-                <h2>{% blocktrans with next_stop.entity.title as title %}Directions to {{ title }}{% endblocktrans %}</h2>
+                {% if geolocation.name %}
+                    <h2>{% blocktrans with stop.entity.title as title %}Directions to {{ title }} from your current location{% endblocktrans %}</h2>
+                {% else %}
+                    <h2>{% blocktrans with stop.entity.title as title %}Directions to {{ title }} from your previous stop{% endblocktrans %}</h2>
+                {% endif %}
             </div>
             <div class="section-content no-round-bottom">
                 {% render_map route_map %}
@@ -30,7 +35,7 @@
                     {% blocktrans with route.total_time|humanise_seconds as time and route.total_distance|humanise_distance as distance %}This route will take {{ time }} and cover {{ distance }}.{% endblocktrans %}
 		</div></div></div>
             </div>
-            <ol class="directions-list no-round-bottom">
+            <ol class="directions-list">
                 {% for waypoint in route.waypoints %}
                 <li class="direction-{{ waypoint.waypoint_type }}">
                     {{ waypoint.instruction }}<br />
@@ -38,9 +43,6 @@
                 </li>
                 {% endfor %}
             </ol>
-            <ul class="link-list">
-                <li><a href="{% url tours:tour tour.id,stop.order|add:"1" %}">{% blocktrans with next_stop.entity.title as entity %}Go to {{ entity }}{% endblocktrans %}</a>
-            </ul>
         </div>
         
         <div class="note"><div class="bubble"><div class="pad-10">
@@ -48,14 +50,23 @@
         </div></div></div>
     
     {% else %}
-        {% if next_stop %}
+        
+        {% if geolocation.name %}
             <div class="note"><div class="bubble"><div class="pad-10">
-                {% trans 'We could not plot a route to your next stop.' %}
+                {% trans 'We could not plot a route to this location as we do not know where you currently are.' %}
             </div></div></div>
-            <ul class="link-list stand-alone">
-                <li><a href="{% url tours:tour tour.id,stop.order|add:"1" %}">{% blocktrans with next_stop.entity.title as entity %}Go to {{ entity }}{% endblocktrans %}</a>
-            </ul>
+        {% else %}
+            <div class="note"><div class="bubble"><div class="pad-10">
+                {% trans 'We could not plot a route to this location.' %}
+            </div></div></div>
         {% endif %}
+        
+    {% endif %}
+    
+    {% if next_stop %}
+        <ul class="link-list stand-alone">
+            <li><a href="{% url tours:tour tour.id,next_stop.order %}">{% blocktrans with next_stop.entity.title as entity %}Go to {{ entity }}{% endblocktrans %}</a>
+        </ul>
     {% endif %}
     
 {% endif %}
