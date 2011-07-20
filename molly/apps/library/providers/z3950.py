@@ -63,12 +63,7 @@ class USMARCSearchResult(SearchResult):
             heading, data = item.split(' ', 1)
             heading = int(heading)
             if heading == self.USM_CONTROL_NUMBER:
-                # We strip the 'UkOxUb' from the front.
-                
-                if data.startswith('UkOxUb'):
-                    self.control_number = data[6:]
-                else:
-                    self.control_number = data
+                self.control_number = data
 
             # We'll use a slice as data may not contain that many characters.
             # LCN 12110145 is an example where this would otherwise fail.
@@ -94,7 +89,7 @@ class USMARCSearchResult(SearchResult):
         self.libraries = {}
 
         for datum in self.metadata[self.USM_LOCATION]:
-            library = Library(datum['b'])
+            library = Library(datum['b'] + datum.get('c', []))
             if not 'p' in datum:
                 availability = LibrarySearchResult.AVAIL_UNKNOWN
                 datum['y'] = ['Check web OPAC']
