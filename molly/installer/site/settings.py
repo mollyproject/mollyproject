@@ -290,6 +290,11 @@ API_KEYS = {
 # primary identifer. The default is shown in the sample below, and is optional:
 #IDENTIFIER_SCHEME_PREFERENCE = ('atco', 'osm', 'naptan', 'postcode', 'bbc-tpeg')
 
+# When converting distances into human readable units, several schemes are
+# available: metric (metres and kilometres), imperial (yards and miles) and
+# british (metres and miles) - the default.
+#DISTANCE_UNITS = 'british'
+
 # This is where you define which applications are used in your Molly install
 # The order in this file defines the order in which applications appear on the
 # home screen
@@ -563,7 +568,13 @@ APPLICATIONS = [
                             
                             # Optional - the 'use attribute' to use when looking
                             # up by control number, defaults to 12
-                            #control_number_key='1032'
+                            #control_number_key='1032',
+                            
+                            # Optional - the encoding which is used on results
+                            # from the server, only unicode or marc8 are
+                            # supported. Aleph supplies unicode, and marc8 is
+                            # default
+                            #results_encoding='unicode',
                             ),
     ),
 
