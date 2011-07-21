@@ -480,7 +480,7 @@ class CategoryListView(BaseView):
         return Breadcrumb(
             'places',
             lazy_parent('index'),
-            -('Categories'),
+            _('Categories'),
             lazy_reverse('category-list'),
         )
 
