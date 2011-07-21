@@ -14,7 +14,7 @@ else:
 if distribution == 'Fedora':
     from molly.installer.sysprep.fedora import *
 elif distribution == 'redhat':
-    from molly.installer.sysprep.rhel import *
+    from molly.installer.sysprep.redhat import *
 elif distribution == 'Ubuntu':
     if distribution_version == '10.04':
         from molly.installer.sysprep.ubuntu_lucid import *

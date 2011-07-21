@@ -21,7 +21,7 @@ def deploy(venv, site_path, development=False, listen_externally=False,
     """
     
     logger.info('Doing a %s install into %s using site %s',
-                'development' if development else 'production',
+                {True: 'development', False: 'production'}.get(development),
                 venv.path, site_path)
     
     if not development:

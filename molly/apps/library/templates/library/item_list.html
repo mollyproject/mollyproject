@@ -36,7 +36,7 @@
                     {% endwith %}
                 {% endif %}
                 <a href="{% url library:item-detail item.control_number %}">
-                    {{ item  }}{% if item.author %}
+                    {{ item.title }}{% if item.author %}
                     <br/><small><strong>{% trans "Author" %}:</strong> {{ item.author }}</small>{% endif %}
                     <br/><small><strong>{% trans "Publisher" %}:</strong> {{ item.publisher }}</small>{% if item.edition %}
                     <br/><small><strong>{% trans "Edition" %}:</strong> {{ item.edition }}</small>{% endif %}

@@ -1,7 +1,7 @@
 import logging
 
 from django.http import Http404
-from django.core.urlresolvers import resolve
+from django.core.urlresolvers import resolve, reverse
 from django.utils.translation import ugettext as _
 
 from molly.utils.views import BaseView
@@ -100,7 +100,7 @@ class IndexView(BaseView):
         
             # If the source was the favourites page, redirect back there
             if 'return_to_favourites' in request.POST:
-                return self.redirect(lazy_reverse('favourites:index'), request)
+                return self.redirect(reverse('favourites:index'), request)
             
             # else the source
             else:
@@ -108,4 +108,4 @@ class IndexView(BaseView):
             
         else:
             # Missing POST data, probably a bad request
-            return self.redirect(lazy_reverse('favourites:index'), request)
+            return self.redirect(reverse('favourites:index'), request)
