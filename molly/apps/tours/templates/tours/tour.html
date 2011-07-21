@@ -69,6 +69,60 @@
         </ul>
     {% endif %}
 
+{% else %}
+    
+    {% if arrival_points or arrival_routes %}
+        <div class="section">
+            <div class="header">
+                <h2>{% trans 'Arrival method' %}</h2>
+            </div>
+            <ul class="link-list">
+                {% for i, entity in arrival_points %}
+                    <li><a href="?arrival_point={{ i }}">{% blocktrans with entity.title as title %}At {{ title }}{% endblocktrans %}</a></li>
+                {% endfor %}
+                {% for route, title in arrival_routes %}
+                    <li><a href="?arrival_route={{ route }}">{% blocktrans with title as title %}By {{ title }}{% endblocktrans %}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+    
+    {% if first_directions %}
+        
+        <div class="section">
+            {% if p_and_r %}
+                <div class="header">
+                    <h2>{% blocktrans with p_and_r.start.title as start and p_and_r.closest_stop.title as end %}Park &amp; Ride from {{ start }} to {{ end }}{% endblocktrans %}</h2>
+                </div>
+                <div class="section-content no-round-bottom">
+                    <p>{% blocktrans count p_and_r.routes|length as num_routes with p_and_r.routes|join:', ' as route_numbers and p_and_r.start.title as start and p_and_r.closest_stop.title as end %}At {{ start }} take service {{ route_numbers }} to {{ end }}.{% plural %}At {{ start }} take any of services {{ route_numbers }} to {{ end }}.{% endblocktrans %}
+                </div>
+            {% endif %}
+            <div class="header">
+                <h2>{% blocktrans with directions_end.title as dest_title and directions_start.title as origin_title %}Directions to {{ dest_title }} from {{ origin_title }}{% endblocktrans %}</h2>
+            </div>
+            <div class="section-content no-round-bottom">
+                {% render_map directions_map %}
+		<div class="note"><div class="bubble"><div class="pad-10">
+                    {% blocktrans with first_directions.total_time|humanise_seconds as time and first_directions.total_distance|humanise_distance as distance %}This route will take {{ time }} and cover {{ distance }}.{% endblocktrans %}
+		</div></div></div>
+            </div>
+            <ol class="directions-list">
+                {% for waypoint in first_directions.waypoints %}
+                <li class="direction-{{ waypoint.waypoint_type }}">
+                    {{ waypoint.instruction }}<br />
+                    <span class="additional">{{ waypoint.additional }}</span>
+                </li>
+                {% endfor %}
+            </ol>
+        </div>
+        
+        <div class="note"><div class="bubble"><div class="pad-10">
+            {% trans 'Please note that the route information provided should be followed at your own risk.' %}
+        </div></div></div>
+    
+    {% endif %}
+
 {% endif %}
 
 <div class="section">

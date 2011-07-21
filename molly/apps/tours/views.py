@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404
 from django.http import Http404
 
 from molly.apps.places import get_entity
-from molly.apps.places.models import Entity, EntityType
+from molly.apps.places.models import Entity, EntityType, StopOnRoute
 from molly.maps import Map
 from molly.utils.breadcrumbs import *
 from molly.utils.views import BaseView
@@ -153,6 +153,56 @@ class TourView(BaseView):
             except StopOnTour.DoesNotExist:
                 pass
         
+        else:
+            
+            arrival_point = request.GET.get('arrival_point')
+            if arrival_point:
+                first_stop = tour.stops.all()[0]
+                sv, p_and_r, routes = self.conf.arrival_points[int(arrival_point)]
+                entity = get_entity(*sv.split(':'))
+                if p_and_r:
+                    # Get closest bus stop to first stop on route, then plot
+                    # route
+                    closest_stop = Entity.objects.filter(
+                            stoponroute__route__service_id__in=routes,
+                        ).distance(first_stop.location).order_by('distance')[0]
+                    context['p_and_r'] = {
+                        'start': entity,
+                        'routes': set(routes) & set(sor.route.service_id for sor in closest_stop.stoponroute_set.all()),
+                        'closest_stop': closest_stop
+                    }
+                    start_location = closest_stop
+                else:
+                    # Directions from that point to first stop
+                    start_location = entity
+                
+                context['first_directions'] = generate_route(
+                    [start_location.location, first_stop.location], 'foot')
+                context['directions_start'] = start_location
+                context['directions_end'] = first_stop
+                context['directions_map'] = Map(
+                (start_location.location[0], start_location.location[1], 'green', ''),
+                [(w['location'][0], w['location'][1], 'red', w['instruction'])
+                    for w in context['first_directions']['waypoints']],
+                len(context['first_directions']['waypoints']),
+                None,
+                request.map_width,
+                request.map_height,
+                extra_points=[(first_stop.location[0],
+                               first_stop.location[1],
+                               'red', first_stop.title)],
+                paths=[(context['first_directions']['path'], '#3c3c3c')])
+            
+            else:
+            
+                arrival_points = []
+                for i, arrival_point in enumerate(getattr(self.conf, 'arrival_points', [])):
+                    arrival_points.append((i, get_entity(*arrival_point[0].split(':'))))
+                context.update({
+                    'arrival_points': arrival_points,
+                    'arrival_routes': getattr(self.conf, 'arrival_routes', []),
+                })
+            
         return context
     
     def handle_GET(self, request, context, tour, page=None):
