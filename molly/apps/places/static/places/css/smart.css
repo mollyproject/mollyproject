@@ -31,11 +31,11 @@ td.service-id a {
 ol.directions-list li {
     font-size: 1.2em;
     font-weight: bold;
-    padding-left: 55px;
+    padding-left: 55px !important;
     list-style-type: decimal;
     list-style-position: inside;
-    background-repeat: no-repeat;
-    background-position: left center;
+    background-repeat: no-repeat !important;
+    background-position: left center !important;
 }
 
 ol.directions-list li .additional {
