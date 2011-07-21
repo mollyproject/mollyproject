@@ -194,9 +194,9 @@ class DBCreateCommand(Command):
     user_options = [
         ('admin-username=', 'u', 'The username of the database superuser to connect as [default=None]'),
         ('admin-password=', 'p', 'The password of the database superuser to connect as [default=None]'),
-        ('molly-username', 'c', 'The username of the database user to create [default=molly]'),
-        ('molly-password', 'w', 'The password of the database user to create [default=random]'),
-        ('molly-database', 'd', 'Force installing, even if virtualenv already exists [default=molly]'),
+        ('molly-username=', 'c', 'The username of the database user to create [default=molly]'),
+        ('molly-password=', 'w', 'The password of the database user to create [default=random]'),
+        ('molly-database=', 'd', 'The name of the database to create [default=molly]'),
     ]
     
     def initialize_options(self):
