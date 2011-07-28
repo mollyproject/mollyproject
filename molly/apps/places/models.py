@@ -194,6 +194,8 @@ class Entity(models.Model):
         try:
             return self.__identifiers
         except AttributeError:
+            if not self.pk:
+                return dict()
             self.__identifiers = dict()
             for identifier in self._identifiers.all():
                 scheme, value = identifier.scheme, identifier.value
