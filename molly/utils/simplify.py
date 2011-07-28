@@ -32,7 +32,8 @@ def simplify_value(value):
             try:
                 out[new_key] = simplify_value(value[key])
             except NotImplementedError:
-                logger.info('Could not simplify a value', exc_info=True)
+                logger.info('Could not simplify a value of type %s',
+                            type(value[key]), exc_info=True)
                 pass
         return out
     elif isinstance(value, (list, tuple, set, frozenset)):
@@ -41,7 +42,8 @@ def simplify_value(value):
             try:
                 out.append(simplify_value(subvalue))
             except NotImplementedError:
-                pass
+                logger.info('Could not simplify a value of type %s',
+                            type(value[key]), exc_info=True)
         if isinstance(value, tuple):
             return tuple(out)
         else:
