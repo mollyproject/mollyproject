@@ -39,7 +39,6 @@ def device_specific_media(request):
     # Blackberries
     elif device.brand_name == 'RIM' :
         style_group = 'smart'
-        use_javascript = False
 
     # Android
     elif device.device_os == 'Android' :
