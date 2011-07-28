@@ -22,6 +22,7 @@ from django.core.urlresolvers import reverse, resolve, NoReverseMatch
 from django.conf import settings
 from django.utils.translation import ugettext as _
 from django.views.debug import technical_500_response
+from django.middleware.csrf import get_token
 
 logger = logging.getLogger(__name__)
 
@@ -330,6 +331,11 @@ class BaseView(object):
         context = simplify_value(context)
         resolved = resolve(request.path)
         context['view_name'] = '%s:%s' % (':'.join(resolved.namespaces), resolved.url_name)
+        
+        # Include CSRF token, as templates don't get rendered csrf_token is
+        # never called which breaks CSRF for apps written against the JSON API
+        get_token(request)
+        
         return HttpResponse(simplejson.dumps(context),
                             mimetype="application/json")
 
