@@ -5,6 +5,7 @@ from molly.apps.places.models import Entity
 
 class Tour(models.Model):
     
+    name = models.TextField()
     stops = models.ManyToManyField(Entity, through='StopOnTour')
     
     def get_absolute_url(self):
