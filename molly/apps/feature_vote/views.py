@@ -56,17 +56,18 @@ class IndexView(BaseView):
 
     def handle_POST(self, request, context):
         form = context['form']
+        post = request.POST.copy()
 
-        if 'vote_up.x' in request.POST:
-            request.POST['vote_up'] = request.POST['vote_up.x']
+        if 'vote_up.x' in post:
+            post['vote_up'] = post['vote_up.x']
         
-        if 'vote_down.x' in request.POST:
-            request.POST['vote_down'] = request.POST['vote_down.x']
+        if 'vote_down.x' in post:
+            post['vote_down'] = post['vote_down.x']
         
-        if 'vote_up' in request.POST or 'vote_down' in request.POST:
-            feature = get_object_or_404(Feature, id = request.POST.get('id', 0))
+        if 'vote_up' in post or 'vote_down' in post:
+            feature = get_object_or_404(Feature, id=post.get('id', 0))
             previous_vote = request.session['feature_vote:votes'].get(feature.id, 0)
-            vote = previous_vote + (1 if 'vote_up' in request.POST else -1)
+            vote = previous_vote + (1 if 'vote_up' in post else -1)
             vote = min(max(-1, vote), 1)
             request.session['feature_vote:votes'][feature.id] = vote
             request.session.modified = True
