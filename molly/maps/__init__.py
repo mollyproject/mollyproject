@@ -1,5 +1,7 @@
 from urllib import urlencode
 
+from django.contrib.gis.geos import Point
+
 from molly.maps.osm import fit_to_map
 from molly.maps.models import GeneratedMap
 
@@ -120,6 +122,21 @@ class Map(object):
         self.lon_centre, self.lat_centre = lon_center, lat_center
         
         self.markers = markers
+    
+    def simplify_for_render(self, simplify_value, simplify_model):
+        return {
+            'hash': simplify_value(self.static_map_hash),
+            'centre_point': simplify_value(self.centre_point),
+            'extra_points': simplify_value(self.extra_points),
+            'points': simplify_value(self.points),
+            'paths': simplify_value(self.paths),
+            'width': simplify_value(self.width),
+            'height': simplify_value(self.height),
+            'map_centre': simplify_value(Point(self.lon_centre, self.lat_centre)),
+            'zoom': simplify_value(self.zoom),
+            'markers': simplify_value(self.markers),
+        }
+
 
 def map_from_point(point, width, height, colour='green', title='', zoom=16):
     """
