@@ -53,6 +53,7 @@ class OSMHandler(handler.ContentHandler):
         self.node_locations = {}
 
     def startElement(self, name, attrs):
+        
         if name == 'node':
             lon, lat = float(attrs['lon']), float(attrs['lat'])
             
@@ -299,6 +300,7 @@ class OSMMapsProvider(BaseMapsProvider):
         while buffer:
             parser.feed(bunzip.decompress(buffer))
             buffer = osm.read(8192)
+        parser.close()
         
         for lang_code, lang_name in settings.LANGUAGES:
             with override(lang_code):
