@@ -47,6 +47,10 @@ class ACISLiveMapsProvider(BaseMapsProvider):
                 lambda entity: entity.identifiers.get('atco'),
                 lambda entity: entity.identifiers.get('atco'),
                ), # Cheshire East
+        '080': ('http://cornwall.acislive.com/',
+                lambda entity: entity.identifiers.get('atco'),
+                lambda entity: entity.identifiers.get('atco'),
+               ), # Cornwall
         '160': ('http://gloucestershire.acislive.com/',
                 lambda entity: entity.identifiers.get('atco'),
                 lambda entity: entity.identifiers.get('atco'),
