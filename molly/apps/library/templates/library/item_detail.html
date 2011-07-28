@@ -3,111 +3,103 @@
 {% block content %}
 
 <div class="section">
-<div class="header">
-    <h2>{{ item.title }}</h2>
-</div>
-    <div class="article"><div class="bubble pad-5">
-    <table>
-{% if item.author %}
-        <tr>
-            <th>{% trans "Author" %}:</th>
-            <td>{{ item.author }}</td>
-        </tr>
-{% endif %}
-{% if item.publisher %}
-        <tr>
-            <th>{% trans "Publisher" %}:</th>
-            <td>{{ item.publisher }}</td>
-        </tr>
-{% endif %}
-{% if item.edition %}
-        <tr>
-            <th>{% trans "Edition" %}:</th>
-            <td>{{ item.edition }}</td>
-        </tr>
-{% endif %}
-{% if item.description %}
-        <tr>
-            <th>{% trans "Description" %}:</th>
-            <td>{{ item.description }}</td>
-        </tr>
-{% endif %}
+    <div class="header">
+        <h2>{{ item.title }}</h2>
+    </div>
+    <div class="article"><div class="bubble pad-5"><table>
+        {% if item.author %}
+            <tr>
+                <th>{% trans "Author" %}:</th>
+                <td>{{ item.author }}</td>
+            </tr>
+        {% endif %}
+        {% if item.publisher %}
+            <tr>
+                <th>{% trans "Publisher" %}:</th>
+                <td>{{ item.publisher }}</td>
+            </tr>
+        {% endif %}
+        {% if item.edition %}
+            <tr>
+                <th>{% trans "Edition" %}:</th>
+                <td>{{ item.edition }}</td>
+            </tr>
+        {% endif %}
+        {% if item.description %}
+            <tr>
+                <th>{% trans "Description" %}:</th>
+                <td>{{ item.description }}</td>
+            </tr>
+        {% endif %}
+        {% if item.isbns %}
+            {% for isbn in item.isbns %}
+                    <tr>
+                        {% if forloop.first %}
+                            <th{% ifnotequal item.isbns|length 1 %} rowspan="{{ item.isbns|length }}"{% endifnotequal %}>
+                                {% blocktrans count item.isbns|length as count %}ISBN{% plural %}ISBNs{% endblocktrans %}:</th>
+                        {% endif %}
+                        <td>{{ isbn }}</td>
+                    </tr>
+            {% endfor %}
+        {% endif %}
+    
+        {% if item.issns %}
+            {% for issn in item.issns %}
+                <tr>
+                    {% if forloop.first %}
+                        <th{% ifnotequal item.issns|length 1 %} rowspan="{{ item.issns|length }}"{% endifnotequal %}>
+                            {% blocktrans count item.issns|length as count %}ISSN{% plural %}ISSNs{% endblocktrans %}:</th>
+                    {% endif %}
+                    <td>{{ issn }}</td>
+                </tr>
+            {% endfor %}
+        {% endif %}
 
-
-
-{% if item.isbns %}
-{% for isbn in item.isbns %}
-        <tr>
-{% if forloop.first %}
-            <th{% ifnotequal item.isbns|length 1 %} rowspan="{{ item.isbns|length }}"{% endifnotequal %}>
-                {% blocktrans count item.isbns|length as count %}ISBN{% plural %}ISBNs{% endblocktrans %}:</th>
-{% endif %}
-            <td>{{ isbn }}</td>
-        </tr>
-{% endfor %}
-{% endif %}
-
-
-{% if item.issns %}
-{% for issn in item.issns %}
-        <tr>
-{% if forloop.first %}
-            <th{% ifnotequal item.issns|length 1 %} rowspan="{{ item.issns|length }}"{% endifnotequal %}>
-                {% blocktrans count item.issns|length as count %}ISSN{% plural %}ISSNs{% endblocktrans %}:</th>
-{% endif %}
-            <td>{{ issn }}</td>
-        </tr>
-{% endfor %}
-{% endif %}
-
-
-    </table>
-    </div></div>
+    </table></div></div>
 
 </div>
 
 {% if item.libraries %}
 <div class="section">
-<div class="header">
-    <h2>{% trans "Library holdings" %}</h2>
-</div>
-<div class="section-content no-round-bottom">
-    {% if map %}{% render_map map %}{% endif %}
-    <div class="note"><div class="bubble pad-10">
-        {% trans "Please note that all libraries have admission and borrowing policies; inclusion in this list does not imply access." %}{% if map_hash %} {% trans "Closest results are not necessarily best." %}{% endif %}
-    </div></div>
-</div>
-<table class="content">
-    <tbody>
-{% for library, books in item.libraries.items %}
-        <tr class="sub-section-divider">
-            <th colspan="2">
-                {% if library.marker_number %}{{ library.marker_number }}. {% endif %}
-                {% with library.location as location_code %}
-                    <a href="{% url library:item-holdings-detail control_number,location_code|join:"/" %}">
-                        {% if library.get_entity %}
-                            {{ library.get_entity.title }}
-                        {% else %}
-                            {{ library.location|join:"/" }}
-                        {% endif %}
-                    </a>
-                {% endwith %}
-            </td>
-        </tr>
-
-    {% for book in books %}
-        <tr>
-            <td>
-                {% trans "Shelfmark" %}: <em>{{ book.shelfmark }}</em>
-                {% if book.materials_specified %}, {% trans "issue" %}: <em>{{ books.0.materials_specified }}</em>{% endif %}    
-            </td>
-            <td><em>{{ book.availability_display }}</em></td>
-            
-        </tr>
-    {% endfor %}
-{% endfor %}
-    </tbody>
-</table>
+    <div class="header">
+        <h2>{% trans "Library holdings" %}</h2>
+    </div>
+    <div class="section-content no-round-bottom">
+        {% if map %}{% render_map map %}{% endif %}
+        <div class="note"><div class="bubble pad-10">
+            {% trans "Please note that all libraries have admission and borrowing policies; inclusion in this list does not imply access." %}{% if map_hash %} {% trans "Closest results are not necessarily best." %}{% endif %}
+        </div></div>
+    </div>
+    <table class="content">
+        <tbody>
+            {% for library, books in item.libraries.items %}
+                <tr class="sub-section-divider">
+                    <th colspan="2">
+                        {% if library.marker_number %}{{ library.marker_number }}. {% endif %}
+                        {% with library.location as location_code %}
+                            <a href="{% url library:item-holdings-detail control_number,location_code|join:"/" %}">
+                                {% if library.get_entity %}
+                                    {{ library.get_entity.title }}
+                                {% else %}
+                                    {{ library.location|join:"/" }}
+                                {% endif %}
+                            </a>
+                        {% endwith %}
+                    </td>
+                </tr>
+                
+                {% for book in books %}
+                    <tr>
+                        <td>
+                            {% trans "Shelfmark" %}: <em>{{ book.shelfmark }}</em>
+                            {% if book.materials_specified %}, {% trans "issue" %}: <em>{{ books.0.materials_specified }}</em>{% endif %}    
+                        </td>
+                        <td><em>{{ book.availability_display }}</em></td>
+                    </tr>
+                {% endfor %}
+            {% endfor %}
+        </tbody>
+    </table>
 
 </div>
 {% endif %}
