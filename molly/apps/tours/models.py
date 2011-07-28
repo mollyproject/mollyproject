@@ -10,6 +10,10 @@ class Tour(models.Model):
     
     def get_absolute_url(self):
         return reverse('tours:tour-start', args=[self.id])
+    
+    def __unicode__(self):
+        return self.name
+
 
 class StopOnTour(models.Model):
     

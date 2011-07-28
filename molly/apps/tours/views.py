@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.core.urlresolvers import reverse
 from django.contrib.gis.measure import D
 from django.db.models import Q
@@ -13,6 +15,7 @@ from molly.utils.views import BaseView
 from molly.wurfl import device_parents
 from molly.routing import generate_route, optimise_points
 from molly.apps.tours.models import Tour, StopOnTour
+
 
 class IndexView(BaseView):
     
@@ -37,6 +40,7 @@ class IndexView(BaseView):
     
     def handle_GET(self, request, context):
         return self.render(request, context, 'tours/index')
+
 
 class CreateView(BaseView):
     
@@ -89,8 +93,14 @@ class SaveView(CreateView):
             context['entities'] = optimise_points([(entity, entity.location) for entity in context['entities']])
             context['optimised_entities'] = True
         
+        # Come up with a name for this tour
+        name = _('Visiting %(number)d places (created on %(creation)s)') % {
+                    'number': len(context['entities']),
+                    'creation': datetime.now().strftime('%c')
+                }
+        
         # Save back to database
-        tour = Tour.objects.create()
+        tour = Tour.objects.create(name=name)
         for i, entity in enumerate(context['entities']):
             StopOnTour.objects.create(entity=entity, tour=tour, order=i)
         
@@ -112,11 +122,14 @@ class SaveView(CreateView):
         
         return super(SaveView, self).handle_GET(request, context, entities)
 
+
 class PdfView(BaseView):
     pass
 
+
 class PodcastView(BaseView):
     pass
+
 
 class TourView(BaseView):
     
@@ -126,7 +139,7 @@ class TourView(BaseView):
         return Breadcrumb(
             self.conf.local_name,
             lazy_parent('index'),
-            context['stop'].entity.title if page else _('Tour'),
+            context['stop'].entity.title if page else context['tour'].name,
             lazy_reverse('tour', args=(context['tour'].pk, page)),
         )
     
