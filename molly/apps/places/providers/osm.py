@@ -101,14 +101,11 @@ class OSMHandler(handler.ContentHandler):
             if name == 'way' and not all(id in self.node_locations for id in self.nodes):
                 return
             
-            # We already have these from OxPoints, so leave them alone.
-            if self.tags.get('amenity') == 'library' and self.tags.get('operator') == 'University of Oxford':
-                return
-            
             # Ignore disused and under-construction entities
             if self.tags.get('life_cycle', 'in_use') != 'in_use' or self.tags.get('disused') in ('1', 'yes', 'true'):
                 return
             
+            # Memory management in debug mode
             reset_queries()
             
             try:
