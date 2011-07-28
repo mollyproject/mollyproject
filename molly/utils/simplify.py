@@ -63,7 +63,9 @@ def simplify_value(value):
             'next_page_number': value.has_next(),
             'previous_page_number': value.has_next(),
             'number': value.number,
-            'objects': simplify_value(value.object_list)
+            'objects': simplify_value(value.object_list),
+            'num_pages': value.paginator.num_pages,
+            'num_objects': value.paginator.count,
         }
     elif value is None:
         return None
