@@ -17,6 +17,13 @@ import os, os.path, imp
 from molly.conf.settings import Application, extract_installed_apps, Authentication, ExtraBase, Provider
 from molly.utils.media import get_compress_groups
 
+# The following import and mimetypes.add_types correct the - possibly wrong - mime type of svg files
+# in certain versions of Django.
+import mimetypes
+
+mimetypes.add_type("image/svg+xml", ".svg", True)
+mimetypes.add_type("image/svg+xml", ".svgz", True)
+
 # The following creates two useful variables - a path to where Molly is
 # installed, and also to the root of where your site is installed. These can be
 # used in place of absolute URLs so you can move your installation around

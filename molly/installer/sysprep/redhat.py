@@ -46,6 +46,7 @@ class SysPreparer(PackagekitSysPreparer):
                 'make',
                 'gcc',
                 'openssl-devel',
+                'libyaml-devel',
             ]
     
     def sysprep(self):
