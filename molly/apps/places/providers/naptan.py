@@ -95,11 +95,11 @@ class NaptanContentHandler(ContentHandler):
                     except KeyError:
                         entity_type = self.entity_types['MET']
                 else:
-                    entity_type = self.entity_types[self.meta['stop-type']]
+                    entity_type, is_entrance = self.entity_types[self.meta['stop-type']]
             except KeyError:
                 pass
             else:
-                entity = self.add_stop(self.meta, entity_type, self.source)
+                entity = self.add_stop(self.meta, entity_type, self.source, is_entrance)
                 if entity:
                     self.entities.add(entity)
         
@@ -144,7 +144,7 @@ class NaptanContentHandler(ContentHandler):
         except KeyError:
             pass
 
-    def add_stop(self, meta, entity_type, source):
+    def add_stop(self, meta, entity_type, source, is_entrance):
         
         # Check this entity is in an area
         if self.areas != None:
@@ -270,6 +270,7 @@ class NaptanContentHandler(ContentHandler):
                     names[lang_code] = title
         
         entity.primary_type = entity_type
+        entity.is_entrance = is_entrance
         
         if not entity.metadata:
             entity.metadata = {}
@@ -742,7 +743,7 @@ class NaptanMapsProvider(BaseMapsProvider):
                                          verbose_name_singular=ugettext(et['verbose-name-singular']),
                                          verbose_name_plural=ugettext(et['verbose-name-plural']))
             
-            entity_types[stop_type] = entity_type
+            entity_types[stop_type] = (entity_type, et['is-entrance'])
 
         for stop_type, entity_type in entity_types.items():
             if entity_type.slug == 'public-transport-access-node':
