@@ -238,7 +238,7 @@ class NaptanContentHandler(ContentHandler):
                     else:
                         title = common_name
                     
-                    if street != None and street != '-':
+                    if street not in (None, '-', '---'):
                         # Deal with all-caps street names
                         if street.upper() == street:
                             fixedstreet = ''
@@ -325,6 +325,7 @@ class NaptanMapsProvider(BaseMapsProvider):
             'verbose-name-plural': _('bus stops'),
             'nearby': True, 'category': False,
             'uri-local': 'BusStop',
+            'is-entrance': False,
         }
     TAXI_RANK_DEFINITION = {
         'slug': 'taxi-rank',
@@ -333,6 +334,7 @@ class NaptanMapsProvider(BaseMapsProvider):
         'verbose-name-plural': _('taxi ranks'),
         'nearby': False, 'category': False,
         'uri-local': 'TaxiRank',
+            'is-entrance': False,
     }
     RAIL_STATION_DEFINITION = {
             'slug': 'rail-station',
@@ -341,6 +343,7 @@ class NaptanMapsProvider(BaseMapsProvider):
             'verbose-name-plural': _('rail stations'),
             'nearby': True, 'category': False,
             'uri-local': 'RailStation',
+            'is-entrance': False,
         }
     HERITAGE_RAIL_STATION_DEFINITION = {
             'slug': 'heritage-rail-station',
@@ -349,6 +352,7 @@ class NaptanMapsProvider(BaseMapsProvider):
             'verbose-name-plural': _('heritage rail stations'),
             'nearby': True, 'category': False,
             'uri-local': 'HeritageRailStation',
+            'is-entrance': False,
         }
 
     entity_type_definitions = {
@@ -362,6 +366,7 @@ class NaptanMapsProvider(BaseMapsProvider):
             'verbose-name-plural': _('bus station entrances'),
             'nearby': False, 'category': False,
             'uri-local': 'BusStationEntrance',
+            'is-entrance': True,
         },
         'TXR': TAXI_RANK_DEFINITION,
         'STR': TAXI_RANK_DEFINITION,
@@ -373,6 +378,7 @@ class NaptanMapsProvider(BaseMapsProvider):
             'verbose-name-plural': _('rail station entrances'),
             'nearby': False, 'category': False,
             'uri-local': 'RailStationEntrance',
+            'is-entrance': True,
         },
         'RPL': {
             'slug': 'rail-platform',
@@ -381,6 +387,7 @@ class NaptanMapsProvider(BaseMapsProvider):
             'verbose-name-plural': _('rail platforms'),
             'nearby': False, 'category': False,
             'uri-local': 'RailPlatform',
+            'is-entrance': False,
         },
         'TMU': {
             'slug': 'metro-entrance',
@@ -392,6 +399,7 @@ class NaptanMapsProvider(BaseMapsProvider):
             'verbose-name-plural': _('metro station entrances'),
             'nearby': False, 'category': False,
             'uri-local': 'MetroEntrance',
+            'is-entrance': True,
         },
         'PLT': {
             'slug': 'platform',
@@ -403,6 +411,7 @@ class NaptanMapsProvider(BaseMapsProvider):
             'verbose-name-plural': _('metro station platforms'),
             'nearby': False, 'category': False,
             'uri-local': 'MetroPlatform',
+            'is-entrance': False,
         },
         'MET': {
             'slug': 'metro-station',
@@ -414,6 +423,7 @@ class NaptanMapsProvider(BaseMapsProvider):
             'verbose-name-plural': _('metro stations'),
             'nearby': True, 'category': False,
             'uri-local': 'MetroStation',
+            'is-entrance': False,
         },
         'MET:AV': HERITAGE_RAIL_STATION_DEFINITION,
         'MET:BB': HERITAGE_RAIL_STATION_DEFINITION,
@@ -430,6 +440,7 @@ class NaptanMapsProvider(BaseMapsProvider):
             'verbose-name-plural': _('tramway stops'),
             'nearby': True, 'category': False,
             'uri-local': 'TramwayStop',
+            'is-entrance': False,
         },
         'MET:BV': HERITAGE_RAIL_STATION_DEFINITION,
         'MET:CA': HERITAGE_RAIL_STATION_DEFINITION,
@@ -440,6 +451,7 @@ class NaptanMapsProvider(BaseMapsProvider):
             'verbose-name-plural': _('tram stops'),
             'nearby': True, 'category': False,
             'uri-local': 'TramlinkStop',
+            'is-entrance': False,
         },
         'MET:CV': HERITAGE_RAIL_STATION_DEFINITION,
         'MET:CW': HERITAGE_RAIL_STATION_DEFINITION,
@@ -454,6 +466,7 @@ class NaptanMapsProvider(BaseMapsProvider):
             'verbose-name-plural': _('DLR stations'),
             'nearby': True, 'category': False,
             'uri-local': 'DLRStation',
+            'is-entrance': False,
         },
         'MET:DM': HERITAGE_RAIL_STATION_DEFINITION,
         'MET:EB': HERITAGE_RAIL_STATION_DEFINITION,
@@ -473,6 +486,7 @@ class NaptanMapsProvider(BaseMapsProvider):
             'verbose-name-plural': _('Subway stations'),
             'nearby': True, 'category': False,
             'uri-local': 'SubwayStation',
+            'is-entrance': False,
         },
         'MET:GO': HERITAGE_RAIL_STATION_DEFINITION,
         'MET:GW': {
@@ -485,6 +499,7 @@ class NaptanMapsProvider(BaseMapsProvider):
             'verbose-name-plural': _('shuttle stations'),
             'nearby': True, 'category': False,
             'uri-local': 'ShuttleStation',
+            'is-entrance': False,
         },
         'MET:GR': HERITAGE_RAIL_STATION_DEFINITION,
         'MET:IW': HERITAGE_RAIL_STATION_DEFINITION,
@@ -503,6 +518,7 @@ class NaptanMapsProvider(BaseMapsProvider):
             'verbose-name-plural': _('Underground stations'),
             'nearby': True, 'category': False,
             'uri-local': 'TubeStation',
+            'is-entrance': False,
         },
         'MET:MA': {
             'slug': 'metrolink-station',
@@ -514,6 +530,7 @@ class NaptanMapsProvider(BaseMapsProvider):
             'verbose-name-plural': _('Metrolink stations'),
             'nearby': True, 'category': False,
             'uri-local': 'MetrolinkStation',
+            'is-entrance': False,
         },
         'MET:MH': HERITAGE_RAIL_STATION_DEFINITION,
         'MET:MN': HERITAGE_RAIL_STATION_DEFINITION,
@@ -525,6 +542,7 @@ class NaptanMapsProvider(BaseMapsProvider):
             'verbose-name-plural': _('tram stops'),
             'nearby': True, 'category': False,
             'uri-local': 'NETStop',
+            'is-entrance': False,
         },
         'MET:NV': HERITAGE_RAIL_STATION_DEFINITION,
         'MET:NY': HERITAGE_RAIL_STATION_DEFINITION,
@@ -549,6 +567,7 @@ class NaptanMapsProvider(BaseMapsProvider):
             'verbose-name-plural': _('Supertram stops'),
             'nearby': True, 'category': False,
             'uri-local': 'SupertramStop',
+            'is-entrance': False,
         },
         'MET:TL': HERITAGE_RAIL_STATION_DEFINITION,
         'MET:TW': {
@@ -561,6 +580,7 @@ class NaptanMapsProvider(BaseMapsProvider):
             'verbose-name-plural': _('Metro stations'),
             'nearby': True, 'category': False,
             'uri-local': 'TyneAndWearMetroStation',
+            'is-entrance': False,
         },
         'MET:TY': HERITAGE_RAIL_STATION_DEFINITION,
         'MET:VR': HERITAGE_RAIL_STATION_DEFINITION,
@@ -577,6 +597,7 @@ class NaptanMapsProvider(BaseMapsProvider):
             'verbose-name-plural': _('Midland Metro stops'),
             'nearby': True, 'category': False,
             'uri-local': 'MidlandMetroStation',
+            'is-entrance': False,
         },
         'MET:WS': HERITAGE_RAIL_STATION_DEFINITION,
         'MET:WW': HERITAGE_RAIL_STATION_DEFINITION,
@@ -587,6 +608,7 @@ class NaptanMapsProvider(BaseMapsProvider):
             'verbose-name-plural': _('airports'),
             'nearby': True, 'category': False,
             'uri-local': 'Airport',
+            'is-entrance': False,
         },
         'AIR': {
             'slug': 'airport-entrance',
@@ -595,6 +617,7 @@ class NaptanMapsProvider(BaseMapsProvider):
             'verbose-name-plural': _('airport entrances'),
             'nearby': False, 'category': False,
             'uri-local': 'AirportEntrance',
+            'is-entrance': True,
         },
         'FER': {
             'slug': 'ferry-terminal',
@@ -603,6 +626,7 @@ class NaptanMapsProvider(BaseMapsProvider):
             'verbose-name-plural': _('ferry terminals'),
             'nearby': True, 'category': False,
             'uri-local': 'FerryTerminal',
+            'is-entrance': False,
         },
         'FTD': {
             'slug': 'ferry-terminal-entrance',
@@ -611,6 +635,7 @@ class NaptanMapsProvider(BaseMapsProvider):
             'verbose-name-plural': _('ferry terminal entrances'),
             'nearby': False, 'category': False,
             'uri-local': 'FerryTerminalEntrance',
+            'is-entrance': True,
         },
         'FBT': {
             'slug': 'ferry-berth',
@@ -619,6 +644,7 @@ class NaptanMapsProvider(BaseMapsProvider):
             'verbose-name-plural': _('ferry berths'),
             'nearby': False, 'category': False,
             'uri-local': 'FerryBerth',
+            'is-entrance': False,
         },
         None: {
             'slug': 'public-transport-access-node',
@@ -627,6 +653,7 @@ class NaptanMapsProvider(BaseMapsProvider):
             'verbose-name-plural': _('public transport access nodes'),
             'nearby': False, 'category': False,
             'uri-local': 'PublicTransportAccessNode',
+            'is-entrance': False,
         }
     }
 
