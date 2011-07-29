@@ -91,9 +91,9 @@ class NaptanContentHandler(ContentHandler):
                 # Classify metro stops according to their particular system
                 if self.meta['stop-type'] == 'MET':
                     try:
-                        entity_type = self.entity_types[self.meta['stop-type'] + ':' + self.meta['atco-code'][6:8]]
+                        entity_type, is_entrance = self.entity_types[self.meta['stop-type'] + ':' + self.meta['atco-code'][6:8]]
                     except KeyError:
-                        entity_type = self.entity_types['MET']
+                        entity_type, is_entrance = self.entity_types['MET']
                 else:
                     entity_type, is_entrance = self.entity_types[self.meta['stop-type']]
             except KeyError:
@@ -745,12 +745,12 @@ class NaptanMapsProvider(BaseMapsProvider):
             
             entity_types[stop_type] = (entity_type, et['is-entrance'])
 
-        for stop_type, entity_type in entity_types.items():
+        for stop_type, (entity_type, is_entrance) in entity_types.items():
             if entity_type.slug == 'public-transport-access-node':
                 continue
-            entity_type.subtype_of.add(entity_types[None])
+            entity_type.subtype_of.add(entity_types[None][0])
             if stop_type.startswith('MET') and stop_type != 'MET' and entity_type.slug != self.RAIL_STATION_DEFINITION['slug']:
-                entity_type.subtype_of.add(entity_types['MET'])
+                entity_type.subtype_of.add(entity_types['MET'][0])
         
         return entity_types
 
