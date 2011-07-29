@@ -180,6 +180,7 @@ class Entity(models.Model):
     absolute_url = models.TextField()
     
     parent = models.ForeignKey('self', null=True)
+    is_entrance = models.BooleanField(default=False)
 
     _identifiers = models.ManyToManyField(Identifier)
     identifier_scheme = models.CharField(max_length=32)
