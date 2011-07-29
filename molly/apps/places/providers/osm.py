@@ -188,7 +188,7 @@ class OSMHandler(handler.ContentHandler):
 
     def endDocument(self):
         for entity in Entity.objects.filter(source=self.source):
-            if not entity.identifiers['osm'] in self.ids:
+            if not entity.identifiers.get('osm') in self.ids:
                 entity.delete()
                 self.delete_count += 1
         
