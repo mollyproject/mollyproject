@@ -597,9 +597,13 @@ class EntityDirectionsView(LocationRequiredView):
     def handle_GET(self, request, context, scheme, value):
         
         user_location = request.session.get('geolocation:location')
-        if context['entity'].location != None:
+        if user_location is not None:
+            user_location = Point(user_location)
+        destination = context['entity'].routing_point(user_location)
+        
+        if destination.location is not None:
             context['route'] = generate_route([user_location,
-                                              context['entity'].location],
+                                              destination.location],
                                               context['type'])
             if not 'error' in context['route']:
                 context['map'] = Map(
@@ -610,9 +614,9 @@ class EntityDirectionsView(LocationRequiredView):
                     None,
                     request.map_width,
                     request.map_height,
-                    extra_points=[(context['entity'].location[0],
-                                   context['entity'].location[1],
-                                   'red', context['entity'].title)],
+                    extra_points=[(destination.location[0],
+                                   destination.location[1],
+                                   'red', destination.title)],
                     paths=[(context['route']['path'], '#3c3c3c')])
 
         return self.render(request, context, 'places/entity_directions')
