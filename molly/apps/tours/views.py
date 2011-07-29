@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from django.core.urlresolvers import reverse
+from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import D
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
@@ -90,7 +91,7 @@ class SaveView(CreateView):
         
         # Now attempt to order entities optimally
         if len(context['entities']) > 2 and len(context['entities']) <= 10:
-            context['entities'] = optimise_points([(entity, entity.location) for entity in context['entities']])
+            context['entities'] = optimise_points([(entity, entity.routing_point().location) for entity in context['entities']])
             context['optimised_entities'] = True
         
         # Come up with a name for this tour
@@ -284,14 +285,18 @@ class TourView(BaseView):
         
         user_location = request.session.get('geolocation:location')
         if user_location is None and 'previous_stop' in context:
-            user_location = context['previous_stop'].entity.location
+            user_location = context['previous_stop'].entity.routing_point(context['stop'].entity.location).location
+        else:
+            user_location = Point(user_location)
         
         if 'stop' in context and \
-          context['stop'].entity.location is not None and \
+          context['stop'].entity.routing_point(user_location).location is not None and \
           user_location is not None:
             
+            entrance = context['stop'].entity.routing_point(user_location)
+            
             context['route'] = generate_route(
-                [user_location, context['stop'].entity.location], 'foot')
+                [user_location, entrance.location], 'foot')
             
             context['route_map'] = Map(
                 (user_location[0], user_location[1], 'green', ''),
@@ -301,9 +306,9 @@ class TourView(BaseView):
                 None,
                 request.map_width,
                 request.map_height,
-                extra_points=[(context['stop'].entity.location[0],
-                               context['stop'].entity.location[1],
-                               'red', context['stop'].entity.title)],
+                extra_points=[(entrance.location[0],
+                               entrance.location[1],
+                               'red', entrance.title)],
                 paths=[(context['route']['path'], '#3c3c3c')])
         
         return self.render(request, context, 'tours/tour')
