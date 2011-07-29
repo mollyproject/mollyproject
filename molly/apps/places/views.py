@@ -132,7 +132,7 @@ class NearbyDetailView(LocationRequiredView, ZoomableView):
         entity_types = tuple(get_object_or_404(EntityType, slug=t) for t in ptypes.split(';'))
 
         if point:
-            entities = Entity.objects.filter(location__isnull = False, is_sublocation = False)
+            entities = Entity.objects.filter(location__isnull=False)
             for et in entity_types:
                 entities = entities.filter(all_types_completion=et)
             
@@ -494,7 +494,7 @@ class CategoryDetailView(BaseView):
     def initial_context(self, request, ptypes):
         entity_types = tuple(get_object_or_404(EntityType, slug=t) for t in ptypes.split(';'))
 
-        entities = Entity.objects.filter(is_sublocation=False)
+        entities = Entity.objects.all()
         for entity_type in entity_types:
             entities = entities.filter(all_types_completion=entity_type)
 

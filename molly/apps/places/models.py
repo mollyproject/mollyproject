@@ -180,8 +180,6 @@ class Entity(models.Model):
     absolute_url = models.TextField()
     
     parent = models.ForeignKey('self', null=True)
-    is_sublocation = models.BooleanField(default=False)
-    is_stack = models.BooleanField(default=False)
 
     _identifiers = models.ManyToManyField(Identifier)
     identifier_scheme = models.CharField(max_length=32)
