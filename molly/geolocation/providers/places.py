@@ -18,10 +18,12 @@ class PlacesGeolocationProvider(BaseGeolocationProvider):
             entities = entities.filter(
                 _identifiers__scheme__in = self.search_identifiers,
                 _identifiers__value__iexact = query,
+                location__isnull = False
             )
         else:
             entities = entities.filter(
                 _identifiers__value__iexact = query,
+                location__isnull = False
             )
 
         entities = chain(

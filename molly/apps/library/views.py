@@ -204,7 +204,7 @@ class ItemHoldingsView(ZoomableView):
         # Find which particular library we're interested in
         library = None
         for item_library in item.libraries:
-            if item_library.location[-1] == sublocation:
+            if item_library.location == tuple(sublocation.split('/')):
                 library = item_library
         
         if library is None:

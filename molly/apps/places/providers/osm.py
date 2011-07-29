@@ -53,6 +53,7 @@ class OSMHandler(handler.ContentHandler):
         self.node_locations = {}
 
     def startElement(self, name, attrs):
+        
         if name == 'node':
             lon, lat = float(attrs['lon']), float(attrs['lat'])
             
@@ -187,7 +188,7 @@ class OSMHandler(handler.ContentHandler):
 
     def endDocument(self):
         for entity in Entity.objects.filter(source=self.source):
-            if not entity.identifiers['osm'] in self.ids:
+            if not entity.identifiers.get('osm') in self.ids:
                 entity.delete()
                 self.delete_count += 1
         
@@ -299,6 +300,7 @@ class OSMMapsProvider(BaseMapsProvider):
         while buffer:
             parser.feed(bunzip.decompress(buffer))
             buffer = osm.read(8192)
+        parser.close()
         
         for lang_code, lang_name in settings.LANGUAGES:
             with override(lang_code):

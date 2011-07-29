@@ -238,8 +238,7 @@ class NaptanContentHandler(ContentHandler):
                     else:
                         title = common_name
                     
-                    if street != None and street != '-' \
-                                 and street not in common_name:
+                    if street != None and street != '-':
                         # Deal with all-caps street names
                         if street.upper() == street:
                             fixedstreet = ''
@@ -257,7 +256,8 @@ class NaptanContentHandler(ContentHandler):
                                     fixedstreet += letter.lower()
                             street = fixedstreet
                         
-                        title += ', ' + street
+                        if street not in title:
+                            title += ', ' + street
                     
                     locality_lang = self.nptg_localities.get(locality)
                     if locality_lang != None:

@@ -73,6 +73,8 @@ function refreshTransport(data){
                         tr = tbody.find('tr:last')
                         if (service.route) {
                             var route_link = '<a href="' + entity._url + 'service?route=' + encodeURIComponent(service.service) + '" class="subtle-link">' + service.service + '</a>'
+                        } else if (service.journey) {
+                            var route_link = '<a href="' + entity._url + 'service?journey=' + service.journey.id + '" class="subtle-link">' + service.service + '</a>'
                         } else {
                             var route_link = service.service
                         }

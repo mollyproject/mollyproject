@@ -4,27 +4,6 @@ Handles generating the settings variables for django-compress
 
 import os, os.path
 
-# os.path.relpath doesn't exist in Py2.5, so we define our own.
-# Many thanks to Elliot of saltycrane.com[0] and James Gardner[1].
-# [0] http://www.saltycrane.com/blog/2010/03/ospathrelpath-source-code-python-25/
-# [1] http://jimmyg.org/work/code/barenecessities/0.2.5/manual.html#the-relpath-function
-if not hasattr(os.path, 'relpath'):
-    # This code taken from [0], above; modified slightly.
-    import posixpath
-    def relpath(path, start=posixpath.curdir):
-        """Return a relative version of a path"""
-        if not path:
-            raise ValueError("no path specified")
-        start_list = posixpath.abspath(start).split(posixpath.sep)
-        path_list = posixpath.abspath(path).split(posixpath.sep)
-        # Work out how much of the filepath is shared by start and path.
-        i = len(posixpath.commonprefix([start_list, path_list]))
-        rel_list = [posixpath.pardir] * (len(start_list)-i) + path_list[i:]
-        if not rel_list:
-            return posixpath.curdir
-        return posixpath.join(*rel_list)
-    os.path.relpath = relpath
-
 def get_compress_groups(STATIC_ROOT):
     COMPRESS_CSS, COMPRESS_JS = {}, {}
     

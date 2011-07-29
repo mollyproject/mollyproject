@@ -1,3 +1,4 @@
+import sys
 import os
 import string
 from random import choice
@@ -6,15 +7,14 @@ from shutil import copytree
 from distutils.core import Command
 from distutils.errors import DistutilsArgError, DistutilsExecError
 
-from installer.deploy import deploy
-from installer.virtualenv import Virtualenv, NotAVirtualenvError
-from installer.dbcreate import create
-from installer import PIP_PACKAGES
+from molly.installer.deploy import deploy
+from molly.installer.virtualenv import Virtualenv, NotAVirtualenvError
+from molly.installer.dbcreate import create
+from molly.installer import PIP_PACKAGES
 
 try:
-    from installer.sysprep import PYTHON26
+    from molly.installer.sysprep import PYTHON26
 except (NotImplementedError, ImportError):
-    import sys
     PYTHON26 = sys.executable
 
 class DeployCommand(Command):
@@ -55,7 +55,7 @@ class DeployCommand(Command):
                self.listen_externally, self.port)
 
 try:    
-    from installer.sysprep import SysPreparer
+    from molly.installer.sysprep import SysPreparer
 except NotImplementedError:
     
     class SysprepCommand(Command):
@@ -172,13 +172,13 @@ class DBPrepCommandImpl(AbstractDBPrepCommand):
             configure_pg_hba()
     
 try:
-    from installer.sysprep import postgres_setup
+    from molly.installer.sysprep import postgres_setup
 except (ImportError, NotImplementedError):
     def postgres_setup(*args, **kwargs):
         pass
 
 try:
-    from installer.dbprep import configure_pg_hba, create_postgis_template
+    from molly.installer.dbprep import configure_pg_hba, create_postgis_template
 except NotImplementedError:
     
     DBPrepCommand = NullDBPrepCommand
@@ -194,9 +194,9 @@ class DBCreateCommand(Command):
     user_options = [
         ('admin-username=', 'u', 'The username of the database superuser to connect as [default=None]'),
         ('admin-password=', 'p', 'The password of the database superuser to connect as [default=None]'),
-        ('molly-username', 'c', 'The username of the database user to create [default=molly]'),
-        ('molly-password', 'w', 'The password of the database user to create [default=random]'),
-        ('molly-database', 'd', 'Force installing, even if virtualenv already exists [default=molly]'),
+        ('molly-username=', 'c', 'The username of the database user to create [default=molly]'),
+        ('molly-password=', 'w', 'The password of the database user to create [default=random]'),
+        ('molly-database=', 'd', 'The name of the database to create [default=molly]'),
     ]
     
     def initialize_options(self):

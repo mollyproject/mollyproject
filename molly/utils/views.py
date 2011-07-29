@@ -60,7 +60,7 @@ def tidy_query_string(url):
     scheme, netloc, path, params, query, fragment = urlparse(url)
     args = []
     for k, vs in parse_qs(query).items():
-        if k in ('format', 'language_code'):
+        if k in ['format',]:
             continue
         else:
             for v in vs:
@@ -278,7 +278,8 @@ class BaseView(object):
             except NotImplementedError:
                 continue
             else:
-                if expires is not None and not settings.DEBUG:
+                if expires is not None and not settings.DEBUG and \
+                  not getattr(settings, 'NO_CACHE', False):
                     response['Expires'] = formatdate(
                         mktime((datetime.now() + expires).timetuple()))
                     

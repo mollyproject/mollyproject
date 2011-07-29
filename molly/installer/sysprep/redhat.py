@@ -8,8 +8,8 @@ if not hasattr(platform, 'linux_distribution'):
 else:
     distribution, distribution_version, distribution_id = platform.linux_distribution()
 
-from installer.utils import quiet_exec
-from installer.sysprep.packagekit import PackagekitSysPreparer, postgres_setup
+from molly.installer.utils import quiet_exec
+from molly.installer.sysprep.packagekit import PackagekitSysPreparer, postgres_setup
 
 PYTHON26 = '/usr/bin/python26'
 
@@ -46,6 +46,7 @@ class SysPreparer(PackagekitSysPreparer):
                 'make',
                 'gcc',
                 'openssl-devel',
+                'libyaml-devel',
             ]
     
     def sysprep(self):

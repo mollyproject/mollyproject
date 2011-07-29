@@ -34,7 +34,7 @@ class IndexView(BaseView):
             raise Http404
 
         return {
-            'path': path,
+            'share_path': path,
             'view': view,
             'view_args': view_args,
             'view_kwargs': view_kwargs,
@@ -56,8 +56,8 @@ class IndexView(BaseView):
             return (
                 breadcrumb[0],
                 breadcrumb[1],
-                (breadcrumb[4], context['path']),
-                breadcrumb[1] == (breadcrumb[4], context['path']),
+                (breadcrumb[4], context['share_path']),
+                breadcrumb[1] == (breadcrumb[4], context['share_path']),
                 _('Shorten link'),
             )
         else:
@@ -65,8 +65,8 @@ class IndexView(BaseView):
             return (
                 view.conf.local_name,
                 index,
-                (u'Back\u2026', context['path']),
-                context['path'] == index[1],
+                (u'Back\u2026', context['share_path']),
+                context['share_path'] == index[1],
                 _('Shorten link'),
             )
 
@@ -74,7 +74,7 @@ class IndexView(BaseView):
         try:
             path = request.GET['path']
         except (KeyError):
-            return self.invalid_path(request, context)
+            raise Http404()
 
         if IndexView in getattr(context['view'], '__mro__', ()):
             return self.redirect(path, request, 'perm')

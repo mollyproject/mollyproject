@@ -8,7 +8,7 @@ import logging
 import shutil
 from distutils.errors import DistutilsSetupError
 
-from installer.utils import CommandFailed
+from molly.installer.utils import CommandFailed
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +21,7 @@ def deploy(venv, site_path, development=False, listen_externally=False,
     """
     
     logger.info('Doing a %s install into %s using site %s',
-                'development' if development else 'production',
+                {True: 'development', False: 'production'}.get(development),
                 venv.path, site_path)
     
     if not development:
@@ -54,7 +54,7 @@ def deploy(venv, site_path, development=False, listen_externally=False,
     # Okay, now install Molly
     print "Installing Molly...",
     sys.stdout.flush()
-    molly_setup = os.path.join(os.path.abspath(os.path.dirname(__file__)), '..', 'setup.py')
+    molly_setup = os.path.join(os.path.abspath(os.path.dirname(__file__)), '..', '..', 'setup.py')
     if development:
         venv('python %s develop' % molly_setup)
     else:

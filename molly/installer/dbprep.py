@@ -6,8 +6,8 @@ configuration for Molly in Postgres
 import os
 from distutils.errors import DistutilsSetupError
 
-from installer.utils import quiet_exec
-from installer.sysprep import POSTGIS_PATH, SPATIAL_REF_SYS_PATH, PG_HBA_PATH
+from molly.installer.utils import quiet_exec
+from molly.installer.sysprep import POSTGIS_PATH, SPATIAL_REF_SYS_PATH, PG_HBA_PATH
 
 def create_postgis_template(username, password):
     # Setup PostGIS
