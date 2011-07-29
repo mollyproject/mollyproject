@@ -338,7 +338,29 @@ class Entity(models.Model):
                 return getattr(self, et.id_field).strip()
             else:
                 return getattr(self, et.id_field)
-
+    
+    def routing_point(self, origin=None):
+        """
+        Returns the location to where the user should go when being routed to
+        this entity - can pass in the start location (e.g., if there are
+        entrances) on two sides, the user will then be routed to the one closest
+        to them.
+        """
+        
+        entrances_in_group = Entity.objects.filter(
+            groups__entity=self,
+            is_entrance=True
+        )
+        
+        # There are no entrances in the groups
+        if entrances_in_group.count() == 0:
+            return self
+        
+        if origin:
+            entrances_in_group = entrances_in_group.distance(origin).order_by('distance')
+        
+        return entrances_in_group[0]
+    
     def simplify_for_render(self, simplify_value, simplify_model):
         return simplify_value({
             '_type': '%s.%s' % (self.__module__[:-7], self._meta.object_name),
