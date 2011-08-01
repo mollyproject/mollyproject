@@ -93,15 +93,15 @@ def get_or_create_map(generator, args):
             # Call the generator to generate it
             metadata = generator(filename=os.path.join(generated_map_dir, hash),
                                  *args)
-            # If no exception was raised, we mark it as non-faulty
-            faulty = False
         except MapGenerationError as e:
             # If a map generation error occurs, then mark this map as faulty
             # this means that it is deleted next time it is requested, forcing
             # it to be re-generated next time (hopefully the error is transient)
-            logger.warning("Unable to generate map")
             metadata = e.metadata
             faulty = True
+        else:
+            # If no exception was raised, we mark it as non-faulty
+            faulty = False
         
         generated_map = GeneratedMap(
             hash = hash,

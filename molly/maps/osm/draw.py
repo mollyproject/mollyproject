@@ -5,6 +5,9 @@ import urllib
 import os.path
 import sys
 import time
+import logging
+
+logger = logging.getLogger(__name__)
 
 from PIL import Image, ImageDraw
 from PIL.ImageFilter import EDGE_ENHANCE
@@ -153,7 +156,8 @@ def get_map(points, width, height, filename, zoom=None, lon_center=None,
         try:
             tile_data = OSMTile.get_data(tile['ref'][0], tile['ref'][1], zoom)
             tile['surface'] = Image.open(tile_data)
-        except Exception, e:
+        except Exception as e:
+            logger.exception('Failed to fetch OSM tile')
             tile['surface'] = Image.open(os.path.join(os.path.dirname(__file__), 'fallback', 'fallback.png'))
             malformed = True
         
