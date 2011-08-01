@@ -3,7 +3,7 @@ from urllib import urlencode
 from molly.maps.osm import fit_to_map
 from molly.maps.models import GeneratedMap
 
-class Map:
+class Map(object):
     """
     An object which represents a Map. This should be added to a context and then
     passed to @C{render_map} in your template to get the appropriate HTML
@@ -108,3 +108,4 @@ def map_from_point(point, width, height, colour='green', title='', zoom=16):
     a star
     """
     return Map((point[0], point[1], colour, title), [], 1, zoom, width, height)
+
