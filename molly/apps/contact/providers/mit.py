@@ -1,3 +1,5 @@
+from operator import itemgetter
+
 import ldap
 import ldap.filter
 
@@ -10,12 +12,14 @@ class LDAPContactProvider(BaseContactProvider):
         'de', 'van der', 'te', 'von', 'van', 'du', 'di'
     ])
     
-    def __init__(self, url, base_dn, phone_prefix='', phone_formatter=None):
+    def __init__(self, url, base_dn, phone_prefix='', phone_formatter=None,
+                 alphabetical=False):
         self._url = url
         self._base_dn = base_dn
         if phone_formatter is None:
             phone_formatter = lambda t: '%s%s' % (phone_prefix, t)
         self._phone_formatter = phone_formatter
+        self.alphabetical = alphabetical
     
     def normalize_query(self, cleaned_data, medium):
         # Examples of initial / surname splitting
@@ -81,4 +85,7 @@ class LDAPContactProvider(BaseContactProvider):
                 'mail': ldap_result[1].get('mail', []),
             })
         
-        return results
+        if self.alphabetical:
+            return sorted(results, key=itemgetter('cn'))
+        else:
+            return results

@@ -37,6 +37,8 @@ This queries an LDAP server for contact details. It takes three options:
    raw phone number from LDAP and is expected to return a normalised phone
    number. Use this is you need more advanced logic than the phone_prefix option
    can give you.
+ * alphabetical (defaults to False): A boolean which indicates whether or not
+   results from the LDAP server should be sorted alphabetically by common name.
 
 Writing Your Own Providers
 --------------------------
