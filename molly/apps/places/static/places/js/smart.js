@@ -255,12 +255,12 @@ function rebuildLDB(elem, board, train_station){
         elem.append('<div class="header"><h2>' + train_station.title + ' (' + gettext(board) + ')</h2></div>');
     } else {
         // generatedAt comes from the server in UTC - cast to local time
-        var generated = new Date(Date.UTC(parseInt(train_station.metadata.ldb.generatedAt.slice(0,4)),
-				 parseInt(train_station.metadata.ldb.generatedAt.slice(5,7)),
-				 parseInt(train_station.metadata.ldb.generatedAt.slice(8,10)),
-				 parseInt(train_station.metadata.ldb.generatedAt.slice(11,13)),
-				 parseInt(train_station.metadata.ldb.generatedAt.slice(14,16)),
-				 parseInt(train_station.metadata.ldb.generatedAt.slice(17,19))))
+        var generated = new Date(Date.UTC(parseInt(train_station.metadata.ldb.generatedAt.slice(0,4), 10),
+				 parseInt(train_station.metadata.ldb.generatedAt.slice(5,7), 10),
+				 parseInt(train_station.metadata.ldb.generatedAt.slice(8,10), 10),
+				 parseInt(train_station.metadata.ldb.generatedAt.slice(11,13), 10),
+				 parseInt(train_station.metadata.ldb.generatedAt.slice(14,16), 10),
+				 parseInt(train_station.metadata.ldb.generatedAt.slice(17,19), 10)))
         elem.append('<div class="header"><h2>' + train_station.title + ' (' + gettext(board) + ') - ' + getTimestamp(generated) + '</h2></div>');
     }
     
