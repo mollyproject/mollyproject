@@ -86,6 +86,6 @@ class LDAPContactProvider(BaseContactProvider):
             })
         
         if self.alphabetical:
-            return sorted(results, key=itemgetter('cn'))
+            return sorted(results, key=itemgetter('sn', 'givenName'))
         else:
             return results

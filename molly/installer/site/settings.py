@@ -372,7 +372,7 @@ APPLICATIONS = [
                         #phone_formatter = my_custom_function,
                         
                         # Whether or not results from the LDAP server should be
-                        # sorted alphabetically
+                        # sorted alphabetically by surname
                         #alphabetical = True,
             ),
     ),
