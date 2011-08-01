@@ -123,7 +123,11 @@ def serialize_to_xml(value):
         node.attrib['type'] = 'boolean'
     elif isinstance(value, (basestring, int, float)):
         node = etree.Element('literal')
-        node.text = unicode(value)
+        try:
+            node.text = unicode(value)
+        except UnicodeDecodeError:
+            # Encode as UTF-8 if ASCII string can not be encoded
+            node.text = unicode(value, 'utf-8')
         node.attrib['type'] = [d[1] for d in _XML_DATATYPES if isinstance(value, d[0])][0]
     elif isinstance(value, dict):
         if '_type' in value:
