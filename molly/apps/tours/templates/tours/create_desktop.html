@@ -4,6 +4,15 @@
 <head>
     <title>{% trans "Create a tour" %}</title>
     {% compressed_css 'tours-desktop' %}
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+    {% compressed_js 'tours-desktop' %}
+    <script type="text/javascript">
+        var current_stops = [
+            {% for entity in entities %}
+                '{{ entity.identifier_scheme }}:{{ entity.identifier_value }}',
+            {% endfor %}
+        ]
+    </script>
 </head>
 <body>
     <!-- Icons on this page are from FamFamFam silk, CC-BY http://www.famfamfam.com/lab/icons/silk/ -->
@@ -21,7 +30,7 @@
         {% endif %}
         <ol id="poi-list">
             {% for entity in entities %}
-                <li><a href="{% url tours:create %}{% for e in entities %}{% if e != entity %}{{ e.identifier_scheme }}:{{ e.identifier_value }}/{% endif %}{% endfor %}">
+                <li><a href="{% url tours:create %}{% for e in entities %}{% if e != entity %}{{ e.identifier_scheme }}:{{ e.identifier_value }}/{% endif %}{% endfor %}" class="{{ entity.identifier_scheme }}-{{ entity.identifier_value }}">
                     {{ entity.title }}
                 </a></li>
             {% endfor %}
@@ -37,7 +46,7 @@
             <p>{% trans 'Your tour takes you near the following places, click on them to add them to your route:' %}</p>
             <ul>
                 {% for entity in suggestions %}
-                    <li id="{{ entity.identifier_scheme }}-{{ entity.identifier_value }}"{% if entity in entities %} class="selected"{% endif %}><a href="{% url tours:create %}{% for e in entities %}{{ e.identifier_scheme }}:{{ e.identifier_value }}/{% endfor %}{{ entity.identifier_scheme }}:{{ entity.identifier_value }}/save/">{{ entity.title }}</a></li>
+                    <li{% if entity in entities %} class="selected"{% endif %}><a href="{% url tours:create %}{% for e in entities %}{{ e.identifier_scheme }}:{{ e.identifier_value }}/{% endfor %}{{ entity.identifier_scheme }}:{{ entity.identifier_value }}/save/" class="{{ entity.identifier_scheme }}-{{ entity.identifier_value }}">{{ entity.title }}</a></li>
                 {% endfor %}
             </ul>
         </div>
@@ -48,7 +57,7 @@
             <h2>{{ entity_type.verbose_name_plural|capfirst }}</h2>
             <ul>
                 {% for entity in attraction_entities %}
-                    <li id="{{ entity.identifier_scheme }}-{{ entity.identifier_value }}"{% if entity in entities %} class="selected"{% endif %}><a href="{% url tours:create %}{% for e in entities %}{{ e.identifier_scheme }}:{{ e.identifier_value }}/{% endfor %}{{ entity.identifier_scheme }}:{{ entity.identifier_value }}/">{{ entity.title }}</a></li>
+                    <li {% if entity in entities %} class="selected"{% endif %}><a href="{% url tours:create %}{% for e in entities %}{{ e.identifier_scheme }}:{{ e.identifier_value }}/{% endfor %}{{ entity.identifier_scheme }}:{{ entity.identifier_value }}/" class="{{ entity.identifier_scheme }}-{{ entity.identifier_value }}">{{ entity.title }}</a></li>
                 {% endfor %}
             </ul>
         </div>
