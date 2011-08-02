@@ -1,8 +1,16 @@
+from datetime import datetime, timedelta
 import math
 from operator import itemgetter
 import logging
+import hashlib
+
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
 
 from molly.maps import Map
+from molly.routing.models import CachedRoute
 
 logger = logging.getLogger(__name__)
 
@@ -59,21 +67,47 @@ def generate_route(points, type):
             'error': 'No provider for %s configured' % type
         }
     else:
-        route = generate_route(points, type)
-        if 'waypoints' in route:
-            for waypoint in route['waypoints']:
-                # Lazily generate the map
-                waypoint['map'] = Map(centre_point=None,
-                                      points=[],
-                                      min_points=0,
-                                      zoom=None,
-                                      width=320,
-                                      height=240,
-                                      extra_points=[
-                                        (waypoint['path'][0][0], waypoint['path'][0][1], 'green', ''),
-                                        (waypoint['path'][-1][0], waypoint['path'][-1][1], 'red', ''),
-                                      ],
-                                      paths=[(waypoint['path'], '#3c3c3c')])
+        
+        cache_hash = hashlib.sha224(pickle.dumps((points, type))).hexdigest()
+        
+        try:
+            
+            cached_route = CachedRoute.objects.get(hash=cache_hash)
+            
+            logger.debug('Found cached route: %s', cached_route.hash)
+            
+            if datetime.now() < cached_route.expires:
+                route = cached_route.cache
+            else:
+                
+                logger.debug('Cached route has expired, regenerating')
+                cached_route.delete()
+                raise CachedRoute.DoesNotExist()
+        
+        except CachedRoute.DoesNotExist:
+            
+            route = generate_route(points, type)
+            if 'waypoints' in route:
+                for waypoint in route['waypoints']:
+                    # Lazily generate the map
+                    waypoint['map'] = Map(centre_point=None,
+                                          points=[],
+                                          min_points=0,
+                                          zoom=None,
+                                          width=320,
+                                          height=240,
+                                          extra_points=[
+                                            (waypoint['path'][0][0], waypoint['path'][0][1], 'green', ''),
+                                            (waypoint['path'][-1][0], waypoint['path'][-1][1], 'red', ''),
+                                          ],
+                                          paths=[(waypoint['path'], '#3c3c3c')])
+            
+            cached_route = CachedRoute.objects.create(
+                hash=cache_hash, expires=datetime.now()+timedelta(weeks=1))
+            
+            cached_route.cache = route
+            cached_route.save()
+            
         return route
 
 

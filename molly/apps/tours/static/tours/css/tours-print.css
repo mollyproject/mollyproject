@@ -1,17 +1,3 @@
-div.osm-license {
-    position: absolute;
-    top: auto;
-    right: 0;
-    bottom: 0;
-    font-size: 0.7rem;
-    text-align:right;
-    padding: 2px;
-    background: #ffffff;
-    background-opacity: 0.5;
-    color: #000000;
-    z-index: 20;
-}
-
 div.backgrounded-image {
     background-repeat: no-repeat;
     background-position: center center;

@@ -11,5 +11,7 @@
         </a>
     {% endifnotequal %}
 {% endif %}
+{% if not force_static %}
     {% url maps:osm-about as about_link %}
     <div class="osm-license">{% blocktrans %}Map &copy; <a href="{{ about_link }}">OpenStreetMap</a> and contributors, CC-BY-SA{% endblocktrans %}</div>
+{% endif %}

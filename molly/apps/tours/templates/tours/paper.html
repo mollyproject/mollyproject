@@ -52,6 +52,8 @@
     {% endfor %}
     
     <p>{% trans 'Please note that the route information provided should be followed at your own risk.' %}</p>
-    
+    {% url maps:osm-about as about_link %}
+    <p>{% blocktrans %}Maps &copy; <a href="{{ about_link }}">OpenStreetMap</a> and contributors, CC-BY-SA{% endblocktrans %}</p>
+ 
 </body>
 </html>

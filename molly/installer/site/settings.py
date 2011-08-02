@@ -965,6 +965,12 @@ APPLICATIONS = [
     Application('molly.favourites', 'favourites', 'Favourite pages',
         display_to_user = False,
     ),
+    
+    # This app provides utilities to other apps which want to generate a route
+    # between 2 points
+    Application('molly.routing', 'routing', 'Routing',
+        display_to_user = False,
+    ),
 
 ]
 
