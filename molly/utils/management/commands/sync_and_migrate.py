@@ -22,7 +22,7 @@ class Command(NoArgsCommand):
             # and django.contrib.auth
             savepoint = transaction.savepoint()
             MigrationHistory.objects.all()[0]
-        except DatabaseError:
+        except (DatabaseError, IndexError):
             transaction.savepoint_rollback(savepoint)
             print "Doing first sync..."
             call_command('syncdb', migrate_all=True)
@@ -31,3 +31,4 @@ class Command(NoArgsCommand):
             print "Doing db sync..."
             call_command('syncdb')
             call_command('migrate')
+
