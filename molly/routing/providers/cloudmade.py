@@ -86,7 +86,10 @@ def generate_route(points, type):
                         'time': humanise_seconds(time)
                     },
                 'waypoint_type': turn_type,
-                'location': points[position]
+                'location': points[position],
+                'path': LineString(map(lambda ps: Point(*ps),
+                            points[position:json['route_instructions'][i+1][2]+1] if i+1 < len(json['route_instructions']) else points[position:]
+                        ))
             })
         
         return {

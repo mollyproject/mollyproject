@@ -1,10 +1,12 @@
 import math
 from operator import itemgetter
+import logging
+
+from molly.maps import Map
+
+logger = logging.getLogger(__name__)
 
 ENGINES = dict()
-
-import logging
-logger = logging.getLogger(__name__)
 
 try:
     from molly.routing.providers.cloudmade import generate_route as cloudmade
@@ -54,10 +56,25 @@ def generate_route(points, type):
     
     if generate_route is None:
         return {
-            'error': 'No provider configured'
+            'error': 'No provider for %s configured' % type
         }
     else:
-        return generate_route(points, type)
+        route = generate_route(points, type)
+        if 'waypoints' in route:
+            for waypoint in route['waypoints']:
+                # Lazily generate the map
+                waypoint['map'] = Map(centre_point=None,
+                                      points=[],
+                                      min_points=0,
+                                      zoom=None,
+                                      width=320,
+                                      height=240,
+                                      extra_points=[
+                                        (waypoint['path'][0][0], waypoint['path'][0][1], 'green', ''),
+                                        (waypoint['path'][-1][0], waypoint['path'][-1][1], 'red', ''),
+                                      ],
+                                      paths=[(waypoint['path'], '#3c3c3c')])
+        return route
 
 
 def optimise_points(points):

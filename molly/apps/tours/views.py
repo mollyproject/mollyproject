@@ -1,4 +1,5 @@
 from datetime import datetime
+from operator import attrgetter
 
 from django.core.urlresolvers import reverse
 from django.contrib.gis.geos import Point
@@ -59,8 +60,10 @@ class CreateView(BaseView):
         
         context.update({
             'entities': [],
-            'attractions': dict((et, et.entity_set.filter(location__isnull=False))
-                for et in EntityType.objects.filter(slug__in=self.conf.attraction_types))
+            'attractions': dict(
+                (et, sorted(et.entity_set.filter(location__isnull=False),
+                            key=attrgetter('title')))
+                    for et in EntityType.objects.filter(slug__in=self.conf.attraction_types))
         })
         
         for entity in entities.split('/'):
@@ -124,10 +127,6 @@ class SaveView(CreateView):
         return super(SaveView, self).handle_GET(request, context, entities)
 
 
-class PdfView(BaseView):
-    pass
-
-
 class PodcastView(BaseView):
     pass
 
@@ -143,6 +142,82 @@ class TourView(BaseView):
             context['stop'].entity.title if page else context['tour'].name,
             lazy_reverse('tour', args=(context['tour'].pk, page)),
         )
+    
+    def arrival_route_location(self, first_stop, arrival_route):
+        """
+        Given a route which the user is entering the city by, then suggest the
+        best place to get off the route, and directions from that point to the
+        first stop
+        """
+        
+        closest_stop = Entity.objects.filter(
+                    stoponroute__route__service_id=arrival_route,
+                ).distance(first_stop.location).order_by('distance')
+        if closest_stop.count() > 0:
+            closest_stop = closest_stop[0]
+            start_location = closest_stop
+        else:
+            start_location = None
+        return start_location
+    
+    def arrival_point_location(self, first_stop, arrival_point):
+        """
+        Given an arrival point (which may be a park and ride, in which case
+        directions using public transport are given), figure out directions to
+        the first location
+        """
+        
+        sv, p_and_r, routes = self.conf.arrival_points[int(arrival_point)]
+        entity = get_entity(*sv.split(':'))
+        if p_and_r:
+            
+            # Get closest bus stop to first stop on route
+            closest_stops = Entity.objects.filter(
+                    stoponroute__route__service_id__in=routes,
+                ).distance(first_stop.location).order_by('distance')
+            
+            # Now, check that this stop comes *after* where we get on
+            closest_stop = None
+            
+            # Go through all of our stops until we find the closest
+            # one which matches our criteria
+            for stop in closest_stops:
+                
+                # Now, check for each route that goes through this
+                # stop that are the ones we're considering
+                for route in stop.route_set.filter(service_id__in=routes):
+                    
+                    stoponroute = StopOnRoute.objects.get(entity=stop,
+                                                          route=route)
+                    
+                    # Get the closest stop to the origin that serves
+                    # this route
+                    closest_origin = Entity.objects.filter(
+                            stoponroute__route=route,
+                        ).distance(entity.location).order_by('distance')[0]
+                    origin_stop = StopOnRoute.objects.get(route=route,
+                                                          entity=closest_origin)
+                    
+                    if stoponroute.order > origin_stop.order:
+                        # now check that this stop comes after our
+                        # first stop...
+                        closest_stop = stop
+                        break
+                    
+                if closest_stop:
+                    break
+            
+            p_and_r_context = {
+                'start': entity,
+                'routes': set(routes) & set(sor.route.service_id for sor in closest_stop.stoponroute_set.all()),
+                'origin_stop': origin_stop,
+                'closest_stop': closest_stop
+            }
+            start_location = closest_stop
+        else:
+            # Directions from that point to first stop
+            start_location = entity
+        return start_location, p_and_r_context
     
     def initial_context(self, request, tour, page=None):
         
@@ -180,69 +255,14 @@ class TourView(BaseView):
                 first_stop = tour.stops.all()[0]
                 
                 if arrival_point is not None:
-                    sv, p_and_r, routes = self.conf.arrival_points[int(arrival_point)]
-                    entity = get_entity(*sv.split(':'))
-                    if p_and_r:
-                        
-                        # Get closest bus stop to first stop on route
-                        closest_stops = Entity.objects.filter(
-                                stoponroute__route__service_id__in=routes,
-                            ).distance(first_stop.location).order_by('distance')
-                        
-                        # Now, check that this stop comes *after* where we get on
-                        closest_stop = None
-                        
-                        # Go through all of our stops until we find the closest
-                        # one which matches our criteria
-                        for stop in closest_stops:
-                            
-                            # Now, check for each route that goes through this
-                            # stop that are the ones we're considering
-                            for route in stop.route_set.filter(
-                                    service_id__in=routes):
-                                
-                                stoponroute = StopOnRoute.objects.get(
-                                    entity=stop, route=route)
-                                
-                                # Get the closest stop to the origin that serves
-                                # this route
-                                closest_origin = Entity.objects.filter(
-                                        stoponroute__route=route,
-                                    ).distance(entity.location).order_by('distance')[0]
-                                origin_stop = StopOnRoute.objects.get(
-                                    route=route, entity=closest_origin)
-                                
-                                if stoponroute.order > origin_stop.order:
-                                    # now check that this stop comes after our
-                                    # first stop...
-                                    closest_stop = stop
-                                    break
-                                
-                            if closest_stop:
-                                break
-                        
-                        context['p_and_r'] = {
-                            'start': entity,
-                            'routes': set(routes) & set(sor.route.service_id for sor in closest_stop.stoponroute_set.all()),
-                            'origin_stop': origin_stop,
-                            'closest_stop': closest_stop
-                        }
-                        start_location = closest_stop
-                    else:
-                        # Directions from that point to first stop
-                        start_location = entity
+                
+                    start_location, p_and_r_context = self.arrival_point_location(first_stop, arrival_point)
+                    context['p_and_r'] = p_and_r_context
                 
                 elif arrival_route is not None:
-                    
-                    closest_stop = Entity.objects.filter(
-                                stoponroute__route__service_id=arrival_route,
-                            ).distance(first_stop.location).order_by('distance')
-                    if closest_stop.count() > 0:
-                        closest_stop = closest_stop[0]
-                        start_location = closest_stop
-                        context['arrival_route'] = arrival_route
-                    else:
-                        start_location = None
+                
+                    start_location = self.arrival_route_location(first_stop, arrival_route)
+                    context['arrival_route'] = arrival_route
                 
                 if start_location is not None:
                     context['first_directions'] = generate_route(
@@ -312,4 +332,17 @@ class TourView(BaseView):
                 paths=[(context['route']['path'], '#3c3c3c')])
         
         return self.render(request, context, 'tours/tour')
+
+
+class PaperView(TourView):
+    
+    def handle_GET(self, request, context, tour):
+        # Map QuerySet to list
+        context['stops'] = list(context['stops'])
+        for i, stop in enumerate(context['stops'][1:], start=1):
+            stop.directions_to = generate_route([
+                context['stops'][i-1].entity.routing_point(stop.entity.location).location,
+                stop.entity.routing_point(context['stops'][i-1].entity.location).location],
+                'foot')
+        return self.render(request, context, 'tours/paper')
 

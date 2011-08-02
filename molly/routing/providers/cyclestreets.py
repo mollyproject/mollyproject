@@ -81,7 +81,9 @@ def generate_route(points, type):
                         'sharp right': 'sharp-right',
                         'double-back': 'turn-around',
                     }.get(segment['turn']),
-                'location': Point(*map(float, segment['points'].split(' ')[0].split(',')))
+                'location': Point(*map(float, segment['points'].split(' ')[0].split(','))),
+                'path': LineString(map(lambda ps: Point(*map(float, ps.split(','))),
+                                       segment['points'].split(' ')))
             })
         
         return {

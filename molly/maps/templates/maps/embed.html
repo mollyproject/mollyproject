@@ -1,6 +1,6 @@
 {% load molly_utils %}
 {% ifnotequal style_group "dumb" %}
-    {% if use_slippy_maps %}
+    {% if use_slippy_maps and not force_static %}
         <div class="slippy-map map">
             <div style="height: {{ map.height }}px;" id="map-{{ map.static_map_hash }}">
                 <script type="text/javascript">
