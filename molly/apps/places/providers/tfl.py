@@ -53,20 +53,23 @@ class TubeRealtimeProvider(BaseMapsProvider):
         
         station = entity.metadata['london-underground-identifiers']['station-code']
         for line in entity.metadata['london-underground-identifiers']['line-codes']:
-            next_info = defaultdict(list)
             
             xml = minidom.parseString(urlopen(self.TRACKERNET_PREDICTION_URL % (line, station)).read())
-            for tag in xml.getElementsByTagName('T'):
-                next_info[tag.getAttribute('Destination')].append(int(tag.getAttribute('SecondsTo')))
-            
-            line_name = xml.getElementsByTagName('LineName')[0].childNodes[0].nodeValue[:-5]
-            
-            for dest, eta in next_info.items():
-                services.append({
-                    'service': line_name,
-                    'destination': dest,
-                    'etas': eta
-                })
+            for platform in xml.getElementsByTagName('P'):
+                next_info = defaultdict(list)
+                for tag in platform.getElementsByTagName('T'):
+                    dest = '%s (%s)' % (
+                        tag.getAttribute('Destination'),
+                        xml.getElementsByTagName('LineName')[0].childNodes[0].nodeValue
+                    )
+                    next_info[dest].append(int(tag.getAttribute('SecondsTo')))
+                
+                for dest, eta in next_info.items():
+                    services.append({
+                        'service': _('Plat %d') % platform.getAttribute('Num'),
+                        'destination': dest,
+                        'etas': eta
+                    })
         
         services.sort(key=lambda s: s['etas'][0])
         for service in services:
