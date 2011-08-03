@@ -62,7 +62,7 @@ def tidy_query_string(url):
     scheme, netloc, path, params, query, fragment = urlparse(url)
     args = []
     for k, vs in parse_qs(query).items():
-        if k in ['format',]:
+        if k in ['format', 'language_code']:
             continue
         else:
             for v in vs:
