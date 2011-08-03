@@ -89,6 +89,7 @@ function async_load(url, query, meth) {
     display_loading_screen()
   
     query['format'] = 'fragment';
+    query['language_code'] = language_code;
     async_load_xhr = $.ajax({
             'url': to_absolute(url),
             'data': query,
