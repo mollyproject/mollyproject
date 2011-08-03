@@ -7,6 +7,7 @@ from lxml import etree
 from django.contrib.gis.geos import Point
 from django.core.paginator import Page
 from django.db import models
+from django.utils.functional import Promise as lazy_translation
 
 logger = getLogger(__name__)
 
@@ -48,6 +49,8 @@ def simplify_value(value):
             return out
     elif isinstance(value, (basestring, int, float)):
         return value
+    elif isinstance(value, lazy_translation):
+        return unicode(value)
     elif isinstance(value, datetime.datetime):
         return DateTimeUnicode(value.isoformat(' '))
     elif isinstance(value, datetime.date):
