@@ -1,5 +1,5 @@
 $(function(){
-    
+
     function reset_selected_bindings(){
         $('#poi-list li a').unbind('click');
         $('#poi-list li a').click(function(e){
@@ -18,7 +18,7 @@ $(function(){
         })
     }
     reset_selected_bindings();
-    
+
     $('.attractions-grouping li a').click(function(e){
         var entity = $(this).attr('class');
         $('#poi-list').append('<li><a href="#" class="' + entity + '">' + $(this).html() + '</a></li>');
@@ -28,5 +28,11 @@ $(function(){
         current_stops.push(entity);
         e.preventDefault();
     })
-    
+
+    $('#poi-submit').submit(function(){
+        $(this).attr('action', '/tours/create/' + current_stops.join('/') + '/save/');
+        e.preventDefault();
+        $(this).submit();
+    })
+
 })
