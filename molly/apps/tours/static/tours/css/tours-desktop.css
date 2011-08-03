@@ -20,19 +20,25 @@ ol {
     list-style-position: inside;
 }
 
-li {
+.attractions-grouping li,
+#poi-list li,
+#poi-search {
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    margin: 5px;
+    border: 1px solid black;
+}
+
+.attractions-grouping li,
+#poi-list li {
     display: inline-block;
     background-color: #d6d6d6;
     background-image: url('../../tours/images/add.png');
     background-position: 5px center;
     background-repeat: no-repeat;
-    -webkit-border-radius: 10px;
-    -moz-border-radius: 10px;
-    border-radius: 10px;
-    padding: 15px 15px 15px 25px;
-    margin: 5px;
-    border: 1px solid black;
     text-align: center;
+    padding: 15px 15px 15px 25px;
 }
 
 #poi-list li {
@@ -55,4 +61,15 @@ li.selected {
 
 .attractions-grouping {
     margin-left: 260px;
+}
+
+ul.ui-autocomplete {
+    max-height: 400px;
+    overflow-y: scroll;
+}
+
+#poi-search {
+    padding: 15px;
+    width: 50%;
+    text-align: center;
 }

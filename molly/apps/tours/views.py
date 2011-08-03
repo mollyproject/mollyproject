@@ -63,7 +63,9 @@ class CreateView(BaseView):
             'attractions': dict(
                 (et, sorted(et.entity_set.filter(location__isnull=False),
                             key=attrgetter('title')))
-                    for et in EntityType.objects.filter(slug__in=self.conf.attraction_types))
+                    for et in EntityType.objects.filter(slug__in=self.conf.attraction_types)),
+            'all_pois': sorted(Entity.objects.filter(all_types_completion__slug__in=self.conf.attraction_types),
+                               key=attrgetter('title'))
         })
         
         for entity in entities.split('/'):
