@@ -66,7 +66,7 @@ class TubeRealtimeProvider(BaseMapsProvider):
                 
                 for dest, eta in next_info.items():
                     services.append({
-                        'service': _('Plat %d') % platform.getAttribute('Num'),
+                        'service': _('Plat %s') % platform.getAttribute('Num'),
                         'destination': dest,
                         'etas': eta
                     })
@@ -78,5 +78,6 @@ class TubeRealtimeProvider(BaseMapsProvider):
             etas = [_('DUE') if e == 0 else _('%d mins') % e for e in etas]
             service['next'] = etas[0]
             service['following'] = etas[1:]
+            del service['etas']
         entity.metadata['real_time_information']['services'] = services
         entity.metadata['meta_refresh'] = 30
