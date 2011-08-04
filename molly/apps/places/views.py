@@ -7,7 +7,6 @@ import copy
 import math
 from datetime import datetime, timedelta
 from urllib import unquote
-from operator import attrgetter
 
 from suds import WebFault
 
@@ -107,7 +106,8 @@ class NearbyListView(LocationRequiredView):
         categorised_entity_types = defaultdict(list)
         for et in filter(lambda et: et.entities_found > 0, entity_types):
             categorised_entity_types[_(et.category.name)].append(et)
-        categorised_entity_types = dict((k, sorted(v, key=attrgetter('verbose_name')))
+        categorised_entity_types = dict(
+            (k, sorted(v, key=lambda x: x.verbose_name.lower()))
             for k, v in categorised_entity_types.items())
 
         context.update({
@@ -468,7 +468,8 @@ class CategoryListView(BaseView):
         for et in EntityType.objects.filter(show_in_category_list=True):
             categorised_entity_types[_(et.category.name)].append(et)
         # Need to do this other Django evalutes .items as ['items']
-        categorised_entity_types = dict((k, sorted(v, key=attrgetter('verbose_name')))
+        categorised_entity_types = dict(
+            (k, sorted(v, key=lambda x: x.verbose_name.lower()))
             for k, v in categorised_entity_types.items())
         return {
             'entity_types': categorised_entity_types,
