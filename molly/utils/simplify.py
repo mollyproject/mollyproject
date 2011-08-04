@@ -37,6 +37,9 @@ def simplify_value(value):
                             type(value[key]), exc_info=True)
                 pass
         return out
+    elif isinstance(value, tuple) and hasattr(value, '_asdict'):
+        # Handle named tuples as dicts
+        return simplify_value(value._asdict())
     elif isinstance(value, (list, tuple, set, frozenset)):
         out = []
         for subvalue in value:
