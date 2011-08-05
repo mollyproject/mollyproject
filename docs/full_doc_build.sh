@@ -33,6 +33,8 @@ fi
 build_documentation dev
 for tag in `git tag`; do
     git checkout $tag
+    find ../molly/ -name *.pyc -exec rm -f {} \;
+    find ../molly/ -name *.pyo -exec rm -f {} \;
     build_documentation $tag
 done
 
