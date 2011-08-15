@@ -42,8 +42,8 @@ class GeolocationView(BaseView):
             location = tuple(location)
         last_updated = request.session.get('geolocation:updated', datetime(1970, 1, 1))
         try:
-            last_location = Point(request.session['geolocation:location'], srid=4326)
-            distance_moved = last_location.transform(settings.SRID, clone=True).distance(Point(location, srid=4326).transform(settings.SRID, clone=True))
+            last_location = Point(request.session['geolocation:location'])
+            distance_moved = last_location.distance(Point(location))
         except KeyError:
             distance_moved = float('inf')
 

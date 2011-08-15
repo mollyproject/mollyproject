@@ -120,11 +120,6 @@ USE_I18N = True
 # calendars according to the current locale
 USE_L10N = True
 
-# This defines the SRID (http://en.wikipedia.org/wiki/SRID) which is used by
-# Geodjango to compute distances, project co-ordinates, etc. The default is
-# fairly sensible.
-SRID = 27700
-
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # This setting is unused in Molly.
 MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'site_media')
