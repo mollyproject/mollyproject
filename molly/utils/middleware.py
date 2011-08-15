@@ -26,14 +26,30 @@ class CookieLocaleMiddleware(LocaleMiddleware):
     
     def process_request(self, request):
         
-        if hasattr(request, 'session'):
-            # MOLLY-177: Force using cookies to set language
-            session = request.session
-            del request.session
-            super(CookieLocaleMiddleware, self).process_request(request)
-            request.session = session
-            
+        language_code = request.REQUEST.get('language_code')
+        
+        if language_code and language_code in dict(settings.LANGUAGES):
+            translation.activate(language_code)
+        
         else:
             
-            super(CookieLocaleMiddleware, self).process_request(request)
+            if hasattr(request, 'session'):
+                # MOLLY-177: Force using cookies to set language
+                session = request.session
+                del request.session
+                super(CookieLocaleMiddleware, self).process_request(request)
+                request.session = session
+                
+            else:
+                
+                super(CookieLocaleMiddleware, self).process_request(request)
+    
+    def process_response(self, request, response):
+        
+        language_code = request.REQUEST.get('language_code')
+        if language_code and language_code in dict(settings.LANGUAGES):
+            response.set_cookie(settings.LANGUAGE_COOKIE_NAME, language_code)
+        
+        return super(CookieLocaleMiddleware, self).process_response(request,
+                                                                    response)
 
