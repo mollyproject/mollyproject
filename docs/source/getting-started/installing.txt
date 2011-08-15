@@ -33,6 +33,12 @@ function correctly. If you are on CentOS 5, Fedora, Ubuntu 10.04 or 10.10, then
 running ``./setup.py sysprep`` as root will automatically install these
 dependencies for you.
 
+.. warning:: CentOS 5 users should be aware that some of these dependencies are
+             not in the default repositories. In order to satisfy these
+             dependencies, Molly will add the EPEL and RPMForge repositories to
+             your system. If this is not what you want, then you must ensure the
+             requirements are satisfied manually.
+
 If your system isn't one of those supported, then you will need to ensure the
 following packages, or their equivalent on your platform, are available:
 
