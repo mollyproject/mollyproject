@@ -3,9 +3,10 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext_noop
-from molly.utils.i18n import name_in_language
 
 from molly.apps.podcasts.data import licenses
+from molly.external_media import resize_external_image
+from molly.utils.i18n import name_in_language
 
 MEDIUM_CHOICES = (
     ('audio', _('audio')),
@@ -67,6 +68,13 @@ class Podcast(models.Model):
         verbose_name = _('Podcast feed')
         verbose_name_plural = _('Podcast feeds')
         ordering = ('title',)
+    
+    def simplify_for_render(self, simplify_value, simplify_model):
+        simplified = simplify_model(self)
+        simplified.update({
+            'resized_logo': simplify_model(resize_external_image(self.logo, 60))
+        })
+        return simplified
 
 
 class PodcastItem(models.Model):
