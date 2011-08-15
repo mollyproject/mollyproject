@@ -463,11 +463,3 @@ The name of the service, extensively used in templates to name the service. This
 defaults to 'Molly Project'::
 
     SITE_NAME = 'Mobile Oxford'
-
-SRID
-""""
-
-This is the `SRID <http://en.wikipedia.org/wiki/SRID>`_ used for projections.
-There's no need to change this from the recommended setting::
-
-    SRID = 27700

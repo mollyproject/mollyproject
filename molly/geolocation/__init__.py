@@ -25,18 +25,18 @@ def _cached(getargsfunc):
 
             i = 0
             while i < len(results):
-                loc, name = Point(results[i]['location'], srid=4326).transform(settings.SRID, clone=True), results[i]['name']
-                if any((r['name'] == name and Point(r['location'], srid=4326).transform(settings.SRID, clone=True).distance(loc) < 100) for r in results[:i]):
+                loc, name = Point(results[i]['location']), results[i]['name']
+                if any((r['name'] == name and Point(r['location']).distance(loc) < 100) for r in results[:i]):
                     results[i:i+1] = []
                 else:
                     i += 1
 
             if hasattr(app, 'prefer_results_near'):
-                point = Point(app.prefer_results_near[:2], srid=4326).transform(settings.SRID, clone=True)
+                point = Point(app.prefer_results_near[:2])
                 distance = app.prefer_results_near[2]
                 filtered_results = [
                     result for result in results if
-                        Point(result['location'], srid=4326).transform(settings.SRID, clone=True).distance(point) <= distance]
+                        Point(result['location']).distance(point) <= distance]
                 if filtered_results:
                     results = filtered_results
 
