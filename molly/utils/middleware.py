@@ -5,6 +5,7 @@ from django.http import Http404
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured, PermissionDenied
 from django.middleware.locale import LocaleMiddleware
+from django.utils import translation
 
 from molly.utils.views import handler500
 
