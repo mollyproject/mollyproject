@@ -10,6 +10,7 @@ except ImportError:
     import pickle
 
 from molly.maps import Map
+from molly.utils import haversine
 from molly.routing.models import CachedRoute
 
 logger = logging.getLogger(__name__)
@@ -128,28 +129,6 @@ def optimise_points(points):
     
     if len(points) > 10:
         raise NotImplementedError()
-
-    def haversine(origin, destination):
-        """
-        Returns the distance between two points using the haversine formula
-        
-        http://www.platoscave.net/blog/2009/oct/5/calculate-distance-latitude-longitude-python/
-        
-        >>> int(haversine((-1.31017, 51.7459), (-1.199226, 51.749327)))
-        7647
-        """
-        
-        lon1, lat1 = map(math.radians, origin)
-        lon2, lat2 = map(math.radians, destination)
-        radius = 6371000 # Earth's radius in metres
-        
-        dlat = lat2-lat1
-        dlon = lon2-lon1
-        a = math.sin(dlat/2)**2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon/2)**2
-        c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
-        d = radius * c
-        
-        return d
     
     distances = {}
     
