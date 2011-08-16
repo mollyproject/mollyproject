@@ -66,7 +66,6 @@ $(document).bind('molly-page-change', function(event, url){
                         $('li.next a').attr('href', '?page=' + (data.entities.number + 1).toString(10))
                     } else {
                         $('li.next').remove()
-                        $('.section-content').removeClass('no-round-bottom')
                     }
                     for (i in data.entities.objects) {
                         item = data.entities.objects[i]
@@ -149,8 +148,6 @@ function parse_results(data, nearby){
             }
         }
     }
-    $('#poi-category-selector ul').addClass('no-round-bottom')
-    $('#poi-category-selector ul:last').removeClass('no-round-bottom')
     capture_outbound();
 }
 
@@ -196,7 +193,7 @@ function refreshRTI(data){
 function rebuildRTI(elem, metadata){
     elem.empty()
     if ((typeof(metadata.pip_info) != 'undefined' && metadata.pip_info.length > 0) || metadata.services.length == 0) {
-        elem.append('<ul class="content-list no-round-bottom"></ul>')
+        elem.append('<ul class="content-list"></ul>')
         if (metadata.pip_info.length > 0) {
             elem.find('ul').append('<li></li>')
             var li = elem.find('li')
@@ -214,7 +211,7 @@ function rebuildRTI(elem, metadata){
         }
     }
     if (metadata.services.length > 0) {
-        elem.append('<div class="section-content no-round-bottom"><div class="pad-5"><table class="real-time-information"><tbody id="bus_times"></tbody></table></div></div>')
+        elem.append('<div class="section-content"><div class="pad-5"><table class="real-time-information"><tbody id="bus_times"></tbody></table></div></div>')
         tbody = elem.find('tbody')
         for (var i in metadata.services) {
             var service = metadata.services[i]
@@ -265,14 +262,14 @@ function rebuildLDB(elem, board, train_station){
     }
     
     if (train_station.metadata.ldb.nrccMessages) {
-        elem.append('<ul class="content-list no-round-bottom"></ul>')
+        elem.append('<ul class="content-list"></ul>')
         ul = elem.find('ul:last')
         for (var i in train_station.metadata.ldb.nrccMessages.message) {
             ul.append('<li>' + train_station.metadata.ldb.nrccMessages.message[i] + '</li>')
         }
     }
     
-    elem.append('<table class="content no-round-bottom"><thead><tr></tr></thead><tbody></tbody></table>')
+    elem.append('<table class="content"><thead><tr></tr></thead><tbody></tbody></table>')
     tr = elem.find('.content thead tr')
     if (board == 'arrivals') {
         tr.append('<th>' + gettext('Origin') + '</th>')

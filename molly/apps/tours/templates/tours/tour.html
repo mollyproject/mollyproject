@@ -29,7 +29,7 @@
                     <h2>{% blocktrans with stop.entity.title as title %}Directions to {{ title }} from your previous stop{% endblocktrans %}</h2>
                 {% endif %}
             </div>
-            <div class="section-content no-round-bottom">
+            <div class="section-content">
                 {% render_map route_map %}
                 <div class="note"><div class="bubble"><div class="pad-10">
                             {% blocktrans with route.total_time|humanise_seconds as time and route.total_distance|humanise_distance as distance %}This route will take {{ time }} and cover {{ distance }}.{% endblocktrans %}
@@ -102,7 +102,7 @@
                     <div class="header">
                         <h2>{% blocktrans with p_and_r.start.title as start and p_and_r.closest_stop.title as end %}Park &amp; Ride from {{ start }} to {{ end }}{% endblocktrans %}</h2>
                     </div>
-                    <div class="section-content no-round-bottom">
+                    <div class="section-content">
                         <p>{% blocktrans count p_and_r.routes|length as num_routes with p_and_r.routes|join:', ' as route_numbers and p_and_r.start.title as start and p_and_r.origin_stop.entity.title as origin_stop %}At {{ start }} take service {{ route_numbers }} from {{ origin_stop }}.{% plural %}At {{ start }} take any of services {{ route_numbers }} from stop {{ origin_stop }}.{% endblocktrans %}
                         <p>{% blocktrans with p_and_r.closest_stop.title as end %}When the service reaches {{ end }}, disembark and continue by foot using the directions below.{% endblocktrans %}</p>
                     </div>
@@ -110,7 +110,7 @@
                 <div class="header">
                     <h2>{% blocktrans with directions_end.title as dest_title and directions_start.title as origin_title %}Directions to {{ dest_title }} from {{ origin_title }}{% endblocktrans %}</h2>
                 </div>
-                <div class="section-content no-round-bottom">
+                <div class="section-content">
                     {% render_map directions_map %}
                     <div class="note"><div class="bubble"><div class="pad-10">
                         {% blocktrans with first_directions.total_time|humanise_seconds as time and first_directions.total_distance|humanise_distance as distance %}This route will take {{ time }} and cover {{ distance }}.{% endblocktrans %}

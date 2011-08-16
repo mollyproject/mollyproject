@@ -64,7 +64,7 @@
     <div class="header">
         <h2>{% trans "Library holdings" %}</h2>
     </div>
-    <div class="section-content no-round-bottom">
+    <div class="section-content">
         {% if map %}{% render_map map %}{% endif %}
         <div class="note"><div class="bubble pad-10">
             {% trans "Please note that all libraries have admission and borrowing policies; inclusion in this list does not imply access." %}{% if map_hash %} {% trans "Closest results are not necessarily best." %}{% endif %}

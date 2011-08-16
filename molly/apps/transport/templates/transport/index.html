@@ -76,7 +76,7 @@
     <div class="header">
         <h2>{% trans data.results_type %} {{ data.type.verbose_name_plural }} - {% now "G:i:s "%}</h2>
     </div>
-    <table class="content{% ifequal data.results_type _("Favourite") %} no-round-bottom{% endifequal %}">
+    <table class="content">
         <tbody>
         {% for entity in data.entities %}
             <tr class="sub-section-divider"><th colspan="3"><a href="{{ entity.get_absolute_url }}" class="subtle-link">

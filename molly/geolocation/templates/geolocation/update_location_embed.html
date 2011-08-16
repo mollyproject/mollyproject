@@ -75,7 +75,7 @@
                     <div class="header">
                         <h2>{% trans "Favourite Locations" %}</h2>
                     </div>
-                    <ul class="favourite-locations-list link-list{% if geolocation.history %} no-round-bottom{% endif %}">
+                    <ul class="favourite-locations-list link-list">
                       {% for id, favourite in geolocation.favourites.items %}
                         <li>
                             <form class="specific-location-form" method="post" action="{% url geolocation:index %}">

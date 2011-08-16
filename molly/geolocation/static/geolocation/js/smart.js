@@ -52,9 +52,6 @@ $(document).bind('molly-page-change', function(){
   if(geo_position_js.init()) {
     // Add automatic location buttons if geolocation API is available
     $('.update-location-form').append('<ul class="link-list location-automatic-list"><li><input type="submit" value="' + gettext('Get location automatically') + '" class="automatic-update as-text-link" /></li></ul>');
-    if ($('.favourite-locations-list').length + $('.historic-locations-list').length) {
-      $('.location-automatic-list').addClass('no-round-bottom')
-    }
     $('.current-location-box p').prepend('<input type="submit" value="' + gettext('Determine location automatically') + '" class="automatic-update automatic-update-button" />')
     $('.automatic-update, .location-automatic-list').click(function(){
       $('.update-location-box').slideUp();
@@ -240,9 +237,7 @@ function locationFound(data) {
       $('.alternate-location-box').slideUp();
     }
     $('.update-location-lists').empty()
-    $('.location-automatic-list').removeClass('no-round-bottom')
     if (data.favourites.length > 0) {
-      $('.location-automatic-list').addClass('no-round-bottom')
       $('.update-location-lists').append( '<div class="header">'
                                         + '  <h2>' + gettext('Or select a favourite location') + '</h2>'
                                         + '</div>'
@@ -253,8 +248,6 @@ function locationFound(data) {
       }
     }
     if (data.history.length > 0) {
-      $('.location-automatic-list').addClass('no-round-bottom')
-      $('.favourite-locations-list').addClass('no-round-bottom')
       $('.update-location-lists').append( '<div class="header">'
                                         + '  <h2>' + gettext('Or select from history') + '</h2>'
                                         + '</div>'
@@ -269,9 +262,6 @@ function locationFound(data) {
       for (i in data.history.reverse()) {
         $('.historic-locations-list').prepend('<li>' + specificLocationForm(data.history[i], false) + '</i>')
       }
-    }
-    if ($('.favourite-locations-list').length + $('.historic-locations-list').length) {
-      $('.location-automatic-list').addClass('no-round-bottom')
     }
     $(document).trigger('molly-location-update')
   } else {

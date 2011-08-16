@@ -9,7 +9,7 @@
     <div class="header">
         <h2>{% trans "Multiple routes found" %}</h2>
     </div>
-    <div class="section-content no-round-bottom">
+    <div class="section-content">
         <p>{% trans "Multiple routes with the same number were found from this stop. This could be due to this stop serving two different directions. Please select exactly which route you want from the list below." %}
     </div>
     <ul class="link-list">
@@ -44,7 +44,7 @@
   
   {% else %}
   
-  <ul class="content-list no-round-bottom">
+  <ul class="content-list">
     {% if service.operator %}
         <li>
             {% blocktrans with service.operator as operator %}Operated by {{ operator }}{% endblocktrans %}

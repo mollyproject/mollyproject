@@ -6,14 +6,14 @@
   </div>
   
   {% if train_station.metadata.ldb.nrccMessages.message %}
-  <ul class="content-list no-round-bottom">
+  <ul class="content-list">
     {% for message in train_station.metadata.ldb.nrccMessages.message %}
       <li>{{ message|sanitize_html }}</li>
     {% endfor %}
   </ul>
   {% endif %}
 
-  <table class="content no-round-bottom">
+  <table class="content">
     <thead>
       <tr>
         <th>

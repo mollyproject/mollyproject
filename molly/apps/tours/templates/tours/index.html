@@ -5,7 +5,7 @@
     <div class="header">
         <h2>{% trans 'Tours' %}</h2>
     </div>
-    <ul class="link-list{% if tours %} no-round-bottom{% endif %}">
+    <ul class="link-list">
         <li><a href="{% url tours:create %}">{% trans 'Create a new tour' %}</a></li>
     </ul>
     {% if tours %}

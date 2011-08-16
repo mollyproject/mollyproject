@@ -20,7 +20,7 @@
            {% trans 'An error occurred plotting this route:' %} {{ route.error }}.
         </div></div></div>
         {% else %}
-            <div class="section-content no-round-bottom">
+            <div class="section-content">
                 {% render_map map %}
 		<div class="note"><div class="bubble"><div class="pad-10">
                     {% blocktrans with route.total_time|humanise_seconds as time and route.total_distance|humanise_distance as distance %}This route will take {{ time }} and cover {{ distance }}.{% endblocktrans %}
