@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load molly_utils %}{% load i18n %}
 <div class="location-box section" id="location-box">
     <div class="header location-box-header">
         <h2>{% trans "Your Location" %}</h2>
@@ -14,7 +14,7 @@
                 <span class="location">
                     {% if geolocation.name %}{{ geolocation.name }}{% else %}{% trans "No location known" %}{% endif %}</span><br/>
                 <span class="location-accuracy">{% if geolocation.accuracy %}
-                    {% blocktrans with geolocation.accuracy|floatformat:"0" as accuracy %}within approx. {{ accuracy }} m{% endblocktrans %}
+                    {% blocktrans with geolocation.accuracy|humanise_distance as accuracy %}within approx. {{ accuracy }}{% endblocktrans %}
                     {% endif %}</span>
             </p>
         </div>

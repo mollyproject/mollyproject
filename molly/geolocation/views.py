@@ -10,6 +10,7 @@ from django.utils.translation import ugettext as _
 from molly.utils.views import BaseView, renderer
 from molly.utils.breadcrumbs import *
 from molly.utils.http import update_url
+from molly.utils.templatetags.molly_utils import humanise_distance
 
 from molly.geolocation.forms import LocationUpdateForm
 from molly.geolocation import geocode, reverse_geocode
@@ -96,7 +97,7 @@ class GeolocationView(BaseView):
         response['X-Embed'] = 'True'
         return response
 
-    def get_location_response(self, request, context, form = None):
+    def get_location_response(self, request, context, form=None):
         if context.get('return_url').startswith('/'):
             redirect = context['return_url']
         else:
@@ -105,7 +106,7 @@ class GeolocationView(BaseView):
             return self.render(request, {
                 'name': request.session['geolocation:name'],
                 'redirect': redirect,
-                'accuracy': request.session['geolocation:accuracy'],
+                'accuracy': humanise_distance(request.session['geolocation:accuracy']),
                 'longitude': request.session['geolocation:location'][0],
                 'latitude': request.session['geolocation:location'][1],
                 'history': request.session.get('geolocation:history', ()),
