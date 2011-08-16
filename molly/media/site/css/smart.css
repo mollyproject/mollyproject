@@ -12,7 +12,6 @@
                 ul.link-list
                 ol.directions-list
                 div.section-content
-                div.form-section
 */
 
 /*** Generic ***/
@@ -444,15 +443,26 @@ div.section {
 }
 
 .stand-alone,
-div.section> *:first-child {
+div.section > div.header:first-child {
     -webkit-border-top-right-radius: 8px; -moz-border-radius-topright: 8px; border-top-right-radius: 8px;
     -webkit-border-top-left-radius: 8px; -moz-border-radius-topleft: 8px; border-top-left-radius: 8px;
 }
 
 .stand-alone,
-div.section> *:last-child {
+div.section ul.content-list:last-child,
+div.section ul.link-list:last-child,
+div.section ol.directions-list:last-child,
+div.section div.section-content:last-child {
     -webkit-border-bottom-right-radius: 8px; -moz-border-radius-bottomright: 8px; border-bottom-right-radius: 8px;
     -webkit-border-bottom-left-radius: 8px; -moz-border-radius-bottomleft: 8px; border-bottom-left-radius: 8px;
+}
+
+div.section table.content:last-child > *:last-child > tr:last-child > *:first-child {
+    -webkit-border-bottom-left-radius: 8px; -moz-border-radius-bottomleft: 8px; border-bottom-left-radius: 8px;
+}
+
+div.section table.content:last-child > *:last-child > tr:last-child > *:last-child {
+    -webkit-border-bottom-right-radius: 8px; -moz-border-radius-bottomright: 8px; border-bottom-right-radius: 8px;
 }
 
 div.header {
