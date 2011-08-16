@@ -362,12 +362,16 @@ class Entity(models.Model):
         return entrances_in_group[0]
     
     def simplify_for_render(self, simplify_value, simplify_model):
-        return simplify_value({
+        simplified = {
             '_type': '%s.%s' % (self.__module__[:-7], self._meta.object_name),
             '_pk': self.pk,
             '_url': self.get_absolute_url(),
             'location': self.location,
+            'geometry': self.geometry,
+            'routing_point': self.routing_point().location,
             'parent': simplify_model(self.parent, terse=True),
+            'is_entrance': self.is_entrance,
+            'groups': self.groups.all(),
             'all_types': [simplify_model(t, terse=True)
                           for t in self.all_types_completion.all()],
             'primary_type': simplify_model(self.primary_type, terse=True),
@@ -376,7 +380,21 @@ class Entity(models.Model):
             'identifiers': self.identifiers,
             'identifier_scheme': self.identifier_scheme,
             'identifier_value': self.identifier_value
-        })
+        }
+        
+        for field in list(dir(self)):
+            try:
+                if field[0] != '_' \
+                 and field not in ('objects', 'all_types_slugs') \
+                 and not isinstance(getattr(self, field), models.Field):
+                    try:
+                        simplified[field] = simplify_value(getattr(self, field))
+                    except NotImplementedError:
+                        pass
+            except AttributeError:
+                pass
+        
+        return simplify_value(simplified)
 
 class EntityName(models.Model):
     entity = models.ForeignKey(Entity, related_name='names')
