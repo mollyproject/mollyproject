@@ -11,7 +11,6 @@ except ImportError:
         ez_setup.use_setuptools()
         from setuptools import setup
 
-from setuptools import setup
 from distutils.command.install import INSTALL_SCHEMES
 import os
 
@@ -90,10 +89,6 @@ setup(
     install_requires = [
         "python-Levenshtein",
         "pywurfl",
-        "ply",
-        "PyZ3950", # The one in PyPI is broken! You should install the one from
-                   # https://github.com/oucs/PyZ3950/ *BEFORE* running
-                   # this script
         "feedparser>=5.0",
         "simplejson",
         "rdflib",
@@ -110,9 +105,6 @@ setup(
         "suds",
         "django-slimmer",
         'pyyaml',
-    ],
-    dependency_links = [
-        'http://pylevenshtein.googlecode.com/files/python-Levenshtein-0.10.1.tar.bz2#egg=python-Levenshtein'
     ],
     cmdclass = {
         'sysprep': SysprepCommand,
