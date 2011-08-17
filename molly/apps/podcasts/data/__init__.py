@@ -23,6 +23,22 @@ class _License(object):
     @property
     def logo(self):
         return self.get(FOAF['logo'])
+    
+    def simplify_for_render(self, simplify_value, simplify_model):
+        simplified = {}
+        for predicate, object in self._graph.predicate_objects(self._uri):
+            # Disregard type
+            if predicate == RDF['type']:
+                continue
+            
+            # Convert predicate URIs into something a bit friendlier
+            predicate = {
+                DCTERMS['title']: 'title',
+                FOAF['logo']: 'logo',
+                DCTERMS['description']: 'description',
+            }.get(predicate, predicate)
+            simplified[predicate] = simplify_value(object)
+        return simplified
 
 class _Licenses(object):
     def __init__(self, filename):
