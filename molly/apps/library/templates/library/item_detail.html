@@ -72,14 +72,14 @@
     </div>
     <table class="content">
         <tbody>
-            {% for library, books in item.libraries.items %}
+            {% for library, books in sorted_libraries %}
                 <tr class="sub-section-divider">
                     <th colspan="2">
                         {% if library.marker_number %}{{ library.marker_number }}. {% endif %}
                         {% with library.location as location_code %}
                             <a href="{% url library:item-holdings-detail control_number,location_code|join:"/" %}">
-                                {% if library.get_entity %}
-                                    {{ library.get_entity.title }}
+                                {% if library.entity %}
+                                    {{ library.entity.title }}
                                 {% else %}
                                     {{ library.location|join:"/" }}
                                 {% endif %}
