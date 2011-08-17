@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-07-06 10:58+0100\n"
+"POT-Creation-Date: 2011-08-17 10:44+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -35,6 +35,19 @@ msgstr ""
 
 #: apps/places/static/places/js/smart.js:133 media/site/js/dummy.js:26
 msgid "%(entities_found)s within %(distance)sm"
+msgstr ""
+
+#: apps/places/static/places/js/smart.js:363
+#: apps/places/static/places/js/smart.js:369 media/site/js/dummy.js:41
+msgid "There are currently no scheduled %(board)s."
+msgstr ""
+
+#: apps/places/static/places/js/smart.js:377 media/site/js/dummy.js:42
+msgid "View arrivals board"
+msgstr ""
+
+#: apps/places/static/places/js/smart.js:379 media/site/js/dummy.js:43
+msgid "View departures board"
 msgstr ""
 
 #. Translators: Space as in car parking spaces
@@ -193,18 +206,6 @@ msgstr ""
 
 #: media/site/js/dummy.js:40
 msgid "Circular Route"
-msgstr ""
-
-#: media/site/js/dummy.js:41
-msgid "There are currently no scheduled %(board)s."
-msgstr ""
-
-#: media/site/js/dummy.js:42
-msgid "View arrivals board"
-msgstr ""
-
-#: media/site/js/dummy.js:43
-msgid "View departures board"
 msgstr ""
 
 #: media/site/js/dummy.js:53
