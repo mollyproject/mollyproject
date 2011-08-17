@@ -17,6 +17,7 @@ from molly.utils.views import BaseView
 from molly.wurfl import device_parents
 from molly.routing import generate_route, optimise_points
 from molly.apps.tours.models import Tour, StopOnTour
+from molly.url_shortener import get_shortened_url
 
 
 class IndexView(BaseView):
@@ -96,7 +97,9 @@ class SaveView(CreateView):
         
         # Now attempt to order entities optimally
         if len(context['entities']) > 2 and len(context['entities']) <= 10:
-            context['entities'] = optimise_points([(entity, entity.routing_point().location) for entity in context['entities']])
+            context['entities'] = optimise_points(
+                [(entity, entity.routing_point().location)
+                    for entity in context['entities']])
             context['optimised_entities'] = True
         
         # Come up with a name for this tour
@@ -124,7 +127,10 @@ class SaveView(CreateView):
                 location__distance_lt=(route['path'],
                         D(m=getattr(self.conf, 'suggestion_distance', 100))))
         
-        context['tour'] = tour
+        context.update({
+            'tour': tour,
+            'short_url': get_shortened_url(tour.get_absolute_url(), request),
+        })
         
         return super(SaveView, self).handle_GET(request, context, entities)
 

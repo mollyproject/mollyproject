@@ -30,7 +30,12 @@
     <p>{% blocktrans %}Some instructions on how to create a tour here{% endblocktrans %}</p>
     
     {% if tour %}
-        <p><a href="{{ tour.get_absolute_url }}">{% trans 'Your tour has been created. Click here to go to the tour page.' %}</a></p>
+        <p>{% trans 'Your tour has been created.' %}</a></p>
+        <ul>
+            <li><a href="{{ tour.get_absolute_url }}">{% trans 'Click here to go to the tour page.' %}</a></li>
+            <li><a href="{% url tours:tour-print tour.id %}">{% trans 'Click here to get a printable version of your tour.' %}</a></li>
+            <li><img class="qr-code" src="http://chart.apis.google.com/chart?cht=qr&amp;chs=200x200&amp;chld=L|1&amp;chl={{ short_url|urlencode }}" style="width:100%; max-width:200px" /></li>
+        </ul>
     {% endif %}
     
     <div id="current-tour">
