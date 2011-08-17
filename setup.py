@@ -89,10 +89,10 @@ setup(
     install_requires = [
         "python-Levenshtein",
         "pywurfl",
+        "mollyZ3950",
         "feedparser>=5.0",
         "simplejson",
         "rdflib",
-        "mollyZ3950",
         "python-dateutil==1.5",
         "Django==1.3",
         "oauth==1.0.1",
