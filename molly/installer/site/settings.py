@@ -170,39 +170,26 @@ STATICFILES_DIRS = (
     ('markers', MARKER_DIR),
 )
 
-# This defines where files should be found to be compressed - this should be
-# the folder all the collected media is stored in
-COMPRESS_SOURCE = STATIC_ROOT
-
-# This defines where all the compressed files should be stored. You'll want this
-# to be in the same place as above
-COMPRESS_ROOT = STATIC_ROOT
-
-# This is the URL where the compressed files are expected to be served from. If
-# you're saving them in the same place as your regular media (the recommended)
-# default, then they're available in the same place
-COMPRESS_URL = STATIC_URL
-
 # This uses a Molly convenience function to find the CSS and JS to be compressed
 # and which should be concatenated together
-COMPRESS_CSS, COMPRESS_JS = get_compress_groups(STATIC_ROOT)
+PIPELINE_CSS, PIPELINE_JS = get_compress_groups(STATIC_ROOT)
 
 # This determines how the CSS should be compressed
 # CSS filter is custom-written since the provided one mangles it too much
-COMPRESS_CSS_FILTERS = ('molly.utils.compress.MollyCSSFilter',)
+PIPELINE_CSS_COMPRESSOR = 'molly.utils.compress.MollyCSSFilter'
 
 # This determines how the JavaScript should be compressed
-COMPRESS_JS_FILTERS = ('compress.filters.jsmin.JSMinFilter',)
-
-# This settings sets whether or not compression is enabled
-# In order to help with debugging, then this is only enabled when debugging is
-# off
-COMPRESS = not DEBUG
+PIPELINE_JS_COMPRESSOR = 'pipeline.compressors.jsmin.JSMinCompressor'
 
 # When set, then a version number is added to compressed files, this means
 # changing a file also changes its URL - when combined with far future expires,
 # then this solves caching issues
-COMPRESS_VERSION = True
+PIPELINE_VERSION = True
+
+# We set this to False for a performance optimisation - we don't want CSS and JS
+# to be regenerated on the server, just once at deploy time. If you do want
+# this, then change it to True
+PIPELINE_AUTO = False
 
 # Make this unique, and don't share it with anybody. It's used to salt passwords
 SECRET_KEY = ''
@@ -980,6 +967,6 @@ INSTALLED_APPS = extract_installed_apps(APPLICATIONS) + (
     'django.contrib.comments', # Django's comments API - used in the feature vote app
     'molly.batch_processing', # This is a part of Molly that handles the batch jobs
     'django.contrib.staticfiles', # Staticfiles handles media for Molly
-    'compress', # Compress is an external library that minifies JS and CSS
+    'pipeline', # Pipeline is an external library that minifies JS and CSS
     'south', # South handles changes to database schema
 )

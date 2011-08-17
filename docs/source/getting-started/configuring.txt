@@ -112,7 +112,7 @@ therefore be at least::
         'django.contrib.comments',
         'molly.batch_processing',
         'django.contrib.staticfiles',
-        'compress',
+        'pipeline',
         'south',
     )
 
@@ -276,31 +276,11 @@ must be configured appropriately.
 
 The following settings will make this "just work" with Molly::
 
-    COMPRESS_SOURCE = STATIC_ROOT
-    COMPRESS_ROOT = STATIC_ROOT
-    COMPRESS_URL = STATIC_URL
-    COMPRESS_CSS, COMPRESS_JS = get_compress_groups(STATIC_ROOT)
-    COMPRESS_CSS_FILTERS = ('molly.utils.compress.MollyCSSFilter',) # CSS filter is custom-written since the provided one mangles it too much
-    COMPRESS_CSSTIDY_SETTINGS = {
-        'remove_bslash': True, # default True
-        'compress_colors': True, # default True
-        'compress_font-weight': True, # default True
-        'lowercase_s': False, # default False
-        'optimise_shorthands': 0, # default 2, tries to merge bg rules together and makes a hash of things
-        'remove_last_': False, # default False
-        'case_properties': 1, # default 1
-        'sort_properties': False, # default False
-        'sort_selectors': False, # default False
-        'merge_selectors': 0, # default 2, messes things up
-        'discard_invalid_properties': False, # default False
-        'css_level': 'CSS2.1', # default 'CSS2.1'
-        'preserve_css': False, # default False
-        'timestamp': False, # default False
-        'template': 'high_compression', # default 'highest_compression'
-    }
-    COMPRESS_JS_FILTERS = ('compress.filters.jsmin.JSMinFilter',)
-    COMPRESS = not DEBUG     # Only enable on production (to help debugging)
-    COMPRESS_VERSION = True  # Add a version number to compressed files.
+    PIPELINE_CSS, PIPELINE_JS = get_compress_groups(STATIC_ROOT)
+    PIPELINE_AUTO = False
+    PIPELINE_VERSION = True
+    PIPELINE_CSS_COMPRESSOR = 'molly.utils.compress.MollyCSSFilter'
+    PIPELINE_JS_COMPRESSOR = 'pipeline.compressors.jsmin.JSMinCompressor'
 
 Molly settings
 ^^^^^^^^^^^^^^
