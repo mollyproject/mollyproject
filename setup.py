@@ -89,6 +89,7 @@ setup(
     install_requires = [
         "python-Levenshtein",
         "pywurfl",
+        "mollyZ3950",
         "feedparser>=5.0",
         "simplejson",
         "rdflib",
