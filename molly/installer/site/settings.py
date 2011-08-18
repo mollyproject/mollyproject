@@ -364,11 +364,16 @@ APPLICATIONS = [
                         # The next option gives you more power than this, by
                         # allowing you to specify a function which filters all
                         # phone numbers and returns a complete string.
-                        #phone_formatter = my_custom_function,
+                        #phone_formatter=my_custom_function,
                         
                         # Whether or not results from the LDAP server should be
                         # sorted alphabetically by surname
-                        #alphabetical = True,
+                        #alphabetical=True,
+                        
+                        # Determines the LDAP query passed to the server,
+                        # using {surname} and {forename} as substitutes for the
+                        # user to search for
+                        #query='(sn={surname})',
             ),
     ),
 
