@@ -114,9 +114,5 @@ def smoke_test(base_url):
     
     return status
 
-if __name__ == '__main__':
-    if len(sys.argv) > 1:
-        base_url = sys.argv[1]
-    else:
-        base_url = "http://localhost:8000"
+def command(base_url='http://localhost:8000'):
     sys.exit(smoke_test(base_url))

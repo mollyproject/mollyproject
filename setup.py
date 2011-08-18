@@ -15,11 +15,7 @@ from distutils.command.install import INSTALL_SCHEMES
 import os
 
 from molly import __version__ as molly_version
-
-from molly.installer.utils import get_packages_and_data
-from molly.installer.commands import (DeployCommand, SysprepCommand,
-                                CreateVirtualenvCommand, DBPrepCommand,
-                                DBCreateCommand, SiteCreateCommand)
+from molly.utils.installer import get_packages_and_data
 
 print """
                                  ;Ok;                                         
@@ -107,12 +103,7 @@ setup(
         "django-slimmer",
         'pyyaml',
     ],
-    cmdclass = {
-        'sysprep': SysprepCommand,
-        'dbprep': DBPrepCommand,
-        'dbcreate': DBCreateCommand,
-        'sitecreate': SiteCreateCommand,
-        'createvirtualenv': CreateVirtualenvCommand,
-        'deploy': DeployCommand,
-    }
+    scripts = [
+        'molly/commands/molly-admin'
+    ]
 )

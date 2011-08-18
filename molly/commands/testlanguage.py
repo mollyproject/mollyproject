@@ -42,7 +42,7 @@ def invert(chars):
             r += INVERSIONS.get(char, char)
     return r
 
-if __name__ == '__main__':
+def command(language_file):
     import sys
     
     msgs = []
@@ -50,7 +50,7 @@ if __name__ == '__main__':
     this_plural = ''
     in_msgid = False
     
-    with open(sys.argv[1], encoding='utf-8') as fd:
+    with open(language_file, encoding='utf-8') as fd:
         for line in fd:
             if line[:12] == 'msgid_plural':
                 in_msgid = 'p'
@@ -69,7 +69,7 @@ if __name__ == '__main__':
                     this_msg += line[1:-2] + '\n'
                 else:
                     this_plural += line[1:-2] + '\n'
-    with open(sys.argv[1], 'w', encoding='utf-8') as fd:
+    with open(language_file, 'w', encoding='utf-8') as fd:
         print >>fd, """
 msgid ""
 msgstr ""

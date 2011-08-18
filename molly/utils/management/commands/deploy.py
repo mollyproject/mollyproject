@@ -1,11 +1,12 @@
 import os
+from optparse import make_option
 
 from django.core.management import call_command
 from django.core.management.base import NoArgsCommand
 
 class Command(NoArgsCommand):
     
-    option_list = BaseCommand.option_list + (
+    option_list = NoArgsCommand.option_list + (
         make_option('--develop',
             action='store_true',
             dest='develop',
@@ -29,7 +30,7 @@ class Command(NoArgsCommand):
             no_wurfl = False
         if no_wurfl or not develop:
             call_command('update_wurfl')
-        call_command('collectstatic', noinput=True, link=develop)
+        call_command('collectstatic', interactive=False, link=develop)
         call_command('synccompress')
         if not skip_cron:
             call_command('create_crontab', pipe_to_crontab=(os.name != 'nt'))

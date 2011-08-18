@@ -1,3 +1,4 @@
+from optparse import make_option
 from StringIO import StringIO
 from subprocess import Popen, PIPE
 import sys
@@ -9,7 +10,7 @@ from molly.batch_processing import create_crontab
 class Command(NoArgsCommand):
     help = "Generates a crontab"
     
-    option_list = BaseCommand.option_list + (
+    option_list = NoArgsCommand.option_list + (
             make_option('--pipe-to-crontab',
                 action='store_true',
                 dest='pipe_to_crontab',
