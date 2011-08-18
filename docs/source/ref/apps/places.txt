@@ -113,7 +113,7 @@ This has one option:
    instances to be scraped for route data
 
 :class:`molly.apps.places.providers.AtcoCifTimetableProvider`
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 .. note :: This only implements ATCO-CIF as far as TfGM data is concerned. There
            are no other public releases of ATCO-CIF data to test against.
@@ -198,7 +198,7 @@ to the "food" type, so "food" is a parent of "ice cream cafe").
 This file is optional, and Molly ships with a sensible set of defaults (see
 :file:`molly/apps/places/providers/data/osm-entity-types.yaml`).
 
-.. info:: Note for translators! This file isn't in Python, so isn't marked up!
+.. note:: Note for translators! This file isn't in Python, so isn't marked up!
           You will, however, still want the names in here to be translated, so
           you need to make sure your .po files include things defined here.
 

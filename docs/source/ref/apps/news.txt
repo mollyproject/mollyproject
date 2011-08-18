@@ -8,7 +8,8 @@ Used to display news feeds to the user.
 Configuration
 -------------
 
-This module has no configuration
+This module has no configuration in setup.py. Rather, feeds are controlled in
+the database as discussed in :doc:`feeds`.
 
 Sample::
 
