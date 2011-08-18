@@ -72,7 +72,8 @@ setup(
     version = molly_version,
     url = 'http://mollyproject.org/',
     author = 'The Molly Project',
-    description ="A framework for building mobile information portals",
+    description = "A framework for building mobile information portals",
+    license = 'Academic Free License',
     packages = packages,
     data_files = data_files, 
     classifiers=[
