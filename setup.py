@@ -97,7 +97,7 @@ setup(
         "PIL",
         "lxml",
         "python-ldap",
-        "django-pipeline",
+        "django-pipeline>=1.1.10",
         "South",
         "suds",
         "django-slimmer",
