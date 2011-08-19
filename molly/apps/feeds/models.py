@@ -49,10 +49,9 @@ class Tag(models.Model):
 
 class Feed(models.Model):
     title = models.TextField(help_text=_("Feed title"))
-    # Represents the 'unit' which owns said feed. 
-    # Translators: A unit e.g. 'oucs' or short form of a department name. 
-    unit = models.CharField(max_length=10,null=True,blank=True,help_text=_("Unit to which the feed belongs to"))
-    rss_url = models.URLField(help_text=_("URL of RSS feed"))
+    entity = models.ForeignKey(Entity, null=True,
+                               help_text=_('Place which this feed belongs to'))
+    rss_url = models.URLField(help_text=_("URL of feed"))
     slug = models.SlugField(help_text=_("Slug of feed, e.g. oucs-news"))
     last_modified = models.DateTimeField(null=True, blank=True) # this one is in UTC
     language = models.CharField(max_length=10, choices=settings.LANGUAGES,
@@ -61,12 +60,6 @@ class Feed(models.Model):
     # Provider type
     ptype = models.CharField(max_length=1, choices=FEED_TYPE_CHOICES)
     provider = models.CharField(max_length=128, choices=PROVIDER_CHOICES)
-    
-    def _set_importer_params(self, value):
-        self._importer_params = simplejson.dumps(value)
-    def _get_importer_params(self):
-        return simplejson.loads(self._importer_params)
-    importer_params = property(_get_importer_params, _set_importer_params) 
     
     objects = models.Manager()
     events = EventsManager()
