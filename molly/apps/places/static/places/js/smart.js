@@ -294,7 +294,11 @@ function rebuildLDB(elem, board, train_station){
     if (train_station.metadata.ldb.trainServices) {
         for (var i in train_station.metadata.ldb.trainServices.service) {
             service = train_station.metadata.ldb.trainServices.service[i]
-            tbody.append('<tr></tr>')
+            if (service.problems) {
+                tbody.append('<tr class="delayed-service"></tr>')
+            } else {
+                tbody.append('<tr></tr>')
+            }
             tr = tbody.find('tr:last')
             dest = ''
             if (board == 'arrivals') {

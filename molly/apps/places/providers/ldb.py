@@ -17,6 +17,56 @@ class LiveDepartureBoardPlacesProvider(BaseMapsProvider):
         self._max_results = max_results
         self._token = token
 
+    def delayed(self, eta, sta, etd, std):
+        """
+        Try and figure out if a service is delayed based on free text values
+        for estimated/scheduled times of arrival/depature
+        """
+        if eta in ('Delayed', 'Cancelled') or etd in ('Delayed', 'Cancelled'):
+            # Easy case
+            return True
+        else:
+            # More complex case, have to parse time stamps
+            try:
+                # Compare scheduled and expected arrival times
+                schedh, schedm = sta.split(':')
+                exph, expm = eta.rstrip('*').split(':')
+            except ValueError:
+                pass
+            else:
+                # Minutes since midnight, as we can't compare time objects
+                sched_msm = int(schedh) * 60 + int(schedm)
+                exp_msm = int(exph) * 60 + int(expm)
+                
+                if exp_msm < sched_msm:
+                    # Deal with wraparound at midnight
+                    sched_msm += 1440
+                
+                if exp_msm - sched_msm >= 5:
+                    # 5 minute delay
+                    return True
+            
+            try:
+                # Compare scheduled and expected departure times
+                schedh, schedm = std.split(':')
+                exph, expm = etd.rstrip('*').split(':')
+            except ValueError:
+                pass
+            else:
+                # Minutes since midnight, as we can't compare time objects
+                sched_msm = int(schedh) * 60 + int(schedm)
+                exp_msm = int(exph) * 60 + int(expm)
+                
+                if exp_msm < sched_msm:
+                    # Deal with wraparound at midnight
+                    sched_msm += 1440
+                
+                if exp_msm - sched_msm >= 5:
+                    # 5 minute delay
+                    return True
+            
+            return False
+
     def augment_metadata(self, entities, board='departures', **kwargs):
         station_entities = []
         for entity in entities:
@@ -43,7 +93,7 @@ class LiveDepartureBoardPlacesProvider(BaseMapsProvider):
                     db = ldb.service.GetDepartureBoard(self._max_services, entity.identifiers['crs'])
                 db = self.transform_suds(db)
                 entity.metadata['ldb'] = db
-                entity.metadata['service_details'] = lambda s: LiveDepartureBoardPlacesProvider.service_details(s, entity)
+                entity.metadata['service_details'] = lambda s: self.service_details(s, entity)
                 entity.metadata['ldb_service'] = lambda s: self.transform_suds(ldb.service.GetServiceDetails(s))
                 entity.metadata['service_type'] = 'ldb'
                 
@@ -52,6 +102,12 @@ class LiveDepartureBoardPlacesProvider(BaseMapsProvider):
                     db = self.transform_suds(
                         ldb.service.GetDepartureBoard(self._max_services,
                                                      entity.identifiers['crs']))
+                
+                if 'trainServices' in db:
+                    for service in db['trainServices']['service']:
+                        service['problems'] = self.delayed(
+                            service.get('eta', ''), service.get('sta', ''),
+                            service.get('etd', ''), service.get('std', ''))
                 
                 if 'busServices' in db:
                     for service in db['busServices']['service']:
@@ -66,12 +122,12 @@ class LiveDepartureBoardPlacesProvider(BaseMapsProvider):
                         }
                 
             except Exception, e:
-                logger.warning("Could not retrieve departure board for station: %r", entity.identifiers.get('crs'))
+                logger.warning("Could not retrieve departure board for station: %r", entity.identifiers.get('crs'),
+                               exc_info=True)
                 self._add_error((entity,))
             entity.metadata['meta_refresh'] = 60
     
-    @staticmethod
-    def service_details(service, entity):
+    def service_details(self, service, entity):
         try:
             service = entity.metadata['ldb_service'](service)
         except suds.WebFault as f:
@@ -149,11 +205,18 @@ class LiveDepartureBoardPlacesProvider(BaseMapsProvider):
         stop_entities = []
         
         # Now get a list of the entities for the stations (if they exist)
-        # to plot on a map
+        # to plot on a map, and figure out if this stop is delayed or not
         for point in calling_points:
-        
+            
+            point['problems'] = self.delayed(
+                point.get('et', ''), point.get('st', ''), '', '')
+            
             if 'joining' in point:
                 for jpoint in point['joining']:
+                    
+                    jpoint['problems'] = self.delayed(
+                        jpoint.get('et', ''), jpoint.get('st', ''), '', '')
+                    
                     point_entity = Entity.objects.filter(_identifiers__scheme='crs', _identifiers__value=str(jpoint['crs']))
                     if len(point_entity):
                         point_entity = point_entity[0]
@@ -170,6 +233,10 @@ class LiveDepartureBoardPlacesProvider(BaseMapsProvider):
 
             if 'splitting' in point:
                 for spoint in point['splitting']['list']:
+                    
+                    spoint['problems'] = self.delayed(
+                        spoint.get('et', ''), spoint.get('st', ''), '', '')
+                    
                     point_entity = Entity.objects.filter(_identifiers__scheme='crs', _identifiers__value=str(spoint['crs']))
                     if len(point_entity):
                         point_entity = point_entity[0]
@@ -183,7 +250,7 @@ class LiveDepartureBoardPlacesProvider(BaseMapsProvider):
             # This service arrives here
             title = service['sta'] + ' from ' + ' and '.join(sources)
         
-        messages = []
+        messages = service.get('adhocAlerts', [])
         
         if 'disruptionReason' in service:
             messages.append(service['disruptionReason'])
