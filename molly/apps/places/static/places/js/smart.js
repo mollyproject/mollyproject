@@ -246,6 +246,7 @@ function rebuildRTI(elem, metadata){
 }
 
 function rebuildLDB(elem, board, train_station){
+    var powered_by = elem.find('.powered-by');
     elem.empty()
     if (!board) {
         board = 'departures'
@@ -371,6 +372,7 @@ function rebuildLDB(elem, board, train_station){
         tbody.append('<tr><td colspan="' + cols + '">' + no_scheduled + '</td></tr>')
     }
     
+    elem.append(powered_by);
     elem.append('<ul class="link-list"></ul>');
     ul = elem.find('ul:last')
     if (board == 'departures') {
