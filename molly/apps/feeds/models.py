@@ -23,16 +23,18 @@ PROVIDER_CHOICES = tuple(
         if app.application_name == 'molly.apps.feeds'
 )
 
+
 FORMAT_CHOICES = tuple((x, x) for x in (
     'lecture', 'class', 'tutorial', 'seminar', 'performance', 'workshop',
     'exhibition', 'meeting',
 ))
 
 
-
 class EventsManager(models.Manager):
     def get_query_set(self):
         return super(EventsManager, self).get_query_set().filter(ptype='e')
+
+
 class NewsManager(models.Manager):
     def get_query_set(self):
         return super(NewsManager, self).get_query_set().filter(ptype='n')
@@ -43,6 +45,7 @@ class Tag(models.Model):
     
     def __unicode__(self):
         return self.value
+
 
 class Feed(models.Model):
     title = models.TextField(help_text=_("Feed title"))
@@ -83,6 +86,7 @@ class Feed(models.Model):
     class Meta:
         ordering = ('title',)
 
+
 class vCard(models.Model):
     uri = models.TextField()
 
@@ -91,7 +95,8 @@ class vCard(models.Model):
     telephone = models.TextField(blank=True)
     location = models.PointField(null=True)
     entity = models.ForeignKey(Entity, null=True, blank=True)
-    
+
+
 class Series(models.Model):
     feed = models.ForeignKey(Feed)
     guid = models.TextField()
@@ -99,6 +104,7 @@ class Series(models.Model):
     unit = models.ForeignKey(vCard, null=True, blank=True)
 
     tags = models.ManyToManyField(Tag, blank=True)
+
 
 class Item(models.Model):
     feed = models.ForeignKey(Feed)
