@@ -10,6 +10,7 @@ from django.utils.translation import ugettext as _
 from molly.utils.views import BaseView, renderer
 from molly.utils.breadcrumbs import *
 from molly.utils.http import update_url
+from molly.utils import haversine
 
 from molly.geolocation.forms import LocationUpdateForm
 from molly.geolocation import geocode, reverse_geocode
@@ -43,7 +44,7 @@ class GeolocationView(BaseView):
         last_updated = request.session.get('geolocation:updated', datetime(1970, 1, 1))
         try:
             last_location = Point(request.session['geolocation:location'])
-            distance_moved = last_location.distance(Point(location))
+            distance_moved = haversine(last_location, Point(location))
         except KeyError:
             distance_moved = float('inf')
 
