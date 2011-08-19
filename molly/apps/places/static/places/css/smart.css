@@ -25,3 +25,8 @@ td.service-id a {
     color: inherit;
 }
 /* End RTI */
+
+/* Delayed trains */
+.delayed-service {
+    color: #781c1f;
+}
