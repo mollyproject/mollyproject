@@ -40,6 +40,9 @@ class NewsManager(models.Manager):
 
 class Tag(models.Model):
     value = models.CharField(max_length=128)
+    
+    def __unicode__(self):
+        return self.value
 
 class Feed(models.Model):
     title = models.TextField(help_text=_("Feed title"))
