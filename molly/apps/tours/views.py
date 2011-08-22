@@ -4,6 +4,7 @@ from operator import attrgetter
 from django.core.urlresolvers import reverse
 from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import D
+from django.db import connection
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 from django.shortcuts import get_object_or_404
@@ -114,8 +115,10 @@ class SaveView(CreateView):
             StopOnTour.objects.create(entity=entity, tour=tour, order=i)
         
         # Add any suggested "passing-by" entities to the context to be presented
-        # back to the user
-        if hasattr(self.conf, 'suggested_entities'):
+        # back to the user. We can only do this query if the database backend
+        # supports distance operations on geographies (i.e., things more complex
+        # than points)
+        if hasattr(self.conf, 'suggested_entities') and connection.ops.geography:
             route = generate_route([e.location for e in context['entities']], 'foot')
             suggestion_filter = Q()
             for sv in self.conf.suggested_entities:
