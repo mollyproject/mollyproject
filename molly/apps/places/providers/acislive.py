@@ -383,5 +383,5 @@ class ACISLiveRouteProvider(BaseMapsProvider):
         return source
     
     def _get_entity_type(self):
-        return NaptanMapsProvider(None)._get_entity_types()['BCT']
+        return NaptanMapsProvider(None)._get_entity_types()['BCT'][0]
 
