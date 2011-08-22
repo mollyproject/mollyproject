@@ -146,7 +146,7 @@
                 <a href="{% url tours:tour tour.id,s.order %}">{{ s.entity.title }}</a>
             {% if s.entity == stop.entity %}</em>{% endif %}</li>
         {% endfor %}
-        <li><strong><a href="{% url tours:create %}{% for s in stops %}{{ s.entity.identifier_scheme }}:{{ s.entity.identifier_value }}/{% endfor %}">{% trans 'Edit this tour' %}</a></strong></li>
+        <li><strong><a href="{% url tours:create tour.type %}{% for s in stops %}{{ s.entity.identifier_scheme }}:{{ s.entity.identifier_value }}/{% endfor %}">{% trans 'Edit this tour' %}</a></strong></li>
     </ul>
 </div>
 

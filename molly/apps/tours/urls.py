@@ -8,11 +8,11 @@ urlpatterns = patterns('',
         IndexView, {},
         'index'),
     
-    (r'^create/(?P<entities>([a-z_\-]+:[^/]+/)*)?$',
+    (r'^(?P<slug>[a-z_\-0-9]+)/create/(?P<entities>([a-z_\-]+:[^/]+/)*)?$',
         CreateView, {},
         'create'),
     
-    (r'^create/(?P<entities>([a-z_\-]+:[^/]+/)*)save/$',
+    (r'^(?P<slug>[a-z_\-0-9]+)/create/(?P<entities>([a-z_\-]+:[^/]+/)*)save/$',
         SaveView, {},
         'save'),
     

@@ -14,7 +14,7 @@
             </div>
             <ul class="link-list">
                 {% for entity in suggestions %}
-                    <li><a href="{% url tours:create %}{% for e in entities %}{{ e.identifier_scheme }}:{{ e.identifier_value }}/{% endfor %}{{ entity.identifier_scheme }}:{{ entity.identifier_value }}/save/">{{ entity.title }}</a></li>
+                    <li><a href="{% url tours:create tour_type.slug %}{% for e in entities %}{{ e.identifier_scheme }}:{{ e.identifier_value }}/{% endfor %}{{ entity.identifier_scheme }}:{{ entity.identifier_value }}/save/">{{ entity.title }}</a></li>
                 {% endfor %}
             </ul>
         </div>

@@ -42,7 +42,7 @@
             <p>{% trans 'Your tour takes you near the following places, click on them to add them to your route:' %}</p>
             <ul>
                 {% for entity in suggestions %}
-                    <li{% if entity in entities %} class="selected"{% endif %}><a href="{% url tours:create %}{% for e in entities %}{{ e.identifier_scheme }}:{{ e.identifier_value }}/{% endfor %}{{ entity.identifier_scheme }}:{{ entity.identifier_value }}/save/" class="{{ entity.identifier_scheme }}-{{ entity.identifier_value }}">{{ entity.title }}</a></li>
+                    <li{% if entity in entities %} class="selected"{% endif %}><a href="{% url tours:create tour_type.slug %}{% for e in entities %}{{ e.identifier_scheme }}:{{ e.identifier_value }}/{% endfor %}{{ entity.identifier_scheme }}:{{ entity.identifier_value }}/save/" class="{{ entity.identifier_scheme }}-{{ entity.identifier_value }}">{{ entity.title }}</a></li>
                 {% endfor %}
             </ul>
             <p class="close"><a href="?nosuggestions">{% trans 'Or click here to close this box and access your saved tour.' %}</a></p>
