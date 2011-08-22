@@ -118,7 +118,8 @@ class SaveView(CreateView):
         # back to the user. We can only do this query if the database backend
         # supports distance operations on geographies (i.e., things more complex
         # than points)
-        if hasattr(self.conf, 'suggested_entities') and connection.ops.geography:
+        if hasattr(self.conf, 'suggested_entities') \
+        and connection.ops.geography and request.GET.get('nosuggestions') is None:
             route = generate_route([e.location for e in context['entities']], 'foot')
             suggestion_filter = Q()
             for sv in self.conf.suggested_entities:
@@ -128,14 +129,19 @@ class SaveView(CreateView):
             context['suggestions'] = Entity.objects.filter(
                 suggestion_filter,
                 location__distance_lt=(route['path'],
-                        D(m=getattr(self.conf, 'suggestion_distance', 100))))
+                        D(m=getattr(self.conf, 'suggestion_distance', 100)))
+                ).exclude(id__in=[e.pk for e in context['entities']])
         
         context.update({
             'tour': tour,
             'short_url': get_shortened_url(tour.get_absolute_url(), request),
         })
         
-        return super(SaveView, self).handle_GET(request, context, entities)
+        if 'generic_web_browser' in device_parents[request.browser.devid]:
+            # Desktop
+            return self.render(request, context, 'tours/save_desktop')
+        else:
+            return self.render(request, context, 'tours/save')
 
 
 class PodcastView(BaseView):

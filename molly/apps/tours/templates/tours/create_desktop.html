@@ -29,21 +29,9 @@
     <h1>{% trans "Create a tour" %}</h1>
     <p>{% blocktrans %}Some instructions on how to create a tour here{% endblocktrans %}</p>
     
-    {% if tour %}
-        <p>{% trans 'Your tour has been created.' %}</a></p>
-        <ul>
-            <li><a href="{{ tour.get_absolute_url }}">{% trans 'Click here to go to the tour page.' %}</a></li>
-            <li><a href="{% url tours:tour-print tour.id %}">{% trans 'Click here to get a printable version of your tour.' %}</a></li>
-            <li><img class="qr-code" src="http://chart.apis.google.com/chart?cht=qr&amp;chs=200x200&amp;chld=L|1&amp;chl={{ short_url|urlencode }}" style="width:100%; max-width:200px" /></li>
-        </ul>
-    {% endif %}
-    
     <div id="current-tour">
         <h2>{% trans "Current stops on your tour" %}</h2>
-        {% if optimised_entities %}
-            <p>{% trans 'Your route order has been optimised to minimise travelling distance - the order may have changed.' %}</p>
-        {% endif %}
-        <ol id="poi-list">
+        <ol id="poi-list" class="entity-list">
             {% for entity in entities %}
                 <li><a href="{% url tours:create %}{% for e in entities %}{% if e != entity %}{{ e.identifier_scheme }}:{{ e.identifier_value }}/{% endif %}{% endfor %}" class="{{ entity.identifier_scheme }}-{{ entity.identifier_value }}">
                     {{ entity.title }}
@@ -57,22 +45,10 @@
     
     <input id="poi-search" type="text" placeholder="{% trans 'Search for a point of interest' %}" />
     
-    {% if suggestions %}
-        <div class="attractions-grouping">
-            <h2>{% trans "Suggestions" %}</h2>
-            <p>{% trans 'Your tour takes you near the following places, click on them to add them to your route:' %}</p>
-            <ul>
-                {% for entity in suggestions %}
-                    <li{% if entity in entities %} class="selected"{% endif %}><a href="{% url tours:create %}{% for e in entities %}{{ e.identifier_scheme }}:{{ e.identifier_value }}/{% endfor %}{{ entity.identifier_scheme }}:{{ entity.identifier_value }}/save/" class="{{ entity.identifier_scheme }}-{{ entity.identifier_value }}">{{ entity.title }}</a></li>
-                {% endfor %}
-            </ul>
-        </div>
-    {% endif %}
-    
     {% for entity_type, attraction_entities in attractions.items %}
         <div class="attractions-grouping">
             <h2>{{ entity_type.verbose_name_plural|capfirst }}</h2>
-            <ul>
+            <ul class="entity-list">
                 {% for entity in attraction_entities %}
                     <li {% if entity in entities %} class="selected"{% endif %}><a href="{% url tours:create %}{% for e in entities %}{{ e.identifier_scheme }}:{{ e.identifier_value }}/{% endfor %}{{ entity.identifier_scheme }}:{{ entity.identifier_value }}/" class="{{ entity.identifier_scheme }}-{{ entity.identifier_value }}">{{ entity.title }}</a></li>
                 {% endfor %}
