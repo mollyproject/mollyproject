@@ -2,21 +2,21 @@ body {
     font-family: 'Liberation Sans', Arial, sans-serif;
 }
 
-a {
+.entity-list a {
     text-decoration: none;
     color: #000;
 }
 
-ul, ol {
+ul.entity-list, ol.entity-list {
     padding: 0;
     margin: 0;
 }
 
-ul {
+ul.entity-list {
     list-style-type: none;
 }
 
-ol {
+ol.entity-list {
     list-style-position: inside;
 }
 
@@ -71,4 +71,39 @@ ul.ui-autocomplete {
 #poi-search {
     padding: 15px;
     width: 50%;
+}
+
+.created {
+    width: 50%;
+    position: relative;
+    margin: 0 auto;
+    border: 1px solid black;
+}
+
+.short-link {
+    width: 200px;
+    padding: 10px;
+    margin-right: 10px;
+    border-right: 1px dashed #ccc;
+}
+
+.short-link p:first-child {
+    margin-top: 0;
+}
+
+.creation-actions {
+    position: absolute;
+    top: 50px;
+    left: 220px;
+}
+
+#suggestions {
+    margin: 0;
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    width: 80%;
+    height: 80%;
+    background-color: #ffffff;
+    border: 5px solid black;
 }

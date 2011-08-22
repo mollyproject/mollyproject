@@ -133,10 +133,10 @@ class OSMHandler(handler.ContentHandler):
                     entity = Entity.objects.get(source=self.source,
                                                 _identifiers__scheme='osm',
                                                 _identifiers__value=self.id)
-                    created = True
+                    created = False
                 except Entity.DoesNotExist:
                     entity = Entity(source=self.source)
-                    created = False
+                    created = True
             
                 if not 'osm' in entity.metadata or \
                   entity.metadata['osm'].get('attrs', {}).get('timestamp', '') < self.attrs['timestamp']:
@@ -208,7 +208,7 @@ class OSMHandler(handler.ContentHandler):
 
     def endDocument(self):
         for entity in Entity.objects.filter(source=self.source):
-            if not entity.identifiers.get('osm') in self.ids:
+            if entity.identifiers.get('osm') not in self.ids:
                 entity.delete()
                 self.delete_count += 1
         

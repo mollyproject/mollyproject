@@ -7,6 +7,7 @@ class Tour(models.Model):
     
     name = models.TextField()
     stops = models.ManyToManyField(Entity, through='StopOnTour')
+    type = models.SlugField()
     
     def get_absolute_url(self):
         return reverse('tours:tour-start', args=[self.id])

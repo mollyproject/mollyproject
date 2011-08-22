@@ -2,41 +2,18 @@
 
 {% block content %}
 
-{% if tour %}
-    <ul class="link-list stand-alone">
-        <li><a href="{{ tour.get_absolute_url }}">{% trans 'Go to your created tour' %}</a></li>
-    </ul>
-{% endif %}
-
-{% if suggestions %}
-    <div class="section">
-        <div class="header">
-            <h2>{% trans "Suggestions" %}</h2>
-            <p>{% trans 'Your tour takes you near the following places, click on them to add them to your route:' %}</p>
-        </div>
-        <ul class="link-list">
-            {% for entity in suggestions %}
-                <li><a href="{% url tours:create %}{% for e in entities %}{{ e.identifier_scheme }}:{{ e.identifier_value }}/{% endfor %}{{ entity.identifier_scheme }}:{{ entity.identifier_value }}/save/">{{ entity.title }}</a></li>
-            {% endfor %}
-        </ul>
-    </div>
-{% endif %}
-
 <div class="section">
     <div class="header">
         <h2>{% trans 'Current Stops' %}</h2>
-        {% if optimised_entities %}
-            <p>{% trans 'Your route order has been optimised to minimise travelling distance - the order may have changed.' %}</p>
-        {% endif %}
     </div>
     <ul class="content-list">
         {% for entity in entities %}
-            <li><a href="{% url tours:create %}{% for e in entities %}{% if e != entity %}{{ e.identifier_scheme }}:{{ e.identifier_value }}/{% endif %}{% endfor %}">
+            <li><a href="{% url tours:create tour_type.slug %}{% for e in entities %}{% if e != entity %}{{ e.identifier_scheme }}:{{ e.identifier_value }}/{% endif %}{% endfor %}">
                 {{ entity.title }}
             </a></li>
         {% endfor %}
     </ul>
-    <form action="{% url tours:create %}{% for e in entities %}{{ e.identifier_scheme }}:{{ e.identifier_value }}/{% endfor %}save/">
+    <form action="{% url tours:create tour_type.slug %}{% for e in entities %}{{ e.identifier_scheme }}:{{ e.identifier_value }}/{% endfor %}save/">
         <input type="submit" value="{% trans 'Save' %}" />
     </form>
 </div>
@@ -51,7 +28,7 @@
         </div>
         <ul class="link-list">
             {% for entity in attraction_entities %}
-                <li><a href="{% url tours:create %}{% for e in entities %}{{ e.identifier_scheme }}:{{ e.identifier_value }}/{% endfor %}{{ entity.identifier_scheme }}:{{ entity.identifier_value }}/">{{ entity.title }}</a></li>
+                <li><a href="{% url tours:create tour_type.slug %}{% for e in entities %}{{ e.identifier_scheme }}:{{ e.identifier_value }}/{% endfor %}{{ entity.identifier_scheme }}:{{ entity.identifier_value }}/">{{ entity.title }}</a></li>
             {% endfor %}
         </ul>
     {% endfor %}

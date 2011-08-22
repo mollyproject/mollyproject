@@ -35,6 +35,8 @@ class IndexView(BaseView):
     def initial_context(self, request):
         context = super(IndexView, self).initial_context(request)
         
+        context['types'] = [(slug, vs['name']) for slug, vs in self.conf.types.items()]
+        
         if 'tours:visited' in request.session:
             context.update({
                 'tours': Tour.objects.filter(id__in=request.session['tours:visited'])
@@ -49,7 +51,7 @@ class IndexView(BaseView):
 class CreateView(BaseView):
     
     @BreadcrumbFactory
-    def breadcrumb(self, request, context, entities):
+    def breadcrumb(self, request, context, slug, entities):
         return Breadcrumb(
             self.conf.local_name,
             lazy_parent('index'),
@@ -57,16 +59,24 @@ class CreateView(BaseView):
             lazy_reverse('create'),
         )
     
-    def initial_context(self, request, entities):
+    def initial_context(self, request, slug, entities):
         context = super(CreateView, self).initial_context(request)
         
+        try:
+            tour_type = self.conf.types[slug]
+        except KeyError:
+            raise Http404()
+        else:
+            tour_type['slug'] = slug
+        
         context.update({
+            'tour_type': tour_type,
             'entities': [],
             'attractions': dict(
                 (et, sorted(et.entity_set.filter(location__isnull=False),
                             key=attrgetter('title')))
-                    for et in EntityType.objects.filter(slug__in=self.conf.attraction_types)),
-            'all_pois': sorted(Entity.objects.filter(all_types_completion__slug__in=self.conf.attraction_types),
+                    for et in EntityType.objects.filter(slug__in=tour_type['attraction_types'])),
+            'all_pois': sorted(Entity.objects.filter(all_types_completion__slug__in=tour_type['attraction_types']),
                                key=attrgetter('title'))
         })
         
@@ -79,7 +89,7 @@ class CreateView(BaseView):
         
         return context
     
-    def handle_GET(self, request, context, entities):
+    def handle_GET(self, request, context, slug, entities):
         
         if 'generic_web_browser' in device_parents[request.browser.devid]:
             # Desktop
@@ -90,7 +100,7 @@ class CreateView(BaseView):
 
 class SaveView(CreateView):
     
-    def handle_GET(self, request, context, entities):
+    def handle_GET(self, request, context, slug, entities):
         
         if len(context['entities']) < 2:
             # Need at least 2 entities to be a tour
@@ -104,13 +114,14 @@ class SaveView(CreateView):
             context['optimised_entities'] = True
         
         # Come up with a name for this tour
-        name = _('Visiting %(number)d places (created on %(creation)s)') % {
+        name = _('%(type)s; visiting %(number)d places (created on %(creation)s)') % {
+                    'type': _(context['tour_type']['name']),
                     'number': len(context['entities']),
                     'creation': datetime.now().strftime('%c')
                 }
         
         # Save back to database
-        tour = Tour.objects.create(name=name)
+        tour = Tour.objects.create(name=name, type=context['tour_type']['slug'])
         for i, entity in enumerate(context['entities']):
             StopOnTour.objects.create(entity=entity, tour=tour, order=i)
         
@@ -118,24 +129,30 @@ class SaveView(CreateView):
         # back to the user. We can only do this query if the database backend
         # supports distance operations on geographies (i.e., things more complex
         # than points)
-        if hasattr(self.conf, 'suggested_entities') and connection.ops.geography:
+        if 'suggested_entities' in context['tour_type'] \
+        and connection.ops.geography and request.GET.get('nosuggestions') is None:
             route = generate_route([e.location for e in context['entities']], 'foot')
             suggestion_filter = Q()
-            for sv in self.conf.suggested_entities:
+            for sv in context['tour_type']['suggested_entities']:
                 scheme, value = sv.split(':')
                 suggestion_filter |= Q(_identifiers__scheme=scheme,
                                        _identifiers__value=value)
             context['suggestions'] = Entity.objects.filter(
                 suggestion_filter,
                 location__distance_lt=(route['path'],
-                        D(m=getattr(self.conf, 'suggestion_distance', 100))))
+                        D(m=getattr(self.conf, 'suggestion_distance', 100)))
+                ).exclude(id__in=[e.pk for e in context['entities']])
         
         context.update({
             'tour': tour,
             'short_url': get_shortened_url(tour.get_absolute_url(), request),
         })
         
-        return super(SaveView, self).handle_GET(request, context, entities)
+        if 'generic_web_browser' in device_parents[request.browser.devid]:
+            # Desktop
+            return self.render(request, context, 'tours/save_desktop')
+        else:
+            return self.render(request, context, 'tours/save')
 
 
 class PodcastView(BaseView):
@@ -227,7 +244,7 @@ class TourView(BaseView):
             start_location = closest_stop
         else:
             # Directions from that point to first stop
-            start_location = entity
+            start_location, p_and_r_context = entity, {}
         return start_location, p_and_r_context
     
     def initial_context(self, request, tour, page=None):
