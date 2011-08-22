@@ -105,7 +105,8 @@ class Weather(models.Model):
     pollution = models.CharField(max_length=1, choices=SCALE_CHOICES, null=True)
     sunset = models.TimeField(null=True)
     sunrise = models.TimeField(null=True)
-
+    
+    @property
     def icon(self):
         now = datetime.now().time()
         if now < time(7) or now > time(21):
