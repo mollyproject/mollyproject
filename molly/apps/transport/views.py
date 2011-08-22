@@ -85,10 +85,11 @@ class RailView(TransportView):
         context = super(RailView, self).initial_context(request)
         
         if context['train_station']:
-            if getattr(self.conf, 'train_station_nearest', False) and location:
+            if getattr(self.conf, 'train_station_nearest', False) \
+              and context['location']:
                 et = EntityType.objects.get(slug='rail-station')
                 entity = et.entities_completion.filter(location__isnull=False)
-                enity = entity.distance(location).order_by('distance')[0]
+                entity = entity.distance(context['location']).order_by('distance')[0]
             else:
                 scheme, value = self.conf.train_station.split(':')
                 entity = get_entity(scheme, value)
