@@ -63,6 +63,10 @@ class LDAPContactProvider(BaseContactProvider):
     def perform_query(self, surname, forename):
         
         ldap_server = ldap.initialize(self._url)
+        
+        if forename is None:
+            forename = ''
+        
         try:
             ldap_results = ldap_server.search_ext_s(
                 self._base_dn, ldap.SCOPE_SUBTREE,
