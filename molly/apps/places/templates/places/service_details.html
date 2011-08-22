@@ -205,6 +205,15 @@
 </div>
 {% endif %}
 
+{% if entity.metadata.ldb %}
+  <div class="note powered-by">
+    <a href="http://nationalrail.co.uk">
+        <small>For more information</small><br>
+        <img src="{{ STATIC_URL }}places/images/powered-by-nre.png" alt="Powered by National Rail Enquiries" />
+    </a>
+  </div>
+{% endif %}
+
 {% endif %}
 
 {% endblock %}
