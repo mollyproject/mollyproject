@@ -4,20 +4,20 @@
 {% if entity.metadata.real_time_information %}
 <div id="rti-{{ entity.identifier_scheme }}-{{ entity.identifier_value }}">
     {% if entity.metadata.real_time_information.pip_info %}
-    <ul class="content-list no-round-bottom">
+    <ul class="content-list">
         <li>{% for info in entity.metadata.real_time_information.pip_info %}
     {{ info|sanitize_html }}{% if not forloop.last %}<br/>{% endif %}
         {% endfor %}</li>
     </ul>
     {% else %}
-    <ul class="content-list no-round-bottom">
+    <ul class="content-list">
         {% if not entity.metadata.real_time_information.services %}
             <li>{% trans "Sorry, there is currently no real time information for this stop." %}</li>
         {% endif %}
     </ul>
     {% endif %}
   {% if entity.metadata.real_time_information.services %}
- <div class="section-content no-round-bottom">
+ <div class="section-content">
   <div class="pad-5">
    <table class="real-time-information">
     <thead class="invisible">

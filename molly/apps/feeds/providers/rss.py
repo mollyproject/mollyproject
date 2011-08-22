@@ -1,5 +1,12 @@
 from datetime import datetime, timedelta
-import urllib, re, email, feedparser, time, random, traceback, logging
+import urllib
+import re
+import email
+import feedparser
+import time
+import random
+import traceback
+import logging
 
 from molly.external_media import sanitise_html
 from molly.conf.settings import batch

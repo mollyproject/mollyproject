@@ -31,7 +31,7 @@ class Command(NoArgsCommand):
         
 
         for color, index in itertools.product(MARKER_COLORS, MARKER_RANGE):
-            if os.path.exists(os.path.join(marker_dir, '%s-%d.png' % (color[0], index))):
+            if os.path.exists(os.path.join(marker_dir, '%s_%d.png' % (color[0], index))):
                 continue
             
             out = template % {
@@ -45,14 +45,14 @@ class Command(NoArgsCommand):
             os.write(f, out)
             os.close(f)
             
-            filename = os.path.join(marker_dir, '%s-%d.png' % (color[0], index))
+            filename = os.path.join(marker_dir, '%s_%d.png' % (color[0], index))
             subprocess.check_call('convert -background none "%s" "%s"' % (infile, filename), shell=True)
             os.unlink(infile)
         
         template = open(os.path.join(os.path.dirname(__file__), 'markers', 'star-base.svg')).read()
             
         for color in MARKER_COLORS:
-            if os.path.exists(os.path.join(marker_dir, '%s-star.png' % color[0])):
+            if os.path.exists(os.path.join(marker_dir, '%s_star.png' % color[0])):
                 continue
             
             out = template % {'fill': color[1], 'stroke': color[2]}
@@ -61,6 +61,6 @@ class Command(NoArgsCommand):
             os.write(f, out)
             os.close(f)
             
-            filename = os.path.join(marker_dir, '%s-star.png' % color[0])
+            filename = os.path.join(marker_dir, '%s_star.png' % color[0])
             subprocess.check_call('convert -background none "%s" "%s"' % (infile, filename), shell=True)
             os.unlink(infile)

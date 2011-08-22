@@ -66,7 +66,6 @@ $(document).bind('molly-page-change', function(event, url){
                         $('li.next a').attr('href', '?page=' + (data.entities.number + 1).toString(10))
                     } else {
                         $('li.next').remove()
-                        $('.section-content').removeClass('no-round-bottom')
                     }
                     for (i in data.entities.objects) {
                         item = data.entities.objects[i]
@@ -130,10 +129,10 @@ function parse_results(data, nearby){
             '<ul class="link-list"></ul>')
         for (j in data.entity_types[category]) {
             var entity_type = data.entity_types[category][j]
-            var found_within_string = interpolate(gettext('%(entities_found)s within %(distance)sm'),
+            var found_within_string = interpolate(gettext('%(entities_found)s within %(distance)s'),
                                                   {
                                                     entities_found: entity_type.entities_found,
-                                                    distance: Math.ceil(entity_type.max_distance/10)*10
+                                                    distance: entity_type.max_distance
                                                   }, true)
             if (nearby) {
                 $('#poi-category-selector ul:last').append(
@@ -149,8 +148,6 @@ function parse_results(data, nearby){
             }
         }
     }
-    $('#poi-category-selector ul').addClass('no-round-bottom')
-    $('#poi-category-selector ul:last').removeClass('no-round-bottom')
     capture_outbound();
 }
 
@@ -196,7 +193,7 @@ function refreshRTI(data){
 function rebuildRTI(elem, metadata){
     elem.empty()
     if ((typeof(metadata.pip_info) != 'undefined' && metadata.pip_info.length > 0) || metadata.services.length == 0) {
-        elem.append('<ul class="content-list no-round-bottom"></ul>')
+        elem.append('<ul class="content-list"></ul>')
         if (metadata.pip_info.length > 0) {
             elem.find('ul').append('<li></li>')
             var li = elem.find('li')
@@ -214,7 +211,7 @@ function rebuildRTI(elem, metadata){
         }
     }
     if (metadata.services.length > 0) {
-        elem.append('<div class="section-content no-round-bottom"><div class="pad-5"><table class="real-time-information"><tbody id="bus_times"></tbody></table></div></div>')
+        elem.append('<div class="section-content"><div class="pad-5"><table class="real-time-information"><tbody id="bus_times"></tbody></table></div></div>')
         tbody = elem.find('tbody')
         for (var i in metadata.services) {
             var service = metadata.services[i]
@@ -246,6 +243,7 @@ function rebuildRTI(elem, metadata){
 }
 
 function rebuildLDB(elem, board, train_station){
+    var powered_by = elem.find('.powered-by');
     elem.empty()
     if (!board) {
         board = 'departures'
@@ -255,24 +253,24 @@ function rebuildLDB(elem, board, train_station){
         elem.append('<div class="header"><h2>' + train_station.title + ' (' + gettext(board) + ')</h2></div>');
     } else {
         // generatedAt comes from the server in UTC - cast to local time
-        var generated = new Date(Date.UTC(parseInt(train_station.metadata.ldb.generatedAt.slice(0,4)),
-				 parseInt(train_station.metadata.ldb.generatedAt.slice(5,7)),
-				 parseInt(train_station.metadata.ldb.generatedAt.slice(8,10)),
-				 parseInt(train_station.metadata.ldb.generatedAt.slice(11,13)),
-				 parseInt(train_station.metadata.ldb.generatedAt.slice(14,16)),
-				 parseInt(train_station.metadata.ldb.generatedAt.slice(17,19))))
+        var generated = new Date(Date.UTC(parseInt(train_station.metadata.ldb.generatedAt.slice(0,4), 10),
+				 parseInt(train_station.metadata.ldb.generatedAt.slice(5,7), 10),
+				 parseInt(train_station.metadata.ldb.generatedAt.slice(8,10), 10),
+				 parseInt(train_station.metadata.ldb.generatedAt.slice(11,13), 10),
+				 parseInt(train_station.metadata.ldb.generatedAt.slice(14,16), 10),
+				 parseInt(train_station.metadata.ldb.generatedAt.slice(17,19), 10)))
         elem.append('<div class="header"><h2>' + train_station.title + ' (' + gettext(board) + ') - ' + getTimestamp(generated) + '</h2></div>');
     }
     
     if (train_station.metadata.ldb.nrccMessages) {
-        elem.append('<ul class="content-list no-round-bottom"></ul>')
+        elem.append('<ul class="content-list"></ul>')
         ul = elem.find('ul:last')
         for (var i in train_station.metadata.ldb.nrccMessages.message) {
             ul.append('<li>' + train_station.metadata.ldb.nrccMessages.message[i] + '</li>')
         }
     }
     
-    elem.append('<table class="content no-round-bottom"><thead><tr></tr></thead><tbody></tbody></table>')
+    elem.append('<table class="content"><thead><tr></tr></thead><tbody></tbody></table>')
     tr = elem.find('.content thead tr')
     if (board == 'arrivals') {
         tr.append('<th>' + gettext('Origin') + '</th>')
@@ -297,7 +295,11 @@ function rebuildLDB(elem, board, train_station){
     if (train_station.metadata.ldb.trainServices) {
         for (var i in train_station.metadata.ldb.trainServices.service) {
             service = train_station.metadata.ldb.trainServices.service[i]
-            tbody.append('<tr></tr>')
+            if (service.problems) {
+                tbody.append('<tr class="delayed-service"></tr>')
+            } else {
+                tbody.append('<tr></tr>')
+            }
             tr = tbody.find('tr:last')
             dest = ''
             if (board == 'arrivals') {
@@ -371,6 +373,7 @@ function rebuildLDB(elem, board, train_station){
         tbody.append('<tr><td colspan="' + cols + '">' + no_scheduled + '</td></tr>')
     }
     
+    elem.append(powered_by);
     elem.append('<ul class="link-list"></ul>');
     ul = elem.find('ul:last')
     if (board == 'departures') {

@@ -1,19 +1,18 @@
-{% load molly_utils %}{% if entity.metadata.ldb %}
-{% load i18n %}
+{% load molly_utils %}{% load i18n %}{% if entity.metadata.ldb %}
 <div class="section" id="ldb-{{ train_station.identifier_scheme }}-{{ train_station.identifier_value }}">
   <div class="header">
     <h2>{{ entity.title }} ({% if board %}{% trans board %}{% else %}{% trans "departures" %}{% endif %}) - {{ entity.metadata.ldb.generatedAt|localize_utc|date:"H:i:s" }}</h2>
   </div>
   
   {% if entity.metadata.ldb.nrccMessages.message %}
-  <ul class="content-list no-round-bottom">
+  <ul class="content-list">
     {% for message in entity.metadata.ldb.nrccMessages.message %}
       <li>{{ message|sanitize_html }}</li>
     {% endfor %}
   </ul>
   {% endif %}
 
-  <table class="content no-round-bottom">
+  <table class="content">
     <thead>
       <tr>
         <th>
@@ -40,7 +39,7 @@
         </tr>
       {% else %}
         {% for service in entity.metadata.ldb.trainServices.service %}
-          <tr>
+          <tr{% if service.problems %} class="delayed-service"{% endif %}>
             <td>
               <a href="{{ entity.get_absolute_url }}service?id={{ service.serviceID|urlencode }}" class="subtle-link" rel="nofollow">
                 {# This isn't that straight-forward - trains can split and go to multiple destinations #}
@@ -88,6 +87,9 @@
       {% endif %}
     </tbody>
   </table>
+  <div class="note powered-by">
+    <img src="{{ STATIC_URL }}places/images/powered-by-nre.png" alt="Powered by National Rail Enquiries" />
+  </div>
   <ul class="link-list">
     {% if board %}
       {% ifequal board "departures" %}

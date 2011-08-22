@@ -22,12 +22,15 @@ from django.utils.translation import ungettext
 from django.contrib.gis.measure import D
 
 from molly.utils.views import BaseView, ZoomableView
+from molly.utils.templatetags.molly_utils import humanise_distance
 from molly.utils.breadcrumbs import *
 from molly.favourites.views import FavouritableView
 from molly.geolocation.views import LocationRequiredView
 
 from molly.maps import Map
 from molly.maps.osm.models import OSMUpdate
+
+from molly.routing import generate_route, ALLOWED_ROUTING_TYPES
 
 from molly.apps.places.models import Entity, EntityType, Route, Journey
 from molly.apps.places import get_entity, get_point
@@ -93,7 +96,7 @@ class NearbyListView(LocationRequiredView):
         
         for et in entity_types:
             # For each et, get the entities that belong to it
-            et.max_distance = 0
+            et.max_distance = humanise_distance(0)
             et.entities_found = 0
             es = et.entities_completion.filter(location__isnull=False,
                                                location__distance_lt=(point, D(km=5))).distance(point).order_by('distance')
@@ -101,14 +104,15 @@ class NearbyListView(LocationRequiredView):
                 # Selection criteria for whether or not to count this entity
                 if (e.distance.m ** 0.75) * (et.entities_found + 1) > 500:
                     break
-                et.max_distance = e.distance.m
+                et.max_distance = humanise_distance(e.distance.m)
                 et.entities_found += 1
 
         categorised_entity_types = defaultdict(list)
         for et in filter(lambda et: et.entities_found > 0, entity_types):
             categorised_entity_types[_(et.category.name)].append(et)
-        # Need to do this other Django evalutes .items as ['items']
-        categorised_entity_types = dict(categorised_entity_types.items())
+        categorised_entity_types = dict(
+            (k, sorted(v, key=lambda x: x.verbose_name.lower()))
+            for k, v in categorised_entity_types.items())
 
         context.update({
             'entity_types': categorised_entity_types,
@@ -130,7 +134,7 @@ class NearbyDetailView(LocationRequiredView, ZoomableView):
         entity_types = tuple(get_object_or_404(EntityType, slug=t) for t in ptypes.split(';'))
 
         if point:
-            entities = Entity.objects.filter(location__isnull = False, is_sublocation = False)
+            entities = Entity.objects.filter(location__isnull=False)
             for et in entity_types:
                 entities = entities.filter(all_types_completion=et)
             
@@ -236,7 +240,6 @@ class NearbyDetailView(LocationRequiredView, ZoomableView):
         })
         return self.render(request, context, 'places/nearby_detail')
 
-
 class EntityDetailView(ZoomableView, FavouritableView):
     default_zoom = 16
 
@@ -246,8 +249,8 @@ class EntityDetailView(ZoomableView, FavouritableView):
         distance, bearing = entity.get_distance_and_bearing_from(user_location)
         additional = '<strong>%s</strong>' % capfirst(entity.primary_type.verbose_name)
         if distance:
-            additional += ', ' + _('about %(distance)dm %(bearing)s') % {
-                                    'distance': int(math.ceil(distance/10)*10),
+            additional += ', ' + _('about %(distance)s %(bearing)s') % {
+                                    'distance': humanise_distance(distance),
                                     'bearing': bearing }
         routes = sorted(set(sor.route.service_id for sor in entity.stoponroute_set.all()))
         if routes:
@@ -347,7 +350,7 @@ class EntityUpdateView(ZoomableView):
         return Breadcrumb(
             'places',
             lazy_parent('entity', scheme=scheme, value=value),
-            'Update place',
+            _('Update place'),
             lazy_reverse('entity-update', args=[scheme, value]))
 
     def handle_GET(self, request, context, scheme, value):
@@ -420,7 +423,7 @@ class NearbyEntityListView(NearbyListView):
         return Breadcrumb(
             'places',
             lazy_parent('entity', scheme=scheme, value=value),
-            'Things near %s' % context['entity'].title,
+            _('Things near %s') % context['entity'].title,
             lazy_reverse('entity-nearby-list', args=[scheme, value]))
 
     def handle_GET(self, request, context, scheme, value):
@@ -445,9 +448,10 @@ class NearbyEntityDetailView(NearbyDetailView):
         return Breadcrumb(
             'places',
             lazy_parent('entity-nearby-list', scheme=scheme, value=value),
-            '%s near %s' % (
-                capfirst(entity_type.verbose_name_plural),
-                context['entity'].title, ),
+            _('%(entity_type)s near %(entity)s') % {
+                    'entity_type': capfirst(entity_type.verbose_name_plural),
+                    'entity': context['entity'].title
+                },
             lazy_reverse('places:entity_nearby_detail', args=[scheme, value, ptype]))
 
     def get_metadata(self, request, scheme, value, ptype):
@@ -466,7 +470,9 @@ class CategoryListView(BaseView):
         for et in EntityType.objects.filter(show_in_category_list=True):
             categorised_entity_types[_(et.category.name)].append(et)
         # Need to do this other Django evalutes .items as ['items']
-        categorised_entity_types = dict(categorised_entity_types.items())
+        categorised_entity_types = dict(
+            (k, sorted(v, key=lambda x: x.verbose_name.lower()))
+            for k, v in categorised_entity_types.items())
         return {
             'entity_types': categorised_entity_types,
         }
@@ -476,7 +482,7 @@ class CategoryListView(BaseView):
         return Breadcrumb(
             'places',
             lazy_parent('index'),
-            'Categories',
+            _('Categories'),
             lazy_reverse('category-list'),
         )
 
@@ -490,7 +496,7 @@ class CategoryDetailView(BaseView):
     def initial_context(self, request, ptypes):
         entity_types = tuple(get_object_or_404(EntityType, slug=t) for t in ptypes.split(';'))
 
-        entities = Entity.objects.filter(is_sublocation=False)
+        entities = Entity.objects.all()
         for entity_type in entity_types:
             entities = entities.filter(all_types_completion=entity_type)
 
@@ -549,6 +555,73 @@ class CategoryDetailView(BaseView):
         return self.render(request, context, 'places/category_detail',
                            expires=timedelta(days=1))
 
+class EntityDirectionsView(LocationRequiredView):
+    default_zoom = 16
+
+    def get_metadata(self, request, scheme, value):
+        entity = get_entity(scheme, value)
+        return {
+            'title': _('Directions to %s') % entity.title,
+            'entity': entity,
+        }
+
+    def initial_context(self, request, scheme, value):
+        context = super(EntityDirectionsView, self).initial_context(request)
+        entity = get_entity(scheme, value)
+        
+        allowed_types = ALLOWED_ROUTING_TYPES
+        type = request.GET.get('type')
+        if type:
+            request.session['places:directions-type'] = type
+        else:
+            type = request.session.get('places:directions-type', 'foot')
+        
+        if type not in allowed_types:
+            type = 'foot'
+        
+        context.update({
+            'entity': entity,
+            'type': type,
+            'allowed_types': allowed_types,
+        })
+        return context
+
+    @BreadcrumbFactory
+    def breadcrumb(self, request, context, scheme, value):
+        entity = get_entity(scheme, value)
+        return Breadcrumb(
+            'places',
+            lazy_parent('entity', scheme=scheme, value=value),
+            _('Directions to %s') % context['entity'].title,
+            lazy_reverse('entity-directions', args=[scheme, value]),
+        )
+
+    def handle_GET(self, request, context, scheme, value):
+        
+        user_location = request.session.get('geolocation:location')
+        if user_location is not None:
+            user_location = Point(user_location)
+        destination = context['entity'].routing_point(user_location)
+        
+        if destination.location is not None:
+            context['route'] = generate_route([user_location,
+                                              destination.location],
+                                              context['type'])
+            if not 'error' in context['route']:
+                context['map'] = Map(
+                    (user_location[0], user_location[1], 'green', ''),
+                    [(w['location'][0], w['location'][1], 'red', w['instruction'])
+                        for w in context['route']['waypoints']],
+                    len(context['route']['waypoints']),
+                    None,
+                    request.map_width,
+                    request.map_height,
+                    extra_points=[(destination.location[0],
+                                   destination.location[1],
+                                   'red', destination.title)],
+                    paths=[(context['route']['path'], '#3c3c3c')])
+
+        return self.render(request, context, 'places/entity_directions')
 
 class ServiceDetailView(BaseView):
     """
@@ -604,7 +677,7 @@ class ServiceDetailView(BaseView):
                 raise Http404
             if 'error' in service:
                 context.update({
-                    'title': 'An error occurred',
+                    'title': _('An error occurred'),
                     'service': {
                         'error': service['error'],
                     },

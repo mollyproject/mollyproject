@@ -1,4 +1,4 @@
-{% extends "podcasts/base.html" %}{% load molly_utils %}{% load molly_external_media %}{% load molly_podcasts %}
+{% extends "podcasts/base.html" %}{% load molly_utils %}{% load molly_external_media %}
 {% load i18n %}
 {% block breadcrumbs %}
 {{ block.super }}
@@ -52,19 +52,19 @@
     {% endif %}
       
       <small>
-	  {# Significant whitespace on next line #}
-      {% trans "Published:" %} {{ item.published_date|date:"DATE_FORMAT" }}
+        {# Significant whitespace on next line #}
+        {% trans "Published:" %} {{ item.published_date|date:"DATE_FORMAT" }}
       </small><br />
     <div class="podcast-description">
       {{ item.description|safe }}
     </div>
     
-    <ul class="link-list round-top podcast-enclosures">
+    <ul class="link-list stand-alone podcast-enclosures">
     {% for enc in item.podcastenclosure_set.all %}
       <li class="podcast-enclosure">
         <a href="{{ enc.url }}{% block after_encurl %}{% endblock %}">
         <img src="{{ STATIC_URL }}site/images/icons/list-{{ enc.medium }}.png" alt="({{ enc.medium }})"/>
-          {% if item.duration %}{{ item.duration|humanize_seconds }}, {% endif %}{{ enc.get_mimetype_display|capfirst }}, {{ enc.length|filesizeformat }}
+          {% if item.duration %}{{ item.duration|humanise_seconds }}, {% endif %}{{ enc.get_mimetype_display|capfirst }}, {{ enc.length|filesizeformat }}
           </a>
         </li>
     {% endfor %}

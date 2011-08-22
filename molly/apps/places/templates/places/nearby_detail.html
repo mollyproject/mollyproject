@@ -6,89 +6,101 @@
 {% block content %}
 
 <div class="section">
-<div class="header">
-  <h2>
-    {% if entity %}
-      {% blocktrans with entity_types.0.verbose_name as name and entity_types.0.verbose_name_plural as name_plural and entity.title as title count count as count %}Found {{ count }} {{ name }} near {{ title }}{% plural %}Found {{ count }} {{ name_plural }} near {{ title }}{% endblocktrans %}
-    {% else %}
-      {% blocktrans with entity_types.0.verbose_name as name and entity_types.0.verbose_name_plural as name_plural count count as count %}Found {{ count }} {{ name }}{% plural %}Found {{ count }} {{ name_plural }}{% endblocktrans %}
-    {% endif %}
-
-        {# Also show other categories if this is an 'and' search #}
-        {% ifnotequal entity_types|length 1 %}
-          {% blocktrans count count as count %}that is also{% plural %}that are also{% endblocktrans %}
-
-          {% for et in entity_types|slice:"1:" %}
-            {% if not forloop.first %}, 
-              {% if forloop.last %}{% trans "and" %} {% endif %}
-            {% endif %}
-            {{ et.verbose_name_singular }}
-          {% endfor %}
-        {% endifnotequal %}
-  </h2>
-
-  {% if not found_entity_types|length_is:0 and not found_entity_types|length_is:1 %}
-    <div class="note"><div class="bubble pad-10">
-    {% trans "Limit to:" %}
-    {% for et in found_entity_types %}
+  <div class="header">
+    <h2>
       {% if entity %}
-      <a href="{% url places:entity-nearby-list entity.identifier_scheme entity.identifier_value %}{{ et.slug }}{% for oet in entity_types %}{% if not et.subtype_of.all|contains:oet %};{{ oet.slug }}{% endif %}{% endfor %}/">
-                      {{ et.verbose_name_plural }}</a>
+        {% blocktrans with entity_types.0.verbose_name as name and entity_types.0.verbose_name_plural as name_plural and entity.title as title count count as count %}Found {{ count }} {{ name }} near {{ title }}{% plural %}Found {{ count }} {{ name_plural }} near {{ title }}{% endblocktrans %}
       {% else %}
-      <a href="{% url places:nearby-list %}{{ et.slug }}{% for oet in entity_types %}{% if not et.subtype_of_completion.all|contains:oet %};{{ oet.slug }}{% endif %}{% endfor %}/">
-                      {{ et.verbose_name_plural }}</a>
+        {% blocktrans with entity_types.0.verbose_name as name and entity_types.0.verbose_name_plural as name_plural count count as count %}Found {{ count }} {{ name }}{% plural %}Found {{ count }} {{ name_plural }}{% endblocktrans %}
       {% endif %}
-      {% if not forloop.last %} | {% endif %} 
-    {% endfor %}
-    </div></div>
-  {% endif %}
+  
+      {# Also show other categories if this is an 'and' search #}
+      {% ifnotequal entity_types|length 1 %}
+        {% blocktrans count count as count %}that is also{% plural %}that are also{% endblocktrans %}
 
-{% if entity_type.note %}
-<div class="note"><div class="bubble pad-10">{{ entity_type.note }}</div></div>
-{% endif %}
+        {% for et in entity_types|slice:"1:" %}
+          {% if not forloop.first %}, 
+            {% if forloop.last %}{% trans "and" %} {% endif %}
+          {% endif %}
+          {{ et.verbose_name_singular }}
+        {% endfor %}
+      {% endifnotequal %}
+    </h2>
+  
+    {% if not found_entity_types|length_is:0 and not found_entity_types|length_is:1 %}
+      <div class="note"><div class="bubble pad-10">
+      {% trans "Limit to:" %}
+      {% for et in found_entity_types %}
+        {% if entity %}
+        <a href="{% url places:entity-nearby-list entity.identifier_scheme entity.identifier_value %}{{ et.slug }}{% for oet in entity_types %}{% if not et.subtype_of.all|contains:oet %};{{ oet.slug }}{% endif %}{% endfor %}/">
+                        {{ et.verbose_name_plural }}</a>
+        {% else %}
+        <a href="{% url places:nearby-list %}{{ et.slug }}{% for oet in entity_types %}{% if not et.subtype_of_completion.all|contains:oet %};{{ oet.slug }}{% endif %}{% endfor %}/">
+                        {{ et.verbose_name_plural }}</a>
+        {% endif %}
+        {% if not forloop.last %} | {% endif %} 
+      {% endfor %}
+      </div></div>
+    {% endif %}
+  
+    {% if entity_type.note %}
+      <div class="note"><div class="bubble pad-10">{{ entity_type.note }}</div></div>
+    {% endif %}
+    
+    {% render_map map %}
+    {% if use_slippy_maps %}
+    <script type="text/javascript">
+        $(function(){
+            map.on('zoomend', function(e){
+                {# Have zoomed out past the limit we currently have entities for #}
+                if (e.target._zoom < e.target.options.zoom) {
+                    async_load('?', {zoom: e.target._zoom}, 'GET')
+                }
+            })
+        });
+    </script>
+    {% endif %}
+    
+  </div>
 
-{% render_map map %}
-
-</div>
-
-<ul class="link-list">
-
-{% for entity_group in entities %}
-    {% ifequal entity_group|length 1 %}
-      {% with entity_group.0 as entity %}
+  <ul class="link-list">
+  
+    {% for entity_group in entities %}
+      {% ifequal entity_group|length 1 %}
+        {% with entity_group.0 as entity %}
           <li><a title="{{ entity.title }}" href="{{ entity.get_absolute_url }}">
             {{ forloop.counter }}. {{ entity.title }}<br />
             <small>
             {% if found_entity_types %}
-              {% blocktrans with entity.primary_type.verbose_name|capfirst as type_name and entity.distance.m|round_up_10 as distance and entity.bearing as bearing %}{{ type_name }}, about {{ distance }}m {{ bearing }}{% endblocktrans %}
+              {% blocktrans with entity.primary_type.verbose_name|capfirst as type_name and entity.distance.m|humanise_distance as distance and entity.bearing as bearing %}{{ type_name }}, about {{ distance }} {{ bearing }}{% endblocktrans %}
             {% else %}
-              {% blocktrans with entity.distance.m|round_up_10 as distance and entity.bearing as bearing %}{{ distance }}m {{ bearing }}{% endblocktrans %}
+              {% blocktrans with entity.distance.m|humanise_distance as distance and entity.bearing as bearing %}{{ distance }} {{ bearing }}{% endblocktrans %}
             {% endif %}
             </small>
           </a></li>
-      {% endwith %}
-    {% else %}
-      {% with entity_group.0 as entity %}
+        {% endwith %}
+      {% else %}
+        {% with entity_group.0 as entity %}
           <li class="non-link-item">
             {{ forloop.counter }}. <em>{{ entity_group|length }} {{ entity_type.0.verbose_name_plural }}</em> 
-            {% blocktrans with entity.distance.m|round_up_10 as distance and entity.bearing as bearing %}{{ distance }}m {{ bearing }}{% endblocktrans %}
+            {% blocktrans with entity.distance.m|humanise_distance as distance and entity.bearing as bearing %}{{ distance }} {{ bearing }}{% endblocktrans %}
           </li>
-      {% endwith %}
-      {% for entity in entity_group %}
+        {% endwith %}
+        {% for entity in entity_group %}
           <li class="subitem"><a href="{{ entity.get_absolute_url }}">{{ entity.title }}
               {% if found_entity_types %}, <small>{{ entity.primary_type.verbose_name }}</small>{% endif %}
           </a></li>
-      {% endfor %}
-    {% endifequal %}
-{% endfor %}
-
-  {% if map.zoom > 10 %}
-    <li><a class="no-icon" href="?zoom={{ map.zoom|add:"-1" }}"><strong>
-                {% blocktrans with entity_types.0.verbose_name_plural as type_name %}Find more {{ type_name }}{% endblocktrans %}
-        </strong></a></li>
-  {% endif %}
-
-</ul>
+        {% endfor %}
+      {% endifequal %}
+    {% endfor %}
+  
+    {% if map.zoom > 10 %}
+      <li><a class="no-icon" href="?zoom={{ map.zoom|add:"-1" }}"><strong>
+        {% blocktrans with entity_types.0.verbose_name_plural as type_name %}Find more {{ type_name }}{% endblocktrans %}
+      </strong></a></li>
+    {% endif %}
+  
+  </ul>
 </div>
 
 {% endblock %}

@@ -1,0 +1,22 @@
+{% extends "tours/base.html" %}{% load i18n %}
+
+{% block content %}
+<div class="section">
+    <div class="header">
+        <h2>{% trans 'Tours' %}</h2>
+    </div>
+    <ul class="link-list">
+        <li><a href="{% url tours:create %}">{% trans 'Create a new tour' %}</a></li>
+    </ul>
+    {% if tours %}
+        <div class="header">
+            <h2>{% trans 'Previously saved tours' %}</h2>
+        </div>
+        <ul class="link-list">
+            {% for tour in tours %}
+                <li><a href="{{ tour.get_absolute_url }}">{{ tour.name }}</a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</div>
+{% endblock %}

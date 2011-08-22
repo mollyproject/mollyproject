@@ -5,8 +5,10 @@ from logging import getLogger
 from lxml import etree
 
 from django.contrib.gis.geos import Point
+from django.contrib.gis.measure import Distance
 from django.core.paginator import Page
 from django.db import models
+from django.utils.functional import Promise as lazy_translation
 
 logger = getLogger(__name__)
 
@@ -32,22 +34,29 @@ def simplify_value(value):
             try:
                 out[new_key] = simplify_value(value[key])
             except NotImplementedError:
-                logger.info('Could not simplify a value', exc_info=True)
+                logger.info('Could not simplify field %s of type %s',
+                            key, type(value[key]), exc_info=True)
                 pass
         return out
+    elif isinstance(value, tuple) and hasattr(value, '_asdict'):
+        # Handle named tuples as dicts
+        return simplify_value(value._asdict())
     elif isinstance(value, (list, tuple, set, frozenset)):
         out = []
         for subvalue in value:
             try:
                 out.append(simplify_value(subvalue))
             except NotImplementedError:
-                pass
+                logger.info('Could not simplify a value of type %s',
+                            type(subvalue), exc_info=True)
         if isinstance(value, tuple):
             return tuple(out)
         else:
             return out
     elif isinstance(value, (basestring, int, float)):
         return value
+    elif isinstance(value, lazy_translation):
+        return unicode(value)
     elif isinstance(value, datetime.datetime):
         return DateTimeUnicode(value.isoformat(' '))
     elif isinstance(value, datetime.date):
@@ -61,12 +70,18 @@ def simplify_value(value):
             'next_page_number': value.has_next(),
             'previous_page_number': value.has_next(),
             'number': value.number,
-            'objects': simplify_value(value.object_list)
+            'objects': simplify_value(value.object_list),
+            'num_pages': value.paginator.num_pages,
+            'num_objects': value.paginator.count,
         }
     elif value is None:
         return None
     elif isinstance(value, Point):
         return simplify_value(list(value))
+    elif isinstance(value, Distance):
+        # This is here to avoid a circular import
+        from molly.utils.templatetags.molly_utils import humanise_distance
+        return simplify_value(humanise_distance(value.m))
     elif hasattr(value, '__iter__'):
         # Iterators may be unbounded; silently ignore elements once we've already had 1000.
         return [simplify_value(item) for item in itertools.islice(value, 1000)]
@@ -123,7 +138,11 @@ def serialize_to_xml(value):
         node.attrib['type'] = 'boolean'
     elif isinstance(value, (basestring, int, float)):
         node = etree.Element('literal')
-        node.text = unicode(value)
+        try:
+            node.text = unicode(value)
+        except UnicodeDecodeError:
+            # Encode as UTF-8 if ASCII string can not be encoded
+            node.text = unicode(value, 'utf-8')
         node.attrib['type'] = [d[1] for d in _XML_DATATYPES if isinstance(value, d[0])][0]
     elif isinstance(value, dict):
         if '_type' in value:

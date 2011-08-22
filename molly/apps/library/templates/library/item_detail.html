@@ -64,7 +64,7 @@
     <div class="header">
         <h2>{% trans "Library holdings" %}</h2>
     </div>
-    <div class="section-content no-round-bottom">
+    <div class="section-content">
         {% if map %}{% render_map map %}{% endif %}
         <div class="note"><div class="bubble pad-10">
             {% trans "Please note that all libraries have admission and borrowing policies; inclusion in this list does not imply access." %}{% if map_hash %} {% trans "Closest results are not necessarily best." %}{% endif %}
@@ -72,14 +72,14 @@
     </div>
     <table class="content">
         <tbody>
-            {% for library, books in item.libraries.items %}
+            {% for library, books in sorted_libraries %}
                 <tr class="sub-section-divider">
                     <th colspan="2">
                         {% if library.marker_number %}{{ library.marker_number }}. {% endif %}
                         {% with library.location as location_code %}
                             <a href="{% url library:item-holdings-detail control_number,location_code|join:"/" %}">
-                                {% if library.get_entity %}
-                                    {{ library.get_entity.title }}
+                                {% if library.entity %}
+                                    {{ library.entity.title }}
                                 {% else %}
                                     {{ library.location|join:"/" }}
                                 {% endif %}

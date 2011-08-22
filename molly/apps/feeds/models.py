@@ -23,16 +23,18 @@ PROVIDER_CHOICES = tuple(
         if app.application_name == 'molly.apps.feeds'
 )
 
+
 FORMAT_CHOICES = tuple((x, x) for x in (
     'lecture', 'class', 'tutorial', 'seminar', 'performance', 'workshop',
     'exhibition', 'meeting',
 ))
 
 
-
 class EventsManager(models.Manager):
     def get_query_set(self):
         return super(EventsManager, self).get_query_set().filter(ptype='e')
+
+
 class NewsManager(models.Manager):
     def get_query_set(self):
         return super(NewsManager, self).get_query_set().filter(ptype='n')
@@ -40,13 +42,16 @@ class NewsManager(models.Manager):
 
 class Tag(models.Model):
     value = models.CharField(max_length=128)
+    
+    def __unicode__(self):
+        return self.value
+
 
 class Feed(models.Model):
     title = models.TextField(help_text=_("Feed title"))
-    # Represents the 'unit' which owns said feed. 
-    # Translators: A unit e.g. 'oucs' or short form of a department name. 
-    unit = models.CharField(max_length=10,null=True,blank=True,help_text=_("Unit to which the feed belongs to"))
-    rss_url = models.URLField(help_text=_("URL of RSS feed"))
+    entity = models.ForeignKey(Entity, null=True,
+                               help_text=_('Place which this feed belongs to'))
+    rss_url = models.URLField(help_text=_("URL of feed"))
     slug = models.SlugField(help_text=_("Slug of feed, e.g. oucs-news"))
     last_modified = models.DateTimeField(null=True, blank=True) # this one is in UTC
     language = models.CharField(max_length=10, choices=settings.LANGUAGES,
@@ -55,12 +60,6 @@ class Feed(models.Model):
     # Provider type
     ptype = models.CharField(max_length=1, choices=FEED_TYPE_CHOICES)
     provider = models.CharField(max_length=128, choices=PROVIDER_CHOICES)
-    
-    def _set_importer_params(self, value):
-        self._importer_params = simplejson.dumps(value)
-    def _get_importer_params(self):
-        return simplejson.loads(self._importer_params)
-    importer_params = property(_get_importer_params, _set_importer_params) 
     
     objects = models.Manager()
     events = EventsManager()
@@ -80,6 +79,7 @@ class Feed(models.Model):
     class Meta:
         ordering = ('title',)
 
+
 class vCard(models.Model):
     uri = models.TextField()
 
@@ -88,7 +88,8 @@ class vCard(models.Model):
     telephone = models.TextField(blank=True)
     location = models.PointField(null=True)
     entity = models.ForeignKey(Entity, null=True, blank=True)
-    
+
+
 class Series(models.Model):
     feed = models.ForeignKey(Feed)
     guid = models.TextField()
@@ -96,6 +97,7 @@ class Series(models.Model):
     unit = models.ForeignKey(vCard, null=True, blank=True)
 
     tags = models.ManyToManyField(Tag, blank=True)
+
 
 class Item(models.Model):
     feed = models.ForeignKey(Feed)

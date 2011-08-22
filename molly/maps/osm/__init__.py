@@ -93,15 +93,15 @@ def get_or_create_map(generator, args):
             # Call the generator to generate it
             metadata = generator(filename=os.path.join(generated_map_dir, hash),
                                  *args)
-            # If no exception was raised, we mark it as non-faulty
-            faulty = False
         except MapGenerationError as e:
             # If a map generation error occurs, then mark this map as faulty
             # this means that it is deleted next time it is requested, forcing
             # it to be re-generated next time (hopefully the error is transient)
-            logger.warning("Unable to generate map")
             metadata = e.metadata
             faulty = True
+        else:
+            # If no exception was raised, we mark it as non-faulty
+            faulty = False
         
         generated_map = GeneratedMap(
             hash = hash,
@@ -146,7 +146,8 @@ def get_or_create_map(generator, args):
     
     return hash, metadata
     
-def fit_to_map(centre_point, points, min_points, zoom, width, height):
+def fit_to_map(centre_point, points, min_points, zoom, width, height,
+               extra_points, paths):
     """
     Given a list of points and some minimum number of points, then a "fitted
     map" is generated, which is one which contains at least @C{min_points}, and
@@ -183,4 +184,4 @@ def fit_to_map(centre_point, points, min_points, zoom, width, height):
     points = list(points)
     return get_or_create_map(get_fitted_map,
                              (centre_point, points, min_points,
-                              zoom, width, height))
+                              zoom, width, height, extra_points, paths))

@@ -1,7 +1,8 @@
 from email.utils import formatdate
 from time import mktime
 from inspect import isfunction
-import logging, itertools
+import logging
+import itertools
 from datetime import datetime, date, timedelta
 from slimmer.slimmer import xhtml_slimmer
 from urlparse import urlparse, urlunparse, parse_qs
@@ -21,6 +22,7 @@ from django.core.urlresolvers import reverse, resolve, NoReverseMatch
 from django.conf import settings
 from django.utils.translation import ugettext as _
 from django.views.debug import technical_500_response
+from django.middleware.csrf import get_token
 
 logger = logging.getLogger(__name__)
 
@@ -60,7 +62,7 @@ def tidy_query_string(url):
     scheme, netloc, path, params, query, fragment = urlparse(url)
     args = []
     for k, vs in parse_qs(query).items():
-        if k in ['format',]:
+        if k in ['format', 'language_code']:
             continue
         else:
             for v in vs:
@@ -329,6 +331,11 @@ class BaseView(object):
         context = simplify_value(context)
         resolved = resolve(request.path)
         context['view_name'] = '%s:%s' % (':'.join(resolved.namespaces), resolved.url_name)
+        
+        # Include CSRF token, as templates don't get rendered csrf_token is
+        # never called which breaks CSRF for apps written against the JSON API
+        get_token(request)
+        
         return HttpResponse(simplejson.dumps(context),
                             mimetype="application/json")
 

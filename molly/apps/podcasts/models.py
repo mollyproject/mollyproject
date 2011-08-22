@@ -3,9 +3,10 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext_noop
-from molly.utils.i18n import name_in_language
 
 from molly.apps.podcasts.data import licenses
+from molly.external_media import resize_external_image
+from molly.utils.i18n import name_in_language
 
 MEDIUM_CHOICES = (
     ('audio', _('audio')),
@@ -67,6 +68,13 @@ class Podcast(models.Model):
         verbose_name = _('Podcast feed')
         verbose_name_plural = _('Podcast feeds')
         ordering = ('title',)
+    
+    def simplify_for_render(self, simplify_value, simplify_model):
+        simplified = simplify_model(self)
+        simplified.update({
+            'resized_logo': simplify_model(resize_external_image(self.logo, 60))
+        })
+        return simplified
 
 
 class PodcastItem(models.Model):
@@ -90,6 +98,20 @@ class PodcastItem(models.Model):
     class Meta:
         verbose_name = _('Podcast item')
         verbose_name_plural = _('Podcast items')
+    
+    def simplify_for_render(self, simplify_value, simplify_model):
+        return {
+            'podcast': simplify_model(self.podcast, terse=True),
+            'title': simplify_value(self.title),
+            'description': simplify_value(self.description),
+            'published_date': simplify_value(self.published_date),
+            'author': simplify_value(self.author),
+            'duration': simplify_value(self.duration),
+            'guid': simplify_value(self.guid),
+            'order': simplify_value(self.order),
+            'license_data': simplify_value(self.license_data),
+            'enclosures': simplify_value(self.podcastenclosure_set.all())
+        }
 
 MIMETYPES = {
     'audio/x-mpeg': _('MP3 audio'),
@@ -137,4 +159,14 @@ class PodcastEnclosure(models.Model):
     class Meta:
         verbose_name = _('Podcast enclosed data')
         verbose_name_plural = _('Podcast enclosed data')
+    
+    def simplify_for_render(self, simplify_value, simplify_model):
+        return {
+            'podcast_item': simplify_model(self.podcast_item, terse=True),
+            'url': simplify_value(self.url),
+            'length': simplify_value(self.length),
+            'mimetype': simplify_value(self.mimetype),
+            'mimetype_display': simplify_value(self.get_mimetype_display()),
+            'medium': simplify_value(self.medium),
+        }
 

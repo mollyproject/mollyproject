@@ -12,7 +12,6 @@ class IndexView(BaseView):
     View to display service status information
     """
 
-    # TODO Remove specific references to OUCS and OLIS
     def get_metadata(self, request):
         return {
             'title': _('Service status'),

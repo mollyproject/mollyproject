@@ -46,14 +46,15 @@ function refreshTransport(data){
         tbody.empty()
         for (var i in data.nearby[type].entities) {
             entity = data.nearby[type].entities[i]
-            tbody.append('<tr class="sub-section-divider"><th colspan="3"><a href="' + entity._url  + '" class="subtle-link">' + entity.title + '</a></th></tr>')
             if (entity.distance) {
                 // Translators: e.g., about 100 metres NW
-                var about = interpolate(gettext('about %(distance)s %(bearing)s'),
-                                        { distance: Math.ceil(entity.distance/10)*10,
-                                          bearing: entity.bearing }, true)
-                tbody.find('th').append('<small>(' + about + ')</small>')
+                var about = ' (' + interpolate(gettext('about %(distance)s %(bearing)s'),
+                                        { distance: entity.distance,
+                                          bearing: entity.bearing }, true) + ')'
+            } else {
+                var about = ''
             }
+            tbody.append('<tr class="sub-section-divider"><th colspan="3"><a href="' + entity._url  + '" class="subtle-link">' + entity.title + about + '</a></th></tr>')
             if (entity.metadata.real_time_information) {
                 if (entity.metadata.real_time_information.pip_info.length > 0) {
                     tbody.append('<tr><td colspan="3"></td></tr>')

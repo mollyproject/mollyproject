@@ -1,5 +1,6 @@
-import urllib, urllib2, logging
-
+import urllib
+import urllib2
+import logging
 import simplejson
 
 from django.conf import settings
@@ -98,7 +99,7 @@ class CloudmadeGeolocationProvider(BaseGeolocationProvider):
         for i, feature in enumerate(features):
             try:
                 # Cloudmade returns a lat-long (and we use long-lats internally)
-                bounds_a, bounds_b = [Point(p[1], p[0], srid=4326).transform(settings.SRID, clone=True) for p in feature['bounds']]
+                bounds_a, bounds_b = [Point(p[1], p[0]) for p in feature['bounds']]
             except OGRException:
                 # The point wasn't transformable into the co-ordinate
                 # scheme desired - it's probably a long way away.

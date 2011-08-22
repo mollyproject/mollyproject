@@ -8,7 +8,7 @@
             <div class="header">
                 <h2>{% trans "Multiple routes found" %}</h2>
             </div>
-            <div class="section-content no-round-bottom">
+            <div class="section-content">
                 <p>{% trans "Multiple routes with the same number were found. Please select exactly which route you want from the list below." %}
             </div>
             <ul class="link-list">
@@ -20,14 +20,14 @@
                     {% endif %}
                 {% endfor %}
             </ul>
-        </div>    
+        </div>
 {% else %}
 
 <div class="section">
   <div class="header">
-    {% if train_service.ldb %}
+    {% if entity.metadata.ldb %}
         <h2>{% trans "Live Train Information" %}
-        {% if train_service.ldb.generatedAt %} - {{ train_service.ldb.generatedAt|localize_utc|date:"H:i:s" }}{% endif %}</h2>
+        {% if entity.metadata.ldb.generatedAt %} - {{ entity.metadata.ldb.generatedAt|localize_utc|date:"H:i:s" }}{% endif %}</h2>
     {% else %}
         <h2>{% trans "Route Information" %}</h2>
     {% endif %}
@@ -36,7 +36,7 @@
   
   <ul class="content-list">
     <li>
-        {% if entity.identifiers.crs %}
+        {% if entity.metadata.ldb %}
             {% blocktrans with entity.identifiers.crs as crs %}There is currently a problem retrieving live departure information from the National Rail web site. Departure information may still be accessed<a href="http://pda.ojp.nationalrail.co.uk/en/pj/ldbboard/dep/{{ crs }}">directly from their web site</a>.{% endblocktrans %}
         {% else %}
             {% trans "There is currently an error getting route information." %}
@@ -46,7 +46,7 @@
   
   {% else %}
   
-  <ul class="content-list no-round-bottom">
+  <ul class="content-list">
     {% if service.operator %}
         <li>
             {% blocktrans with service.operator as operator %}Operated by {{ operator }}{% endblocktrans %}
@@ -107,7 +107,7 @@
                   </thead>
                   <tbody>
                     {% for joining_point in point.joining %}
-                    <tr{% if joining_point.at %} class="grey"{% endif %}>
+                    <tr{% if joining_point.at %} class="grey"{% else %}{% if joining_point.problems %} class="delayed-service"{% endif %}{% endif %}>
                       <td>{{ joining_point.stop_num }} <a href="{{ joining_point.entity.get_absolute_url }}" class="subtle-link">
                         {% ifequal joining_point.entity.title|slice:"-12:" "Rail Station" %}
                             {{ joining_point.entity.title|slice:":-13" }}
@@ -133,7 +133,7 @@
                 <td colspan="3">{% blocktrans with point.service_change as service_type %}This service is then continued by {{ service_type }}.{% endblocktrans %}
             </tr>
         {% endif %}
-        <tr{% if point.at %} class="grey"{% endif %}>
+        <tr{% if point.at %} class="grey"{% else %}{% if point.problems %} class="delayed-service"{% endif %}{% endif %}>
           <td>{{ point.stop_num }} <a href="{{ point.entity.get_absolute_url }}" class="subtle-link">
                 {% ifequal point.entity.title|slice:"-12:" "Rail Station" %}
                     {{ point.entity.title|slice:":-13" }}
@@ -168,7 +168,7 @@
                   </thead>
                   <tbody>
                     {% for splitting_point in point.splitting.list %}
-                    <tr{% if splitting_point.at %} class="grey"{% endif %}>
+                    <tr{% if splitting_point.at %} class="grey"{% else %}{% if splitting_point.problems %} class="delayed-service"{% endif %}{% endif %}>
                       <td>{{ splitting_point.stop_num }} <a href="{{ splitting_point.entity.get_absolute_url }}" class="subtle-link">
                         {% ifequal splitting_point.entity.title|slice:"-12:" "Rail Station" %}
                             {{ splitting_point.entity.title|slice:":-13" }}

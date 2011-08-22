@@ -1,0 +1,180 @@
+{% extends "transport/base.html" %}{% load molly_utils %}{% load i18n %}
+
+{% block content %}
+
+{% block transport-links %}
+
+{% ifnotequal style_group "dumb" %}
+    {% if device|device_has_parent:"apple_generic" or browser.svgt_1_1 %}
+        <ul id="transport-links">
+            {% if nearby.bus %}
+            <li class="transport-link">
+                <a href="#bus"><img src="{{ STATIC_URL }}transport/images/bus.svg" alt="{% trans "Bus Stops" %}"  width="48" height="48" /></a></li>
+            {% endif %}
+            {% if park_and_rides %}
+            <li class="transport-link">
+                <a href="#park_and_rides"><img src="{{ STATIC_URL }}transport/images/pride.svg" alt="{% trans "Park and Rides" %}" width="48" height="48" /></a></li>
+            {% endif %}
+            {% if train_station %}
+            <li class="transport-link">
+                <a href="#ldb"><img src="{{ STATIC_URL }}transport/images/train.svg" alt="{% trans "Train Departure Boards" %}" width="48" height="48" /></a></li>
+            {% endif %}
+            {% if travel_alerts %}
+            <li class="transport-link">
+                <a href="#travel_news"><img src="{{ STATIC_URL }}transport/images/warn.svg" alt="{% trans "Travel News" %}" width="48" height="48" /></a></li>
+            {% endif %}
+        </ul>
+    {% else %}
+        <ul id="transport-links">
+            {% if nearby.bus %}
+            <li class="transport-link">
+                <a href="#bus"><img src="{{ STATIC_URL }}transport/images/bus.png" alt="{% trans "Bus Stops" %}" width="48" height="48" /></a></li>
+            {% endif %}
+            {% if park_and_rides %}
+            <li class="transport-link">
+                <a href="#park_and_rides"><img src="{{ STATIC_URL }}transport/images/pride.png" alt="{% trans "Park and Rides" %}" width="48" height="48" /></a></li>
+            {% endif %}
+            {% if train_station %}
+            <li class="transport-link">
+                <a href="#ldb"><img src="{{ STATIC_URL }}transport/images/train.png" alt="{% trans "Train Departure Boards" %}" width="48" height="48" /></a></li>
+            {% endif %}
+            {% if travel_alerts %}
+            <li class="transport-link">
+                <a href="#travel_news"><img src="{{ STATIC_URL }}transport/images/warn.png" alt="{% trans "Travel News" %}" width="48" height="48" /></a></li>
+            {% endif %}
+        </ul>
+    {% endif %}
+{% else %}
+    
+    <ul id="transport-links">
+        {% if nearby.bus %}
+            <li class="transport-link"><a href="#bus">{% trans "Bus Stops" %}</a></li>
+        {% endif %}
+        {% if park_and_rides %}
+            <li class="transport-link"><a href="#park_and_rides">{% trans "Park and Rides" %}</a></li>
+        {% endif %}
+        {% if train_station %}
+            <li class="transport-link"><a href="#ldb">{% trans "Train Departure Boards" %}</a></li>
+        {% endif %}
+        {% if travel_alerts %}
+            <li class="transport-link"><a href="#travel_news">{% trans "Travel News" %}</a></li>
+        {% endif %}
+    </ul>
+    
+{% endifnotequal %}
+
+{% endblock %}
+
+{% include "geolocation/update_location_embed.html" %}
+
+{% if transit_status %}
+    {% include "places/metadata/transit_status.html" %}
+{% endif %}
+
+{% for type, data in nearby.items %}
+<div class="section" id="{{ type }}">
+    <div class="header">
+        <h2>{% trans data.results_type %} {{ data.type.verbose_name_plural }} - {% now "G:i:s "%}</h2>
+    </div>
+    <table class="content">
+        <tbody>
+        {% for entity in data.entities %}
+            <tr class="sub-section-divider"><th colspan="3"><a href="{{ entity.get_absolute_url }}" class="subtle-link">
+                    {{ entity.title }}
+                    {% if entity.distance %}<small>
+                        {% blocktrans with entity.distance.m|humanise_distance as distance and entity.bearing as bearing %}(about {{ distance }} {{ bearing }}){% endblocktrans %}
+                    </small>{% endif %}
+                </a></th></tr>
+            {% if entity.metadata.real_time_information.pip_info %}
+                <tr><td colspan="3">{{ entity.metadata.real_time_information.pip_info|join:"<br/>" }}</td></tr>
+            {% endif %}
+            {% if entity.metadata.real_time_information.services %}
+                {% for service in entity.metadata.real_time_information.services %}
+                    <tr>
+                        <td class="center"><big>
+                            {% if service.route %}<a href="{{ entity.get_absolute_url }}service?route={{ service.service|urlencode }}" class="subtle-link">{% endif %}
+                            {% if service.journey %}<a href="{{ entity.get_absolute_url }}service?journey={{ service.journey.id }}" class="subtle-link">{% endif %}
+                                {{ service.service }}
+                            {% if service.route or service.journey %}</a>{% endif %}
+                        </big></td>
+                        <td>{{ service.destination }}</td>
+                        <td>{{ service.next }}{% if service.following %}<small>, {{ service.following.0 }}{% if service.following.1 %}, &hellip;{% endif %}</small>{% endif %}</td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                {% if not entity.metadata.real_time_information.pip_info %}
+                    <tr><td colspan="3">{% trans "There is currently no real time information from this stop." %}</td></tr>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+        </tbody>
+    </table>
+    {% ifequal data.results_type _("Favourite") %}
+    <ul class="link-list">
+        <li class="switcher"><a href="?{{ type }}=nearby" class="nearby-switcher has-ajax-handler">
+            {% blocktrans with data.type.verbose_name_plural as entity_type %}View nearby {{ entity_type }}{% endblocktrans %}
+        </a></li>
+    </ul>
+    {% endifequal %}
+</div>
+{% endfor %}
+
+{% if park_and_rides %}
+<div class="section" id="park_and_rides">
+    <div class="header">
+        <h2><a href="{% url places:nearby-detail "park-and-ride" %}">{% trans "Park and Rides" %}</a></h2>
+    </div>
+    <div class="section-content">
+        {% for entity in park_and_rides %}
+            <div class="park-and-ride" style="{% if not forloop.last or forloop.counter|divisibleby:2 %} float: left;{% endif %}{% if not forloop.counter|divisibleby:2 %} clear: left;{% endif %}">
+                <h3><a href="{{ entity.get_absolute_url}}">
+                    {% ifequal entity.title|slice:"-13:" "Park and Ride" %}
+                        {{ entity.title|slice:":-14" }}
+                    {% else %}
+                        {% ifequal entity.title|slice:"-11:" "Park & Ride" %}
+                            {{ entity.title|slice:":-12" }}
+                        {% else %}
+                            {{ entity.title }}
+                        {% endifequal %}
+                    {% endifequal %}</a></h3>
+                {% if entity.metadata.park_and_ride %}
+                    {% if not entity.metadata.park_and_ride.unavailable %}
+                        <div class="capacity-bar">
+                            <div class="capacity-bar-red" style="width: {{ entity.metadata.park_and_ride.percentage }}%;">&nbsp;</div>
+                        </div>
+                        {# Translators: As in, car parking spaces #}
+                        <p>{% trans "Spaces" %}: {{ entity.metadata.park_and_ride.spaces }} / {{ entity.metadata.park_and_ride.capacity }}</p>
+                    {% else %}
+                        {# Translators: As in, car parking spaces #}
+                        <p><em>{% trans "Space information currently unavailable" %}</em></p>
+                        {# Translators: As in, car parking spaces #}
+                        <p>{% trans "Spaces" %}: ? / {{ entity.metadata.park_and_ride.capacity }}</p>
+                    {% endif %}
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+{% if train_station %}
+    {% include "places/metadata/ldb.html" %}
+{% endif %}
+
+{% if travel_alerts %}
+
+<div class="section" id="travel_news">
+    <div class="header">
+        <h2>{% trans "Travel alerts" %}</h2>
+    </div>
+  
+    <ul class="content-list">
+    {% for alert in travel_alerts %}
+        <li><a href="{{ alert.get_absolute_url }}" class="subtle-link">{{ alert.title }}</a></li>
+    {% endfor %}
+    </ul>
+</div>
+
+{% endif %}
+
+{% endblock %}

@@ -8,13 +8,114 @@ This shows webcams to users. The webcams to be imported are configured from the 
 Configuration
 -------------
 
-This has no additional configuration
+This has no additional configuration in the settings file, just in the database.
 
 Sample::
 
     Application('molly.apps.webcams', 'webcams', 'Webcams')
 
+Managing Webcams
+----------------
+
+This app can be managed by going to the admin interface at http://m.example.com/adm/
+and logging in using the username and password created at install time. From here,
+you can select the 'Webcams' option from the 'Webcams' box on the front page to
+manage webcam feeds that are being displayed to users. To create a new webcam, you
+simply need to click on the 'Add webcam' button, whereas to edit a webcam, you can
+click on the webcam title. You can also bulk delete webcams from this screen.
+
+On the following screen, there are three fields and a box to allow for multi-lingual
+content to be configured:
+
+ * slug - this is the unique identifier that forms the URL for this webcam, i.e.,
+   http://m.example.com/webcam/SLUG/
+ * URL - this is the URL for the static image for the webcam. Molly proxies this
+   image, so if the webcam is private, it can be set so only Molly can access it.
+   The formats supported depend on the support that PIL was compiled with, but
+   by default should include JPEG and PNG. Django ensures 
+ * Fetch period - this is how long Molly should wait between requests (i.e., how
+   long the image should be cached for). Note that Molly only requests the webcam
+   when it is dealing with a request for the webcam, so this is not a constant
+   fetch rate.
+
+The box below is then split into rows with one row per language. You can then
+specify details for the webcam in multiple languages to support multi-lingual
+websites. For single language websites, you must fill in the top line and can
+leave the rest blank.
+
+The four columns are:
+
+ * Language code: The language of this row
+ * Title: The name of this webcam (shown as the page title and also on the list
+   of webcams).
+ * Description: In the default template, this is shown below the webcam image.
+ * Credit: In the default template, this is shown below the description.
+
+Once you have entered this information, you can click 'Save' at the bottom to
+save the changes.
+
+Webcam
+-------
+
+.. autoclass:: molly.apps.webcams.models.Webcam
+
+    .. autoattribute :: molly.apps.webcams.models.Webcam.slug
+    .. autoattribute :: molly.apps.webcams.models.Webcam.url
+    .. autoattribute :: molly.apps.webcams.models.Webcam.fetch_period
+    .. autoattribute :: molly.apps.webcams.models.Webcam.title
+    .. autoattribute :: molly.apps.webcams.models.Webcam.description
+    .. autoattribute :: molly.apps.webcams.models.Webcam.credit
+
 Views
 -----
 
-.. todo:: Complete
+``index``
+"""""""""
+
+This view lives at the ``/`` URL of this app and is handled by
+:class:`molly.apps.webcams.views.IndexView`. It is rendered with a week-long
+cache.
+
+This view provides a list of all webcams and is used to render a list of webcams
+for the user to choose. The rendered template is ``webcams/index.html`` and a
+single item is provided in the context: ``webcams`` which is an (unordered) list
+of all :class:`molly.apps.webcams.models.Webcam` objects known to Molly.
+
+``webcam``
+""""""""""
+
+This view lives at the ``/:slug:/`` URL of this app, and is handled by
+:class:`molly.apps.webcams.views.WebcamDetailView`.
+
+The context consists of a single item: ``webcam``, which corresponds to the
+:class:`molly.apps.webcams.models.Webcam` object in the database where the slug
+matches the ``:slug:`` parameter in the URL. The rendered template is
+``webcams/webcam_detail.html``.
+
+Templates
+---------
+
+``webcams/index.html``
+""""""""""""""""""""""
+
+This template defines no new blocks and uses standard styling to render a link
+list to all webcams known about.
+
+``webcams/webcam_detail.html``
+""""""""""""""""""""""""""""""
+
+This template defines no new blocks and uses standard styling to render the
+webcam image with description and credit beneath it, with title as the page
+header.
+
+It uses the ``extrahead`` block to define a meta refresh period of 60 seconds.
+
+Styling
+-------
+
+Webcams uses core Molly styles and defines non-itself.
+
+Media
+-----
+
+Webcams does not use any additional media.

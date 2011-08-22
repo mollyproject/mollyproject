@@ -120,11 +120,6 @@ USE_I18N = True
 # calendars according to the current locale
 USE_L10N = True
 
-# This defines the SRID (http://en.wikipedia.org/wiki/SRID) which is used by
-# Geodjango to compute distances, project co-ordinates, etc. The default is
-# fairly sensible.
-SRID = 27700
-
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # This setting is unused in Molly.
 MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'site_media')
@@ -297,6 +292,11 @@ API_KEYS = {
 # primary identifer. The default is shown in the sample below, and is optional:
 #IDENTIFIER_SCHEME_PREFERENCE = ('atco', 'osm', 'naptan', 'postcode', 'bbc-tpeg')
 
+# When converting distances into human readable units, several schemes are
+# available: metric (metres and kilometres), imperial (yards and miles) and
+# british (metres and miles) - the default.
+#DISTANCE_UNITS = 'british'
+
 # This is where you define which applications are used in your Molly install
 # The order in this file defines the order in which applications appear on the
 # home screen
@@ -369,7 +369,16 @@ APPLICATIONS = [
                         # The next option gives you more power than this, by
                         # allowing you to specify a function which filters all
                         # phone numbers and returns a complete string.
-                        #phone_formatter = my_custom_function,
+                        #phone_formatter=my_custom_function,
+                        
+                        # Whether or not results from the LDAP server should be
+                        # sorted alphabetically by surname
+                        #alphabetical=True,
+                        
+                        # Determines the LDAP query passed to the server,
+                        # using {surname} and {forename} as substitutes for the
+                        # user to search for
+                        #query='(sn={surname})',
             ),
     ),
 
@@ -570,7 +579,13 @@ APPLICATIONS = [
                             
                             # Optional - the 'use attribute' to use when looking
                             # up by control number, defaults to 12
-                            #control_number_key='1032'
+                            #control_number_key='1032',
+                            
+                            # Optional - the encoding which is used on results
+                            # from the server, only unicode or marc8 are
+                            # supported. Aleph supplies unicode, and marc8 is
+                            # default
+                            #results_encoding='unicode',
                             ),
     ),
 
@@ -948,6 +963,12 @@ APPLICATIONS = [
     # immediately from the front page, or rendered on the nearby page. It has no
     # configuration.
     Application('molly.favourites', 'favourites', 'Favourite pages',
+        display_to_user = False,
+    ),
+    
+    # This app provides utilities to other apps which want to generate a route
+    # between 2 points
+    Application('molly.routing', 'routing', 'Routing',
         display_to_user = False,
     ),
 

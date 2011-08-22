@@ -8,7 +8,7 @@ from string import ascii_lowercase
 from urllib2 import urlopen
 import random
 
-from django.db import transaction, reset_queries
+from django.db import transaction, reset_queries, connection
 from django.http import Http404
 
 from molly.apps.places.models import Route, StopOnRoute, Entity, Source, EntityType
@@ -154,76 +154,82 @@ class ACISLiveMapsProvider(BaseMapsProvider):
             thread.join()
     
     def get_times(self, entity, routes):
-
         try:
-            realtime_url = self.get_realtime_url(entity)
-            xml = etree.parse(urllib.urlopen(realtime_url),
-                              parser = etree.HTMLParser())
-        except (TypeError, IOError):
-            rows = []
-            pip_info = []
-        except NoACISLiveInstanceException:
-            return
-        else:
             try:
-                cells = xml.find('.//table').findall('td')
-                rows = [cells[i:i+4] for i in range(0, len(cells), 4)]
-            except AttributeError:
+                realtime_url = self.get_realtime_url(entity)
+                xml = etree.parse(urllib.urlopen(realtime_url),
+                                  parser = etree.HTMLParser())
+            except (TypeError, IOError):
                 rows = []
-            
-            # Get the messages associated with that bus stop
-            try:
-                messages_url = self.get_messages_url(entity)
-                if messages_url != None:
-                    messages_page = urllib.urlopen(messages_url).read()
-                    pip_info = re.findall(r'msgs\[\d+\] = "(?P<message>[^"]+)"',
-                                          messages_page)
-                    pip_info = filter(lambda pip: pip != '&nbsp;', pip_info)
-                else:
-                    pip_info = []
-            except:
                 pip_info = []
-
-        services = {}
-        for row in rows:
-            service, destination, proximity = [row[i].text.encode('utf8').replace('\xc2\xa0', '') for i in range(3)]
-            
-            # Skip routes we're not interested in
-            if routes and service not in routes:
-                continue
-            
-            # Handle scheduled departures (non-realtime)
-            if ':' in proximity:
-                now = datetime.now()
-                hour, minute = map(int, proximity.split(':'))
-                diff = (datetime(now.year, now.month, now.day, hour, minute) - datetime.now()).seconds / 60
-            elif proximity.lower() == 'due':
-                diff = 0
+            except NoACISLiveInstanceException:
+                return
             else:
-                diff = int(proximity.split(' ')[0])
-
-            if not service in services:
-                services[service] = (destination, (proximity, diff), [])
-            else:
-                services[service][2].append((proximity, diff))
-
-        services = [(s[0], s[1][0], s[1][1], s[1][2]) for s in services.items()]
-        services.sort(key= lambda x: ( ' '*(5-len(x[0]) + (1 if x[0][-1].isalpha() else 0)) + x[0] ))
-        services.sort(key= lambda x: x[2][1])
+                try:
+                    cells = xml.find('.//table').findall('td')
+                    rows = [cells[i:i+4] for i in range(0, len(cells), 4)]
+                except AttributeError:
+                    rows = []
+                
+                # Get the messages associated with that bus stop
+                try:
+                    messages_url = self.get_messages_url(entity)
+                    if messages_url != None:
+                        messages_page = urllib.urlopen(messages_url).read()
+                        pip_info = re.findall(r'msgs\[\d+\] = "(?P<message>[^"]+)"',
+                                              messages_page)
+                        pip_info = filter(lambda pip: pip != '&nbsp;', pip_info)
+                    else:
+                        pip_info = []
+                except:
+                    pip_info = []
+            
+            services = {}
+            for row in rows:
+                service, destination, proximity = [row[i].text.encode('utf8').replace('\xc2\xa0', '') for i in range(3)]
+                
+                # Skip routes we're not interested in
+                if routes and service not in routes:
+                    continue
+                
+                # Handle scheduled departures (non-realtime)
+                if ':' in proximity:
+                    now = datetime.now()
+                    hour, minute = map(int, proximity.split(':'))
+                    diff = (datetime(now.year, now.month, now.day, hour, minute) - datetime.now()).seconds / 60
+                elif proximity.lower() == 'due':
+                    diff = 0
+                else:
+                    diff = int(proximity.split(' ')[0])
+    
+                if not service in services:
+                    services[service] = (destination, (proximity, diff), [])
+                else:
+                    services[service][2].append((proximity, diff))
+    
+            services = [(s[0], s[1][0], s[1][1], s[1][2]) for s in services.items()]
+            services.sort(key= lambda x: ( ' '*(5-len(x[0]) + (1 if x[0][-1].isalpha() else 0)) + x[0] ))
+            services.sort(key= lambda x: x[2][1])
+            
+            services = [{
+                'service': s[0],
+                'destination': s[1],
+                'next': s[2][0],
+                'following': [f[0] for f in s[3]],
+                'route': self._get_route(s[0], entity)
+            } for s in services]
+            
+            entity.metadata['real_time_information'] = {
+                'services': services,
+                'pip_info': pip_info,
+            }
+            entity.metadata['meta_refresh'] = 30
         
-        services = [{
-            'service': s[0],
-            'destination': s[1],
-            'next': s[2][0],
-            'following': [f[0] for f in s[3]],
-            'route': self._get_route(s[0], entity)
-        } for s in services]
+        except Exception as e:
+            logger.exception('Failed to get RTI from ACIS Live')
         
-        entity.metadata['real_time_information'] = {
-            'services': services,
-            'pip_info': pip_info,
-        }
-        entity.metadata['meta_refresh'] = 30
+        finally:
+            connection.close()
     
     def _get_route(self, service, entity):
         return Route.objects.filter(service_id=service, stops=entity).exists()

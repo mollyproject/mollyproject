@@ -113,7 +113,7 @@ This has one option:
    instances to be scraped for route data
 
 :class:`molly.apps.places.providers.AtcoCifTimetableProvider`
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 .. note :: This only implements ATCO-CIF as far as TfGM data is concerned. There
            are no other public releases of ATCO-CIF data to test against.
@@ -177,6 +177,9 @@ following options, all of which are optional:
  * osm_tags_data_file: A YAML file (see below) which contains the OSM tags to be
    imported, and how they map to Molly's entity types (defined in
    entity_type_data_file)
+ * identities_file: A YAML file (see below) which contains a mapping between any
+   OpenStreetMap nodes or ways and an external data source which defines when
+   the OSM entity is identical to the entity in the external data source.
 
 Entity Type data files
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -195,7 +198,7 @@ to the "food" type, so "food" is a parent of "ice cream cafe").
 This file is optional, and Molly ships with a sensible set of defaults (see
 :file:`molly/apps/places/providers/data/osm-entity-types.yaml`).
 
-.. info:: Note for translators! This file isn't in Python, so isn't marked up!
+.. note:: Note for translators! This file isn't in Python, so isn't marked up!
           You will, however, still want the names in here to be translated, so
           you need to make sure your .po files include things defined here.
 
@@ -225,7 +228,7 @@ The OSM tag data file can then refer to the slugs (the keys: e.g., 'bank' and
 'church') when mapping OSM tags to Molly entity types.
 
 OSM tag data files
-^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^
 
 This file defines which OSM tags are to be imported, and also which entity types
 in Molly they map on to. Each entity in the list contains at least two keys:
@@ -268,6 +271,25 @@ In the example above, this imports OSM items with a tag 'amenity=museum' as
 the Molly entity type 'museum', OSM items with a tag 'amenity=parking' as entity
 type 'car-park', and OSM items with the tags 'amenity=parking' AND
 'park_ride=bus' as entity type 'park-and-ride'.
+
+Identity files
+^^^^^^^^^^^^^^
+
+The file defines which OpenStreetMap nodes or ways are identical to an entity
+already in your database, which has been imported from another source. When such
+a node or way is encountered (and would be imported because it contains a tag
+in the entity type data file), then the OSM metadata is then added to the other
+entity, rather than a new entity being created.
+
+.. code-block:: yaml
+
+    W23679234: oxpoints:23232416
+    W23679567: oxpoints:23232405
+
+In the example above, the OpenStreetMap way with ID 23679234 (which would
+normally get imported with URL http://example.com/places/osm:W23679234/) is
+instead mapped on to the entity at http://example.com/places/oxpoints:23232405/,
+i.e., /places/osm:W23679234/ is identical to /places/oxpoints:23232416/.
 
 :class:`molly.apps.places.providers.PostcodesMapsProvider`
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""

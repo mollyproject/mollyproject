@@ -42,6 +42,10 @@ li.podcast div.podcast-image {
     margin-right: 5px;
 }
 
+li.podcast div.podcast-image img {
+    border: 0;
+}
+
 li.podcast div.podcast-title {
     padding-left: 60px;
 }
@@ -54,7 +58,7 @@ li.podcast div.podcast-title span.podcast-description {
 
 /* Podcast detail */
 ul.podcast-enclosures {
-    margin-top: 10px;
+    margin: 10px 0 0 0 !important;
 }
 li.podcast-enclosure {
     vertical-align: middle;
@@ -70,3 +74,4 @@ li.podcast-enclosure a img {
     margin: 2px;
 }
 /* End podcast detail */
+

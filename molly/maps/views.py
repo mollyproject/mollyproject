@@ -18,20 +18,3 @@ class IndexView(BaseView):
 
     def handle_GET(self, request, context):
         raise Http404
-
-class TouchMapLiteView(BaseView):
-    @BreadcrumbFactory
-    def breadcrumb(self, request, context):
-        return Breadcrumb(
-            self.conf.local_name,
-            None,
-            _('Maps'),
-            lazy_reverse('maps:touchmaplite'),
-        )
-
-    def handle_GET(self, request, context):
-        context.update({
-            'zoom_controls': True,
-        })
-        return self.render(request, context, 'maps/touchmaplite/map',
-                           expires=timedelta(days=365))

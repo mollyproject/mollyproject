@@ -1,0 +1,49 @@
+{% extends "places/base.html" %}{% load molly_maps %}{% load molly_utils %}{% load i18n %}
+
+{% block content %}
+
+<div class="section">
+    <div class="header">
+        <h2>{% blocktrans with entity.title as entity and type as type %}Directions to {{ entity }} (by {{ type }}){% endblocktrans %}</h2>
+	{% trans 'Show directions for: ' %}
+        {% for type in allowed_types %}
+	    {% comment %} the non-breaking space is to combat a bug in slimmer,
+	                  where it is over zealous in removing the spaces
+			  between the a tags {% endcomment %}
+	   <a href="{% url places:entity-directions entity.identifier_scheme entity.identifier_value %}?type={{ type }}" rel="nofollow">{{ type }}</a>&nbsp;
+	{% endfor %}
+        {% include "geolocation/update_location_embed.html" %}
+    </div>
+    {% if entity.location %}
+        {% if route.error %}
+        <div class="note"><div class="bubble"><div class="pad-10">
+           {% trans 'An error occurred plotting this route:' %} {{ route.error }}.
+        </div></div></div>
+        {% else %}
+            <div class="section-content">
+                {% render_map map %}
+		<div class="note"><div class="bubble"><div class="pad-10">
+                    {% blocktrans with route.total_time|humanise_seconds as time and route.total_distance|humanise_distance as distance %}This route will take {{ time }} and cover {{ distance }}.{% endblocktrans %}
+		</div></div></div>
+            </div>
+            <ol class="directions-list">
+                {% for waypoint in route.waypoints %}
+                <li class="direction-{{ waypoint.waypoint_type }}">
+                    {{ waypoint.instruction }}<br />
+                    <span class="additional">{{ waypoint.additional }}</span>
+                </li>
+                {% endfor %}
+            </ol>
+        {% endif %}
+    {% else %}
+        <div class="note"><div class="bubble">
+            {% blocktrans with entity.primary_type.verbose_name as type_name %}We do not yet have a location for this {{ type_name }}.{% endblocktrans %}
+        </div></div>
+    {% endif %}
+</div>
+
+<div class="note"><div class="bubble"><div class="pad-10">
+   {% trans 'Please note that the route information provided should be followed at your own risk.' %}
+</div></div></div>
+
+{% endblock %}

@@ -3,6 +3,7 @@ import re
 
 from django import forms
 from django.forms.util import ErrorList
+from django.utils.translation import ugettext_lazy as _
 
 from molly.conf import applications
 from molly.geolocation import geocode, reverse_geocode
@@ -37,20 +38,24 @@ class LocationUpdateForm(forms.Form):
     def clean_latitude(self):
         latitude = self.cleaned_data.get('latitude')
         if latitude is not None and not (-180 <= latitude < 180):
-            raise forms.ValidationError('Must be in the range [-180, 180).')
+            raise forms.ValidationError(_('Must be in the range [-180, 180).'))
         return latitude
 
     def clean_longitude(self):
         longitude = self.cleaned_data.get('longitude')
         if longitude is not None and not (-90 <= longitude < 90):
-            raise forms.ValidationError('Must be in the range [-90, 90).')
+            raise forms.ValidationError(_('Must be in the range [-90, 90).'))
         return longitude
 
     def clean(self):
         cleaned_data = self.cleaned_data
 
-        if cleaned_data['method'] in ('html5', 'html5request', 'gears', 'manual', 'geocoded', 'other', 'favourite'):
+        if cleaned_data['method'] in ('html5', 'html5request', 'gears','manual', 'geocoded', 'other', 'favourite'):
             if cleaned_data['method'] == 'geocoded':
+                
+                if not cleaned_data['name'].strip():
+                    raise forms.ValidationError(_("You must enter a location"))
+                
                 results = geocode(cleaned_data['name'])
                 if len(results) > 0:
                     cleaned_data.update(results[0])
@@ -61,7 +66,7 @@ class LocationUpdateForm(forms.Form):
                     else:
                         cleaned_data['alternatives'] = []
                 else:
-                    raise forms.ValidationError("Unable to find a location that matches '%s'." % cleaned_data['name'])
+                    raise forms.ValidationError(_("Unable to find a location that matches '%s'.") % cleaned_data['name'])
 
             for key in ('latitude', 'longitude', 'accuracy'):
                 if cleaned_data.get(key) is None:

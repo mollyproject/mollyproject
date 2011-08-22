@@ -1,0 +1,96 @@
+.current-location-box {
+    padding: 0 8px;
+}
+
+.current-location-box p {
+    padding: 2px;
+    line-height: 17px;
+    min-height: 34px;
+    margin: 0;
+}
+
+.location {
+    font-weight: bold;
+}
+
+.current-location-box .update-location-opener {
+    float: right;
+}
+
+.location-automatic-list li {
+    padding-left: 35px !important;
+    background-image: url('../../geolocation/images/location-white.png');
+    background-repeat: no-repeat;
+    background-position: 5px center;
+}
+
+.update-location-name-container {
+    margin-right: 110px;
+    padding-left: 5px;
+    margin-bottom: 2px;
+}
+
+.update-location-name {
+    width: 100%;
+    padding: 5px 0 5px 3px;
+}
+
+.update-location {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+}
+
+.cancel-update {
+    position: absolute;
+    top: -34px;
+    right: 5px;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.favourite-location-form {
+    position: absolute;
+    top: 0;
+    right: 2px;
+    border-left: 1px solid #98A1AC;
+    padding: 8px;
+}
+
+.update-location-lists .link-list li {
+    position: relative;
+    overflow: hidden;
+}
+
+.location-box .header {
+    border-bottom: none !important;
+}
+
+.location-box .header h2 {
+    background-image: none !important;
+}
+
+.location-box .section-content {
+    padding: 0;
+    border-top: none !important;
+}
+
+.location-box {
+    background-color: #DFDFDF !important;
+}
+
+.automatic-update-button {
+    background-color: transparent !important;
+    border: 0 !important;
+    text-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    -moz-box-shadow: none !important;
+    box-shadow: none !important;
+    width: 25px !important;
+    cursor: pointer !important;
+    text-indent:-999em; /* Hack to not show the text on a button when we're showing the image */
+    background-image: url('../../geolocation/images/location.png') !important;
+    float: right;
+    background-position: center center;
+    margin-right: 5px;
+}

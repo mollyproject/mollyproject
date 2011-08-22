@@ -330,7 +330,7 @@ should consists of a list of Molly Application objects, e.g.,::
 
 Details about configuration of each individual application are on the page for
 that application, and more abstract information about the application framework
-can be found at :doc:`../topics/application_framework`.
+can be found at :doc:`../topics/application-framework`.
 
 Applications bundled with Molly are split into two categories: utility, and
 batteries-included. Utility apps must always be loaded, whereas
@@ -340,12 +340,12 @@ some batteries-included apps rely on others, so these must also be loaded.
 The apps that are utility apps are:
 
 * :doc:`../ref/auth`
-* :doc:`../ref/batch_processing`
-* :doc:`../ref/external_media`
+* :doc:`../ref/batch-processing`
+* :doc:`../ref/external-media`
 * :doc:`../ref/favourites`
 * :doc:`../ref/geolocation`
 * :doc:`../ref/maps`
-* :doc:`../ref/url_shortener`
+* :doc:`../ref/url-shortener`
 * :doc:`../ref/utils`
 * :doc:`../ref/wurfl`
 
@@ -354,7 +354,7 @@ The following battery-included apps are:
 * :doc:`../ref/apps/contact`
 * :doc:`../ref/apps/desktop`
 * :doc:`../ref/apps/events`
-* :doc:`../ref/apps/feature_vote`
+* :doc:`../ref/apps/feature-vote`
 * :doc:`../ref/apps/feedback`
 * :doc:`../ref/apps/feeds` (required by news, events and webcams)
 * :doc:`../ref/apps/home` (required)
@@ -364,7 +364,7 @@ The following battery-included apps are:
 * :doc:`../ref/apps/podcasts`
 * :doc:`../ref/apps/sakai`
 * :doc:`../ref/apps/search`
-* :doc:`../ref/apps/service_status`
+* :doc:`../ref/apps/service-status`
 * :doc:`../ref/apps/stats`
 * :doc:`../ref/apps/transport`
 * :doc:`../ref/apps/weather`
@@ -407,6 +407,18 @@ parts of the site marked as secure).
 Sample::
 
     DEBUG_SECURE = DEBUG # There is no default, but this would set it to the same value as the global DEBUG setting
+
+DISTANCE_UNITS
+""""""""""""""
+
+This setting determines how distances are transformed into human-readable units.
+The valid settings here are 'imperial', which uses yards and miles, 'metric'
+which uses metres and kilometres, and 'british', which uses metres and miles.
+This defaults to 'british'.
+
+Sample::
+
+    DISTANCE_UNITS = 'british'
 
 EXTERNAL_IMAGES_DIR
 """""""""""""""""""
@@ -451,11 +463,3 @@ The name of the service, extensively used in templates to name the service. This
 defaults to 'Molly Project'::
 
     SITE_NAME = 'Mobile Oxford'
-
-SRID
-""""
-
-This is the `SRID <http://en.wikipedia.org/wiki/SRID>`_ used for projections.
-There's no need to change this from the recommended setting::
-
-    SRID = 27700

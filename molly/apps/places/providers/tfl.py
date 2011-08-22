@@ -2,10 +2,13 @@ from urllib2 import urlopen
 from xml.dom import minidom
 from collections import defaultdict
 import threading
+import logging
 
 from django.utils.translation import ugettext_lazy as _
 
 from molly.apps.places.providers import BaseMapsProvider
+
+logger = logging.getLogger(__name__)
 
 class TubeRealtimeProvider(BaseMapsProvider):
     """
@@ -49,31 +52,39 @@ class TubeRealtimeProvider(BaseMapsProvider):
     
     def get_times(self, entity):
         
-        services = []
+        try:
+            services = []
+            
+            station = entity.metadata['london-underground-identifiers']['station-code']
+            for line in entity.metadata['london-underground-identifiers']['line-codes']:
+                
+                xml = minidom.parseString(urlopen(self.TRACKERNET_PREDICTION_URL % (line, station)).read())
+                for platform in xml.getElementsByTagName('P'):
+                    next_info = defaultdict(list)
+                    for tag in platform.getElementsByTagName('T'):
+                        dest = '%s (%s)' % (
+                            tag.getAttribute('Destination'),
+                            xml.getElementsByTagName('LineName')[0].childNodes[0].nodeValue
+                        )
+                        next_info[dest].append(int(tag.getAttribute('SecondsTo')))
+                    
+                    for dest, eta in next_info.items():
+                        services.append({
+                            'service': _('Plat %s') % platform.getAttribute('Num'),
+                            'destination': dest,
+                            'etas': eta
+                        })
+            
+            services.sort(key=lambda s: s['etas'][0])
+            for service in services:
+                etas = [round(e/60) for e in service['etas']]
+                # Translators: This refers to arrival times of trains, in minutes
+                etas = [_('DUE') if e == 0 else _('%d mins') % e for e in etas]
+                service['next'] = etas[0]
+                service['following'] = etas[1:]
+                del service['etas']
+            entity.metadata['real_time_information']['services'] = services
+            entity.metadata['meta_refresh'] = 30
         
-        station = entity.metadata['london-underground-identifiers']['station-code']
-        for line in entity.metadata['london-underground-identifiers']['line-codes']:
-            next_info = defaultdict(list)
-            
-            xml = minidom.parseString(urlopen(self.TRACKERNET_PREDICTION_URL % (line, station)).read())
-            for tag in xml.getElementsByTagName('T'):
-                next_info[tag.getAttribute('Destination')].append(int(tag.getAttribute('SecondsTo')))
-            
-            line_name = xml.getElementsByTagName('LineName')[0].childNodes[0].nodeValue[:-5]
-            
-            for dest, eta in next_info.items():
-                services.append({
-                    'service': line_name,
-                    'destination': dest,
-                    'etas': eta
-                })
-        
-        services.sort(key=lambda s: s['etas'][0])
-        for service in services:
-            etas = [round(e/60) for e in service['etas']]
-            # Translators: This refers to arrival times of trains, in minutes
-            etas = [_('DUE') if e == 0 else _('%d mins') % e for e in etas]
-            service['next'] = etas[0]
-            service['following'] = etas[1:]
-        entity.metadata['real_time_information']['services'] = services
-        entity.metadata['meta_refresh'] = 30
+        except Exception as e:
+            logger.exception('Failed to get RTI from Trackernet')

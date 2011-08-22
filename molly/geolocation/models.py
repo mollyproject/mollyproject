@@ -6,7 +6,7 @@ from django.db import models
 
 class RecentManager(models.Manager):
     def get_query_set(self):
-        return super(RecentManager, self).get_query_set().filter(updated__gt = datetime.utcnow() - timedelta(14))
+        return super(RecentManager, self).get_query_set().filter(updated__gt=datetime.utcnow() - timedelta(14))
 
 class Geocode(models.Model):
     lon = models.FloatField(null=True)

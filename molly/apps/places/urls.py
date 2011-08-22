@@ -12,7 +12,7 @@ from views import (
     NearbyEntityListView, NearbyEntityDetailView,
     CategoryListView, CategoryDetailView,
     
-    ServiceDetailView,
+    ServiceDetailView, EntityDirectionsView,
 
     APIView,
 )
@@ -43,6 +43,10 @@ urlpatterns = patterns('',
     (r'^(?P<scheme>[a-z_\-]+):(?P<value>[^/]+)/$',
         EntityDetailView, {},
         'entity'),
+    
+    (r'^(?P<scheme>[a-z_\-]+):(?P<value>[^/]+)/directions/$',
+        EntityDirectionsView, {},
+        'entity-directions'),
     
     (r'^(?P<scheme>[a-z_\-]+):(?P<value>[^/]+)/service$',
         ServiceDetailView, {},

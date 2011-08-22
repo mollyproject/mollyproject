@@ -9,12 +9,9 @@ from django.utils.translation import ugettext as _
 
 from molly.utils.views import BaseView
 
-from models import ShortenedURL
+from molly.url_shortener import get_shortened_url
 
 class IndexView(BaseView):
-    # We'll omit characters that look similar to one another
-    AVAILABLE_CHARS = '23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghkmnpqrstuvwxyz'
-    has_alpha_re = re.compile(r'[a-zA-Z]')
 
     def initial_context(self, request):
         try:
@@ -79,19 +76,7 @@ class IndexView(BaseView):
         if IndexView in getattr(context['view'], '__mro__', ()):
             return self.redirect(path, request, 'perm')
 
-        context['shortened_url'], created = ShortenedURL.objects.get_or_create(path=path)
-
-        if created:
-            if context['complex_shorten']:
-                slug = None
-                while not (slug and ShortenedURL.objects.filter(slug=slug).count() == 0 and self.has_alpha_re.search(slug)):
-                    slug = ''.join(random.choice(self.AVAILABLE_CHARS) for i in range(5))
-            else:
-                slug = unicode(context['shortened_url'].id)
-            context['shortened_url'].slug = slug
-            context['shortened_url'].save()
-
-        context['url'] = request.build_absolute_uri('/' + context['shortened_url'].slug)
+        context['url'] = get_shortened_url(path, request, context['complex_shorten'])
 
         return self.render(request, context, 'url_shortener/index',
                            expires=timedelta(days=365))
