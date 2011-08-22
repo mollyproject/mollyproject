@@ -244,7 +244,7 @@ class TourView(BaseView):
             start_location = closest_stop
         else:
             # Directions from that point to first stop
-            start_location = entity
+            start_location, p_and_r_context = entity, {}
         return start_location, p_and_r_context
     
     def initial_context(self, request, tour, page=None):
