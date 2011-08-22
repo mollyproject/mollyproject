@@ -366,6 +366,7 @@ The following battery-included apps are:
 * :doc:`../ref/apps/search`
 * :doc:`../ref/apps/service-status`
 * :doc:`../ref/apps/stats`
+* :doc:`../ref/apps/tours`
 * :doc:`../ref/apps/transport`
 * :doc:`../ref/apps/weather`
 * :doc:`../ref/apps/webcams`

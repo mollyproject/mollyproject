@@ -1,0 +1,34 @@
+:mod:`molly.apps.tours` -- Tours
+================================
+
+.. module :: molly.apps.tours
+
+This module allows users to build their own walking tours by selecting
+destinations from a list of points of interest. It will then give the user
+directions to the start of the route using long-distance public transport routes
+or arrival points, taking into account park and ride routes.
+
+Configuration
+-------------
+
+.. todo ::
+
+Views
+-----
+
+.. todo ::
+
+Templates
+---------
+
+.. todo ::
+
+Styling
+-------
+
+.. todo ::
+
+Media
+-----
+
+.. todo ::
