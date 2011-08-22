@@ -32,7 +32,7 @@ def _cached(getargsfunc):
             i = 0
             while i < len(results):
                 loc, name = Point(results[i]['location']), results[i]['name']
-                if any((r['name'] == name and Point(r['location']).distance(loc) < 100) for r in results[:i]):
+                if any((r['name'] == name and haversine(Point(r['location']), loc) < 100) for r in results[:i]):
                     results[i:i+1] = []
                 else:
                     i += 1
