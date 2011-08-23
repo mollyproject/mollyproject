@@ -5,6 +5,7 @@ from django.contrib.gis.geos import Point
 from django.utils.translation import ugettext as _
 from django.core.urlresolvers import reverse
 from django.http import Http404
+from django.template.defaultfilters import capfirst
 
 from molly.conf import app_by_application_name
 
@@ -76,7 +77,7 @@ class RailView(TransportView):
         return Breadcrumb(
             self.conf.local_name,
             None,
-            _('Transport'),
+            _('Rail departures') if context['board'] == 'departures' else _('Rail arrivals'),
             lazy_reverse('%s:rail' % self.conf.local_name),
         )
     
@@ -116,7 +117,7 @@ class TravelNewsView(TransportView):
         return Breadcrumb(
             self.conf.local_name,
             None,
-            _('Transport'),
+            _('Travel alerts'),
             lazy_reverse('%s:travel-news' % self.conf.local_name),
         )
     
@@ -148,7 +149,7 @@ class ParkAndRideView(TransportView):
         return Breadcrumb(
             self.conf.local_name,
             None,
-            _('Transport'),
+            _('Park and Ride'),
             lazy_reverse('%s:park-and-ride' % self.conf.local_name),
         )
     
@@ -177,11 +178,13 @@ class PublicTransportView(TransportView):
     
     @BreadcrumbFactory
     def breadcrumb(self, request, context, key):
+        type_slug, count = self.conf.nearby[key]
+        et = EntityType.objects.get(slug=type_slug)
         return Breadcrumb(
             self.conf.local_name,
             None,
-            _('Transport'), #TODO: Change depending on args - same with below
-            lazy_reverse('%s:public-transport' % self.conf.local_name),
+            capfirst(et.verbose_name_plural),
+            lazy_reverse('%s:public-transport' % self.conf.local_name, key=key),
         )
     
     def initial_context(self, request, key):
@@ -254,6 +257,15 @@ class PublicTransportView(TransportView):
 
 
 class RoutesView(TransportView):
+    
+    @BreadcrumbFactory
+    def breadcrumb(self, request, context, key):
+        return Breadcrumb(
+            self.conf.local_name,
+            lazy_parent('transport:public-transport', key=key),
+            _('Routes'),
+            lazy_reverse('%s:route' % self.conf.local_name),
+        )
     
     def initial_context(self, request, key):
         

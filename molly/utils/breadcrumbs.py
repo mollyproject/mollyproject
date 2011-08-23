@@ -69,7 +69,7 @@ def lazy_reverse(view_name, *args, **kwargs):
         view = view_name
         if ':' not in view:
             view = '%s:%s' % (application_name, view)
-        return reverse(view, *args, **kwargs)
+        return reverse(view, args=args, kwargs=kwargs)
     return f
     
 def static_reverse(path):
