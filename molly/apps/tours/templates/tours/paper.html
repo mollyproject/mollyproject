@@ -47,7 +47,7 @@
         
         <h2>{{ stop.entity.title }}</h2>
         {% render_location_map stop.entity.location 'printable' %}
-        <p>Metadata goes here</p>
+        {{ stop.description }}
         
     {% endfor %}
     

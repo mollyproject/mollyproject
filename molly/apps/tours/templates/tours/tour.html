@@ -16,7 +16,9 @@
         <div class="header">
             <h2>{{ stop.entity.title }}</h2>
         </div>
-        {# TODO: Information about current stop #}
+        <div class="section-content">
+            {{ stop.description }}
+        </div>
     </div>
     
     {% if route %}

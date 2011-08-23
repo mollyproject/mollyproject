@@ -1,6 +1,8 @@
 from django.db import models
 from django.core.urlresolvers import reverse
 
+from molly.utils.i18n import languages_to_try
+
 from molly.apps.places.models import Entity
 
 class Tour(models.Model):
@@ -27,4 +29,13 @@ class StopOnTour(models.Model):
     
     def get_absolute_url(self):
         return reverse('tours:tour', args=[self.tour.id, self.order])
+    
+    @property
+    def description(self):
+        
+        descriptions = self.entity.metadata.get('tours', {}).get(self.tour.type, {})
+        for language in languages_to_try():
+            if language in descriptions:
+                return descriptions[language]
+        return None
 
