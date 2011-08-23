@@ -12,6 +12,7 @@ from django.contrib.gis.geos import Point
 from django.utils.translation import get_language
 from django.utils.translation import ugettext_lazy as _
 
+from molly.utils import haversine
 from molly.utils.i18n import name_in_language
 
 # Translators: These are compass points
@@ -243,13 +244,7 @@ class Entity(models.Model):
         """
         if point is None or not self.location:
             return None, None
-        if not isinstance(point, Point):
-            point = Point(point, srid=4326)
-        return (
-            point.transform(27700, clone=True).distance(
-                self.location.transform(27700, clone=True)),
-            self.get_bearing(point),
-        )
+        return haversine(point, self.location), self.get_bearing(point)
     
     def save(self, *args, **kwargs):
         try:
@@ -258,12 +253,12 @@ class Entity(models.Model):
             pass
         
         identifiers = kwargs.pop('identifiers', None)
-        if not identifiers is None:
+        if identifiers is not None:
             self.absolute_url = self._get_absolute_url(identifiers)
         
         super(Entity, self).save(*args, **kwargs)
 
-        if not identifiers is None:
+        if identifiers is not None:
             self._identifiers.all().delete()
             id_objs = []
             for scheme, value in identifiers.items():
