@@ -192,7 +192,8 @@ class OSMHandler(handler.ContentHandler):
                     }
                     entity.primary_type = self.entity_types[types[0]]
                     
-                    identifiers = entity.identifiers.update({
+                    identifiers = entity.identifiers
+                    identifiers.update({
                         'osm': self.id
                     })
                     entity.save(identifiers=identifiers)
