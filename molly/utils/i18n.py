@@ -10,33 +10,29 @@ from django.core.urlresolvers import reverse
 
 from molly.utils.views import BaseView
 
+def languages_to_try():
+    languages = [get_language()]
+    if '-' in languages[0]:
+        languages.append(languages[0].split('-')[0])
+    languages.append(settings.LANGUAGE_CODE)
+    if '-' in settings.LANGUAGE_CODE:
+        languages.append(settings.LANGUAGE_CODE.split('-')[0])
+    return languages
+    
+
 def name_in_language(obj, field, default=None):
     """
     Assuming the object follows the Molly pattern for i18n data (related manager
     called names, and the related object has a language_code field), then get
     the i18n'd version of 'field' in the user's current language.
     """
-    try:
-        return getattr(obj.names.get(language_code=get_language()), field)
-    except ObjectDoesNotExist:
+    
+    for language_code in languages_to_try():
         try:
-            return getattr(obj.names.get(language_code=settings.LANGUAGE_CODE), field)
+            return getattr(obj.names.get(language_code=language_code), field)
         except ObjectDoesNotExist:
-            try:
-                if '-' in settings.LANGUAGE_CODE:
-                    language_code = settings.LANGUAGE_CODE.split('-')[0]
-                    return getattr(obj.names.get(language_code=language_code),
-                                   field)
-            except ObjectDoesNotExist:
-                if default is not None:
-                    return default
-                else:
-                    raise
-            else:
-                if default is not None:
-                    return default
-                else:
-                    raise
+            continue
+    return None
 
 
 def set_name_in_language(obj, lang, **fields):
@@ -48,10 +44,7 @@ def set_name_in_language(obj, lang, **fields):
     
     names = obj.names.filter(language_code=lang)
     if names.count() == 0:
-        
-        obj.names.create(
-            language_code=lang,
-            **fields)
+        obj.names.create(language_code=lang, **fields)
     else:
         name = names[0]
         for k, v in fields.items():
