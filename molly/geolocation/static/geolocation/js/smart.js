@@ -9,7 +9,6 @@ function submitAutomaticLocation(position, method) {
     accuracy: position.coords.accuracy,
     method: method,
     format: 'json',
-    return_url: $('input[name=return_url]').val(),
     force: 'True'
   }, locationFound, 'json');
 }
