@@ -1,6 +1,6 @@
 {% load molly_utils %}
-{% ifnotequal style_group "dumb" %}
-    {% if use_slippy_maps and not force_static %}
+{% if style_group != "dumb" and not force_static %}
+    {% if use_slippy_maps %}
         <div class="slippy-map map">
             <div style="height: {{ map.height }}px;" id="map-{{ map.static_map_hash }}">
                 <script type="text/javascript">
@@ -78,4 +78,4 @@
 {% else %}
     <img src="{% url maps:osm-generated_map map.static_map_hash %}" alt="Map" class="map"><br />
     {% include "maps/map_elements.html" %}
-{% endifnotequal %}
+{% endif %}

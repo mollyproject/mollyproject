@@ -37,17 +37,17 @@
             <ol class="directions-list">
                 {% for waypoint in stop.directions_to.waypoints %}
                     <li class="direction-{{ waypoint.waypoint_type }}">
-                        {{ waypoint.instruction }}<br />
-                        <span class="additional">{{ waypoint.additional }}</span>
-                        {% render_map waypoint.map 'printable' %}
+                        <p>{{ waypoint.instruction }}<br />
+                        <span class="additional">{{ waypoint.additional }}</span></p>
+                        <p>{% render_map waypoint.map 'printable' %}</p>
                     </li>
                 {% endfor %}
             </ol>
         {% endif %}
         
         <h2>{{ stop.entity.title }}</h2>
-        {% render_location_map stop.entity.location 'printable' %}
-        {{ stop.description }}
+        <p>{% render_location_map stop.entity.location 'printable' %}</p>
+        {% if stop.description %}{{ stop.description }}{% endif %}
         
     {% endfor %}
     
