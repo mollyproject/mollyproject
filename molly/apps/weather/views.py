@@ -14,7 +14,9 @@ class IndexView(BaseView):
             observation = None
         return {
             'observation': observation,
-            'forecasts': Weather.objects.filter(location_id=self.conf.location_id, ptype='f', observed_date__gte=datetime.now().date()).order_by('observed_date'),
+            'forecasts': Weather.objects.filter(
+                location_id=self.conf.location_id, ptype='f',
+                observed_date__gte=datetime.now().date()).order_by('observed_date'),
         }
 
     @BreadcrumbFactory

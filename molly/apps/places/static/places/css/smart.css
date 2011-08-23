@@ -26,6 +26,11 @@ td.service-id a {
 }
 /* End RTI */
 
+/* Delayed trains */
+.delayed-service {
+    color: #781c1f;
+}
+
 /* Directions list */
 
 ol.directions-list li {

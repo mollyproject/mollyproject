@@ -39,6 +39,9 @@ This queries an LDAP server for contact details. It takes three options:
    can give you.
  * alphabetical (defaults to False): A boolean which indicates whether or not
    results from the LDAP server should be sorted alphabetically by surname.
+ * query (defaults to '(sn={surname})'): This is the query which is passed to
+   the LDAP server. It uses new style string formatting and has two fields
+   available 'forename' and surname.
 
 Writing Your Own Providers
 --------------------------

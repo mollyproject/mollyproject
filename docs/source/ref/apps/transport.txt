@@ -103,7 +103,7 @@ This view renders ``transport/index.html`` providing the following context:
    user of current travel alerts.
 
 Where entities are referred to, the full documentation is as laid out in
-:doc:`ref/apps/places`
+:doc:`places`
  
  Templates
  ---------

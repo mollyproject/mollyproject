@@ -220,4 +220,4 @@ A provider can annotate methods to be included in a crontab using the
         # do stuff
         return metadata
 
-For more information, see :doc:`topics/batch_jobs`.
+For more information, see :doc:`../ref/batch-processing`.

@@ -356,11 +356,16 @@ APPLICATIONS = [
                         # The next option gives you more power than this, by
                         # allowing you to specify a function which filters all
                         # phone numbers and returns a complete string.
-                        #phone_formatter = my_custom_function,
+                        #phone_formatter=my_custom_function,
                         
                         # Whether or not results from the LDAP server should be
                         # sorted alphabetically by surname
-                        #alphabetical = True,
+                        #alphabetical=True,
+                        
+                        # Determines the LDAP query passed to the server,
+                        # using {surname} and {forename} as substitutes for the
+                        # user to search for
+                        #query='(sn={surname})',
             ),
     ),
 
@@ -659,6 +664,90 @@ APPLICATIONS = [
             ),
         ]
     ),
+    
+    # The tours app allows for users to build their own walking tours of a city
+    # or University by choosing their own points of interest from a list
+    # presented to them. Tours displays metadata stored with an entity in the
+    # places database depending on the type of tour that is created. For more
+    # information, see http://docs.mollyproject.org/dev/ref/apps/tours.html.
+    #Application('molly.apps.tours', 'tours', 'Tours',
+    #            
+    #            # The types setting defines the different "types" of tours that
+    #            # can be created. The tour type determines which descriptions
+    #            # are shown to people on the tour, as well as what categories
+    #            # of entities are shown to the user when creating the tour.
+    #            types={
+    #                
+    #                # The dictionary key refers to the 'slug' of the tour
+    #                # creation page (e.g., /tours/*admissions*/create/) and should
+    #                # be all lower case with only letters, - or numbers
+    #                'admissions': {
+    #                    
+    #                    # This is the name of the tour as shown to users. If you
+    #                    # are using i18n, you will want to manually add this
+    #                    # string to your custom .po files to ensure it is
+    #                    # correctly translated
+    #                    'name': 'Admissions tour',
+    #                    
+    #                    # This is a list of entity types which are shown to the
+    #                    # user, and should consist of slugs for the EntityType.
+    #                    'attraction_types': ['department', 'hall-of-residence'],
+    #                    
+    #                    # This next setting is optional, and if set, will
+    #                    # suggest particular entities to the user (as defined by
+    #                    # identifier scheme and value in the same form as is
+    #                    # used in entity URLs) if the user will be passing by
+    #                    # them.
+    #                    'suggested_entities': ['oxpoints:23233759'],
+    #                },
+    #                
+    #                # To create more types, simply copy and paste the template
+    #                # above in this list.
+    #            },
+    #            
+    #            # This setting defines the points where visitors can arrive to
+    #            # start their tours
+    #            arrival_points=[
+    #                    # scheme:value, is_park_and_ride, park_and_ride_routes
+    #                    
+    #                    # The first value is the identifier scheme and value for
+    #                    # the arrival point, the second is whether or not this
+    #                    # is Park & Ride site (in which case, users will
+    #                    # continue to their tour starting point by bus) and the
+    #                    # final defines which bus routes serve that point, if
+    #                    # that point is a Park & Ride site
+    #                    
+    #                    # This example defines the arrival point of Oxford rail
+    #                    # station which is a non-Park&Ride site
+    #                    ('crs:OXF', False, []),
+    #                    
+    #                    # This example defines the arrival point of a Park&Ride
+    #                    # which is served by the bus route 300.
+    #                    ('osm:W4333225', True, ['300']),
+    #                ],
+    #            
+    #            # This setting defines the long distance routes (e.g., coach
+    #            # services) that can be used to access the University.
+    #            arrival_routes=[
+    #                    
+    #                    # The first element is the service ID (which should
+    #                    # match up with a route in the places database) and then
+    #                    # a human-readable name for that route.
+    #                    ('TUBE', 'Oxford Tube'),
+    #                    ('X90', 'Oxford Espress (X90)'),
+    #                    ('X70', 'Gatwick Airline (X70)'),
+    #                    ('X80', 'Heathrow Airline (X80)'),
+    #                ],
+    #            
+    #            # This optional setting which defines how far that suggested
+    #            # entities should be looked for off the currently plotted route
+    #            # e.g., with the default setting of 100 metres, then if any
+    #            # suggested entities are within 100 metres of the route the user
+    #            # would be walking anyway, then those entities are suggested to
+    #            # the user
+    #            suggestion_distance = 100,
+    #
+    #),
 
     # The following app enables webcams in Molly, comment it out or delete it
     # to disable it. There are no additional settings, as webcams are added

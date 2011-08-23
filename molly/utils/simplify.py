@@ -48,7 +48,7 @@ def simplify_value(value):
                 out.append(simplify_value(subvalue))
             except NotImplementedError:
                 logger.info('Could not simplify a value of type %s',
-                            type(value[key]), exc_info=True)
+                            type(subvalue), exc_info=True)
         if isinstance(value, tuple):
             return tuple(out)
         else:

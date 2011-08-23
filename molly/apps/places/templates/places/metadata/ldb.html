@@ -40,7 +40,7 @@
         </tr>
       {% else %}
         {% for service in train_station.metadata.ldb.trainServices.service %}
-          <tr>
+          <tr{% if service.problems %} class="delayed-service"{% endif %}>
             <td>
               <a href="{{ train_station.get_absolute_url }}service?id={{ service.serviceID|urlencode }}" class="subtle-link" rel="nofollow">
                 {# This isn't that straight-forward - trains can split and go to multiple destinations #}
@@ -88,6 +88,9 @@
       {% endif %}
     </tbody>
   </table>
+  <div class="note powered-by">
+    <img src="{{ STATIC_URL }}places/images/powered-by-nre.png" alt="Powered by National Rail Enquiries" />
+  </div>
   <ul class="link-list">
     {% if board %}
       {% ifequal board "departures" %}

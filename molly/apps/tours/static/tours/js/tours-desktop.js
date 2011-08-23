@@ -39,7 +39,7 @@ $(function(){
     });
 
     $('#poi-submit').submit(function(){
-        $(this).attr('action', '/tours/create/' + current_stops.join('/') + '/save/');
+        $(this).attr('action', '/tours/' + type_slug + '/create/' + current_stops.join('/') + '/save/');
         e.preventDefault();
         $(this).submit();
     });

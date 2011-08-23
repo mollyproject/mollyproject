@@ -3,10 +3,12 @@
 {% block content %}
 <div class="section">
     <div class="header">
-        <h2>{% trans 'Tours' %}</h2>
+        <h2>{% trans 'Create a new tour' %}</h2>
     </div>
     <ul class="link-list">
-        <li><a href="{% url tours:create %}">{% trans 'Create a new tour' %}</a></li>
+        {% for slug, name in types %}
+            <li><a href="{% url tours:create slug %}">{% trans name %}</a></li>
+        {% endfor %}
     </ul>
     {% if tours %}
         <div class="header">

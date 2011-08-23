@@ -3,7 +3,46 @@
 
 .. module :: molly.apps.feeds
 
-This is a utility app for importing RSS feeds. The feeds to be imported are configured in the admin interface.
+This is a utility app for importing feeds. The feeds to be imported are
+configured in the admin interface.
+
+To manage your feeds, you can go to the admin interface (at http://m.example.com/adm/)
+and then select the 'Feeds' option in the 'Feeds' box on that page. On the following
+page you will see a list of feeds. To edit an existing feed, you simply need to
+click on the feed title. To create a new feed, simply click the 'Add Feed' button
+in the top right corner. You can also bulk delete feeds from this screen.
+
+The Add and Edit screens for feeds are the same, with the Edit field being
+prepopulated with pre-existing values for that feed. The following fields exist:
+
+ * Title
+ * Entity - if this feed belongs to a place (for example, University department,
+   bar, etc) which is in the places database, you can associate it with an entity
+   here.
+ * RSS URL - this is the URL to the RSS (or Atom) feed. In future, other providers
+   may exist, in which case this will be a URL to the feed to be parsed by that
+   provider. Django will check that this URL is valid (responds to a HEAD request)
+   upon saving.
+ * Slug - this is the unique identifier for this feed which is used to generate
+   the URL the feed is displayed at, i.e., http://m.example.com/news/SLUG/.
+ * Language - in multi-lingual setups, you can set a language on a feed which
+   means it is only shown to users in that language.
+ * Ptype - this is the type of feed that is being imported - event or news
+ * Provider - at present, only the RSS provider is supported, however in future
+   more providers may be supported. This can therefore be used to specify the
+   type of feed. Note that the RSS provider can also handle Atom feeds.
+ * Tags - this feature is currently unused by Molly, but allows for feeds to be
+   tagged and possibly grouped together in future
+
+.. note:: A common mistake is to leave the Provider value unset. This will result
+          in the feed appearing, but no items appearing, as the RSS provider does
+          not import it!
+
+To save changes, or to create a new feed, simply use the 'Save' buttom at the
+bottom of the screen.
+
+Once the feed has been created, the contents of it will be imported the next time
+the RSS importer runs (by default, hourly).
 
 Configuration
 -------------
@@ -25,7 +64,7 @@ Providers
 :class:`molly.apps.feeds.providers.RSSFeedsProvider`
 """"""""""""""""""""""""""""""""""""""""""""""""""""
 
-Imports RSS feeds. Has no options.
+Imports RSS (and Atom) feeds, takes no options.
 
 
 Writing Your Own Providers
@@ -36,4 +75,8 @@ Writing Your Own Providers
 Views
 -----
 
-.. todo:: Complete
+This app has no views. Instead, the rendering of the two different types of
+feeds are handled seperately by two different applications:
+
+ * :doc:`news`
+ * :doc:`events`
