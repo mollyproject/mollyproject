@@ -1,4 +1,6 @@
 from math import atan2, degrees
+import re
+
 from django.shortcuts import get_object_or_404
 from django.contrib.gis.geos import Point
 
@@ -26,3 +28,13 @@ def get_point(request, entity):
     else:
         point = None
     return point
+
+def bus_route_sorter(route):
+    start_nums = re.match('([0-9]+)([A-Z]?)', route)
+    letter_nums = re.match('([A-Z]+)([0-9]+)([A-Z]?)', route)
+    if start_nums:
+        return int(start_nums.group(1)), start_nums.group(2)
+    elif letter_nums:
+        return letter_nums.group(1), int(letter_nums.group(2)), letter_nums.group(2)
+    else:
+        return route

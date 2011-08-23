@@ -12,7 +12,7 @@ from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
 from molly.favourites import get_favourites
 
-from molly.apps.places import get_entity
+from molly.apps.places import get_entity, bus_route_sorter
 from molly.apps.places.models import Entity, EntityType, Route
 
 class TransportView(BaseView):
@@ -234,6 +234,7 @@ class PublicTransportView(TransportView):
         self.augment_metadata(favourites)
         
         context.update({
+            'pageslug': key,
             'type': et,
             'entities': es,
             'favourites': favourites
@@ -243,19 +244,31 @@ class PublicTransportView(TransportView):
         routes = Route.objects.filter(stoponroute__entity__all_types_completion=et).distinct()
         route_ids = routes.values_list('service_id').distinct()
         
-        # Now sort routes numerically
-        def bus_route_sorter(route):
-            start_nums = re.match('([0-9]+)([A-Z]?)', route)
-            letter_nums = re.match('([A-Z]+)([0-9]+)([A-Z]?)', route)
-            if start_nums:
-                return int(start_nums.group(1)), start_nums.group(2)
-            elif letter_nums:
-                return letter_nums.group(1), int(letter_nums.group(2)), letter_nums.group(2)
-            else:
-                return route
-        
         context['route_ids'] = sorted(map(itemgetter(0), route_ids), key=bus_route_sorter)
         context['selected_routes'] = selected_routes
+        
+        return context
+    
+    def handle_GET(self, request, context, key):
+        return self.render(request, context, 'transport/public_transport')
+
+
+class RoutesView(TransportView):
+    
+    def initial_context(self, request, key):
+        
+        context = super(RoutesView, self).initial_context(request)
+        
+        type_slug, count = self.conf.nearby[key]
+        et = EntityType.objects.get(slug=type_slug)
+        
+        if key not in getattr(self.conf, 'nearby', {}):
+            raise Http404()
+        
+        location = context['location']
+        
+        # Only show routes which serve this type of thing
+        routes = Route.objects.filter(stoponroute__entity__all_types_completion=et).distinct()
         
         if location:
             routes = list(routes)
@@ -268,5 +281,5 @@ class PublicTransportView(TransportView):
         return context
     
     def handle_GET(self, request, context, key):
-        return self.render(request, context, 'transport/public_transport')
-
+        return self.render(request, context, 'transport/routes')
+    

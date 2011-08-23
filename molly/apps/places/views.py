@@ -21,6 +21,7 @@ from django.utils.translation import ugettext as _
 from django.utils.translation import ungettext
 from django.contrib.gis.measure import D
 
+from molly.utils import haversine
 from molly.utils.views import BaseView, ZoomableView
 from molly.utils.templatetags.molly_utils import humanise_distance
 from molly.utils.breadcrumbs import *
@@ -33,7 +34,7 @@ from molly.maps.osm.models import OSMUpdate
 from molly.routing import generate_route, ALLOWED_ROUTING_TYPES
 
 from molly.apps.places.models import Entity, EntityType, Route, Journey
-from molly.apps.places import get_entity, get_point
+from molly.apps.places import get_entity, get_point, bus_route_sorter
 from molly.apps.places.forms import UpdateOSMForm
 
 
@@ -184,7 +185,7 @@ class NearbyDetailView(LocationRequiredView, ZoomableView):
                 'exclude_from_search': True,
                 'title': title}
         
-        number = len([e for e in context['entities'] if e.location.transform(27700, clone=True).distance(context['point'].transform(27700, clone=True)) <= 1000])
+        number = len(e for e in context['entities'] if haversine(e, context['point']) <= 1000)
         entity_type = context['entity_types'][0].verbose_name_plural
 
         return {
@@ -252,7 +253,8 @@ class EntityDetailView(ZoomableView, FavouritableView):
             additional += ', ' + _('about %(distance)s %(bearing)s') % {
                                     'distance': humanise_distance(distance),
                                     'bearing': bearing }
-        routes = sorted(set(sor.route.service_id for sor in entity.stoponroute_set.all()))
+        routes = sorted(set(sor.route.service_id for sor in entity.stoponroute_set.all()),
+                        key=bus_route_sorter)
         if routes:
             additional += ', ' + ungettext('service %(services)s stops here',
                                            'services %(services)s stop here',
