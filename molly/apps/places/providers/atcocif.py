@@ -274,5 +274,6 @@ class AtcoCifTimetableProvider(BaseMapsProvider):
                                                        name='ATCO-CIF Importer')
         return source
 
+
 if __name__ == '__main__':
     AtcoCifTimetableProvider('http://store.datagm.org.uk/sets/TfGM/GMPTE_CIF.zip').import_data({}, sys.stdout)

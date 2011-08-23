@@ -9,19 +9,24 @@ displays it in a friendlier way
 Configuration
 -------------
 
- * train_station: A string in the form 'scheme:value' identifying the entity to
-   use as the train station on the page (this is the same form as in
+ * ``train_station``: A string in the form 'scheme:value' identifying the entity
+   to use as the train station on the page (this is the same form as in
    /places/scheme:value/)
- * train_station_nearest: A boolean (defaulting to False) specifying that if
+ * ``train_station_nearest``: A boolean (defaulting to False) specifying that if
    the user has a location set, whether or not they should instead be shown
    their closest rail station instead.
- * nearby: A dictionaries of entity types where values are in the form:
-   (entity-type-slug, number to show). The keys form the values of the div ids
+ * ``nearby``: A dictionaries of entity types where values are in the form:
+   (entity-type-slug, number to show). The keys form the values of the page URLs
    in the rendered remplate.
- * transit_status_provider: A provider which provides statues
- * park_and_rides: if specified, then the park and ride entities are shown on the
-   page in the order specified (scheme:value strings)
- * travel_alerts: Whether or not to display travel alerts on this page
+ * ``*_status_provider``: A provider which provides statuses for currently running
+   services. X should be replaced with the type of service that that provider
+   serves and should match up with the key in 'nearby' for that type of
+   entities and then it is shown on that page, e.g., in the example below, to
+   add a provider to deal with bus stops, the setting would be
+   ``bus_stops_status_provider``
+ * ``park_and_rides``: if specified, then the park and ride entities are shown
+   on the page in the order specified (scheme:value strings)
+ * ``travel_alerts``: Whether or not to display travel alerts on this page
  
 Sample::
 
@@ -29,11 +34,12 @@ Sample::
         train_station = 'crs:OXF',
         nearby = {
             'bus_stops': ('bus-stop', 5),
+            'tube': ('tube-station', 3),
         },
         park_and_rides = ('osm:W4333225', 'osm:W4329908', 'osm:W34425625',
                           'osm:W24719725', 'osm:W2809915'),
         travel_alerts = True,
-        transit_status_provider = 'molly.apps.transport.providers.TubeStatusProvider',
+        tube_status_provider = 'molly.apps.transport.providers.TubeStatusProvider',
     ),
 
 Providers

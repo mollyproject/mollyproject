@@ -339,3 +339,15 @@ def localize_utc(value):
     else:
         return value
 
+@register.tag
+def svg_or_png(parser, token):
+    return SvgOrPngNode()
+
+class SvgOrPngNode(template.Node):
+
+    def render(self, context):
+        if device_has_parent(context['device'], 'apple_generic') or context['browser'].svgt_1_1:
+            return 'svg'
+        else:
+            return 'png'
+

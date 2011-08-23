@@ -124,7 +124,10 @@ function capture_outbound()  {
             var datamap = {}
             var i = 0;
             for (i = 0; i < serial.length; i++) {
-                datamap[serial[i].name] = serial[i].value;
+                if (!datamap[serial[i].name]) {
+                    datamap[serial[i].name] = []
+                }
+                datamap[serial[i].name].push(serial[i].value);
             }
             return async_load($(this).attr('action'), datamap, $(this).attr('method'));
         });

@@ -7,6 +7,7 @@ from views import (
     NearbyListView, NearbyDetailView,
     EntityDetailView,
     EntityUpdateView,
+    RouteView,
 
     NearbyEntityListView, NearbyEntityDetailView,
     CategoryListView, CategoryDetailView,
@@ -34,6 +35,10 @@ urlpatterns = patterns('',
     (r'^category/(?P<ptypes>[^/;]+(\;[^/;]+)*)/$',
         CategoryDetailView, {},
         'category-detail'),
+
+    (r'^route:(?P<route>[^/]+)/(?P<id>\d+)?$',
+        RouteView, {},
+        'route'),
 
     (r'^(?P<scheme>[a-z_\-]+):(?P<value>[^/]+)/$',
         EntityDetailView, {},

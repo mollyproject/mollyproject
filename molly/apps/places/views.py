@@ -5,6 +5,7 @@ from itertools import chain
 import simplejson
 import copy
 import math
+from urllib import unquote
 from datetime import datetime, timedelta
 from urllib import unquote
 
@@ -293,7 +294,6 @@ class EntityDetailView(ZoomableView, FavouritableView):
 
         context.update({
             'entity': entity,
-            'train_station': entity, # This allows the ldb metadata to be portable
             'board': board,
             'entity_types': entity.all_types.all(),
             'associations': associations,
@@ -318,7 +318,6 @@ class EntityDetailView(ZoomableView, FavouritableView):
         entity = context['entity']
 
         if unquote(entity.absolute_url) != request.path:
-            
             return self.redirect(entity.absolute_url, request, 'perm')
 
         entities = []
@@ -813,6 +812,72 @@ class ServiceDetailView(BaseView):
     def handle_GET(self, request, context, scheme, value):
         return self.render(request, context, 'places/service_details')
 
+
+class RouteView(BaseView):
+    
+    @BreadcrumbFactory
+    def breadcrumb(self, request, context, route, id):
+        return Breadcrumb(
+            'places',
+            lazy_parent('index'),
+            context['title'],
+            lazy_reverse('route', args=[route, id]))
+    
+    def initial_context(self, request, route, id):
+        
+        context = super(RouteView, self).initial_context(request)
+        
+        if id is None:
+            
+            context.update({
+                'title': _('Select a route'),
+                'multiple_routes': Route.objects.filter(service_id=route)
+            })
+            
+        else:
+            
+            route = get_object_or_404(Route, id=id)
+            
+            i = 1
+            calling_points = []
+            
+            for stop in route.stoponroute_set.all():
+                
+                calling_point = {'entity': stop.entity}
+                if stop.entity.location is not None:
+                    calling_point['stop_num'] = i
+                    i += 1
+                calling_points.append(calling_point)
+            
+            service = {
+                    'entities': route.stops.all(),
+                    'operator': route.operator,
+                    'has_timetable': False,
+                    'has_realtime': False,
+                    'calling_points': calling_points
+                }
+            
+            context.update({
+                'title': '%s: %s' % (route.service_id, route.service_name),
+                'service': service,
+                'route': route
+            })
+        
+        return context
+    
+    def handle_GET(self, request, context, route, id):
+        
+        if len(context.get('multiple_routes', [])) == 1:
+            # Only one alternative, redirect straight there
+            route = context['multiple_routes'][0]
+            return self.redirect(reverse('places:route', args=[route.service_id,
+                                                               route.pk]), request)
+        
+        elif id is not None and route != context['route'].service_id:
+            # Redirect if the route doesn't match the ID
+            return self.redirect(reverse('places:route', args=[context['route'].service_id, id]), request)
+        else:
+            return self.render(request, context, 'places/service_details')
 
 class APIView(BaseView):
     """
