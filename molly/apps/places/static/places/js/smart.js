@@ -383,6 +383,20 @@ function rebuildLDB(elem, board, train_station){
     }
 }
 
+function rebuildLineStatus(elem, line_statuses){
+    var tbody = $(elem).find('tbody');
+    tbody.empty();
+    for (var i in line_statuses){
+        tbody.append('<tr class="' + line_statuses[i].line_id + '"></tr>')
+        var tr = tbody.find('tr:last');
+        tr.append('<td class="line-name">' + line_statuses[i].line_name + '</td>')
+        tr.append('<td class="line-status">' + line_statuses[i].status + '</td>')
+        if (line_statuses[i].disruption_reason) {
+            tr.find('td:last').append('<br/>' + line_statuses[i].disruption_reason);
+        }
+    }
+}
+
 function setupLDBButtons(){
     $('.ldb-board').click(function(){
         display_loading_screen()

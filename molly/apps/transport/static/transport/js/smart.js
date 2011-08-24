@@ -195,6 +195,11 @@ function refreshPT(data){
     var now = new Date();
     now = pad2(now.getHours()) + ':' + pad2(now.getMinutes()) + ':' + pad2(now.getSeconds())
     
+    // Do transit status
+    if (data.line_status) {
+        rebuildLineStatus($('#transit-status'), data.line_status.line_statuses);
+    }
+    
     // Do favourite entities
     if (data.favourites) {
         $('#entities-favourites h2:first').html(gettext('Favourite') + ' ' + data.type.verbose_name_plural + ' - ' + now);

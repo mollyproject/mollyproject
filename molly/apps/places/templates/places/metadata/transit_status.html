@@ -4,7 +4,7 @@
         <div class="header">
             <h2>{% blocktrans with transit_status.service_name as service_name %}{{ service_name }} line status{% endblocktrans %}</h2>
         </div>
-        <table class="content">
+        <table class="content" id="transit-status">
             <thead>
                 <tr>
                     <th>{% trans "Line" %}</th>
