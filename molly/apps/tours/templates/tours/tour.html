@@ -73,6 +73,13 @@
 
 {% else %}
     
+    {% if created %}
+        {% url url_shortener:index as share_link %}
+        <div class="bubble stand-alone pad-5"><p class="note">
+            {% blocktrans with full_path|urlencode as share_url %}Your tour has been created and is saved to this device, you can use <a href="{{ share_link }}?path={{ share_url }}">the Share button</a> to share on different devices. Your route order may have been optimised to minimise travelling distance.{% endblocktrans %}
+        </p></div>
+    {% endif %}
+    
     {% if arrival_points or arrival_routes %}
         <div class="section">
             <div class="header">

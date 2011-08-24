@@ -51,7 +51,7 @@
             <h2>{{ entity_type.verbose_name_plural|capfirst }}</h2>
             <ul class="entity-list">
                 {% for entity in attraction_entities %}
-                    <li {% if entity in entities %} class="selected"{% endif %}><a href="{% url tours:create tour_type.slug %}{% for e in entities %}{{ e.identifier_scheme }}:{{ e.identifier_value }}/{% endfor %}{{ entity.identifier_scheme }}:{{ entity.identifier_value }}/" class="{{ entity.identifier_scheme }}-{{ entity.identifier_value }}">{{ entity.title }}</a></li>
+                    <li{% if entity in entities %} class="selected"{% endif %}><a href="{% url tours:create tour_type.slug %}{% for e in entities %}{{ e.identifier_scheme }}:{{ e.identifier_value }}/{% endfor %}{{ entity.identifier_scheme }}:{{ entity.identifier_value }}/" class="{{ entity.identifier_scheme }}-{{ entity.identifier_value }}">{{ entity.title }}</a></li>
                 {% endfor %}
             </ul>
         </div>

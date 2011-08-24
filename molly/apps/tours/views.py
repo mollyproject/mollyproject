@@ -152,11 +152,12 @@ class SaveView(CreateView):
             # Desktop
             return self.render(request, context, 'tours/save_desktop')
         else:
-            return self.render(request, context, 'tours/save')
-
-
-class PodcastView(BaseView):
-    pass
+            # Redirect if no suggestions, otherwise show suggestions page
+            if len(context.get('suggestions', [])) > 0:
+                return self.render(request, context, 'tours/save')
+            else:
+                return self.redirect(
+                    context['tour'].get_absolute_url() + '?created', request)
 
 
 class TourView(BaseView):
@@ -319,6 +320,7 @@ class TourView(BaseView):
                 context.update({
                     'arrival_points': arrival_points,
                     'arrival_routes': getattr(self.conf, 'arrival_routes', []),
+                    'created': 'created' in request.GET
                 })
             
         return context

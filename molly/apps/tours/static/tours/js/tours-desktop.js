@@ -38,7 +38,7 @@ $(function(){
         e.preventDefault();
     });
 
-    $('#poi-submit').submit(function(){
+    $('#poi-submit').submit(function(e){
         $(this).attr('action', '/tours/' + type_slug + '/create/' + current_stops.join('/') + '/save/');
         e.preventDefault();
         $(this).submit();
