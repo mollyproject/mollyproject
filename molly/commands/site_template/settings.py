@@ -590,11 +590,11 @@ APPLICATIONS = [
         # specified above is then only used as a fallback
         train_station_nearest = False,
         
-        # This specifies which other nearby entity types are to be shown on
-        # the transport page. It is a dictionary where the key represents the
-        # ID of the <div> which contains it, and the value is a tuple of type
-        # slug (i.e., from http://example.com/places/category/TYPE-SLUG/) and
-        # the number to show by default
+        # This specifies which tabs are created for different transport entity
+        # types. It is a dictionary where the key represents the slug of the
+        # pagewhich contains it, and the value is a tuple of type slug (i.e.,
+        # from http://example.com/places/category/TYPE-SLUG/) and the number to
+        # show by default
         nearby = {
             
             # This shows the 5 nearest bus stops
@@ -602,11 +602,25 @@ APPLICATIONS = [
             
             # This shows the 3 nearest Supertram stops
             #'supertram': ('supertram-stop', 3),
+            
+            # This shows the 3 nearest Tube stations
+            #'tube': ('tube-station', 3),
         },
+        
+        # The nearby pages above can be augmented with a "status" provider which
+        # typically shows information about the different lines currently on
+        # that transit network. These settings are called TYPE_status_provider,
+        # where the first word (TYPE) is replaced with the key of the nearby
+        # page as defined in the setting above
+        #
+        # Molly comes with a single provider for transit line statuses, which is
+        # the London Underground line statuses. Using the example setting above,
+        # where Tube stations are exposed with the key 'tube', the following
+        # setting will show the current Tube status on the 'tube' page:
+        #tube_status_provider = 'molly.apps.transport.providers.TubeStatusProvider',
         
         # When set, then this shows the park and rides specified below on the
         # transport page. These are in the form SCHEME:VALUE
-        
         #park_and_rides = [
         #    'osm:W4333225',
         #    'osm:W4329908',
@@ -617,12 +631,6 @@ APPLICATIONS = [
         # When set to True, this shows current travel alerts on the transport
         # page
         travel_alerts = False,
-        
-        # The next setting refers to a provider which provides "line status"
-        # about a public transport system (e.g., Tube, tram, etc). Molly only
-        # comes with one provider for this, a London Underground line status
-        # provider, uncomment the line below to enable this
-        #transit_status_provider = 'molly.apps.transport.providers.TubeStatusProvider',
     ),
     
     # The following app allows for podcasts to be shown
