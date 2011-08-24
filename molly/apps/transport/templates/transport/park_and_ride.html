@@ -3,10 +3,6 @@
 {% block content %}
 {{ block.super }}
 
-{% if transit_status %}
-    {% include "places/metadata/transit_status.html" %}
-{% endif %}
-
 {% if park_and_rides %}
 <div class="section" id="park_and_rides">
     <div class="header">

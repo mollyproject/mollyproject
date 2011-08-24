@@ -218,7 +218,6 @@ class PublicTransportView(TransportView):
                 es = es.distinct().distance(location).order_by('distance')[:count]
             else:
                 es = []
-            results_type = 'Nearby'
         
         else:
             
