@@ -185,13 +185,14 @@ class NearbyDetailView(LocationRequiredView, ZoomableView):
                 'exclude_from_search': True,
                 'title': title}
         
-        number = len([e for e in context['entities'] if haversine(e, context['point']) <= 1000])
+        number = len([e for e in context['entities']
+                      if haversine(e.location, context['point']) <= 1000])
         entity_type = context['entity_types'][0].verbose_name_plural
 
         return {
             'title': title,
-            'additional': _('<strong>%(number)d %(entity_type)s</strong> within 1km') % {'number': number,
-                               'entity_type': entity_type}
+            'additional': _('<strong>%(number)d %(entity_type)s</strong> within 1km') \
+                % {'number': number, 'entity_type': entity_type}
         }
 
     def handle_GET(self, request, context, ptypes, entity=None):
