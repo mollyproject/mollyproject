@@ -116,10 +116,7 @@ function async_load(url, query, meth) {
     return false;
 }
 
-function capture_outbound()  {
-    // Intercept all forms
-    $('form:not(.has-ajax-handler)').unbind('submit')
-    $('form:not(.has-ajax-handler)').submit(function(evt) {
+function async_form_load(evt){
             var serial = $(this).serializeArray();
             var datamap = {}
             var i = 0;
@@ -130,7 +127,12 @@ function capture_outbound()  {
                 datamap[serial[i].name].push(serial[i].value);
             }
             return async_load($(this).attr('action'), datamap, $(this).attr('method'));
-        });
+}
+
+function capture_outbound()  {
+    // Intercept all forms
+    $('form:not(.has-ajax-handler)').unbind('submit')
+    $('form:not(.has-ajax-handler)').submit(async_form_load);
     $('form:not(.has-ajax-handler) button[type="submit"], form:not(.has-ajax-handler) input[type="submit"], form:not(.has-ajax-handler) input[type="image"]').click(function(e){
         var form = $(this).parents('form');
         $(form).find('input[type="hidden"][name="' + $(this).attr('name') + '"]').remove()
