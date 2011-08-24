@@ -185,7 +185,7 @@ class NearbyDetailView(LocationRequiredView, ZoomableView):
                 'exclude_from_search': True,
                 'title': title}
         
-        number = len(e for e in context['entities'] if haversine(e, context['point']) <= 1000)
+        number = len([e for e in context['entities'] if haversine(e, context['point']) <= 1000])
         entity_type = context['entity_types'][0].verbose_name_plural
 
         return {
