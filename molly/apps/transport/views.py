@@ -184,7 +184,8 @@ class PublicTransportView(TransportView):
             self.conf.local_name,
             None,
             capfirst(et.verbose_name_plural),
-            lazy_reverse('%s:public-transport' % self.conf.local_name, key=key),
+            lazy_reverse('%s:public-transport' % self.conf.local_name,
+                         kwargs={'key': key}),
         )
     
     def initial_context(self, request, key):
