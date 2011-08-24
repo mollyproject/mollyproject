@@ -61,7 +61,7 @@ def renderer(format, mimetypes=(), priority=0):
 def tidy_query_string(url):
     scheme, netloc, path, params, query, fragment = urlparse(url)
     args = []
-    for k, vs in parse_qs(query).items():
+    for k, vs in parse_qs(query, keep_blank_values=True).items():
         if k in ['format', 'language_code']:
             continue
         else:
@@ -213,7 +213,7 @@ class BaseView(object):
         if 'format' in request.REQUEST:
             uri = urlparse(uri)
             args = []
-            for k, vs in parse_qs(uri.query).items():
+            for k, vs in parse_qs(uri.query, keep_blank_values=True).items():
                 if k == 'format':
                     continue
                 else:
