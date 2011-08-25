@@ -330,7 +330,8 @@ class BaseView(object):
     def render_json(self, request, context, template_name):
         context = simplify_value(context)
         resolved = resolve(request.path)
-        context['view_name'] = '%s:%s' % (':'.join(resolved.namespaces), resolved.url_name)
+        context['view_name'] = '%s:%s' % (
+            self.conf.application_name.split('.')[-1], resolved.url_name)
         
         # Include CSRF token, as templates don't get rendered csrf_token is
         # never called which breaks CSRF for apps written against the JSON API

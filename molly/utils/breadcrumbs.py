@@ -15,10 +15,10 @@ class Breadcrumb(object):
 
 RenderedBreadcrumbs = namedtuple('RenderedBreadcrumbs',
                                 ['application', 'index', 'parent',
-                                 'parent_is_index', 'page_title'])
+                                 'parent_is_index', 'page_title', 'local_name'])
 
 RenderedBreadcrumb = namedtuple('RenderedBreadcrumb',
-                                ['title', 'url', 'view_name'])
+                                ['title', 'url', 'page_name'])
 
 def BreadcrumbFactory(breadcrumb_func):
     def data(self, request, context, *args, **kwargs):
@@ -53,6 +53,7 @@ def BreadcrumbFactory(breadcrumb_func):
             parent,
             parent_is_index,
             breadcrumb.title,
+            self.conf.local_name
         )
         
     render.data = data
