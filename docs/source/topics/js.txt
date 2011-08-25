@@ -1,7 +1,8 @@
 JavaScript with Molly
 =====================
 
-Molly uses device detection to decide 
+Molly uses device detection to decide whether or not a device should be given
+JavaScript or not.
 
 Adding JavaScript to your app
 -----------------------------
