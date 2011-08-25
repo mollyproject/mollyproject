@@ -6,9 +6,9 @@ such flexibility is the ability to vary the format of the rendered view based on
 the Accept headers of the client, or a manual override of the data format based
 on an additional GET parameter: ``format``.
 
-To stop this functionality on a particular view (e.g., if the context contains
+To disable this functionality on a particular view (e.g., if the context contains
 data that should not be exposed), you can set ``exposes_user_data`` to True in
-the context.
+the context thus implying that the data is private and should not be exposed in the API. 
 
 The data formats supported are:
 
@@ -82,7 +82,7 @@ URL resolver definition in the app's ``urls.py``.
 
 .. seealso :: `Django's documentation on reversing URLs <https://docs.djangoproject.com/en/dev/topics/http/urls/#reverse>`_
 
-This page returns a simple string containing . It is recommended that you cache
+This page returns a simple string containing the URL. It is recommended that you cache
 these somewhere to avoid lookups.
 
 For example, to resolve the URL for Doncaster rail station, we can simply
