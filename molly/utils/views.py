@@ -353,10 +353,11 @@ class BaseView(object):
     def render_html(self, request, context, template_name):
         if template_name is None:
             raise NotImplementedError
-        return render_to_response(template_name+'.html',
-                                  context,
-                                  context_instance=RequestContext(request),
-                                  mimetype='text/html;charset=UTF-8')
+        return render_to_response(
+            template_name+'.html',
+            context,
+            context_instance=RequestContext(request, current_app=self.conf.local_name),
+            mimetype='text/html;charset=UTF-8')
 
     @renderer(format="xml", mimetypes=('application/xml', 'text/xml'))
     def render_xml(self, request, context, template_name):
