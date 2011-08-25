@@ -160,7 +160,7 @@ class Application(object):
                 # Call to recursively apply the conf and bases to each of the
                 # views referenced in the urlconf.
                 new_urlpatterns.append(self.add_conf_to_pattern(pattern, self.conf, bases))
-            conf._urls_cache = urlconf_include(new_urlpatterns, self.application_name.split('.')[-1], self.local_name)
+            conf._urls_cache = urlconf_include(new_urlpatterns, app_name=self.application_name.split('.')[-1], namespace=self.local_name)
             return conf._urls_cache
         return urls
     
