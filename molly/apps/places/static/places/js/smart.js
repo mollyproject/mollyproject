@@ -405,11 +405,7 @@ function setupLDBButtons(){
             data: { format: 'json' },
             dataType: 'json',
             success: function(data){
-                if (data.train_station) {
-                    rebuildLDB($('#ldb-' + data.train_station.identifier_scheme + '-' + data.train_station.identifier_value), data.board, data.train_station);
-                } else {
-                    rebuildLDB($('#ldb-' + data.entity.identifier_scheme + '-' + data.entity.identifier_value), data.board, data.entity);
-                }
+                rebuildLDB($('#ldb-' + data.entity.identifier_scheme + '-' + data.entity.identifier_value), data.board, data.entity);
                 clear_loading_screen();
                 setupLDBButtons()
                 capture_outbound();
