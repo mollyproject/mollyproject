@@ -2,25 +2,21 @@
 {% load molly_utils %}{% load i18n %}
 
 {% block extrahead %}
-
-
-{% comment %}
-                TODO - Stop meta refresh if JS enabled
-{% endcomment %}
-
-    <meta http-equiv="refresh" content="60" />
+    {% if not use_javascript %}
+        <meta http-equiv="refresh" content="60" />
+    {% endif %}
 {% endblock %}
 
 {% block content %}
 
 <div class="section">
     <div class="header">
-        <h2>{{ webcam.title }}<br /><small>{% now "G:i "%}</small></h2>
+        <h2>{{ webcam.title }}<br /><small class="webcam-last-updated">{% now "G:i "%}</small></h2>
     </div>
     <div class="section-content">
         {% if eis %}
             {% ifnotequal style_group "dumb" %}
-                <div class="backgrounded-image" style="background-image:url('{{ eis.get_absolute_url }}'); height:{{ eis.height }}px;"> </div>
+                <div class="backgrounded-image webcam-image" style="background-image:url('{{ eis.get_absolute_url }}'); height:{{ eis.height }}px;"> </div>
               {% else %}
                 <img src="{{ eis.get_absolute_url }}" alt="{% trans "Webcam Image" %}">
             {% endifnotequal %}
