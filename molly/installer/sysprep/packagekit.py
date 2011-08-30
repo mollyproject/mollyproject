@@ -2,6 +2,7 @@
 Wrapper for installations on packagekit/yum distributions
 """
 
+import os, sys
 from molly.installer.utils import quiet_exec
 
 try:
