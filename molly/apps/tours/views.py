@@ -73,11 +73,13 @@ class CreateView(BaseView):
             'tour_type': tour_type,
             'entities': [],
             'attractions': dict(
-                (et, sorted(et.entity_set.filter(location__isnull=False),
+                (et, sorted(et.entities_completion.filter(location__isnull=False),
                             key=attrgetter('title')))
-                    for et in EntityType.objects.filter(slug__in=tour_type['attraction_types'])),
-            'all_pois': sorted(Entity.objects.filter(all_types_completion__slug__in=tour_type['attraction_types']),
-                               key=attrgetter('title'))
+                    for et in EntityType.objects.filter(
+                        slug__in=tour_type['attraction_types'])),
+            'all_pois': sorted(Entity.objects.filter(
+                all_types_completion__slug__in=tour_type['attraction_types']),
+                key=attrgetter('title'))
         })
         
         for entity in entities.split('/'):
