@@ -91,7 +91,7 @@ setup(
         "simplejson",
         "rdflib",
         "python-dateutil==1.5",
-        "Django==1.3",
+        "Django==1.3.1",
         "oauth==1.0.1",
         "psycopg2",
         "PIL",
