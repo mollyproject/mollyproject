@@ -43,7 +43,7 @@ class TimetableAnnotationProvider(BaseMapsProvider):
             else:
                 until = [Q(sta__gte=today.time()) | Q(std__gte=today.time()) | Q(sta__lt=(today + timedelta(hours=2)).time()) | Q(std__lt=(today + timedelta(hours=2)).time())]
             
-            for stop in entity.scheduledstop_set.filter(*until):
+            for stop in entity.scheduledstop_set.filter(*until).exclude(activity__in=('D','N','F')):
                 
                 if not stop.journey.runs_on(today.date()):
                     continue

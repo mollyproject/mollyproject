@@ -917,7 +917,7 @@ class TimetableView(BaseView):
         services = context['entity'].scheduledstop_set.filter(
             journey__runs_from__gte=context['date'],
             journey__runs_until__lte=context['date']
-        )
+        ).exclude(activity__in=('D','N','F'))
         
         context['timetable'] = filter(lambda s: s.runs_on(context['date']),
                                       services)
