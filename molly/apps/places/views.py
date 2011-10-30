@@ -915,11 +915,11 @@ class TimetableView(BaseView):
             raise Http404()
         
         services = context['entity'].scheduledstop_set.filter(
-            journey__runs_from__gte=context['date'],
-            journey__runs_until__lte=context['date']
-        ).exclude(activity__in=('D','N','F'))
+           journey__runs_from__lte=context['date'],
+            journey__runs_until__gte=context['date']
+        ).exclude(activity__in=('D','N','F')).order_by('std')
         
-        context['timetable'] = filter(lambda s: s.runs_on(context['date']),
+        context['timetable'] = filter(lambda s: s.journey.runs_on(context['date']),
                                       services)
         
         context['title'] = _('Timetable for %(title)s on %(date)s') % {

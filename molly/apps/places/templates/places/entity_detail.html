@@ -52,7 +52,7 @@
       </li>
       <li><a href="{% url places:entity-directions entity.identifier_scheme entity.identifier_value %}" rel="nofollow">Get directions to here</a></li>
       {% if entity.scheduledstop_set.all %}
-        <li><a href="{% url places:timetabke entity.identifier_scheme entity.identifier_value %}" rel="nofollow">{% trans 'View timetable for this stop' %}</a></li>
+        <li><a href="{% url places:timetable entity.identifier_scheme entity.identifier_value %}" rel="nofollow">{% trans 'View timetable for this stop' %}</a></li>
       {% endif %}
     </ul>
     {% else %}
