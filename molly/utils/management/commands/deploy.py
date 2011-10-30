@@ -30,6 +30,7 @@ class Command(NoArgsCommand):
             no_wurfl = False
         if no_wurfl or not develop:
             call_command('update_wurfl')
+        call_command('generate_markers', lazy=True)
         call_command('collectstatic', interactive=False, link=develop)
         call_command('synccompress')
         if not skip_cron:
