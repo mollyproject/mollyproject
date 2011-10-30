@@ -35,7 +35,7 @@ class AtcoCifTimetableProvider(BaseMapsProvider):
         """
         self._url = url
         self._cache = EntityCache()
-        self._entity_type = NaptanMapsProvider(None)._get_entity_types()['BCT']
+        self._entity_type = NaptanMapsProvider(None)._get_entity_types()['BCT'][0]
     
     @batch('%d 10 * * wed' % random.randint(0, 59))
     def import_data(self, metadata, output):
