@@ -6,7 +6,7 @@ import simplejson
 import copy
 import math
 from urllib import unquote
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from urllib import unquote
 
 from suds import WebFault
@@ -15,7 +15,7 @@ from django.contrib.gis.geos import Point
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.core.urlresolvers import reverse
-from django.template.defaultfilters import capfirst
+from django.template.defaultfilters import capfirst, date as djangodate
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.utils.translation import ugettext as _
 from django.utils.translation import ungettext
@@ -881,6 +881,58 @@ class RouteView(BaseView):
             return self.redirect(reverse('places:route', args=[context['route'].service_id, id]), request)
         else:
             return self.render(request, context, 'places/service_details')
+
+
+class TimetableView(BaseView):
+    """
+    A view which shows the timetable of all departures for a stop.
+    """
+    
+    @BreadcrumbFactory
+    def breadcrumb(self, request, context, scheme, value, year, month, day):
+        return Breadcrumb(
+            'places',
+            lazy_parent('entity', scheme=scheme, value=value),
+            context['title'],
+            lazy_reverse('timetable', args=[scheme, value]))
+    
+    def initial_context(self, request, scheme, value, year, month, day):
+        
+        context = super(TimetableView, self).initial_context(request)
+        
+        context['entity'] = get_entity(scheme, value)
+        
+        if year and month and day:
+            try:
+                context['date'] = date(int(year), int(month), int(day))
+            except ValueError:
+                raise Http404()
+        else:
+            context['date'] = date.today()
+        
+        if context['entity'].scheduledstop_set.all().count() == 0:
+            # 404 on entities which don't have timetables
+            raise Http404()
+        
+        services = context['entity'].scheduledstop_set.filter(
+            journey__runs_from__gte=context['date'],
+            journey__runs_until__lte=context['date']
+        )
+        
+        context['timetable'] = filter(lambda s: s.runs_on(context['date']),
+                                      services)
+        
+        context['title'] = _('Timetable for %(title)s on %(date)s') % {
+            'title': context['entity'].title,
+            'date': djangodate(context['date'])
+        }
+        
+        return context
+    
+    def handle_GET(self, request, context, scheme, value, year, month, day):
+        
+        return self.render(request, context, 'places/timetable')
+
 
 class APIView(BaseView):
     """

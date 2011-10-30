@@ -12,7 +12,7 @@ from views import (
     NearbyEntityListView, NearbyEntityDetailView,
     CategoryListView, CategoryDetailView,
     
-    ServiceDetailView, EntityDirectionsView,
+    ServiceDetailView, EntityDirectionsView, TimetableView,
 
     APIView,
 )
@@ -51,6 +51,10 @@ urlpatterns = patterns('',
     (r'^(?P<scheme>[a-z_\-]+):(?P<value>[^/]+)/service$',
         ServiceDetailView, {},
         'service-detail'),
+    
+    (r'^(?P<scheme>[a-z_\-]+):(?P<value>[^/]+)/timetable/((?P<year>\d{4})\-(?P<month>\d{2})\-(?P<day>\d{2})/)?$',
+        TimetableView, {},
+        'timetable'),
     
     (r'^(?P<scheme>[a-z_\-]+):(?P<value>[^/]+)/nearby/$',
         NearbyEntityListView, {},

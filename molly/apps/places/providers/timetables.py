@@ -49,12 +49,7 @@ class TimetableAnnotationProvider(BaseMapsProvider):
                     continue
                 
                 service_id = stop.journey.route.service_id
-                destination = stop.journey.scheduledstop_set.all().reverse()[0].entity.title
-                
-                # Now try and tidy up destination
-                destination = destination.split(', ')[-1]
-                if '(' in destination:
-                    destination = destination[:destination.find('(')].strip()
+                destination = stop.journey.destination
                 
                 services[(service_id, destination)].append((stop.journey, stop.std or stop.sta))
             

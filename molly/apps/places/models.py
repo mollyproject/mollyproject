@@ -567,6 +567,16 @@ class Journey(models.Model):
     
     vehicle = models.TextField()
     
+    @property
+    def destination(self):
+        destination = self.scheduledstop_set.all().reverse()[0].entity.title
+        
+        # Now try and tidy up destination
+        destination = destination.split(', ')[-1]
+        if '(' in destination:
+            destination = destination[:destination.find('(')].strip()
+        return destination
+    
     def __unicode__(self):
         return self.route.__unicode__()
 
