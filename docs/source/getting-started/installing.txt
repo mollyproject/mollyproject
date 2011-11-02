@@ -202,13 +202,13 @@ is a Django project which contains your settings for Molly, as well as any
 media, templates and other customisations to the Molly core. In order to get
 started with Molly, you will need to create a site.
 
-The ``molly-admin sitecreate`` command will create a template site which you can
+The ``molly-admin createsite`` command will create a template site which you can
 then go and customise to your exact requirements::
 
 This argument takes one argument which specifies the path to create the template
 in::
 
-    molly-admin sitecreate /PATH/TO/MY/SITE
+    molly-admin createsite /PATH/TO/MY/SITE
 
 Once your site template has been created, the following files are created which
 are only templates and require you to edit them:
