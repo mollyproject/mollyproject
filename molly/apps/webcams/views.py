@@ -5,14 +5,16 @@ from django.shortcuts import get_object_or_404
 from django.http import Http404
 from django.utils.translation import ugettext as _
 
-from molly.utils.views import BaseView
+from molly.conf.urls import url
 from molly.utils.breadcrumbs import *
+from molly.utils.views import BaseView
 from molly.external_media import resize_external_image
 
 from molly.apps.webcams.models import Webcam, WEBCAM_WIDTHS
 
 import datetime
 
+@url(r'^$', 'index')
 class IndexView(BaseView):
     def get_metadata(self, request):
         return {
@@ -29,7 +31,9 @@ class IndexView(BaseView):
         context['webcams'] = webcams
         return self.render(request, context, 'webcams/index',
                            expires=timedelta(days=7))
-    
+
+
+@url(r'^(?P<slug>[a-zA-Z0-9\-]+)/$', 'webcam')
 class WebcamDetailView(BaseView):
     def get_metadata(self, request, slug):
         webcam = get_object_or_404(Webcam, slug=slug)
