@@ -8,11 +8,10 @@ from django.utils.translation import ugettext as _
 from molly.conf.urls import url
 from molly.utils.breadcrumbs import *
 from molly.utils.views import BaseView
+from molly.favourites.views import FavouritableView
 from molly.external_media import resize_external_image
 
 from molly.apps.webcams.models import Webcam, WEBCAM_WIDTHS
-
-from molly.favourites.views import FavouritableView
 
 import datetime
 
