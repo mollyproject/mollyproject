@@ -12,6 +12,8 @@ from molly.external_media import resize_external_image
 
 from molly.apps.webcams.models import Webcam, WEBCAM_WIDTHS
 
+from molly.favourites.views import FavouritableView
+
 import datetime
 
 @url(r'^$', 'index')
@@ -34,7 +36,7 @@ class IndexView(BaseView):
 
 
 @url(r'^(?P<slug>[a-zA-Z0-9\-]+)/$', 'webcam')
-class WebcamDetailView(BaseView):
+class WebcamDetailView(FavouritableView):
     def get_metadata(self, request, slug):
         webcam = get_object_or_404(Webcam, slug=slug)
         return {
@@ -43,9 +45,9 @@ class WebcamDetailView(BaseView):
         }
         
     def initial_context(self, request, slug):
-        return {
-            'webcam': get_object_or_404(Webcam, slug=slug)
-        }
+        context = super(WebcamDetailView, self).initial_context(request)
+        context.update({'webcam': get_object_or_404(Webcam, slug=slug)})
+        return context
 
     @BreadcrumbFactory
     def breadcrumb(self, request, context, slug):
