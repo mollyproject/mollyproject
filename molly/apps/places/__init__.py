@@ -6,6 +6,8 @@ from django.contrib.gis.geos import Point
 
 from models import EntityType, Entity, Identifier
 
+from molly.geolocation import get_location_from_request
+
 def get_entity(scheme, value):
     return get_object_or_404(Entity,
                              _identifiers__scheme=scheme,
@@ -23,8 +25,9 @@ def get_point(request, entity):
         point = entity.location
     elif entity and not entity.location:
         point = None
-    elif request.session.get('geolocation:location'):
-        point = Point(request.session.get('geolocation:location'), srid=4326)
+    elif get_location_from_request(request) is not None:
+        latitude, longitude, accuracy = get_location_from_request(request)
+        point = Point(longitude, latitude, srid=4326)
     else:
         point = None
     return point

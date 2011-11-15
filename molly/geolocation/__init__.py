@@ -8,10 +8,41 @@ from molly.conf import get_app
 from molly.utils import haversine
 from molly.geolocation.models import Geocode
 
-__all__ = ['geocode', 'reverse_geocode']
+__all__ = ['geocode', 'reverse_geocode', 'get_location_from_request']
 
 logger = logging.getLogger(__name__)
 
+def get_location_from_request(request):
+    """
+    Returns a (lng, lat, accuracy) tuple for the request
+    """
+    
+    latitude = None
+    longitude = None
+    accuracy = None
+    
+    # If the request a location parameter, use that
+    location_string = request.REQUEST.get('location', request.META.get('HTTP_X_CURRENT_LOCATION', None))
+    if location_string is not None:
+        try:
+            (latitude, longitude, accuracy) = location_string.split(',')
+        except ValueError, e:
+            # Not enough values passed. Just quietly fail for now
+            pass
+    
+    # Else use a geolocation:location session variable
+    elif 'geolocation:location' in request.session:
+        longitude, latitude = request.session['geolocation:location']
+        accuracy = request.session.get('geolocation:accuracy', None)
+        
+    if latitude and longitude:
+        latitude = float(latitude)
+        longitude = float(longitude)
+        if accuracy:
+            accuracy = float(accuracy) # float or int?
+        return (latitude, longitude, accuracy)
+    return None
+    
 def _cached(getargsfunc):
     def g(f):
         @wraps(f)

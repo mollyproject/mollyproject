@@ -14,7 +14,7 @@ from molly.utils.templatetags.molly_utils import humanise_distance
 from molly.utils import haversine
 
 from molly.geolocation.forms import LocationUpdateForm
-from molly.geolocation import geocode, reverse_geocode
+from molly.geolocation import geocode, reverse_geocode, get_location_from_request
 
 class GeolocationView(BaseView):
     """
@@ -272,7 +272,7 @@ class LocationRequiredView(BaseView):
         return True
 
     def __call__(self, request, *args, **kwargs):
-        if not self.is_location_required(request, *args, **kwargs) or request.session.get('geolocation:location'):
+        if not self.is_location_required(request, *args, **kwargs) or get_location_from_request(request) is not None:
             return super(LocationRequiredView, self).__call__(request, *args, **kwargs)
         else:
             return self.redirect('%s?%s' % (
