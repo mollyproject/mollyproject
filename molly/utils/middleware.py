@@ -1,8 +1,10 @@
 import sys
 import logging
 
+from collections import namedtuple
 from django.http import Http404
 from django.conf import settings
+from django.contrib.gis.geos import Point
 from django.core.exceptions import ImproperlyConfigured, PermissionDenied
 from django.middleware.locale import LocaleMiddleware
 from django.utils import translation
@@ -10,6 +12,55 @@ from django.utils import translation
 from molly.utils.views import handler500
 
 logger = logging.getLogger(__name__)
+
+Location = namedtuple('Location', ['point', 'accuracy'])
+
+class LocationMiddleware(object):
+    """
+    Adds a user_location attribute to requests where the user's location
+    can be determined by any of a number of means (query string parameters,
+    HTTP header, previously set session variable, etc)
+    
+    user_location is a namedtuple of (point, accuracy). user_location.point
+    is a django.contrib.gis.geos.Point object using SRID 4326
+    """
+    def process_request(self, request):
+        latitude = None
+        longitude = None
+        accuracy = None
+
+        # If the request has latitude and longitude query params, use those
+        if 'latitude' in request.GET and 'longitude' in request.GET:
+            latitude = request.GET['latitude']
+            longitude = request.GET['longitude']
+            accuracy = request.GET.get('accuracy')
+
+        # Else look for an X-Current-Location header with the format
+        # X-Current-Location: latitude=0.0,longitude=0.0,accuracy=1
+        elif 'HTTP_X_CURRENT_LOCATION' in request.META:
+            location_string = request.META['HTTP_X_CURRENT_LOCATION']
+            try:
+                temp_dict = dict([token.split('=') for token in location_string.split(',')])
+                if 'latitude' in temp_dict and 'longitude' in temp_dict:
+                    latitude = temp_dict['latitude']
+                    longitude = temp_dict['longitude']
+                    accuracy = temp_dict.get('accuracy')
+            except ValueError:
+                # Malformed X-Current-Location header (e.g. latitude=0.0&foo)
+                pass
+                
+        # Else use a geolocation:location session variable
+        elif 'geolocation:location' in request.session:
+            longitude, latitude = request.session['geolocation:location']
+            accuracy = request.session.get('geolocation:accuracy')
+
+        if latitude and longitude:
+            point = Point(float(longitude), float(latitude), srid=4326)
+            if accuracy:
+                accuracy = float(accuracy)
+            else:
+                accuracy = None
+            request.user_location = Location(point, accuracy)
 
 class ErrorHandlingMiddleware(object):
     def process_exception(self, request, exception):
