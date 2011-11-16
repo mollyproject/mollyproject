@@ -1,8 +1,11 @@
 from datetime import date
 
+from django.test.client import Client
 from django.utils import unittest
 
 from molly.apps.places.models import Journey
+
+import httplib
 
 class AtcoCifTestCase(unittest.TestCase):
     
@@ -51,6 +54,31 @@ class AtcoCifTestCase(unittest.TestCase):
         self.assertTrue(date(2012, 8, 27) in hols) # Summer Bank Holiday
         self.assertTrue(date(2012, 12, 25) in hols) # Christmas Day
         self.assertTrue(date(2012, 12, 26) in hols) # Boxing Day
+
+class LocationTestCase(unittest.TestCase):
+    def testLocationRequiredViewSubclass(self):
+        c = Client()
+        path = '/places/nearby/'
+        latitude = 53.800651
+        longitude = -4.064941
+        accuracy = 10
+        
+        # Trying to get a LocationRequiredView with no location set should
+        # cause a redirect
+        response = c.get(path)
+        self.assertEquals(response.status_code, httplib.SEE_OTHER)
+        
+        # Trying to get a LocationRequiredView with latitude, longitude
+        # and accuracy query params returns OK
+        response = c.get(path, data={ 'latitude':latitude, 'longitude': longitude, 'accuracy': accuracy })
+        self.assertEquals(response.status_code, httplib.OK)
+
+        # Trying to get a LocationRequiredView with an X-Current-Location
+        # HTTP header returns OK
+        response = c.get(path, HTTP_X_CURRENT_LOCATION="latitude=%.6f,longitude=%.6f,accuracy=%d" % (latitude, longitude, accuracy))
+        self.assertEquals(response.status_code, httplib.OK)
+        
+        
 
 if __name__ == '__main__':
     unittest.main()
