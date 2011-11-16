@@ -1068,3 +1068,5 @@ INSTALLED_APPS = extract_installed_apps(APPLICATIONS) + (
     'pipeline', # Pipeline is an external library that minifies JS and CSS
     'south', # South handles changes to database schema
 )
+
+SOUTH_TESTS_MIGRATE = False
