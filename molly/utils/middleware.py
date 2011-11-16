@@ -55,10 +55,12 @@ class LocationMiddleware(object):
             accuracy = request.session.get('geolocation:accuracy')
 
         if latitude and longitude:
-            user_location = Location(Point(float(longitude), float(latitude), srid=4326), None)
+            point = Point(float(longitude), float(latitude), srid=4326)
             if accuracy:
-                user_location.accuracy = float(accuracy)
-            request.user_location = user_location
+                accuracy = float(accuracy)
+            else:
+                accuracy = None
+            request.user_location = Location(point, accuracy)
 
 class ErrorHandlingMiddleware(object):
     def process_exception(self, request, exception):

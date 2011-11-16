@@ -59,8 +59,8 @@ class LocationTestCase(unittest.TestCase):
     def testLocationRequiredViewSubclass(self):
         c = Client()
         path = '/places/nearby/'
-        latitude = 53.800651
-        longitude = -4.064941
+        latitude = 51.752274
+        longitude = -1.255875
         accuracy = 10
         
         # Trying to get a LocationRequiredView with no location set should
@@ -68,12 +68,22 @@ class LocationTestCase(unittest.TestCase):
         response = c.get(path)
         self.assertEquals(response.status_code, httplib.SEE_OTHER)
         
+        # Trying to get a LocationRequiredView with latitude and longitude
+        # query params returns OK
+        response = c.get(path, data={ 'latitude':latitude, 'longitude': longitude })
+        self.assertEquals(response.status_code, httplib.OK)
+        
         # Trying to get a LocationRequiredView with latitude, longitude
         # and accuracy query params returns OK
         response = c.get(path, data={ 'latitude':latitude, 'longitude': longitude, 'accuracy': accuracy })
         self.assertEquals(response.status_code, httplib.OK)
 
-        # Trying to get a LocationRequiredView with an X-Current-Location
+        # Trying to get a LocationRequiredView with an X-Current-Location (no accuracy)
+        # HTTP header returns OK
+        response = c.get(path, HTTP_X_CURRENT_LOCATION="latitude=%.6f,longitude=%.6f" % (latitude, longitude))
+        self.assertEquals(response.status_code, httplib.OK)
+
+        # Trying to get a LocationRequiredView with an X-Current-Location (including accuracy)
         # HTTP header returns OK
         response = c.get(path, HTTP_X_CURRENT_LOCATION="latitude=%.6f,longitude=%.6f,accuracy=%d" % (latitude, longitude, accuracy))
         self.assertEquals(response.status_code, httplib.OK)
