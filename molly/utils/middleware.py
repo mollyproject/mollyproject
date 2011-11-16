@@ -1,8 +1,10 @@
 import sys
 import logging
 
+from collections import namedtuple
 from django.http import Http404
 from django.conf import settings
+from django.contrib.gis.geos import Point
 from django.core.exceptions import ImproperlyConfigured, PermissionDenied
 from django.middleware.locale import LocaleMiddleware
 from django.utils import translation
@@ -11,7 +13,17 @@ from molly.utils.views import handler500
 
 logger = logging.getLogger(__name__)
 
+Location = namedtuple('Location', ['point', 'accuracy'])
+
 class LocationMiddleware(object):
+    """
+    Adds a user_location attribute to requests where the user's location
+    can be determined by any of a number of means (query string parameters,
+    HTTP header, previously set session variable, etc)
+    
+    user_location is a namedtuple of (point, accuracy). user_location.point
+    is a django.contrib.gis.geos.Point object using SRID 4326
+    """
     def process_request(self, request):
         latitude = None
         longitude = None
@@ -43,14 +55,10 @@ class LocationMiddleware(object):
             accuracy = request.session.get('geolocation:accuracy')
 
         if latitude and longitude:
-            location_dict = {
-                'latitude': float(latitude),
-                'longitude': float(longitude),
-            }
+            user_location = Location(Point(float(longitude), float(latitude), srid=4326), None)
             if accuracy:
-                location_dict['accuracy'] = float(accuracy) # float or int?
-            request.user_location = location_dict
-
+                user_location.accuracy = float(accuracy)
+            request.user_location = user_location
 
 class ErrorHandlingMiddleware(object):
     def process_exception(self, request, exception):

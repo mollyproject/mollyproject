@@ -24,7 +24,7 @@ def get_point(request, entity):
     elif entity and not entity.location:
         point = None
     elif hasattr(request, 'user_location'):
-        point = Point(request.user_location['longitude'], request.user_location['latitude'], srid=4326)
+        point = request.user_location.point
     else:
         point = None
     return point
