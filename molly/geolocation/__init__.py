@@ -11,7 +11,7 @@ from molly.geolocation.models import Geocode
 __all__ = ['geocode', 'reverse_geocode']
 
 logger = logging.getLogger(__name__)
-
+    
 def _cached(getargsfunc):
     def g(f):
         @wraps(f)

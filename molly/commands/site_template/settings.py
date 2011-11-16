@@ -218,6 +218,7 @@ MIDDLEWARE_CLASSES = (
     'molly.wurfl.middleware.WurflMiddleware', # This enables Molly's device detection capability (required)
     'django.middleware.common.CommonMiddleware', # This incorporates some convenience functions from Django (required)
     'django.contrib.sessions.middleware.SessionMiddleware', # This enables Django's session storage framework (required)
+    'molly.utils.middleware.LocationMiddleware', # This annotates requests with a user_location attribute
     'molly.utils.middleware.CookieLocaleMiddleware', # This enables i18n support in Molly (required)
     'molly.utils.middleware.ErrorHandlingMiddleware', # This enables Molly's error handling and reporting framework
     'django.contrib.auth.middleware.AuthenticationMiddleware', # This allows for users to be logged in in Django (required)
@@ -1067,3 +1068,5 @@ INSTALLED_APPS = extract_installed_apps(APPLICATIONS) + (
     'pipeline', # Pipeline is an external library that minifies JS and CSS
     'south', # South handles changes to database schema
 )
+
+SOUTH_TESTS_MIGRATE = False
