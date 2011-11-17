@@ -20,7 +20,7 @@ OUTPUT_DIR=$1
 PYTHON=$2
 if [ -z "$PYTHON" ] ; then
     PYTHON='python'
-    SPHINXBUILD="`which spinx-build`"
+    SPHINXBUILD="`which sphinx-build`"
 else
     SPHINXBUILD="`dirname $PYTHON`/sphinx-build"
 fi
