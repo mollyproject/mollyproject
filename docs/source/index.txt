@@ -50,6 +50,7 @@ Utilities
    :maxdepth: 1
 
    ref/*
+   ref/utils/*
 
 "Batteries-Included" Apps
 """""""""""""""""""""""""

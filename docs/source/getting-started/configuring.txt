@@ -145,6 +145,9 @@ If you would like to receive e-mail notifications of errors, you must add
 ``molly.utils.middleware.ErrorHandlingMiddleware``, and if you would like
 statistics logging, ``molly.apps.stats.middleware.StatisticsMiddleware``.
 
+In order to enable geolocation functionality in Molly, you must enable
+``molly.utils.middleware.LocationMiddleware``.
+
 A typical setup may look like this::
 
     MIDDLEWARE_CLASSES = (
@@ -153,6 +156,7 @@ A typical setup may look like this::
         'django.contrib.sessions.middleware.SessionMiddleware',
         'molly.utils.middleware.CookieLocaleMiddleware',
         'molly.utils.middleware.ErrorHandlingMiddleware',
+        'molly.utils.middleware.LocationMiddleware',
         'django.contrib.auth.middleware.AuthenticationMiddleware',
         'molly.auth.middleware.SecureSessionMiddleware',
         'molly.apps.stats.middleware.StatisticsMiddleware',

@@ -23,8 +23,8 @@ def get_point(request, entity):
         point = entity.location
     elif entity and not entity.location:
         point = None
-    elif request.session.get('geolocation:location'):
-        point = Point(request.session.get('geolocation:location'), srid=4326)
+    elif hasattr(request, 'user_location'):
+        point = request.user_location.point
     else:
         point = None
     return point
