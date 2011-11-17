@@ -72,7 +72,10 @@ class RSSFeedsProvider(BaseFeedsProvider):
                 # and hope it's unique
                 guid = x_item.link
 
-            last_modified = datetime(*x_item.date_parsed[:7])
+            try:
+                last_modified = datetime(*x_item.date_parsed[:7])
+            except:
+                last_modified = None
 
             for i in items:
                 if i.guid == guid:

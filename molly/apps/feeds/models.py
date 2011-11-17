@@ -105,7 +105,7 @@ class Item(models.Model):
     guid = models.TextField()
     description = models.TextField(help_text=_("Description of feed item"))
     link = models.URLField(help_text=_("URL to feed item"))
-    last_modified = models.DateTimeField()  # this one is also in UTC
+    last_modified = models.DateTimeField(null = True)  # this one is also in UTC
 
     ptype = models.CharField(max_length=16, choices=FEED_TYPE_CHOICES)
 
