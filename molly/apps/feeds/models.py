@@ -42,40 +42,41 @@ class NewsManager(models.Manager):
 
 class Tag(models.Model):
     value = models.CharField(max_length=128)
-    
+
     def __unicode__(self):
         return self.value
 
 
 class Feed(models.Model):
     title = models.TextField(help_text=_("Feed title"))
-    entity = models.ForeignKey(Entity, null=True,
+    entity = models.ForeignKey(Entity, null=True, blank=True,
                                help_text=_('Place which this feed belongs to'))
     rss_url = models.URLField(help_text=_("URL of feed"))
     slug = models.SlugField(help_text=_("Slug of feed, e.g. oucs-news"))
-    last_modified = models.DateTimeField(null=True, blank=True) # this one is in UTC
+    # this one is in UTC
+    last_modified = models.DateTimeField(null=True, blank=True)
     language = models.CharField(max_length=10, choices=settings.LANGUAGES,
                                 null=True)
-    
+
     # Provider type
     ptype = models.CharField(max_length=1, choices=FEED_TYPE_CHOICES)
     provider = models.CharField(max_length=128, choices=PROVIDER_CHOICES)
-    
+
     objects = models.Manager()
     events = EventsManager()
     news = NewsManager()
 
     tags = models.ManyToManyField(Tag, blank=True)
-    
+
     def __unicode__(self):
         return self.title
-        
+
     def get_absolute_url(self):
         if self.ptype == 'n':
             return reverse('news:item-list', args=[self.slug])
         else:
             return reverse('events:item-list', args=[self.slug])
-        
+
     class Meta:
         ordering = ('title',)
 
@@ -95,7 +96,6 @@ class Series(models.Model):
     guid = models.TextField()
     title = models.TextField()
     unit = models.ForeignKey(vCard, null=True, blank=True)
-
     tags = models.ManyToManyField(Tag, blank=True)
 
 
@@ -105,19 +105,23 @@ class Item(models.Model):
     guid = models.TextField()
     description = models.TextField(help_text=_("Description of feed item"))
     link = models.URLField(help_text=_("URL to feed item"))
-    last_modified = models.DateTimeField() # this one is also in UTC
-    
+    last_modified = models.DateTimeField()  # this one is also in UTC
+
     ptype = models.CharField(max_length=16, choices=FEED_TYPE_CHOICES)
-    
-    organiser = models.ForeignKey(vCard, related_name='organising_set', null=True, blank=True)
-    speaker = models.ForeignKey(vCard, related_name='speaking_set', null=True, blank=True)
-    venue = models.ForeignKey(vCard, related_name='venue_set', null=True, blank=True)
-    contact = models.ForeignKey(vCard, related_name='contact_set', null=True, blank=True)
-    
+
+    organiser = models.ForeignKey(vCard, related_name='organising_set',
+                                  null=True, blank=True)
+    speaker = models.ForeignKey(vCard, related_name='speaking_set',
+                                null=True, blank=True)
+    venue = models.ForeignKey(vCard, related_name='venue_set',
+                              null=True, blank=True)
+    contact = models.ForeignKey(vCard, related_name='contact_set',
+                                null=True, blank=True)
+
     series = models.ForeignKey(Series, null=True, blank=True)
     ordinal = models.IntegerField(null=True)
     track = models.TextField(blank=True)
-    
+
     tags = models.ManyToManyField(Tag, blank=True)
 
     objects = models.Manager()
@@ -127,38 +131,42 @@ class Item(models.Model):
     dt_start = models.DateTimeField(null=True, blank=True)
     dt_end = models.DateTimeField(null=True, blank=True)
     dt_has_time = models.BooleanField(default=False)
-    
+
     @property
     def location_mobile_url(self):
-        return self.location_url.replace('/reviews/venue/', '/reviews/phone/venue/')
-    
+        return self.location_url.replace('/reviews/venue/',
+                                         '/reviews/phone/venue/')
+
     @property
     def last_modified_local(self):
         try:
-            return self.last_modified.replace(tzinfo=tzutc()).astimezone(tzlocal())
+            return self.last_modified.replace(tzinfo=tzutc())\
+                .astimezone(tzlocal())
         except Exception, e:
             return repr(e)
-    
+
     def get_absolute_url(self):
         if self.ptype == 'n':
             return reverse('news:item-detail', args=[self.feed.slug, self.id])
         else:
-            return reverse('events:item-detail', args=[self.feed.slug, self.id])
-    
+            return reverse('events:item-detail',
+                           args=[self.feed.slug, self.id])
+
     def get_description_display(self, device):
-        html = etree.fromstring('<div>%s</div>' % self.description, parser=etree.HTMLParser())
+        html = etree.fromstring('<div>%s</div>' % self.description,
+                                parser=etree.HTMLParser())
         for img in html.findall('.//img'):
-            eis = resize_external_image(img.attrib['src'], device.max_image_width-40)
+            eis = resize_external_image(img.attrib['src'],
+                                        device.max_image_width - 40)
             if eis != None:
                 img.attrib['src'] = eis.get_absolute_url()
                 img.attrib['width'] = '%d' % eis.width
                 img.attrib['height'] = '%d' % eis.height
         return etree.tostring(html.find('.//div'), method="html")[5:-6]
-    
+
     def save(self, *args, **kwargs):
         self.ptype = self.feed.ptype
         super(Item, self).save(*args, **kwargs)
-        
-    
+
     class Meta:
         ordering = ('-last_modified',)
