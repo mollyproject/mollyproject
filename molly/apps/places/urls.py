@@ -52,9 +52,9 @@ urlpatterns = patterns('',
         ServiceDetailView, {},
         'service-detail'),
     
-    (r'^(?P<scheme>[a-z_\-]+):(?P<value>[^/]+)/timetable/((?P<year>\d{4})\-(?P<month>\d{2})\-(?P<day>\d{2})/)?$',
-        TimetableView, {},
-        'timetable'),
+    #(r'^(?P<scheme>[a-z_\-]+):(?P<value>[^/]+)/timetable/((?P<year>\d{4})\-(?P<month>\d{2})\-(?P<day>\d{2})/)?$',
+    #    TimetableView, {},
+    #    'timetable'),
     
     (r'^(?P<scheme>[a-z_\-]+):(?P<value>[^/]+)/nearby/$',
         NearbyEntityListView, {},
