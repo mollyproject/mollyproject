@@ -8,14 +8,22 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
 
-        # Alter column last_modified to allow null values
-        db.alter_column('feeds_item'. 'last_modified', models.DateTimeField(null = True))
+        # Changing field 'Item.last_modified'
+        db.alter_column('feeds_item', 'last_modified', self.gf('django.db.models.fields.DateTimeField')(null=True))
 
 
     def backwards(self, orm):
-        
-        # Alter column last_modified to reject null values
-        db.alter_column('feeds_item'. 'last_modified', models.DateTimeField(null = False))
+
+        # Migrating data to a default value when null
+        db.start_transaction()
+        for item in orm.Item.objects.filter(last_modified__isnull=True):
+            item.last_modified = datetime.datetime.now()
+            item.save()
+        db.commit_transaction()
+        print "Migrated"
+        # Changing field 'Item.last_modified'
+        db.alter_column('feeds_item', 'last_modified', self.gf('django.db.models.fields.DateTimeField')(null=False))
+        print "Altered"
 
 
     models = {
@@ -42,7 +50,7 @@ class Migration(SchemaMigration):
             'feed': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['feeds.Feed']"}),
             'guid': ('django.db.models.fields.TextField', [], {}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'last_modified': ('django.db.models.fields.DateTimeField', [], {}),
+            'last_modified': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'null': 'True'}),
             'link': ('django.db.models.fields.URLField', [], {'max_length': '200'}),
             'ordinal': ('django.db.models.fields.IntegerField', [], {'null': 'True'}),
             'organiser': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'organising_set'", 'null': 'True', 'to': "orm['feeds.vCard']"}),
