@@ -65,7 +65,14 @@ function async_load_callback(data, textStatus, xhr) {
     capture_outbound();
 }
 
-function ajax_failure() {
+function ajax_failure(jqXHR, textStatus, errorThrown) {
+    if (window.console) {
+        if (console.error) {
+            console.error(jqXHR, textStatus, errorThrown);
+        } else {
+            console.log(jqXHR, textStatus, errorThrown);
+        }
+    }
     async_load_xhr = null;
     $('#loading')
         .html('<p style="position:fixed; top: 10%; width:100%; margin:0 auto; text-align:center;">' + gettext('Error loading page - please try again.') + '</p>')

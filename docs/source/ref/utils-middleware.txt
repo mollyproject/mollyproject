@@ -44,11 +44,16 @@ as follows:
 
 For example:
 
-    ``http://mydomain.com/places/nearby/?latitude=51.40392&longiture=1.0203``
+    ``http://mydomain.com/places/nearby/?latitude=51.40392&longitude=1.0203``
 
-    ``http://mydomain.com/places/nearby/?latitude=51.40392&longiture=1.0203&accuracy=5``
+    ``http://mydomain.com/places/nearby/?latitude=51.40392&longitude=1.0203&accuracy=5``
 
 Note: When providing location as an HTTP header or as query string parameters, 
 latitude and longitude are mandatory, and will be interpreted using
 the WSG84 datum. Accuracy is optional.
 
+The order of evaluation is:
+
+* If query string params are provided, use those; else:
+* If the X-Current-Location header is set, use that; else:
+* If the geolocation:location session variable is set, use that
