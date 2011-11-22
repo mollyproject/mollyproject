@@ -15,6 +15,7 @@
 from oauth.oauth import OAuthSignatureMethod_PLAINTEXT
 import os, os.path, imp
 from molly.conf.settings import Application, extract_installed_apps, Authentication, ExtraBase, Provider
+from molly.conf.default_settings import *
 from molly.utils.media import get_compress_groups
 
 # The following import and mimetypes.add_types correct the - possibly wrong - mime type of svg files
@@ -209,42 +210,6 @@ TEMPLATE_DIRS = (
     os.path.join(MOLLY_ROOT, 'templates'), # secondly, look in Molly's default templates
 )
 
-# This list specifies which Django middleware clases are used when processing
-# requests and responses. For more information about Django middleware, please
-# see https://docs.djangoproject.com/en/dev/topics/http/middleware/
-# The defaults are fine for most installs
-MIDDLEWARE_CLASSES = (
-    'django.middleware.csrf.CsrfViewMiddleware', # This enables Django's cross-site request forgery protection framework
-    'molly.wurfl.middleware.WurflMiddleware', # This enables Molly's device detection capability (required)
-    'django.middleware.common.CommonMiddleware', # This incorporates some convenience functions from Django (required)
-    'django.contrib.sessions.middleware.SessionMiddleware', # This enables Django's session storage framework (required)
-    'molly.utils.middleware.LocationMiddleware', # This annotates requests with a user_location attribute
-    'molly.utils.middleware.CookieLocaleMiddleware', # This enables i18n support in Molly (required)
-    'molly.utils.middleware.ErrorHandlingMiddleware', # This enables Molly's error handling and reporting framework
-    'django.contrib.auth.middleware.AuthenticationMiddleware', # This allows for users to be logged in in Django (required)
-    'molly.auth.middleware.SecureSessionMiddleware', # This adds the capability to have secure sessions (sessions which are HTTPS only)
-    'molly.apps.stats.middleware.StatisticsMiddleware', # This enables Molly's built in hit logging
-    'molly.url_shortener.middleware.URLShortenerMiddleware', # This enables Molly's URL shortening functionality
-)
-
-# This list specifies "context processors" which add things to the context which
-# are then available in the templates. The defaults are fine for most installs.
-TEMPLATE_CONTEXT_PROCESSORS = (
-    'django.contrib.auth.context_processors.auth', # This adds information about the currently logged in user to the context
-    'django.core.context_processors.debug', # This allows templates to check whether or not they are in debug mode
-    'django.core.context_processors.request', # This adds the current request to the template context
-    'molly.utils.context_processors.ssl_media', # This adds STATIC_URL to the template context, which is the base URL to be used for rendering
-                                                # when the request is over HTTPS, then STATIC_URL is also changed to be HTTPS if it's a full URI
-    'molly.wurfl.context_processors.wurfl_device', # This adds information about the current device to the context
-    'molly.wurfl.context_processors.device_specific_media', # This adds information to the context about the capability group this device has been put in
-                                                            # for more information about capability groups, see: http://docs.mollyproject.org/dev/topics/supported_devices.html
-    'molly.geolocation.context_processors.geolocation', # This adds the current known location of the user to the context
-    'molly.utils.context_processors.full_path', # This allows for templates to know the full path to the currently rendered page
-    'molly.utils.context_processors.google_analytics', # This adds settings related to Google Analytics to the template contect
-    'molly.utils.context_processors.site_name', # This adds the globally configured site name to the template context
-    'molly.utils.context_processors.languages', # This adds information about the current and available languages to the context
-    'django.core.context_processors.csrf', # This adds a CSRF token to the context which is used for form rendering
-)
 
 # This specifies that Django should use Molly's automatically generated Urlconf
 # If you're using any non-Molly apps with Molly, you will need to create a
@@ -1069,4 +1034,3 @@ INSTALLED_APPS = extract_installed_apps(APPLICATIONS) + (
     'south', # South handles changes to database schema
 )
 
-SOUTH_TESTS_MIGRATE = False
