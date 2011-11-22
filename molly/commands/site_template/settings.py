@@ -1020,17 +1020,5 @@ APPLICATIONS = [
 ]
 
 # This is where any non-Molly apps are added to the configuration
-INSTALLED_APPS = extract_installed_apps(APPLICATIONS) + (
-    'django.contrib.auth', # Django's user authentication system
-    'django.contrib.admin', # Django's admin backend
-    'django.contrib.contenttypes', # Django's Content Types API - this is a prerequisite for the admin interface
-    'django.contrib.sessions', # Django's sessions API - this is required
-    'django.contrib.sites', # Django's sites API, this is a prerequisite for the comments API
-    'django.contrib.gis', # Geodjango - this is required
-    'django.contrib.comments', # Django's comments API - used in the feature vote app
-    'molly.batch_processing', # This is a part of Molly that handles the batch jobs
-    'django.contrib.staticfiles', # Staticfiles handles media for Molly
-    'pipeline', # Pipeline is an external library that minifies JS and CSS
-    'south', # South handles changes to database schema
-)
+INSTALLED_APPS = extract_installed_apps(APPLICATIONS) + INSTALLED_APPS
 
