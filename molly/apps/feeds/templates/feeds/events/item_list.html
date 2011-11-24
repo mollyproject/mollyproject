@@ -18,7 +18,7 @@
     <h2>{{ feed.title }}</h2>
 </div>
     <ul class="link-list">
-{% for item in feed.item_set.all %}
+{% for item in feed_items %}
         <li>
             <a href="{{ item.get_absolute_url }}">
                 {{ item.title }}<br />
