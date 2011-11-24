@@ -49,7 +49,7 @@ class Tag(models.Model):
 
 class Feed(models.Model):
     title = models.TextField(help_text=_("Feed title"))
-    entity = models.ForeignKey(Entity, null=True,
+    entity = models.ForeignKey(Entity, null=True, blank=True, 
                                help_text=_('Place which this feed belongs to'))
     rss_url = models.URLField(help_text=_("URL of feed"))
     slug = models.SlugField(help_text=_("Slug of feed, e.g. oucs-news"))
