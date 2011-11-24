@@ -1,6 +1,52 @@
 # default_settings.py: Default Django settings that it makes sense to apply
 # across all installations.
 
+# This refers to Django's 'Site' framework, which Molly does not use. It is
+# recommended to leave this at its default setting
+SITE_ID = 1
+
+# If you set this to False, Django will make some optimizations so as not
+# to load the internationalization machinery.
+USE_I18N = True
+
+# If you set this to False, Django will not format dates, numbers and
+# calendars according to the current locale
+USE_L10N = True
+
+# When set, then a version number is added to compressed files, this means
+# changing a file also changes its URL - when combined with far future expires,
+# then this solves caching issues
+PIPELINE_VERSION = True
+
+# We set this to False for a performance optimisation - we don't want CSS and JS
+# to be regenerated on the server, just once at deploy time. If you do want
+# this, then change it to True
+PIPELINE_AUTO = False
+
+# This list is used to specifiy which classes are used to help Django find
+# templates to be rendered. In most circumstances, there is no reason to change
+# this
+TEMPLATE_LOADERS = (
+    'django.template.loaders.filesystem.Loader', # First try the templates in the directories specified by TEMPLATE_DIRS
+    'django.template.loaders.app_directories.Loader', # Then try the ones that come with the bundled apps
+    'molly.utils.template_loaders.MollyDefaultLoader' # Finally, use Molly's molly_default virtual directory
+)
+
+# This specifies that Django should use Molly's automatically generated Urlconf
+# If you're using any non-Molly apps with Molly, you will need to create a
+# custom Urlconf
+ROOT_URLCONF = 'molly.urls'
+
+# This defines the view that is rendered when a CSRF validation failure occurs
+# The default is to use Molly's default templates. If you want to change this
+# view, it is instead recommended that you create a new template
+# 'csrf_failure.html' in your templates folder and customise that
+CSRF_FAILURE_VIEW = 'molly.utils.views.CSRFFailureView'
+
+# This disables Django's built in logger, as Molly comes with its own logging
+# framework which can sometimes conflict with Django's
+LOGGING_CONFIG = None
+
 # This list specifies which Django middleware clases are used when processing
 # requests and responses. For more information about Django middleware, please
 # see https://docs.djangoproject.com/en/dev/topics/http/middleware/
