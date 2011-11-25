@@ -34,7 +34,7 @@ class Command(NoArgsCommand):
         call_command('collectstatic', interactive=False, link=develop)
         call_command('synccompress')
         if not skip_cron:
-            call_command('create_crontab', pipe_to_crontab=(os.name != 'nt'))
+            call_command('create_crontab', write_system_cron=(os.name != 'nt'))
         if develop:
             call_command('runserver')
 
