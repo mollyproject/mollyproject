@@ -13,8 +13,6 @@ from views import (
     CategoryListView, CategoryDetailView,
     
     ServiceDetailView, EntityDirectionsView, TimetableView,
-
-    APIView,
 )
 
 urlpatterns = patterns('',
@@ -71,8 +69,4 @@ urlpatterns = patterns('',
         StaticDetailView,
         {'title':'About OpenStreetMap', 'template':'openstreetmap'},
         'static-openstreetmap'),
-
-    (r'^api/$',
-        APIView, {},
-        'api'),
 )
