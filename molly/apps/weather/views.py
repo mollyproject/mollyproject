@@ -12,8 +12,10 @@ class IndexView(BaseView):
             observation = Weather.objects.get(location_id=self.conf.location_id, ptype='o')
         except Weather.DoesNotExist:
             observation = None
+        copyrights = [provider.copyright for provider in self.conf.providers]
         return {
             'observation': observation,
+            'copyrights': copyrights,
             'forecasts': Weather.objects.filter(
                 location_id=self.conf.location_id, ptype='f',
                 observed_date__gte=datetime.now().date()).order_by('observed_date'),

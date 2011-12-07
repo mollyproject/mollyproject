@@ -14,6 +14,7 @@ class BBCWeatherProvider(object):
     def __init__(self, location_id):
        self.location_id = location_id
        self.id = 'bbc/%d' % location_id
+       self.copyright = { 'title': "BBC Weather", 'url': "http://bbc.co.uk/weather"}
 
     @staticmethod
     def _rfc_2822_datetime(value):
