@@ -1,6 +1,9 @@
 import re, urllib, random, email
 from datetime import datetime, tzinfo, timedelta
 from xml.etree import ElementTree as ET
+import traceback
+import logging
+import socket
 
 from django.contrib.gis.geos import Point
 
@@ -9,6 +12,8 @@ from molly.apps.weather.models import (
     Weather, OUTLOOK_CHOICES, VISIBILITY_CHOICES, PRESSURE_STATE_CHOICES,
     SCALE_CHOICES
 )
+
+logger = logging.getLogger(__name__)
 
 class BBCWeatherProvider(object):
     def __init__(self, location_id):
@@ -71,8 +76,16 @@ class BBCWeatherProvider(object):
     def import_data(self, metadata, output):
         "Pulls weather data from the BBC"
 
-        observations = self.get_observations_data()
-        forecasts = self.get_forecast_data()
+        socket.setdefaulttimeout(5)
+        try:
+            observations = self.get_observations_data()
+            forecasts = self.get_forecast_data()
+        except Exception, e:
+            output.write("Error importing weather data from BBC\n")
+            traceback.print_exc(file=output)
+            output.write('\n')
+            logger.exception("Error importing weather data from BBC")
+            return metadata
 
         weathers = [(
             Weather.objects.get_or_create(location_id = self.id, ptype='o')[0], observations
