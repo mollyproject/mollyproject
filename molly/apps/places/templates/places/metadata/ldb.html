@@ -34,7 +34,7 @@
         <tr>
           <td colspan="{% if entity.metadata.ldb.platformAvailable %}4{% else %}3{% endif %}">
             <p>{% trans "There is currently a problem retrieving live departure information from the National Rail web site." %}</p>
-            <p>{% blocktrans with entity.identifiers.crs as crs %}Departure information may still be accessed<a href="http://pda.ojp.nationalrail.co.uk/en/pj/ldbboard/dep/{{ crs }}">directly from their web site</a>.{% endblocktrans %}</p>
+            <p>{% blocktrans with entity.identifiers.crs as crs %}{% trans "Departure information may still be accessed" %}<a href="http://pda.ojp.nationalrail.co.uk/en/pj/ldbboard/dep/{{ crs }}">directly from their web site</a>.{% endblocktrans %}</p>
           </td>
         </tr>
       {% else %}
@@ -77,9 +77,9 @@
           <tr>
             <td colspan="{% if entity.metadata.ldb.platformAvailable %}4{% else %}3{% endif %}">
                 {% ifequal board "arrivals" %}
-                    There are currently no scheduled arrivals.
+                    {% trans "There are currently no scheduled arrivals." %}
                 {% else %}
-                    There are currently no scheduled departures.
+                    {% trans "There are currently no scheduled departures." %}
                 {% endifequal%}
 	    </td>
           </tr>
