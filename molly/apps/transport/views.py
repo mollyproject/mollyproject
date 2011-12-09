@@ -98,9 +98,14 @@ class RailView(TransportView):
             context['entity'] = entity
         else:
             raise Http404()
-        
+            
+        places_conf = app_by_application_name('molly.apps.places')
+        copyrights = [provider.copyright for provider in places_conf.providers
+                      if hasattr(provider, 'copyright')]
+        context['copyrights'] = copyrights
+
         context['board'] = request.GET.get('board', 'departures')
-        
+
         self.augment_metadata([entity], board=context['board'])
         
         return context

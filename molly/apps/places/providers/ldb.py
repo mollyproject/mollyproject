@@ -16,6 +16,9 @@ class LiveDepartureBoardPlacesProvider(BaseMapsProvider):
         self._max_services = max_services
         self._max_results = max_results
         self._token = token
+        self.copyright = { 'title': "Powered by National Rail Enquiries",
+                          'url': "http://nationalrail.co.uk",
+                          'picture': "places/images/powered-by-nre.png" }
 
     def delayed(self, eta, sta, etd, std):
         """
