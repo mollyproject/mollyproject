@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-12-07 16:50+0000\n"
+"POT-Creation-Date: 2011-12-12 17:33+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -439,7 +439,7 @@ msgid "View events from across the University."
 msgstr ""
 
 #. Translators: Feed last modified [date format] otherwise _('never_updated')
-#: apps/feeds/events/views.py:57 apps/feeds/events/views.py:82
+#: apps/feeds/events/views.py:57 apps/feeds/events/views.py:83
 #: apps/feeds/news/views.py:57
 msgid "never updated"
 msgstr ""
@@ -450,7 +450,7 @@ msgstr ""
 msgid "Events feed"
 msgstr ""
 
-#: apps/feeds/events/views.py:95
+#: apps/feeds/events/views.py:96
 msgid "Events item"
 msgstr ""
 
@@ -1012,6 +1012,10 @@ msgstr ""
 
 #: apps/places/providers/bbc_tpeg.py:143
 msgid "travel alerts"
+msgstr ""
+
+#: apps/places/providers/ldb.py:16
+msgid "Powered by National Rail Enquiries"
 msgstr ""
 
 #. Translators: This is referring to bus stop location descriptions
@@ -2395,12 +2399,24 @@ msgstr ""
 msgid "Circular Route"
 msgstr ""
 
-#: apps/places/templates/places/metadata/ldb.html:99
-#: apps/places/templates/places/metadata/ldb.html:104
-msgid "View arrivals board"
+#: apps/places/templates/places/metadata/ldb.html:80
+msgid "There are currently no scheduled arrivals."
+msgstr ""
+
+#: apps/places/templates/places/metadata/ldb.html:82
+msgid "There are currently no scheduled departures."
+msgstr ""
+
+#: apps/places/templates/places/metadata/ldb.html:93
+msgid "For more information"
 msgstr ""
 
 #: apps/places/templates/places/metadata/ldb.html:101
+#: apps/places/templates/places/metadata/ldb.html:106
+msgid "View arrivals board"
+msgstr ""
+
+#: apps/places/templates/places/metadata/ldb.html:103
 msgid "View departures board"
 msgstr ""
 
@@ -3287,16 +3303,16 @@ msgstr ""
 msgid "Rail arrivals"
 msgstr ""
 
-#: apps/transport/views.py:120
+#: apps/transport/views.py:125
 #: apps/transport/templates/transport/travel_news.html:8
 msgid "Travel alerts"
 msgstr ""
 
-#: apps/transport/views.py:152
+#: apps/transport/views.py:157
 msgid "Park and Ride"
 msgstr ""
 
-#: apps/transport/views.py:266
+#: apps/transport/views.py:271
 #: apps/transport/templates/transport/routes.html:8
 msgid "Routes"
 msgstr ""

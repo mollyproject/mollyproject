@@ -91,7 +91,7 @@
     {% for c in copyrights %}
       <a href="{{ c.url }}">
 	  <small>{% trans "For more information" %}</small><br>
-	  <img src="{{ STATIC_URL }}{{ c.picture }}" alt="{{ c.title }}" />
+	  <img src="{{ c.picture }}" alt="{{ c.title }}" />
       </a>
     {% endfor %}
   </div>

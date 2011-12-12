@@ -100,8 +100,8 @@ class RailView(TransportView):
             raise Http404()
             
         places_conf = app_by_application_name('molly.apps.places')
-        copyrights = [provider.copyright for provider in places_conf.providers
-                      if hasattr(provider, 'copyright')]
+        copyrights = [provider._COPYRIGHT for provider in places_conf.providers
+                      if hasattr(provider, '_COPYRIGHT')]
         context['copyrights'] = copyrights
 
         context['board'] = request.GET.get('board', 'departures')
