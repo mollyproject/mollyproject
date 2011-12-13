@@ -15,8 +15,8 @@ class Command(NoArgsCommand):
 
     requires_model_validation = False
 
-    WURFL_URL = 'http://kent.dl.sourceforge.net/project/wurfl/WURFL/2.1.1/wurfl-2.1.1.xml.gz'
-    WEB_PATCH_URL = 'http://kent.dl.sourceforge.net/project/wurfl/WURFL/2.1.1/web_browsers_patch.xml'
+    WURFL_URL = 'http://mollyproject.org/wurfl/wurfl-2.1.1.xml.gz'
+    WEB_PATCH_URL = 'http://mollyproject.org/wurfl/web_browsers_patch.xml'
 
     def handle_noargs(self, **options):
         tempdir = tempfile.mkdtemp()
