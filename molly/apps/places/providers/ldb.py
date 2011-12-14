@@ -4,10 +4,10 @@ from suds.sax.element import Element
 
 from django.utils.translation import ugettext_lazy
 from django.utils.translation import ugettext as _
+from django.conf import settings
 
 from molly.apps.places.models import Entity
 from molly.apps.places.providers import BaseMapsProvider
-from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
