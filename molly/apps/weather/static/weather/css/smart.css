@@ -1,4 +1,9 @@
 /* Weather */
+
+/* Used to indicate that the weather observations shown are old */
+span#weather-old {
+    color: #A81515;
+}
 div.weather-icon {
     display:inline-block;
     width: 128px;

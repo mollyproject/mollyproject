@@ -20,6 +20,10 @@ class BBCWeatherProvider(object):
        self.location_id = location_id
        self.id = 'bbc/%d' % location_id
        self.attribution = { 'title': "BBC Weather", 'url': "http://bbc.co.uk/weather"}
+       #freshness is the max time between readings to be current.
+       #With the BBC we expect a max granularity of 15min
+       # Therefore 32min is a reasonable max freshness value IOO.
+       self.freshness = timedelta(minutes=61)
 
     @staticmethod
     def _rfc_2822_datetime(value):
