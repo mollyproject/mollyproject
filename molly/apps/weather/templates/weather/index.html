@@ -47,8 +47,8 @@
     
     <div class="note powered-by">
 	<p>{% trans "From" %}</p>
-	{% for c in copyrights %}
-	    <p><a href="{{c.url}}">{{c.title}}</a></p>
+	{% for attribution in attributions %}
+	    <p><a href="{{attribution.url}}">{{attribution.title}}</a></p>
 	{% endfor %}
   </div>
 </div>

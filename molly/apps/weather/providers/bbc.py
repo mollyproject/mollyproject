@@ -19,7 +19,7 @@ class BBCWeatherProvider(object):
     def __init__(self, location_id):
        self.location_id = location_id
        self.id = 'bbc/%d' % location_id
-       self.copyright = { 'title': "BBC Weather", 'url': "http://bbc.co.uk/weather"}
+       self.attribution = { 'title': "BBC Weather", 'url': "http://bbc.co.uk/weather"}
 
     @staticmethod
     def _rfc_2822_datetime(value):
@@ -74,8 +74,9 @@ class BBCWeatherProvider(object):
 
     @batch('%d-%d/15 * * * *' % (lambda x:(x, x+45))(random.randint(0, 14)))
     def import_data(self, metadata, output):
-        "Pulls weather data from the BBC"
-
+        """
+        Pulls weather data from the BBC
+        """
         socket.setdefaulttimeout(5)
         try:
             observations = self.get_observations_data()
@@ -87,6 +88,8 @@ class BBCWeatherProvider(object):
             logger.exception("Error importing weather data from BBC")
             return metadata
 
+        # We only keep the most recent observation. This avoids the DB growing
+        # without limit. We also may not have a right to store this data. 
         weathers = [(
             Weather.objects.get_or_create(location_id = self.id, ptype='o')[0], observations
         )]
