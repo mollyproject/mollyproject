@@ -10,7 +10,7 @@
     <div class="header">
         <h2>{% block location %}{{ observation.name }}{% endblock %}
 	    <small>
-		{% if {{ fresh }} != True %}<span id="weather-old">{% trans "Sorry, these observations are a little old:" %}</span>
+		{% if fresh != True %}<span id="weather-old">{% trans "Sorry, these observations are a little old:" %}</span>{% endif %}
 		{% blocktrans with observation.observed_date|date:"H:i" as observation_time %}at {{ observation_time }}{% endblocktrans %}
 		</small>
 	</h2>

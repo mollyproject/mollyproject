@@ -20,11 +20,11 @@ class IndexView(BaseView):
         # This returns a list of attributions, but we can't tie it to an 
         # observation or forecast at present. 
         attributions = [provider.attribution for provider in self.conf.providers]
-        fresheness = [provider.freshness for providder in self.conf.providers][0]
+        freshness = [provider.freshness for providder in self.conf.providers][0]
 
         # Check if the we have recent data. 
         # NB This is not the same as checking if the provider has received data
-        # recently.
+        # recently.
         fresh = True
         if datetime.now() - observation.observed_date > freshness:
             fresh = False
