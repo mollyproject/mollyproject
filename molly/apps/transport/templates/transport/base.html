@@ -6,10 +6,10 @@
 
 {% ifnotequal style_group "dumb" %}
     <ul id="transport-links">
-        {% if public_transport.bus %}
-        <li class="transport-link">
-            <a href="{% url transport:public-transport 'bus' %}"><img src="{{ STATIC_URL }}transport/images/bus.{% svg_or_png %}" alt="{% trans "Bus Stops" %}"  width="48" height="48" /></a></li>
-        {% endif %}
+        {% for transport_type in public_transport.keys %}<li class="transport-link">
+            <a href="{% url transport:public-transport transport_type %}">
+                <img src="{{ STATIC_URL }}transport/images/{{ transport_type }}.{% svg_or_png %}" alt="{% trans transport_type %}"  width="48" height="48" /></a></li> 
+        {% endfor %}
         {% if park_and_rides %}
         <li class="transport-link">
             <a href="{% url transport:park-and-ride %}"><img src="{{ STATIC_URL }}transport/images/pride.{% svg_or_png %}" alt="{% trans "Park and Rides" %}" width="48" height="48" /></a></li>
