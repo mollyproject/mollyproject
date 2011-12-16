@@ -37,13 +37,8 @@
     {% ifequal style_group "dumb" %}
         <img width="90" height="55" src="{{ STATIC_URL }}site/images/logos/logo-90x55.jpg" alt="{{ site_name }}">
     {% else %}
-        {# Display a different logo at Christmas time! (non-featurephones only, as featurephones don't believe in Christmas) #}
-        {% if is_christmas %}
-        <img width="128" height="51" src="{{ STATIC_URL }}site/images/logos/logo-128x51-TRMargin-5px-christmas.png" alt="{{ site_name }}"/>
-        {% else %}
         {# Standard logo for non-featurephones #}
         <img width="128" height="51" src="{{ STATIC_URL }}site/images/logos/logo-128x51-TRMargin-5px.png" alt="{{ site_name }}"/>
-        {% endif %}
         {% endifequal %}
     </div>
 
