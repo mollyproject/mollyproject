@@ -6,9 +6,12 @@
 
 {% ifnotequal style_group "dumb" %}
     <ul id="transport-links">
-        {% for transport_type in public_transport.keys %}<li class="transport-link">
-            <a href="{% url transport:public-transport transport_type %}">
-                <img src="{{ STATIC_URL }}transport/images/{{ transport_type }}.{% svg_or_png %}" alt="{% trans transport_type %}"  width="48" height="48" /></a></li> 
+        {% for transport_type in public_transport.keys %}
+            <li class="transport-link">
+                <a href="{% url transport:public-transport transport_type %}">
+                    <img src="{{ STATIC_URL }}transport/images/{{ transport_type }}.{% svg_or_png %}" alt="{% trans transport_type %}"  width="48" height="48" />
+                </a>
+            </li> 
         {% endfor %}
         {% if park_and_rides %}
         <li class="transport-link">
@@ -27,17 +30,21 @@
 {% else %}
     
     <ul id="transport-links">
-        {% if nearby.bus %}
-            <li class="transport-link"><a href="#bus">{% trans "Bus Stops" %}</a></li>
-        {% endif %}
+        {% for transport_type in public_transport.keys %}
+            <li class="transport-link">
+                <a href="{% url transport:public-transport transport_type %}">
+                    {% trans transport_type %}
+                </a>
+            </li> 
+        {% endfor %}
         {% if park_and_rides %}
-            <li class="transport-link"><a href="#park_and_rides">{% trans "Park and Rides" %}</a></li>
+            <li class="transport-link"><a href="{% url transport:park-and-ride %}">{% trans "Park and Rides" %}</a></li>
         {% endif %}
         {% if train_station %}
-            <li class="transport-link"><a href="#ldb">{% trans "Train Departure Boards" %}</a></li>
+            <li class="transport-link"><a href="{% url transport:rail %}">{% trans "Train Departure Boards" %}</a></li>
         {% endif %}
         {% if travel_alerts %}
-            <li class="transport-link"><a href="#travel_news">{% trans "Travel News" %}</a></li>
+            <li class="transport-link"><a href="{% url transport:travel-news %}">{% trans "Travel News" %}</a></li>
         {% endif %}
     </ul>
     
