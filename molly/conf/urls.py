@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import RegexURLPattern
+from django.core.urlresolvers import RegexURLPattern
 
 def url(pattern, name=None, extra={}):
     
