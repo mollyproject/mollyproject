@@ -422,7 +422,7 @@ class NaptanMapsProvider(BaseMapsProvider):
             'verbose-name-singular': _('a metro station'),
             # Translators: This is the generic term for rapid transit systems
             'verbose-name-plural': _('metro stations'),
-            'nearby': True, 'category': False,
+            'nearby': False, 'category': False,
             'uri-local': 'MetroStation',
             'is-entrance': False,
         },
