@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 class LiveDepartureBoardPlacesProvider(BaseMapsProvider):
     _WSDL_URL = "http://realtime.nationalrail.co.uk/ldbws/wsdl.aspx"
-    _COPYRIGHT = { 'title': _("Powered by National Rail Enquiries"),
+    _ATTRIBUTION = { 'title': _("Powered by National Rail Enquiries"),
                   'url': "http://nationalrail.co.uk",
                   'picture': settings.STATIC_URL + "places/images/powered-by-nre.png" }
 

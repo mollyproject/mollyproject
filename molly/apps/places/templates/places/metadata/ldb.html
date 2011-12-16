@@ -88,10 +88,10 @@
     </tbody>
   </table>
   <div class="note powered-by">
-    {% for c in copyrights %}
-      <a href="{{ c.url }}">
+    {% for attribution in attributions %}
+      <a href="{{ attribution.url }}">
 	  <small>{% trans "For more information" %}</small><br>
-	  <img src="{{ c.picture }}" alt="{{ c.title }}" />
+	  <img src="{{ attribution.picture }}" alt="{{ attribution.title }}" />
       </a>
     {% endfor %}
   </div>
