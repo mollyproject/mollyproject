@@ -1,10 +1,13 @@
 from datetime import datetime, time
+
 from django.contrib.gis.db import models
 from django.utils.translation import ugettext_lazy as _
 
+PTYPE_OBSERVATION = 'o'
+PTYPE_FORECAST = 'f'
 PTYPE_CHOICES = (
-    ('o', _('observation')),
-    ('f', _('forecast')),
+    (PTYPE_OBSERVATION, _('observation')),
+    (PTYPE_FORECAST, _('forecast')),
 )
 
 PRESSURE_STATE_CHOICES = (
@@ -94,8 +97,10 @@ class Weather(models.Model):
     wind_speed = models.IntegerField(null=True)
     humidity = models.IntegerField(null=True)
     pressure = models.PositiveIntegerField(null=True)
-    pressure_state = models.CharField(null=True, max_length=1, choices=PRESSURE_STATE_CHOICES)
-    visibility = models.CharField(null=True, max_length=2, choices=VISIBILITY_CHOICES)
+    pressure_state = models.CharField(null=True, max_length=1,
+                                      choices=PRESSURE_STATE_CHOICES)
+    visibility = models.CharField(null=True, max_length=2,
+                                  choices=VISIBILITY_CHOICES)
 
     location = models.PointField(srid=4326, null=True)
 
