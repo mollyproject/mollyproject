@@ -171,7 +171,7 @@ Templates
 
 This template contains the following blocks:
 
- * ``transport-links``: A list of buttons which canbe used to jump to
+ * ``transport_links``: A list of buttons which canbe used to jump to
    particular parts of the page. This defaults to Bus Stops, Park and Rides,
    Rail Stations and Travel Alerts. If any of those things are not being
    rendered, then they are hidden. Any additional anchors should be added to

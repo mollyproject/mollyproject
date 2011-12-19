@@ -16,7 +16,7 @@
     
     - body
       - header
-        - site-small-logo 
+        - site_small_logo 
         - breadcrumb_0 
       - content 
       - bottom_links
@@ -108,7 +108,7 @@
         <div id="bc-header">
           <ol id="bc">
           {# Breadcrumb home logo - override this in your own templates #}
-          {% block site-small-logo %}
+          {% block site_small_logo %}
             <li><a href="{% url home:index %}" title="{% trans 'Home' %}">
               <img src="{{ STATIC_URL }}site/images/logo.png" width="42" height="30" alt="{% trans 'Home' %}"/>
             </a></li>

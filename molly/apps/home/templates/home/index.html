@@ -95,10 +95,10 @@
                     {% endblock date %}
                     </td>
                     <td class="half-width weather">
-                {% block weather-location %}{{ weather.name }}{% endblock weather-location %}: {{ weather.temperature }}&deg;C<img src="{{ STATIC_URL }}weather/images/{{ weather.icon }}_small.png" alt="{{ weather.get_outlook_display|capfirst }}" height="30" width="30"/>
+                {% block weather_location %}{{ weather.name }}{% endblock weather-location %}: {{ weather.temperature }}&deg;C<img src="{{ STATIC_URL }}weather/images/{{ weather.icon }}_small.png" alt="{{ weather.get_outlook_display|capfirst }}" height="30" width="30"/>
                     </td>
                 </tr>
-                {% block below-weather %}{% endblock below-weather %}
+                {% block below_weather %}{% endblock below_weather %}
             </tbody>
         </table>
     </div>
@@ -136,8 +136,8 @@
         <li><a href="{% url feedback:index %}?referer={% url home:index %}">{% trans "Provide feedback" %}</a></li>
     </ul>
 
-    {% block below-about %}
-    {% endblock below-about %}
+    {% block below_about %}
+    {% endblock below_about %}
     {% if LANGUAGES|length > 1 %}
         {% include "i18n/language_selector.html" %}
     {% endif %}
