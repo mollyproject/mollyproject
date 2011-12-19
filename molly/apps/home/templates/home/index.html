@@ -15,10 +15,8 @@
         - header
         - content
           - date
-          :: The following are using the incorrect naming convention (dashes rather than underscores)
-          - weather-location
-          - below-weather
-        
+          - weather_location
+          - below_weather
           - below_about
 {% endcomment %}
 
@@ -95,7 +93,7 @@
                     {% endblock date %}
                     </td>
                     <td class="half-width weather">
-                {% block weather_location %}{{ weather.name }}{% endblock weather-location %}: {{ weather.temperature }}&deg;C<img src="{{ STATIC_URL }}weather/images/{{ weather.icon }}_small.png" alt="{{ weather.get_outlook_display|capfirst }}" height="30" width="30"/>
+                {% block weather_location %}{{ weather.name }}{% endblock weather_location %}: {{ weather.temperature }}&deg;C<img src="{{ STATIC_URL }}weather/images/{{ weather.icon }}_small.png" alt="{{ weather.get_outlook_display|capfirst }}" height="30" width="30"/>
                     </td>
                 </tr>
                 {% block below_weather %}{% endblock below_weather %}
