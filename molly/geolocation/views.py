@@ -144,7 +144,8 @@ class IndexView(GeolocationView):
             )
 
         try:
-            parent_view, args, kwargs = resolve(request.REQUEST['return_url'])
+	    return_url = unquote(request.REQUEST['return_url'])
+	    parent_view, args, kwargs = resolve(return_url)
             parent_data = parent_view.breadcrumb.data(self, request, context, *args, **kwargs)
             parent_data = parent_data.parent(self, parent_view.conf.local_name, request, context)
 
