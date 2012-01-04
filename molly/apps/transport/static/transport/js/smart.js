@@ -239,16 +239,15 @@ $(document).bind('molly-page-change', function(event, url){
         clearTimeout(PAndRTimer)
     }
     
+    $(document).unbind('molly-location-update', ajaxPTUpdate)
+    if (ptAjax != null) {
+        ptAjax.abort()
+    }
+    clearTimeout(ptTimer)
     if (url.match(/^\/transport\/[^\/]+\/$/)) {
         // Public transport view - refresh every 30 seconds and on location move
         ptTimer = setTimeout(ptRefreshTimer, 30000)
         $(document).bind('molly-location-update', ajaxPTUpdate)
-    } else {
-        $(document).unbind('molly-location-update', ajaxPTUpdate)
-        if (ptAjax != null) {
-            ptAjax.abort()
-        }
-        clearTimeout(ptTimer)
     }
     
 });
