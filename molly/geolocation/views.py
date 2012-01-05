@@ -1,5 +1,6 @@
 import urllib, random
 from datetime import datetime, timedelta
+from urlparse import urlparse
 
 from django.core.urlresolvers import resolve, reverse
 from django.http import HttpResponse, Http404, HttpResponseBadRequest
@@ -144,8 +145,8 @@ class IndexView(GeolocationView):
             )
 
         try:
-	    return_url = urlparse.urlparse(request.REQUEST['return_url']).path
-	    parent_view, args, kwargs = resolve(return_url)
+            return_url = urlparse(request.REQUEST['return_url']).path
+            parent_view, args, kwargs = resolve(return_url)
             parent_data = parent_view.breadcrumb.data(self, request, context, *args, **kwargs)
             parent_data = parent_data.parent(self, parent_view.conf.local_name, request, context)
 
