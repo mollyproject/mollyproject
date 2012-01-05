@@ -1,41 +1,32 @@
 from datetime import datetime, timedelta
 from django.utils.translation import ugettext as _
 
+from molly.conf.urls import url
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
 
-from models import Weather
+from molly.apps.weather.models import Weather
 
+@url(r'^$', 'index')
 class IndexView(BaseView):
+    """
+    Displays current weather observations and forecasts for the next 3 days
+    """
+    
+    def _is_fresh(self, observation, freshness):
+        return datetime.now() - freshness < observation.observed_date
+    
     def initial_context(self, request):
-        """
-        Provides intiial context for main view. 
-        Caveats: We can only handle one data provider AND observation at a time
-        """
         try:
-            # This will except of more than one observation is found.
-            observation = Weather.objects.get(location_id=self.conf.location_id, ptype='o')
+            observation = self.conf.provider.fetch_observation()
         except Weather.DoesNotExist:
             observation = None
-        # This returns a list of attributions, but we can't tie it to an 
-        # observation or forecast at present. 
-        attributions = [provider.attribution for provider in self.conf.providers]
-        freshness = [provider.freshness for providder in self.conf.providers][0]
-
-        # Check if the we have recent data. 
-        # NB This is not the same as checking if the provider has received data
-        # recently.
-        fresh = True
-        if datetime.now() - observation.observed_date > freshness:
-            fresh = False
 
         return {
             'observation': observation,
-            'attributions': attributions,
-            'fresh': fresh,
-            'forecasts': Weather.objects.filter(
-                location_id=self.conf.location_id, ptype='f',
-                observed_date__gte=datetime.now().date()).order_by('observed_date'),
+            'attribution': self.conf.providers.ATTRIBUTION,
+            'fresh': self._is_fresh(observation, self.conf.provider.FRESHNESS),
+            'forecasts': self.conf.fetch_forecasts(),
         }
 
     @BreadcrumbFactory
