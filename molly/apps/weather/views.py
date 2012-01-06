@@ -24,10 +24,10 @@ class IndexView(BaseView):
 
         return {
             'observation': observation,
-            'attribution': self.conf.providers.ATTRIBUTION,
+            'attribution': self.conf.provider.ATTRIBUTION,
             'fresh': self._is_fresh(observation, self.conf.provider.FRESHNESS),
-            'forecasts': self.conf.fetch_forecasts(),
-        }
+            'forecasts': self.conf.provider.fetch_forecasts(),
+            }
 
     @BreadcrumbFactory
     def breadcrumb(self, request, context):

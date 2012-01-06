@@ -48,7 +48,7 @@ class BBCWeatherProvider(object):
 
     @staticmethod
     def _rfc_2822_datetime(value):
-        parsed_datetime = email.utils.parsedate_tz(value)
+        time_tz = email.utils.parsedate_tz(value)
         tz = tzoffset(time_tz[9], time_tz[9])
 
         return datetime(*(time_tz[:6] + (0, tz)))
