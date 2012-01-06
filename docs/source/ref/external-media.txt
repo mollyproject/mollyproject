@@ -1,7 +1,7 @@
-:mod:`molly.external_media` -- Batch Processing
+:mod:`molly.external_media` -- External Media
 =================================================
 
-.. module :: molly.batch_processing
+.. module :: molly.external_media
 
 This is a utility app for handling off-site media, including resizing for mobile
 devices.
