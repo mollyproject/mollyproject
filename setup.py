@@ -11,16 +11,11 @@ except ImportError:
         ez_setup.use_setuptools()
         from setuptools import setup
 
-from setuptools import setup
 from distutils.command.install import INSTALL_SCHEMES
 import os
 
 from molly import __version__ as molly_version
-
-from molly.installer.utils import get_packages_and_data
-from molly.installer.commands import (DeployCommand, SysprepCommand,
-                                CreateVirtualenvCommand, DBPrepCommand,
-                                DBCreateCommand, SiteCreateCommand)
+from molly.utils.installer import get_packages_and_data
 
 print """
                                  ;Ok;                                         
@@ -73,7 +68,8 @@ setup(
     version = molly_version,
     url = 'http://mollyproject.org/',
     author = 'The Molly Project',
-    description ="A framework for building mobile information portals",
+    description = "A framework for building mobile information portals",
+    license = 'Academic Free License',
     packages = packages,
     data_files = data_files, 
     classifiers=[
@@ -90,10 +86,7 @@ setup(
     install_requires = [
         "python-Levenshtein",
         "pywurfl",
-        "ply",
-        "PyZ3950", # The one in PyPI is broken! You should install the one from
-                   # https://github.com/oucs/PyZ3950/ *BEFORE* running
-                   # this script
+        "mollyZ3950",
         "feedparser>=5.0",
         "simplejson",
         "rdflib",
@@ -104,22 +97,13 @@ setup(
         "PIL",
         "lxml",
         "python-ldap",
-        "django-compress",
-        "python-memcached",
+        "django-pipeline>=1.1.10",
         "South",
         "suds",
         "django-slimmer",
         'pyyaml',
     ],
-    dependency_links = [
-        'http://pylevenshtein.googlecode.com/files/python-Levenshtein-0.10.1.tar.bz2#egg=python-Levenshtein'
-    ],
-    cmdclass = {
-        'sysprep': SysprepCommand,
-        'dbprep': DBPrepCommand,
-        'dbcreate': DBCreateCommand,
-        'sitecreate': SiteCreateCommand,
-        'createvirtualenv': CreateVirtualenvCommand,
-        'deploy': DeployCommand,
-    }
+    scripts = [
+        'molly/commands/molly-admin'
+    ]
 )

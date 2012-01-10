@@ -1,2 +1,57 @@
-{% extends "base.html" %}
+{% extends "base.html" %}{% load i18n %}{% load molly_utils %}{% load molly_search %}
 
+{% block content %}
+
+{% block transport_links %}
+
+{% ifnotequal style_group "dumb" %}
+    <ul id="transport-links">
+        {% for transport_type in public_transport.keys %}
+            <li class="transport-link">
+                <a href="{% url transport:public-transport transport_type %}">
+                    <img src="{{ STATIC_URL }}transport/images/{{ transport_type }}.{% svg_or_png %}" alt="{% trans transport_type %}"  width="48" height="48" />
+                </a>
+            </li> 
+        {% endfor %}
+        {% if park_and_rides %}
+        <li class="transport-link">
+            <a href="{% url transport:park-and-ride %}"><img src="{{ STATIC_URL }}transport/images/pride.{% svg_or_png %}" alt="{% trans "Park and Rides" %}" width="48" height="48" /></a></li>
+        {% endif %}
+        {% if train_station %}
+        <li class="transport-link">
+            <a href="{% url transport:rail %}"><img src="{{ STATIC_URL }}transport/images/train.{% svg_or_png %}" alt="{% trans "Train Departure Boards" %}" width="48" height="48" /></a></li>
+        {% endif %}
+        {% if travel_alerts %}
+        <li class="transport-link">
+            <a href="{% url transport:travel-news %}"><img src="{{ STATIC_URL }}transport/images/warn.{% svg_or_png %}" alt="{% trans "Travel News" %}" width="48" height="48" /></a></li>
+        {% endif %}
+    </ul>
+    
+{% else %}
+    
+    <ul id="transport-links">
+        {% for transport_type in public_transport.keys %}
+            <li class="transport-link">
+                <a href="{% url transport:public-transport transport_type %}">
+                    {% trans transport_type %}
+                </a>
+            </li> 
+        {% endfor %}
+        {% if park_and_rides %}
+            <li class="transport-link"><a href="{% url transport:park-and-ride %}">{% trans "Park and Rides" %}</a></li>
+        {% endif %}
+        {% if train_station %}
+            <li class="transport-link"><a href="{% url transport:rail %}">{% trans "Train Departure Boards" %}</a></li>
+        {% endif %}
+        {% if travel_alerts %}
+            <li class="transport-link"><a href="{% url transport:travel-news %}">{% trans "Travel News" %}</a></li>
+        {% endif %}
+    </ul>
+    
+{% endifnotequal %}
+
+{% endblock %}
+
+{% include "geolocation/update_location_embed.html" %}
+
+{% endblock %}

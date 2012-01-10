@@ -1,0 +1,53 @@
+{% load compressed %}{% load i18n %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% trans "Create a tour" %}</title>
+    {% compressed_css 'tours-desktop' %}
+    <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.14/themes/base/jquery-ui.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(function(){
+            $('#suggestions .close a').click(function(e){
+                $('#suggestions').remove();
+                e.preventDefault();
+            });
+        });
+    </script>
+</head>
+<body>
+    <!-- Icons on this page are from FamFamFam silk, CC-BY http://www.famfamfam.com/lab/icons/silk/ -->
+    <h1>{% trans "Create a tour" %}</h1>
+    
+    <div class="created">
+        <h2>{% trans 'Your tour has been created.' %}</h2>
+        {% if optimised_entities %}
+            <p>{% trans 'Your route order has been optimised to minimise travelling distance - the order may have changed.' %}</p>
+        {% endif %}
+        <div class="short-link">
+            <p>{% trans 'Scan the following QR code with your phone, or go to the address below to access this tour on your mobile device.' %}</p>
+            <img class="qr-code" src="http://chart.apis.google.com/chart?cht=qr&amp;chs=200x200&amp;chld=L|1&amp;chl={{ short_url|urlencode }}" style="width:100%; max-width:200px" />
+            <p><a href="{{ short_url }}">{{ short_url }}</a></p>
+        </div>
+        <ul class="creation-actions">
+            <li><a href="{{ tour.get_absolute_url }}">{% trans 'Click here to go to the tour page.' %}</a></li>
+            <li><a href="{% url tours:tour-print tour.id %}">{% trans 'Click here to get a printable version of your tour.' %}</a></li>
+        </ul>
+    </div>
+    
+    {% if suggestions %}
+        <div class="attractions-grouping" id="suggestions">
+            <p class="close"><a href="?nosuggestions">{% trans 'Close' %}</a></p>
+            <h2>{% trans "Suggestions" %}</h2>
+            <p>{% trans 'Your tour takes you near the following places, click on them to add them to your route:' %}</p>
+            <ul>
+                {% for entity in suggestions %}
+                    <li{% if entity in entities %} class="selected"{% endif %}><a href="{% url tours:create tour_type.slug %}{% for e in entities %}{{ e.identifier_scheme }}:{{ e.identifier_value }}/{% endfor %}{{ entity.identifier_scheme }}:{{ entity.identifier_value }}/save/" class="{{ entity.identifier_scheme }}-{{ entity.identifier_value }}">{{ entity.title }}</a></li>
+                {% endfor %}
+            </ul>
+            <p class="close"><a href="?nosuggestions">{% trans 'Or click here to close this box and access your saved tour.' %}</a></p>
+        </div>
+    {% endif %}
+    
+</body>
+</html>

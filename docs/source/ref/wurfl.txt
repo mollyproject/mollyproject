@@ -22,3 +22,33 @@ Views
 -----
 
 .. todo:: Complete
+
+Troubleshooting
+---------------
+
+The WURFL database is the part of the Molly framework that needs the most upkeep
+due to the ever-changing nature of the mobile market. The installation process
+for Molly will update your Wurfl database to the most recent version at every
+install and update (except when in development mode), but new devices may not
+yet appear in the Wurfl, and the Wurfl neglects to cover user agents belonging
+to desktop browsers. Therefore, Molly maintains a "local patch" to the Wurfl in
+``molly/wurfl/data/local_patch.xml``. This `patch file format is documented by Wurfl <http://wurfl.sourceforge.net/patchfile.php>`_
+and is merged into the main Wurfl file at update time. This file lives in the
+main Molly repository, and if you have come across a device which the Wurfl does
+not recognise, we would encourage you to commit it back to the main Molly
+Project as a patch so all users can benefit.
+
+When modifying this file, you must first identify the user agent of the device,
+and if this device is a newer version of an already existing device, the Wurfl
+ID of the older version of the device (assuming that the newer device inherits
+the attributes of the older version). You can then simply add a new line like so:
+
+.. code-block:: xml
+    
+    <device user_agent="User-Agent-Of-My-New-Device" fall_back="wurfl_id_of_old_device" id="my_new_wurfl_id"/>
+
+New devices can be added following the format specified in the main Wurfl docs.
+
+The Wurfl will cover most mobile devices eventually, so you should be able to
+remove this patch after a period of time. Desktop browsers appear to be slower
+to be updated in the Wurfl desktop patch.

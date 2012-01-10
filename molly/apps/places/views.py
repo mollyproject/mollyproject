@@ -5,7 +5,8 @@ from itertools import chain
 import simplejson
 import copy
 import math
-from datetime import datetime, timedelta
+from urllib import unquote
+from datetime import datetime, timedelta, date
 from urllib import unquote
 
 from suds import WebFault
@@ -14,13 +15,15 @@ from django.contrib.gis.geos import Point
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.core.urlresolvers import reverse
-from django.template.defaultfilters import capfirst
+from django.template.defaultfilters import capfirst, date as djangodate
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.utils.translation import ugettext as _
 from django.utils.translation import ungettext
 from django.contrib.gis.measure import D
 
+from molly.utils import haversine
 from molly.utils.views import BaseView, ZoomableView
+from molly.utils.templatetags.molly_utils import humanise_distance
 from molly.utils.breadcrumbs import *
 from molly.favourites.views import FavouritableView
 from molly.geolocation.views import LocationRequiredView
@@ -28,8 +31,10 @@ from molly.geolocation.views import LocationRequiredView
 from molly.maps import Map
 from molly.maps.osm.models import OSMUpdate
 
+from molly.routing import generate_route, ALLOWED_ROUTING_TYPES
+
 from molly.apps.places.models import Entity, EntityType, Route, Journey
-from molly.apps.places import get_entity, get_point
+from molly.apps.places import get_entity, get_point, bus_route_sorter
 from molly.apps.places.forms import UpdateOSMForm
 
 
@@ -92,7 +97,7 @@ class NearbyListView(LocationRequiredView):
         
         for et in entity_types:
             # For each et, get the entities that belong to it
-            et.max_distance = 0
+            et.max_distance = humanise_distance(0)
             et.entities_found = 0
             es = et.entities_completion.filter(location__isnull=False,
                                                location__distance_lt=(point, D(km=5))).distance(point).order_by('distance')
@@ -100,7 +105,7 @@ class NearbyListView(LocationRequiredView):
                 # Selection criteria for whether or not to count this entity
                 if (e.distance.m ** 0.75) * (et.entities_found + 1) > 500:
                     break
-                et.max_distance = e.distance.m
+                et.max_distance = humanise_distance(e.distance.m)
                 et.entities_found += 1
 
         categorised_entity_types = defaultdict(list)
@@ -130,7 +135,7 @@ class NearbyDetailView(LocationRequiredView, ZoomableView):
         entity_types = tuple(get_object_or_404(EntityType, slug=t) for t in ptypes.split(';'))
 
         if point:
-            entities = Entity.objects.filter(location__isnull = False, is_sublocation = False)
+            entities = Entity.objects.filter(location__isnull=False)
             for et in entity_types:
                 entities = entities.filter(all_types_completion=et)
             
@@ -180,13 +185,14 @@ class NearbyDetailView(LocationRequiredView, ZoomableView):
                 'exclude_from_search': True,
                 'title': title}
         
-        number = len([e for e in context['entities'] if e.location.transform(27700, clone=True).distance(context['point'].transform(27700, clone=True)) <= 1000])
+        number = len([e for e in context['entities']
+                      if haversine(e.location, context['point']) <= 1000])
         entity_type = context['entity_types'][0].verbose_name_plural
 
         return {
             'title': title,
-            'additional': _('<strong>%(number)d %(entity_type)s</strong> within 1km') % {'number': number,
-                               'entity_type': entity_type}
+            'additional': _('<strong>%(number)d %(entity_type)s</strong> within 1km') \
+                % {'number': number, 'entity_type': entity_type}
         }
 
     def handle_GET(self, request, context, ptypes, entity=None):
@@ -236,7 +242,6 @@ class NearbyDetailView(LocationRequiredView, ZoomableView):
         })
         return self.render(request, context, 'places/nearby_detail')
 
-
 class EntityDetailView(ZoomableView, FavouritableView):
     default_zoom = 16
 
@@ -246,10 +251,11 @@ class EntityDetailView(ZoomableView, FavouritableView):
         distance, bearing = entity.get_distance_and_bearing_from(user_location)
         additional = '<strong>%s</strong>' % capfirst(entity.primary_type.verbose_name)
         if distance:
-            additional += ', ' + _('about %(distance)dm %(bearing)s') % {
-                                    'distance': int(math.ceil(distance/10)*10),
+            additional += ', ' + _('about %(distance)s %(bearing)s') % {
+                                    'distance': humanise_distance(distance),
                                     'bearing': bearing }
-        routes = sorted(set(sor.route.service_id for sor in entity.stoponroute_set.all()))
+        routes = sorted(set(sor.route.service_id for sor in entity.stoponroute_set.all()),
+                        key=bus_route_sorter)
         if routes:
             additional += ', ' + ungettext('service %(services)s stops here',
                                            'services %(services)s stop here',
@@ -291,7 +297,6 @@ class EntityDetailView(ZoomableView, FavouritableView):
 
         context.update({
             'entity': entity,
-            'train_station': entity, # This allows the ldb metadata to be portable
             'board': board,
             'entity_types': entity.all_types.all(),
             'associations': associations,
@@ -316,7 +321,6 @@ class EntityDetailView(ZoomableView, FavouritableView):
         entity = context['entity']
 
         if unquote(entity.absolute_url) != request.path:
-            
             return self.redirect(entity.absolute_url, request, 'perm')
 
         entities = []
@@ -349,7 +353,7 @@ class EntityUpdateView(ZoomableView):
         return Breadcrumb(
             'places',
             lazy_parent('entity', scheme=scheme, value=value),
-            'Update place',
+            _('Update place'),
             lazy_reverse('entity-update', args=[scheme, value]))
 
     def handle_GET(self, request, context, scheme, value):
@@ -422,7 +426,7 @@ class NearbyEntityListView(NearbyListView):
         return Breadcrumb(
             'places',
             lazy_parent('entity', scheme=scheme, value=value),
-            'Things near %s' % context['entity'].title,
+            _('Things near %s') % context['entity'].title,
             lazy_reverse('entity-nearby-list', args=[scheme, value]))
 
     def handle_GET(self, request, context, scheme, value):
@@ -447,9 +451,10 @@ class NearbyEntityDetailView(NearbyDetailView):
         return Breadcrumb(
             'places',
             lazy_parent('entity-nearby-list', scheme=scheme, value=value),
-            '%s near %s' % (
-                capfirst(entity_type.verbose_name_plural),
-                context['entity'].title, ),
+            _('%(entity_type)s near %(entity)s') % {
+                    'entity_type': capfirst(entity_type.verbose_name_plural),
+                    'entity': context['entity'].title
+                },
             lazy_reverse('places:entity_nearby_detail', args=[scheme, value, ptype]))
 
     def get_metadata(self, request, scheme, value, ptype):
@@ -480,7 +485,7 @@ class CategoryListView(BaseView):
         return Breadcrumb(
             'places',
             lazy_parent('index'),
-            'Categories',
+            _('Categories'),
             lazy_reverse('category-list'),
         )
 
@@ -494,7 +499,7 @@ class CategoryDetailView(BaseView):
     def initial_context(self, request, ptypes):
         entity_types = tuple(get_object_or_404(EntityType, slug=t) for t in ptypes.split(';'))
 
-        entities = Entity.objects.filter(is_sublocation=False)
+        entities = Entity.objects.all()
         for entity_type in entity_types:
             entities = entities.filter(all_types_completion=entity_type)
 
@@ -553,6 +558,73 @@ class CategoryDetailView(BaseView):
         return self.render(request, context, 'places/category_detail',
                            expires=timedelta(days=1))
 
+class EntityDirectionsView(LocationRequiredView):
+    default_zoom = 16
+
+    def get_metadata(self, request, scheme, value):
+        entity = get_entity(scheme, value)
+        return {
+            'title': _('Directions to %s') % entity.title,
+            'entity': entity,
+        }
+
+    def initial_context(self, request, scheme, value):
+        context = super(EntityDirectionsView, self).initial_context(request)
+        entity = get_entity(scheme, value)
+        
+        allowed_types = ALLOWED_ROUTING_TYPES
+        type = request.GET.get('type')
+        if type:
+            request.session['places:directions-type'] = type
+        else:
+            type = request.session.get('places:directions-type', 'foot')
+        
+        if type not in allowed_types:
+            type = 'foot'
+        
+        context.update({
+            'entity': entity,
+            'type': type,
+            'allowed_types': allowed_types,
+        })
+        return context
+
+    @BreadcrumbFactory
+    def breadcrumb(self, request, context, scheme, value):
+        entity = get_entity(scheme, value)
+        return Breadcrumb(
+            'places',
+            lazy_parent('entity', scheme=scheme, value=value),
+            _('Directions to %s') % context['entity'].title,
+            lazy_reverse('entity-directions', args=[scheme, value]),
+        )
+
+    def handle_GET(self, request, context, scheme, value):
+        
+        user_location = request.session.get('geolocation:location')
+        if user_location is not None:
+            user_location = Point(user_location)
+        destination = context['entity'].routing_point(user_location)
+        
+        if destination.location is not None:
+            context['route'] = generate_route([user_location,
+                                              destination.location],
+                                              context['type'])
+            if not 'error' in context['route']:
+                context['map'] = Map(
+                    (user_location[0], user_location[1], 'green', ''),
+                    [(w['location'][0], w['location'][1], 'red', w['instruction'])
+                        for w in context['route']['waypoints']],
+                    len(context['route']['waypoints']),
+                    None,
+                    request.map_width,
+                    request.map_height,
+                    extra_points=[(destination.location[0],
+                                   destination.location[1],
+                                   'red', destination.title)],
+                    paths=[(context['route']['path'], '#3c3c3c')])
+
+        return self.render(request, context, 'places/entity_directions')
 
 class ServiceDetailView(BaseView):
     """
@@ -608,7 +680,7 @@ class ServiceDetailView(BaseView):
                 raise Http404
             if 'error' in service:
                 context.update({
-                    'title': 'An error occurred',
+                    'title': _('An error occurred'),
                     'service': {
                         'error': service['error'],
                     },
@@ -744,120 +816,119 @@ class ServiceDetailView(BaseView):
         return self.render(request, context, 'places/service_details')
 
 
-class APIView(BaseView):
-    """
-    Returns a JSON object containing entity details.
-
-    Valid parameters are:
-
-    * type: Filters by an EntityType slug
-    * source: Filters by data source; a places provider module name.
-    * near: A long,lat pair to order by
-    * max_distance: Filters out those more than the specified distance from the point given above.
-    * limit: The number of results to return; defaults to 100; capped at 200 (or 1000 if without_metadata specified)
-    * offset: The number of results to skip; defaults to 0
-    * without_metadata: If 'true', metadata aren't returned. Raises the limit cap.
-
-    It is an error to specify max_distance without near. Entities are ordered
-    by name and then DB id; hence the order is deterministic.
-
-    Returns a JSON object with the following attributes:
-
-    * count: The number of entities that survived the filters
-    * returned: The number of entities returned once limit and offset were taken into account
-    * limit: The limit used. This may differ from that provided when the latter was invalid.
-    * offset: The offset used. This may differ as above.
-    * entities: A list of entities
-
-    Entities are JSON objects with the following attributes:
-
-    * primary_type: The primary type of the entity
-    * all_types: A list containing all types of the object
-    * source: The data source for the entity, with the same range as given above
-    * url: The location of this resource on this host
-    * name: The title of the entity.
-    * location: A two-element list containing longitude and latitude
-    * metadata: Any further metadata as provided by the data source
-    """
-
-    breadcrumb = NullBreadcrumb
-
-    def handle_GET(self, request, context):
-        entities = Entity.objects.order_by('title', 'id')
-        error = False
-        without_metadata = request.GET.get('without_metadata') == 'true'
-
-        limit, offset = request.GET.get('limit', 100), request.GET.get('offset', 0)
-        try:
-            limit, offset = int(limit), int(offset)
-        except (ValueError, TypeError):
-            limit, offset = 100, 0
-        limit, offset = min(limit, 1000 if without_metadata else 200), max(offset, 0)
-
-        if 'type' in request.GET:
-            entities = entities.filter(all_types_completion__slug = request.GET['type'])
-        if 'source' in request.GET:
-            entities = entities.filter(source__module_name = request.GET['source'])
-
-        if 'near' in request.GET:
-            try:
-                point = Point(map(float, request.GET['near'].split(',')), srid=4326).transform(27700, clone=True)
-
-                entities = entities.filter(location__isnull=False)
-                entities = entities.distance(point).order_by('distance')
-
-                for entity in entities:
-                    entity.distance = entity.location.transform(27700, clone=True).distance(point)
-
-                if 'max_distance' in request.GET:
-                    max_distance = float(request.GET['max_distance'])
-                    new_entities = []
-                    for entity in entities:
-                        if entity.distance > max_distance:
-                            break
-                        new_entities.append(entity)
-                    entities = new_entities
-                    count = len(entities)
-
-                    if 'limit' in request.GET:
-                        entities = islice(entities, offset, offset+limit)
-                else:
-                    count = entities.count()
-            except:
-                entities, count, error = [], 0, True
-        elif 'max_distance' in request.GET:
-            entities, count, error = [], 0, True
-
-        if not 'near' in request.GET:
-            count = entities.count()
-            try:
-                entities = entities[offset:offset+limit]
-            except ValueError:
-                entities, count, error = [], 0, True
-
-        out = []
-        for entity in entities:
-            out.append({
-                'primary_type': entity.primary_type.slug,
-                'all_types': [et.slug for et in entity.all_types_completion.all()],
-                'source': entity.source.module_name,
-                'name': entity.title,
-                'location': tuple(entity.location) if entity.location else None,
-                'url': entity.get_absolute_url(),
+class RouteView(BaseView):
+    
+    @BreadcrumbFactory
+    def breadcrumb(self, request, context, route, id):
+        return Breadcrumb(
+            'places',
+            lazy_parent('index'),
+            context['title'],
+            lazy_reverse('route', args=[route, id]))
+    
+    def initial_context(self, request, route, id):
+        
+        context = super(RouteView, self).initial_context(request)
+        
+        if id is None:
+            
+            context.update({
+                'title': _('Select a route'),
+                'multiple_routes': Route.objects.filter(service_id=route)
             })
-            if not without_metadata:
-                out[-1]['metadata'] = entity.metadata
+            
+        else:
+            
+            route = get_object_or_404(Route, id=id)
+            
+            i = 1
+            calling_points = []
+            
+            for stop in route.stoponroute_set.all():
+                
+                calling_point = {'entity': stop.entity}
+                if stop.entity.location is not None:
+                    calling_point['stop_num'] = i
+                    i += 1
+                calling_points.append(calling_point)
+            
+            service = {
+                    'entities': route.stops.all(),
+                    'operator': route.operator,
+                    'has_timetable': False,
+                    'has_realtime': False,
+                    'calling_points': calling_points
+                }
+            
+            context.update({
+                'title': '%s: %s' % (route.service_id, route.service_name),
+                'service': service,
+                'route': route
+            })
+        
+        return context
+    
+    def handle_GET(self, request, context, route, id):
+        
+        if len(context.get('multiple_routes', [])) == 1:
+            # Only one alternative, redirect straight there
+            route = context['multiple_routes'][0]
+            return self.redirect(reverse('places:route', args=[route.service_id,
+                                                               route.pk]), request)
+        
+        elif id is not None and route != context['route'].service_id:
+            # Redirect if the route doesn't match the ID
+            return self.redirect(reverse('places:route', args=[context['route'].service_id, id]), request)
+        else:
+            return self.render(request, context, 'places/service_details')
 
-            if 'near' in request.GET:
-                out[-1]['distance'] = entity.distance
 
-        out = {
-            'offset': offset,
-            'limit': limit,
-            'entities': out,
-            'count': count,
-            'error': error,
-            'returned': len(out),
+class TimetableView(BaseView):
+    """
+    A view which shows the timetable of all departures for a stop.
+    """
+    
+    @BreadcrumbFactory
+    def breadcrumb(self, request, context, scheme, value, year, month, day):
+        return Breadcrumb(
+            'places',
+            lazy_parent('entity', scheme=scheme, value=value),
+            context['title'],
+            lazy_reverse('timetable', args=[scheme, value]))
+    
+    def initial_context(self, request, scheme, value, year, month, day):
+        
+        context = super(TimetableView, self).initial_context(request)
+        
+        context['entity'] = get_entity(scheme, value)
+        
+        if year and month and day:
+            try:
+                context['date'] = date(int(year), int(month), int(day))
+            except ValueError:
+                raise Http404()
+        else:
+            context['date'] = date.today()
+        
+        if context['entity'].scheduledstop_set.all().count() == 0:
+            # 404 on entities which don't have timetables
+            raise Http404()
+        
+        services = context['entity'].scheduledstop_set.filter(
+           journey__runs_from__lte=context['date'],
+            journey__runs_until__gte=context['date']
+        ).exclude(activity__in=('D','N','F')).order_by('std')
+        
+        context['timetable'] = filter(lambda s: s.journey.runs_on(context['date']),
+                                      services)
+        
+        context['title'] = _('Timetable for %(title)s on %(date)s') % {
+            'title': context['entity'].title,
+            'date': djangodate(context['date'])
         }
-
-        return self.render(request, out, None)
+        
+        return context
+    
+    def handle_GET(self, request, context, scheme, value, year, month, day):
+        
+        return self.render(request, context, 'places/timetable')

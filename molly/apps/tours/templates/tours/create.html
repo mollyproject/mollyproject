@@ -1,0 +1,53 @@
+{% extends "tours/base.html" %}{% load i18n %}
+
+{% block content %}
+
+<script type="text/javascript">
+    var current_stops = [
+        {% for entity in entities %}
+            '{{ entity.identifier_scheme|escapejs }}:{{ entity.identifier_value|escapejs }}',
+        {% endfor %}
+    ];
+    var type_slug = '{{ tour_type.slug|escapejs }}';
+    var all_pois = [
+        {% for entity in all_pois %}
+        {
+            id: '{{ entity.identifier_scheme|escapejs }}:{{ entity.identifier_value|escapejs }}',
+            label: '{{ entity.title|escapejs }}',
+        },
+        {% endfor %}
+    ];
+</script>
+
+<div class="section">
+    <div class="header">
+        <h2>{% trans 'Current Stops' %}</h2>
+    </div>
+    <ul id="tour-poi-list" class="content-list">
+        {% for entity in entities %}
+            <li><a href="{% url tours:create tour_type.slug %}{% for e in entities %}{% if e != entity %}{{ e.identifier_scheme }}:{{ e.identifier_value }}/{% endif %}{% endfor %}">
+                {{ entity.title }}
+            </a></li>
+        {% endfor %}
+    </ul>
+    <form id="tour-submit" action="{% url tours:create tour_type.slug %}{% for e in entities %}{{ e.identifier_scheme }}:{{ e.identifier_value }}/{% endfor %}save/">
+        <input type="submit" value="{% trans 'Save' %}" />
+    </form>
+</div>
+
+<div class="section">
+    <div class="header">
+        <h2>{% trans 'Add new stop' %}</h2>
+    </div>
+    {% for entity_type, attraction_entities in attractions.items %}
+        <div class="header">
+            <h2>{{ entity_type.verbose_name_plural|capfirst }}</h2>
+        </div>
+        <ul class="link-list attractions-grouping">
+            {% for entity in attraction_entities %}
+                <li{% if entity in entities %} class="selected"{% endif %}><a href="{% url tours:create tour_type.slug %}{% for e in entities %}{{ e.identifier_scheme }}:{{ e.identifier_value }}/{% endfor %}{{ entity.identifier_scheme }}:{{ entity.identifier_value }}/" class="tour-{{ entity.identifier_scheme }}-{{ entity.identifier_value }}">{{ entity.title }}</a></li>
+            {% endfor %}
+        </ul>
+    {% endfor %}
+</div>
+{% endblock %}

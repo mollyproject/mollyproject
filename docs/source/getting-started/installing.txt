@@ -1,138 +1,203 @@
 Installing Molly
 ================
 
-Getting the Code
-----------------
-
-Molly extends the standard ``setup.py`` in order to add additional functionality
-to make working with Molly easier.
-
-First off, you will need a checkout of Molly. You can either grab a tarball from
-the `Downloads part of Github <https://github.com/mollyproject/mollyproject/archives/master>`_,
-and unzip that::
-
-    wget --no-check-certificate https://github.com/mollyproject/mollyproject/tarball/master
-    tar zxvf https://github.com/mollyproject/mollyproject/tarball/master
-
-Or clone the Git repository directly::
-
-    git clone git://github.com/mollyproject/mollyproject.git
-
-(note that you may have to install Git for this to work)
-
-The links above will get the latest "unstable" version of Molly, you may wish to
-select a specific version from the
-`download page <https://github.com/mollyproject/mollyproject/archives/master>`_,
-or checkout a specific branch from Git (e.g., git checkout molly1.2).
-
 Preparing your system
 ---------------------
 
-Molly requires some system library and packages to be installed in order to
-function correctly. If you are on CentOS 5, Fedora, Ubuntu 10.04 or 10.10, then
-running ``./setup.py sysprep`` as root will automatically install these
-dependencies for you.
-
 .. warning:: CentOS 5 users should be aware that some of these dependencies are
-             not in the default repositories. In order to satisfy these
-             dependencies, Molly will add the EPEL and RPMForge repositories to
-             your system. If this is not what you want, then you must ensure the
-             requirements are satisfied manually.
+             not in the default repositories. These dependencies live in the
+             the `EPEL <http://fedoraproject.org/wiki/EPEL>`_ and
+             `RPMforge <http://wiki.centos.org/AdditionalResources/Repositories/RPMForge>`_
+             third-party repositories, which you may need to install to satisfy
+             these dependencies.
 
-If your system isn't one of those supported, then you will need to ensure the
+.. note:: RPM and .deb users can skip this step
+
+In order to install Molly, there are several non-Python dependencies which are
+needed for Molly and its dependencies first. If you are installing Molly from an
+RPM or Deb, than these dependencies should be satisfied automatically by your
+package manager. However, if you are installing Molly from Git or using Pip,
+then you must first install some system level dependencies.
+
+Fedora
+""""""
+
+.. code-block ::
+
+    su -c 'yum install python-pip libxml-devel libxslt-devel python-devel postgresql-devel openldap-devel openssl-devel gdal-python proj geos libjpeg-devel imagemagick gcc make git libyaml'
+
+CentOS
+""""""
+
+.. code-block ::
+
+    su -c 'yum install python-pip python26 python-setuptools python26-devel binutils libxslt-devel cyrus-sasl-devel openldap-devel ImageMagick proj proj-devel postgresql-devel postgresql-contrib geos-3.1.0 geos-devel-3.1.0 gdal libjpeg-devel make gcc openssl-devel libyaml-devel'
+
+Ubuntu/Debian
+"""""""""""""
+
+.. note:: Different versions of Ubuntu and Debian may include different versions
+          of libgeos, libgdal and postgresql which changes the package name. The
+          version below are for Ubuntu 10.04.
+
+.. code-block ::
+
+    sudo apt-get install python-pip build-essential python-gdal proj libgeos-3.1.0 binutils libgdal1-1.6.0 postgresql-server-dev-8.4 python-setuptools python-dev libxslt-dev libldap2-dev libsasl2-dev libjpeg-dev imagemagick libyaml
+
+.. note:: Versions below are for Ubuntu 10.11
+
+.. code-block ::
+
+    sudo apt-get install python-pip build-essential python-gdal proj libgeos-3.2.2 binutils libgdal1-1.7.0 postgresql-server-dev-8.4 python-setuptools python-dev libxslt1-dev libldap2-dev libsasl2-dev libjpeg62-dev imagemagick python-yaml
+
+If your system isn't one of those listed above, then you will need to ensure the
 following packages, or their equivalent on your platform, are available:
 
-* python-virtualenv
-* python-pip
 * libxml-devel
 * libxslt-devel
 * python-devel
 * postgresql-devel
 * openldap-devel
 * openssl-devel
-* postgis
 * gdal-python
 * proj
-* postgresql-server
 * geos
-* httpd
 * libjpeg-devel
 * imagemagick
 * gcc
 * make
-* git
 
-Configuring PostgreSQL
-----------------------
+Installing Molly
+----------------
 
-.. warning:: The following installation instructions are unlikely to be suitable
-             for production databases. Experienced DBAs will want to skip
-             this section.
+.. note:: When installing using pip or Git it is possible to install Molly in an
+          isolated environment called a virtualenv, where Molly and its
+          dependencies can be installed seperately from the system-wide Python
+          packages. To do this, you simply need to install the virtualenv tool
+          (``pip install virtualenv``) and then run ``virtualenv molly``,
+          followed by ``source molly/bin/activate``. Once the virtualenv is
+          activated, then you can install Molly using the directions below.
+          Please note that Molly will only appear installed when the virtualenv
+          is activated by running the activate script as indicated above.
 
-Molly requires Postgis to be installed into the database in order to work
-correctly. A convenience script is included in Molly to create such a database
-on supported platforms (Ubuntu, Fedora and CentOS)::
+.. warning:: Please note that the Python 2.6 binary on CentOS 5 is called 'python26'.
+             On CentOS, it is therefore recommended that you work in a virtualenv
+             as detailed above. The virtualenv can be set to use Python 2.6
+             by creating it as ``virtualenv --python=/usr/bin/python26 molly``.
+             Once the virtualenv is activated, ``python`` refers to version 2.6.
 
-    ./setup.py dbprep --create-template
+From .rpm or .deb
+"""""""""""""""""
 
-This script expects to be able to access the database as a super user. You can
-either do this by running the script as a user which has superuser access to the
-database (e.g., the ``postgres`` user on many systems), or by specifying a
-superuser name and password on the command line which will be used to
-authenticate to Postgres, e.g.,::
+You can install these files using your distribution's package manager of choice.
 
-    ./setup.py dbprep --create-template -u admin -p admin
+Using pip or easy_install
+"""""""""""""""""""""""""
 
-.. seealso:: `The Django documentation <http://docs.djangoproject.com/en/dev/ref/contrib/gis/install/#spatialdb-template>`_
-             contains information on how to create a spatial database template
-             by hand, if you would like to do it that way.
+.. note:: On Fedora, pip is called 'pip-python' to avoid a clash with Perl's pip
 
-.. warning:: The next step will override your existing ``pg_hba.conf`` and may
-             break an existing PostgreSQL installation. It is recommended you do
-             this only on a new, blank installation, and when Molly is the only
-             user of the database.
+You can install Molly directly from the Python Package Index (PyPI) using the
+pip or easy_install commands::
 
-Many Linux distributions' default configuration for Postgres are not immediately
-usable by Molly - typically, they are not configured to allow users to connect
-to the database by password authentication. Molly includes a convenience
-function to create a ``pg_hba.conf`` which includes a default security
-configuration for Molly to access the database. If you already have a working
-Postgres database, or want to configure security by hand, then skip this step::
+    pip install molly
 
-    sudo ./setup.py dbprep --configure-security
+From Git (latest development version)
+"""""""""""""""""""""""""""""""""""""
 
-Creating your database
-----------------------
+To install the bleeding edge version of Molly, you can obtain Molly from our
+Git repository at git://github.com/mollyproject/mollyproject.git::
 
-.. note:: The function described below is simplistic and experienced DBAs may
-          prefer creating the database and permissions by hand. If you choose to
-          do so, then ensure you create the database for Molly from a Postgis
-          template.
+    git clone git://github.com/mollyproject/mollyproject.git
 
-.. warning:: This will delete any database called ``molly`` that already exists
-             and change the password of any user called ``molly`` which exists.
+This will create a clone (local copy) of the full Molly source code repository
+in the folder called 'mollyproject' in the directory where you ran the command.
+To install Molly, you can now use the setup.py script inside the newly created
+'mollyproject' directory::
 
-As a convenience function, Molly provides a command to automatically create a
-database user and database for Molly to use::
+    python setup.py install
 
-    ./setup.py dbcreate
+If you intend on doing development work with Molly, you may prefer to use the
+development install facility which will allow you to work from your Molly
+repository without having to re-install after every code change::
 
-.. info:: This assumes that the Postgis template is called ``template_postgis``,
-          which is the default and recommended value.
+    python setup.py develop
 
-By default, if running as a superuser, this will create a database called
-``molly`` and a user called ``molly`` which has access to this database. A
-randomly generated password is used, which is shown to you at the end of the
-script (you will need to enter this into your ``settings.py``, so make a note of
-it). In order to customise the username, database name or password used, then
-the following options can be used:
+Setting up your database
+------------------------
 
-* ``-c``: Specifies the name of the created database user
-* ``-d``: Specifies the name of the database to create
-* ``-w``: Specifies the name of the password to use for the created database user
+.. warning:: This is only intended as a quick introduction to configuring
+             Postgres and may not be suitable for production environments.
 
-As with the ``dbprep`` command, this can also take superuser credentials which
-are used to run these commands, if the current user doesn't have credentials.
+Molly recommends the use of the PostgreSQL database with the PostGIS extensions
+as a database backend.
+
+Installing Postgres
+"""""""""""""""""""
+
+On Ubuntu and Debian::
+
+    sudo apt-get install postgresql-8.4 postgresql-8.4-postgis
+
+On Fedora and CentOS::
+
+    su -c 'yum install postgresql postgresql-server postgresql-devel postgresql-contrib postgis'
+
+You may then need to start your new Postgres database, this can be done with::
+
+    sudo service postgresql start
+
+Once Postgres is created you must create a template database which can then be
+used to create the Molly database. This can be done by following the Creating a
+Spatial Database Template for PostGIS section in `the Geodjango documentation <https://docs.djangoproject.com/en/dev/ref/contrib/gis/install/#spatialdb-template>`_.
+
+Creating your database user
+"""""""""""""""""""""""""""
+
+.. warning:: This section assumes a default distribution install of Postgres, if
+             you have changed the default security settings of Postgres, you may
+             need to specify the ``-U username -W password`` options on the
+             ``createuser`` command to authenticate as a superuser.
+
+In default installs of Postgres, database usernames must match local usernames
+in order to authenticate, therefore, the user created on the database should
+match the username of the user that Molly runs as.
+
+On most default installs, the 'postgres' user is a superuser on the database,
+and the ``createuser`` command should be run as this superuser::
+
+    sudo -u postgres createuser
+
+Please enter your local username when creating this user, and the user does not
+need to be a superuser or able to create new users (roles) or databases.
+
+If you have configured Postgres to require password authentication, the ``-P``
+option should be specified::
+
+    sudo -u postgres createuser -P
+
+In this case, the username may not necessarily be the same as the local user.
+
+Creating your database for Molly
+""""""""""""""""""""""""""""""""
+
+.. warning:: This section assumes a default distribution install of Postgres, if
+             you have changed the default security settings of Postgres, you may
+             need to specify the ``-U username -W password`` options on the
+             ``createdb`` and ``psql`` commands to authenticate as a superuser.
+
+As with the ``createuser`` command, the 'postgres' user is considered a
+superuser and commands should be run as this user. To create the database,
+assuming the PostGIS template was installed as ``template_postgis`` you can use::
+
+    sudo -u postgres createdb -T template_postgis <database>
+
+Replacing <database> with your database name
+
+And then you can give your user access to this new database::
+
+    sudo -u postgres psql -c "GRANT ALL ON DATABASE <database> TO <username>;"
+
+Replacing <database> and <username> with your database and username respectively.
 
 Creating a site template
 ------------------------
@@ -143,14 +208,13 @@ is a Django project which contains your settings for Molly, as well as any
 media, templates and other customisations to the Molly core. In order to get
 started with Molly, you will need to create a site.
 
-The ``sitecreate`` command will create a template site which you can then go and
-customise to your exact requirements. This site folder is used as an argument to
-the ``deploy`` command to tell Molly which site to deploy.
+The ``molly-admin createsite`` command will create a template site which you can
+then go and customise to your exact requirements::
 
-This argument takes one option, ``-s``, which specifies the path to create the
-template in::
+This argument takes one argument which specifies the path to create the template
+in::
 
-    ./setup.py sitecreate -s /PATH/TO/MY/SITE
+    molly-admin createsite /PATH/TO/MY/SITE
 
 Once your site template has been created, the following files are created which
 are only templates and require you to edit them:
@@ -166,31 +230,20 @@ You will also have a ``compiled_media`` folder, which should be ignored, and a
 ``site_media`` folder, which is where you should put any overrides for media on
 your site.
 
-Creating a Virtualenv for Molly
--------------------------------
-
-Molly operates from a virtualenv, which allows for specific dependencies to be
-tracked without interfering with your system-wide Python installation.
-
-.. note:: If you have virtualenvwrapper installed, Molly will use that to
-          create your virtualenv.
-
-In order to create your virtualenv, the command ``./setup.py createvirtualenv``
-can be used. This command takes one compulsory argument, ``-i PATH``, which
-specifies the path to create the virtualenv in.
-
 Deploying Molly
 ---------------
 
-Once you have configured your site appropriately and created a Virtualenv for
-Molly to be installed into, you're almost ready to deploy your site!
+Once you have configured your site appropriately, you're almost ready to deploy your
+site!
 
-This can be done using the command ``./setup.py deploy``. This command takes a
-number of compulsory arguments:
+.. note:: The following command overrides your crontab. If you do not wish this
+          to happen, then run the command with the ``--skip-cron`` option.
+          You can then use ``python manage.py create_crontab`` to get a crontab
+          specification suitable for putting into the ``crontab`` command.
 
-* ``-s PATH``: The path to the site to deploy (i.e., the one created using the
-  sitestart command above)
-* ``-i PATH``: The path of the virtualenv to install into.
+This can be done using the command::
+
+    python manage.py deploy
 
 You now have an install of Molly ready to serve to the world. The recommended
 way of doing this is by using Apache and mod_wsgi. The site template created by
@@ -201,32 +254,19 @@ The `mod_wsgi <http://code.google.com/p/modwsgi/wiki/IntegrationWithDjango>`_
 documentation goes into considerable detail about how to deploy a Django
 application.
 
-Developing Molly
-----------------
+Starting a development server for Molly
+"""""""""""""""""""""""""""""""""""""""
 
-In order to support developing Molly, the following option ``-d`` is available
-on ``./setup.py deploy``. This will install Molly and your site in a development
-mode and start Django's development server. In this mode, changes to your CSS,
-images and JavaScript will be immediately shown without having to re-run the
-deploy command, and any time any Python code is changed, this is automatically
-reloaded.
+This can be done by adding the ``--develop`` command to the deploy command above::
 
-In this mode, Molly and your site are run from their source locations, not their
-installed locations, so you can edit them in-place and see the results
-immediately in the development server. Additionally, verbose logging output is
-printed to stdout, which allows you to debug an issues that are occurring with
-Molly.
+    python manage.py deploy --develop
 
-A number of additional options are available here too:
-
-* ``-p PORT``: The port which the development server should start on (defaults
-  to 8000)
-* ``-x``: This indicates the development server should start on a port which is
-  externally visible (for testing purposes only)
+.. note:: Starting a development server also skips the updating Wurfl step, in
+          order to speed up development
 
 Updating Molly
 --------------
 
-To update Molly, you simply need to rerun the ``./setup.py deploy` command in
+To update Molly, you simply need to rerun the ``./setup.py install` command in
 the new Molly folder. This will recognise that the installation already exists
 and will update as appropriate.

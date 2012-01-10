@@ -1,6 +1,7 @@
 import imp
 
 from django.utils.importlib import import_module
+from django.conf.urls.defaults import patterns
 from django.conf.urls.defaults import include as urlconf_include
 from django.core.urlresolvers import RegexURLResolver, RegexURLPattern
 
@@ -56,14 +57,30 @@ class Application(object):
             from molly.auth.views import SecureView
             bases = (SecureView,) + bases
 
+        has_urlconf = self._module_exists(self.urlconf)
+        if not has_urlconf and self._module_exists(self.application_name+'.views'):
+            views = import_module(self.application_name+'.views')
+            patterns = [getattr(views, v).pattern for v in dir(views) if hasattr(getattr(views, v), 'pattern')]
+            
+            if len(patterns):
+                urls = self._get_urls_property(bases, patterns)
+            else:
+                urls = None
+        
+        elif has_urlconf:
+            urls = self._get_urls_property(bases, import_module(self.urlconf).urlpatterns)
+        
+        else:
+            urls = None
+
         self.kwargs.update({
             'application_name': self.application_name,
             'local_name': self.local_name,
             'title': self.title,
             'providers': providers,
             'provider': providers[-1] if len(providers) else None,
-            'urls': self._get_urls_property(bases),
-            'has_urlconf': self._module_exists(self.urlconf),
+            'urls': urls,
+            'has_urlconf': urls is not None,
         })
         
         # Handle "other" providers - i.e., singletons which end with
@@ -141,7 +158,7 @@ class Application(object):
         else:
             raise TypeError("Expected RegexURLResolver or RegexURLPattern instance, got %r." % type(pattern))
 
-    def _get_urls_property(self, bases):
+    def _get_urls_property(self, bases, urlpatterns):
         """
         Returns a property object that will load and cache the urlconf for an app.
 
@@ -153,14 +170,12 @@ class Application(object):
         def urls(conf):
             if hasattr(conf, '_urls_cache'):
                 return conf._urls_cache
-            # Load the urls module and extract the patterns
-            urlpatterns = import_module(self.urlconf).urlpatterns
             new_urlpatterns = []
             for pattern in urlpatterns:
                 # Call to recursively apply the conf and bases to each of the
                 # views referenced in the urlconf.
                 new_urlpatterns.append(self.add_conf_to_pattern(pattern, self.conf, bases))
-            conf._urls_cache = urlconf_include(new_urlpatterns, self.application_name.split('.')[-1], self.local_name)
+            conf._urls_cache = urlconf_include(new_urlpatterns, app_name=self.application_name.split('.')[-1], namespace=self.local_name)
             return conf._urls_cache
         return urls
     

@@ -40,8 +40,9 @@
     {% endif %}
   </div>
   {% include "places/metadata/real_time_information.html" %}
+  
   {% if entity.location %}
-    <div class="section-content no-round-bottom">
+    <div class="section-content">
       {% render_location_map entity.location %}
     </div>
     <ul class="link-list category-list">
@@ -49,6 +50,7 @@
         <a href="{% url places:entity-nearby-list entity.identifier_scheme entity.identifier_value %}" rel="nofollow">
           {% trans "Find things near here" %}</a>
       </li>
+      <li><a href="{% url places:entity-directions entity.identifier_scheme entity.identifier_value %}" rel="nofollow">Get directions to here</a></li>
     </ul>
     {% else %}
       <div class="note"><div class="pad-10">

@@ -43,18 +43,13 @@ class TimetableAnnotationProvider(BaseMapsProvider):
             else:
                 until = [Q(sta__gte=today.time()) | Q(std__gte=today.time()) | Q(sta__lt=(today + timedelta(hours=2)).time()) | Q(std__lt=(today + timedelta(hours=2)).time())]
             
-            for stop in entity.scheduledstop_set.filter(*until):
+            for stop in entity.scheduledstop_set.filter(*until).exclude(activity__in=('D','N','F')):
                 
                 if not stop.journey.runs_on(today.date()):
                     continue
                 
                 service_id = stop.journey.route.service_id
-                destination = stop.journey.scheduledstop_set.all().reverse()[0].entity.title
-                
-                # Now try and tidy up destination
-                destination = destination.split(', ')[-1]
-                if '(' in destination:
-                    destination = destination[:destination.find('(')].strip()
+                destination = stop.journey.destination
                 
                 services[(service_id, destination)].append((stop.journey, stop.std or stop.sta))
             

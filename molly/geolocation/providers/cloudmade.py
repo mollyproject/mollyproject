@@ -1,5 +1,6 @@
-import urllib, urllib2, logging
-
+import urllib
+import urllib2
+import logging
 import simplejson
 
 from django.conf import settings

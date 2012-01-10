@@ -1,7 +1,8 @@
 from email.utils import formatdate
 from time import mktime
 from inspect import isfunction
-import logging, itertools
+import logging
+import itertools
 from datetime import datetime, date, timedelta
 from slimmer.slimmer import xhtml_slimmer
 from urlparse import urlparse, urlunparse, parse_qs
@@ -21,6 +22,7 @@ from django.core.urlresolvers import reverse, resolve, NoReverseMatch
 from django.conf import settings
 from django.utils.translation import ugettext as _
 from django.views.debug import technical_500_response
+from django.middleware.csrf import get_token
 
 logger = logging.getLogger(__name__)
 
@@ -59,7 +61,7 @@ def renderer(format, mimetypes=(), priority=0):
 def tidy_query_string(url):
     scheme, netloc, path, params, query, fragment = urlparse(url)
     args = []
-    for k, vs in parse_qs(query).items():
+    for k, vs in parse_qs(query, keep_blank_values=True).items():
         if k in ['format', 'language_code']:
             continue
         else:
@@ -211,7 +213,7 @@ class BaseView(object):
         if 'format' in request.REQUEST:
             uri = urlparse(uri)
             args = []
-            for k, vs in parse_qs(uri.query).items():
+            for k, vs in parse_qs(uri.query, keep_blank_values=True).items():
                 if k == 'format':
                     continue
                 else:
@@ -328,7 +330,13 @@ class BaseView(object):
     def render_json(self, request, context, template_name):
         context = simplify_value(context)
         resolved = resolve(request.path)
-        context['view_name'] = '%s:%s' % (':'.join(resolved.namespaces), resolved.url_name)
+        context['view_name'] = '%s:%s' % (
+            self.conf.application_name.split('.')[-1], resolved.url_name)
+        
+        # Include CSRF token, as templates don't get rendered csrf_token is
+        # never called which breaks CSRF for apps written against the JSON API
+        get_token(request)
+        
         return HttpResponse(simplejson.dumps(context),
                             mimetype="application/json")
 
@@ -346,10 +354,11 @@ class BaseView(object):
     def render_html(self, request, context, template_name):
         if template_name is None:
             raise NotImplementedError
-        return render_to_response(template_name+'.html',
-                                  context,
-                                  context_instance=RequestContext(request),
-                                  mimetype='text/html;charset=UTF-8')
+        return render_to_response(
+            template_name+'.html',
+            context,
+            context_instance=RequestContext(request, current_app=self.conf.local_name),
+            mimetype='text/html;charset=UTF-8')
 
     @renderer(format="xml", mimetypes=('application/xml', 'text/xml'))
     def render_xml(self, request, context, template_name):

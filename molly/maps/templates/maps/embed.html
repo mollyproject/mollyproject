@@ -1,9 +1,74 @@
 {% load molly_utils %}
-{% ifnotequal style_group "dumb" %}
-    {% if device|device_has_parent:"generic_web_browser" or device.pointing_method == "touchscreen" and use_javascript and device.device_os != "Symbian" and device.device_os != "Symbian OS" %}
-        <div class="slippy-map">
-            <iframe width="100%" height="{{ map.height }}" frameborder="0" class="map"
-                    src="{% url maps:touchmaplite %}?{{ map.slippy_map_parameters }}"></iframe>
+{% if style_group != "dumb" and not force_static %}
+    {% if use_slippy_maps %}
+        <div class="slippy-map map">
+            <div style="height: {{ map.height }}px;" id="map-{{ map.static_map_hash }}">
+                <script type="text/javascript">
+                    $(function(){
+                        var map_{{ map.static_map_hash }} = new L.Map('map-{{ map.static_map_hash }}', {
+                            center: new L.LatLng({{ map.lat_centre }}, {{ map.lon_centre }}),
+                            zoom: {{ map.zoom }},
+                            minZoom: {% if map.zoom < 10 %}{{ map.zoom }}{% else %}10{% endif %},
+                            zoomControl: false,
+                            attributionControl: false,
+                            layers: [
+                                new L.TileLayer('http://tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom: 18}),
+                            ]
+                        })
+                        
+                        {% for lat, lon, icon, title in map.markers %}
+                            var {{ icon }} = L.Icon.extend({
+                                iconUrl: '{{ STATIC_URL }}markers/{{ icon }}.png',
+                                shadowUrl: null,
+                                {% ifequal icon|slice:"-4:" "star" %}
+                                    iconSize: new L.Point(20, 20),
+                                    iconAnchor: new L.Point(10, 10),
+                                {% else %}
+                                    iconSize: new L.Point(20, 25),
+                                    iconAnchor: new L.Point(10, 25),
+                                {% endifequal %}
+                            })
+                            {% if title %}
+                                map_{{ map.static_map_hash }}.addLayer(new L.Marker(new L.LatLng({{ lat }}, {{ lon }}), {
+                                    icon: new {{ icon }}()
+                                }).bindPopup('{{ title|escapejs }}'))
+                            {% else %}
+                                map_{{ map.static_map_hash }}.addLayer(new L.Marker(new L.LatLng({{ lat }}, {{ lon }}), {
+                                    icon: new {{ icon }}()
+                                }))
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% for path, colour in map.paths %}
+                            // create a red polyline from an arrays of LatLng points
+                            map_{{ map.static_map_hash }}.addLayer(new L.Polyline(
+                            [{% for point in path %}
+                                new L.LatLng({{ point.1 }}, {{ point.0 }}),
+                            {% endfor %}],
+                            {color: '{{ colour|escapejs }}'}))
+                        {% endfor %}
+                        
+                        {# Bind our custom zoom handlers #}
+                        $('#map-{{ map.static_map_hash }}').parents('.map').find('.zoom-in').click(function(){
+                            map_{{ map.static_map_hash }}.zoomIn()
+                            return false;
+                        })
+                        $('#map-{{ map.static_map_hash }}').parents('.map').find('.zoom-out').click(function(){
+                            map_{{ map.static_map_hash }}.zoomOut()
+                            return false;
+                        })
+                        
+                        {% comment %}
+                        The next line makes this map globally accessible - this means that other scripts
+                        can access it - but only when this is the last map on the page, for pages which
+                        have multiple maps, this falls down.
+                        {% endcomment %}
+                        map = map_{{ map.static_map_hash }};
+                        
+                    });
+                </script>
+            </div>
+            {% include "maps/map_elements.html" %}
         </div>
     {% else %}
         <div class="backgrounded-image map" style="background-image:url('{% url maps:osm-generated_map map.static_map_hash %}'); height:{{ map.height }}px">
@@ -13,4 +78,4 @@
 {% else %}
     <img src="{% url maps:osm-generated_map map.static_map_hash %}" alt="Map" class="map"><br />
     {% include "maps/map_elements.html" %}
-{% endifnotequal %}
+{% endif %}

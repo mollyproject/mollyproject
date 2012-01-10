@@ -1,0 +1,109 @@
+body {
+    font-family: 'Liberation Sans', Arial, sans-serif;
+}
+
+.entity-list a {
+    text-decoration: none;
+    color: #000;
+}
+
+ul.entity-list, ol.entity-list {
+    padding: 0;
+    margin: 0;
+}
+
+ul.entity-list {
+    list-style-type: none;
+}
+
+ol.entity-list {
+    list-style-position: inside;
+}
+
+.attractions-grouping li,
+#poi-list li,
+#poi-search {
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    margin: 5px;
+    border: 1px solid black;
+}
+
+.attractions-grouping li,
+#poi-list li {
+    display: inline-block;
+    background-color: #d6d6d6;
+    background-image: url('../../tours/images/add.png');
+    background-position: 5px center;
+    background-repeat: no-repeat;
+    text-align: center;
+    padding: 15px 15px 15px 25px;
+}
+
+#poi-list li {
+    background-color: #fffcb6;
+    background-image: url('../../tours/images/delete.png');
+}
+
+li.selected {
+    display: none;
+}
+
+#current-tour {
+    width: 250px;
+    float: left;
+}
+
+#current-tour li {
+    width: 200px;
+}
+
+.attractions-grouping {
+    margin-left: 260px;
+}
+
+ul.ui-autocomplete {
+    max-height: 400px;
+    overflow-y: scroll;
+}
+
+#poi-search {
+    padding: 15px;
+    width: 50%;
+}
+
+.created {
+    width: 50%;
+    position: relative;
+    margin: 0 auto;
+    border: 1px solid black;
+}
+
+.short-link {
+    width: 200px;
+    padding: 10px;
+    margin-right: 10px;
+    border-right: 1px dashed #ccc;
+}
+
+.short-link p:first-child {
+    margin-top: 0;
+}
+
+.creation-actions {
+    position: absolute;
+    top: 50px;
+    left: 220px;
+}
+
+#suggestions {
+    margin: 0;
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    width: 80%;
+    height: 80%;
+    background-color: #ffffff;
+    border: 5px solid black;
+}

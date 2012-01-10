@@ -1,0 +1,35 @@
+#favourite-bit {
+    position: absolute;
+    right: 0px;
+    padding: 5px;
+}
+
+#favourite, .favourite,
+#unfavourite, .unfavourite {
+    background-color: transparent !important;
+    border: 0 !important;
+    text-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    -moz-box-shadow: none !important;
+    box-shadow: none !important;
+    height: 20px !important;
+    width: 20px !important;
+    cursor: pointer !important;
+    text-indent:-999em; /* Hack to not show the text on a button when we're showing the image */
+}
+
+#favourite, .favourite {
+    background-image: url('../../favourites/images/star-grey.png') !important;
+}
+
+#unfavourite, .unfavourite {
+    background-image: url('../../favourites/images/star.png') !important;
+}
+
+.with-favourite {
+    margin-right: 28px !important;
+}
+
+.favourite-link .additional {
+    font-size: 0.9em;
+}

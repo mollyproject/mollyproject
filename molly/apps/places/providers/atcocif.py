@@ -35,7 +35,7 @@ class AtcoCifTimetableProvider(BaseMapsProvider):
         """
         self._url = url
         self._cache = EntityCache()
-        self._entity_type = NaptanMapsProvider(None)._get_entity_types()['BCT']
+        self._entity_type = NaptanMapsProvider(None)._get_entity_types()['BCT'][0]
     
     @batch('%d 10 * * wed' % random.randint(0, 59))
     def import_data(self, metadata, output):
@@ -273,6 +273,7 @@ class AtcoCifTimetableProvider(BaseMapsProvider):
         source, created = Source.objects.get_or_create(module_name=__name__,
                                                        name='ATCO-CIF Importer')
         return source
+
 
 if __name__ == '__main__':
     AtcoCifTimetableProvider('http://store.datagm.org.uk/sets/TfGM/GMPTE_CIF.zip').import_data({}, sys.stdout)

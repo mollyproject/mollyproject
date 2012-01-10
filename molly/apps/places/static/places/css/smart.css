@@ -30,3 +30,30 @@ td.service-id a {
 .delayed-service {
     color: #781c1f;
 }
+
+/* Directions list */
+
+ol.directions-list li {
+    font-size: 1.2em;
+    font-weight: bold;
+    padding-left: 55px !important;
+    list-style-type: decimal;
+    list-style-position: inside;
+    background-repeat: no-repeat !important;
+    background-position: left center !important;
+}
+
+ol.directions-list li .additional {
+    font-size: 0.8em;
+    font-weight: normal;
+}
+
+ol.directions-list li.direction-start { background-image: url('../../places/images/start.png'); }
+ol.directions-list li.direction-left { background-image: url('../../places/images/turn-left.png'); }
+ol.directions-list li.direction-slight-left { background-image: url('../../places/images/bear-left.png'); }
+ol.directions-list li.direction-sharp-left { background-image: url('../../places/images/sharp-left.png'); }
+ol.directions-list li.direction-right { background-image: url('../../places/images/turn-right.png'); }
+ol.directions-list li.direction-slight-right { background-image: url('../../places/images/bear-right.png'); }
+ol.directions-list li.direction-sharp-right { background-image: url('../../places/images/sharp-right.png'); }
+ol.directions-list li.direction-turn-around { background-image: url('../../places/images/turn-around.png'); }
+ol.directions-list li.direction-straight { background-image: url('../../places/images/straight-on.png'); }

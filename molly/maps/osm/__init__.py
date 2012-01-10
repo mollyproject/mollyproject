@@ -146,7 +146,8 @@ def get_or_create_map(generator, args):
     
     return hash, metadata
     
-def fit_to_map(centre_point, points, min_points, zoom, width, height):
+def fit_to_map(centre_point, points, min_points, zoom, width, height,
+               extra_points, paths):
     """
     Given a list of points and some minimum number of points, then a "fitted
     map" is generated, which is one which contains at least @C{min_points}, and
@@ -183,4 +184,4 @@ def fit_to_map(centre_point, points, min_points, zoom, width, height):
     points = list(points)
     return get_or_create_map(get_fitted_map,
                              (centre_point, points, min_points,
-                              zoom, width, height))
+                              zoom, width, height, extra_points, paths))

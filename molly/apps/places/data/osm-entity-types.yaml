@@ -334,3 +334,19 @@ theatre:
   verbose_name: theatre
   verbose_name_plural: theatres
   verbose_name_singular: a theatre
+tourist-attraction:
+  category: Leisure
+  parent-types: []
+  show_in_category_list: false
+  show_in_nearby_list: true
+  verbose_name: tourist attraction
+  verbose_name_plural: tourist attractions
+  verbose_name_singular: a tourist attraction
+tourist-information:
+  category: Leisure
+  parent-types: []
+  show_in_category_list: false
+  show_in_nearby_list: true
+  verbose_name: tourist information point
+  verbose_name_plural: tourist information points
+  verbose_name_singular: a tourist information point

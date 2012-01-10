@@ -45,4 +45,6 @@
 - {entity-type: swimming-pool, osm-tag: sport=swimming}
 - {entity-type: swimming-pool, osm-tag: leisure=swimming_pool}
 - {entity-type: cycle-shop, osm-tag: shop=bicycle}
+- {entity-type: tourist-information, osm-tag: tourism=information}
+- {entity-type: tourist-attraction, osm-tag: tourism=attraction}
 

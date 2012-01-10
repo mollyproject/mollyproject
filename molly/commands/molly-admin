@@ -1,0 +1,49 @@
+#!/usr/bin/env python
+
+class CommandError(Exception):
+    
+    def __init__(self, error):
+        self.error = error
+    
+    def __str__(self):
+        return self.error
+
+def parse_argv(argv):
+    
+    args = []
+    options = {}
+    
+    for arg in argv:
+        if arg.startswith('--'):
+            arg = arg[2:]
+            if '=' in arg:
+                key, value = arg.split('=', 1)
+            else:
+                key, value = arg, True
+            options[key] = value
+        else:
+            args.append(arg)
+    
+    return args, options
+
+def call_command(command, *args, **options):
+    name = 'molly.commands.%s' % command
+    try:
+        found_mod = __import__(name, globals(), locals(), ['command'], -1)
+    except ImportError:
+        raise CommandError('No such command: %s' % command)
+    else:
+        try:
+            found_mod.command(*args, **options)
+        except TypeError:
+            raise CommandError('Invalid arguments')
+    
+if __name__ == '__main__':
+    import sys
+    args, options = parse_argv(sys.argv[2:])
+    try:
+        if len(sys.argv) < 2:
+            raise CommandError('You must specify a command to run')
+        call_command(sys.argv[1], *args, **options)
+    except CommandError as e:
+        print e

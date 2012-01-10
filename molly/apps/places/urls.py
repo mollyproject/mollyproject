@@ -7,13 +7,12 @@ from views import (
     NearbyListView, NearbyDetailView,
     EntityDetailView,
     EntityUpdateView,
+    RouteView,
 
     NearbyEntityListView, NearbyEntityDetailView,
     CategoryListView, CategoryDetailView,
     
-    ServiceDetailView,
-
-    APIView,
+    ServiceDetailView, EntityDirectionsView, TimetableView,
 )
 
 urlpatterns = patterns('',
@@ -35,13 +34,25 @@ urlpatterns = patterns('',
         CategoryDetailView, {},
         'category-detail'),
 
+    (r'^route:(?P<route>[^/]+)/(?P<id>\d+)?$',
+        RouteView, {},
+        'route'),
+
     (r'^(?P<scheme>[a-z_\-]+):(?P<value>[^/]+)/$',
         EntityDetailView, {},
         'entity'),
     
+    (r'^(?P<scheme>[a-z_\-]+):(?P<value>[^/]+)/directions/$',
+        EntityDirectionsView, {},
+        'entity-directions'),
+    
     (r'^(?P<scheme>[a-z_\-]+):(?P<value>[^/]+)/service$',
         ServiceDetailView, {},
         'service-detail'),
+    
+    #(r'^(?P<scheme>[a-z_\-]+):(?P<value>[^/]+)/timetable/((?P<year>\d{4})\-(?P<month>\d{2})\-(?P<day>\d{2})/)?$',
+    #    TimetableView, {},
+    #    'timetable'),
     
     (r'^(?P<scheme>[a-z_\-]+):(?P<value>[^/]+)/nearby/$',
         NearbyEntityListView, {},
@@ -58,8 +69,4 @@ urlpatterns = patterns('',
         StaticDetailView,
         {'title':'About OpenStreetMap', 'template':'openstreetmap'},
         'static-openstreetmap'),
-
-    (r'^api/$',
-        APIView, {},
-        'api'),
 )

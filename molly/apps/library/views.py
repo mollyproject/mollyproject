@@ -4,6 +4,7 @@ from django.core.paginator import Paginator
 from django.http import Http404
 from django.utils.translation import ugettext as _
 
+from molly.utils import haversine
 from molly.utils.views import BaseView, ZoomableView
 from molly.utils.breadcrumbs import *
 from molly.maps import Map
@@ -153,20 +154,29 @@ class ItemDetailView(ZoomableView):
         # Build a map of all the libraries that have this book, with markers
         # corresponding to colours
         
+        user_location = request.session.get('geolocation:location')
+        
         points = []
         point_libraries = []
-        for library, books in context['item'].libraries.items():
-            entity = library.get_entity()
-            if entity != None and entity.location != None:
+        lbs = context['item'].libraries.items()
+        
+        for library, books in lbs:
+            library.entity = library.get_entity()
+        
+        if user_location:
+            lbs = sorted(lbs, key=lambda (l,b): haversine(user_location,
+                                                          l.entity.location))
+        
+        for library, books in lbs:
+            if library.entity != None and library.entity.location != None:
                 colour = AVAIL_COLORS[max(b['availability'] for b in books)]
-                points.append((entity.location[0],
-                               entity.location[1],
+                points.append((library.entity.location[0],
+                               library.entity.location[1],
                                colour,
-                               ' - '.join(library.location)))
+                               library.entity.title))
                 point_libraries.append(library)
         
         if len(points) > 0:
-            user_location = request.session.get('geolocation:location')
             context['map'] = Map(
                 centre_point = (user_location[0], user_location[1], 'green', '')
                                 if user_location != None else None,
@@ -184,6 +194,10 @@ class ItemDetailView(ZoomableView):
             for i, (a,b) in enumerate(context['map'].points):
                 for j in range(len(b)):
                     lib_iter.next().marker_number = i + 1
+        
+        context.update({
+            'sorted_libraries': lbs,
+        })
         
         return self.render(request, context, 'library/item_detail')
 

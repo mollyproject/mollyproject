@@ -16,7 +16,7 @@
     
     - body
       - header
-        - site-small-logo 
+        - site_small_logo 
         - breadcrumb_0 
       - content 
       - bottom_links
@@ -46,6 +46,7 @@
         {# Provide the minified CSS file appropriate to class of device #}
         {% compressed_css style_group %}
     {% endif %}
+    
     {# If the device supports SVGs, add the following CSS file that gives SVG icons rather than .png #}
     {% if device|device_has_parent:"apple_iphone_ver4" or browser.svgt_1_1 %}
         {% compressed_css 'svg' %}
@@ -79,6 +80,12 @@
     {# Favicon link #}
     <link rel="icon" type="image/png" href="{{ STATIC_URL }}site/images/favicon.png"/>
     
+    {% if use_slippy_maps %}
+        {# These devices get slippy maps #}
+        {% compressed_css "leaflet" %}
+        {% compressed_js "leaflet" %}
+    {% endif %} 
+    
     {# Include ALL javascript (ignore filename) #}
     {% include "geolocation/js.html" %}
 
@@ -101,24 +108,25 @@
         <div id="bc-header">
           <ol id="bc">
           {# Breadcrumb home logo - override this in your own templates #}
-          {% block site-small-logo %}
+          {% block site_small_logo %}
             <li><a href="{% url home:index %}" title="{% trans 'Home' %}">
               <img src="{{ STATIC_URL }}site/images/logo.png" width="42" height="30" alt="{% trans 'Home' %}"/>
             </a></li>
           {% endblock %}
-          {% if breadcrumbs.2 %}
-            <li><a href="{{ breadcrumbs.1.1 }}" title="{{ breadcrumbs.1.0 }}">
-              <img src="{{ STATIC_URL }}site/images/index-icons/{{ breadcrumbs.0 }}-bc.png" alt="{{ breadcrumb.1.0 }}"/>
+          {% if breadcrumbs.parent %}
+            <li><a href="{{ breadcrumbs.index.url }}" title="{{ breadcrumbs.index.title }}">
+              <img src="{{ STATIC_URL }}site/images/index-icons/{{ breadcrumbs.application }}-bc.png" alt="{{ breadcrumb.index.title }}"/>
             </a></li>
-          {% if not breadcrumbs.3 %}
-            <li><a href="{{ breadcrumbs.2.1 }}" title="{{ breadcrumbs.2.0 }}">
-              &hellip;
-            </a></li>
-          {% endif %}{% endif %}
+            {% if not breadcrumbs.parent_is_index %}
+              <li><a href="{{ breadcrumbs.parent.url }}" title="{{ breadcrumbs.parent.title }}">
+                &hellip;
+              </a></li>
+            {% endif %}
+          {% endif %}
           </ol> 
           <div id="bc-title">
             {# Title of the page #}
-            <h1 class="{% if not breadcrumbs.2 %}{{ breadcrumbs.0 }}-header with-icon{% endif %}">{{ breadcrumbs.4 }}</h1>
+            <h1 class="{% if not breadcrumbs.parent %}{{ breadcrumbs.application }}-header with-icon{% endif %}">{{ breadcrumbs.page_title }}</h1>
             {# Include favourites if appropriate (defined in favourite.html) - a star is placed at the top right if so #}
             {% include "favourite.html" %}
           </div>
@@ -128,13 +136,13 @@
     {% else %}
         <div id="bc-header">
                <a href="{% url home:index %}">{% block breadcrumb_0 %}{% trans "Home" %}{% endblock %}</a>
-           {% if breadcrumbs.2 %}
-               / <a href="{{ breadcrumbs.1.1 }}" title="{{ breadcrumbs.1.0 }}">{{ breadcrumbs.1.0 }}</a>
-           {% if not breadcrumbs.3 %}
-                / <a href="{{ breadcrumbs.2.1 }}" title="{{ breadcrumbs.2.0 }}">&hellip;</a>
+           {% if breadcrumbs.parent %}
+               / <a href="{{ breadcrumbs.index.url }}" title="{{ breadcrumbs.index.title }}">{{ breadcrumbs.index.title }}</a>
+           {% if not breadcrumbs.parent_is_index %}
+                / <a href="{{ breadcrumbs.parent.url }}" title="{{ breadcrumbs.parent.title }}">&hellip;</a>
            {% endif %}{% endif %}
              <div id="bc-title">
-               <h1>{{ breadcrumbs.4 }}</h1>
+               <h1>{{ breadcrumbs.page_title }}</h1>
              </div>
              {% include "favourite.html" %}
          </div>

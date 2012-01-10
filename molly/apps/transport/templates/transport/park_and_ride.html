@@ -1,0 +1,44 @@
+{% extends "transport/base.html" %}{% load i18n %}
+
+{% block content %}
+{{ block.super }}
+
+{% if park_and_rides %}
+<div class="section" id="park_and_rides">
+    <div class="header">
+        <h2><a href="{% url places:nearby-detail "park-and-ride" %}">{% trans "Park and Rides" %}</a></h2>
+    </div>
+    <div class="section-content">
+        {% for entity in park_and_rides %}
+            <div class="park-and-ride" style="{% if not forloop.last or forloop.counter|divisibleby:2 %} float: left;{% endif %}{% if not forloop.counter|divisibleby:2 %} clear: left;{% endif %}">
+                <h3><a href="{{ entity.get_absolute_url}}">
+                    {% ifequal entity.title|slice:"-13:" "Park and Ride" %}
+                        {{ entity.title|slice:":-14" }}
+                    {% else %}
+                        {% ifequal entity.title|slice:"-11:" "Park & Ride" %}
+                            {{ entity.title|slice:":-12" }}
+                        {% else %}
+                            {{ entity.title }}
+                        {% endifequal %}
+                    {% endifequal %}</a></h3>
+                {% if entity.metadata.park_and_ride %}
+                    {% if not entity.metadata.park_and_ride.unavailable %}
+                        <div class="capacity-bar">
+                            <div class="capacity-bar-red" style="width: {{ entity.metadata.park_and_ride.percentage }}%;">&nbsp;</div>
+                        </div>
+                        {# Translators: As in, car parking spaces #}
+                        <p>{% trans "Spaces" %}: {{ entity.metadata.park_and_ride.spaces }} / {{ entity.metadata.park_and_ride.capacity }}</p>
+                    {% else %}
+                        {# Translators: As in, car parking spaces #}
+                        <p><em>{% trans "Space information currently unavailable" %}</em></p>
+                        {# Translators: As in, car parking spaces #}
+                        <p>{% trans "Spaces" %}: ? / {{ entity.metadata.park_and_ride.capacity }}</p>
+                    {% endif %}
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}

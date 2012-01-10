@@ -3,6 +3,8 @@ import suds, suds.sudsobject
 from suds.sax.element import Element
 
 from django.utils.translation import ugettext_lazy
+from django.utils.translation import ugettext as _
+from django.conf import settings
 
 from molly.apps.places.models import Entity
 from molly.apps.places.providers import BaseMapsProvider
@@ -11,7 +13,10 @@ logger = logging.getLogger(__name__)
 
 class LiveDepartureBoardPlacesProvider(BaseMapsProvider):
     _WSDL_URL = "http://realtime.nationalrail.co.uk/ldbws/wsdl.aspx"
-    
+    _ATTRIBUTION = { 'title': _("Powered by National Rail Enquiries"),
+                  'url': "http://nationalrail.co.uk",
+                  'picture': settings.STATIC_URL + "places/images/powered-by-nre.png" }
+
     def __init__(self, token, max_services=15, max_results=1):
         self._max_services = max_services
         self._max_results = max_results
@@ -108,7 +113,7 @@ class LiveDepartureBoardPlacesProvider(BaseMapsProvider):
                         service['problems'] = self.delayed(
                             service.get('eta', ''), service.get('sta', ''),
                             service.get('etd', ''), service.get('std', ''))
-                
+
                 if 'busServices' in db:
                     for service in db['busServices']['service']:
                         entity.metadata['real_time_information'] = {

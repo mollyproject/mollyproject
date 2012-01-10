@@ -1,4 +1,7 @@
-import urllib, urllib2, logging, re
+import urllib
+import urllib2
+import logging
+import re
 
 import xml.etree
 import xml.parsers.expat

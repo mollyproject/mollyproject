@@ -3,16 +3,14 @@ import hashlib
 import urllib2
 from datetime import timedelta
 
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.utils.translation import ugettext as _
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
-from molly.apps.contact.providers import TooManyResults
+from molly.apps.contact.providers import BaseContactProvider, TooManyResults
 
-from .forms import GenericContactForm
-
-
+from molly.apps.contact.forms import GenericContactForm
 
 class IndexView(BaseView):
 
@@ -42,7 +40,7 @@ class ResultListView(IndexView):
     def breadcrumb(self, request, context):
         return Breadcrumb(
             self.conf.local_name,
-            None,
+            lazy_parent('index'),
             _('Contact search'),
             lazy_reverse('result_list'),
         )
@@ -88,7 +86,7 @@ class ResultDetailView(BaseView):
     def breadcrumb(self, request, context, id):
         return Breadcrumb(
             self.conf.local_name,
-            None,
+            lazy_parent('result_list'),
             _('Contact search'),
             lazy_reverse('result_detail', id),
         )
@@ -99,4 +97,4 @@ class ResultDetailView(BaseView):
         except BaseContactProvider.NoSuchResult:
             raise Http404
 
-        return self.render(request, context, 'contact/result_detail')
+        return self.render(request, context, 'contact/result_list')

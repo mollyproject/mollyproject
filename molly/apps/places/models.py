@@ -12,7 +12,19 @@ from django.contrib.gis.geos import Point
 from django.utils.translation import get_language
 from django.utils.translation import ugettext_lazy as _
 
+from molly.utils import haversine
 from molly.utils.i18n import name_in_language
+
+# Translators: These are compass points
+COMPASS_POINTS = (_('N'), _('NE'), _('E'), _('SE'),
+                  _('S'), _('SW'), _('W'), _('NW'))
+
+def bearing_to_compass(bearing):
+    """
+    Translates a bearing in degrees to a human readable direction (N, S, E, etc)
+    """
+    compass_point = (int(bearing + 22.5) % 360) // 45
+    return COMPASS_POINTS[compass_point]
 
 class Source(models.Model):
     """
@@ -93,6 +105,7 @@ class EntityType(models.Model):
         else:
             super(EntityType, self).save(*args, **kwargs)
 
+
 class EntityTypeName(models.Model):
     entity_type = models.ForeignKey(EntityType, related_name='names')
     language_code = models.CharField(max_length=10, choices=settings.LANGUAGES)
@@ -168,8 +181,7 @@ class Entity(models.Model):
     absolute_url = models.TextField()
     
     parent = models.ForeignKey('self', null=True)
-    is_sublocation = models.BooleanField(default=False)
-    is_stack = models.BooleanField(default=False)
+    is_entrance = models.BooleanField(default=False)
 
     _identifiers = models.ManyToManyField(Identifier)
     identifier_scheme = models.CharField(max_length=32)
@@ -182,6 +194,8 @@ class Entity(models.Model):
         try:
             return self.__identifiers
         except AttributeError:
+            if not self.pk:
+                return dict()
             self.__identifiers = dict()
             for identifier in self._identifiers.all():
                 scheme, value = identifier.scheme, identifier.value
@@ -214,9 +228,6 @@ class Entity(models.Model):
         self.__metadata = metadata
     metadata = property(get_metadata, set_metadata)
     
-    # Translators: These are compass points
-    COMPASS_POINTS = (_('N'), _('NE'), _('E'), _('SE'),
-                      _('S'), _('SW'), _('W'), _('NW'))
 
     def get_bearing(self, p1):
         """
@@ -224,9 +235,7 @@ class Entity(models.Model):
         """
         p2 = self.location
         lat_diff, lon_diff = p2[0] - p1[0], p2[1] - p1[1]
-        compass_point = int(((90 - degrees(atan2(lon_diff, lat_diff)) + 22.5)
-            % 360) // 45)
-        return self.COMPASS_POINTS[compass_point]
+        return bearing_to_compass(degrees(atan2(lon_diff, lat_diff)))
 
     def get_distance_and_bearing_from(self, point):
         """
@@ -235,13 +244,7 @@ class Entity(models.Model):
         """
         if point is None or not self.location:
             return None, None
-        if not isinstance(point, Point):
-            point = Point(point, srid=4326)
-        return (
-            point.transform(27700, clone=True).distance(
-                self.location.transform(27700, clone=True)),
-            self.get_bearing(point),
-        )
+        return haversine(point, self.location), self.get_bearing(point)
     
     def save(self, *args, **kwargs):
         try:
@@ -250,12 +253,12 @@ class Entity(models.Model):
             pass
         
         identifiers = kwargs.pop('identifiers', None)
-        if not identifiers is None:
+        if identifiers is not None:
             self.absolute_url = self._get_absolute_url(identifiers)
         
         super(Entity, self).save(*args, **kwargs)
 
-        if not identifiers is None:
+        if identifiers is not None:
             self._identifiers.all().delete()
             id_objs = []
             for scheme, value in identifiers.items():
@@ -330,14 +333,40 @@ class Entity(models.Model):
                 return getattr(self, et.id_field).strip()
             else:
                 return getattr(self, et.id_field)
-
+    
+    def routing_point(self, origin=None):
+        """
+        Returns the location to where the user should go when being routed to
+        this entity - can pass in the start location (e.g., if there are
+        entrances) on two sides, the user will then be routed to the one closest
+        to them.
+        """
+        
+        entrances_in_group = Entity.objects.filter(
+            groups__entity=self,
+            is_entrance=True
+        )
+        
+        # There are no entrances in the groups
+        if entrances_in_group.count() == 0:
+            return self
+        
+        if origin:
+            entrances_in_group = entrances_in_group.distance(origin).order_by('distance')
+        
+        return entrances_in_group[0]
+    
     def simplify_for_render(self, simplify_value, simplify_model):
-        return simplify_value({
+        simplified = {
             '_type': '%s.%s' % (self.__module__[:-7], self._meta.object_name),
             '_pk': self.pk,
             '_url': self.get_absolute_url(),
             'location': self.location,
+            'geometry': self.geometry,
+            'routing_point': self.routing_point().location,
             'parent': simplify_model(self.parent, terse=True),
+            'is_entrance': self.is_entrance,
+            'groups': self.groups.all(),
             'all_types': [simplify_model(t, terse=True)
                           for t in self.all_types_completion.all()],
             'primary_type': simplify_model(self.primary_type, terse=True),
@@ -346,7 +375,21 @@ class Entity(models.Model):
             'identifiers': self.identifiers,
             'identifier_scheme': self.identifier_scheme,
             'identifier_value': self.identifier_value
-        })
+        }
+        
+        for field in list(dir(self)):
+            try:
+                if field[0] != '_' \
+                 and field not in ('objects', 'all_types_slugs') \
+                 and not isinstance(getattr(self, field), models.Field):
+                    try:
+                        simplified[field] = simplify_value(getattr(self, field))
+                    except NotImplementedError:
+                        pass
+            except AttributeError:
+                pass
+        
+        return simplify_value(simplified)
 
 class EntityName(models.Model):
     entity = models.ForeignKey(Entity, related_name='names')
@@ -523,6 +566,16 @@ class Journey(models.Model):
             return False
     
     vehicle = models.TextField()
+    
+    @property
+    def destination(self):
+        destination = self.scheduledstop_set.all().reverse()[0].entity.title
+        
+        # Now try and tidy up destination
+        destination = destination.split(', ')[-1]
+        if '(' in destination:
+            destination = destination[:destination.find('(')].strip()
+        return destination
     
     def __unicode__(self):
         return self.route.__unicode__()

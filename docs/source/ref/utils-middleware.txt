@@ -1,0 +1,59 @@
+:mod:`molly.utils.middleware` -- Molly Middleware
+=====================================
+
+.. module :: molly.utils.middleware
+
+A library containing middleware classes for Molly
+
+LocationMiddleware
+------------------
+
+Configuration
+^^^^^^^^^^^^^
+
+Add ``molly.utils.middleware.LocationMiddleware`` to your 
+``MIDDLEWARE_CLASSES`` setting and you're done.
+
+Usage
+^^^^^
+
+LocationMiddleware enables location awareness in Molly. Locations can be
+provided in a number of ways.
+
+1. **Stored as a session variable** - this is the default for people
+visiting the site with their browsers. Molly redirects the user to
+a view that gets their location if they visit a view that requires
+their location and their current session doesn't already store it.
+
+2. **Provided as an HTTP header** - useful for third party apps
+accessing Molly via API calls. The format of the HTTP header is as follows:
+
+    ``X-Current-Location: latitude=x.xx,longitude=y.yy[,accuracy=z]``
+    
+For example:
+
+    ``X-Current-Location: latitude=51.40392,longitude=1.0203``
+    
+    ``X-Current-Location: latitude=51.40392,longitude=1.0203,accuracy=5``
+
+3. **Provided as HTTP query string parameters** - an alternative to
+HTTP headers where it's easier to use a query string. The format is 
+as follows:
+
+    ``latitude=x.xx&longitude=y.yy[&accuracy=z]``
+
+For example:
+
+    ``http://mydomain.com/places/nearby/?latitude=51.40392&longitude=1.0203``
+
+    ``http://mydomain.com/places/nearby/?latitude=51.40392&longitude=1.0203&accuracy=5``
+
+Note: When providing location as an HTTP header or as query string parameters, 
+latitude and longitude are mandatory, and will be interpreted using
+the WSG84 datum. Accuracy is optional.
+
+The order of evaluation is:
+
+* If query string params are provided, use those; else:
+* If the X-Current-Location header is set, use that; else:
+* If the geolocation:location session variable is set, use that

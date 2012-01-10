@@ -4,21 +4,23 @@
 {% block content %}
 
 {% if multiple_routes %}
-    
-<div class="section">
-    <div class="header">
-        <h2>{% trans "Multiple routes found" %}</h2>
-    </div>
-    <div class="section-content no-round-bottom">
-        <p>{% trans "Multiple routes with the same number were found from this stop. This could be due to this stop serving two different directions. Please select exactly which route you want from the list below." %}
-    </div>
-    <ul class="link-list">
-        {% for route in multiple_routes %}
-            <li><a href="{{ entity.get_absolute_url }}service?routeid={{ route.pk }}">{{ route }}</a></li>
-        {% endfor %}
-    </ul>
-</div>
-    
+        <div class="section">
+            <div class="header">
+                <h2>{% trans "Multiple routes found" %}</h2>
+            </div>
+            <div class="section-content">
+                <p>{% trans "Multiple routes with the same number were found. Please select exactly which route you want from the list below." %}
+            </div>
+            <ul class="link-list">
+                {% for route in multiple_routes %}
+                    {% if entity %}
+                        <li><a href="{{ entity.get_absolute_url }}service?routeid={{ route.pk }}">{{ route }}</a></li>
+                    {% else %}
+                        <li><a href="{% url places:route route.service_id route.pk %}">{{ route }}</a></li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
 {% else %}
 
 <div class="section">
@@ -44,7 +46,7 @@
   
   {% else %}
   
-  <ul class="content-list no-round-bottom">
+  <ul class="content-list">
     {% if service.operator %}
         <li>
             {% blocktrans with service.operator as operator %}Operated by {{ operator }}{% endblocktrans %}

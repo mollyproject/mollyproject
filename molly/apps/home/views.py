@@ -94,7 +94,6 @@ class IndexView(BaseView):
         context = {
             'applications': applications,
             'hide_feedback_link': True,
-            'is_christmas': datetime.now().month == 12,
             'messages': messages,
             'favourites': get_favourites(request),
             'weather': weather,

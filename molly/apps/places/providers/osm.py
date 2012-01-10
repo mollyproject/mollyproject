@@ -16,6 +16,7 @@ from django.utils.translation import ugettext as _
 from django.utils.translation import ugettext_noop
 from django.utils.translation import get_language
 
+from molly.apps.places import get_entity
 from molly.apps.places.models import (Entity, EntityType, Source,
                                       EntityTypeCategory, EntityName)
 from molly.apps.places.providers import BaseMapsProvider
@@ -31,7 +32,7 @@ def way_id(id):
 
 class OSMHandler(handler.ContentHandler):
     def __init__(self, source, entity_types, find_types, output, lat_north=None,
-                 lat_south=None, lon_west=None, lon_east=None):
+                 lat_south=None, lon_west=None, lon_east=None, identities={}):
         self.source = source
         self.entity_types = entity_types
         self.find_types = find_types
@@ -40,6 +41,7 @@ class OSMHandler(handler.ContentHandler):
         self._lat_south = lat_south
         self._lon_west = lon_west
         self._lon_east = lon_east
+        self.identities = identities
 
     def startDocument(self):
         self.ids = set()
@@ -102,93 +104,112 @@ class OSMHandler(handler.ContentHandler):
             if name == 'way' and not all(id in self.node_locations for id in self.nodes):
                 return
             
-            # We already have these from OxPoints, so leave them alone.
-            if self.tags.get('amenity') == 'library' and self.tags.get('operator') == 'University of Oxford':
-                return
-            
             # Ignore disused and under-construction entities
             if self.tags.get('life_cycle', 'in_use') != 'in_use' or self.tags.get('disused') in ('1', 'yes', 'true'):
                 return
             
+            # Memory management in debug mode
             reset_queries()
             
-            try:
-                entity = Entity.objects.get(source=self.source,
-                                            _identifiers__scheme='osm',
-                                            _identifiers__value=self.id)
-                created = True
-            except Entity.DoesNotExist:
-                entity = Entity(source=self.source)
-                created = False
-            
-            if not 'osm' in entity.metadata or \
-              entity.metadata['osm'].get('attrs', {}).get('timestamp', '') < self.attrs['timestamp']:
-                
-                if created:
-                    self.create_count += 1
-                else:
-                    self.modify_count += 1
-                
-                if name == 'node':
-                    entity.location = Point(self.node_location, srid=4326)
-                    entity.geometry = entity.location
-                elif name == 'way':
-                    cls = LinearRing if self.nodes[0] == self.nodes[-1] else LineString
-                    entity.geometry = cls([self.node_locations[n] for n in self.nodes], srid=4326)
-                    min_, max_ = (float('inf'), float('inf')), (float('-inf'), float('-inf'))
-                    for lon, lat in [self.node_locations[n] for n in self.nodes]:
-                        min_ = min(min_[0], lon), min(min_[1], lat) 
-                        max_ = max(max_[0], lon), max(max_[1], lat)
-                    entity.location = Point( (min_[0]+max_[0])/2 , (min_[1]+max_[1])/2 , srid=4326)
-                else:
-                    raise AssertionError("There should be no other types of entity we're to deal with.")
-                
-                names = dict()
-                
-                for lang_code, lang_name in settings.LANGUAGES:
-                    with override(lang_code):
-                    
-                        if '-' in lang_code:
-                            tags_to_try = ('name:%s' % lang_code, 'name:%s' % lang_code.split('-')[0], 'name', 'operator')
-                        else:
-                            tags_to_try = ('name:%s' % lang_code, 'name', 'operator')
-                            name = None
-                            for tag_to_try in tags_to_try:
-                                if self.tags.get(tag_to_try):
-                                    name = self.tags.get(tag_to_try)
-                                    break
-                        
-                        if name is None:
-                            try:
-                                name = reverse_geocode(*entity.location)[0]['name']
-                                if not name:
-                                    raise IndexError
-                                name = u"↝ %s" % name
-                            except IndexError:
-                                name = u"↝ %f, %f" % (self.node_location[1], self.node_location[0])
-                        
-                        names[lang_code] = name
+            if self.id in self.identities:
+                entity = get_entity(*self.identities[self.id].split(':'))
                 
                 entity.metadata['osm'] = {
                     'attrs': dict(self.attrs),
                     'tags': dict(zip((k.replace(':', '_') for k in self.tags.keys()), self.tags.values()))
                 }
-                entity.primary_type = self.entity_types[types[0]]
                 
-                entity.save(identifiers={'osm': self.id})
-                
-                for lang_code, name in names.items():
-                    set_name_in_language(entity, lang_code, title=name)
-                
-                entity.all_types = [self.entity_types[et] for et in types]
+                identifiers = entity.identifiers
+                identifiers.update({
+                    'osm': self.id
+                })
+                entity.save(identifiers=identifiers)
+                entity.all_types = set(entity.all_types.all()) | set(self.entity_types[et] for et in types)
                 entity.update_all_types_completion()
-            
+                self.ids.remove(self.id)
+                
             else:
-                self.unchanged_count += 1
+                try:
+                    entity = Entity.objects.get(source=self.source,
+                                                _identifiers__scheme='osm',
+                                                _identifiers__value=self.id)
+                    created = False
+                except Entity.DoesNotExist:
+                    entity = Entity(source=self.source)
+                    created = True
+            
+                if not 'osm' in entity.metadata or \
+                  entity.metadata['osm'].get('attrs', {}).get('timestamp', '') < self.attrs['timestamp']:
+                    
+                    if created:
+                        self.create_count += 1
+                    else:
+                        self.modify_count += 1
+                    
+                    if name == 'node':
+                        entity.location = Point(self.node_location, srid=4326)
+                        entity.geometry = entity.location
+                    elif name == 'way':
+                        cls = LinearRing if self.nodes[0] == self.nodes[-1] else LineString
+                        entity.geometry = cls([self.node_locations[n] for n in self.nodes], srid=4326)
+                        min_, max_ = (float('inf'), float('inf')), (float('-inf'), float('-inf'))
+                        for lon, lat in [self.node_locations[n] for n in self.nodes]:
+                            min_ = min(min_[0], lon), min(min_[1], lat) 
+                            max_ = max(max_[0], lon), max(max_[1], lat)
+                        entity.location = Point( (min_[0]+max_[0])/2 , (min_[1]+max_[1])/2 , srid=4326)
+                    else:
+                        raise AssertionError("There should be no other types of entity we're to deal with.")
+                    
+                    names = dict()
+                    
+                    for lang_code, lang_name in settings.LANGUAGES:
+                        with override(lang_code):
+                        
+                            if '-' in lang_code:
+                                tags_to_try = ('name:%s' % lang_code, 'name:%s' % lang_code.split('-')[0], 'name', 'operator')
+                            else:
+                                tags_to_try = ('name:%s' % lang_code, 'name', 'operator')
+                                name = None
+                                for tag_to_try in tags_to_try:
+                                    if self.tags.get(tag_to_try):
+                                        name = self.tags.get(tag_to_try)
+                                        break
+                            
+                            if name is None:
+                                try:
+                                    name = reverse_geocode(*entity.location)[0]['name']
+                                    if not name:
+                                        raise IndexError
+                                    name = u"↝ %s" % name
+                                except IndexError:
+                                    name = u"↝ %f, %f" % (self.node_location[1], self.node_location[0])
+                            
+                            names[lang_code] = name
+                    
+                    entity.metadata['osm'] = {
+                        'attrs': dict(self.attrs),
+                        'tags': dict(zip((k.replace(':', '_') for k in self.tags.keys()), self.tags.values()))
+                    }
+                    entity.primary_type = self.entity_types[types[0]]
+                    
+                    identifiers = entity.identifiers
+                    identifiers.update({
+                        'osm': self.id
+                    })
+                    entity.save(identifiers=identifiers)
+                    
+                    for lang_code, name in names.items():
+                        set_name_in_language(entity, lang_code, title=name)
+                    
+                    entity.all_types = [self.entity_types[et] for et in types]
+                    entity.update_all_types_completion()
+                
+                else:
+                    self.unchanged_count += 1
 
     def endDocument(self):
         for entity in Entity.objects.filter(source=self.source):
-            if not entity.identifiers.get('osm') in self.ids:
+            if entity.identifiers.get('osm') not in self.ids:
                 entity.delete()
                 self.delete_count += 1
         
@@ -213,7 +234,8 @@ class OSMMapsProvider(BaseMapsProvider):
                  lon_west=None, lon_east=None,
                  url='http://download.geofabrik.de/osm/europe/great_britain/england.osm.bz2',
                  entity_type_data_file=None,
-                 osm_tags_data_file=None):
+                 osm_tags_data_file=None,
+                 identities_file=None):
         """
         @param lat_north: A limit of the northern-most latitude to import points
                           for
@@ -237,6 +259,11 @@ class OSMMapsProvider(BaseMapsProvider):
                                    should be imported, and how these map to
                                    Molly's entity types
         @type osm_tags_data_file: str
+        @param identities_file: A YAML file containing a mapping from OSM IDs
+                                to any other namespace of entities. When an ID
+                                is matched in this file, a new entitity is not
+                                created, but instead associated with the other one
+        @type identities_file: str
         """
         self._lat_north = lat_north
         self._lat_south = lat_south
@@ -267,6 +294,12 @@ class OSMMapsProvider(BaseMapsProvider):
                     return (tag['osm-tag'],
                             tag['entity-type'])
             self._osm_tags = map(to_tuple, yaml.load(fd))
+        
+        if identities_file is not None:
+            with open(identities_file) as fd:
+                self.identities = yaml.load(fd)
+        else:
+            self.identities = {}
 
     @batch('%d 9 * * mon' % random.randint(0, 59))
     def import_data(self, metadata, output):
@@ -291,7 +324,8 @@ class OSMMapsProvider(BaseMapsProvider):
                                             self._lat_north,
                                             self._lat_south,
                                             self._lon_west,
-                                            self._lon_east))
+                                            self._lon_east,
+                                            self.identities))
         
         # Parse in 8k chunks
         osm = urllib2.urlopen(self._url)
@@ -679,5 +713,17 @@ DUMMY = {
         'verbose_name': ugettext_noop('theatre'),
         'verbose_name_plural': ugettext_noop('theatres'),
         'verbose_name_singular': ugettext_noop('a theatre')
-    }
+    },
+    'tourist-information': {
+        'category': ugettext_noop('Leisure'),
+        'verbose_name': ugettext_noop('tourist information point'),
+        'verbose_name_plural': ugettext_noop('tourist information points'),
+        'verbose_name_singular': ugettext_noop('a tourist information point')
+    },
+    'tourist-attraction': {
+        'category': ugettext_noop('Leisure'),
+        'verbose_name': ugettext_noop('tourist attraction'),
+        'verbose_name_plural': ugettext_noop('tourist attractions'),
+        'verbose_name_singular': ugettext_noop('a tourist attraction')
+    },
 }

@@ -1,5 +1,6 @@
 import urllib, random
 from datetime import datetime, timedelta
+from urlparse import urlparse
 
 from django.core.urlresolvers import resolve, reverse
 from django.http import HttpResponse, Http404, HttpResponseBadRequest
@@ -10,6 +11,7 @@ from django.utils.translation import ugettext as _
 from molly.utils.views import BaseView, renderer
 from molly.utils.breadcrumbs import *
 from molly.utils.http import update_url
+from molly.utils.templatetags.molly_utils import humanise_distance
 from molly.utils import haversine
 
 from molly.geolocation.forms import LocationUpdateForm
@@ -97,7 +99,7 @@ class GeolocationView(BaseView):
         response['X-Embed'] = 'True'
         return response
 
-    def get_location_response(self, request, context, form = None):
+    def get_location_response(self, request, context, form=None):
         if context.get('return_url').startswith('/'):
             redirect = context['return_url']
         else:
@@ -106,7 +108,7 @@ class GeolocationView(BaseView):
             return self.render(request, {
                 'name': request.session['geolocation:name'],
                 'redirect': redirect,
-                'accuracy': request.session['geolocation:accuracy'],
+                'accuracy': humanise_distance(request.session['geolocation:accuracy']),
                 'longitude': request.session['geolocation:location'][0],
                 'latitude': request.session['geolocation:location'][1],
                 'history': request.session.get('geolocation:history', ()),
@@ -143,7 +145,8 @@ class IndexView(GeolocationView):
             )
 
         try:
-            parent_view, args, kwargs = resolve(request.REQUEST['return_url'])
+            return_url = urlparse(request.REQUEST['return_url']).path
+            parent_view, args, kwargs = resolve(return_url)
             parent_data = parent_view.breadcrumb.data(self, request, context, *args, **kwargs)
             parent_data = parent_data.parent(self, parent_view.conf.local_name, request, context)
 
@@ -271,7 +274,7 @@ class LocationRequiredView(BaseView):
         return True
 
     def __call__(self, request, *args, **kwargs):
-        if not self.is_location_required(request, *args, **kwargs) or request.session.get('geolocation:location'):
+        if not self.is_location_required(request, *args, **kwargs) or hasattr(request, 'user_location'):
             return super(LocationRequiredView, self).__call__(request, *args, **kwargs)
         else:
             return self.redirect('%s?%s' % (

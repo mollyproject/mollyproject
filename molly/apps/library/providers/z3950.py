@@ -26,22 +26,6 @@ class SearchResult(LibrarySearchResult):
         '': LibrarySearchResult.AVAIL_UNKNOWN,
     }
 
-    def simplify_for_render(self, simplify_value, simplify_model):
-        return {
-            '_type': 'z3950.Item',
-            '_pk': self.control_number,
-            'control_number': self.control_number,
-            'title': self.title,
-            'publisher': self.publisher,
-            'author': self.author,
-            'description': self.description,
-            'edition': self.edition,
-            'copies': self.copies,
-            'holding_libraries': self.holding_libraries,
-            'isbns': simplify_value(self.isbns),
-            'issns': simplify_value(self.issns),
-            'holdings': simplify_value(self.libraries),
-        }
 
 class USMARCSearchResult(SearchResult):
     USM_CONTROL_NUMBER = 1
@@ -159,12 +143,14 @@ class USMARCSearchResult(SearchResult):
         else:
             return []
 
+
 def get_text(nodelist):
     rc = []
     for node in nodelist:
         if node.nodeType == node.TEXT_NODE:
             rc.append(node.data)
     return ''.join(rc)
+
 
 class XMLSearchResult(SearchResult):
     
@@ -291,6 +277,7 @@ class XMLSearchResult(SearchResult):
         self.author = ' / '.join(self.author)
         self.copies = sum((len(holdings) for holdings in self.libraries.values()))
         self.holding_libraries = len(self.libraries)
+
 
 class Z3950(BaseLibrarySearchProvider):
     
@@ -427,6 +414,7 @@ class Z3950(BaseLibrarySearchProvider):
             return results[0]
         else:
             return None
+
 
 def marc_to_unicode(x):
     translator = MARC8_to_Unicode()

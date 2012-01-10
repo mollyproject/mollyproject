@@ -1,12 +1,15 @@
-import simplejson, traceback, sys, logging
+import simplejson
+import traceback
+import sys
+import logging
 from datetime import datetime
 from StringIO import StringIO
 
-from django.db import models, IntegrityError, transaction
+from django.db import models, DatabaseError, transaction
 
 from molly.conf import all_apps, app_by_local_name
 
-logger = logging.getLogger("molly.batch_processing")
+logger = logging.getLogger(__name__)
 
 class TeeStringIO(StringIO):
     def __init__(self, *args, **kwargs):
@@ -70,8 +73,8 @@ class Batch(models.Model):
             method = getattr(provider, self.method_name)
             
             self.metadata = method(self.metadata, output)
-        except Exception, e:
-            if isinstance(e, IntegrityError):
+        except Exception as e:
+            if isinstance(e, DatabaseError):
                 transaction.rollback()
             if output.getvalue():
                 output.write("\n\n")

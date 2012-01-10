@@ -104,6 +104,7 @@ class LibrarySearchQuery:
         else:
             self.issn = None
 
+
 class LibrarySearchResult(object):
     """
     An object holding an individual result from a search
@@ -185,6 +186,23 @@ class LibrarySearchResult(object):
     AVAIL_UNAVAILABLE, AVAIL_UNKNOWN, AVAIL_STACK, AVAIL_REFERENCE, \
     AVAIL_AVAILABLE = range(5)
 
+    def simplify_for_render(self, simplify_value, simplify_model):
+        return {
+            '_type': 'library.LibrarySearchResult',
+            '_pk': self.id,
+            'control_number': self.control_number,
+            'title': self.title,
+            'publisher': self.publisher,
+            'author': self.author,
+            'description': self.description,
+            'edition': self.edition,
+            'copies': self.copies,
+            'holding_libraries': self.holding_libraries,
+            'isbns': simplify_value(self.isbns),
+            'issns': simplify_value(self.issns),
+            'holdings': simplify_value(self.libraries),
+        }
+
     def __unicode__(self):
         return self.title
 
@@ -208,11 +226,6 @@ class Library(object):
 
     def __eq__(self, other):
         return self.location == other.location
-
-    def availability_display(self):
-        return [
-            _('unavailable'), _('unknown'), _('stack'), _('reference'), _('available')
-        ][self.availability]
     
     def get_entity(self):
         """
@@ -228,6 +241,17 @@ class Library(object):
                 return None
         else:
             return None
+
+    def simplify_for_render(self, simplify_value, simplify_model):
+        entity = self.get_entity()
+        return {
+            '_type': 'library.Library',
+            'location_code': simplify_value(self.location),
+            'entity': simplify_value(entity),
+            'display_name': entity.title if entity else "/".join(self.location),
+        }
+    
+
 
 class LibrarySearchError(Exception):
     

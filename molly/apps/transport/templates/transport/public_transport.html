@@ -1,0 +1,123 @@
+{% extends "transport/base.html" %}{% load molly_utils %}{% load i18n %}
+
+{% block content %}
+{{ block.super }}
+
+{% if line_status %}
+    {% with line_status as transit_status %}
+        {% include "places/metadata/transit_status.html" %}
+    {% endwith %}
+{% endif %}
+
+{% if favourites %}
+<div class="section" id="entities-favourites">
+    <div class="header">
+        <h2>{% trans "Favourite" %} {{ type.verbose_name_plural }} - {% now "G:i:s "%}</h2>
+    </div>
+    <table class="content">
+        <tbody>
+        {% for entity in favourites %}
+            <tr class="sub-section-divider"><th colspan="3"><a href="{{ entity.get_absolute_url }}" class="subtle-link">
+                {{ entity.title }}
+                {% if entity.distance %}<small>
+                    {% blocktrans with entity.distance.m|humanise_distance as distance and entity.bearing as bearing %}(about {{ distance }} {{ bearing }}){% endblocktrans %}
+                </small>{% endif %}
+            </a></th></tr>
+            {% if entity.metadata.real_time_information.pip_info %}
+                <tr><td colspan="3">{{ entity.metadata.real_time_information.pip_info|join:"<br/>" }}</td></tr>
+            {% endif %}
+            {% if entity.metadata.real_time_information.services %}
+                {% for service in entity.metadata.real_time_information.services %}
+                    <tr>
+                        <td class="center"><big>
+                            {% if service.route %}<a href="{{ entity.get_absolute_url }}service?route={{ service.service|urlencode }}" class="subtle-link">{% endif %}
+                                {{ service.service }}
+                            {% if service.route %}</a>{% endif %}
+                        </big></td>
+                        <td>{{ service.destination }}</td>
+                        <td>{{ service.next }}{% if service.following %}<small>, {{ service.following.0 }}{% if service.following.1 %}, &hellip;{% endif %}</small>{% endif %}</td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                {% if not entity.metadata.real_time_information.pip_info %}
+                    <tr><td colspan="3">{% trans "There is currently no real time information from this stop." %}</td></tr>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+<div class="section" id="entities-nearby">
+    <div class="header">
+        <h2>{% trans "Nearby" %} {{ type.verbose_name_plural }} - {% now "G:i:s "%}</h2>
+        {% if routes %}
+            <form id="route-picker">
+                <select name="route" multiple="multiple">
+                    {% for route in route_ids %}
+                        <option>{{ route }}</option>
+                    {% endfor %}
+                </select>
+                <br/>
+                <input type="submit" value="{% trans "Filter" %}"/>
+            </form>
+            {% if selected_routes %}
+                <p>{% blocktrans count selected_routes|length as num_routes %}Only showing stops on the following route:{% plural %}Only showing stops on the following routes:{% endblocktrans %}
+                {% for selected_route in selected_routes %}
+                 {{ selected_route }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+                </p>
+            {% else %}
+                <p>{% trans "Showing services on all routes." %}</p>
+            {% endif %}
+        {% endif %}
+    </div>
+    <table class="content">
+        <tbody>
+        {% for entity in entities %}
+            <tr class="sub-section-divider"><th colspan="3"><a href="{{ entity.get_absolute_url }}" class="subtle-link">
+                {{ entity.title }}
+                {% if entity.distance %}<small>
+                    {% blocktrans with entity.distance.m|humanise_distance as distance and entity.bearing as bearing %}(about {{ distance }} {{ bearing }}){% endblocktrans %}
+                </small>{% endif %}
+            </a></th></tr>
+            {% if entity.metadata.real_time_information.pip_info %}
+                <tr><td colspan="3">{{ entity.metadata.real_time_information.pip_info|join:"<br/>" }}</td></tr>
+            {% endif %}
+            {% if entity.metadata.real_time_information.services %}
+                {% for service in entity.metadata.real_time_information.services %}
+                    <tr>
+                        <td class="center"><big>
+                            {% if service.route %}<a href="{{ entity.get_absolute_url }}service?route={{ service.service|urlencode }}" class="subtle-link">{% endif %}
+                            {% if service.journey %}<a href="{{ entity.get_absolute_url }}service?journey={{ service.journey.id }}" class="subtle-link">{% endif %} 
+                                {{ service.service }}
+                            {% if service.route or service.journey %}</a>{% endif %}
+                        </big></td>
+                        <td>{{ service.destination }}</td>
+                        <td>{{ service.next }}{% if service.following %}<small>, {{ service.following.0 }}{% if service.following.1 %}, &hellip;{% endif %}</small>{% endif %}</td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                {% if not entity.metadata.real_time_information.pip_info %}
+                    <tr><td colspan="3">{% trans "There is currently no real time information from this stop." %}</td></tr>
+                {% endif %}
+            {% endif %}
+        {% empty %}
+            <tr>
+                <td colspan="3"><div class="note">
+                    {% blocktrans with type.verbose_name_plural as type %}There are no {{ type }} near you.{% endblocktrans %}
+                </div></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<ul class="link-list stand-alone">
+    <li><a href="{% url transport:routes pageslug %}">
+        {% trans 'View all routes' %}
+    </a></li>
+</ul>
+
+{% endblock %}

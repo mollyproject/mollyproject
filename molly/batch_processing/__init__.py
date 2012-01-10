@@ -1,3 +1,4 @@
+import getpass
 import simplejson
 import os
 import os.path
@@ -181,7 +182,11 @@ if os.name == 'nt':
     
 else:
 
-    def create_crontab(filename):
+    def create_crontab(filename, include_user=False):
+        """
+        If include_user is True, generates a cron file with a user column,
+        suitable for use in /etc/cron.d
+        """
         load_batches()
     
         sys_path = get_norm_sys_path()
@@ -196,11 +201,21 @@ else:
         for batch in Batch.objects.all():
             if not batch.enabled:
                 continue
-            f.write('%s %s %s "%s" "%s" "%s"\n' % (
-                batch.cron_stmt.ljust(20),
-                sys.executable,
-                os.path.abspath(os.path.join(os.path.dirname(__file__), 'scripts', 'run_batch.py')),
-                _escape(batch.local_name),
-                _escape(batch.provider_name),
-                _escape(batch.method_name),
-            ))
+            
+            line_args = {
+                'time': batch.cron_stmt.ljust(20),
+                'user': '',
+                'python': sys.executable,
+                'run_batch': os.path.abspath(os.path.join(os.path.dirname(__file__), 'scripts', 'run_batch.py')),
+                'batch_local_name': _escape(batch.local_name),
+                'batch_provider_name': _escape(batch.provider_name),
+                'batch_method_name': _escape(batch.method_name),
+            }
+            if include_user:
+                line_args['user'] = getpass.getuser()
+            
+            f.write(
+                '%(time)s %(user)s %(python)s %(run_batch)s '
+                '"%(batch_local_name)s" "%(batch_provider_name)s" '
+                '"%(batch_method_name)s"\n' % line_args)
+            

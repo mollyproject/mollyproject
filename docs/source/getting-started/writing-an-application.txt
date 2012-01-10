@@ -5,7 +5,7 @@ A Molly application is just a standard Django application, however, the Molly
 framework provides a few extra features to make applications within Molly
 consistent, and handling mobile browsers easier.
 
-* :doc:`Class-based views <../topics/class_based_views>`, which provide a
+* :doc:`Class-based views <../topics/class-based-views>`, which provide a
   powerful framework for rendering which targets different devices
 * A consistent :doc:`framework for styling <../topics/styling>`, which provides
   a consistent look and feel across the site.
@@ -136,7 +136,7 @@ site-wide search framework.
 Anatomy of a view
 -----------------
 
-.. seealso:: :doc:`../topics/class_based_views`
+.. seealso:: :doc:`../topics/class-based-views`
 
 Molly provides a powerful framework for writing class-based views by providing
 a class called ``BaseView``. Writing a view generally consists of extending this
@@ -606,7 +606,7 @@ To create a base provider, then the following can be included in a new file,
             # of "line_name", "status" and optional "disruption_reason"
             return []
 
-.. seealso:: :doc:`../topics/application_framework`
+.. seealso:: :doc:`../topics/application-framework`
 
 We can now alter our ``settings.py`` application configuration to point to
 this provider, and our app should now render the page as expected (with no

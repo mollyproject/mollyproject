@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load molly_utils %}{% load i18n %}
 <div class="location-box section" id="location-box">
     <div class="header location-box-header">
         <h2>{% trans "Your Location" %}</h2>
@@ -14,7 +14,7 @@
                 <span class="location">
                     {% if geolocation.name %}{{ geolocation.name }}{% else %}{% trans "No location known" %}{% endif %}</span><br/>
                 <span class="location-accuracy">{% if geolocation.accuracy %}
-                    {% blocktrans with geolocation.accuracy|floatformat:"0" as accuracy %}within approx. {{ accuracy }} m{% endblocktrans %}
+                    {% blocktrans with geolocation.accuracy|humanise_distance as accuracy %}within approx. {{ accuracy }}{% endblocktrans %}
                     {% endif %}</span>
             </p>
         </div>
@@ -75,7 +75,7 @@
                     <div class="header">
                         <h2>{% trans "Favourite Locations" %}</h2>
                     </div>
-                    <ul class="favourite-locations-list link-list{% if geolocation.history %} no-round-bottom{% endif %}">
+                    <ul class="favourite-locations-list link-list">
                       {% for id, favourite in geolocation.favourites.items %}
                         <li>
                             <form class="specific-location-form" method="post" action="{% url geolocation:index %}">

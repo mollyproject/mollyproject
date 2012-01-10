@@ -66,7 +66,6 @@ $(document).bind('molly-page-change', function(event, url){
                         $('li.next a').attr('href', '?page=' + (data.entities.number + 1).toString(10))
                     } else {
                         $('li.next').remove()
-                        $('.section-content').removeClass('no-round-bottom')
                     }
                     for (i in data.entities.objects) {
                         item = data.entities.objects[i]
@@ -130,10 +129,10 @@ function parse_results(data, nearby){
             '<ul class="link-list"></ul>')
         for (j in data.entity_types[category]) {
             var entity_type = data.entity_types[category][j]
-            var found_within_string = interpolate(gettext('%(entities_found)s within %(distance)sm'),
+            var found_within_string = interpolate(gettext('%(entities_found)s within %(distance)s'),
                                                   {
                                                     entities_found: entity_type.entities_found,
-                                                    distance: Math.ceil(entity_type.max_distance/10)*10
+                                                    distance: entity_type.max_distance
                                                   }, true)
             if (nearby) {
                 $('#poi-category-selector ul:last').append(
@@ -149,8 +148,6 @@ function parse_results(data, nearby){
             }
         }
     }
-    $('#poi-category-selector ul').addClass('no-round-bottom')
-    $('#poi-category-selector ul:last').removeClass('no-round-bottom')
     capture_outbound();
 }
 
@@ -196,7 +193,7 @@ function refreshRTI(data){
 function rebuildRTI(elem, metadata){
     elem.empty()
     if ((typeof(metadata.pip_info) != 'undefined' && metadata.pip_info.length > 0) || metadata.services.length == 0) {
-        elem.append('<ul class="content-list no-round-bottom"></ul>')
+        elem.append('<ul class="content-list"></ul>')
         if (metadata.pip_info.length > 0) {
             elem.find('ul').append('<li></li>')
             var li = elem.find('li')
@@ -214,7 +211,7 @@ function rebuildRTI(elem, metadata){
         }
     }
     if (metadata.services.length > 0) {
-        elem.append('<div class="section-content no-round-bottom"><div class="pad-5"><table class="real-time-information"><tbody id="bus_times"></tbody></table></div></div>')
+        elem.append('<div class="section-content"><div class="pad-5"><table class="real-time-information"><tbody id="bus_times"></tbody></table></div></div>')
         tbody = elem.find('tbody')
         for (var i in metadata.services) {
             var service = metadata.services[i]
@@ -266,14 +263,14 @@ function rebuildLDB(elem, board, train_station){
     }
     
     if (train_station.metadata.ldb.nrccMessages) {
-        elem.append('<ul class="content-list no-round-bottom"></ul>')
+        elem.append('<ul class="content-list"></ul>')
         ul = elem.find('ul:last')
         for (var i in train_station.metadata.ldb.nrccMessages.message) {
             ul.append('<li>' + train_station.metadata.ldb.nrccMessages.message[i] + '</li>')
         }
     }
     
-    elem.append('<table class="content no-round-bottom"><thead><tr></tr></thead><tbody></tbody></table>')
+    elem.append('<table class="content"><thead><tr></tr></thead><tbody></tbody></table>')
     tr = elem.find('.content thead tr')
     if (board == 'arrivals') {
         tr.append('<th>' + gettext('Origin') + '</th>')
@@ -386,6 +383,20 @@ function rebuildLDB(elem, board, train_station){
     }
 }
 
+function rebuildLineStatus(elem, line_statuses){
+    var tbody = $(elem).find('tbody');
+    tbody.empty();
+    for (var i in line_statuses){
+        tbody.append('<tr class="' + line_statuses[i].line_id + '"></tr>')
+        var tr = tbody.find('tr:last');
+        tr.append('<td class="line-name">' + line_statuses[i].line_name + '</td>')
+        tr.append('<td class="line-status">' + line_statuses[i].status + '</td>')
+        if (line_statuses[i].disruption_reason) {
+            tr.find('td:last').append('<br/>' + line_statuses[i].disruption_reason);
+        }
+    }
+}
+
 function setupLDBButtons(){
     $('.ldb-board').click(function(){
         display_loading_screen()
@@ -394,11 +405,7 @@ function setupLDBButtons(){
             data: { format: 'json' },
             dataType: 'json',
             success: function(data){
-                if (data.train_station) {
-                    rebuildLDB($('#ldb-' + data.train_station.identifier_scheme + '-' + data.train_station.identifier_value), data.board, data.train_station);
-                } else {
-                    rebuildLDB($('#ldb-' + data.entity.identifier_scheme + '-' + data.entity.identifier_value), data.board, data.entity);
-                }
+                rebuildLDB($('#ldb-' + data.entity.identifier_scheme + '-' + data.entity.identifier_value), data.board, data.entity);
                 clear_loading_screen();
                 setupLDBButtons()
                 capture_outbound();

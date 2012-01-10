@@ -1,0 +1,4 @@
+/* Hide selected entities from the tour selection list */
+.attractions-grouping li.selected {
+    display: none;
+}

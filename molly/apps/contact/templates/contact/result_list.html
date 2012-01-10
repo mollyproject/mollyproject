@@ -13,13 +13,13 @@
     <h2>{% trans "Results" %}</h2>
   </div>
     {% if message %}
-      <div class="section-content no-round-bottom">
+      <div class="section-content">
           <div class="note"><div class="bubble pad-10">
             {{ message }}
           </div></div>
       </div>
     {% endif %}
-    <div class="section-content{% if results %} no-round-bottom{% endif %}">
+    <div class="section-content">
       <div class="note"><div class="bubble pad-10">
         {% blocktrans count results|length as counter %}Your search returned one item.{% plural %}Your search returned {{ counter }} items.{% endblocktrans %}
 		{# If there are too many results suggest that the user uses more specific criteria #}

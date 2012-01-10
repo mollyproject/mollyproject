@@ -1,0 +1,20 @@
+{% extends "transport/base.html" %}{% load molly_utils %}{% load i18n %}
+
+{% block content %}
+{{ block.super }}
+
+<div class="section">
+    <div class="header">
+        <h2>{% trans "Routes" %}</h2>
+    </div>
+    <ul class="link-list">
+        {% for route in routes %}
+            <li><a href="{% url places:route route.service_id route.pk %}">{{ route }}
+            {% if route.nearest %}<br /><small><em>{% trans "Closest stop:" %} {{ route.nearest.title }}
+                {% if route.nearest_distance and route.nearest_bearing %}{% blocktrans with route.nearest_distance|humanise_distance as distance and route.nearest_bearing as bearing %}(about {{ distance }} {{ bearing }}){% endblocktrans %}{% endif %}
+            </em></small>{% endif %}</a></li>
+        {% endfor %}
+    </ul>
+</div>
+
+{% endblock %}

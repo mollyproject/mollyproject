@@ -9,40 +9,56 @@
 <div class="section">
     <div class="header">
         <h2>{% block location %}{{ observation.name }}{% endblock %}
-	    <small>{% blocktrans with observation.observed_date|date:"H:i" as observation_time %}at {{ observation_time }}{% endblocktrans %}</small>
-	</h2>
+            <small>
+                {% if not fresh %}
+                    <span id="weather-old">{% trans "Sorry, these observations are a little old:" %}</span>
+                {% endif %}
+                {% blocktrans with observation.observed_date|date:"H:i" as observation_time %}at {{ observation_time }}{% endblocktrans %}
+                </small>
+        </h2>
     </div>
     
     <div class="note">
-	<div class="weather-icon">
-	    <img src="{{ STATIC_URL }}weather/images/{{ observation.icon }}.png" alt="{{ observation.get_outlook_display|capfirst }}"/><br/>
-	</div>
-	<div class="weather-live-info">
-	    <span>
-		{% blocktrans with observation.temperature as temperature %} {{ temperature }}&deg;C{% endblocktrans %}</span><br/>
-		{% blocktrans with observation.wind_speed as wind_speed and observation.wind_direction as wind_direction %}{{ wind_speed }}mph {{ wind_direction }}{% endblocktrans %}<br/>
-		{% blocktrans with observation.humidity as humidity %}{{ humidity }}% Relative Humidity{% endblocktrans %}<br/>
-		{% blocktrans with observation.pressure as pressure and observation.get_pressure_state_display as pressure_change %}{{ pressure }} mbar and {{ pressure_change }}{% endblocktrans %}<br/>
-	</div>
+        <div class="weather-icon">
+            <img src="{{ STATIC_URL }}weather/images/{{ observation.icon }}.png"
+                 alt="{{ observation.get_outlook_display|capfirst }}"/><br/>
+        </div>
+        <div class="weather-live-info">
+            <span>
+                {% blocktrans with observation.temperature as temperature %} {{ temperature }}&deg;C{% endblocktrans %}
+            </span><br/>
+                {% blocktrans with observation.wind_speed as wind_speed and observation.wind_direction as wind_direction %}{{ wind_speed }}mph {{ wind_direction }}{% endblocktrans %}<br/>
+                {% blocktrans with observation.humidity as humidity %}{{ humidity }}% Relative Humidity{% endblocktrans %}<br/>
+                {% blocktrans with observation.pressure as pressure and observation.get_pressure_state_display as pressure_change %}{{ pressure }} mbar and {{ pressure_change }}{% endblocktrans %}<br/>
+        </div>
     </div>
 
 </div>
 
 <div class="section">
     <div class="header">
-	<h2>{% trans "Forecast" %}</h2>
+        <h2>{% trans "Forecast" %}</h2>
     </div>
     <table class="weather-forecast">
         <tbody>
-	    {% for forecast in forecasts %}
+            {% for forecast in forecasts %}
             <tr>
                 <td class="large-text">{{ forecast.observed_date|date:"l" }}</td>
-                <td><img src="{{ STATIC_URL }}weather/images/{{ forecast.icon }}_small.png" alt="{{ forecast.get_outlook_display|capfirst }}"/></td>
+                <td><img src="{{ STATIC_URL }}weather/images/{{ forecast.icon }}_small.png"
+                         alt="{{ forecast.get_outlook_display|capfirst }}"/></td>
                 <td class="large-text">{% blocktrans with forecast.max_temperature as temperature %}{{ temperature }}&deg;C{% endblocktrans %}</td>
                 <td>{% blocktrans with forecast.min_temperature as temperature %}{{ temperature }}&deg;C{% endblocktrans %}</td>
             </tr>
-	    {% endfor %}
+            {% endfor %}
         </tbody>
     </table>
+    
+    {% if attribution %}
+        <div class="note powered-by">
+            <p>{% trans "From" %}</p>
+            <p><a href="{{ attribution.url }}">{{ attribution.title }}</a></p>
+        </div>
+    {% endif %}
 </div>
+
 {% endblock %}

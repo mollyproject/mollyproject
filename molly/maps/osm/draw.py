@@ -1,7 +1,6 @@
 from __future__ import division
 import math
 import random
-import PIL.Image
 import urllib
 import os.path
 import sys
@@ -9,6 +8,9 @@ import time
 import logging
 
 logger = logging.getLogger(__name__)
+
+from PIL import Image, ImageDraw
+from PIL.ImageFilter import EDGE_ENHANCE
 
 from molly.maps.osm.models import OSMTile, get_marker_dir
 
@@ -77,7 +79,8 @@ def minmax(i):
         max_ = max(max_, e)
     return min_, max_
 
-def get_map(points, width, height, filename, zoom=None, lon_center=None, lat_center=None):
+def get_map(points, width, height, filename, zoom=None, lon_center=None,
+            lat_center=None, paths=[]):
     """
     Generates a map for the passed in arguments, saving that to filename
     
@@ -136,7 +139,7 @@ def get_map(points, width, height, filename, zoom=None, lon_center=None, lat_cen
         for tx in range(tx_min_, tx_max_) for ty in range(ty_min_, ty_max_)]
     
     # Create a new blank image for us to add the tiles on to
-    image = PIL.Image.new('RGBA', (width, height))
+    image = Image.new('RGBA', (width, height))
     
     # Keep track of if the image if malformed or not
     malformed = False
@@ -152,24 +155,40 @@ def get_map(points, width, height, filename, zoom=None, lon_center=None, lat_cen
         
         try:
             tile_data = OSMTile.get_data(tile['ref'][0], tile['ref'][1], zoom)
-            tile['surface'] = PIL.Image.open(tile_data)
+            tile['surface'] = Image.open(tile_data)
         except Exception as e:
             logger.exception('Failed to fetch OSM tile')
-            tile['surface'] = PIL.Image.open(os.path.join(os.path.dirname(__file__), 'fallback', 'fallback.png'))
+            tile['surface'] = Image.open(os.path.join(os.path.dirname(__file__), 'fallback', 'fallback.png'))
             malformed = True
         
         image.paste(tile['surface'], ((tile['ref'][0] - tx_min) * 256 - ox, (tile['ref'][1] - ty_min) * 256 - oy))
+    
+    
+    # Now add the paths to the image
+    paths_canvas = Image.new('RGBA', (width, height))
+    drawing = ImageDraw.Draw(paths_canvas)
+    for path, colour in paths:
+        drawing.line(map(lambda (x,y): (int((x - tx_min) * 256 - ox),
+                                        int((y - ty_min) * 256 - oy)),
+                         map(lambda x: get_tile_ref(*x, zoom=zoom), path.coords)),
+                     fill=colour, width=4)
+    paths_canvas = paths_canvas.filter(EDGE_ENHANCE) # Anti-alias
+    
+    # 50% transparency
+    paths_canvas = Image.blend(paths_canvas, Image.new('RGBA', (width, height)), 0.5)
+    
+    image.paste(paths_canvas, None, paths_canvas)
     
     # Now add the markers to the image
     points.sort(key=lambda p:p[0][1])
     marker_dir = get_marker_dir()
     for (tx, ty), color, index in points:
         if index is None:
-            off, fn = (10, 10), "%s-star.png" % color
+            off, fn = (10, 10), "%s_star.png" % color
         else:
-            off, fn = (10, 25), "%s-%d.png" % (color, index)
+            off, fn = (10, 25), "%s_%d.png" % (color, index)
         fn = os.path.join(marker_dir, fn)
-        marker = PIL.Image.open(fn)
+        marker = Image.open(fn)
         off = (
             int((tx - tx_min) * 256 - off[0] - ox),
             int((ty - ty_min) * 256 - off[1] - oy),
@@ -255,7 +274,8 @@ class PointSet(set):
         return extent[0] <= box[0] and extent[1] <= box[1]
         
 
-def get_fitted_map(centre_point, points, min_points, zoom, width, height, filename):
+def get_fitted_map(centre_point, points, min_points, zoom, width, height,
+                   extra_points, paths, filename):
     """
     Given a list of points and some minimum number of points, then a "fitted
     map" is generated, which is one which contains at least @C{min_points}, and
@@ -307,9 +327,13 @@ def get_fitted_map(centre_point, points, min_points, zoom, width, height, filena
     
     points = [p[0] for p in new_points]
     
+    # Include extra_points in bounding_box
+    points = list(extra_points) + points
+    min_points += len(extra_points)
+    
     # Include the central point in the points to be considered
     if centre_point:
-        points = [centre_point] + list(points)
+        points = [centre_point] + points
     
     # Get a set of the minimum points
     point_set, points = PointSet(points[:min_points+1]), points[min_points+1:]
@@ -328,12 +352,13 @@ def get_fitted_map(centre_point, points, min_points, zoom, width, height, filena
     else:
         point_set.remove(new_point)
     
+    points = [(p[0], p[1], p[2], None) for p in extra_points]
+    
     if centre_point:
-        used_points = point_set.ordered[1:]
-        points = [(centre_point[0], centre_point[1], centre_point[2], None)]
+        used_points = point_set.ordered[len(extra_points)+1:]
+        points.append((centre_point[0], centre_point[1], centre_point[2], None))
     else:
-        used_points = point_set.ordered[:]
-        points = []
+        used_points = point_set.ordered[len(extra_points):]
     
     for i, point in enumerate(used_points):
         points.append(
@@ -346,7 +371,8 @@ def get_fitted_map(centre_point, points, min_points, zoom, width, height, filena
         new_points = new_points[:len(point_set)]
     
     try:
-        lon_center, lat_center = get_map(points, width, height, filename, zoom)
+        lon_center, lat_center = get_map(points, width, height, filename, zoom,
+                                         paths=paths)
     except MapGenerationError as e:
         e.metadata = (new_points, zoom, e.metadata[0], e.metadata[1])
         raise
@@ -378,3 +404,4 @@ if __name__ == '__main__':
             (51.759247, -1.259904, 'green', 8),
             (51.759173, -1.259880, 'red', 9),
         ], 300, 200, 'foo.png')
+

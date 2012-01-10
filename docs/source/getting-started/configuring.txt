@@ -112,7 +112,7 @@ therefore be at least::
         'django.contrib.comments',
         'molly.batch_processing',
         'django.contrib.staticfiles',
-        'compress',
+        'pipeline',
         'south',
     )
 
@@ -145,6 +145,9 @@ If you would like to receive e-mail notifications of errors, you must add
 ``molly.utils.middleware.ErrorHandlingMiddleware``, and if you would like
 statistics logging, ``molly.apps.stats.middleware.StatisticsMiddleware``.
 
+In order to enable geolocation functionality in Molly, you must enable
+``molly.utils.middleware.LocationMiddleware``.
+
 A typical setup may look like this::
 
     MIDDLEWARE_CLASSES = (
@@ -153,6 +156,7 @@ A typical setup may look like this::
         'django.contrib.sessions.middleware.SessionMiddleware',
         'molly.utils.middleware.CookieLocaleMiddleware',
         'molly.utils.middleware.ErrorHandlingMiddleware',
+        'molly.utils.middleware.LocationMiddleware',
         'django.contrib.auth.middleware.AuthenticationMiddleware',
         'molly.auth.middleware.SecureSessionMiddleware',
         'molly.apps.stats.middleware.StatisticsMiddleware',
@@ -276,31 +280,11 @@ must be configured appropriately.
 
 The following settings will make this "just work" with Molly::
 
-    COMPRESS_SOURCE = STATIC_ROOT
-    COMPRESS_ROOT = STATIC_ROOT
-    COMPRESS_URL = STATIC_URL
-    COMPRESS_CSS, COMPRESS_JS = get_compress_groups(STATIC_ROOT)
-    COMPRESS_CSS_FILTERS = ('molly.utils.compress.MollyCSSFilter',) # CSS filter is custom-written since the provided one mangles it too much
-    COMPRESS_CSSTIDY_SETTINGS = {
-        'remove_bslash': True, # default True
-        'compress_colors': True, # default True
-        'compress_font-weight': True, # default True
-        'lowercase_s': False, # default False
-        'optimise_shorthands': 0, # default 2, tries to merge bg rules together and makes a hash of things
-        'remove_last_': False, # default False
-        'case_properties': 1, # default 1
-        'sort_properties': False, # default False
-        'sort_selectors': False, # default False
-        'merge_selectors': 0, # default 2, messes things up
-        'discard_invalid_properties': False, # default False
-        'css_level': 'CSS2.1', # default 'CSS2.1'
-        'preserve_css': False, # default False
-        'timestamp': False, # default False
-        'template': 'high_compression', # default 'highest_compression'
-    }
-    COMPRESS_JS_FILTERS = ('compress.filters.jsmin.JSMinFilter',)
-    COMPRESS = not DEBUG     # Only enable on production (to help debugging)
-    COMPRESS_VERSION = True  # Add a version number to compressed files.
+    PIPELINE_CSS, PIPELINE_JS = get_compress_groups(STATIC_ROOT)
+    PIPELINE_AUTO = False
+    PIPELINE_VERSION = True
+    PIPELINE_CSS_COMPRESSOR = 'molly.utils.compress.MollyCSSFilter'
+    PIPELINE_JS_COMPRESSOR = 'pipeline.compressors.jsmin.JSMinCompressor'
 
 Molly settings
 ^^^^^^^^^^^^^^
@@ -330,7 +314,7 @@ should consists of a list of Molly Application objects, e.g.,::
 
 Details about configuration of each individual application are on the page for
 that application, and more abstract information about the application framework
-can be found at :doc:`../topics/application_framework`.
+can be found at :doc:`../topics/application-framework`.
 
 Applications bundled with Molly are split into two categories: utility, and
 batteries-included. Utility apps must always be loaded, whereas
@@ -340,12 +324,12 @@ some batteries-included apps rely on others, so these must also be loaded.
 The apps that are utility apps are:
 
 * :doc:`../ref/auth`
-* :doc:`../ref/batch_processing`
-* :doc:`../ref/external_media`
+* :doc:`../ref/batch-processing`
+* :doc:`../ref/external-media`
 * :doc:`../ref/favourites`
 * :doc:`../ref/geolocation`
 * :doc:`../ref/maps`
-* :doc:`../ref/url_shortener`
+* :doc:`../ref/url-shortener`
 * :doc:`../ref/utils`
 * :doc:`../ref/wurfl`
 
@@ -354,7 +338,7 @@ The following battery-included apps are:
 * :doc:`../ref/apps/contact`
 * :doc:`../ref/apps/desktop`
 * :doc:`../ref/apps/events`
-* :doc:`../ref/apps/feature_vote`
+* :doc:`../ref/apps/feature-vote`
 * :doc:`../ref/apps/feedback`
 * :doc:`../ref/apps/feeds` (required by news, events and webcams)
 * :doc:`../ref/apps/home` (required)
@@ -364,8 +348,9 @@ The following battery-included apps are:
 * :doc:`../ref/apps/podcasts`
 * :doc:`../ref/apps/sakai`
 * :doc:`../ref/apps/search`
-* :doc:`../ref/apps/service_status`
+* :doc:`../ref/apps/service-status`
 * :doc:`../ref/apps/stats`
+* :doc:`../ref/apps/tours`
 * :doc:`../ref/apps/transport`
 * :doc:`../ref/apps/weather`
 * :doc:`../ref/apps/webcams`
@@ -407,6 +392,18 @@ parts of the site marked as secure).
 Sample::
 
     DEBUG_SECURE = DEBUG # There is no default, but this would set it to the same value as the global DEBUG setting
+
+DISTANCE_UNITS
+""""""""""""""
+
+This setting determines how distances are transformed into human-readable units.
+The valid settings here are 'imperial', which uses yards and miles, 'metric'
+which uses metres and kilometres, and 'british', which uses metres and miles.
+This defaults to 'british'.
+
+Sample::
+
+    DISTANCE_UNITS = 'british'
 
 EXTERNAL_IMAGES_DIR
 """""""""""""""""""

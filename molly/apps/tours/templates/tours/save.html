@@ -1,0 +1,25 @@
+{% extends "tours/base.html" %}{% load i18n %}
+
+{% block content %}
+
+    {% if optimised_entities %}
+        <div class="bubble stand-alone pad-5"><p class="note">{% trans 'Your route order has been optimised to minimise travelling distance - the order may have changed.' %}</p></div>
+    {% endif %}
+    
+    <div class="section">
+        <div class="header">
+            <h2>{% trans "Suggestions" %}</h2>
+            <p>{% trans 'Your tour takes you near the following places, click on them to add them to your route:' %}</p>
+        </div>
+        <ul class="link-list">
+            {% for entity in suggestions %}
+                <li><a href="{% url tours:create tour_type.slug %}{% for e in entities %}{{ e.identifier_scheme }}:{{ e.identifier_value }}/{% endfor %}{{ entity.identifier_scheme }}:{{ entity.identifier_value }}/save/">{{ entity.title }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+    
+    <ul class="link-list stand-alone">
+        <li><a href="{{ tour.get_absolute_url }}?created">{% trans "Complete your tour without adding any suggestions" %}</a></li>
+    </ul>
+
+{% endblock %}

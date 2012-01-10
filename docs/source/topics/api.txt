@@ -1,0 +1,94 @@
+Molly as an API
+===============
+
+Molly's approach to views lends itself to a large amount of flexibility. One
+such flexibility is the ability to vary the format of the rendered view based on
+the Accept headers of the client, or a manual override of the data format based
+on an additional GET parameter: ``format``.
+
+To disable this functionality on a particular view (e.g., if the context contains
+data that should not be exposed), you can set ``exposes_user_data`` to True in
+the context thus implying that the data is private and should not be exposed in the API. 
+
+The data formats supported are:
+
+ * XML
+ * JSON/JSONP
+ * YAML
+
+And in each of these, a serialised form of the context is presented.
+
+The JSON API also provides a field called ``view_name`` which can be used to
+uniquely identify the format of the response. This is discussed further below.
+
+An additional format, 'fragment' is also available. This provides the body and
+title HTML of a template encoded using JSON. It's used for the AJAX
+functionality introduced in Molly 1.1.
+
+Adding serialisation to your apps
+---------------------------------
+
+Molly will attempt to serialise many standard Python and Django objects, however
+in some cases, this is too simplistic for many uses. Classes can therefore define
+a ``simplify_for_render`` method which can be used to manually specify how the
+object can be simplified.
+
+.. todo:: simplify_for_render
+
+View names and page names
+-------------------------
+
+A view name is a unique identifier for the page which rendered the view. It
+should uniquely identify the format of the response. It is in the format of
+``application:view_id``. The details of what are available for each view
+
+Page names uniquely identify a particular instance of a page. Molly can handle
+multiple instantiations of an app, so this refers to the specific instance of
+the app. This is best illustrated with an example.
+
+Let's assume that we have two different phonebooks, one for people and another
+for departments. We may want to instantiate this as two different instances of
+the contact search app with the configuration below::
+
+    Application('molly.apps.contact', 'people', 'People search',
+        provider = 'example.providers.contact.PeopleSearchProvider',
+    ),
+
+    Application('molly.apps.contact', 'departments', 'Department Phonebook',
+        provider = 'example.providers.contact.DepartmentSearch',
+    ),
+
+The page at http://example.com/people/ will therefore have a page name of
+``people:index`` and the page at http://example.com/contact/ will have a page
+name of ``departments:index``, however both pages when rendered will be
+rendered by the view in the Molly app ``contact`` so will have a view name of
+``contact:index``.
+
+Page names are therefore used in breadcrumbs and on the home page apps listing
+as these refer to particular instances of apps, and these should be passed
+to the reverse API in order to get the URL of those particular instances. View
+name only exists as a convenience to help API users determine how to handle
+the response.
+
+The reverse API
+---------------
+
+Django includes functionality to "reverse" a URL, that is, take a page or view
+name and arguments to it and then return the URL on that Molly instance. This
+endpoint exists at the ``/reverse/`` URL at the highest level of the instance
+(e.g., ``http://example.com/reverse/``) and takes two arguments: ``name`` and
+``arg``, which can be specified multiple times. These correspond to the Django
+URL resolver definition in the app's ``urls.py``.
+
+.. seealso :: `Django's documentation on reversing URLs <https://docs.djangoproject.com/en/dev/topics/http/urls/#reverse>`_
+
+This page returns a simple string containing the URL. It is recommended that you cache
+these somewhere to avoid lookups.
+
+For example, to resolve the URL for Doncaster rail station, we can simply
+call the URL ``http://example.com/reverse/?name=places:entity&arg=crs&arg=DON``
+which will return the fully qualified URL for that page.
+
+This functionality allows for applications to be written against Molly as a
+generic API, rather than one tied to the (URL configuration) of a particular
+Molly instance.

@@ -4,12 +4,14 @@ from __future__ import absolute_import
 
 import re
 
-from compress.filter_base import FilterBase
+from pipeline.compressors import CompressorBase
 
-class MollyCSSFilter(FilterBase):
+class MollyCSSFilter(CompressorBase):
+    
     _COMMENT_RE = re.compile(r'/\*.*?\*/')
     _WHITESPACE_RE = re.compile(r'[ \t\n\r]+')
-    def filter_css(self, css):
+    
+    def compress_css(self, css):
         css = self._COMMENT_RE.sub('', css)
         css = self._WHITESPACE_RE.sub(' ', css)
         return css.strip()

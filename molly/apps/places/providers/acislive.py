@@ -137,7 +137,7 @@ class ACISLiveMapsProvider(BaseMapsProvider):
             return None
         
     
-    def augment_metadata(self, entities, **kwargs):
+    def augment_metadata(self, entities, routes=[], **kwargs):
         threads = []
         for entity in entities:
             
@@ -146,15 +146,15 @@ class ACISLiveMapsProvider(BaseMapsProvider):
             if bus_et not in entity.all_types.all():
                 continue
             
-            thread = threading.Thread(target=self.get_times, args=[entity])
+            thread = threading.Thread(target=self.get_times,
+                                      args=[entity, routes])
             thread.start()
             threads.append(thread)
         
         for thread in threads:
             thread.join()
     
-    def get_times(self, entity):
-        
+    def get_times(self, entity, routes):
         try:
             try:
                 realtime_url = self.get_realtime_url(entity)
@@ -184,11 +184,15 @@ class ACISLiveMapsProvider(BaseMapsProvider):
                         pip_info = []
                 except:
                     pip_info = []
-    
+            
             services = {}
             for row in rows:
                 service, destination, proximity = [row[i].text.encode('utf8').replace('\xc2\xa0', '') for i in range(3)]
-    
+                
+                # Skip routes we're not interested in
+                if routes and service not in routes:
+                    continue
+                
                 # Handle scheduled departures (non-realtime)
                 if ':' in proximity:
                     now = datetime.now()
@@ -380,5 +384,5 @@ class ACISLiveRouteProvider(BaseMapsProvider):
         return source
     
     def _get_entity_type(self):
-        return NaptanMapsProvider(None)._get_entity_types()['BCT']
+        return NaptanMapsProvider(None)._get_entity_types()['BCT'][0]
 

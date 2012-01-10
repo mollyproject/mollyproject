@@ -22,7 +22,7 @@
 	{% endif %} 
 	{{ entity_type.verbose_name_plural|capfirst }} 
 	<small>
-	  {% blocktrans with entity_type.entities_found as quantity and entity_type.max_distance|round_up_10 as distance %}({{ quantity }} within {{ distance }}m){% endblocktrans %}
+	  {% blocktrans with entity_type.entities_found as quantity and entity_type.max_distance as distance %}({{ quantity }} within {{ distance }}){% endblocktrans %}
 	</small></a>
       </li>
     {% endfor %}

@@ -1,0 +1,5 @@
+Coding guidelines
+=================
+
+Blocks in template should use an underscore to separate words (i.e. double_word should be preferred over doubleword or double-word).
+

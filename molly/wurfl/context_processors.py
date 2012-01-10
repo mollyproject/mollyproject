@@ -14,6 +14,7 @@ def device_specific_media(request):
 
     device, browser = request.device, request.browser
     use_javascript = True
+    use_slippy_maps = device.pointing_method == "touchscreen"
 
     # Skyfire
     if browser.devid == 'generic_skyfire':
@@ -26,6 +27,7 @@ def device_specific_media(request):
     # Symbian S60 v3 and above (iresspective of browser)
     elif device.device_os in ('Symbian', 'Symbian OS') and parse_version(device.device_os_version) >= (9, 2) :
         style_group = "smart"
+        use_slippy_maps = False
         if parse_version(device.device_os_version) < (9, 4):
             # Only S60 5th edition properly supports JQuery
             use_javascript = False
@@ -66,6 +68,7 @@ def device_specific_media(request):
     # Desktop browsers
     elif 'generic_web_browser' in device_parents[browser.devid]:
         style_group = 'smart'
+        use_slippy_maps = True
 
     # All Others
     else:
@@ -75,6 +78,7 @@ def device_specific_media(request):
     return {
         'style_group': '%s' % style_group,
         'use_javascript': use_javascript,
+        'use_slippy_maps': use_javascript and use_slippy_maps,
     }
 
 def wurfl_device(request):

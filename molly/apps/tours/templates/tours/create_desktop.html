@@ -1,0 +1,61 @@
+{% load compressed %}{% load i18n %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% trans "Create a tour" %}</title>
+    {% compressed_css 'tours-desktop' %}
+    <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.14/themes/base/jquery-ui.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.14/jquery-ui.min.js"></script>
+    {% compressed_js 'tours-desktop' %}
+    <script type="text/javascript">
+        var current_stops = [
+            {% for entity in entities %}
+                '{{ entity.identifier_scheme|escapejs }}:{{ entity.identifier_value|escapejs }}',
+            {% endfor %}
+        ];
+        var type_slug = '{{ tour_type.slug|escapejs }}';
+        var all_pois = [
+            {% for entity in all_pois %}
+            {
+                id: '{{ entity.identifier_scheme|escapejs }}:{{ entity.identifier_value|escapejs }}',
+                label: '{{ entity.title|escapejs }}',
+            },
+            {% endfor %}
+        ];
+    </script>
+</head>
+<body>
+    <!-- Icons on this page are from FamFamFam silk, CC-BY http://www.famfamfam.com/lab/icons/silk/ -->
+    <h1>{% trans "Create a tour" %}</h1>
+    <p>{% blocktrans %}Some instructions on how to create a tour here{% endblocktrans %}</p>
+    
+    <div id="current-tour">
+        <h2>{% trans "Current stops on your tour" %}</h2>
+        <ol id="poi-list" class="entity-list">
+            {% for entity in entities %}
+                <li><a href="{% url tours:create tour_type.slug %}{% for e in entities %}{% if e != entity %}{{ e.identifier_scheme }}:{{ e.identifier_value }}/{% endif %}{% endfor %}" class="{{ entity.identifier_scheme }}-{{ entity.identifier_value }}">
+                    {{ entity.title }}
+                </a></li>
+            {% endfor %}
+        </ol>
+        <form id="poi-submit" action="{% url tours:create tour_type.slug %}{% for e in entities %}{{ e.identifier_scheme }}:{{ e.identifier_value }}/{% endfor %}save/">
+            <input type="submit" value="{% trans 'Save' %}" />
+        </form>
+    </div>
+    
+    <input id="poi-search" type="text" placeholder="{% trans 'Search for a point of interest' %}" />
+    
+    {% for entity_type, attraction_entities in attractions.items %}
+        <div class="attractions-grouping">
+            <h2>{{ entity_type.verbose_name_plural|capfirst }}</h2>
+            <ul class="entity-list">
+                {% for entity in attraction_entities %}
+                    <li{% if entity in entities %} class="selected"{% endif %}><a href="{% url tours:create tour_type.slug %}{% for e in entities %}{{ e.identifier_scheme }}:{{ e.identifier_value }}/{% endfor %}{{ entity.identifier_scheme }}:{{ entity.identifier_value }}/" class="{{ entity.identifier_scheme }}-{{ entity.identifier_value }}">{{ entity.title }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endfor %}
+    
+</body>
+</html>

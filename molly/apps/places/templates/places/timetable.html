@@ -1,0 +1,36 @@
+{% extends "places/base.html" %}
+{% load molly_utils %}{% load molly_maps %}
+{% load i18n %}
+{% block content %}
+
+<div class="section">
+    <div class="header">
+        <h2>{{ title }}</h2>
+    </div>
+
+    <table class="content">
+        <thead>
+            <tr>
+                <th>{% trans "Service" %}</th>
+                <th>{% trans "Destination" %}</th>
+                <th>{% trans "Scheduled Time" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for stop in timetable %}
+                <tr>
+                    <td><a href="{{ entity.get_absolute_url }}service?journey={{ stop.journey.pk }}">{{ stop.journey.route.service_id }}</a></td>
+                    <td>{{ stop.journey.destination }}</td>
+                    <td>{{ stop.std }}
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="3"><em>{% trans 'There are no scheduled departures from this stop today.' %}</em></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+
+{% endblock %}

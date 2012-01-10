@@ -15,11 +15,11 @@ function to_absolute(url) {
         return window.location.protocol + '//' + window.location.host + url;
     } else if (url.indexOf('?') != -1) {
         if (current_url.lastIndexOf('?') != -1) {
-            return current_url.substring(0, current_url.lastIndexOf('?')) + url;
+            return base.slice(0, -1) + current_url.substring(0, current_url.lastIndexOf('?')) + url;
         }
-        return current_url + url;
+        return base.slice(0, -1) + current_url + url;
     } else {
-        return current_url + url;
+        return base.slice(0, -1) + current_url + url;
     }
 }
 
@@ -65,7 +65,14 @@ function async_load_callback(data, textStatus, xhr) {
     capture_outbound();
 }
 
-function ajax_failure() {
+function ajax_failure(jqXHR, textStatus, errorThrown) {
+    if (window.console) {
+        if (console.error) {
+            console.error(jqXHR, textStatus, errorThrown);
+        } else {
+            console.log(jqXHR, textStatus, errorThrown);
+        }
+    }
     async_load_xhr = null;
     $('#loading')
         .html('<p style="position:fixed; top: 10%; width:100%; margin:0 auto; text-align:center;">' + gettext('Error loading page - please try again.') + '</p>')
@@ -116,18 +123,23 @@ function async_load(url, query, meth) {
     return false;
 }
 
-function capture_outbound()  {
-    // Intercept all forms
-    $('form:not(.has-ajax-handler)').unbind('submit')
-    $('form:not(.has-ajax-handler)').submit(function(evt) {
+function async_form_load(evt){
             var serial = $(this).serializeArray();
             var datamap = {}
             var i = 0;
             for (i = 0; i < serial.length; i++) {
-                datamap[serial[i].name] = serial[i].value;
+                if (!datamap[serial[i].name]) {
+                    datamap[serial[i].name] = []
+                }
+                datamap[serial[i].name].push(serial[i].value);
             }
             return async_load($(this).attr('action'), datamap, $(this).attr('method'));
-        });
+}
+
+function capture_outbound()  {
+    // Intercept all forms
+    $('form:not(.has-ajax-handler)').unbind('submit')
+    $('form:not(.has-ajax-handler)').submit(async_form_load);
     $('form:not(.has-ajax-handler) button[type="submit"], form:not(.has-ajax-handler) input[type="submit"], form:not(.has-ajax-handler) input[type="image"]').click(function(e){
         var form = $(this).parents('form');
         $(form).find('input[type="hidden"][name="' + $(this).attr('name') + '"]').remove()

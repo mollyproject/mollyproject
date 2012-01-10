@@ -1,15 +1,8 @@
-import urlparse, urllib, re
+import urlparse
+import urllib
+import re
 
 from django.http import HttpResponseRedirect
-
-
-# parse_qs was copied from cgi to urlparse in Python 2.6
-# We'll copy it outselves if it's not already there.
-if not hasattr(urlparse, 'parse_qs'):
-    import cgi
-    urlparse.parse_qs = cgi.parse_qs
-    del cgi
-
 
 class HttpResponseSeeOther(HttpResponseRedirect):
     status_code = 303

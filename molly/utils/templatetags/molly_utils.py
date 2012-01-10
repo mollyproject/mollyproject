@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 try:
     import cStringIO as StringIO
 except ImportError:
@@ -9,8 +10,11 @@ from datetime import datetime
 from dateutil.tz import tzutc, tzlocal
 
 from django import template
+from django.conf import settings
 from django.template.defaultfilters import stringfilter
 from django.utils.safestring import SafeUnicode, mark_safe
+from django.utils.translation import ugettext as _
+from django.utils.translation import ungettext
 
 from molly.utils.xslt import transform
 from molly.wurfl import device_parents
@@ -57,11 +61,143 @@ def this_year(value, arg=None):
     return value.year == arg.year
 
 @register.filter
-def round_up_10(value):
+def humanise_distance(value, round10=True):
     """
-    Rounds a number up to the nearest 10
+    Takes a distance in metres and returns it in sensible units
     """
-    return '%d' % int(math.ceil(int(value)/10)*10)
+    if round10:
+        m = int(math.ceil(float(value)/10)*10)
+    else:
+        m = int(value)
+    units = getattr(settings, 'DISTANCE_UNITS', 'british')
+    
+    if units == 'metric':
+    
+        if m >= 1000:
+            # Translators: Distance in kilometres
+            return _('%.1fkm') % round(float(m) / 1000, 2)
+        else:
+            # Translators: Distance in metres
+            return _('%dm') % m
+    
+    elif units == 'imperial':
+        
+        yds = int(math.ceil((int(value) * 1.0936133)/10)*10)
+        if yds >= 1200:
+            # Translators: Distance in miles
+            return _('%.1f miles') % round(float(yds) / 5280, 2)
+        else:
+            # Translators: Distance in yards
+            return _('%d yards') % yds
+        
+    elif units == 'british':
+        
+        if m >= 1000:
+            # Translators: Distance in miles
+            return _('%.1f miles') % round(float(m) / 1609.344, 2)
+        else:
+            # Translators: Distance in metres
+            return _('%dm') % m
+
+@register.filter
+def humanise_seconds(seconds):
+    
+    seconds = int(seconds)
+    # <30 secs = less than 30 seconds
+    
+    if seconds < 30:
+        return _('less than 30 seconds')
+    
+    hours, seconds = seconds // 3600, seconds % 3600
+    minutes, seconds = seconds // 60, seconds % 60
+    
+    # 30secs to 2 minutes = exact
+    if (hours, minutes) < (0, 2):
+        # Translators: Seconds
+        second_t = ungettext('%d sec', '%d secs', seconds) % seconds
+        # Translators: Minutes
+        minute_t = ungettext('%d min', '%d mins', minutes) % minutes
+        
+        if minutes == 0:
+            return second_t
+        else:
+            if seconds:
+                return '%s %s' % (minute_t, second_t)
+            else:
+                return minute_t
+    
+    # 2 minutes to 5 mins: mins and secs, rounded up to 10
+    elif (hours, minutes) < (0, 5):
+        # Translators: Minutes and seconds
+        seconds = int(math.ceil(float(seconds)/10)*10)
+        if seconds == 60:
+            minutes += 1
+            seconds = 0
+        
+        # Translators: Seconds
+        second_t = ungettext('%d sec', '%d secs', seconds) % seconds
+        # Translators: Minutes
+        minute_t = ungettext('%d min', '%d mins', minutes) % minutes
+        
+        if seconds:
+            return '%s %s' % (minute_t, second_t)
+        else:
+            return minute_t
+    
+    # 5 mins to 10 mins: mins and secs rounded to quarter mins
+    elif (hours, minutes) < (0, 10):
+        
+        seconds = int(math.ceil(float(seconds)/15))
+        if seconds == 4:
+            minutes += 1
+        
+        if seconds in (0,4):
+            second_t = ''
+        else:
+            second_t = {
+                # Translators: A quarter minute
+                1: _(u'¼'),
+                # Translators: A half minute
+                2: _(u'½'),
+                # Translators: Three-quarters of a minute
+                3: _(u'¾'),
+            }.get(seconds)
+        
+        # Translators: Minutes with fractions
+        return _('%(minutes)d%(seconds)s mins') % {
+            'minutes': minutes,
+            'seconds': second_t
+        }
+    
+    # 10mins-30mins: mins and secs rounded to half mins
+    elif (hours, minutes) < (0, 30):
+        
+        seconds = int(math.ceil(float(seconds)/30))
+        if seconds == 2:
+            minutes += 1
+        
+        if seconds in (0,2):
+            second_t = ''
+        else:
+            # Translators: A half minute
+            second_t = _(u'½')
+        
+        # Translators: Minutes with fractions
+        return _('%(minutes)d%(seconds)s mins') % {
+            'minutes': minutes,
+            # Translators: A half minute
+            'seconds': _(u'½')
+        }
+        
+    # 30mins+ mins (and hours)
+    else:
+        # Translators: Hours
+        hour_t = ungettext('%d hour', '%d hours', hours) % hours
+        
+        # Translators: Minutes
+        minute_t = ungettext('%d min', '%d mins', minutes) % minutes
+        
+        return '%s %s' % (hour_t, minute_t)
 
 UNUSUAL_NUMBERS = {
     '+448454647': '0845 46 47', # NHS Direct
@@ -202,3 +338,16 @@ def localize_utc(value):
         return value.replace(tzinfo=tzutc()).astimezone(tzlocal())
     else:
         return value
+
+@register.tag
+def svg_or_png(parser, token):
+    return SvgOrPngNode()
+
+class SvgOrPngNode(template.Node):
+
+    def render(self, context):
+        if device_has_parent(context['device'], 'apple_generic') or context['browser'].svgt_1_1:
+            return 'svg'
+        else:
+            return 'png'
+
