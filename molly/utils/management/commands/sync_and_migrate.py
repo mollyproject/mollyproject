@@ -30,5 +30,7 @@ class Command(NoArgsCommand):
         else:
             print "Doing db sync..."
             call_command('syncdb')
+            # patch to solve a bug in data migration (app feeds/003)
+            call_command('migrate', 'places')
             call_command('migrate')
 
