@@ -170,7 +170,9 @@ class ParkAndRideView(TransportView):
                 entity = get_entity(scheme, value)
                 park_and_rides.append(entity)
             context['park_and_rides'] = park_and_rides
-        
+        else:
+            raise Http404()
+
         self.augment_metadata(park_and_rides)
         return context
     
