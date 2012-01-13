@@ -32,7 +32,9 @@ class Command(NoArgsCommand):
             call_command('update_wurfl')
         call_command('generate_markers', lazy=True)
         call_command('collectstatic', interactive=False, link=develop)
-        call_command('synccompress')
+        # Forcing compression because it seems to not compress *sometimes* even if files
+        # have been changed...
+        call_command('synccompress', force=True)
         if not skip_cron:
             call_command('create_crontab', write_system_cron=(os.name != 'nt'))
         if develop:
