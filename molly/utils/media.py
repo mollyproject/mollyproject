@@ -14,7 +14,8 @@ def get_compress_groups(STATIC_ROOT):
         # We don't want to compress admin media or already-compressed media.
         # Due to the structure of the leaflet directory (as its distributed like
         # that) and the fact that it's already minified), we don't compress it
-        if directory in ('admin', 'c', 'leaflet',):
+        # blueprint is only used for desktop site, no need to compress it
+        if directory in ('admin', 'c', 'leaflet', 'blueprint',):
             continue
         directory = os.path.join(STATIC_ROOT, directory)
         for root, dirs, files in os.walk(directory):
