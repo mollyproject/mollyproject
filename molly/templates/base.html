@@ -81,9 +81,9 @@
     <link rel="icon" type="image/png" href="{{ STATIC_URL }}site/images/favicon.png"/>
     
     {% if use_slippy_maps %}
-        {# These devices get slippy maps #}
-        {% compressed_css "leaflet" %}
-        {% compressed_js "leaflet" %}
+    {# These devices get slippy maps #}
+        <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}/leaflet/leaflet.css"/>
+        <script type="text/javascript" src="{{ STATIC_URL }}/leaflet/leaflet.js"></script>
     {% endif %} 
     
     {# Include ALL javascript (ignore filename) #}
