@@ -1,14 +1,21 @@
 """
-Contains a utility method to send an e-mail based on a Django template.
+Contains utility methods to send an e-mail and haversine
 """
 
 import math
 
-from django.template import Context, RequestContext, loader
-from django.core.mail import EmailMessage
-from django.conf import settings
 
 def send_email(request, context, template_name, cls=None, to_email=None):
+    """
+    Sends an e-mail based on a Django template.
+    """
+
+    # Imports moved into function because it was causing installer to fail
+    # because django may not be installed when installer is running
+    # MOLLY-244
+    from django.template import Context, RequestContext, loader
+    from django.core.mail import EmailMessage
+    from django.conf import settings
 
     if to_email is not None:
         pass
