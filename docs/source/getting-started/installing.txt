@@ -11,13 +11,7 @@ Preparing your system
              third-party repositories, which you may need to install to satisfy
              these dependencies.
 
-.. note:: RPM and .deb users can skip this step
-
-In order to install Molly, there are several non-Python dependencies which are
-needed for Molly and its dependencies first. If you are installing Molly from an
-RPM or Deb, than these dependencies should be satisfied automatically by your
-package manager. However, if you are installing Molly from Git or using Pip,
-then you must first install some system level dependencies.
+In order to install Molly, there are several non-Python dependencies which are needed for Molly and its dependencies first.
 
 Fedora
 """"""
@@ -85,11 +79,6 @@ Installing Molly
              as detailed above. The virtualenv can be set to use Python 2.6
              by creating it as ``virtualenv --python=/usr/bin/python26 molly``.
              Once the virtualenv is activated, ``python`` refers to version 2.6.
-
-From .rpm or .deb
-"""""""""""""""""
-
-You can install these files using your distribution's package manager of choice.
 
 Using pip or easy_install
 """""""""""""""""""""""""
