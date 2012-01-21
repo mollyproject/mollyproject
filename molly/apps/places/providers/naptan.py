@@ -44,6 +44,7 @@ class NaptanContentHandler(ContentHandler):
         ('StopAreas', 'StopAreaRef'): 'stop-area',
         ('StopClassification', 'StopType'): 'stop-type',
         ('StopClassification', 'OffStreet', 'Rail', 'AnnotatedRailRef', 'CrsRef'): 'crs',
+        ('StopClassification', 'OffStreet', 'Rail', 'AnnotatedRailRef', 'TiplocRef'): 'tiploc',
         ('StopAreaCode',): 'area-code',
         ('Name',): 'name',
     }
@@ -291,6 +292,8 @@ class NaptanContentHandler(ContentHandler):
             identifiers['plate'] = meta['plate-code']
         if 'crs' in meta:
             identifiers['crs'] = meta['crs']
+        if 'tiploc' in meta:
+            identifiers['tiploc'] = meta['tiploc']
         if indicator != None and re.match('Stop [A-Z]\d\d?', indicator):
             identifiers['stop'] = indicator[5:]
         
