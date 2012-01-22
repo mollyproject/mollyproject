@@ -41,7 +41,7 @@ class Source(models.Model):
 IDENTIFIER_SCHEME_PREFERENCE = getattr(
     settings,
     'IDENTIFIER_SCHEME_PREFERENCE',
-    ('atco', 'osm', 'naptan', 'postcode', 'bbc-tpeg'))
+    ('atco', 'osm', 'naptan', 'postcode', 'bbc-tpeg', 'tiploc'))
 
 
 class EntityTypeCategory(models.Model):
@@ -54,6 +54,31 @@ class EntityTypeCategory(models.Model):
 
     def __unicode__(self):
         return self.name
+
+class EntityTypeManager(models.Manager):
+    
+    def get_or_create(self, defaults, *args, **kwargs):
+        """
+        Simplifies the creation of multilingual EntityTypes - takes an
+        additional argument in defaults of 'verbose_names' which is a dictionary
+        mapping language codes to verbose_name, verbose_name_singular and
+        verbose_name plural
+        """
+        
+        verbose_names = defaults.pop('verbose_names', {})
+        kwargs['defaults'] = defaults
+        entity_type, created = super(
+            EntityTypeManager, self).get_or_create(*args, **kwargs)
+        if created:
+            for language, (verbose, singular, plural) in verbose_names.items():
+                EntityTypeName.objects.create(
+                    entity_type=entity_type,
+                    language_code=language,
+                    verbose_name=verbose,
+                    verbose_name_singular=singular,
+                    verbose_name_plural=plural
+                )
+        return entity_type, created
 
 
 class EntityType(models.Model):
@@ -104,6 +129,8 @@ class EntityType(models.Model):
                 e.save()
         else:
             super(EntityType, self).save(*args, **kwargs)
+    
+    objects = EntityTypeManager()
 
 
 class EntityTypeName(models.Model):
@@ -153,6 +180,33 @@ class EntityGroupName(models.Model):
     
     class Meta:
         unique_together = ('entity_group', 'language_code')
+
+
+class EntityManager(models.GeoManager):
+    
+    def get_entity(self, scheme, value):
+        return self.filter(_identifiers__scheme=scheme,
+                           _identifiers__value=value)
+    
+    def create(self, *args, **kwargs):
+        """
+        Simplifies the creation of multilingual Entitys - takes an
+        additional argument in defaults of 'titles' which is a dictionary
+        mapping language codes to names.
+        """
+        
+        titles = kwargs.pop('titles', {})
+        identifiers = kwargs.pop('identifiers', {})
+        entity = super(EntityManager, self).create(*args, **kwargs)
+        for language, title in titles.items():
+            EntityName.objects.create(
+                entity=entity,
+                language_code=language,
+                title=title
+            )
+        if len(identifiers) > 0:
+            entity.save(identifiers=identifiers)
+        return entity
 
 
 class Entity(models.Model):
@@ -299,7 +353,7 @@ class Entity(models.Model):
             identifier.delete()
         super(Entity, self).delete()
     
-    objects = models.GeoManager()
+    objects = EntityManager()
 
     def _get_absolute_url(self, identifiers):
         for scheme in IDENTIFIER_SCHEME_PREFERENCE:
@@ -391,6 +445,7 @@ class Entity(models.Model):
         
         return simplify_value(simplified)
 
+
 class EntityName(models.Model):
     entity = models.ForeignKey(Entity, related_name='names')
     title = models.TextField(blank=False)
@@ -398,6 +453,7 @@ class EntityName(models.Model):
     
     class Meta:
         unique_together = ('entity', 'language_code')
+
 
 class Route(models.Model):
     """
@@ -420,7 +476,8 @@ class Route(models.Model):
     
     def __unicode__(self):
         return u'%s: %s' % (self.service_id, self.service_name)
-    
+
+
 class StopOnRoute(models.Model):
     
     entity = models.ForeignKey(Entity)
@@ -434,6 +491,7 @@ class StopOnRoute(models.Model):
     
     def __unicode__(self):
         return self.entity.title
+
 
 class Journey(models.Model):
     """
@@ -579,6 +637,7 @@ class Journey(models.Model):
     
     def __unicode__(self):
         return self.route.__unicode__()
+
 
 class ScheduledStop(models.Model):
     """

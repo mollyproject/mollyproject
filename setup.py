@@ -102,6 +102,7 @@ setup(
         "suds",
         "django-slimmer",
         'pyyaml',
+        'mockito'
     ],
     scripts = [
         'molly/commands/molly-admin'

@@ -1,9 +1,12 @@
 from datetime import date
 
+from mockito import *
+
 from django.test.client import Client
 from django.utils import unittest
 
-from molly.apps.places.models import Journey
+from molly.apps.places.models import Entity, Journey
+from molly.apps.places.providers.cif import CifTimetableProvider
 
 import httplib
 
@@ -87,8 +90,111 @@ class LocationTestCase(unittest.TestCase):
         # HTTP header returns OK
         response = c.get(path, HTTP_X_CURRENT_LOCATION="latitude=%.6f,longitude=%.6f,accuracy=%d" % (latitude, longitude, accuracy))
         self.assertEquals(response.status_code, httplib.OK)
+
+
+class CifTestCase(unittest.TestCase):
+    
+    sample_file = \
+"""
+HDTPS.UCFCATE.PD1201131301122139DFTTISX       FA130112300912                    
+TIAACHEN 00081601LAACHEN                    00005   0                           
+TIABCWM  00385964VABERCWMBOI                78128   0
+"""
+    
+    class MockQuerySet():
         
+        def __init__(self, mockObj):
+            self._mock = mockObj
         
+        def count(self):
+            return 1
+        
+        def __getitem__(self, index):
+            return self._mock
+    
+    def setUp(self):
+        self.mock_entity_manager = mock()
+        self.provider = CifTimetableProvider(
+            entity_manager=self.mock_entity_manager
+        )
+        
+        self.empty_query_set = mock()
+        self.entity_query_set = self.MockQuerySet(mock())
+        when(self.empty_query_set).count().thenReturn(0)
+        when(self.mock_entity_manager).get_entity(
+            'tiploc', 'ABCWM').thenReturn(self.empty_query_set)
+        when(self.mock_entity_manager).get_entity(
+            "tiploc", 'AACHEN').thenReturn(self.entity_query_set)
+    
+    def testThatTiplocsAreLookedUp(self):
+        self.provider.import_from_string(self.sample_file)
+        verify(self.mock_entity_manager, times=2).get_entity(any(), any())
+    
+    def testThatTiplocsAreLookedUpWithCorrectNamespace(self):
+        self.provider.import_from_string(self.sample_file)
+        verify(self.mock_entity_manager, times=2).get_entity("tiploc", any())
+    
+    def testThatTiplocsAreLookedUpWithName(self):
+        self.provider.import_from_string(self.sample_file)
+        verify(self.mock_entity_manager).get_entity("tiploc", "AACHEN")
+    
+    def testThatTiplocsAreLookedUpWithStrippedName(self):
+        self.provider.import_from_string(self.sample_file)
+        verify(self.mock_entity_manager).get_entity('tiploc', 'ABCWM')
+    
+    def testThatTiplocsAreCreatedWhenNoneAreReturned(self):
+        self.provider.import_from_string(self.sample_file)
+        
+        # Annoyingly mockito doesn't properly support assertions on the args
+        verify(self.mock_entity_manager).create(
+            source=any(),
+            primary_type=any(),
+            identifiers=any(),
+            titles=any()
+        )
+    
+    def testThatTiplocsAreCreatedWithCorrectSource(self):
+        self.provider = CifTimetableProvider()
+        self.provider.import_from_string(self.sample_file)
+        entity = Entity.objects.get_entity('tiploc', 'ABCWM')
+        self.assertEquals(self.provider.source, entity[0].source)
+    
+    def testThatTiplocsAreCreatedWithCorrectType(self):
+        self.provider = CifTimetableProvider()
+        self.provider.import_from_string(self.sample_file)
+        entity = Entity.objects.get_entity('tiploc', 'ABCWM')
+        self.assertEquals(self.provider.entity_type, entity[0].primary_type)
+    
+    def testThatTiplocsAreCreatedWithCorrectName(self):
+        self.provider = CifTimetableProvider()
+        self.provider.import_from_string(self.sample_file)
+        entity = Entity.objects.get_entity('tiploc', 'ABCWM')
+        self.assertEquals('Abercwmboi', entity[0].title)
+    
+    def testGetSource(self):
+        self.assertEquals(
+            'molly.apps.places.providers.cif',
+            self.provider.source.module_name
+        )
+    
+    def testGetEntityTypeVerboseName(self):
+        self.assertEquals(
+            'rail network timing point',
+            self.provider.entity_type.verbose_name
+        )
+    
+    def testGetEntityTypeVerboseNamePlural(self):
+        self.assertEquals(
+            'rail network timing points',
+            self.provider.entity_type.verbose_name_plural
+        )
+    
+    def testGetEntityTypeVerboseNameSingular(self):
+        self.assertEquals(
+            'a rail network timing point',
+            self.provider.entity_type.verbose_name_singular
+        )
+
 
 if __name__ == '__main__':
     unittest.main()
