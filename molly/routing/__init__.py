@@ -33,6 +33,13 @@ except ImportError:
 else:
     ENGINES['bicycle'] = cyclestreets
 
+try:
+    from molly.routing.providers.timetables import generate_route as timetables
+except ImportError:
+    logger.info('Failed to import Cyclestreets routing engine')
+else:
+    ENGINES['public transport'] = timetables
+
 ALLOWED_ROUTING_TYPES = ENGINES.keys()
 
 def generate_route(points, type):
