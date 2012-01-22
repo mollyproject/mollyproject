@@ -633,6 +633,10 @@ class Journey(models.Model):
         destination = destination.split(', ')[-1]
         if '(' in destination:
             destination = destination[:destination.find('(')].strip()
+        
+        if destination.endswith('Rail Station'):
+            destination = destination[:-13]
+        
         return destination
     
     def __unicode__(self):

@@ -40,6 +40,7 @@ class CifTimetableProvider(BaseMapsProvider):
         self._journey_manager = journey_manager
         self._scheduled_stop_manager = scheduled_stop_manager
         self._tiplocs = {}
+        self._routes = {}
         self._filename = filename
 
     def _parse_tiploc(self, line):
@@ -146,7 +147,7 @@ class CifTimetableProvider(BaseMapsProvider):
         self._stops.append({
             'entity': self._tiplocs[line[2:9].strip()],
             'sta': self._parse_cif_time(line[10:15]),
-            'activity': 'D'
+            'activity': 'F'
         })
 
     def _save_route(self):

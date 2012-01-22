@@ -39,11 +39,21 @@ class TimetableAnnotationProvider(BaseMapsProvider):
             
             services = defaultdict(list)
             if today.time() < time(22):
-                until = [Q(sta__gte=today.time()) | Q(std__gte=today.time()), Q(sta__lt=(today + timedelta(hours=2)).time()) | Q(std__lt=(today + timedelta(hours=2)).time())]
+                until = [
+                    Q(sta__gte=today.time())
+                    | Q(std__gte=today.time()), Q(sta__lt=(today + timedelta(hours=2)).time())
+                    | Q(std__lt=(today + timedelta(hours=2)).time())
+                ]
             else:
-                until = [Q(sta__gte=today.time()) | Q(std__gte=today.time()) | Q(sta__lt=(today + timedelta(hours=2)).time()) | Q(std__lt=(today + timedelta(hours=2)).time())]
+                until = [
+                    Q(sta__gte=today.time())
+                    | Q(std__gte=today.time())
+                    | Q(sta__lt=(today + timedelta(hours=2)).time())
+                    | Q(std__lt=(today + timedelta(hours=2)).time())
+                ]
             
-            for stop in entity.scheduledstop_set.filter(*until).exclude(activity__in=('D','N','F')):
+            for stop in entity.scheduledstop_set.filter(
+                *until).exclude(activity__in=('D','N','F')):
                 
                 if not stop.journey.runs_on(today.date()):
                     continue
@@ -51,7 +61,8 @@ class TimetableAnnotationProvider(BaseMapsProvider):
                 service_id = stop.journey.route.service_id
                 destination = stop.journey.destination
                 
-                services[(service_id, destination)].append((stop.journey, stop.std or stop.sta))
+                services[(service_id, destination)].append(
+                    (stop.journey, stop.std or stop.sta))
             
             services = ((route, sorted(ss, key=itemgetter(1), cmp=midnight_4am))
                 for route, ss in services.items())
@@ -62,7 +73,8 @@ class TimetableAnnotationProvider(BaseMapsProvider):
                 'next': ss[0][1].strftime('%H:%M'),
                 'following': map(lambda t: t[1].strftime('%H:%M'), ss[1:4]),
                 'journey': ss[0][0]
-            } for (service_id, destination), ss in sorted(services, key=lambda x: x[1][0][1])]
+            } for (service_id, destination), ss in sorted(
+                services, key=lambda x: x[1][0][1])]
             
             entity.metadata['real_time_information'] = {
                 'services': services,

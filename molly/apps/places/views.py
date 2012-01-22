@@ -721,7 +721,8 @@ class ServiceDetailView(BaseView):
                     previous = False
                 calling_point = {
                     'entity': stop.entity,
-                    'at': previous
+                    'at': previous,
+                    'activity': stop.activity
                 }
                 if stop.entity.location is not None:
                     calling_point['stop_num'] = i
@@ -759,7 +760,8 @@ class ServiceDetailView(BaseView):
                     calling_point = {
                         'entity': stop.entity,
                         'st': stop.std.strftime('%H:%M'),
-                        'at': True
+                        'at': True,
+                        'activity': stop.activity
                     }
                 
                 else:
@@ -771,7 +773,8 @@ class ServiceDetailView(BaseView):
                         # show the time the bus left stops before this one (if
                         # it exists)
                         'st': ((stop.sta or stop.std) if entity_passed else (stop.std or stop.sta)).strftime('%H:%M'),
-                        'at': False
+                        'at': False,
+                        'activity': stop.activity
                     }
                 
                 if stop.entity.location is not None:
