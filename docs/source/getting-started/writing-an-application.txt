@@ -518,7 +518,7 @@ content to be displayed.
 At this point, we need to decide on the format of the context to be presented to
 the template, as well as the format of the data provided by providers.
 
-.. note:: Molly seperates apps into "views" and "providers". Providers should
+.. note:: Molly separates apps into "views" and "providers". Providers should
           provide abstract interfaces to services which views can call to get
           the details about the configured services. Views should therefore be
           service agnostic.
