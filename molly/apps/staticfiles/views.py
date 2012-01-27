@@ -3,21 +3,29 @@ from django.template import TemplateDoesNotExist
 
 from molly.conf.urls import url
 from molly.utils.views import BaseView
-from molly.utils.breadcrumbs import Breadcrumb, BreadcrumbFactory, lazy_reverse
+from molly.utils.breadcrumbs import Breadcrumb, BreadcrumbFactory, lazy_reverse, lazy_parent
 
-#@url(r'^(?P<view>[a-zA-Z0-9\-]+)/$', 'view')
-@url(r'^$', 'index')
-class StaticFileView(BaseView):
+
+class PageView(BaseView):
 
     @BreadcrumbFactory
-    def breadcrumb(self, request, context):
-        return Breadcrumb('test',
-                None,
+    def breadcrumb(self, request, context, page='index'):
+        parent = None
+        if page != 'index':
+            parent = lazy_parent('index')
+        return Breadcrumb(self.conf.local_name,
+                parent,
                 self.conf.title,
-                lazy_reverse('index'))
+                lazy_reverse(page))
 
-    def handle_GET(self, request, context):
+    def get_metadata(self, request):
+        return {
+            'title': self.conf.title,
+        }
+
+    def handle_GET(self, request, context, page='index'):
         try:
-            return self.render(request, context, 'staticfiles/%s' % self.conf.local_name)
+            return self.render(request, context, 'staticfiles/%s/%s'
+                    % (self.conf.local_name, page))
         except TemplateDoesNotExist:
             raise Http404

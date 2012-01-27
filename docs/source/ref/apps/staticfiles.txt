@@ -1,0 +1,22 @@
+:mod:`molly.apps.staticfiles` -- Static Files
+=======================================
+
+.. module :: molly.apps.staticfiles
+
+This application renders static files contained in a sub-folder of the staticfiles app.
+
+Configuration
+-------------
+
+This app takes no additional configuration.
+
+Sample::
+
+    Application('molly.apps.staticfiles', 'welcome-to-freshers', 'Welcome to Freshers',
+        display_to_user = True,
+    )
+
+Views
+-----
+
+.. todo:: Complete
