@@ -218,4 +218,5 @@ else:
                 '%(time)s %(user)s %(python)s %(run_batch)s '
                 '"%(batch_local_name)s" "%(batch_provider_name)s" '
                 '"%(batch_method_name)s"\n' % line_args)
-            
+
+        f.close()
