@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 class LiveDepartureBoardPlacesProvider(BaseMapsProvider):
     _WSDL_URL = "http://realtime.nationalrail.co.uk/ldbws/wsdl.aspx"
     _ATTRIBUTION = { 'title': _("Powered by National Rail Enquiries"),
-                  'url': "http://nationalrail.co.uk",
+                  'url': "http://www.nationalrail.co.uk",
                   'picture': settings.STATIC_URL + "places/images/powered-by-nre.png" }
 
     def __init__(self, token, max_services=15, max_results=1):
