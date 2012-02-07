@@ -860,12 +860,6 @@ APPLICATIONS = [
         expose_view = True,
     ),
 
-    # This app collects hit records of visitors to the site and logs them to the
-    # database. It also renders a number of simple reports based on these stats
-    # at the http://example.com/stats/ page. It has no configuration, but depends
-    # on and is depended on by the molly.apps.stats middleware defined above.
-    Application('molly.apps.stats', 'stats', 'Statistics', display_to_user = False),
-
     # This app implements the URL shortening functionality inside Molly
     Application('molly.url_shortener', 'url-shortener', 'URL Shortener',
         display_to_user = False,
@@ -974,4 +968,3 @@ APPLICATIONS = [
 
 # This is where any non-Molly apps are added to the configuration
 INSTALLED_APPS = extract_installed_apps(APPLICATIONS) + INSTALLED_APPS
-

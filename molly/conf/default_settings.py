@@ -61,7 +61,6 @@ MIDDLEWARE_CLASSES = (
     'molly.utils.middleware.ErrorHandlingMiddleware', # This enables Molly's error handling and reporting framework
     'django.contrib.auth.middleware.AuthenticationMiddleware', # This allows for users to be logged in in Django (required)
     'molly.auth.middleware.SecureSessionMiddleware', # This adds the capability to have secure sessions (sessions which are HTTPS only)
-    'molly.apps.stats.middleware.StatisticsMiddleware', # This enables Molly's built in hit logging
     'molly.url_shortener.middleware.URLShortenerMiddleware', # This enables Molly's URL shortening functionality
 )
 

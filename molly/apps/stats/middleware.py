@@ -9,6 +9,7 @@ import logging
 import sys
 import traceback
 import Cookie
+import warnings
 
 from django.contrib.auth.models import User
 from django.conf import settings
@@ -50,6 +51,8 @@ class StatisticsMiddleware(object):
             logger.error("Uncaught exception", extra=details)
 
     def request_details(self, request, response=None):
+
+        warnings.warn("The stats app is deprecated. You should remove it from your INSTALLED_APPS and MIDDLEWARE_CLASSES.", DeprecationWarning)
 
         view_name = getattr(request, '_stats_view_name', None)
         local_name = getattr(request, '_stats_local_name', None)

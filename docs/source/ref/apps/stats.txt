@@ -2,6 +2,7 @@
 ===================================================
 
 .. module :: molly.apps.stats
+    :deprecated:
 
 This provides hit logging and statistic analysis.
 
