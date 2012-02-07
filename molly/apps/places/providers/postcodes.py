@@ -26,6 +26,7 @@ class PostcodesMapsProvider(BaseMapsProvider):
         self.import_areas = import_areas
 
     CODEPOINT_OPEN_URL = 'http://freepostcodes.org.uk/static/code-point-open/codepo_gb.zip'
+    MODULE_NAME = "molly.providers.apps.maps.postcodes"
 
     def _download_codepoint_open(self):
 
@@ -122,26 +123,23 @@ class PostcodesMapsProvider(BaseMapsProvider):
 
     def _get_entity_type(self):
         category, created = EntityTypeCategory.objects.get_or_create(name=ugettext_noop('Uncategorised'))
+        verbose_names = {}
+        for lang_code, lang_name in settings.LANGUAGES:
+            verbose_names[lang_code] = (_('postcode'), _('a postcode'), _('postcodes'))
+        defaults = {'verbose_names': verbose_names }
         entity_type, created = EntityType.objects.get_or_create(
-            slug='post-code', category=category)
-        entity_type.slug = 'post-code'
+            slug='post-code', category=category, defaults=defaults)
         if created:
             entity_type.show_in_nearby_list = False
             entity_type.show_in_category_list = False
-        entity_type.save()
-        for lang_code, lang_name in settings.LANGUAGES:
-            with override(lang_code):
-                set_name_in_language(entity_type, lang_code,
-                                     verbose_name=_('postcode'),
-                                     verbose_name_singular=_('a postcode'),
-                                     verbose_name_plural=_('postcodes'))
+            entity_type.save()
         return entity_type
 
     def _get_source(self):
         try:
-            source = Source.objects.get(module_name="molly.providers.apps.maps.postcodes")
+            source = Source.objects.get(module_name=self.MODULE_NAME)
         except Source.DoesNotExist:
-            source = Source(module_name="molly.providers.apps.maps.postcodes")
+            source = Source(module_name=self.MODULE_NAME)
 
         source.name = "Postcodes"
         source.save()
