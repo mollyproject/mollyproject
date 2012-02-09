@@ -41,6 +41,7 @@ URLS=[
     '/places/atco:9100OXFD/nearby/',
     '/places/atco:9100OXFD/nearby/bus-stop/',
     '/places/osm:N295953659/update/',
+    '/places/atco:340001903OUT/service?route=S5',
     '/places/openstreetmap/',
     #'/places/api/',
     '/podcasts/',
@@ -79,7 +80,15 @@ def verify_200(url, ua):
         file = urllib2.urlopen(url)
         if file.geturl() != url:
             # Redirected
-            return file, 300
+            file2 = urllib2.urlopen(file.geturl())
+            if file2.geturl() != file.geturl():
+                # still redirected, let's assume it's
+                # not a normal behaviour?
+                return file2, 300
+            else:
+                return file2, 200
+            # avoid infinite loop
+            #return verify_200(file.geturl(), ua)
         else:
             return file, 200
     except urllib2.HTTPError, e:
@@ -88,9 +97,9 @@ def verify_200(url, ua):
 def smoke_test(base_url):
     tests = 0
     status = 0
-    print "MOLLY SMOKER"
+    print "MOLLY SMOKER %s" % base_url
     print "------------"
-    
+
     for type, ua in USER_AGENTS.items():
         print
         print "Simulating", type
@@ -118,3 +127,9 @@ def smoke_test(base_url):
 
 def command(base_url='http://localhost:8000'):
     sys.exit(smoke_test(base_url))
+
+if __name__ == "__main__":
+    if len(sys.argv) > 1:
+        command(base_url=sys.argv[1])
+    else:
+        command()
