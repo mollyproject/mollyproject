@@ -34,6 +34,7 @@ class Command(NoArgsCommand):
         call_command('collectstatic', interactive=False, link=develop)
         # Forcing compression because it seems to not compress *sometimes* even if files
         # have been changed...
+        call_command('synccompress')
         call_command('synccompress', force=True)
         if not skip_cron:
             call_command('create_crontab', write_system_cron=(os.name != 'nt'))
