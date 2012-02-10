@@ -722,7 +722,7 @@ class ServiceDetailView(BaseView):
                 calling_point = {
                     'entity': stop.entity,
                     'at': previous,
-                    'activity': stop.activity
+                    #'activity': stop.activity
                 }
                 if stop.entity.location is not None:
                     calling_point['stop_num'] = i
