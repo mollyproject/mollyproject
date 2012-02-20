@@ -93,7 +93,7 @@ function async_load(url, query, meth) {
         return true;
     }
     
-    display_loading_screen()
+    display_loading_screen();
   
     query['format'] = 'fragment';
     query['language_code'] = language_code;
@@ -111,7 +111,7 @@ function async_load(url, query, meth) {
                 current_url = data.uri;
                 // Detect if history API is available - http://diveintohtml5.org/detect.html#history
                 if (!!(window.history && history.pushState)) {
-                    history.pushState(null, null, to_absolute(current_url))
+                    history.pushState(null, null, to_absolute(current_url));
                 } else {
                     already_doing_hash_reload = false;
                     window.location.hash = current_url;

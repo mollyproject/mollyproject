@@ -54,7 +54,7 @@
             map.on('zoomend', function(e){
                 {# Have zoomed out past the limit we currently have entities for #}
                 if (e.target._zoom < e.target.options.zoom) {
-                    async_load('?', {zoom: e.target._zoom}, 'GET')
+                    async_load('?', {zoom: e.target._zoom}, 'GET');
                 }
             })
         });
