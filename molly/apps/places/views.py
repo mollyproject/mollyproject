@@ -309,10 +309,10 @@ class EntityDetailView(ZoomableView, FavouritableView):
             parent_view = 'nearby-detail'
         else:
             parent_view = 'category-detail'
-        entity = get_entity(scheme, value)
+        #entity = get_entity(scheme, value)
         return Breadcrumb(
             'places',
-            lazy_parent(parent_view, ptypes=entity.primary_type.slug),
+            lazy_parent(parent_view, ptypes=context['entity'].primary_type.slug),
             context['entity'].title,
             lazy_reverse('entity', args=[scheme, value]),
         )
@@ -430,7 +430,7 @@ class NearbyEntityListView(NearbyListView):
             lazy_reverse('entity-nearby-list', args=[scheme, value]))
 
     def handle_GET(self, request, context, scheme, value):
-        entity = get_entity(scheme, value)
+        entity = context['entity']
         return super(NearbyEntityListView, self).handle_GET(request, context, entity)
 
 
@@ -462,7 +462,7 @@ class NearbyEntityDetailView(NearbyDetailView):
         return super(NearbyEntityDetailView, self).get_metadata(request, ptype, entity)
 
     def handle_GET(self, request, context, scheme, value, ptype):
-        entity = get_entity(scheme, value)
+        entity = context['entity']
         return super(NearbyEntityDetailView, self).handle_GET(request, context, ptype, entity)
 
 
