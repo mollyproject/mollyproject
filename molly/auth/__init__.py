@@ -25,9 +25,10 @@ def unify_users(request):
     identifier_namespaces = set(i.namespace for i in user.useridentifier_set.all())
 
     root_user = min(users, key=lambda u:u.date_joined)
-    
+    users_without_root = users.copy()
+    users_without_root = users_without_root.remove(root_user)
     # Send signals to anyone else who needs to be merged
-    unifying_users.send_robust(self, users=users - root_user, into=root_user)
+    unifying_users.send_robust(sender=request, users=users_without_root, into=root_user)
     
     # Need to do the root_user first, otherwise if it's after the current user,
     # tokens get assigned from the current user to the root user, and then
