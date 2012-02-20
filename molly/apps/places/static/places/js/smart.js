@@ -50,6 +50,22 @@ $(document).bind('molly-page-change', function(event, url){
         
         $('.categories a').addClass('has-ajax-handler')
     }
+
+    if (url.match(/^\/places\/nearby\/[^\/;]/)) {
+        // prevent script from stopping
+        // if we do not use slippy_maps
+        try {
+            map.on('zoomend', function(e){
+                // Have zoomed out past the limit we currently have
+                // entities for
+                if (e.target._zoom < e.target.options.zoom) {
+                    async_load('?', {zoom: e.target._zoom}, 'GET');
+                }
+            });
+        } catch(err) {
+            console.log("Unable to attach event zoomend to the map. (Not using slippy maps?)");
+        }
+    }
     
     if (url.match(/^\/places\/category\/[^\/;]/)) {
         // Category detail view
