@@ -25,13 +25,14 @@
                 <small><em>
                 {% if item.dt_start %}
                     {% trans "Starts:" %} {{item.dt_start|date:"j M Y \a\t H:i"}}
-                {% elif not item.last_modified_local|this_year %}
-                    {{ item.last_modified_local|date:"j M Y" }}
                 {% else %}
-                    {{ item.last_modified_local|date:"j M"}}
+                    {% if not item.last_modified_local|this_year %}
+                        {{ item.last_modified_local|date:"j M Y" }}
+                    {% else %}
+                        {{ item.last_modified_local|date:"j M"}}
+                    {% endif %}
                 {% endif %}
                 </em></small>
-                
             </a>
         </li>
 {% endfor %}
