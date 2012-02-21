@@ -309,9 +309,10 @@ class EntityDetailView(ZoomableView, FavouritableView):
             parent_view = 'nearby-detail'
         else:
             parent_view = 'category-detail'
+        entity = get_entity(scheme, value)
         return Breadcrumb(
             'places',
-            lazy_parent(parent_view, ptypes=context['entity'].primary_type.slug),
+            lazy_parent(parent_view, ptypes=entity.primary_type.slug),
             context['entity'].title,
             lazy_reverse('entity', args=[scheme, value]),
         )
