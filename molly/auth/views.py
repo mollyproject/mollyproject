@@ -164,7 +164,4 @@ class ClearSessionView(SecureView):
     def handle_POST(self, request, context):
         UserSession.objects.filter(secure_session_key = request.secure_session.session_key).delete()
         logout(request)
-        if context['return_url']:
-            return self.redirect(context['return_url'], request)
-        else:
-            return self.redirect('.', request)
+        return self.redirect(context['return_url'], request)
