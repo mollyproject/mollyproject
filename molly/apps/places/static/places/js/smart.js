@@ -63,7 +63,9 @@ $(document).bind('molly-page-change', function(event, url){
                 }
             });
         } catch(err) {
-            console.log("Unable to attach event zoomend to the map. (Not using slippy maps?)");
+            if(console && console.log) {
+                console.log("Unable to attach event zoomend to the map. (Not using slippy maps?)");
+            }
         }
     }
     
