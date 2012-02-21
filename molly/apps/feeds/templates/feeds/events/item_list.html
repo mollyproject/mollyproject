@@ -23,7 +23,9 @@
             <a href="{{ item.get_absolute_url }}">
                 {{ item.title }}<br />
                 <small><em>
-                {% if not item.last_modified_local|this_year %}
+                {% if item.dt_start %}
+                    {% trans "Starts:" %} {{item.dt_start|date:"j M Y \a\t H:i"}}
+                {% elif not item.last_modified_local|this_year %}
                     {{ item.last_modified_local|date:"j M Y" }}
                 {% else %}
                     {{ item.last_modified_local|date:"j M"}}

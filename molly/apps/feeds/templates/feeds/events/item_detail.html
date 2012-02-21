@@ -24,16 +24,19 @@
         <br />
 
         {% if item.dt_start %}
-        {% trans "Start:" %} {{item.dt_start|date:"j M Y \a\t H:i"}}<br />
+        {% trans "Starts:" %} {{item.dt_start|date:"j M Y \a\t H:i"}}<br />
         {% endif %}
 
         {% if item.dt_end %}
-        {% trans "End:" %} {{item.dt_end|date:"j M Y \a\t H:i"}}<br />
+        {% trans "Ends:" %} {{item.dt_end|date:"j M Y \a\t H:i"}}<br />
         {% endif %}
 
         <small><em>
+            {# Do not display the "last modified" date if we have dt_start  #}
+            {% if not item.dt_start %}
             {{ item.last_modified_local|date:"j M Y \a\t H:i" }}<br />
-			{# Significant whitespace on line below #}
+            {% endif %}
+            {# Significant whitespace on line below #}
             {% trans "Link:" %} <a href="{{ item.link }}" title="{{ item.title }}">{{ item.link }}</a>
         </em></small>
     </div></div>
