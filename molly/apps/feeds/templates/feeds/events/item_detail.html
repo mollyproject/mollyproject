@@ -24,11 +24,11 @@
         <br />
 
         {% if item.dt_start %}
-        {% trans "Starts:" %} {{item.dt_start|date:"j M Y \a\t H:i"}}<br />
+        {% trans "Starts:" %} {{item.dt_start|date:"l j M Y \a\t H:i"}}<br />
         {% endif %}
 
         {% if item.dt_end %}
-        {% trans "Ends:" %} {{item.dt_end|date:"j M Y \a\t H:i"}}<br />
+        {% trans "Ends:" %} {{item.dt_end|date:"l j M Y \a\t H:i"}}<br />
         {% endif %}
 
         <small><em>

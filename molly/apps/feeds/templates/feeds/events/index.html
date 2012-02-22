@@ -2,30 +2,6 @@
 {% load i18n %}
 {% block content %}
 
-{# News Search #}
-{% search_form %}
-<form method="get" action="{% url search:index %}">
-    <!-- Doing the devil's work below: couldn't get a CSS design to work with Blackberry 8900 so using Tables as a last resort. Tim F -->
-<h2 class="invisible">{% trans "Search Events" %}</h2>
-<table class="search"><tbody>
-        <tr><td>
-                <label class="invisible" for="id_query">{% trans "Search News Box" %}</label>
-                {{ search_form.query }}
-        </td><td>
-                <input type="hidden" name="application" value="events" title='{% trans "Search News" %}' />
-                {% ifequal style_group "dumb" %}
-                    <button type="submit">{% trans "Go!" %}</button>
-                {% else %}
-                        <input type="image" src="{{ STATIC_URL }}site/images/buttons/search-button.png" title='{% trans "Search" %}' alt='{% trans "Search" %}'/>
-                {% endifequal %}
-        </td></tr><tr><td>
-                <p class="help-bubble top">{% trans "Search for particular events" %}</p>
-        </td><td></td></tr></tbody>
-</table>
-</form>
-{# End News Search #}
-
-
 <div class="section">
   <div class="header">
         <h2>{% trans "Feeds" %}</h2>
