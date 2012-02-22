@@ -32,7 +32,7 @@
     {% endif %}
     {% if not poll.hasVoted and poll.isOpen %}
       <div class="sakai-notice-message">
-        {% blocktrans with pollvoteClose|timeuntil as time_until_close %}This poll closes {{ time_until_close }} from now.{% endblocktrans %}
+        {% blocktrans with poll.voteClose|timeuntil as time_until_close %}This poll closes {{ time_until_close }} from now.{% endblocktrans %}
       </div>
     {% endif %}
     {% if poll.minOptions > 1 %}
