@@ -102,6 +102,7 @@ setup(
         "suds",
         "django-slimmer",
         'pyyaml',
+        'icalendar',
         'mockito'
     ],
     scripts = [

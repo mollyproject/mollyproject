@@ -773,8 +773,8 @@ APPLICATIONS = [
     Application('molly.apps.feeds', 'feeds', 'Feeds',
         # The providers specify the kind of feeds this feed importer supports
         providers = [
-            # Only RSS is supported right now - this has no options
             Provider('molly.apps.feeds.providers.RSSFeedsProvider'),
+            Provider('molly.apps.feeds.providers.ICalFeedsProvider'),
         ],
         display_to_user = False,
     ),
