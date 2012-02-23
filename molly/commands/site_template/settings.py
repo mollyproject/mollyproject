@@ -775,6 +775,7 @@ APPLICATIONS = [
         providers = [
             Provider('molly.apps.feeds.providers.RSSFeedsProvider'),
             Provider('molly.apps.feeds.providers.ICalFeedsProvider'),
+            Provider('molly.apps.feeds.providers.TalksCamFeedsProvider'),
         ],
         display_to_user = False,
     ),
