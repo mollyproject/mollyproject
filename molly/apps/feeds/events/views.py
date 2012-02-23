@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import datetime, timedelta
 from xml.sax.saxutils import escape
 
 from django.core.paginator import Paginator, EmptyPage, InvalidPage
@@ -73,7 +73,7 @@ class ItemListView(BaseView):
     def handle_GET(self, request, context, slug):
         feed = get_object_or_404(Feed.events, slug=slug)
         context['feed'] = feed
-        context['feed_items'] = feed.item_set.order_by('dt_start')
+        context['feed_items'] = feed.item_set.filter(dt_start__gte=datetime.today()).order_by('dt_start')
         return self.render(request, context, 'feeds/events/item_list')
 
 class ItemDetailView(BaseView):
