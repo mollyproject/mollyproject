@@ -4,4 +4,4 @@ http://mollyproject.org
 A framework for creating Mobile Web applications for HE/FE institutions.
 """
 
-__version__ = '1.3.2'
+__version__ = '1.3.3'
