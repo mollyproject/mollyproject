@@ -7,7 +7,7 @@ import random
 import traceback
 import logging
 from icalendar import Calendar, Event
-from icalendar.prop import vDatetime
+from icalendar.prop import vDatetime, vDate, vText
 
 from molly.external_media import sanitise_html
 from molly.conf.settings import batch
@@ -58,23 +58,39 @@ class ICalFeedsProvider(BaseFeedsProvider):
             if component.name == 'VEVENT':
                 item, created = Item.objects.get_or_create(feed=feed, guid=str(component.get('UID')))
                 # Do not create the event if one the property is not correct,
-                # e.g. datetime...
+                # first tries to parse DT as datetime then as date, if it still fails, then ignore
                 try:
-                    item.dt_start = vDatetime.from_ical(str(component.get('DTSTART')))
-                    item.dt_end = vDatetime.from_ical(str(component.get('DTEND')))
-                    item.title = str(component.get('SUMMARY')).strip()
-                    item.link = str(component.get('URL'))
-                    item.description = sanitise_html(str(component.get('DESCRIPTION')))
+                    try:
+                        item.dt_start = vDatetime.from_ical(str(component.get('DTSTART')))
+                    except ValueError, ve:
+                        item.dt_start = vDate.from_ical(str(component.get('DTSTART')))
+                    
+                    if component.get('DTEND'):
+                        try:
+                            item.dt_end = vDatetime.from_ical(str(component.get('DTEND')))
+                        except ValueError, ve:
+                            item.dt_end = vDate.from_ical(str(component.get('DTEND')))
+                    
+                    item.title = vText.from_ical(str(component.get('SUMMARY')).strip())
+                    
+                    if component.get('URL'):
+                        item.link = str(component.get('URL'))
+                    
+                    if component.get('DESCRIPTION'):
+                        item.description = sanitise_html(vText.from_ical(str(component.get('DESCRIPTION'))))
+                    
                     if str(component.get('LOCATION')) != '':
                         location, created = vCard.objects.get_or_create(name=str(component.get('LOCATION')).strip())
                         # in the future, we could imagine to (try to) geocode the location
                         # to get a point field...
                         location.save()
                         item.venue = location
+                    
                     try:
                         item.last_modified = vDatetime.from_ical(str(component.get('LAST-MODIFIED')))
                     except Exception, e:
                         item.last_modified = datetime.now()
+                    
                     item.save()
                     items.add(item)
                 except ValueError, v:
