@@ -20,8 +20,10 @@
     <h2>{{ item.title }}</h2>
     
     <div class="article"><div class="bubble pad-5">
+        {% if description %}   
         {{ description|safe }}
-        <br />
+        <br /><br />
+        {% endif %}
 
         {% if item.dt_start %}
         {% trans "Starts:" %} {{item.dt_start|date:"l j M Y \a\t H:i"}}<br />
@@ -37,7 +39,9 @@
             {{ item.last_modified_local|date:"j M Y \a\t H:i" }}<br />
             {% endif %}
             {# Significant whitespace on line below #}
+            {% if item.link %}
             {% trans "Link:" %} <a href="{{ item.link }}" title="{{ item.title }}">{{ item.link }}</a>
+            {% endif %}
         </em></small>
     </div></div>
 </div>
