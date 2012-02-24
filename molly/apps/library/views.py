@@ -162,11 +162,11 @@ class ItemDetailView(ZoomableView):
         
         for library, books in lbs:
             library.entity = library.get_entity()
-        
+
         if user_location:
-            lbs = sorted(lbs, key=lambda (l,b): haversine(user_location,
-                                                          l.entity.location))
-        
+            lbs = sorted(lbs, key=lambda (l,b): (haversine(user_location, l.entity.location)
+                if l.entity and l.entity.location else float('inf')))
+
         for library, books in lbs:
             if library.entity != None and library.entity.location != None:
                 colour = AVAIL_COLORS[max(b['availability'] for b in books)]
