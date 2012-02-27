@@ -21,7 +21,7 @@
     
     <div class="article"><div class="bubble pad-5">
         {% if description %}   
-        {{ description|safe }}
+        {{ description|safe|urlize }}
         <br /><br />
         {% endif %}
 
