@@ -49,7 +49,7 @@ class ICalFeedsProvider(BaseFeedsProvider):
 
     def import_feed(self, feed):
         from molly.apps.feeds.models import Item, vCard
-        
+
         calendar = Calendar.from_string(urllib2.urlopen(feed.rss_url).read())
 
         items = set()
@@ -80,7 +80,7 @@ class ICalFeedsProvider(BaseFeedsProvider):
                         item.description = sanitise_html(vText.from_ical(str(component.get('DESCRIPTION'))))
                     
                     if str(component.get('LOCATION')) != '':
-                        location, created = vCard.objects.get_or_create(name=str(component.get('LOCATION')).strip())
+                        location, created = vCard.objects.get_or_create(name=vText.from_ical(str(component.get('LOCATION')).strip()))
                         # in the future, we could imagine to (try to) geocode the location
                         # to get a point field...
                         location.save()
