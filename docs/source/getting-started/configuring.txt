@@ -1,17 +1,6 @@
 Configuring Molly
 =================
 
-Using the Config Generator
---------------------------
-
-When installing Molly for the first time, without using an existing site, the
-config generator will run, which will ask you a number of questions about how
-you would like your site to be configured.
-
-If you would like to generate a new config from scratch, without having to
-re-install Molly, the file ``scripts/config_generator.py`` will create a new
-one.
-
 Understanding the Config
 ------------------------
 
