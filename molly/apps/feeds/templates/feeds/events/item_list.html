@@ -24,10 +24,19 @@
                 {{ item.title }}<br />
                 <small><em>
                 {% if item.dt_start %}
+                    {% trans "Starts:" %} 
                     {% if item.dt_start|this_year %}
-                        {% trans "Starts:" %} {{item.dt_start|date:"l j M \a\t H:i"}}
+                        {% if item.dt_start|date:"H:i" != "00:00" %}
+                            {{item.dt_start|date:"l j M \a\t H:i"}}
+                        {% else %}
+                            {{item.dt_start|date:"l j M"}}
+                        {% endif %}
                     {% else %}
-                        {% trans "Starts:" %} {{item.dt_start|date:"j M Y \a\t H:i"}}
+                        {% if item.dt_start|date:"H:i" != "00:00" %}
+                            {{item.dt_start|date:"j M Y \a\t H:i"}}
+                        {% else %}
+                            {{item.dt_start|date:"j M Y"}}
+                        {% endif %}
                     {% endif %}
                 {% else %}
                     {% if not item.last_modified_local|this_year %}
