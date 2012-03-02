@@ -1,10 +1,11 @@
 import threading
-import urllib
 from datetime import datetime
 from lxml import etree
 import re
 import logging
 from string import ascii_lowercase
+import socket
+socket.setdefaulttimeout(5)
 from urllib2 import urlopen
 import random
 
@@ -67,7 +68,7 @@ class ACISLiveMapsProvider(BaseMapsProvider):
                 lambda entity: '329%05d' % int(entity.identifiers.get('plate')),
                 lambda entity: '329%05d' % int(entity.identifiers.get('plate'))
                ), # York
-        '340': ('http://www.oxontime.com/',
+        '340': ('http://localhost:9001/',
                 lambda entity: entity.identifiers.get('naptan'),
                 lambda entity: entity.identifiers.get('atco'),
                ), # Oxfordshire
@@ -158,7 +159,7 @@ class ACISLiveMapsProvider(BaseMapsProvider):
         try:
             try:
                 realtime_url = self.get_realtime_url(entity)
-                xml = etree.parse(urllib.urlopen(realtime_url),
+                xml = etree.parse(urlopen(realtime_url),
                                   parser = etree.HTMLParser())
             except (TypeError, IOError):
                 rows = []
@@ -176,7 +177,7 @@ class ACISLiveMapsProvider(BaseMapsProvider):
                 try:
                     messages_url = self.get_messages_url(entity)
                     if messages_url != None:
-                        messages_page = urllib.urlopen(messages_url).read()
+                        messages_page = urlopen(messages_url).read()
                         pip_info = re.findall(r'msgs\[\d+\] = "(?P<message>[^"]+)"',
                                               messages_page)
                         pip_info = filter(lambda pip: pip != '&nbsp;', pip_info)
@@ -228,7 +229,6 @@ class ACISLiveMapsProvider(BaseMapsProvider):
         
         except Exception as e:
             logger.exception('Failed to get RTI from ACIS Live')
-        
         finally:
             connection.close()
     
