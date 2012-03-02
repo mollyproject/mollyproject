@@ -68,7 +68,7 @@ class ACISLiveMapsProvider(BaseMapsProvider):
                 lambda entity: '329%05d' % int(entity.identifiers.get('plate')),
                 lambda entity: '329%05d' % int(entity.identifiers.get('plate'))
                ), # York
-        '340': ('http://localhost:9001/',
+        '340': ('http://www.oxontime.com/',
                 lambda entity: entity.identifiers.get('naptan'),
                 lambda entity: entity.identifiers.get('atco'),
                ), # Oxfordshire
