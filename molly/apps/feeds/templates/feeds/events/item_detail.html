@@ -21,16 +21,26 @@
     
     <div class="article"><div class="bubble pad-5">
         {% if description %}   
-        {{ description|safe|urlize }}
+        {{ description|safe|urlize|linebreaksbr }}
         <br /><br />
         {% endif %}
 
         {% if item.dt_start %}
-        {% trans "Starts:" %} {{item.dt_start|date:"l j M Y \a\t H:i"}}<br />
+        {% trans "Starts:" %} 
+            {% if item.dt_start.hour != 0 and item.dt_start.minute != 0 %}
+            {{item.dt_start|date:"l j M Y \a\t H:i"}}<br />
+            {% else %}
+            {{item.dt_start|date:"l j M Y"}}<br />
+            {% endif %}
         {% endif %}
 
         {% if item.dt_end %}
-        {% trans "Ends:" %} {{item.dt_end|date:"l j M Y \a\t H:i"}}<br />
+        {% trans "Ends:" %} 
+            {% if item.dt_end.hour != 0 and item.dt_end.minute != 0 %}
+            {{item.dt_end|date:"l j M Y \a\t H:i"}}<br />
+            {% else %}
+            {{item.dt_end|date:"l j M Y"}}<br />
+            {% endif %}
         {% endif %}
 
         <small><em>
