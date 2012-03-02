@@ -1,13 +1,12 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 import urllib2
-import re
-import email
-import time
 import random
 import traceback
 import logging
-from icalendar import Calendar, Event
+from icalendar import Calendar
 from icalendar.prop import vDatetime, vDate, vText
+import socket
+socket.setdefaulttimeout(5)
 
 from molly.external_media import sanitise_html
 from molly.conf.settings import batch

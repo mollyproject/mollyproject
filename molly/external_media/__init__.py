@@ -21,7 +21,7 @@ def sanitise_html(dirty_html, opener=None, device=None):
     # serialize and remove the div tag
     return etree.tostring(html, method='html')[5:-6]
 
-def resize_external_image(url, width, timeout=None):
+def resize_external_image(url, width, timeout=5):
 
     ei, created = ExternalImage.objects.get_or_create(url=url)
 

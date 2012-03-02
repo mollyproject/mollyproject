@@ -1,12 +1,11 @@
-from datetime import datetime, timedelta
-import urllib
-import re
-import email
+from datetime import datetime
 import feedparser
 import time
 import random
 import traceback
 import logging
+import socket
+socket.setdefaulttimeout(5)
 
 from molly.external_media import sanitise_html
 from molly.conf.settings import batch
