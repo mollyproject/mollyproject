@@ -51,7 +51,7 @@ class BBCTPEGPlacesProvider(BaseMapsProvider):
         self._tpeg_url = url
     
     @batch('%d-59/3 * * * *' % random.randint(0, 2))
-    def import_data(self, metadata, output):
+    def import_data(self, **metadata):
         source, entity_type = self._get_source(), self._get_entity_type()
         
         parser = etree.XMLParser(load_dtd=True)

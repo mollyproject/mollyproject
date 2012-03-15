@@ -674,7 +674,7 @@ class NaptanMapsProvider(BaseMapsProvider):
         self._areas = areas
 
     @batch('%d 10 * * mon' % random.randint(0, 59))
-    def import_data(self, metadata, output):
+    def import_data(self, **metadata):
         username, password = self._username, self._password
 
         self._source = self._get_source()
@@ -775,4 +775,4 @@ except ImportError:
 else:
     if __name__ == '__main__':
         p = NaptanMapsProvider(method='ftp', username=SECRETS.journeyweb[0], password=SECRETS.journeyweb[1], areas=('340',))
-        p.import_data(None, None)
+        p.import_data()

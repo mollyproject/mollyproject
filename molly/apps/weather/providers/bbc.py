@@ -104,7 +104,7 @@ class BBCWeatherProvider(object):
     )
 
     @batch('%d-%d/15 * * * *' % (lambda x:(x, x+45))(random.randint(0, 14)))
-    def import_data(self, metadata, output):
+    def import_data(self, **metadata):
         """
         Pulls weather data from the BBC
         """
@@ -113,9 +113,6 @@ class BBCWeatherProvider(object):
             observations = self.get_observations_data()
             forecasts = self.get_forecast_data()
         except Exception as e:
-            output.write("Error importing weather data from BBC\n")
-            traceback.print_exc(file=output)
-            output.write('\n')
             logger.exception("Error importing weather data from BBC")
             return metadata
 

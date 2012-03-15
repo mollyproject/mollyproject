@@ -37,7 +37,7 @@ class RSSPodcastsProvider(BasePodcastsProvider):
         return Namespace('http://www.w3.org/2005/Atom')
     
     @batch('%d * * * *' % random.randint(0, 59))
-    def import_data(self, metadata, output):
+    def import_data(self, **metadata):
         for slug, url in self.podcasts:
             podcast, url = Podcast.objects.get_or_create(
                 provider=self.class_path,

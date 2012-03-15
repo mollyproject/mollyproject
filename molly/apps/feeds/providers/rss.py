@@ -29,23 +29,19 @@ class RSSFeedsProvider(BaseFeedsProvider):
     verbose_name = 'RSS'
 
     @batch('%d * * * *' % random.randint(0, 59))
-    def import_data(self, metadata, output):
+    def import_data(self, **metadata):
         """
         Pulls RSS feeds
         """
 
         from molly.apps.feeds.models import Feed
         for feed in Feed.objects.filter(provider=self.class_path):
-            output.write("Importing %s\n" % feed.title)
+            logger.info("Importing %s\n" % feed.title)
             try:
                 self.import_feed(feed)
             except Exception, e:
-                output.write("Error importing %s\n" % feed.title)
-                traceback.print_exc(file=output)
-                output.write('\n')
                 logger.warn("Error importing feed %r" % feed.title,
                             exc_info=True, extra={'url': feed.rss_url})
-
         return metadata
 
     def import_feed(self, feed):

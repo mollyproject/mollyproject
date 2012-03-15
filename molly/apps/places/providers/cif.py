@@ -189,7 +189,7 @@ class CifTimetableProvider(BaseMapsProvider):
                 self._save_stops(self._save_journey(self._save_route()))
 
     @batch('%d 15 * * mon' % random.randint(0, 59))
-    def import_from_file(self, metadata, output):
+    def import_from_file(self, **metadata):
         with open(self._filename) as file:
             for line in file:
                 self._handle_line(line)

@@ -71,7 +71,7 @@ class OPMLPodcastsProvider(RSSPodcastsProvider):
         self.update_podcast(podcast)
 
     @batch('%d * * * *' % random.randint(0, 59))
-    def import_data(self, metadata, output):
+    def import_data(self, **metadata):
         
         self._category = None
 
@@ -89,8 +89,6 @@ class OPMLPodcastsProvider(RSSPodcastsProvider):
                     self.parse_outline(outline)
                     rss_urls.append(outline.attrib['xmlUrl'])
                 except Exception, e:
-                    output.write("Update of podcast %r failed." % outline.attrib['xmlUrl'])
-                    traceback.print_exc(file=output)
                     if not failure_logged:
                         logger.exception("Update of podcast %r failed.", outline.attrib['xmlUrl'])
                         failure_logged = True
@@ -103,8 +101,6 @@ class OPMLPodcastsProvider(RSSPodcastsProvider):
                             self.parse_outline(outline)
                             rss_urls.append(outline.attrib['xmlUrl'])
                         except Exception, e:
-                            output.write("Update of podcast %r failed." % outline.attrib['xmlUrl'])
-                            traceback.print_exc(file=output)
                             if not failure_logged:
                                 logger.exception("Update of podcast %r failed.", outline.attrib['xmlUrl'])
                                 failure_logged = True

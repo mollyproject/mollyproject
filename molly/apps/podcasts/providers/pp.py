@@ -19,7 +19,7 @@ class PodcastProducerPodcastsProvider(RSSPodcastsProvider):
         self.url = url
 
     @batch('%d * * * *' % random.randint(0, 59))
-    def import_data(self, metadata, output):
+    def import_data(self, **metadata):
         atom = self.atom
         xml = etree.parse(urllib.urlopen(self.url))
 

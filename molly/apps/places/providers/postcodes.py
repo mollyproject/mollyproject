@@ -36,7 +36,7 @@ class PostcodesMapsProvider(BaseMapsProvider):
             archive_file.close()
 
     @batch('%d 12 1 1 *' % random.randint(0, 59))
-    def import_data(self, metadata, output):
+    def import_data(self, **metadata):
 
         entity_type, source = self._get_entity_type(), self._get_source()
         

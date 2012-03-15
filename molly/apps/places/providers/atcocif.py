@@ -38,14 +38,14 @@ class AtcoCifTimetableProvider(BaseMapsProvider):
         self._entity_type = NaptanMapsProvider(None)._get_entity_types()['BCT'][0]
     
     @batch('%d 10 * * wed' % random.randint(0, 59))
-    def import_data(self, metadata, output):
+    def import_data(self, **metadata):
         
         deleted_routes = set(Route.objects.filter(external_ref__startswith=self._url).values_list('external_ref'))
         archive = ZipFile(StringIO(urlopen(self._url).read()))
         for file in archive.namelist():
-            output.write(file)
+            logger.info(file)
             routes = self._import_cif(archive.open(file))
-            output.write(': %d routes in file\n' % len(routes))
+            logger.info(': %d routes in file\n' % len(routes))
             self._import_routes(routes)
             deleted_routes -= set(self._url + route['id'] for route in routes)
         archive.close()
@@ -276,4 +276,4 @@ class AtcoCifTimetableProvider(BaseMapsProvider):
 
 
 if __name__ == '__main__':
-    AtcoCifTimetableProvider('http://store.datagm.org.uk/sets/TfGM/GMPTE_CIF.zip').import_data({}, sys.stdout)
+    AtcoCifTimetableProvider('http://store.datagm.org.uk/sets/TfGM/GMPTE_CIF.zip').import_data({})
