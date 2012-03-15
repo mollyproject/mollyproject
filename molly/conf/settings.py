@@ -1,11 +1,10 @@
 import imp
 
 from django.utils.importlib import import_module
-from django.conf.urls.defaults import patterns
 from django.conf.urls.defaults import include as urlconf_include
 from django.core.urlresolvers import RegexURLResolver, RegexURLPattern
+from django.conf import settings
 from celery.app import current_app
-
 
 """
 Provides a framework for Molly application objects.
@@ -103,12 +102,13 @@ class Application(object):
 
         # Configure any logging for this application, passing the
         # configuration lest it needs it.
-        try:
-            logconfig = import_module(self.application_name + '.logconfig')
-        except ImportError, e:
-            pass
-        else:
-            logconfig.configure_logging(self.conf)
+        if settings.LOGGING_CONFIG is None:
+            try:
+                logconfig = import_module(self.application_name + '.logconfig')
+            except ImportError, e:
+                pass
+            else:
+                logconfig.configure_logging(self.conf)
 
         return self.conf
 
