@@ -234,11 +234,10 @@ class Provider(object):
             if hasattr(self._provider, 'import_data'):
                 task_name = '%s.%s' % (self.klass, 'import_data')
                 if task_name not in app.tasks:
-                    from StringIO import StringIO
                     from celery.task import task
                     @task(name=task_name)
-                    def t():
-                        self._provider.import_data({}, StringIO())
+                    def t(**kwargs):
+                        self._provider.import_data(**kwargs)
                     self._provider.task = t
             return self._provider
 
