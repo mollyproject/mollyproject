@@ -95,6 +95,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles', # Staticfiles handles media for Molly
     'pipeline', # Pipeline is an external library that minifies JS and CSS
     'south', # South handles changes to database schema
+    'djcelery', # Celery tasks run our periodic batch processing
 )
 
 # Don't do South migrations when running unit tests - just do a syncdb

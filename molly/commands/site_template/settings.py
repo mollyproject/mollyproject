@@ -18,6 +18,10 @@ from molly.conf.settings import Application, extract_installed_apps, Authenticat
 from molly.conf.default_settings import *
 from molly.utils.media import get_compress_groups
 
+# Import Django-Celery and have it register our tasks
+import djcelery
+djcelery.setup_loader()
+
 # The following import and mimetypes.add_types correct the - possibly wrong - mime type of svg files
 # in certain versions of Django.
 import mimetypes
