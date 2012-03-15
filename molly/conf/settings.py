@@ -4,6 +4,8 @@ from django.utils.importlib import import_module
 from django.conf.urls.defaults import patterns
 from django.conf.urls.defaults import include as urlconf_include
 from django.core.urlresolvers import RegexURLResolver, RegexURLPattern
+from celery.app import current_app
+
 
 """
 Provides a framework for Molly application objects.
@@ -228,6 +230,16 @@ class Provider(object):
             klass = getattr(module, cls_name)
             self._provider = klass(**self.kwargs)
             self._provider.class_path = self.klass
+            app = current_app()
+            if hasattr(self._provider, 'import_data'):
+                task_name = '%s.%s' % (self.klass, 'import_data')
+                if task_name not in app.tasks:
+                    from StringIO import StringIO
+                    from celery.task import task
+                    @task(name=task_name)
+                    def t():
+                        self._provider.import_data({}, StringIO())
+                    self._provider.task = t
             return self._provider
 
 def batch(cron_stmt, initial_metadata={}):
