@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import feedparser
 import time
 import random
@@ -8,7 +8,7 @@ import socket
 socket.setdefaulttimeout(5)
 
 from molly.external_media import sanitise_html
-from molly.conf.settings import batch
+from molly.conf.settings import task
 
 from molly.apps.feeds.providers import BaseFeedsProvider
 
@@ -28,14 +28,16 @@ logger = logging.getLogger(__name__)
 class RSSFeedsProvider(BaseFeedsProvider):
     verbose_name = 'RSS'
 
-    @batch('%d * * * *' % random.randint(0, 59))
+    @task(run_every=timedelta(seconds=10))
     def import_data(self, **metadata):
         """
         Pulls RSS feeds
         """
 
+        print "In import_data"
         from molly.apps.feeds.models import Feed
         for feed in Feed.objects.filter(provider=self.class_path):
+            print feed.title
             logger.info("Importing %s\n" % feed.title)
             try:
                 self.import_feed(feed)
@@ -45,6 +47,8 @@ class RSSFeedsProvider(BaseFeedsProvider):
         return metadata
 
     def import_feed(self, feed):
+        print "In import_feed"
+        print feed.title
         from molly.apps.feeds.models import Item
 
         feed_data = feedparser.parse(feed.rss_url)
