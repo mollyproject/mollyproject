@@ -4,7 +4,6 @@ from django.utils.importlib import import_module
 from django.conf.urls.defaults import include as urlconf_include
 from django.core.urlresolvers import RegexURLResolver, RegexURLPattern
 from django.conf import settings
-from celery.app import current_app
 
 """
 Provides a framework for Molly application objects.
@@ -48,10 +47,10 @@ class Application(object):
 
         providers = []
         for provider in self.providers:
-            if isinstance(provider, Provider):
+            if isinstance(provider, ProviderConf):
                 providers.append(provider())
             else:
-                providers.append(Provider(provider)())
+                providers.append(ProviderConf(provider)())
 
         bases = tuple(base() for base in self.extra_bases)
         if self.secure:
@@ -89,8 +88,8 @@ class Application(object):
         for key in self.kwargs:
             if key != 'provider' and key.endswith('provider'):
                 provider = self.kwargs[key]
-                if not isinstance(provider, Provider):
-                    provider = Provider(provider)
+                if not isinstance(provider, ProviderConf):
+                    provider = ProviderConf(provider)
                 providers.append(provider())
                 self.kwargs[key] = provider()
         self.conf = type(self.local_name.capitalize()+'Conf', (ApplicationConf,), self.kwargs)()
@@ -217,7 +216,7 @@ class ExtraBase(object):
 def extract_installed_apps(applications):
     return tuple(app.application_name for app in applications)
 
-class Provider(object):
+class ProviderConf(object):
     def __init__(self, klass, **kwargs):
         self.klass, self.kwargs = klass, kwargs
 
@@ -228,18 +227,16 @@ class Provider(object):
             mod_name, cls_name = self.klass.rsplit('.', 1)
             module = import_module(mod_name)
             klass = getattr(module, cls_name)
-            self._provider = klass(**self.kwargs)
+            self._provider = klass.register_tasks(**self.kwargs)
             self._provider.class_path = self.klass
-            app = current_app()
-            if hasattr(self._provider, 'import_data'):
-                task_name = '%s.%s' % (self.klass, 'import_data')
-                if task_name not in app.tasks:
-                    from celery.task import task
-                    @task(name=task_name)
-                    def t(**kwargs):
-                        self._provider.import_data(**kwargs)
-                    self._provider.task = t
             return self._provider
+
+
+def task(run_every=None, initial_metadata={}):
+    def dec(fun):
+        fun.task = {'run_every': run_every, 'initial_metadata':initial_metadata}
+        return fun
+    return dec
 
 def batch(cron_stmt, initial_metadata={}):
     def g(f):
