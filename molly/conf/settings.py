@@ -231,13 +231,6 @@ class ProviderConf(object):
             self._provider.class_path = self.klass
             return self._provider
 
-
-def task(run_every=None, initial_metadata={}):
-    def dec(fun):
-        fun.task = {'run_every': run_every, 'initial_metadata':initial_metadata}
-        return fun
-    return dec
-
 def batch(cron_stmt, initial_metadata={}):
     def g(f):
         f.is_batch = True
