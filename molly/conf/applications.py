@@ -16,6 +16,7 @@ __all__ = [
     'has_app_by_local_name',
     'has_app_by_application_name',
     'has_app',
+    'init_providers',
 ]
 
 _load_lock = Lock()
@@ -91,6 +92,14 @@ def has_app(application_name=None, local_name=None):
         return has_app_by_local_name(local_name)
     else:
         return has_app_by_application_name(application_name)
+
+def init_providers():
+    """Calls all the providers which in turns registers any Celery tasks
+    attached to that provider.
+    """
+    for app in all_apps():
+        for p in app.providers:
+            p()
 
 class Applications(object):
     def __getattr__(self, key):
