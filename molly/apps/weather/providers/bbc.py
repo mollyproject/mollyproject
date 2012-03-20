@@ -103,7 +103,7 @@ class BBCWeatherProvider(Provider):
         + r'(Latest Observations|Forecast) for (?P<name>.+)'
     )
 
-    @task(run_every=timedelta(seconds=50))
+    @task(run_every=timedelta(minutes=15))
     def import_data(self, **metadata):
         """
         Pulls weather data from the BBC

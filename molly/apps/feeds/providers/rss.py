@@ -1,8 +1,6 @@
 from datetime import datetime, timedelta
 import feedparser
 import time
-import random
-import traceback
 import logging
 import socket
 socket.setdefaulttimeout(5)
@@ -28,7 +26,7 @@ logger = logging.getLogger(__name__)
 class RSSFeedsProvider(BaseFeedsProvider):
     verbose_name = 'RSS'
 
-    @task(run_every=timedelta(seconds=10))
+    @task(run_every=timedelta(minutes=60))
     def import_data(self, **metadata):
         """
         Pulls RSS feeds

@@ -1,5 +1,5 @@
 import threading
-from datetime import datetime
+from datetime import datetime, timedelta
 from lxml import etree
 import re
 import logging
@@ -7,7 +7,6 @@ from string import ascii_lowercase
 import socket
 socket.setdefaulttimeout(5)
 from urllib2 import urlopen
-import random
 
 from django.db import transaction, reset_queries, connection
 from django.http import Http404
@@ -17,7 +16,7 @@ from molly.apps.places.providers import BaseMapsProvider
 from molly.apps.places import get_entity
 from molly.apps.places.providers.naptan import NaptanMapsProvider
 from molly.utils.i18n import set_name_in_language
-from molly.conf.settings import batch
+from molly.conf.provider import task
 
 logger = logging.getLogger(__name__)
 
@@ -254,7 +253,7 @@ class ACISLiveRouteProvider(BaseMapsProvider):
             urls = [instance[0] for instance in ACISLiveMapsProvider.ACISLIVE_URLS.items()]
         self.urls = urls
 
-    @batch('%d 10 * * sat' % random.randint(0, 59))
+    @task(run_every=timedelta(days=7))
     def import_data(self, **metadata):
         # Searching can flag up the same results again and again, so store
         # which ones we've found

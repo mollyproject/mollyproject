@@ -1,8 +1,8 @@
 import random, urllib, email
 from lxml import etree
-from datetime import datetime
+from datetime import datetime, timedelta
 
-from molly.conf.settings import batch
+from molly.conf.provider import task
 import dateutil.parser
 
 from molly.apps.podcasts.providers import BasePodcastsProvider
@@ -36,7 +36,7 @@ class RSSPodcastsProvider(BasePodcastsProvider):
     def atom(self):
         return Namespace('http://www.w3.org/2005/Atom')
     
-    @batch('%d * * * *' % random.randint(0, 59))
+    @task(run_every=timedelta(minutes=60))
     def import_data(self, **metadata):
         for slug, url in self.podcasts:
             podcast, url = Podcast.objects.get_or_create(

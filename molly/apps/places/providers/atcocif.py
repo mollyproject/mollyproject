@@ -15,7 +15,7 @@ from molly.apps.places import EntityCache
 from molly.apps.places.models import (Entity, Route, StopOnRoute, Source,
                                       Journey, ScheduledStop)
 from molly.apps.places.providers import BaseMapsProvider, NaptanMapsProvider
-from molly.conf.settings import batch
+from molly.conf.provider import task
 from molly.utils.i18n import set_name_in_language
 
 logger = getLogger(__name__)
@@ -37,7 +37,7 @@ class AtcoCifTimetableProvider(BaseMapsProvider):
         self._cache = EntityCache()
         self._entity_type = NaptanMapsProvider(None)._get_entity_types()['BCT'][0]
     
-    @batch('%d 10 * * wed' % random.randint(0, 59))
+    @task(run_every=timedelta(days=7))
     def import_data(self, **metadata):
         
         deleted_routes = set(Route.objects.filter(external_ref__startswith=self._url).values_list('external_ref'))

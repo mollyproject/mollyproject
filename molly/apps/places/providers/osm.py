@@ -9,6 +9,7 @@ import yaml
 import logging
 
 from xml.sax import saxutils, handler, make_parser
+from datetime import timedelta
 
 from django.db import reset_queries
 from django.contrib.gis.geos import Point, LineString, LinearRing
@@ -24,7 +25,7 @@ from molly.apps.places.providers import BaseMapsProvider
 from molly.utils.misc import AnyMethodRequest
 from molly.utils.i18n import override, set_name_in_language
 from molly.geolocation import reverse_geocode
-from molly.conf.settings import batch
+from molly.conf.provider import task
 
 
 logger = logging.getLogger(__name__)
@@ -304,7 +305,7 @@ class OSMMapsProvider(BaseMapsProvider):
         else:
             self.identities = {}
 
-    @batch('%d 9 * * mon' % random.randint(0, 59))
+    @task(run_every=timedelta(days=7))
     def import_data(self, **metadata):
         "Imports places data from OpenStreetMap"
         

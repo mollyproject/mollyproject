@@ -1,5 +1,6 @@
 import os, os.path, urllib, random, zipfile, tempfile
 from lxml import etree
+from datetime import timedelta
 
 from django.contrib.gis.geos import Point, LineString
 from django.conf import settings
@@ -8,7 +9,7 @@ from django.utils.translation import ugettext_noop
 
 from molly.apps.places.providers import BaseMapsProvider
 from molly.apps.places.models import Source, Entity, EntityType, EntityTypeCategory
-from molly.conf.settings import batch
+from molly.conf.provider import task
 from molly.utils.i18n import override, set_name_in_language
 
 class BBCTPEGResolver(etree.Resolver):
@@ -50,7 +51,7 @@ class BBCTPEGPlacesProvider(BaseMapsProvider):
     def __init__(self, url=_TPEG_URL):
         self._tpeg_url = url
     
-    @batch('%d-59/3 * * * *' % random.randint(0, 2))
+    @task(run_every=timedelta(minutes=3))
     def import_data(self, **metadata):
         source, entity_type = self._get_source(), self._get_entity_type()
         

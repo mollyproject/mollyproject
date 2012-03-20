@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from lxml import etree
 import urllib2
 import random
@@ -8,7 +8,7 @@ import socket
 socket.setdefaulttimeout(5)
 
 from molly.external_media import sanitise_html
-from molly.conf.settings import batch
+from molly.conf.provider import task
 
 from molly.apps.feeds.providers import BaseFeedsProvider
 
@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 class TalksCamFeedsProvider(BaseFeedsProvider):
     verbose_name = 'TalksCam'
 
-    @batch('%d * * * *' % random.randint(0, 59))
+    @task(run_every=timedelta(minutes=60))
     def import_data(self, **metadata):
         """
         Pulls TalksCam feeds

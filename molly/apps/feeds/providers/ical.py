@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import urllib2
 import random
 import traceback
@@ -9,7 +9,7 @@ import socket
 socket.setdefaulttimeout(5)
 
 from molly.external_media import sanitise_html
-from molly.conf.settings import batch
+from molly.conf.provider import task
 
 from molly.apps.feeds.providers import BaseFeedsProvider
 
@@ -26,7 +26,7 @@ class ICalFeedsProvider(BaseFeedsProvider):
     """
     verbose_name = 'iCal'
 
-    @batch('%d * * * *' % random.randint(0, 59))
+    @task(run_every=timedelta(minutes=60))
     def import_data(self, **metadata):
         """
         Pulls iCal feeds

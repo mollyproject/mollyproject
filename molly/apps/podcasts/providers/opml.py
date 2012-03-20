@@ -1,5 +1,5 @@
 from xml.etree import ElementTree as ET
-from datetime import datetime
+from datetime import datetime, timedelta
 import urllib
 import re
 import email
@@ -10,7 +10,7 @@ import traceback
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_noop as _
 
-from molly.conf.settings import batch
+from molly.conf.provider import task
 from molly.utils.i18n import set_name_in_language
 from molly.apps.podcasts.providers import BasePodcastsProvider
 from molly.apps.podcasts.models import Podcast, PodcastItem, PodcastCategory, PodcastEnclosure
@@ -70,7 +70,7 @@ class OPMLPodcastsProvider(RSSPodcastsProvider):
         
         self.update_podcast(podcast)
 
-    @batch('%d * * * *' % random.randint(0, 59))
+    @task(run_every=timedelta(minutes=60))
     def import_data(self, **metadata):
         
         self._category = None
