@@ -12,8 +12,7 @@ from dateutil.tz import tzoffset
 from django.contrib.gis.geos import Point
 from django.utils.translation import ugettext_lazy as _
 
-from molly.conf.settings import task
-from molly.conf.provider import Provider
+from molly.conf.provider import Provider, task
 from molly.apps.weather.models import (
     Weather, OUTLOOK_CHOICES, VISIBILITY_CHOICES, PRESSURE_STATE_CHOICES,
     SCALE_CHOICES, PTYPE_OBSERVATION, PTYPE_FORECAST
@@ -104,7 +103,7 @@ class BBCWeatherProvider(Provider):
         + r'(Latest Observations|Forecast) for (?P<name>.+)'
     )
 
-    @task(run_every=timedelta(seconds=20))
+    @task(run_every=timedelta(seconds=50))
     def import_data(self, **metadata):
         """
         Pulls weather data from the BBC
@@ -158,11 +157,7 @@ class BBCWeatherProvider(Provider):
 
             weather.location = Point(data['location'], srid=4326)
             weather.save()
-            print weather
 
-        print metadata
-        metadata['n'] = metadata.get('n', 0) + 1
-        print metadata
         return metadata
 
     def get_observations_data(self):
