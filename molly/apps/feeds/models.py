@@ -1,6 +1,5 @@
 from dateutil.tz import tzutc, tzlocal
 from lxml import etree
-import simplejson
 
 from django.core.urlresolvers import reverse
 from django.contrib.gis.db import models
@@ -51,7 +50,8 @@ class Feed(models.Model):
     title = models.TextField(help_text=_("Feed title"))
     entity = models.ForeignKey(Entity, null=True, blank=True,
                                help_text=_('Place which this feed belongs to'))
-    rss_url = models.URLField(help_text=_("URL of feed"))
+    rss_url = models.URLField(help_text=_("URL of feed"),
+            verbose_name=_("URL"))
     slug = models.SlugField(help_text=_("Slug of feed, e.g. oucs-news"))
     # this one is in UTC
     last_modified = models.DateTimeField(null=True, blank=True)
