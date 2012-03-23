@@ -376,6 +376,7 @@ class ACISLiveRouteProvider(BaseMapsProvider):
     def _get_source(self):
         source, created = Source.objects.get_or_create(module_name=__name__,
                                                        name='ACIS Route Scraper')
+        source.save()
         return source
     
     def _get_entity_type(self):

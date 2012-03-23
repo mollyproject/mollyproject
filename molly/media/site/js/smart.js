@@ -18,6 +18,8 @@ function to_absolute(url) {
             return base.slice(0, -1) + current_url.substring(0, current_url.lastIndexOf('?')) + url;
         }
         return base.slice(0, -1) + current_url + url;
+    } else if (url.substring(0,4) == "tel:") {
+        return url;
     } else {
         return base.slice(0, -1) + current_url + url;
     }

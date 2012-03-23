@@ -3,7 +3,7 @@ from time import mktime
 from inspect import isfunction
 import logging
 import itertools
-from datetime import datetime, date, timedelta
+from datetime import datetime, timedelta
 from slimmer.slimmer import xhtml_slimmer
 from urlparse import urlparse, urlunparse, parse_qs
 from urllib import urlencode
@@ -11,11 +11,10 @@ from urllib import urlencode
 import simplejson
 from lxml import etree
 
-from django.db import models
 from django.http import (HttpRequest, HttpResponse, HttpResponseBadRequest,
-                         HttpResponseNotAllowed, HttpResponseForbidden, Http404,
+                         HttpResponseNotAllowed, Http404,
                          HttpResponseRedirect, HttpResponsePermanentRedirect)
-from django.template import loader, Context, RequestContext, TextNode
+from django.template import loader, Context, RequestContext
 from django.template.loader_tags import BlockNode, ExtendsNode
 from django.shortcuts import render_to_response
 from django.core.urlresolvers import reverse, resolve, NoReverseMatch
@@ -27,8 +26,7 @@ from django.middleware.csrf import get_token
 logger = logging.getLogger(__name__)
 
 from molly.utils.http import MediaType, HttpResponseSeeOther
-from molly.utils.simplify import (simplify_value, simplify_model,
-                                  serialize_to_xml)
+from molly.utils.simplify import (simplify_value, serialize_to_xml)
 from molly.utils.breadcrumbs import NullBreadcrumb
 
 def renderer(format, mimetypes=(), priority=0):
