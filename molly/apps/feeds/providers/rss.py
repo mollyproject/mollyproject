@@ -35,7 +35,7 @@ class RSSFeedsProvider(BaseFeedsProvider):
         from molly.apps.feeds.models import Feed
         for feed in Feed.objects.filter(provider=self.class_path):
             logger.debug("Importing: %s - %s" % (feed.title, feed.rss_url))
-            self.import_feed.apply_async(args=(feed,))
+            self.import_feed.delay(feed)
         return metadata
 
     @task()

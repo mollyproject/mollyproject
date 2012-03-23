@@ -47,7 +47,7 @@ class RSSPodcastsProvider(BasePodcastsProvider):
                 podcast.medium = self.medium
                 
             podcast.slug = slug
-            self.update_podcast(podcast)
+            self.update_podcast.delay(podcast)
             
     def determine_license(self, o):
         license = o.find('{http://purl.org/dc/terms/}license') or \
@@ -55,6 +55,7 @@ class RSSPodcastsProvider(BasePodcastsProvider):
         
         return getattr(license, 'text', None)
         
+    @task()
     def update_podcast(self, podcast):
         atom = self.atom
         def gct(node, names):
