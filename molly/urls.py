@@ -1,12 +1,15 @@
 from django.conf.urls.defaults import *
 from django.conf import settings
 from django.contrib import admin
+from djcelery.admin import PeriodicTaskAdmin
 
 from molly.conf import applications, all_apps
+from molly.conf.admin import run_now
 from molly.utils.views import ReverseView
 from molly.utils.i18n import SetLanguageView, javascript_catalog
 
 # Admin
+PeriodicTaskAdmin.actions.append(run_now)
 admin.autodiscover()
 
 urlpatterns = patterns('',
