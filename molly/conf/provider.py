@@ -31,10 +31,10 @@ class Provider(object):
                     base = Task
                     def run(self, *args, **kwargs):
                         meth = getattr(self.provider, self.true_method)
-                        return meth(*args, **kwargs)
+                        return meth(*args)
                 def __call__(self, *args, **kwargs):
                     meth = getattr(self.provider, self.true_method)
-                    return meth(*args, **kwargs)
+                    return meth(*args)
                 def __init__(self, provider=ins, run_every=run_every,
                         metadata=fun.task['initial_metadata'], base=base):
                     self.provider = provider
@@ -64,6 +64,12 @@ class BatchTask(PeriodicTask):
 
 
 def task(run_every=None, initial_metadata={}):
+    """Sets a .task attribute on each function decorated, this indictes
+    this function should be registered as a task with Celery
+
+    TODO: Extend this functionality to implement a wrapping function to
+    capture the kwargs passed through by celery.
+    """
     def dec(fun):
         fun.task = {'run_every': run_every,
                 'initial_metadata': initial_metadata}
