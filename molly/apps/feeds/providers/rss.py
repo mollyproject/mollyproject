@@ -34,14 +34,11 @@ class RSSFeedsProvider(BaseFeedsProvider):
 
         from molly.apps.feeds.models import Feed
         for feed in Feed.objects.filter(provider=self.class_path):
-            logger.info("Importing %s\n" % feed.title)
-            try:
-                self.import_feed(feed)
-            except Exception, e:
-                logger.warn("Error importing feed %r" % feed.title,
-                            exc_info=True, extra={'url': feed.rss_url})
+            logger.debug("Importing: %s - %s" % (feed.title, feed.rss_url))
+            self.import_feed.apply_async(args=(feed,))
         return metadata
 
+    @task()
     def import_feed(self, feed):
         from molly.apps.feeds.models import Item
 
@@ -93,5 +90,3 @@ class RSSFeedsProvider(BaseFeedsProvider):
         for item in Item.objects.filter(feed=feed):
             if item not in items:
                 item.delete()
-
-        return items
