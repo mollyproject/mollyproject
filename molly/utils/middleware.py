@@ -8,6 +8,7 @@ from django.contrib.gis.geos import Point
 from django.core.exceptions import ImproperlyConfigured, PermissionDenied
 from django.middleware.locale import LocaleMiddleware
 from django.utils import translation
+from django.core.signals import got_request_exception
 
 from molly.utils.views import handler500
 
@@ -71,8 +72,8 @@ class ErrorHandlingMiddleware(object):
         elif isinstance(exception, ImproperlyConfigured):
             logger.critical("Site improperly configured", exc_info=True)
         else:
-            logger.exception("[500] %s at %s" % (type(exception).__name__, request.path),
-                    request=request)
+            logger.exception("[500] %s at %s" % (type(exception).__name__, request.path))
+            got_request_exception.send(sender=self, request=request)
             return handler500(request, exc_info=sys.exc_info())
 
 class CookieLocaleMiddleware(LocaleMiddleware):
