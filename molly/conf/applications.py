@@ -4,8 +4,6 @@ from threading import Lock
 
 from django.conf import settings as django_settings
 
-import settings
-
 __all__ = [
     'app_by_local_name',
     'app_by_application_name',
