@@ -71,7 +71,8 @@ class ErrorHandlingMiddleware(object):
         elif isinstance(exception, ImproperlyConfigured):
             logger.critical("Site improperly configured", exc_info=True)
         else:
-            logger.exception("[500] %s at %s" % (type(exception).__name__, request.path))
+            logger.exception("[500] %s at %s" % (type(exception).__name__, request.path),
+                    request=request)
             return handler500(request, exc_info=sys.exc_info())
 
 class CookieLocaleMiddleware(LocaleMiddleware):
