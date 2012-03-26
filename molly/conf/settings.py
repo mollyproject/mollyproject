@@ -31,7 +31,6 @@ class Application(object):
         self.extra_bases = kwargs.pop('extra_bases', ())
         self.urlconf = kwargs.pop('urlconf', application_name+'.urls')
         self.kwargs = kwargs
-        self.batches = []
         self.conf = None
 
         kwargs['display_to_user'] = kwargs.get('display_to_user', True)
@@ -220,11 +219,3 @@ class ProviderConf(object):
             self._provider = klass.register_tasks(**self.kwargs)
             self._provider.class_path = self.klass
             return self._provider
-
-def batch(cron_stmt, initial_metadata={}):
-    def g(f):
-        f.is_batch = True
-        f.cron_stmt = cron_stmt
-        f.initial_metadata = initial_metadata
-        return f
-    return g

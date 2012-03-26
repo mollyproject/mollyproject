@@ -12,14 +12,8 @@ class Command(NoArgsCommand):
             dest='develop',
             default=False,
             help='Create symlinks, rather than copy, existing media, then start the dev server'),
-        ) + (
-        make_option('--skip-cron',
-            action='store_true',
-            dest='skip_cron',
-            default=False,
-            help='Skip creating a crontab'),
         )
-    
+
     def handle_noargs(self, skip_cron, develop, **options):
         call_command('sync_and_migrate')
         try:
@@ -36,8 +30,6 @@ class Command(NoArgsCommand):
         # have been changed...
         call_command('synccompress')
         call_command('synccompress', force=True)
-        if not skip_cron:
-            call_command('create_crontab', write_system_cron=(os.name != 'nt'))
         if develop:
             call_command('runserver')
 

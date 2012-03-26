@@ -91,7 +91,6 @@ INSTALLED_APPS = (
     'django.contrib.sites', # Django's sites API, this is a prerequisite for the comments API
     'django.contrib.gis', # Geodjango - this is required
     'django.contrib.comments', # Django's comments API - used in the feature vote app
-    'molly.batch_processing', # This is a part of Molly that handles the batch jobs
     'django.contrib.staticfiles', # Staticfiles handles media for Molly
     'pipeline', # Pipeline is an external library that minifies JS and CSS
     'south', # South handles changes to database schema
