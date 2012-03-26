@@ -1,7 +1,7 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
-from molly.conf import all_apps
+from molly.conf.applications import all_apps
 
 # We can't pick up the list of applications when this module is imported, as
 # that could lead to a circular import dependency.[0] Instead, wait until a

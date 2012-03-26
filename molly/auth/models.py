@@ -8,7 +8,7 @@ from django.db import models
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 
-from molly.conf import app_by_local_name
+from molly.conf.applications import app_by_local_name
 
 class UserIdentifier(models.Model):
     user = models.ForeignKey(User)

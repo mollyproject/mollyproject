@@ -4,7 +4,7 @@ import logging
 from django.conf import settings
 from django.contrib.gis.geos import Point
 
-from molly.conf import get_app
+from molly.conf.applications import get_app
 from molly.utils import haversine
 from molly.geolocation.models import Geocode
 

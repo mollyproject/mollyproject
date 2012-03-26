@@ -1,5 +1,5 @@
 from celery.app import current_app
-from molly.conf import init_providers
+from molly.conf.applications import init_providers
 
 
 def run_now(modeladmin, request, queryset):

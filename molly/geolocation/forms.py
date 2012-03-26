@@ -5,7 +5,6 @@ from django import forms
 from django.forms.util import ErrorList
 from django.utils.translation import ugettext_lazy as _
 
-from molly.conf import applications
 from molly.geolocation import geocode, reverse_geocode
 
 METHOD_CHOICES = (

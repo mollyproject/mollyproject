@@ -1,5 +1,5 @@
 from settings import *
-from molly.conf import init_providers
+from molly.conf.applications import init_providers
 
 
 # Celery configuration
