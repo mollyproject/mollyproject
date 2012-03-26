@@ -14,7 +14,8 @@
 # skip it:
 from oauth.oauth import OAuthSignatureMethod_PLAINTEXT
 import os, os.path, imp
-from molly.conf.settings import Application, extract_installed_apps, Authentication, ExtraBase, Provider
+from molly.conf.settings import Application, extract_installed_apps, Authentication, ExtraBase
+from molly.conf.settings import ProviderConf as Provider
 from molly.conf.default_settings import *
 from molly.utils.media import get_compress_groups
 
