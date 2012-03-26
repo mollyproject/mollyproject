@@ -14,7 +14,7 @@ class Command(NoArgsCommand):
             help='Create symlinks, rather than copy, existing media, then start the dev server'),
         )
 
-    def handle_noargs(self, skip_cron, develop, **options):
+    def handle_noargs(self, develop, **options):
         call_command('sync_and_migrate')
         try:
             from molly.wurfl import wurfl_data
@@ -32,4 +32,3 @@ class Command(NoArgsCommand):
         call_command('synccompress', force=True)
         if develop:
             call_command('runserver')
-
