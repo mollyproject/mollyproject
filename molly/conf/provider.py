@@ -25,32 +25,31 @@ class Provider(object):
                 if run_every:
                     base = PeriodicTask
                     def run(self, **kwargs):
-                        return getattr(self.provider, self.true_method)(**self.metadata)
-                    def __init__(self, provider=ins, run_every=run_every,
-                            metadata=fun.task['initial_metadata']):
-                        self.provider = provider
-                        self.run_every = run_every
-                        self.metadata = metadata
-                        super(PeriodicTask, self).__init__()
+                        meth = getattr(self.provider, self.true_method)
+                        return meth(**self.metadata)
                 else:
                     base = Task
                     def run(self, *args, **kwargs):
-                        return getattr(self.provider, self.true_method)(*args)
-                    def __init__(self, provider=ins, run_every=run_every,
-                            metadata=fun.task['initial_metadata']):
-                        self.provider = provider
-                        self.run_every = run_every
-                        self.metadata = metadata
-                        super(Task, self).__init__()
+                        meth = getattr(self.provider, self.true_method)
+                        return meth(*args)
                 def __call__(self, *args, **kwargs):
-                    return getattr(self.provider, self.true_method)(*args)
+                    meth = getattr(self.provider, self.true_method)
+                    return meth(*args)
+                def __init__(self, provider=ins, run_every=run_every,
+                        metadata=fun.task['initial_metadata'], base=base):
+                    self.provider = provider
+                    self.run_every = run_every
+                    self.metadata = metadata
+                    base.__init__(self)  # Only 1 base class, so this is safe.
                 t = type(name, (base,), {'__init__': __init__,
                     '__call__': __call__,
-                    'run': run,
                     '__module__': cls.__module__,
+                    'run': run,
                     'name': name,
                     'true_method': new_attr_name,
                     })
+                # We rename the decorated method to __task_<method_name>
+                # and set the old method to the Task instance.
                 setattr(ins, new_attr_name, getattr(ins, attr_name))
                 setattr(ins, attr_name, t())
         return ins
