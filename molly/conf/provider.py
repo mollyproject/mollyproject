@@ -25,21 +25,25 @@ class Provider(object):
                 if run_every:
                     base = PeriodicTask
                     def run(self, **kwargs):
-                        meth = getattr(self.provider, self.true_method)
-                        return meth(**self.metadata)
+                        return getattr(self.provider, self.true_method)(**self.metadata)
+                    def __init__(self, provider=ins, run_every=run_every,
+                            metadata=fun.task['initial_metadata']):
+                        self.provider = provider
+                        self.run_every = run_every
+                        self.metadata = metadata
+                        super(PeriodicTask, self).__init__()
                 else:
                     base = Task
                     def run(self, *args, **kwargs):
-                        meth = getattr(self.provider, self.true_method)
-                        return meth(*args)
+                        return getattr(self.provider, self.true_method)(*args)
+                    def __init__(self, provider=ins, run_every=run_every,
+                            metadata=fun.task['initial_metadata']):
+                        self.provider = provider
+                        self.run_every = run_every
+                        self.metadata = metadata
+                        super(Task, self).__init__()
                 def __call__(self, *args, **kwargs):
-                    meth = getattr(self.provider, self.true_method)
-                    return meth(*args)
-                def __init__(self, provider=ins, run_every=run_every,
-                        metadata=fun.task['initial_metadata'], base=base):
-                    self.provider = provider
-                    self.run_every = run_every
-                    self.metadata = metadata
+                    return getattr(self.provider, self.true_method)(*args)
                 t = type(name, (base,), {'__init__': __init__,
                     '__call__': __call__,
                     'run': run,
