@@ -1,16 +1,17 @@
 from django.conf.urls.defaults import *
 from django.conf import settings
 from django.contrib import admin
-from djcelery.admin import PeriodicTaskAdmin
+from djcelery.models import PeriodicTask
 
+from molly.conf.admin import RunnablePeriodicTaskAdmin
 from molly.conf.applications import applications, all_apps
-from molly.conf.admin import run_now
 from molly.utils.views import ReverseView
 from molly.utils.i18n import SetLanguageView, javascript_catalog
 
 # Admin
-PeriodicTaskAdmin.actions.append(run_now)
 admin.autodiscover()
+admin.site.unregister(PeriodicTask)
+admin.site.register(PeriodicTask, RunnablePeriodicTaskAdmin)
 
 urlpatterns = patterns('',
     (r'^adm/', include(admin.site.urls)), # Admin site
