@@ -12,16 +12,21 @@
 
 # This next block of code is preamble that is used later on, you can safely
 # skip it:
-from oauth.oauth import OAuthSignatureMethod_PLAINTEXT
-import os, os.path, imp
-from molly.conf.settings import Application, extract_installed_apps, Authentication, ExtraBase
+import os
+import imp
+from molly.conf.settings import Application, extract_installed_apps
 from molly.conf.settings import ProviderConf as Provider
+from molly.conf.celery_util import prepare_celery
 from molly.conf.default_settings import *
 from molly.utils.media import get_compress_groups
 
-# Import Django-Celery and have it register our tasks
-import djcelery
-djcelery.setup_loader()
+# Celery configuration
+BROKER_URL = "amqp://molly:molly@localhost:5672//"
+CELERYBEAT_SCHEDULER = "djcelery.schedulers.DatabaseScheduler"
+CELERYD_CONCURRENCY = 1
+
+# Register Django-Celery and initialise our providers.
+prepare_celery()
 
 # The following import and mimetypes.add_types correct the - possibly wrong - mime type of svg files
 # in certain versions of Django.
