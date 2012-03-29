@@ -1,5 +1,5 @@
 from celery.app import current_app
-from molly.conf.applications import init_providers
+from molly.conf.celery_util import init_providers
 from djcelery.admin import PeriodicTaskAdmin
 
 
