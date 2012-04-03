@@ -1,4 +1,11 @@
+try:
+    import json
+except ImportError:
+    import simplejson as json
+
+from djcelery.models import PeriodicTask as PerodicTaskModel
 from celery.task import PeriodicTask, Task
+from django.core.cache import cache
 
 
 class Provider(object):
@@ -10,6 +17,9 @@ class Provider(object):
     def register_tasks(cls, *args, **kwargs):
         """Constructor, looks for decorated tasks and registers them with Celery,
         this is done in a non-standard way as Celery tasks can only be functions, not methods.
+
+        Tasks with the run_every option set are subclasses of BatchTask which
+        handles storing a cache of metadata between each task execution.
         """
         ins = cls(*args, **kwargs)
         for attr_name in dir(cls):
@@ -23,18 +33,16 @@ class Provider(object):
                 name = "%s.%s.%s" % (cls.__module__, cls.__name__, attr_name)
                 new_attr_name = '__task_%s' % attr_name
                 if run_every:
-                    base = PeriodicTask
+                    base = BatchTask
                     def run(self, **kwargs):
                         meth = getattr(self.provider, self.true_method)
-                        return meth(**self.metadata)
+                        metadata = self.get_metadata()
+                        return meth(**metadata)
                 else:
                     base = Task
                     def run(self, *args, **kwargs):
                         meth = getattr(self.provider, self.true_method)
                         return meth(*args)
-                def __call__(self, *args, **kwargs):
-                    meth = getattr(self.provider, self.true_method)
-                    return meth(*args)
                 def __init__(self, provider=ins, run_every=run_every,
                         metadata=fun.task['initial_metadata'], base=base):
                     self.provider = provider
@@ -42,7 +50,6 @@ class Provider(object):
                     self.metadata = metadata
                     base.__init__(self)  # Only 1 base class, so this is safe.
                 t = type(name, (base,), {'__init__': __init__,
-                    '__call__': __call__,
                     '__module__': cls.__module__,
                     'run': run,
                     'name': name,
@@ -57,13 +64,37 @@ class Provider(object):
 
 class BatchTask(PeriodicTask):
     """Subclass of Celery's PeriodicTask which handles a local
-    cache of metadata.
+    cache of metadata. Provided via. Django caching.
+
+    Our task metadata represents the return values from each task execution.
+    This means you can cache (for example an ETag - see OSM provider) between
+    task runs and save making uncecessary calls. Metadata is provided as the
+    keyword arguments to all BatchTasks
+
+    Tasks decorated which don't specify 'run_every' cannot store metadata.
     """
     abstract = True
 
+    def get_metadata(self):
+        """Metadata getter, the null value for metadata is an empty dict"""
+        pt = PerodicTaskModel.objects.get(task=self.name)
+        metadata = pt.kwargs
+        if metadata:
+            return json.loads(metadata)
+        else:
+            return {}
+
+    def set_metadata(self, metadata, expires=None):
+        pt = PerodicTaskModel.objects.get(task=self.name)
+        pt.kwargs = json.dumps(metadata)
+        pt.save()
+
     def after_return(self, status, value, *args, **kwargs):
-        if value:
-            self.metadata = value
+        if value and isinstance(value, dict):
+            try:
+                self.set_metadata(value)
+            except:
+                self.get_logger().exception("Unable to store metadata.")
 
 
 def task(run_every=None, initial_metadata={}):
