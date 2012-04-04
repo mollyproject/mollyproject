@@ -78,7 +78,7 @@ class BatchTask(PeriodicTask):
     def get_metadata(self):
         """Metadata getter, the null value for metadata is an empty dict"""
         pt = PerodicTaskModel.objects.get(task=self.name)
-        metadata = pt.kwargs
+        metadata = pt.kwargs or self.metadata
         if metadata:
             return json.loads(metadata)
         else:
