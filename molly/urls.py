@@ -4,7 +4,7 @@ from django.contrib import admin
 from djcelery.models import PeriodicTask
 
 from molly.conf.admin import RunnablePeriodicTaskAdmin
-from molly.conf.applications import applications, all_apps
+from molly.conf import applications, all_apps
 from molly.utils.views import ReverseView
 from molly.utils.i18n import SetLanguageView, javascript_catalog
 

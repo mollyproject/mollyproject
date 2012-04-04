@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.dispatch import Signal
 
-from molly.conf.applications import app_by_application_name
+from molly.conf import app_by_application_name
 from molly.auth.models import UserIdentifier, UserSession, ExternalServiceToken
 
 # A signal for finding out when two users were merged. First argument is the

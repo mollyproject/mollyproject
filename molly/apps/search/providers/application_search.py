@@ -2,7 +2,7 @@ import logging
 
 from molly.apps.search.providers import BaseSearchProvider
 
-from molly.conf.applications import all_apps
+from molly.conf import all_apps
 
 logger = logging.getLogger(__name__)
 

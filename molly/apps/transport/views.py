@@ -7,7 +7,7 @@ from django.core.urlresolvers import reverse
 from django.http import Http404
 from django.template.defaultfilters import capfirst
 
-from molly.conf.applications import app_by_application_name
+from molly.conf import app_by_application_name
 
 from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *

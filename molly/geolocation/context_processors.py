@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from molly.conf.applications import app_by_application_name
+from molly.conf import app_by_application_name
 
 def geolocation(request):
     """
