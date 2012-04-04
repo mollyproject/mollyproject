@@ -5,7 +5,6 @@ except ImportError:
 
 from djcelery.models import PeriodicTask as PerodicTaskModel
 from celery.task import PeriodicTask, Task
-from django.core.cache import cache
 
 
 class Provider(object):
@@ -64,7 +63,8 @@ class Provider(object):
 
 class BatchTask(PeriodicTask):
     """Subclass of Celery's PeriodicTask which handles a local
-    cache of metadata. Provided via. Django caching.
+    cache of metadata. This metadata is stored in the kwargs field on the
+    djcelery.PeriodicTask model as JSON encoded kwargs.
 
     Our task metadata represents the return values from each task execution.
     This means you can cache (for example an ETag - see OSM provider) between
@@ -85,9 +85,8 @@ class BatchTask(PeriodicTask):
             return {}
 
     def set_metadata(self, metadata, expires=None):
-        pt = PerodicTaskModel.objects.get(task=self.name)
-        pt.kwargs = json.dumps(metadata)
-        pt.save()
+        PerodicTaskModel.objects.filter(task=self.name).update(
+                kwargs=json.dumps(metadata))
 
     def after_return(self, status, value, *args, **kwargs):
         if value and isinstance(value, dict):
