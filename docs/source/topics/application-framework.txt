@@ -204,20 +204,46 @@ A provider maps an external interface onto the model used by the application.
 Most applications provide a ``providers.BaseProvider`` class which specifies
 an interface to be implemented by a provider for that application.
 
-Extra base classes
-------------------
+.. versionadded:: 1.4
+    Providers now all subclass ``molly.conf.provider.Provider``
 
+.. Extra base classes
+.. ------------------ TODO?
 
+Task Processing
+---------------
+.. versionadded:: 1.4
 
-Batch jobs
-----------
+Celery is used to provide asynchronous task processing. For an introduction to
+the basics of Celery we recommend you take a look at the `"Getting Started with
+Celery"`__ guide.
 
-A provider can annotate methods to be included in a crontab using the
-:meth:`molly.conf.settings.batch` decorator::
+__ http://docs.celeryproject.org/en/latest/getting-started/index.html
 
-    @batch('%d 9 * * mon' % random.randint(0, 59))
-    def import_data(self, metadata, output):
-        # do stuff
+Molly uses a modified version of the Celery task decorator located in
+``molly.conf.provider.task`` this should be used in a similar the previous
+@batch decorator to identify any methods on a provider to run async via celery.
+
+See this (simplified) example from ``molly.apps.feeds.providers.rss``::
+
+    @task(run_every=timedelta(minutes=60))
+    def import_data(self, **metadata):
+        """
+        Pulls RSS feeds
+        """
+
+        from molly.apps.feeds.models import Feed
+        for feed in Feed.objects.filter(provider=self.class_path):
+            logger.debug("Importing: %s - %s" % (feed.title, feed.rss_url))
+            self.import_feed.delay(feed)
         return metadata
 
-For more information, see :doc:`../ref/batch-processing`.
+    @task()
+    def import_feed(self, feed):
+        from molly.apps.feeds.models import Item
+        feed_data = feedparser.parse(feed.rss_url)
+        # Do stuff with feed_data
+
+We can iterate through all feeds and launch tasks to import them asynchronously
+using ``task.delay()``. This convention has been applied through all the
+standard providers packaged with Molly.
