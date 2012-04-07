@@ -2,7 +2,7 @@ from django.conf.urls.defaults import *
 
 from .views import (
     IndexView, UserMessageView,
-    StaticDetailView,
+    StaticDetailView, TestRunnerView
 )
 
 urlpatterns = patterns('',
@@ -10,6 +10,10 @@ urlpatterns = patterns('',
     (r'^$',
         IndexView, {},
         'index'),
+    
+    (r'^tests$',
+        TestRunnerView, {},
+        'tests'),
     
     (r'^about/$',
         StaticDetailView,

@@ -9,12 +9,13 @@ def given_i_am_on_the_home_screen(step):
 
 @step(u'Then I should see a list of apps')
 def then_i_should_see_a_list_of_apps(step):
-    
     for app in filter(lambda app: app.display_to_user, all_apps()):
-        assert world.browser.is_text_present(app.title)
+        assert app.title in world.container().text, \
+            "Expected to see " + app.title + " in the app list"
 
 @step(u'Then I should not see any hidden apps')
 def then_i_should_not_see_any_hidden_apps(step):
     for app in filter(lambda app: not app.display_to_user, all_apps()):
-        assert not world.browser.is_text_present(app.title)
+        assert app.title not in world.container().text, \
+            "Unexpectedly saw " + app.title + " in the app list"
 

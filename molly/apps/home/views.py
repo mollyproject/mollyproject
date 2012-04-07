@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.template import loader, Context, RequestContext
@@ -172,3 +172,11 @@ class UserMessageView(BaseView):
             context['formset'].save()
 
         return self.redirect(reverse('home:messages'), request)
+
+class TestRunnerView(BaseView):
+    
+    def handle_GET(self, request, context):
+        if not settings.DEBUG:
+            raise Http404()
+        
+        return self.render(request, {}, 'home/testrunner')
