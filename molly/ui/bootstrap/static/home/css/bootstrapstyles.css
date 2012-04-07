@@ -1,0 +1,14 @@
+.app {
+    position: relative;
+    height: 190px;
+    text-align: center;
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+
+.app .app-title {
+    position: absolute;
+    bottom: 0px;
+    font-weight: bold;
+    font-size: 2em;
+}

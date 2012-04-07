@@ -340,14 +340,14 @@ class BaseView(object):
         return HttpResponse(simplejson.dumps(context),
                             mimetype="application/json")
 
-    @renderer(format="js", mimetypes=('text/javascript',
-                                      'application/javascript',))
-    def render_js(self, request, context, template_name):
-        callback = request.GET.get('callback',
-                                   request.GET.get('jsonp', 'callback'))
-        content = simplejson.dumps(simplify_value(context))
-        content = "%s(%s);" % (callback, content)
-        return HttpResponse(content, mimetype="application/javascript")
+    #@renderer(format="js", mimetypes=('text/javascript',
+    #                                  'application/javascript',))
+    #def render_js(self, request, context, template_name):
+    #    callback = request.GET.get('callback',
+    #                               request.GET.get('jsonp', 'callback'))
+    #    content = simplejson.dumps(simplify_value(context))
+    #    content = "%s(%s);" % (callback, content)
+    #    return HttpResponse(content, mimetype="application/javascript")
 
     @renderer(format="html", mimetypes=('text/html', 'application/xhtml+xml'),
               priority=1)
