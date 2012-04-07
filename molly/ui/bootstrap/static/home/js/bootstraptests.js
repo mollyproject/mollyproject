@@ -203,31 +203,31 @@ function triggerSuccessfulHomeIndexRender() {
 test("correct number of apps are rendered", function() {
     triggerSuccessfulHomeIndexRender();
     equal(7, $('#body .row-fluid .app').length);
-})
+});
 
 test("apps are partitioned into rows of 6", function() {
     triggerSuccessfulHomeIndexRender();
     equal(6, $('#body .row-fluid:first').find('.app').length);
     equal(1, $('#body .row-fluid:nth-child(2)').find('.app').length);
-})
+});
 
 test("apps are set to span 2", function() {
     triggerSuccessfulHomeIndexRender();
     equal(7, $('#body .row-fluid .app.span2').length);
-})
+});
 
 test("apps contain their item name", function() {
     triggerSuccessfulHomeIndexRender();
     equal("Places", $('#body .app:first span.app-title').text());
-})
+});
 
 test("apps have their local name as class", function() {
     triggerSuccessfulHomeIndexRender();
     ok($('#body .app:first').hasClass('app-places'));
-})
+});
 
 test("loading clears the canvas before rendering", function() {
     $('#body').append($('<div/>').addClass('junk'));
     triggerSuccessfulHomeIndexRender();
     equal(0, $('.junk').length);
-})
+});
