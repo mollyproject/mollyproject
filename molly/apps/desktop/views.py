@@ -54,7 +54,7 @@ class IndexView(BaseView):
         return value
 
     _TWITTER_URL = 'http://api.twitter.com/1/statuses/user_timeline.json?' \
-                   + 'user=%s&include_entities=true'
+                   + 'screen_name=%s&include_entities=true'
 
     def _get_twitter_feed(self, username):
         if not username:
