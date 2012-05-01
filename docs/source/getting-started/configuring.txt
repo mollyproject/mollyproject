@@ -204,7 +204,7 @@ A typical setup looks like this::
         'molly.geolocation.context_processors.geolocation',
         'molly.utils.context_processors.full_path',
         'molly.utils.context_processors.google_analytics',
-        'molly.utils.context_processors.service_name',
+        'molly.utils.context_processors.site_name',
         'django.core.context_processors.csrf',
     )
 
