@@ -24,6 +24,8 @@ from molly.utils.media import get_compress_groups
 BROKER_URL = "amqp://molly:molly@localhost:5672//"
 CELERYBEAT_SCHEDULER = "djcelery.schedulers.DatabaseScheduler"
 CELERYD_CONCURRENCY = 1
+CELERY_RETRY_DELAY = 3 * 60
+CELERY_MAX_RETRIES = 3
 
 # Register Django-Celery and initialise our providers.
 prepare_celery()

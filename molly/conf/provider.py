@@ -3,6 +3,7 @@ try:
 except ImportError:
     import simplejson as json
 
+from django.conf import settings
 from djcelery.models import PeriodicTask as PerodicTaskModel
 from celery.task import PeriodicTask, Task
 
@@ -28,26 +29,44 @@ class Provider(object):
                 continue
             if hasattr(fun, 'task'):
                 # This is a decorated method
-                run_every = fun.task['run_every']
+                periodic_task = 'run_every' in fun.task
                 name = "%s.%s.%s" % (cls.__module__, cls.__name__, attr_name)
                 new_attr_name = '__task_%s' % attr_name
-                if run_every:
+                if periodic_task:
                     base = BatchTask
+
                     def run(self, **kwargs):
                         meth = getattr(self.provider, self.true_method)
                         metadata = self.get_metadata()
-                        return meth(**metadata)
+                        try:
+                            return meth(**metadata)
+                        except Exception, exc:
+                            self.get_logger().warning(
+                                    "Exception raised, retrying: %s" % exc)
+                            self.retry(exc=exc, countdown=self.countdown,
+                                    max_retries=self.max_retries)
                 else:
                     base = Task
+
                     def run(self, *args, **kwargs):
                         meth = getattr(self.provider, self.true_method)
-                        return meth(*args)
-                def __init__(self, provider=ins, run_every=run_every,
-                        metadata=fun.task['initial_metadata'], base=base):
+                        try:
+                            return meth(*args)
+                        except Exception, exc:
+                            self.get_logger().warning(
+                                    "Exception raised, retrying: %s" % exc)
+                            self.retry(exc=exc, countdown=self.countdown,
+                                    max_retries=self.max_retries)
+
+                def __init__(self, provider=ins, base=base, kwargs=fun.task):
                     self.provider = provider
-                    self.run_every = run_every
-                    self.metadata = metadata
+                    self.metadata = kwargs.get('initial_metadata', dict())
+                    self.run_every = kwargs.get('run_every', None)
                     base.__init__(self)  # Only 1 base class, so this is safe.
+                    self.countdown = kwargs.get('countdown',
+                            settings.CELERY_RETRY_DELAY)
+                    self.max_retries = kwargs.get('max_retries',
+                            settings.CELERY_MAX_RETRIES)
                 t = type(name, (base,), {'__init__': __init__,
                     '__module__': cls.__module__,
                     'run': run,
@@ -96,7 +115,7 @@ class BatchTask(PeriodicTask):
                 self.get_logger().exception("Unable to store metadata.")
 
 
-def task(run_every=None, initial_metadata={}):
+def task(**kwargs):
     """Sets a .task attribute on each function decorated, this indictes
     this function should be registered as a task with Celery
 
@@ -104,7 +123,6 @@ def task(run_every=None, initial_metadata={}):
     capture the kwargs passed through by celery.
     """
     def dec(fun):
-        fun.task = {'run_every': run_every,
-                'initial_metadata': initial_metadata}
+        fun.task = kwargs
         return fun
     return dec
