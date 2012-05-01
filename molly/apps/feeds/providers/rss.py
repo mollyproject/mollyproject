@@ -38,7 +38,7 @@ class RSSFeedsProvider(BaseFeedsProvider):
             self.import_feed.delay(feed)
         return metadata
 
-    @task()
+    @task(countdown=5, max_retries=3)
     def import_feed(self, feed):
         from molly.apps.feeds.models import Item
 
