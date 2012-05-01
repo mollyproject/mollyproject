@@ -43,7 +43,7 @@ class Provider(object):
                         except Exception, exc:
                             self.get_logger().warning(
                                     "Exception raised, retrying: %s" % exc)
-                            self.retry(exc=exc, countdown=self.countdown,
+                            self.retry(exc=exc, countdown=self.default_retry_delay,
                                     max_retries=self.max_retries)
                 else:
                     base = Task
@@ -55,7 +55,7 @@ class Provider(object):
                         except Exception, exc:
                             self.get_logger().warning(
                                     "Exception raised, retrying: %s" % exc)
-                            self.retry(exc=exc, countdown=self.countdown,
+                            self.retry(exc=exc, countdown=self.default_retry_delay,
                                     max_retries=self.max_retries)
 
                 def __init__(self, provider=ins, base=base, kwargs=fun.task):
@@ -63,7 +63,7 @@ class Provider(object):
                     self.metadata = kwargs.get('initial_metadata', dict())
                     self.run_every = kwargs.get('run_every', None)
                     base.__init__(self)  # Only 1 base class, so this is safe.
-                    self.countdown = kwargs.get('countdown',
+                    self.default_retry_delay = kwargs.get('default_retry_delay',
                             settings.CELERY_RETRY_DELAY)
                     self.max_retries = kwargs.get('max_retries',
                             settings.CELERY_MAX_RETRIES)

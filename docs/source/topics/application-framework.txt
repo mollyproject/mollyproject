@@ -238,7 +238,8 @@ See this (simplified) example from ``molly.apps.feeds.providers.rss``::
             self.import_feed.delay(feed)
         return metadata
 
-    @task()
+    # Override CELERY_RETRY_DELAY and CELERY_MAX_RETRIES
+    @task(default_retry_delay=5, max_retries=2)
     def import_feed(self, feed):
         from molly.apps.feeds.models import Item
         feed_data = feedparser.parse(feed.rss_url)
@@ -246,4 +247,6 @@ See this (simplified) example from ``molly.apps.feeds.providers.rss``::
 
 We can iterate through all feeds and launch tasks to import them asynchronously
 using ``task.delay()``. This convention has been applied through all the
-standard providers packaged with Molly.
+standard providers packaged with Molly. Note the default_retry_delay and max_retries
+are overridden on import_feed. This means each feed will only be retried 2 times, with
+5 seconds between each of those retries.
