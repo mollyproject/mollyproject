@@ -10,7 +10,9 @@ Configuration
 -------------
 
  * ``twitter_username`` (optional): If set, this imports a Twitter feed which
-   the desktop templates can display
+   the desktop templates can display (this settings refers to Twitter's screen_name,
+   not the user_id as `precised in Twitter's documentation 
+   <https://dev.twitter.com/docs/api/1/get/statuses/user_timeline>`_)
  * ``twitter_ignore_urls`` (optional): If set, this filters out tweets in the
    Twitter feed which contain this URL prefix - this can be used, for example,
    if you're importing a news blog to your Twitter feed to avoid duplicate
