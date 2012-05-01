@@ -104,7 +104,8 @@ setup(
         'pyyaml',
         'icalendar==2.2',
         'mockito',
-        'django-celery==2.5.1',
+        'celery==2.5.3',
+        'django-celery==2.5.5',
     ],
     scripts = [
         'molly/commands/molly-admin'
