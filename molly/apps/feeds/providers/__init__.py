@@ -1,4 +1,6 @@
-class BaseFeedsProvider(object):
+from molly.conf.provider import Provider
+
+class BaseFeedsProvider(Provider):
     pass
 
 from rss import RSSFeedsProvider

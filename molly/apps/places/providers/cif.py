@@ -7,8 +7,7 @@ only used for UK rail timetables.
 It is dissimilar, but related to, the ATCO-CIF standard
 """
 
-from datetime import date, time
-import random
+from datetime import date, time, timedelta
 from string import capwords
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -18,7 +17,7 @@ from django.utils.translation import ugettext_noop as _
 from molly.apps.places.models import (Entity, EntityType, EntityTypeCategory,
                                       Source, Route, Journey, ScheduledStop)
 from molly.apps.places.providers import BaseMapsProvider
-from molly.conf.settings import batch
+from molly.conf.provider import task
 
 
 class CifTimetableProvider(BaseMapsProvider):
@@ -188,8 +187,8 @@ class CifTimetableProvider(BaseMapsProvider):
             with transaction.commit_on_success():
                 self._save_stops(self._save_journey(self._save_route()))
 
-    @batch('%d 15 * * mon' % random.randint(0, 59))
-    def import_from_file(self, metadata, output):
+    @task(run_every=timedelta(days=7))
+    def import_from_file(self, **metadata):
         with open(self._filename) as file:
             for line in file:
                 self._handle_line(line)

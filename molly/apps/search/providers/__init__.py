@@ -1,5 +1,6 @@
 import logging
 
+from molly.conf.provider import Provider
 from django.core.urlresolvers import resolve, Resolver404
 from django.http import Http404
 from django.views.generic.simple import redirect_to
@@ -7,7 +8,7 @@ from django.views.generic.simple import redirect_to
 
 logger = logging.getLogger(__name__)
 
-class BaseSearchProvider(object):
+class BaseSearchProvider(Provider):
     
     def perform_search(self, request, query, application=None):
         """

@@ -6,8 +6,10 @@ import sys
 import random
 import os
 import yaml
+import logging
 
 from xml.sax import saxutils, handler, make_parser
+from datetime import timedelta
 
 from django.db import reset_queries
 from django.contrib.gis.geos import Point, LineString, LinearRing
@@ -23,7 +25,10 @@ from molly.apps.places.providers import BaseMapsProvider
 from molly.utils.misc import AnyMethodRequest
 from molly.utils.i18n import override, set_name_in_language
 from molly.geolocation import reverse_geocode
-from molly.conf.settings import batch
+from molly.conf.provider import task
+
+
+logger = logging.getLogger(__name__)
 
 def node_id(id):
     return "N%d" % int(id)
@@ -31,12 +36,11 @@ def way_id(id):
     return "W%d" % int(id)
 
 class OSMHandler(handler.ContentHandler):
-    def __init__(self, source, entity_types, find_types, output, lat_north=None,
+    def __init__(self, source, entity_types, find_types, lat_north=None,
                  lat_south=None, lon_west=None, lon_east=None, identities={}):
         self.source = source
         self.entity_types = entity_types
         self.find_types = find_types
-        self.output = output
         self._lat_north = lat_north
         self._lat_south = lat_south
         self._lon_west = lon_west
@@ -213,7 +217,7 @@ class OSMHandler(handler.ContentHandler):
                 entity.delete()
                 self.delete_count += 1
         
-        self.output.write("""\
+        logger.info("""\
 Complete
   Created:   %6d
   Modified:  %6d
@@ -301,8 +305,8 @@ class OSMMapsProvider(BaseMapsProvider):
         else:
             self.identities = {}
 
-    @batch('%d 9 * * mon' % random.randint(0, 59))
-    def import_data(self, metadata, output):
+    @task(run_every=timedelta(days=7))
+    def import_data(self, **metadata):
         "Imports places data from OpenStreetMap"
         
         old_etag = metadata.get('etag', '')
@@ -310,17 +314,15 @@ class OSMMapsProvider(BaseMapsProvider):
         request = AnyMethodRequest(self._url, method='HEAD')
         response = urllib2.urlopen(request)
         new_etag = response.headers['ETag'][1:-1]
-        self.output = output
         
         if not settings.DEBUG and new_etag == old_etag:
-            output.write('OSM data not updated. Not updating.\n')
+            logger.info('OSM data not updated. Not updating.\n')
             return
         
         parser = make_parser(['xml.sax.xmlreader.IncrementalParser'])
         parser.setContentHandler(OSMHandler(self._get_source(),
                                             self._get_entity_types(),
                                             lambda tags, type_list=None: self._find_types(tags, self._osm_tags if type_list is None else type_list),
-                                            output,
                                             self._lat_north,
                                             self._lat_south,
                                             self._lon_west,
@@ -442,7 +444,7 @@ class OSMMapsProvider(BaseMapsProvider):
                             else:
                                 title = inferred_name
                         except:
-                            self.output.write("Couldn't geocode for %s\n" % inferred_name)
+                            logger.info("Couldn't geocode for %s\n" % inferred_name)
                             title = inferred_name
                     try:
                         name = entity.names.get(language_code=lang_code)

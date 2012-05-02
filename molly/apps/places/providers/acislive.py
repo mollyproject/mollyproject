@@ -1,5 +1,5 @@
 import threading
-from datetime import datetime
+from datetime import datetime, timedelta
 from lxml import etree
 import re
 import logging
@@ -7,7 +7,6 @@ from string import ascii_lowercase
 import socket
 socket.setdefaulttimeout(5)
 from urllib2 import urlopen
-import random
 
 from django.db import transaction, reset_queries, connection
 from django.http import Http404
@@ -17,7 +16,7 @@ from molly.apps.places.providers import BaseMapsProvider
 from molly.apps.places import get_entity
 from molly.apps.places.providers.naptan import NaptanMapsProvider
 from molly.utils.i18n import set_name_in_language
-from molly.conf.settings import batch
+from molly.conf.provider import task
 
 logger = logging.getLogger(__name__)
 
@@ -254,12 +253,8 @@ class ACISLiveRouteProvider(BaseMapsProvider):
             urls = [instance[0] for instance in ACISLiveMapsProvider.ACISLIVE_URLS.items()]
         self.urls = urls
 
-    @batch('%d 10 * * sat' % random.randint(0, 59))
-    def import_data(self, metadata, output):
-        
-        self._output = output
-        
-        
+    @task(run_every=timedelta(days=7))
+    def import_data(self, **metadata):
         # Searching can flag up the same results again and again, so store
         # which ones we've found
         found_routes = set()
@@ -269,7 +264,7 @@ class ACISLiveRouteProvider(BaseMapsProvider):
             # Try and find all bus routes in the system
             for term in list(ascii_lowercase) + map(str, range(0,9)):
                 found_routes = self._scrape_search(
-                    url, self.SEARCH_PAGE % (url, term), found_routes, output)
+                    url, self.SEARCH_PAGE % (url, term), found_routes)
             
             # Now try and find buses that don't exist on that system any more
             for route in Route.objects.filter(external_ref__startswith=url):
@@ -277,7 +272,7 @@ class ACISLiveRouteProvider(BaseMapsProvider):
                     logger.info('Removed route not found on system: %s', route)
                     route.delete()
     
-    def _scrape_search(self, url, search_page, found_routes, output):
+    def _scrape_search(self, url, search_page, found_routes):
         results = etree.parse(urlopen(search_page), parser = etree.HTMLParser())
         for tr in results.find('.//table').findall('tr')[1:]:
             reset_queries()
@@ -306,11 +301,11 @@ class ACISLiveRouteProvider(BaseMapsProvider):
                             route.operator = operator
                             route.service_name = destination
                             route.save()
-                        self._scrape(route, link, output)
+                        self._scrape(route, link)
         
         return found_routes
     
-    def _scrape(self, route, url, output):
+    def _scrape(self, route, url):
         url += '&showall=1'
         service = etree.parse(urlopen(url), parser = etree.HTMLParser())
         route.stops.clear()

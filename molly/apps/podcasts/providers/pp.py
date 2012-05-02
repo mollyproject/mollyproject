@@ -1,5 +1,5 @@
 from lxml import etree
-from datetime import datetime
+from datetime import datetime, timedelta
 import urllib
 import re
 import email
@@ -7,7 +7,7 @@ import random
 
 from django.conf import settings
 
-from molly.conf.settings import batch
+from molly.conf.provider import task
 from molly.apps.podcasts.providers import BasePodcastsProvider
 from molly.apps.podcasts.models import Podcast, PodcastItem, PodcastCategory, PodcastEnclosure
 from molly.utils.i18n import set_name_in_language
@@ -18,8 +18,8 @@ class PodcastProducerPodcastsProvider(RSSPodcastsProvider):
     def __init__(self, url):
         self.url = url
 
-    @batch('%d * * * *' % random.randint(0, 59))
-    def import_data(self, metadata, output):
+    @task(run_every=timedelta(minutes=60))
+    def import_data(self, **metadata):
         atom = self.atom
         xml = etree.parse(urllib.urlopen(self.url))
 

@@ -1,4 +1,7 @@
-class BaseMapsProvider(object):
+from molly.conf.provider import Provider
+
+
+class BaseMapsProvider(Provider):
     def import_data(self):
         pass
         

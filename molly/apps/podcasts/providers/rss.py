@@ -1,8 +1,8 @@
 import random, urllib, email
 from lxml import etree
-from datetime import datetime
+from datetime import datetime, timedelta
 
-from molly.conf.settings import batch
+from molly.conf.provider import task
 import dateutil.parser
 
 from molly.apps.podcasts.providers import BasePodcastsProvider
@@ -36,8 +36,8 @@ class RSSPodcastsProvider(BasePodcastsProvider):
     def atom(self):
         return Namespace('http://www.w3.org/2005/Atom')
     
-    @batch('%d * * * *' % random.randint(0, 59))
-    def import_data(self, metadata, output):
+    @task(run_every=timedelta(minutes=60))
+    def import_data(self, **metadata):
         for slug, url in self.podcasts:
             podcast, url = Podcast.objects.get_or_create(
                 provider=self.class_path,
@@ -47,7 +47,7 @@ class RSSPodcastsProvider(BasePodcastsProvider):
                 podcast.medium = self.medium
                 
             podcast.slug = slug
-            self.update_podcast(podcast)
+            self.update_podcast.delay(podcast)
             
     def determine_license(self, o):
         license = o.find('{http://purl.org/dc/terms/}license') or \
@@ -55,6 +55,7 @@ class RSSPodcastsProvider(BasePodcastsProvider):
         
         return getattr(license, 'text', None)
         
+    @task()
     def update_podcast(self, podcast):
         atom = self.atom
         def gct(node, names):

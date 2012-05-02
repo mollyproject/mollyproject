@@ -12,8 +12,7 @@ from molly.utils.views import BaseView
 from molly.utils.breadcrumbs import *
 from molly.favourites import get_favourites
 from molly.wurfl import device_parents
-from molly import conf
-from molly.conf.applications import app_by_application_name, has_app_by_application_name
+from molly.conf.applications import app_by_application_name, has_app_by_application_name, has_app, all_apps
 from molly.apps.weather.models import Weather
 
 from models import UserMessage
@@ -47,7 +46,7 @@ class IndexView(BaseView):
             and not request.GET.get('preview') == 'true'
             and not internal_referer
             and not settings.DEBUG
-            and conf.has_app('molly.apps.desktop')
+            and has_app('molly.apps.desktop')
             and request.REQUEST.get('format') is None):
             return self.redirect(reverse('desktop:index'), request)
         
@@ -83,7 +82,7 @@ class IndexView(BaseView):
             'url': reverse('%s:index' % app.local_name) \
                     if app.has_urlconf else None,
             'display_to_user': app.display_to_user,
-        } for app in conf.all_apps()]
+        } for app in all_apps()]
 
         # Add accesskeys to the first 9 apps to be displayed to the user
         for i, app in enumerate(

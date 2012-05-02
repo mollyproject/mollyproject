@@ -1,4 +1,7 @@
-class BaseGeolocationProvider(object):
+from molly.conf.provider import Provider
+
+
+class BaseGeolocationProvider(Provider):
 
     
     def reverse_geocode(self, lon, lat):

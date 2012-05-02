@@ -1,4 +1,7 @@
-class BaseTransitLineStatusProvider():
+from molly.conf.provider import Provider
+
+
+class BaseTransitLineStatusProvider(Provider):
     
     def get_status(self):
         # Return a dictionary with a key of 'service_name', which is the human

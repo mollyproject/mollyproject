@@ -8,6 +8,7 @@ import urllib2
 import os.path
 import re
 
+from datetime import timedelta
 from django.db import transaction, reset_queries
 from django.conf import settings
 from django.contrib.gis.geos import Point
@@ -18,7 +19,7 @@ from molly.apps.places.providers import BaseMapsProvider
 from molly.apps.places.models import Entity, EntityType, Source, EntityTypeCategory
 from molly.utils.i18n import override, set_name_in_language
 
-from molly.conf.settings import batch
+from molly.conf.provider import task
 
 class PostcodesMapsProvider(BaseMapsProvider):
     def __init__(self, codepoint_path, import_areas=None):
@@ -35,8 +36,8 @@ class PostcodesMapsProvider(BaseMapsProvider):
             archive_file.write(archive_url.read())
             archive_file.close()
 
-    @batch('%d 12 1 1 *' % random.randint(0, 59))
-    def import_data(self, metadata, output):
+    @task(run_every=timedelta(days=365))
+    def import_data(self, **metadata):
 
         entity_type, source = self._get_entity_type(), self._get_source()
         
