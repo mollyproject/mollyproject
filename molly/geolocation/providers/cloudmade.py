@@ -20,13 +20,11 @@ class CloudmadeGeolocationProvider(BaseGeolocationProvider):
 
 
     REVERSE_GEOCODE_URL = 'http://geocoding.cloudmade.com/%(api_key)s/geocoding/v2/find.js?object_type=%(type)s&around=%(lat)f,%(lon)f'
-    GEOCODE_URL = 'http://geocoding.cloudmade.com/%(api_key)s/geocoding/v2/find.js?query=%(query)s'
+    GEOCODE_URL = 'http://geocoding.cloudmade.com/%(api_key)s/geocoding/v2/find.js?query=%(query)s&around=%(around)s&distance=%(distance)s&object_type=%(object_type)s'
 
-    def __init__(self, search_locality=None, search_county=None,
-            search_country=None):
-        self.search_locality = search_locality
-        self.search_county = search_county
-        self.search_country = search_country
+    def __init__(self, search_around=None, search_distance=None):
+        self.search_around = search_around
+        self.search_distance = search_distance
 
     def reverse_geocode(self, lon, lat):
 
@@ -68,24 +66,30 @@ class CloudmadeGeolocationProvider(BaseGeolocationProvider):
             }]
 
     def geocode(self, query):
-        
+        """
+        Geocode from a query (query being free-text), "around" and "distance"
+        parameters can be specified to limit search results to an area.
+        Uses version 2 of Cloudmade's Geocoding API.
+        """
+
         if not query:
             return []
-        
-        if self.search_locality and not (', ' in query or ' near ' in query):
-            query += ', %s' % self.search_locality
 
         query = query.strip()
         if query.split(' ')[0][0].isdigit():
-            query = ' '.join(query.split(' ')[1:])
+            query = '+'.join(query.split(' ')[1:])
 
         params = {
             'api_key': settings.API_KEYS['cloudmade'],
             'query': urllib.quote_plus(query),
+            'around': '{0},{1}'.format(self.search_around[1], self.search_around[0]),
+            'distance': self.search_distance,
+            'object_type': 'road',
         }
 
         try:
             request_url = self.GEOCODE_URL % params
+            print request_url
             response = urllib2.urlopen(request_url)
             if response.code != 200:
                 logger.error("Request to %s returned response code %d" % (request_url, response.code))
@@ -120,8 +124,6 @@ class CloudmadeGeolocationProvider(BaseGeolocationProvider):
             
             try:
                 name = feature['properties']['name']
-                if name == self.search_locality and name.lower() != query.split(',')[0].lower():
-                    continue
 
                 try:
                     if i > 0:
@@ -146,5 +148,7 @@ class CloudmadeGeolocationProvider(BaseGeolocationProvider):
                 
             except KeyError:
                 results += self.reverse_geocode(*centroid)
+
+        print results
 
         return results
