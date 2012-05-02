@@ -11,12 +11,22 @@ from molly.geolocation.providers import BaseGeolocationProvider
 
 logger = logging.getLogger(__name__)
 
-class CloudmadeGeolocationProvider(BaseGeolocationProvider):
-    REVERSE_GEOCODE_URL = 'http://geocoding.cloudmade.com/%(api_key)s/geocoding/closest/%(type)s/%(lat)f,%(lon)f.js'
-    GEOCODE_URL = 'http://geocoding.cloudmade.com/%(api_key)s/geocoding/find/%(query)s.js'
 
-    def __init__(self, search_locality=None):
+class CloudmadeGeolocationProvider(BaseGeolocationProvider):
+    """
+    CloudMade GeoLocation provider for geocoding and reverse geocoding,
+    based on version 2 of the API
+    """
+
+
+    REVERSE_GEOCODE_URL = 'http://geocoding.cloudmade.com/%(api_key)s/geocoding/v2/find.js?object_type=%(type)s&around=%(lat)f,%(lon)f'
+    GEOCODE_URL = 'http://geocoding.cloudmade.com/%(api_key)s/geocoding/v2/find.js?query=%(query)s'
+
+    def __init__(self, search_locality=None, search_county=None,
+            search_country=None):
         self.search_locality = search_locality
+        self.search_county = search_county
+        self.search_country = search_country
 
     def reverse_geocode(self, lon, lat):
 
@@ -40,10 +50,9 @@ class CloudmadeGeolocationProvider(BaseGeolocationProvider):
         except urllib2.URLError, e:
             logger.error("Encountered an error reaching Cloudmade: %s", str(e))
             return []
-        
+
         if not json:
             return []
-        
         else:
             name = json['features'][0]['properties'].get('name')
             try:
