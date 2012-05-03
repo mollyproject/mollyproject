@@ -103,7 +103,9 @@ setup(
         "django-slimmer",
         'pyyaml',
         'icalendar==2.2',
-        'mockito'
+        'mockito',
+        'celery==2.5.3',
+        'django-celery==2.5.5',
     ],
     scripts = [
         'molly/commands/molly-admin'

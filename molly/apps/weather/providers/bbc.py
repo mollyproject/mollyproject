@@ -12,7 +12,7 @@ from dateutil.tz import tzoffset
 from django.contrib.gis.geos import Point
 from django.utils.translation import ugettext_lazy as _
 
-from molly.conf.settings import batch
+from molly.conf.provider import Provider, task
 from molly.apps.weather.models import (
     Weather, OUTLOOK_CHOICES, VISIBILITY_CHOICES, PRESSURE_STATE_CHOICES,
     SCALE_CHOICES, PTYPE_OBSERVATION, PTYPE_FORECAST
@@ -20,7 +20,7 @@ from molly.apps.weather.models import (
 
 logger = logging.getLogger(__name__)
 
-class BBCWeatherProvider(object):
+class BBCWeatherProvider(Provider):
     """
     Scrapes BBC RSS feeds to obtain weather information
     """
@@ -103,8 +103,8 @@ class BBCWeatherProvider(object):
         + r'(Latest Observations|Forecast) for (?P<name>.+)'
     )
 
-    @batch('%d-%d/15 * * * *' % (lambda x:(x, x+45))(random.randint(0, 14)))
-    def import_data(self, metadata, output):
+    @task(run_every=timedelta(minutes=15))
+    def import_data(self, **metadata):
         """
         Pulls weather data from the BBC
         """
@@ -113,9 +113,6 @@ class BBCWeatherProvider(object):
             observations = self.get_observations_data()
             forecasts = self.get_forecast_data()
         except Exception as e:
-            output.write("Error importing weather data from BBC\n")
-            traceback.print_exc(file=output)
-            output.write('\n')
             logger.exception("Error importing weather data from BBC")
             return metadata
 

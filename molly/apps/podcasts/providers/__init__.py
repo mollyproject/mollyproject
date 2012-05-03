@@ -1,4 +1,6 @@
-class BasePodcastsProvider(object):
+from molly.conf.provider import Provider
+
+class BasePodcastsProvider(Provider):
     pass
 
 from rss import RSSPodcastsProvider

@@ -1,8 +1,9 @@
+from molly.conf.provider import Provider
 from datetime import datetime
 import dateutil.parser
 import feedparser
 
-class RSSModuleServiceStatusProvider(object):
+class RSSModuleServiceStatusProvider(Provider):
     def __init__(self, name, slug, url):
         self.name, self.slug, self.url = name, slug, url
 

@@ -8,6 +8,7 @@ import re
 import csv
 from warnings import warn
 from collections import defaultdict
+from datetime import timedelta
 try:
     from cStringIO import StringIO
 except:
@@ -24,7 +25,7 @@ from django.utils.translation import ugettext, get_language
 
 from molly.apps.places.providers import BaseMapsProvider
 from molly.apps.places.models import EntityType, Entity, EntityGroup, Source, EntityTypeCategory
-from molly.conf.settings import batch
+from molly.conf.provider import task
 from molly.utils.i18n import override, set_name_in_language
 
 class NaptanContentHandler(ContentHandler):
@@ -673,8 +674,8 @@ class NaptanMapsProvider(BaseMapsProvider):
             areas += ('910',)
         self._areas = areas
 
-    @batch('%d 10 * * mon' % random.randint(0, 59))
-    def import_data(self, metadata, output):
+    @task(run_every=timedelta(days=7))
+    def import_data(self, **metadata):
         username, password = self._username, self._password
 
         self._source = self._get_source()
@@ -775,4 +776,4 @@ except ImportError:
 else:
     if __name__ == '__main__':
         p = NaptanMapsProvider(method='ftp', username=SECRETS.journeyweb[0], password=SECRETS.journeyweb[1], areas=('340',))
-        p.import_data(None, None)
+        p.import_data()

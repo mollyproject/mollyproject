@@ -13,7 +13,7 @@ class PodcastsTestCase(unittest.TestCase):
             opml = OPMLPodcastsProvider(url = 'http://www.bbc.co.uk/radio/opml/bbc_podcast_opml_v2.xml',
                                         rss_re = r'http://downloads.bbc.co.uk/podcasts/(.+)/rss.xml')
             opml.class_path = 'molly.providers.apps.podcasts.opml.OPMLPodcastsProvider'
-            opml.import_data({}, sys.stdout)
+            opml.import_data({})
         
     def testPodcasts(self):
         podcasts = Podcast.objects.all()
