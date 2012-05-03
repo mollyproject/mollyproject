@@ -822,13 +822,16 @@ APPLICATIONS = [
             # This uses Cloudmade's freeform geocoding API to try and identify
             # user input
             Provider('molly.geolocation.providers.CloudmadeGeolocationProvider',
-                
-                # When the next option is set, then it is appended to requests
-                # sent to Cloudmade to try and reduce the results Cloudmade
-                # could send. e.g., if search_locality is Oxford, and a user
-                # attempts to set their location to be "High Street", then the
-                # request that gets send to Cloudmade is "High Street, Oxford"
-                #search_locality = 'Oxford',
+
+                # All parameters are optional but search_around and search_distance
+                # are highly recommended
+                # Central point of the search area.
+                search_around = (-1.25821, 51.75216),
+                # Radius of the search area. (distance in meters)
+                search_distance = 20000,
+                # Make a second call to the API to retrieve the name of the
+                # area, for each search result
+                get_area = True,
             ),
         ],
         

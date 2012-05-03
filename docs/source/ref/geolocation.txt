@@ -25,7 +25,8 @@ Sample::
         providers = [
             Provider('molly.geolocation.providers.PlacesGeolocationProvider'),
             Provider('molly.geolocation.providers.CloudmadeGeolocationProvider',
-                search_locality = 'Oxford',
+                search_around = (-1.25821, 51.75216),
+                search_distance = 5000,
             ),
         ],
         location_request_period = 900,
@@ -48,9 +49,13 @@ option:
 :class:`molly.geolocation.providers.CloudmadeGeolocationProvider`
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-This providers asks Cloudmade to geocode results. It has one optional option:
+This provider asks Cloudmade to geocode results. You have to retrieve an API
+key from Cloudmade to use this provider. It has three optional parameters:
 
- * search_locality: A string of a location with which to limit searching to
+ * search_around: (latitude, longitude) tuple, supposed the centre of the area
+ * search_distance: distance to the centre of the area
+ * get_area: make a second call to the API to display the name of the area, for
+    each search result
 
 Writing Your Own Providers
 --------------------------
