@@ -6,6 +6,7 @@ except ImportError:
 from django.conf import settings
 from djcelery.models import PeriodicTask as PerodicTaskModel
 from celery.task import PeriodicTask, Task
+from celery.app import current_app
 
 
 class Provider(object):
@@ -126,3 +127,27 @@ def task(**kwargs):
         fun.task = kwargs
         return fun
     return dec
+
+
+def queue_post_save(cls):
+    """Overrides the save method, attempts to find the correct provider and
+    schedule all periodic tasks to run on that provider.
+    Use case: Add/Edit a Feed object and update the feeds
+
+    NOTE: We use update_last_modified so we don't recursively queue this task
+    """
+    original_save = cls.save
+
+    def save(self, update_last_modified=False, *arg, **kwargs):
+        if not update_last_modified:
+            app = current_app()
+            provider = self.provider.split('.')[-1]
+            for task in app.tasks:
+                try:
+                    if not app.tasks[task].run_every and task.find(provider) != -1:
+                        app.tasks[task].apply_async(args=(self,))
+                except:
+                    pass
+        return original_save(self, *arg, **kwargs)
+    cls.save = save
+    return cls
