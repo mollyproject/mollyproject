@@ -36,7 +36,7 @@ class TalksCamFeedsProvider(BaseFeedsProvider):
         xml = etree.parse(urllib2.urlopen(feed.rss_url))
 
         feed.last_modified = datetime.now()
-        feed.save()
+        feed.save(update_last_modified=True)
 
         items = set()
         for talk in xml.findall('talk'):

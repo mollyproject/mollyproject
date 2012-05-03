@@ -51,7 +51,7 @@ class RSSFeedsProvider(BaseFeedsProvider):
                 parse_date(feed_data.headers.get('last-modified',
                     datetime.now().strftime("%a, %d %b %Y %H:%M:%S +0000")))
 
-        feed.save()
+        feed.save(update_last_modified=True)
 
         items = set()
         for x_item in feed_data.entries:
