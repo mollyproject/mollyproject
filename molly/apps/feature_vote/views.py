@@ -1,9 +1,7 @@
-import random
 from operator import attrgetter
 
 from django.shortcuts import get_object_or_404
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseForbidden
 from django.utils.translation import ugettext as _
 
 from molly.utils.views import BaseView
@@ -17,13 +15,14 @@ from molly.apps.feature_vote.forms import FeatureForm
 class IndexView(BaseView):
     # A mapping from (old, new) to (delta down, delta up)
     vote_transitions = {
-        (-1,-1) : ( 0, 0),  ( 0,-1): (+1, 0),  (+1,-1): (+1,-1),
-        (-1, 0) : (-1, 0),  ( 0, 0): ( 0, 0),  (+1, 0): ( 0,-1),
-        (-1,+1) : (-1,+1),  ( 0,+1): ( 0,+1),  (+1,+1): ( 0, 0),
+        (-1,-1): ( 0, 0),  ( 0,-1): (+1, 0),  (+1,-1): (+1,-1),
+        (-1, 0): (-1, 0),  ( 0, 0): ( 0, 0),  (+1, 0): ( 0,-1),
+        (-1,+1): (-1,+1),  ( 0,+1): ( 0,+1),  (+1,+1): ( 0, 0),
     }
     #  ++    -
     # -      -
     # -    ++
+
     @BreadcrumbFactory
     def breadcrumb(self, request, context):
         return Breadcrumb(
@@ -36,10 +35,10 @@ class IndexView(BaseView):
     def initial_context(self, request):
         if not 'feature_vote:votes' in request.session:
             request.session['feature_vote:votes'] = {}
-        
+
         for feature in Feature.objects.filter(is_public=True, is_removed=False):
             feature.check_remove(request)
-        
+
         features = Feature.objects.filter(is_public=True, is_removed=False)
         for feature in sorted(features[:], key=attrgetter('net_votes'),
                               reverse=True):
@@ -60,10 +59,10 @@ class IndexView(BaseView):
 
         if 'vote_up.x' in post:
             post['vote_up'] = post['vote_up.x']
-        
+
         if 'vote_down.x' in post:
             post['vote_down'] = post['vote_down.x']
-        
+
         if 'vote_up' in post or 'vote_down' in post:
             feature = get_object_or_404(Feature, id=post.get('id', 0))
             previous_vote = request.session['feature_vote:votes'].get(feature.id, 0)
