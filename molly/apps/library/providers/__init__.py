@@ -1,4 +1,6 @@
-class BaseLibrarySearchProvider(object):
+from molly.conf.provider import Provider
+
+class BaseLibrarySearchProvider(Provider):
     """
     Abstract class implementing the interface for a provider for the library app
     """
@@ -23,7 +25,7 @@ class BaseLibrarySearchProvider(object):
 
 from z3950 import Z3950
 
-class BaseMetadataProvider(object):
+class BaseMetadataProvider(Provider):
     """
     Abstract class implementing the interface for a provider which fetches
     book covers

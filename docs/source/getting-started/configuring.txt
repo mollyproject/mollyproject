@@ -107,15 +107,7 @@ therefore be at least::
 
 With any additional non-Molly apps being added to the bottom of the list.
 
-`LOGGING_CONFIG <https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-LOGGING_CONFIG>`_
-
-.. note:: It is likely Molly will move to Django's logging functionality at some
-          point in the future.
-
-This should be set to None, in order to suppress Django's default logging capabilities
-and to use Molly's built-in system::
-
-    LOGGING_CONFIG = None
+Logging configuration should be done the same way it is done for every `Django project <https://docs.djangoproject.com/en/dev/topics/logging/>`.
 
 `MIDDLEWARE_CLASSES <http://docs.djangoproject.com/en/dev/ref/settings/#middleware-classes>`_
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -129,10 +121,6 @@ At the very least, this setting must include
 point in the list ``molly.auth.middleware.SecureSessionMiddleware`` and
 ``molly.url_shortener.middleware.URLShortenerMiddleware``, as well as Django's
 default middleware.
-
-If you would like to receive e-mail notifications of errors, you must add
-``molly.utils.middleware.ErrorHandlingMiddleware``, and if you would like
-statistics logging, ``molly.apps.stats.middleware.StatisticsMiddleware``.
 
 In order to enable geolocation functionality in Molly, you must enable
 ``molly.utils.middleware.LocationMiddleware``.
@@ -148,7 +136,6 @@ A typical setup may look like this::
         'molly.utils.middleware.LocationMiddleware',
         'django.contrib.auth.middleware.AuthenticationMiddleware',
         'molly.auth.middleware.SecureSessionMiddleware',
-        'molly.apps.stats.middleware.StatisticsMiddleware',
         'molly.url_shortener.middleware.URLShortenerMiddleware',
         'django.middleware.csrf.CsrfViewMiddleware',
     )
@@ -275,6 +262,30 @@ The following settings will make this "just work" with Molly::
     PIPELINE_CSS_COMPRESSOR = 'molly.utils.compress.MollyCSSFilter'
     PIPELINE_JS_COMPRESSOR = 'pipeline.compressors.jsmin.JSMinCompressor'
 
+Celery settings
+^^^^^^^^^^^^^^^
+.. versionadded:: 1.4
+
+We include a few sane-defaults for running Celery. These are::
+
+    BROKER_URL = "amqp://molly:molly@localhost:5672//"
+    CELERYBEAT_SCHEDULER = "djcelery.schedulers.DatabaseScheduler"
+    CELERYD_CONCURRENCY = 1
+    CELERY_RETRY_DELAY = 3 * 60
+    CELERY_MAX_RETRIES = 3
+
+The only setting you should worry about here is the `BROKER_URL`. This setting
+is passed from Celery to the transport layer library Kombu, which has excellent
+`documentation for the possible broker options`__ and their limitations. The
+default we provide will attempt to use RabbitMQ with vhost `molly`, on
+`localhost`, connecting as user `molly`.
+
+__ http://ask.github.com/kombu/userguide/connections.html#urls
+
+Remaining options are best explained in the `Celery documentation`__.
+
+__ http://docs.celeryproject.org/en/2.4/configuration.html
+
 Molly settings
 ^^^^^^^^^^^^^^
 
@@ -338,7 +349,6 @@ The following battery-included apps are:
 * :doc:`../ref/apps/sakai`
 * :doc:`../ref/apps/search`
 * :doc:`../ref/apps/service-status`
-* :doc:`../ref/apps/stats`
 * :doc:`../ref/apps/tours`
 * :doc:`../ref/apps/transport`
 * :doc:`../ref/apps/weather`

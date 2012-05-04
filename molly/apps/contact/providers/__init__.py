@@ -1,7 +1,8 @@
+from molly.conf.provider import Provider
 from molly.apps.contact.forms import GenericContactForm
 from django.utils.translation import ugettext as _
 
-class BaseContactProvider(object):
+class BaseContactProvider(Provider):
 
     class NoSuchResult(KeyError):
         pass

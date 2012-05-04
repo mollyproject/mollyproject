@@ -8,6 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from molly.external_media import resize_external_image
 from molly.apps.places.models import Entity
+from molly.conf.provider import queue_post_save
 
 FEED_TYPE_CHOICES = (
     ('n', 'news'),
@@ -46,6 +47,7 @@ class Tag(models.Model):
         return self.value
 
 
+@queue_post_save
 class Feed(models.Model):
     title = models.TextField(help_text=_("Feed title"))
     entity = models.ForeignKey(Entity, null=True, blank=True,
