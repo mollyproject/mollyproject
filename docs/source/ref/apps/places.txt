@@ -147,6 +147,17 @@ required and 2 optional options:
  * max_services (optional, defaults to 15): The maximum number of services to fetch
  * max_results (optional, defaults to 1): How many boards to fetch at once
 
+:class:`molly.apps.places.providers.cloudamber.CloudAmberBusRtiProvider`
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+This provider scrapes a CloudAmber instance to try and get route data for the
+real-time routes CloudAmber knows about. It is heavily recommended you consult
+with your council before enabling this, as it makes a lot of requests!
+
+This has one mandatory option:
+
+ * url: the base URL of the CloudAmber instance to be scraped for route data
+
 :class:`molly.apps.places.providers.NaptanMapsProvider`
 """""""""""""""""""""""""""""""""""""""""""""""""""""""
 

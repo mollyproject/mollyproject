@@ -412,6 +412,12 @@ APPLICATIONS = [
             # multiple timetable sources and shows them on the entity page
             
             Provider('molly.apps.places.providers.TimetableAnnotationProvider'),
+
+            # Provider used to provide real-time information for buses, scraped from
+            # a website powered by CloudAmber solutions.
+            #Provider('molly.apps.places.providers.cloudamber.CloudAmberBusRtiProvider',
+            #    url = 'http://www.oxontime.com',
+            #),
         ],
         
         # This setting can be used to associate entities with each other. At
