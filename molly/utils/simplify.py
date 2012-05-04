@@ -12,8 +12,14 @@ from django.utils.functional import Promise as lazy_translation
 
 logger = getLogger(__name__)
 
-class DateUnicode(unicode): pass
-class DateTimeUnicode(unicode): pass
+
+class DateUnicode(unicode):
+    pass
+
+
+class DateTimeUnicode(unicode):
+    pass
+
 
 _XML_DATATYPES = (
     (DateUnicode, 'date'),
@@ -23,6 +29,9 @@ _XML_DATATYPES = (
     (int, 'integer'),
     (float, 'float'),
 )
+
+FIELDS_NOT_EXPOSED = ('password', 'user_email',)
+
 
 def simplify_value(value):
     if hasattr(value, 'simplify_for_render'):
@@ -87,11 +96,13 @@ def simplify_value(value):
         return [simplify_value(item) for item in itertools.islice(value, 1000)]
     else:
         raise NotImplementedError
-    
+
+
 def simplify_model(obj, terse=False):
     if obj is None:
         return None
     # It's a Model instance
+    # "expose_fields" is never used
     if hasattr(obj._meta, 'expose_fields'):
         expose_fields = obj._meta.expose_fields
     else:
@@ -106,7 +117,7 @@ def simplify_model(obj, terse=False):
         out['_terse'] = True
     else:
         for field_name in expose_fields:
-            if field_name in ('password',):
+            if field_name in FIELDS_NOT_EXPOSED:
                 continue
             try:
                 value = getattr(obj, field_name)
@@ -115,12 +126,13 @@ def simplify_model(obj, terse=False):
                 out[field_name] = simplify_value(value)
             except NotImplementedError:
                 pass
-        
+
         # Add any non-field attributes
         for field in list(dir(obj)):
             try:
                 if field[0] != '_' and field != 'objects' \
-                 and not isinstance(getattr(obj, field), models.Field):
+                        and not isinstance(getattr(obj, field), models.Field) \
+                        and not field in FIELDS_NOT_EXPOSED:
                     try:
                         out[field] = simplify_value(getattr(obj, field))
                     except NotImplementedError:
@@ -128,6 +140,7 @@ def simplify_model(obj, terse=False):
             except AttributeError:
                 pass
     return out
+
 
 def serialize_to_xml(value):
     if value is None:
@@ -159,16 +172,16 @@ def serialize_to_xml(value):
             node = etree.Element('collection', {'type': 'mapping'})
         for key in value:
             v = serialize_to_xml(value[key])
-            subnode = etree.Element('item', {'key':key})
+            subnode = etree.Element('item', {'key': key})
             subnode.append(v)
             node.append(subnode)
     elif isinstance(value, (list, tuple, set, frozenset)):
-        for x,y in ((list, 'list'), (tuple, 'tuple')):
+        for x, y in ((list, 'list'), (tuple, 'tuple')):
             if isinstance(value, x):
                 node = etree.Element('collection', {'type': y})
                 break
         else:
-            node = etree.Element('collection', {'type':'set'})
+            node = etree.Element('collection', {'type': 'set'})
         for item in value:
             v = serialize_to_xml(item)
             subnode = etree.Element('item')

@@ -53,6 +53,9 @@ class Feature(models.Model):
     def __unicode__(self):
         return self.title
 
+    def simplify_for_render(self, simplify_value, simplify_model):
+        return simplify_model(self)
+
     REMOVE_AFTER_IMPLEMENTED_FOR = timedelta(weeks=4)
 
     def check_remove(self, request):
