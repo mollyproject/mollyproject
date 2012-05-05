@@ -25,7 +25,7 @@ class Command(NoArgsCommand):
         if no_wurfl or not develop:
             call_command('update_wurfl')
         call_command('generate_markers', lazy=True)
-        call_command('collectstatic', interactive=False, link=develop)
+        call_command('collectstatic', interactive=False, link=(develop and os.name != 'nt'))
         # Forcing compression because it seems to not compress *sometimes* even if files
         # have been changed...
         call_command('synccompress')
