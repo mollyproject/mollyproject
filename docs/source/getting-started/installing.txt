@@ -237,17 +237,15 @@ scheduler ``celerybeat`` for us. We just have to start them::
     python manage.py celeryd
     python manage.py celerybeat
 
+.. seealso:: `Daemonizing Celery <http://celery.readthedocs.org/en/latest/cookbook/daemonizing.html>`_
+             -- Celery doesn't daemonize itself so you'll want to either run it as an init
+             script or deploy it with some process management like `supervisor <http://supervisord.org>`_.
 
 Deploying Molly
 ---------------
 
 Once you have configured your site appropriately, you're almost ready to deploy your
 site!
-
-.. note:: The following command overrides your crontab. If you do not wish this
-          to happen, then run the command with the ``--skip-cron`` option.
-          You can then use ``python manage.py create_crontab`` to get a crontab
-          specification suitable for putting into the ``crontab`` command.
 
 This can be done using the command::
 
