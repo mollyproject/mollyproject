@@ -6,11 +6,40 @@ socket.setdefaulttimeout(5)
 from urllib2 import urlopen
 from lxml.etree import tostring
 from itertools import chain
+from datetime import timedelta
 
 from molly.apps.places.models import Route, EntityType
 from molly.apps.places.providers import BaseMapsProvider
+from molly.conf.provider import task
 
 logger = logging.getLogger(__name__)
+
+
+class CloudAmberBusRouteProvider(BaseMapsProvider):
+    def __init__(self, url):
+        self.url = "%s/Naptan.aspx?rdExactMatch=any&hdnSearchType=searchbyServicenumber&hdnChkValue=any" % url
+
+    @task(run_every=timedelta(days=7))
+    def import_data(self, **metadata):
+        logger.info("Importing Route data from %s" % self.url)
+        self._scrape_search()
+
+    def _scrape_search(self):
+        e = etree.parse(self.url, parser=etree.HTMLParser())
+        rows = e.findall('.//div[@class="cloud-amber"]')[0].findall('.//table')[1].findall('tbody/tr')
+        for row in rows[1:]:
+            no, op, dest = row.getchildren()
+            route_no = no.text
+            provider = op.find('img').get('title')
+            route = dest.find('a').text
+            route_href = dest.find('a').get('href')
+            logger.debug("Found route: %s - %s - %s" % (route_no, provider, route))
+            self._scrape_route.delay(route_href)
+
+    @task()
+    def _scrape_route(self, href):
+        logger.debug("Scraping route: %s" % href)
+
 
 
 class CloudAmberBusRtiProvider(BaseMapsProvider):
