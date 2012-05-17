@@ -83,6 +83,8 @@ setup(
         'Topic :: Internet',
     ],
     setup_requires = ["setuptools"],
+    tests_require = ["unittest2", "mock", "mockito"],
+    test_suite = 'runtests.runtests',
     install_requires = [
         "python-Levenshtein>=0.10.2,<0.11",
         "pywurfl==7.2.1",
