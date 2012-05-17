@@ -2,7 +2,7 @@ import unittest
 from django.test.utils import setup_test_environment
 setup_test_environment()
 
-from transports import CloudAmberBusRtiProvider
+from molly.apps.places.providers.cloudamber import CloudAmberBusRtiProvider
 
 class CloudAmberBusRtiProviderTest(unittest.TestCase):
 
@@ -12,7 +12,7 @@ class CloudAmberBusRtiProviderTest(unittest.TestCase):
         """
 
         # HTML retrived from http://oxontime.voyagertest.com/Naptan.aspx?t=departure&sa=69327545&dc=&ac=96&vc=&x=0&y=0&format=xhtml
-        with open('data/cloudamber-info.html') as f:
+        with open('molly/apps/places/tests/data/cloudamber-info.html') as f:
             content = f.read()
             f.close()
        
@@ -29,7 +29,7 @@ class CloudAmberBusRtiProviderTest(unittest.TestCase):
         last_stop_departure_time = '41 mins'
         #last_stop_operator = 'SOX'
 
-        provider = CloudAmberBusRtiProvider()
+        provider = CloudAmberBusRtiProvider('foo.bar')
         services, messages = provider.parse_html(content)
 
         self.assertEqual(messages, '')
@@ -53,15 +53,15 @@ class CloudAmberBusRtiProviderTest(unittest.TestCase):
         """
 
         # HTML retrieved from http://oxontime.voyagertest.com/Naptan.aspx?t=departure&sa=69327545&dc=&ac=96&vc=&x=0&y=0&format=xhtml
-        with open('data/cloudamber-messages.html') as f:
+        with open('molly/apps/places/tests/data/cloudamber-messages.html') as f:
             content = f.read()
             f.close()
 
         message = '-The terminus for the inbound S1 is at stop B1 (west end of George St) <br/> -For the S2 & S3 go to Gloucester Green (bus station) <br/> -Stop closed - long term closure to allow demolition & rebuilding works <br/> -Please refer to notices posted at the stop'
 
-        provider = CloudAmberBusRtiProvider()
+        provider = CloudAmberBusRtiProvider('foo.bar')
         services, messages = provider.parse_html(content)
-        self.assertEqual(messages, message)
+        self.assertEqual(messages[0], message)
 
 
 if __name__ == "__main__":
