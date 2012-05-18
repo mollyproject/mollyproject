@@ -8,11 +8,21 @@ from lxml.etree import tostring
 from itertools import chain
 from datetime import timedelta
 
-from molly.apps.places.models import Route, EntityType
+from molly.apps.places import get_entity
+from molly.apps.places.models import Route, EntityType, StopOnRoute, Source, Entity
 from molly.apps.places.providers import BaseMapsProvider
+from molly.apps.places.providers.naptan import NaptanMapsProvider
 from molly.conf.provider import task
+from molly.utils.i18n import set_name_in_language
 
 logger = logging.getLogger(__name__)
+
+# Maps operator encoded names to known "friendly versions"
+OPERATOR_NAMES = {'SOX': 'Stagecoach',
+        'TT': 'Thames Travel',
+        'OBC': 'Oxford Bus Company',
+        '*Voyager_PD_RAV(en-GB)*': 'ARRIVA',
+        }
 
 
 class CloudAmberBusRouteProvider(BaseMapsProvider):
@@ -30,17 +40,71 @@ class CloudAmberBusRouteProvider(BaseMapsProvider):
         for row in rows[1:]:
             no, op, dest = row.getchildren()
             route_no = no.text
-            provider = op.find('img').get('title')
+            operator = op.find('span').text
+            operator = OPERATOR_NAMES.get(operator, operator)
             route = dest.find('a').text
             route_href = dest.find('a').get('href')
-            logger.debug("Found route: %s - %s - %s" % (route_no, provider, route))
-            self._scrape_route.delay(route_href)
+            logger.debug("Found route: %s - %s - %s" % (route_no, operator, route))
+            route, created = Route.objects.get_or_create(
+                external_ref=route_href,
+                defaults={
+                    'service_id': route_no,
+                    'service_name': route,
+                    'operator': operator,
+                }
+            )
+            if created:
+                logging.debug("Created new route: %s" % route.service_name)
+            self._scrape_route.delay(route.id, route_href)
 
-    @task()
-    def _scrape_route(self, href):
-        logger.debug("Scraping route: %s" % href)
+    def _get_entity(self, stop_code, stop_name):
+        source = self._get_source()
+        entity_type = self._get_entity_type()
+        scheme = 'naptan'
+        try:
+            entity = get_entity(scheme, stop_code)
+        except:
+            try:
+                entity = Entity.objects.get(_identifiers__scheme=scheme,
+                        _identifiers__value=stop_code)
+                logger.debug("Found Entity: %s" % entity)
+            except Entity.DoesNotExist:
+                logger.debug("Entity does not exist: %s-%s" % (stop_code, stop_name))
+                entity = Entity()
+            except Entity.MultipleObjectsReturned:
+                logger.warning("Multiple Entities found for : %s-%s" % (stop_code, stop_name))
+                Entity.objects.filter(_identifiers__scheme=scheme,
+                        _identifiers__value=stop_code).delete()
+                entity = Entity()
+            entity.primary_type = entity_type
+            entity.source = source
+            identifiers = {scheme: stop_code}
+            entity.save(identifiers=identifiers)
+            set_name_in_language(entity, 'en', title=stop_name)
+            entity.all_types = (entity_type,)
+            entity.save()
+        return entity
 
+    @task(max_retries=0)
+    def _scrape_route(self, route_id, href):
+        logger.info("Scraping route: %s" % href)
+        e = etree.parse(href, parser=etree.HTMLParser())
+        rows = e.findall('.//div[@class="cloud-amber"]')[0].findall('.//table')[1].findall('tbody/tr')
+        for i, row in enumerate(rows[1:]):
+            _, naptan, _, stop_name, _ = row.getchildren()
+            stop_code = naptan.text
+            stop_name = stop_name.find('a').text
+            entity = self._get_entity(stop_code, stop_name)
+            StopOnRoute.objects.create(route_id=route_id, entity=entity, order=i)
 
+    def _get_source(self):
+        source, _ = Source.objects.get_or_create(module_name=__name__,
+                name='CloudAmber Route Scraper')
+        source.save()
+        return source
+
+    def _get_entity_type(self):
+        return NaptanMapsProvider(None)._get_entity_types()['BCT'][0]
 
 class CloudAmberBusRtiProvider(BaseMapsProvider):
     """
