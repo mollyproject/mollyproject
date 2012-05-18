@@ -180,7 +180,8 @@ assuming the PostGIS template was installed as ``template_postgis`` you can use:
 
     sudo -u postgres createdb -T template_postgis <database>
 
-Replacing <database> with your database name
+Replacing <database> with your database name. More information on postgis
+templates can be found in the `PostGIS documentation <http://postgis.refractions.net/documentation/manual-1.5/ch02.html#id2701991>`_.
 
 And then you can give your user access to this new database::
 
@@ -204,6 +205,9 @@ This argument takes one argument which specifies the path to create the template
 in::
 
     molly-admin createsite /PATH/TO/MY/SITE
+
+.. warning:: Don't call your site `site`. It will mess up Djangos with settings
+             finder.
 
 Once your site template has been created, the following files are created which
 are only templates and require you to edit them:
