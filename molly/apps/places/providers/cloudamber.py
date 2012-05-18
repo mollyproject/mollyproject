@@ -26,6 +26,10 @@ OPERATOR_NAMES = {'SOX': 'Stagecoach',
 
 
 class CloudAmberBusRouteProvider(BaseMapsProvider):
+    """Sends an empty search string to the cloudamber route search.
+    This returns all routes which we can scrape to collect the
+    route information.
+    """
     def __init__(self, url):
         self.url = "%s/Naptan.aspx?rdExactMatch=any&hdnSearchType=searchbyServicenumber&hdnChkValue=any" % url
 
@@ -35,6 +39,7 @@ class CloudAmberBusRouteProvider(BaseMapsProvider):
         self._scrape_search()
 
     def _scrape_search(self):
+        """Scrapes the search page and queues tasks for scraping the results"""
         e = etree.parse(self.url, parser=etree.HTMLParser())
         rows = e.findall('.//div[@class="cloud-amber"]')[0].findall('.//table')[1].findall('tbody/tr')
         for row in rows[1:]:
@@ -58,6 +63,9 @@ class CloudAmberBusRouteProvider(BaseMapsProvider):
             self._scrape_route.delay(route.id, route_href)
 
     def _get_entity(self, stop_code, stop_name):
+        """Finds a bus stop entity or creates one if it cannot be found.
+        If multiple entities are found we clean them up.
+        """
         source = self._get_source()
         entity_type = self._get_entity_type()
         scheme = 'naptan'
