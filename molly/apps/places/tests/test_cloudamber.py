@@ -32,7 +32,7 @@ class CloudAmberBusRtiProviderTest(unittest.TestCase):
         provider = CloudAmberBusRtiProvider('foo.bar')
         services, messages = provider.parse_html(content)
 
-        self.assertEqual(messages, '')
+        self.assertEqual(messages, [])
 
         # first service (NOT BUS) expected at the bus stop
         first = services[0]
