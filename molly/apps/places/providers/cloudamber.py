@@ -1,12 +1,11 @@
 import threading
-from lxml import etree
 import logging
 import socket
-socket.setdefaulttimeout(5)
+
 from urllib2 import urlopen
-from lxml.etree import tostring
 from itertools import chain
 from datetime import timedelta
+from lxml import etree
 
 from molly.apps.places import get_entity
 from molly.apps.places.models import Route, EntityType, StopOnRoute, Source, Entity
@@ -15,6 +14,7 @@ from molly.apps.places.providers.naptan import NaptanMapsProvider
 from molly.conf.provider import task
 from molly.utils.i18n import set_name_in_language
 
+socket.setdefaulttimeout(5)
 logger = logging.getLogger(__name__)
 
 # Maps operator encoded names to known "friendly versions"
@@ -93,25 +93,28 @@ class CloudAmberBusRouteProvider(BaseMapsProvider):
             entity.save()
         return entity
 
-    @task(max_retries=0)
+    @task(max_retries=1)
     def _scrape_route(self, route_id, href):
+        """Load route data from our Cloudamber provider and capture the stop data."""
         logger.info("Scraping route: %s" % href)
         e = etree.parse(href, parser=etree.HTMLParser())
         rows = e.findall('.//div[@class="cloud-amber"]')[0].findall('.//table')[1].findall('tbody/tr')
         for i, row in enumerate(rows):
-            _, naptan, _, stop_name, _ = row.getchildren()
+            expand, naptan, map_href, stop_name, town = row.getchildren()
             stop_code = naptan.text
             stop_name = stop_name.find('a').text
             entity = self._get_entity(stop_code, stop_name)
             StopOnRoute.objects.create(route_id=route_id, entity=entity, order=i)
 
     def _get_source(self):
-        source, _ = Source.objects.get_or_create(module_name=__name__,
+        """Create or get a reference to this provider"""
+        source, created = Source.objects.get_or_create(module_name=__name__,
                 name='CloudAmber Route Scraper')
         source.save()
         return source
 
     def _get_entity_type(self):
+        """Get the Entity type for BCT - Bus/Coach/Tram stop"""
         return NaptanMapsProvider(None)._get_entity_types()['BCT'][0]
 
 class CloudAmberBusRtiProvider(BaseMapsProvider):
@@ -192,7 +195,7 @@ class CloudAmberBusRtiProvider(BaseMapsProvider):
             try:
                 messages = cells[3]
                 parts = ([messages.text] +
-                    list(chain(*([c.text, tostring(c), c.tail] for c in messages.getchildren()))) +
+                    list(chain(*([c.text, etree.tostring(c), c.tail] for c in messages.getchildren()))) +
                     [messages.tail])
                 messages = ''.join([p for p in parts if p])
                 messages = [messages]
