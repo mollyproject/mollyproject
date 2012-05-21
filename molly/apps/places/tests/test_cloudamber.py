@@ -15,14 +15,14 @@ class CloudAmberBusRouteProviderTest(unittest2.TestCase):
         Route.objects.get_or_create = mock.Mock(return_value=[mock.Mock(), True])
         provider._scrape_search()
         # Attempts to create 200 routes
-        self.assertEqual(Route.objects.get_or_create.call_count, 201)
+        self.assertEqual(Route.objects.get_or_create.call_count, 200)
 
     def test_scrape_route(self):
         provider = CloudAmberBusRouteProvider('foo')
         provider._get_entity = mock.Mock(return_value='bar')
         StopOnRoute.objects.create = mock.Mock()
         provider._scrape_route(6, 'molly/apps/places/tests/data/cloudamber-route.html')
-        self.assertEqual(StopOnRoute.objects.create.call_count, 18)
+        self.assertEqual(StopOnRoute.objects.create.call_count, 17)
 
 class CloudAmberBusRtiProviderTest(unittest2.TestCase):
 
