@@ -105,7 +105,6 @@ setup(
         "django-slimmer>=0.0.2,<0.0.3",
         'pyyaml==3.10',
         'icalendar==2.2',
-        'mockito',
         'celery==2.5.3',
         'django-celery==2.5.5',
     ],
