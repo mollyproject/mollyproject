@@ -1,10 +1,30 @@
-import unittest
-from django.test.utils import setup_test_environment
-setup_test_environment()
+import unittest2
+import mock
 
-from molly.apps.places.providers.cloudamber import CloudAmberBusRtiProvider
+from molly.apps.places.providers.cloudamber import CloudAmberBusRtiProvider, CloudAmberBusRouteProvider, Route, StopOnRoute
 
-class CloudAmberBusRtiProviderTest(unittest.TestCase):
+
+class CloudAmberBusRouteProviderTest(unittest2.TestCase):
+    """Simple tests which asssert the correct numbers of Routes and StopOnRoute
+    objects are being created from a stored data.
+    """
+    def test_scrape_search(self):
+        provider = CloudAmberBusRouteProvider('foo')
+        provider.url = 'molly/apps/places/tests/data/cloudamber-search.html'
+        provider._scrape_route = mock.Mock()
+        Route.objects.get_or_create = mock.Mock(return_value=[mock.Mock(), True])
+        provider._scrape_search()
+        # Attempts to create 200 routes
+        self.assertEqual(Route.objects.get_or_create.call_count, 200)
+
+    def test_scrape_route(self):
+        provider = CloudAmberBusRouteProvider('foo')
+        provider._get_entity = mock.Mock(return_value='bar')
+        StopOnRoute.objects.create = mock.Mock()
+        provider._scrape_route(6, 'molly/apps/places/tests/data/cloudamber-route.html')
+        self.assertEqual(StopOnRoute.objects.create.call_count, 17)
+
+class CloudAmberBusRtiProviderTest(unittest2.TestCase):
 
     def test_info(self):
         """
@@ -65,4 +85,4 @@ class CloudAmberBusRtiProviderTest(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    unittest.main()
+    unittest2.main()
