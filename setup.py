@@ -83,6 +83,8 @@ setup(
         'Topic :: Internet',
     ],
     setup_requires = ["setuptools"],
+    tests_require = ["unittest2", "mock", "mockito"],
+    test_suite = 'runtests.runtests',
     install_requires = [
         "python-Levenshtein>=0.10.2,<0.11",
         "pywurfl==7.2.1",
@@ -103,7 +105,6 @@ setup(
         "django-slimmer>=0.0.2,<0.0.3",
         'pyyaml==3.10',
         'icalendar==2.2',
-        'mockito',
         'celery==2.5.3',
         'django-celery==2.5.5',
     ],

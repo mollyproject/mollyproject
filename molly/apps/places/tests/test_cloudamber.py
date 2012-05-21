@@ -1,10 +1,30 @@
-import unittest
-from django.test.utils import setup_test_environment
-setup_test_environment()
+import unittest2
+import mock
 
-from transports import CloudAmberBusRtiProvider
+from molly.apps.places.providers.cloudamber import CloudAmberBusRtiProvider, CloudAmberBusRouteProvider, Route, StopOnRoute
 
-class CloudAmberBusRtiProviderTest(unittest.TestCase):
+
+class CloudAmberBusRouteProviderTest(unittest2.TestCase):
+    """Simple tests which asssert the correct numbers of Routes and StopOnRoute
+    objects are being created from a stored data.
+    """
+    def test_scrape_search(self):
+        provider = CloudAmberBusRouteProvider('foo')
+        provider.url = 'molly/apps/places/tests/data/cloudamber-search.html'
+        provider._scrape_route = mock.Mock()
+        Route.objects.get_or_create = mock.Mock(return_value=[mock.Mock(), True])
+        provider._scrape_search()
+        # Attempts to create 200 routes
+        self.assertEqual(Route.objects.get_or_create.call_count, 201)
+
+    def test_scrape_route(self):
+        provider = CloudAmberBusRouteProvider('foo')
+        provider._get_entity = mock.Mock(return_value='bar')
+        StopOnRoute.objects.create = mock.Mock()
+        provider._scrape_route(6, 'molly/apps/places/tests/data/cloudamber-route.html')
+        self.assertEqual(StopOnRoute.objects.create.call_count, 18)
+
+class CloudAmberBusRtiProviderTest(unittest2.TestCase):
 
     def test_info(self):
         """
@@ -12,7 +32,7 @@ class CloudAmberBusRtiProviderTest(unittest.TestCase):
         """
 
         # HTML retrived from http://oxontime.voyagertest.com/Naptan.aspx?t=departure&sa=69327545&dc=&ac=96&vc=&x=0&y=0&format=xhtml
-        with open('data/cloudamber-info.html') as f:
+        with open('molly/apps/places/tests/data/cloudamber-info.html') as f:
             content = f.read()
             f.close()
        
@@ -29,10 +49,10 @@ class CloudAmberBusRtiProviderTest(unittest.TestCase):
         last_stop_departure_time = '41 mins'
         #last_stop_operator = 'SOX'
 
-        provider = CloudAmberBusRtiProvider()
+        provider = CloudAmberBusRtiProvider('foo.bar')
         services, messages = provider.parse_html(content)
 
-        self.assertEqual(messages, '')
+        self.assertEqual(messages, [])
 
         # first service (NOT BUS) expected at the bus stop
         first = services[0]
@@ -53,16 +73,16 @@ class CloudAmberBusRtiProviderTest(unittest.TestCase):
         """
 
         # HTML retrieved from http://oxontime.voyagertest.com/Naptan.aspx?t=departure&sa=69327545&dc=&ac=96&vc=&x=0&y=0&format=xhtml
-        with open('data/cloudamber-messages.html') as f:
+        with open('molly/apps/places/tests/data/cloudamber-messages.html') as f:
             content = f.read()
             f.close()
 
         message = '-The terminus for the inbound S1 is at stop B1 (west end of George St) <br/> -For the S2 & S3 go to Gloucester Green (bus station) <br/> -Stop closed - long term closure to allow demolition & rebuilding works <br/> -Please refer to notices posted at the stop'
 
-        provider = CloudAmberBusRtiProvider()
+        provider = CloudAmberBusRtiProvider('foo.bar')
         services, messages = provider.parse_html(content)
-        self.assertEqual(messages, message)
+        self.assertEqual(messages[0], message)
 
 
 if __name__ == "__main__":
-    unittest.main()
+    unittest2.main()
