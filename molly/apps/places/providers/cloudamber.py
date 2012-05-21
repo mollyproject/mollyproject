@@ -43,9 +43,9 @@ class CloudAmberBusRouteProvider(BaseMapsProvider):
         e = etree.parse(self.url, parser=etree.HTMLParser())
         rows = e.findall('.//div[@class="cloud-amber"]')[0].findall('.//table')[1].findall('tbody/tr')
         for row in rows:
-            no, op, dest = row.getchildren()
-            route_no = no.text
-            operator = op.find('span').text
+            route_no, operator, dest = row.getchildren()
+            route_no = route_no.text
+            operator = operator.find('span').text
             operator = OPERATOR_NAMES.get(operator, operator)
             route = dest.find('a').text
             route_href = dest.find('a').get('href')
