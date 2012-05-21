@@ -1,17 +1,121 @@
 import threading
-from lxml import etree
 import logging
 import socket
-socket.setdefaulttimeout(5)
+
 from urllib2 import urlopen
-from lxml.etree import tostring
 from itertools import chain
+from datetime import timedelta
+from lxml import etree
 
-from molly.apps.places.models import Route, EntityType
+from molly.apps.places import get_entity
+from molly.apps.places.models import Route, EntityType, StopOnRoute, Source, Entity
 from molly.apps.places.providers import BaseMapsProvider
+from molly.apps.places.providers.naptan import NaptanMapsProvider
+from molly.conf.provider import task
+from molly.utils.i18n import set_name_in_language
 
+socket.setdefaulttimeout(5)
 logger = logging.getLogger(__name__)
 
+# Maps operator encoded names to known "friendly versions"
+OPERATOR_NAMES = {'SOX': 'Stagecoach',
+        'TT': 'Thames Travel',
+        'OBC': 'Oxford Bus Company',
+        '*Voyager_PD_RAV(en-GB)*': 'ARRIVA',
+        }
+
+
+class CloudAmberBusRouteProvider(BaseMapsProvider):
+    """Sends an empty search string to the cloudamber route search.
+    This returns all routes which we can scrape to collect the
+    route information.
+    """
+    def __init__(self, url):
+        self.url = "%s/Naptan.aspx?rdExactMatch=any&hdnSearchType=searchbyServicenumber&hdnChkValue=any" % url
+
+    @task(run_every=timedelta(days=7))
+    def import_data(self, **metadata):
+        logger.info("Importing Route data from %s" % self.url)
+        self._scrape_search()
+
+    def _scrape_search(self):
+        """Scrapes the search page and queues tasks for scraping the results"""
+        e = etree.parse(self.url, parser=etree.HTMLParser())
+        rows = e.findall('.//div[@class="cloud-amber"]')[0].findall('.//table')[1].findall('tbody/tr')
+        for row in rows:
+            route_no, operator, dest = row.getchildren()
+            route_no = route_no.text
+            operator = operator.find('span').text
+            operator = OPERATOR_NAMES.get(operator, operator)
+            route = dest.find('a').text
+            route_href = dest.find('a').get('href')
+            logger.debug("Found route: %s - %s - %s" % (route_no, operator, route))
+            route, created = Route.objects.get_or_create(
+                external_ref=route_href,
+                defaults={
+                    'service_id': route_no,
+                    'service_name': route,
+                    'operator': operator,
+                }
+            )
+            if created:
+                logging.debug("Created new route: %s" % route.service_name)
+            self._scrape_route.delay(route.id, route_href)
+
+    def _get_entity(self, stop_code, stop_name):
+        """Finds a bus stop entity or creates one if it cannot be found.
+        If multiple entities are found we clean them up.
+        """
+        source = self._get_source()
+        entity_type = self._get_entity_type()
+        scheme = 'naptan'
+        try:
+            entity = get_entity(scheme, stop_code)
+        except:
+            try:
+                entity = Entity.objects.get(_identifiers__scheme=scheme,
+                        _identifiers__value=stop_code)
+                logger.debug("Found Entity: %s" % entity)
+            except Entity.DoesNotExist:
+                logger.debug("Entity does not exist: %s-%s" % (stop_code, stop_name))
+                entity = Entity()
+            except Entity.MultipleObjectsReturned:
+                logger.warning("Multiple Entities found for : %s-%s" % (stop_code, stop_name))
+                Entity.objects.filter(_identifiers__scheme=scheme,
+                        _identifiers__value=stop_code).delete()
+                entity = Entity()
+            entity.primary_type = entity_type
+            entity.source = source
+            identifiers = {scheme: stop_code}
+            entity.save(identifiers=identifiers)
+            set_name_in_language(entity, 'en', title=stop_name)
+            entity.all_types = (entity_type,)
+            entity.save()
+        return entity
+
+    @task(max_retries=1)
+    def _scrape_route(self, route_id, href):
+        """Load route data from our Cloudamber provider and capture the stop data."""
+        logger.info("Scraping route: %s" % href)
+        e = etree.parse(href, parser=etree.HTMLParser())
+        rows = e.findall('.//div[@class="cloud-amber"]')[0].findall('.//table')[1].findall('tbody/tr')
+        for i, row in enumerate(rows):
+            expand, naptan, map_href, stop_name, town = row.getchildren()
+            stop_code = naptan.text
+            stop_name = stop_name.find('a').text
+            entity = self._get_entity(stop_code, stop_name)
+            StopOnRoute.objects.create(route_id=route_id, entity=entity, order=i)
+
+    def _get_source(self):
+        """Create or get a reference to this provider"""
+        source, created = Source.objects.get_or_create(module_name=__name__,
+                name='CloudAmber Route Scraper')
+        source.save()
+        return source
+
+    def _get_entity_type(self):
+        """Get the Entity type for BCT - Bus/Coach/Tram stop"""
+        return NaptanMapsProvider(None)._get_entity_types()['BCT'][0]
 
 class CloudAmberBusRtiProvider(BaseMapsProvider):
     """
@@ -91,7 +195,7 @@ class CloudAmberBusRtiProvider(BaseMapsProvider):
             try:
                 messages = cells[3]
                 parts = ([messages.text] +
-                    list(chain(*([c.text, tostring(c), c.tail] for c in messages.getchildren()))) +
+                    list(chain(*([c.text, etree.tostring(c), c.tail] for c in messages.getchildren()))) +
                     [messages.tail])
                 messages = ''.join([p for p in parts if p])
                 messages = [messages]
