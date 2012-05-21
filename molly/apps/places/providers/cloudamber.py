@@ -42,7 +42,7 @@ class CloudAmberBusRouteProvider(BaseMapsProvider):
         """Scrapes the search page and queues tasks for scraping the results"""
         e = etree.parse(self.url, parser=etree.HTMLParser())
         rows = e.findall('.//div[@class="cloud-amber"]')[0].findall('.//table')[1].findall('tbody/tr')
-        for row in rows[1:]:
+        for row in rows:
             no, op, dest = row.getchildren()
             route_no = no.text
             operator = op.find('span').text
@@ -98,7 +98,7 @@ class CloudAmberBusRouteProvider(BaseMapsProvider):
         logger.info("Scraping route: %s" % href)
         e = etree.parse(href, parser=etree.HTMLParser())
         rows = e.findall('.//div[@class="cloud-amber"]')[0].findall('.//table')[1].findall('tbody/tr')
-        for i, row in enumerate(rows[1:]):
+        for i, row in enumerate(rows):
             _, naptan, _, stop_name, _ = row.getchildren()
             stop_code = naptan.text
             stop_name = stop_name.find('a').text
