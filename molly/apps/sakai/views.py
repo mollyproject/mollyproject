@@ -207,7 +207,7 @@ class SignupEventView(SakaiView):
                 'userActionType': 'invalidAction',
                 })
             self.get_sakai_resource('direct/signupEvent/%s/edit' % event_id, data=data, format=None)
-            event = self.get_sakai_resource('direct/signupEvent/%s.json?siteId=%s' (event_id, site))
+            event = self.get_sakai_resource('direct/signupEvent/%s.json?siteId=%s' % (event_id, site))
         except PermissionDenied, e:
             if isinstance(e, OAuthHTTPError) and e.code != 403:
                 raise
