@@ -16,7 +16,7 @@ from django.core.exceptions import PermissionDenied
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.utils.translation import ugettext_lazy as _
-from django.http import HttpResponseBadRequest
+from django.http import Http404, HttpResponseBadRequest
 
 from molly.auth.models import UserIdentifier
 from molly.auth.oauth.clients import OAuthHTTPError
