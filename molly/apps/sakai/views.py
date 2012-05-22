@@ -78,7 +78,7 @@ class SakaiView(BaseView):
         return request.secure_session['sakai_site_titles'].get(id, 'Unknown site(%s)' % id)
 
     def add_user_identifiers(self, request):
-        user_details = self.get_sakai_resource(request, '/direct/user/current.json')
+        user_details = self.get_sakai_resource(request, 'direct/user/current.json')
         for target, identifier in self.conf.identifiers:
             value = user_details
             for i in identifier:
@@ -103,13 +103,13 @@ class IndexView(SakaiView):
 
     def initial_context(self, request):
         try:
-            announcements = self.get_sakai_resource(request, '/direct/announcement/user.json'),
+            announcements = self.get_sakai_resource(request, 'direct/announcement/user.json'),
         except Http404:
             #  NOTE: we get a 404 from WebLearn when the user has no sites with announcements.
             #  OAuth views re-raises this as a Django Http404.
             announcements = {'announcement_collection': []}
         return {
-            'user_details': self.get_sakai_resource(request, '/direct/user/current.json'),
+            'user_details': self.get_sakai_resource(request, 'direct/user/current.json'),
             'announcements': announcements,
             'tools': [{
                 'name': tool[0],
@@ -275,7 +275,7 @@ class DirectView(SakaiView):
 
     def handle_GET(self, request, context):
         context['user_details'] = self.get_sakai_resource(request,
-                '/direct/user/current.json')
+                'direct/user/current.json')
         return self.render(request, context, 'sakai/direct/index', expires=timedelta(days=-1))
 
 
@@ -299,7 +299,7 @@ class PollIndexView(SakaiView):
     force_auth = True
 
     def initial_context(self, request):
-        json = self.get_sakai_resource(request, '/direct/poll.json')
+        json = self.get_sakai_resource(request, 'direct/poll.json')
         polls = []
         for poll in json['poll_collection']:
             poll['siteTitle'] = self.get_site_title(request, poll['siteId'])
@@ -344,7 +344,7 @@ class PollDetailView(SakaiView):
                 return context
 
         try:
-            votes = self.get_sakai_resource(request, '/direct/poll/%s/vote.json' % id)
+            votes = self.get_sakai_resource(request, 'direct/poll/%s/vote.json' % id)
             votes = votes["poll-vote_collection"]
         except PermissionDenied:
             max_votes, vote_count = None, None
