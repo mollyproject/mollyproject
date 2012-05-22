@@ -4,10 +4,12 @@ import urllib2
 import simplejson
 import urlparse
 import dateutil.parser
+import socket
 from lxml import etree
 from dateutil.tz import tzutc
 from StringIO import StringIO
 from datetime import datetime, timedelta
+from contextlib import contextmanager
 
 from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied
@@ -24,11 +26,28 @@ from molly.utils.breadcrumbs import (NullBreadcrumb, BreadcrumbFactory,
         Breadcrumb, lazy_reverse, lazy_parent)
 
 
+SAKAI_TIMEOUT = 5
 logger = logging.getLogger(__name__)
 
 
 def parse_iso_8601(s):
     return dateutil.parser.parse(s).replace(tzinfo=tzutc())
+
+
+@contextmanager
+def make_sakai_request(seconds):
+    """Set the default timeout to something reasonable.
+    This also helps debug problems on the Sakai endpoint.
+    """
+    original = socket.getdefaulttimeout()
+    socket.setdefaulttimeout(seconds)
+    try:
+        yield
+    except:
+        logger.info("Error accessing Sakai", exc_info=True)
+        raise
+    finally:
+        socket.setdefaulttimeout(original)
 
 
 class SakaiView(BaseView):
@@ -38,15 +57,12 @@ class SakaiView(BaseView):
     def build_url(self, url):
         return '%s%s' % (self.conf.host, url)
 
-    def get_sakai_resource(self, request, resource_name, format='json',
-            data=None):
+    def get_sakai_resource(self, request, resource_name, format='json', data=None):
+        """Consistent API for accessing Sakai resources."""
         url = self.build_url(resource_name)
         logger.debug("Sakai request - %s" % url)
-        try:
-            resource = request.opener.open(url, data=data)
-        except:
-            logger.exception("Error opening Sakai - %s" % resource_name)
-            return None
+        with make_sakai_request(SAKAI_TIMEOUT):
+            resource = request.urlopen(url, data=data)
         if format == 'json':
             resource = simplejson.load(resource)
         elif format == 'xml':
@@ -86,9 +102,15 @@ class IndexView(SakaiView):
         )
 
     def initial_context(self, request):
+        try:
+            announcements = self.get_sakai_resource(request, '/direct/announcement/user.json'),
+        except Http404:
+            #  NOTE: we get a 404 from WebLearn when the user has no sites with announcements.
+            #  OAuth views re-raises this as a Django Http404.
+            announcements = {'announcement_collection': []}
         return {
             'user_details': self.get_sakai_resource(request, '/direct/user/current.json'),
-            'announcements': self.get_sakai_resource(request, '/direct/announcement/user.json'),
+            'announcements': announcements,
             'tools': [{
                 'name': tool[0],
                 'title': tool[1],
@@ -179,15 +201,13 @@ class SignupEventView(SakaiView):
             # This request does absolutely nothing, except force some cache to be
             # reset, making sure the data we receive subsequently is up-to-date.
             # This should be reported as a bug in Sakai.
-            request.urlopen(
-                self.build_url('direct/signupEvent/%s/edit' % event_id),
-                data=urllib.urlencode({
+            data=urllib.urlencode({
                 'siteId': site,
                 'allocToTSid': '0',
                 'userActionType': 'invalidAction',
-            }))
-            url = self.build_url('direct/signupEvent/%s.json?siteId=%s' % (event_id, site))
-            event = simplejson.load(request.urlopen(url))
+                })
+            self.get_sakai_resource('direct/signupEvent/%s/edit' % event_id, data=data, format=None)
+            event = self.get_sakai_resource('direct/signupEvent/%s.json?siteId=%s' (event_id, site))
         except PermissionDenied, e:
             if isinstance(e, OAuthHTTPError) and e.code != 403:
                 raise
@@ -324,8 +344,7 @@ class PollDetailView(SakaiView):
                 return context
 
         try:
-            url = self.build_url('direct/poll/%s/vote.json' % id)
-            votes = simplejson.load(request.urlopen(url))
+            votes = self.get_sakai_resource(request, '/direct/poll/%s/vote.json' % id)
             votes = votes["poll-vote_collection"]
         except PermissionDenied:
             max_votes, vote_count = None, None
@@ -412,8 +431,8 @@ class EvaluationIndexView(SakaiView):
         )
 
     def initial_context(self, request):
-        url = self.build_url('direct/eval-evaluation/1/summary')
-        summary = etree.parse(request.opener.open(url), parser=etree.HTMLParser(recover=False))
+        summary = self.get_sakai_resource('direct/eval-evaluation/1/summary',
+                format='xml', parser=etree.HTMLParser(recover=False))
         summary = transform(summary, 'sakai/evaluation/summary.xslt', {'id': id})
         evaluations = []
         for node in summary.findall('evaluation'):
@@ -438,7 +457,8 @@ class EvaluationDetailView(SakaiView):
     def initial_context(self, request, id):
         url = self.build_url('direct/eval-evaluation/%s' % id)
         data = request.raw_post_data if request.method == 'POST' else None
-        response = request.urlopen(url, data)
+        with make_sakai_request(SAKAI_TIMEOUT):
+            response = request.urlopen(url, data)
         evaluation = etree.parse(response, parser=etree.HTMLParser(recover=False))
         evaluation = transform(evaluation, 'sakai/evaluation/detail.xslt', {'id': id})
 
