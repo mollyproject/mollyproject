@@ -103,7 +103,7 @@ class IndexView(SakaiView):
 
     def initial_context(self, request):
         try:
-            announcements = self.get_sakai_resource(request, 'direct/announcement/user.json'),
+            announcements = self.get_sakai_resource(request, 'direct/announcement/user.json')
         except Http404:
             #  NOTE: we get a 404 from WebLearn when the user has no sites with announcements.
             #  OAuth views re-raises this as a Django Http404.
