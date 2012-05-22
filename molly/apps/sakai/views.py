@@ -201,7 +201,7 @@ class SignupEventView(SakaiView):
             # This request does absolutely nothing, except force some cache to be
             # reset, making sure the data we receive subsequently is up-to-date.
             # This should be reported as a bug in Sakai.
-            data=urllib.urlencode({
+            data = urllib.urlencode({
                 'siteId': site,
                 'allocToTSid': '0',
                 'userActionType': 'invalidAction',
