@@ -68,7 +68,7 @@ class OPMLPodcastsProvider(RSSPodcastsProvider):
         podcast.slug = self.extract_slug(attrib['xmlUrl'])
         podcast.save()
         
-        self.update_podcast(podcast)
+        self.update_podcast.delay(podcast)
 
     @task(run_every=timedelta(minutes=60))
     def import_data(self, **metadata):

@@ -50,7 +50,7 @@ class PodcastProducerPodcastsProvider(RSSPodcastsProvider):
         
                 rss_urls.append(url)
         
-                self.update_podcast(podcast)
+                self.update_podcast.delay(podcast)
 
         for podcast in Podcast.objects.filter(provider=self.class_path):
             if not podcast.rss_url in rss_urls:
