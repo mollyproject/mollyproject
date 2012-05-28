@@ -1,24 +1,18 @@
-#!/usr/bin/env python
+#This file mainly exists to allow python setup.py test to work.
 import os
 import sys
-from os.path import dirname, abspath
-from unittest2 import defaultTestLoader
-from molly.conf import default_settings as settings
-from django.core.management import setup_environ
+os.environ['DJANGO_SETTINGS_MODULE'] = 'molly.conf.test_settings'
+test_dir = os.path.dirname(__file__)
+sys.path.insert(0, test_dir)
 
-sys.path.insert(0, dirname(abspath(__file__)))
-
-
-os.environ['DJANGO_SETTINGS_MODULE'] = 'molly.conf.default_settings'
-setup_environ(settings)
-from django.test.utils import setup_test_environment
-setup_test_environment()
+from django.test.utils import get_runner
+from django.conf import settings
 
 
 def runtests():
-    __main__ = sys.modules['__main__']
-    setupDir = os.path.abspath(os.path.dirname(__main__.__file__))
-    return defaultTestLoader.discover(setupDir)
+    test_runner = get_runner(settings)()
+    failures = test_runner.run_tests([], interactive=True, verbosity=1)
+    sys.exit(failures)
 
 if __name__ == '__main__':
     runtests()
