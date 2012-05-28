@@ -58,16 +58,16 @@
         using AJAX calls. Typically this removes a URL bar in the user's window. 
     
         apple-touch-icons are different sized icons for home screens on devices e.g. iPad, iPhone 4, iPhone 
-        - some of these are also supported by other devices
+        - some of these are also supported by other devices. We have set the size to 144px to match the iPad (3) 
+        this means that all devices which use a lower resolution should just resize it down.
     
         apple-touch-startup-image is used as a splash screen for when a user clicks on the application's home
         screen icon. Under Apple's HCI guidelines, this should really be a greyed out screenshot of the first
         page of the User interface. 
     {% endcomment %}
-    {% if device|device_has_parent:"apple_generic" or device.device_os == "Android" %}
-        <link rel="apple-touch-icon" href="{{ STATIC_URL }}site/images/apple-touch-icon-144px.png"/>
-        <link rel="apple-touch-startup-image" href="{{ STATIC_URL  }}site/images/apple-touch-startup-image.jpg">
-    {% endif %}
+        
+    <link rel="apple-touch-icon" href="{{ STATIC_URL }}site/images/apple-touch-icon-144px.png"/>
+    <link rel="apple-touch-startup-image" href="{{ STATIC_URL  }}site/images/apple-touch-startup-image.jpg">
 
     {# Favicon link #}
     <link rel="icon" type="image/png" href="{{ STATIC_URL }}site/images/favicon.png"/>
