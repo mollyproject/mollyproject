@@ -1,0 +1,10 @@
+include setup.py README.creole MANIFEST.in LICENSE
+recursive-include molly/apps/*/tests/data *
+recursive-include molly/apps/*/templates *
+recursive-include molly/apps/*/static *
+recursive-include molly/apps/*/data *
+recursive-include molly/*/templates *
+recursive-include molly/*/static *
+recursive-include molly/*/data *
+recursive-include molly/media *
+recursive-include molly/templates *

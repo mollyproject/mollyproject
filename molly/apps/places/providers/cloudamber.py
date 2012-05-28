@@ -62,12 +62,10 @@ class CloudAmberBusRouteProvider(BaseMapsProvider):
                 logging.debug("Created new route: %s" % route.service_name)
             self._scrape_route.delay(route.id, route_href)
 
-    def _get_entity(self, stop_code, stop_name):
+    def _get_entity(self, stop_code, stop_name, source, entity_type):
         """Finds a bus stop entity or creates one if it cannot be found.
         If multiple entities are found we clean them up.
         """
-        source = self._get_source()
-        entity_type = self._get_entity_type()
         scheme = 'naptan'
         try:
             entity = get_entity(scheme, stop_code)
@@ -87,10 +85,9 @@ class CloudAmberBusRouteProvider(BaseMapsProvider):
             entity.primary_type = entity_type
             entity.source = source
             identifiers = {scheme: stop_code}
-            entity.save(identifiers=identifiers)
             set_name_in_language(entity, 'en', title=stop_name)
             entity.all_types = (entity_type,)
-            entity.save()
+            entity.save(identifiers=identifiers)
         return entity
 
     @task(max_retries=1)
@@ -99,11 +96,13 @@ class CloudAmberBusRouteProvider(BaseMapsProvider):
         logger.info("Scraping route: %s" % href)
         e = etree.parse(href, parser=etree.HTMLParser())
         rows = e.findall('.//div[@class="cloud-amber"]')[0].findall('.//table')[1].findall('tbody/tr')
+        source = self._get_source()
+        entity_type = self._get_entity_type()
         for i, row in enumerate(rows):
             expand, naptan, map_href, stop_name, town = row.getchildren()
             stop_code = naptan.text
             stop_name = stop_name.find('a').text
-            entity = self._get_entity(stop_code, stop_name)
+            entity = self._get_entity(stop_code, stop_name, source, entity_type)
             StopOnRoute.objects.create(route_id=route_id, entity=entity, order=i)
 
     def _get_source(self):
