@@ -8,3 +8,4 @@ recursive-include molly/*/static *
 recursive-include molly/*/data *
 recursive-include molly/media *
 recursive-include molly/templates *
+recursive-include molly/maps/management/commands/markers *
