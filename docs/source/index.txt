@@ -68,4 +68,3 @@ Miscellany
    :maxdepth: 1
 
    license
-   cla
