@@ -1,4 +1,5 @@
 include setup.py README.creole MANIFEST.in LICENSE
+exclude molly/wurfl/wurfl_data.py
 recursive-include molly/apps/*/tests/data *
 recursive-include molly/apps/*/templates *
 recursive-include molly/apps/*/static *
