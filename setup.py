@@ -55,7 +55,7 @@ setup(
     classifiers=[
         'Framework :: Django',
         'Development Status :: 5 - Production/Stable',
-        'License :: OSI Approved :: Academic Free License (AFL)',
+        'License :: OSI Approved :: Apache Software License',
         'Intended Audience :: Education',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
