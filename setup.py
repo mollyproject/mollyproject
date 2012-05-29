@@ -49,7 +49,7 @@ setup(
     url='http://mollyproject.org/',
     author='The Molly Project',
     description="A framework for building mobile information portals",
-    license='Academic Free License',
+    license='Apache 2.0',
     packages=find_packages(),
     include_package_data=True,
     classifiers=[
