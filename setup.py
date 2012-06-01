@@ -76,7 +76,7 @@ setup(
         "python-dateutil==1.5",
         "Django==1.3.1",
         "oauth==1.0.1",
-        "psycopg2==2.4.5",
+        "psycopg2==2.4.1",
         "PIL==1.1.7",
         "lxml>=2.3.4,<2.4",
         "python-ldap>=2.4.9,<2.5",
