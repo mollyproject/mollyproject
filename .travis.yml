@@ -1,0 +1,15 @@
+language: python
+python:
+  - "2.6"
+env:
+  - DJANGO=1.3.1
+before_install:
+ - sudo apt-get update
+ - sudo apt-get install binutils gdal-bin libproj-dev postgresql-9.1-postgis postgresql-server-dev-9.1 python-psycopg2
+ - sudo su - postgres -c "wget -qO- https://docs.djangoproject.com/en/dev/_downloads/create_template_postgis-debian.sh | sh &> /dev/null"
+ - sudo su - postgres -c "createdb -T template_postgis molly"
+install:
+  - pip install -q Django==$DJANGO --use-mirrors
+  - pip install -q -e . --use-mirrors
+script:
+  - python setup.py test
