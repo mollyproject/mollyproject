@@ -10,6 +10,7 @@ from django.contrib.auth.models import User
 from .views import SecureView
 from .models import UserSession
 from molly.utils.views import BaseView
+from molly.utils.i18n import javascript_catalog
 
 class SecureSessionMiddleware(object):
     def process_request(self, request):
@@ -53,10 +54,8 @@ class SecureSessionMiddleware(object):
     def process_view(self, request, view_func, view_args, view_kwargs):
         if settings.DEBUG_SECURE:
             return
-            
         secure_request = request.is_secure()
         secure_view = isinstance(view_func, SecureView)
-        
         # If the non-secure session is marked secure, refuse the request.
         # Likewise, if the secure session isn't marked secure, refuse the
         # request and delete the cookie.
@@ -66,7 +65,10 @@ class SecureSessionMiddleware(object):
             resp = HttpResponseForbidden('Invalid secure_session_id', mimetype='text/plain')
             resp.delete_cookie('secure_session_id')
             return resp
-
+        # The js catalog is used for translation on the client side
+        # this can be served off either https or http
+        if view_func == javascript_catalog:
+            return
         if secure_view and not secure_request:
             uri = request.build_absolute_uri().split(':', 1)
             uri = 'https:' + uri[1]
@@ -76,7 +78,6 @@ class SecureSessionMiddleware(object):
             uri = 'http:' + uri[1]
             if uri == 'http://%s/' % request.META.get('HTTP_HOST', ''):
                 uri += '?preview=true'
-            
             if isinstance(view_func, BaseView):
                 return view_func.redirect(uri, request, 'secure')
             else:
