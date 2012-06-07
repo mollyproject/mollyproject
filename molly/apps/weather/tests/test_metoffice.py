@@ -29,4 +29,22 @@ class MetOfficeObservationsProviderTest(unittest2.TestCase):
         obs_wind_gust = -99
         obs_wind_direction = 'NW'
 
-        break
+
+class MetOfficeForecastsProviderTest(unittest2.TestCase):
+    """
+    Tests for MetOffice/Forecasts provider
+    """
+
+    def test_scrape_daily_xml(self):
+        """
+        Test parsing of tests/data/metoffice_forecast_daily.xml
+        """
+        with open('molly/apps/weather/tests/data/metoffice_forecast_daily.xml') as f:
+            content = f.read()
+            f.close()
+
+        provider = MetOfficeProvider('test')
+        forecasts = provider.scrape_forecast_daily_xml(content)
+
+
+

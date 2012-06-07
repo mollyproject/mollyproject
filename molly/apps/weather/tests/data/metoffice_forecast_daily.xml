@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<SiteRep>
+    <Wx>
+        <Param units="C" name="FDm">Feels Like Day Maximum Temperature</Param>
+        <Param units="C" name="Dm">Day Maximum Temperature</Param>
+        <Param units="C" name="FNm">Feels Like Night Minimum Temperature</Param>
+        <Param units="C" name="Nm">Night Minimum Temperature</Param>
+        <Param units="C" name="F">Feels Like Temperature</Param>
+        <Param units="mph" name="G">Wind Gust</Param>
+        <Param units="mph" name="Gn">Wind Gust Noon</Param>
+        <Param units="mph" name="Gm">Wind Gust Midnight</Param>
+        <Param units="%" name="Hn">Screen Relative Humidity Noon</Param>
+        <Param units="%" name="Hm">Screen Relative Humidity Midnight</Param>
+        <Param units="C" name="T">Temperature</Param>
+        <Param units="" name="V">Visibility</Param>
+        <Param units="compass" name="D">Wind Direction</Param>
+        <Param units="mph" name="S">Wind Speed</Param>
+        <Param units="" name="U">Max UV Index</Param>
+        <Param units="" name="W">Weather Type</Param>
+        <Param units="%" name="PPd">Precipitation Probability Day</Param>
+        <Param units="%" name="PPn">Precipitation Probability Night</Param>
+    </Wx>
+    <DV type="Forecast" dataDate="2012-06-07T00:00:00Z">
+        <Location continent="EUROPE" country="ENGLAND" name="OXFORD" lon="-1.25" lat="51.75" i="310118">
+            <Period val="2012-06-07Z" type="Day">
+                <Rep U="1" W="15" FDm="13" Dm="15" V="MO" S="12" PPd="95" Hn="89" Gn="25" D="SE">Day</Rep>
+                <Rep W="12" FNm="9" Nm="12" V="VG" S="21" PPn="80" Hm="80" Gm="41" D="S">Night</Rep>
+            </Period>
+            <Period val="2012-06-08Z" type="Day">
+                <Rep U="2" W="12" FDm="9" Dm="13" V="VG" S="23" PPd="80" Hn="81" Gn="45" D="SW">Day</Rep>
+                <Rep W="7" FNm="6" Nm="10" V="VG" S="19" PPn="20" Hm="83" Gm="36" D="WSW">Night</Rep>
+            </Period>
+            <Period val="2012-06-09Z" type="Day">
+                <Rep U="5" W="1" FDm="13" Dm="17" V="EX" S="18" PPd="20" Hn="48" Gn="36" D="W">Day</Rep>
+                <Rep W="7" FNm="10" Nm="11" V="GO" S="7" PPn="20" Hm="88" Gm="13" D="S">Night</Rep>
+            </Period>
+            <Period val="2012-06-10Z" type="Day">
+                <Rep U="2" W="12" FDm="12" Dm="14" V="GO" S="9" PPd="60" Hn="91" Gn="19" D="E">Day</Rep>
+                <Rep W="7" FNm="11" Nm="11" V="GO" S="6" PPn="60" Hm="96" Gm="12" D="NNW">Night</Rep>
+            </Period>
+            <Period val="2012-06-11Z" type="Day">
+                <Rep U="4" W="14" FDm="16" Dm="17" V="VG" S="7" PPd="60" Hn="68" Gn="17" D="NNW">Day</Rep>
+                <Rep W="7" FNm="11" Nm="11" V="GO" S="5" PPn="20" Hm="92" Gm="9" D="WSW">Night</Rep>
+            </Period>
+        </Location>
+    </DV>
+</SiteRep>
