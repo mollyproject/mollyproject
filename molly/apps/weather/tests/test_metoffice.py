@@ -46,5 +46,7 @@ class MetOfficeForecastsProviderTest(unittest2.TestCase):
         provider = MetOfficeProvider('test')
         forecasts = provider.scrape_forecast_daily_xml(content)
 
+        # <Rep U="1" W="15" FDm="13" Dm="15" V="MO" S="12" PPd="95" Hn="89" Gn="25" D="SE">Day</Rep>
+
 
 

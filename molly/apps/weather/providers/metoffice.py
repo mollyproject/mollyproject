@@ -3,6 +3,7 @@ from urllib2 import urlopen
 from lxml import etree
 from datetime import datetime, timedelta
 
+from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 
 from molly.conf.providers import Provider, task
@@ -53,7 +54,7 @@ METOFFICE_OUTLOOK_CHOICES = (
 )
 
 METOFFICE_VISIBILITY_CHOICES = (
-    ('UN', VISIBILITY_CHOICES['']),
+    ('UN', 0),      # "Unknown", TODO missing association
     ('VP', VISIBILITY_CHOICES['vp']),
     ('PO', VISIBILITY_CHOICES['p']),
     ('MO', VISIBILITY_CHOICES['m']),
@@ -65,6 +66,7 @@ METOFFICE_VISIBILITY_CHOICES = (
 class MetOfficeProvider(Provider):
     """
     Scrapes MetOffice DataPoint / observations API
+    Documentation is available at: http://www.metoffice.gov.uk/public/ddc/datasets-documentation.html#DailyForecast
     TODO: this class should be splitted in two (observations and forecasts).
     """
 
@@ -75,25 +77,38 @@ class MetOfficeProvider(Provider):
 
     FRESHNESS = timedelta(hours=3)
 
+    FORECASTS_URL = "http://partner.metoffice.gov.uk/public/val/wxfcs/all/xml/%d?res=daily&key=%s"
+
     def __init__(self, location_id):
         self.location_id = location_id
         self.id = 'metoffice/%d' % location_id
 
     def fetch_observation(self):
-        return Weather.objects.all()
+        return Weather.objects.get(location_id=self.id,
+            ptype=PTYPE_OBSERVATION)
 
-    def scrape_xml(self, content):
-        """
-        Scrape the XML content representing a site,
-        returns a dict containing the first observation
-        (most recent).
-        """
+    def fetch_forecasts(self):
+        return Weather.objects.filter(
+            location_id=self.id, ptype=PTYPE_FORECAST,
+            observed_date__gte=datetime.now().date()
+        ).order_by('observed_date')
+
+    def scrape_forecast_daily_xml(self, content):
         xml = etree.fromstring(content)
-        period = xml.findall('//Period')[0]
-        last_observation = xml.findall('//Rep')[0]
-        observations = {
-            'datetime': datetime(2011, 11, 22, 20, 00),
-            'weather_type': 104,
-            'visibility': 'MO',
-        }
-        return observations
+        periods = xml.findall('.//Period')
+        for period in periods:
+            date = period.get('val')
+            reps = period.findall('.//Rep')
+            for rep in reps:
+                # we'll need the "day" rep
+                # or... both of them? e.g. max temp day + min temp night?
+                weather_type = rep.get('W')
+                wind_direction = rep.get('D')
+                wind_speed = rep.get('S')
+                visibility = rep.get('V')
+
+    @task(run_every=timedelta(minutes=15))
+    def import_forecasts(self, **metadata):
+        content = urlopen(self.FORECASTS_URL % (self.location_id, settings.API_KEYS['metoffice']))\
+            .read()
+        forecasts = self.scrape_forecast_daily_xml(content)
