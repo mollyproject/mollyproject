@@ -62,7 +62,7 @@ class BBCWeatherProvider(Provider):
             return None
 
     _OBSERVATIONS_URL = \
-        'http://newsrss.bbc.co.uk/weather/forecast/%d/ObservationsRSS.xml'
+        'http://open.live.bbc.co.uk/weather/feeds/en/%d/observations.rss'
     _OBSERVATIONS_RE = re.compile(
           r'Temperature: (?P<temperature>-?\d+|N\/A).+'
         + r'Wind Direction: '
@@ -79,7 +79,7 @@ class BBCWeatherProvider(Provider):
     )
 
     _FORECAST_URL = \
-        'http://newsrss.bbc.co.uk/weather/forecast/%d/Next3DaysRSS.xml'
+        'http://open.live.bbc.co.uk/weather/feeds/en/%d/3dayforecast.rss'
     _FORECAST_RE = re.compile(
         r'Max Temp:\s*(?P<max_temperature>-?\d+|N\/A).+'
         + r'Min Temp:\s*(?P<min_temperature>-?\d+|N\/A)'
