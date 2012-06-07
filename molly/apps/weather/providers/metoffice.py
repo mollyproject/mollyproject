@@ -50,7 +50,17 @@ METOFFICE_OUTLOOK_CHOICES = (
     (31, OUTLOOK_CHOICES['tst']),   # Tropical storm
     (32, OUTLOOK_CHOICES['unk']),   # NOT USED?
     (33, OUTLOOK_CHOICES['h']),   # Haze
-    )
+)
+
+METOFFICE_VISIBILITY_CHOICES = (
+    ('UN', VISIBILITY_CHOICES['']),
+    ('VP', VISIBILITY_CHOICES['vp']),
+    ('PO', VISIBILITY_CHOICES['p']),
+    ('MO', VISIBILITY_CHOICES['m']),
+    ('GO', VISIBILITY_CHOICES['g']),
+    ('VG', VISIBILITY_CHOICES['vg']),
+    ('EX', VISIBILITY_CHOICES['e']),
+)
 
 class MetOfficeProvider(Provider):
     """
