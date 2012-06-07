@@ -9,5 +9,6 @@ recursive-include molly/*/data *
 recursive-include molly/media *
 recursive-include molly/templates *
 recursive-include molly/maps/management/commands/markers *
+recursive-include molly/maps/osm/fallback *
 recursive-include molly/commands/site_template *
 exclude molly/wurfl/wurfl_data.py

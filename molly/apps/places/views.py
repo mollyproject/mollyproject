@@ -729,7 +729,7 @@ class ServiceDetailView(BaseView):
                     i += 1
                 calling_points.append(calling_point)
             service = {
-                    'entities': route.stops.all(),
+                    'entities': route.stops.all().order_by('stoponroute__order'),
                     'operator': route.operator,
                     'has_timetable': False,
                     'has_realtime': False,
@@ -856,7 +856,7 @@ class RouteView(BaseView):
                 calling_points.append(calling_point)
             
             service = {
-                    'entities': route.stops.all(),
+                    'entities': route.stops.all().order_by('stoponroute__order'),
                     'operator': route.operator,
                     'has_timetable': False,
                     'has_realtime': False,

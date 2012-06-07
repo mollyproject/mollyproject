@@ -6,6 +6,8 @@ framework for creating a mobile web portal for higher education institutions.
 
 Please do Fork our code! We're looking for more contributors to the project. 
 
+{{https://secure.travis-ci.org/mollyproject/mollyproject.png?branch=master|Build Status}}
+
 == Get Started ==
 
 The 'quickinstall' script will automate the whole process of deploying Molly for
