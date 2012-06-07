@@ -12,6 +12,7 @@ before_install:
 install:
   - pip install -q Django==$DJANGO --use-mirrors
   - pip install -q -e . --use-mirrors
+  - django-admin.py update_wurfl --settings=molly.conf.test_settings
 script:
   - python setup.py test
 notifications:
