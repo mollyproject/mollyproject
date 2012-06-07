@@ -63,6 +63,8 @@ class BBCWeatherProvider(Provider):
 
     _OBSERVATIONS_URL = \
         'http://open.live.bbc.co.uk/weather/feeds/en/%d/observations.rss'
+
+    # Temperature: 14°C (57°F), Wind Direction: South Easterly, Wind Speed: 18mph, Humidity: 90%, Pressure: 994mb, Falling, Visibility: Moderate
     _OBSERVATIONS_RE = re.compile(
           r'Temperature: (?P<temperature>-?\d+|N\/A).+'
         + r'Wind Direction: '
@@ -73,9 +75,9 @@ class BBCWeatherProvider(Provider):
         + r' (?P<pressure_state>rising|falling|steady|no change|N\/A), '
         + r'Visibility: (?P<visibility>[A-Za-z\/ ]+)')
 
+    # Thursday - 15:00 BST: Light Rain, 14°C (57°F)
     _OBSERVATIONS_TITLE_RE = re.compile(
-        r'(?P<day>[A-Za-z]+) at (?P<time>\d\d:\d\d).+' +
-        r'\n(?P<outlook>[A-Za-z\/ ]+)\.'
+        r'(?P<day>[A-Za-z]+) - (?P<time>\d\d:\d\d) (?P<tz>[A-Z]+): (?P<outlook>[A-Za-z\/ ]+)'
     )
 
     _FORECAST_URL = \
