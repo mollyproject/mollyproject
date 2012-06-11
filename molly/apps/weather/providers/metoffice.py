@@ -1,7 +1,7 @@
 import logging
 from urllib2 import urlopen
 from lxml import etree
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
@@ -79,38 +79,30 @@ class MetOfficeProvider(Provider):
 
     FRESHNESS = timedelta(hours=3)
 
-    def __init__(self, location_id):
-        self.location_id = location_id
-        self.id = 'metoffice/%d' % location_id
+    def __init__(self, forecasts_location_id, observations_location_id):
+        self.forecasts_location_id = forecasts_location_id
+        self.observations_location_id = observations_location_id
 
     def fetch_observation(self):
-        return Weather.objects.get(location_id=self.id,
+        return Weather.objects.get(location_id=self.observations_location_id,
             ptype=PTYPE_OBSERVATION)
 
     def fetch_forecasts(self):
         return Weather.objects.filter(
-            location_id=self.id, ptype=PTYPE_FORECAST,
+            location_id=self.forecasts_location_id, ptype=PTYPE_FORECAST,
             observed_date__gte=datetime.now().date()
         ).order_by('observed_date')
-
-    def scrape_forecast_daily_xml(self, forecasts):
-        xml = etree.fromstring(content)
-        periods = xml.findall('.//Period')
-        for period in periods:
-            date = period.get('val')
-            reps = period.findall('.//Rep')
-            for rep in reps:
-                # we'll need the "day" rep
-                # or... both of them? e.g. max temp day + min temp night?
-                weather_type = rep.get('W')
-                wind_direction = rep.get('D')
-                wind_speed = rep.get('S')
-                visibility = rep.get('V')
 
     @task(run_every=timedelta(minutes=15))
     def import_forecasts(self, **metadata):
         api = ApiWrapper()
-        forecasts = api.get_daily_forecasts_by_location(self.location_id)
+        forecasts = api.get_daily_forecasts_by_location(self.forecasts_location_id)
+
+    @task(run_every=timedelta(minutes=15))
+    def import_observations(self, **metadata):
+        api = ApiWrapper()
+        observations = api.get_observations_by_location(self.observations_location_id)
+        latest = observations
 
 
 class ApiWrapper(object):
@@ -120,16 +112,31 @@ class ApiWrapper(object):
 
     FORECAST_FRAGMENT_URL = '/wxfcs/all/xml'
 
+    OBSERVATIONS_FRAGMENT_URL = '/wxobs/all/xml'
+
     def get_daily_forecasts_by_location(self, location_id):
         content = urlopen('{0}{1}/{2}?res=daily&key={3}'.format(
-            self.BASE_METOFFICE_URL,
+            BASE_METOFFICE_URL,
             self.FORECAST_FRAGMENT_URL,
             location_id,
             settings.API_KEYS['metoffice']
         )).read()
         return self.scrape_xml(content)
 
-    def scrape_forecasts_xml(self, content):
+    def get_observations_by_location(self, location_id):
+        content = urlopen('{0}{1}/{2}?res=hourly&key={3}').format(
+            BASE_METOFFICE_URL,
+            self.OBSERVATIONS_FRAGMENT_URL,
+            location_id,
+            settings.API_KEYS['metoffice']
+        ).read()
+        return self.scrape_xml(content)
+
+    def scrape_xml(self, content):
+        """
+        Scrape XML from MetOffice DataPoint API.
+        Can be used to parse Forecasts/Daily, Forecasts/3hourly, Observations
+        """
         xml = etree.fromstring(content)
         periods = xml.findall('.//Period')
         p = {}
@@ -140,7 +147,11 @@ class ApiWrapper(object):
             p[date_parsed] = {}
             reps = period.findall('.//Rep')
             for rep in reps:
+                # rep.txt represents the number of minutes since midnight
                 p[date_parsed][rep.text] = {}
+                # set of attributes depends on type forecasts vs. observations,
+                # but also if it's a forecast for the day or night (e.g. min temperature is
+                # only available for a night forecast...
                 for k in rep.attrib:
                     p[date_parsed][rep.text][k] = rep.attrib[k]
         return p

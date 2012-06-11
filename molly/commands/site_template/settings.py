@@ -201,6 +201,10 @@ API_KEYS = {
     
     # This is the web property ID for your Google Analytics account
     'google_analytics': '',
+
+    # This is used by the weather app - if you want to use the MetOffice
+    # provider. You need to get an API key at http://www.metoffice.gov.uk/public/ddc/index.html
+    'metoffice': '',
 }
 
 # Each entity has a primary identifier which is used to generate the absolute
@@ -712,10 +716,15 @@ APPLICATIONS = [
         
         # This specifies where Molly gets its weather data from. At present,
         # only a BBC Weather RSS feed parser exists
-        provider = Provider('molly.apps.weather.providers.BBCWeatherProvider',
+        #provider = Provider('molly.apps.weather.providers.BBCWeatherProvider',
             # This is the BBC location ID, discovered in the same way as
             # described above
-            location_id = 9,
+        #    location_id = 9,
+        #),
+
+        provider = Provider('molly.apps.weather.providers.metoffice.MetOfficeProvider',
+            forecasts_location_id = 310118,
+            observations_location_id = 3658,
         ),
     ),
 
