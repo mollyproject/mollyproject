@@ -31,7 +31,9 @@
                 {% if observation.humidity %}
                 {% blocktrans with observation.humidity as humidity %}{{ humidity }}% Relative Humidity{% endblocktrans %}<br/>
                 {% endif %}
+                {% if observation.pressure %}
                 {% blocktrans with observation.pressure as pressure and observation.get_pressure_state_display as pressure_change %}{{ pressure }} mbar and {{ pressure_change }}{% endblocktrans %}<br/>
+                {% endif %}
         </div>
     </div>
 
