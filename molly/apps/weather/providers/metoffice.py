@@ -53,17 +53,9 @@ METOFFICE_OUTLOOK_CHOICES = (
     (32, 'unk'),   # NOT USED?
     (33, 'h'),   # Haze
     )
-#METOFFICE_VISIBILITY_CHOICES = (
-#    ('UN', 0),      # "Unknown", TODO missing association
-#    ('VP', VISIBILITY_CHOICES['vp']),
-#    ('PO', VISIBILITY_CHOICES['p']),
-#    ('MO', VISIBILITY_CHOICES['m']),
-#    ('GO', VISIBILITY_CHOICES['g']),
-#    ('VG', VISIBILITY_CHOICES['vg']),
-#    ('EX', VISIBILITY_CHOICES['e']),
-#)
 
 BASE_METOFFICE_URL = "http://partner.metoffice.gov.uk/public/val"
+
 
 class MetOfficeProvider(Provider):
     """
@@ -93,7 +85,7 @@ class MetOfficeProvider(Provider):
             observed_date__gte=datetime.now().date()
         ).order_by('observed_date')
 
-    @task(run_every=timedelta(minutes=15))
+    @task(run_every=timedelta(minutes=15), default_retry_delay=2, max_retries=3)
     def import_forecasts(self, **metadata):
         api = ApiWrapper()
         forecasts = api.get_daily_forecasts_by_location(self.forecasts_location_id)
@@ -110,7 +102,7 @@ class MetOfficeProvider(Provider):
             forecast.observed_date = datetime.combine(fc, time(hour=0))
             forecast.save()
 
-    @task(run_every=timedelta(minutes=15))
+    @task(run_every=timedelta(minutes=15), default_retry_delay=2, max_retries=3)
     def import_observation(self, **metadata):
         api = ApiWrapper()
         observations = api.get_observations_by_location(self.observations_location_id)
