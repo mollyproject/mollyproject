@@ -128,9 +128,15 @@ class MetOfficeProvider(Provider):
                 time(int(latest_hour)/60))
         outlooks = dict(METOFFICE_OUTLOOK_CHOICES)
         observation.outlook = outlooks[int(latest['W'])]
-        #observation.humidity = not available??
+        #observation.humidity = not available
+        #observation.pressure_state = not available
         observation.save()
 
+    @task(run_every=timedelta(hours=1))
+    def delete_old_forecasts(self, **metadata):
+        delete_until = datetime.now() - timedelta(days=2)
+        logger.debug('Deleting old weather objects until %s' % delete_until)
+        Weather.objects.filter(observed_date__lte=delete_until).delete()
 
 class ApiWrapper(object):
     """
