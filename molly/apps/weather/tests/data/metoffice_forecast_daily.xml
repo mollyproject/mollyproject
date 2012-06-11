@@ -20,27 +20,27 @@
         <Param units="%" name="PPd">Precipitation Probability Day</Param>
         <Param units="%" name="PPn">Precipitation Probability Night</Param>
     </Wx>
-    <DV type="Forecast" dataDate="2012-06-07T00:00:00Z">
+    <DV type="Forecast" dataDate="2012-06-08T00:00:00Z">
         <Location continent="EUROPE" country="ENGLAND" name="OXFORD" lon="-1.25" lat="51.75" i="310118">
-            <Period val="2012-06-07Z" type="Day">
-                <Rep U="1" W="15" FDm="13" Dm="15" V="MO" S="12" PPd="95" Hn="89" Gn="25" D="SE">Day</Rep>
-                <Rep W="12" FNm="9" Nm="12" V="VG" S="21" PPn="80" Hm="80" Gm="41" D="S">Night</Rep>
-            </Period>
             <Period val="2012-06-08Z" type="Day">
-                <Rep U="2" W="12" FDm="9" Dm="13" V="VG" S="23" PPd="80" Hn="81" Gn="45" D="SW">Day</Rep>
-                <Rep W="7" FNm="6" Nm="10" V="VG" S="19" PPn="20" Hm="83" Gm="36" D="WSW">Night</Rep>
+                <Rep U="2" W="12" FDm="10" Dm="13" V="GO" S="17" PPd="80" Hn="83" Gn="40" D="SW">Day</Rep>
+                <Rep W="7" FNm="7" Nm="11" V="VG" S="18" PPn="20" Hm="81" Gm="35" D="WSW">Night</Rep>
             </Period>
             <Period val="2012-06-09Z" type="Day">
-                <Rep U="5" W="1" FDm="13" Dm="17" V="EX" S="18" PPd="20" Hn="48" Gn="36" D="W">Day</Rep>
-                <Rep W="7" FNm="10" Nm="11" V="GO" S="7" PPn="20" Hm="88" Gm="13" D="S">Night</Rep>
+                <Rep U="4" W="3" FDm="14" Dm="17" V="EX" S="17" PPd="20" Hn="51" Gn="33" D="WSW">Day</Rep>
+                <Rep W="2" FNm="10" Nm="11" V="GO" S="6" PPn="20" Hm="89" Gm="10" D="SSW">Night</Rep>
             </Period>
             <Period val="2012-06-10Z" type="Day">
-                <Rep U="2" W="12" FDm="12" Dm="14" V="GO" S="9" PPd="60" Hn="91" Gn="19" D="E">Day</Rep>
-                <Rep W="7" FNm="11" Nm="11" V="GO" S="6" PPn="60" Hm="96" Gm="12" D="NNW">Night</Rep>
+                <Rep U="2" W="12" FDm="13" Dm="14" V="MO" S="6" PPd="80" Hn="88" Gn="13" D="ESE">Day</Rep>
+                <Rep W="7" FNm="11" Nm="12" V="GO" S="4" PPn="60" Hm="95" Gm="7" D="SE">Night</Rep>
             </Period>
             <Period val="2012-06-11Z" type="Day">
-                <Rep U="4" W="14" FDm="16" Dm="17" V="VG" S="7" PPd="60" Hn="68" Gn="17" D="NNW">Day</Rep>
-                <Rep W="7" FNm="11" Nm="11" V="GO" S="5" PPn="20" Hm="92" Gm="9" D="WSW">Night</Rep>
+                <Rep U="3" W="12" FDm="14" Dm="16" V="VG" S="7" PPd="60" Hn="85" Gn="14" D="E">Day</Rep>
+                <Rep W="7" FNm="11" Nm="11" V="GO" S="6" PPn="20" Hm="91" Gm="12" D="SE">Night</Rep>
+            </Period>
+            <Period val="2012-06-12Z" type="Day">
+                <Rep U="3" W="14" FDm="14" Dm="16" V="GO" S="6" PPd="60" Hn="77" Gn="14" D="S">Day</Rep>
+                <Rep W="9" FNm="10" Nm="11" V="MO" S="6" PPn="40" Hm="93" Gm="12" D="S">Night</Rep>
             </Period>
         </Location>
     </DV>

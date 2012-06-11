@@ -63,6 +63,8 @@ METOFFICE_VISIBILITY_CHOICES = (
     ('EX', VISIBILITY_CHOICES['e']),
 )
 
+BASE_METOFFICE_URL = "http://partner.metoffice.gov.uk/public/val"
+
 class MetOfficeProvider(Provider):
     """
     Scrapes MetOffice DataPoint / observations API
@@ -76,8 +78,6 @@ class MetOfficeProvider(Provider):
     }
 
     FRESHNESS = timedelta(hours=3)
-
-    FORECASTS_URL = "http://partner.metoffice.gov.uk/public/val/wxfcs/all/xml/%d?res=daily&key=%s"
 
     def __init__(self, location_id):
         self.location_id = location_id
@@ -93,7 +93,7 @@ class MetOfficeProvider(Provider):
             observed_date__gte=datetime.now().date()
         ).order_by('observed_date')
 
-    def scrape_forecast_daily_xml(self, content):
+    def scrape_forecast_daily_xml(self, forecasts):
         xml = etree.fromstring(content)
         periods = xml.findall('.//Period')
         for period in periods:
@@ -109,6 +109,38 @@ class MetOfficeProvider(Provider):
 
     @task(run_every=timedelta(minutes=15))
     def import_forecasts(self, **metadata):
-        content = urlopen(self.FORECASTS_URL % (self.location_id, settings.API_KEYS['metoffice']))\
-            .read()
-        forecasts = self.scrape_forecast_daily_xml(content)
+        api = ApiWrapper()
+        forecasts = api.get_daily_forecasts_by_location(self.location_id)
+
+
+class ApiWrapper(object):
+    """
+    Scrape the XML API
+    """
+
+    FORECAST_FRAGMENT_URL = '/wxfcs/all/xml'
+
+    def get_daily_forecasts_by_location(self, location_id):
+        content = urlopen('{0}{1}/{2}?res=daily&key={3}'.format(
+            self.BASE_METOFFICE_URL,
+            self.FORECAST_FRAGMENT_URL,
+            location_id,
+            settings.API_KEYS['metoffice']
+        )).read()
+        return self.scrape_xml(content)
+
+    def scrape_forecasts_xml(self, content):
+        xml = etree.fromstring(content)
+        periods = xml.findall('.//Period')
+        p = {}
+        for period in periods:
+            date_val = period.get('val')
+            date_parsed = date(year=int(date_val[0:4]),
+                month=int(date_val[5:7]), day=int(date_val[8:10]))
+            p[date_parsed] = {}
+            reps = period.findall('.//Rep')
+            for rep in reps:
+                p[date_parsed][rep.text] = {}
+                for k in rep.attrib:
+                    p[date_parsed][rep.text][k] = rep.attrib[k]
+        return p
