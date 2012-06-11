@@ -99,10 +99,24 @@ class MetOfficeProvider(Provider):
         forecasts = api.get_daily_forecasts_by_location(self.forecasts_location_id)
 
     @task(run_every=timedelta(minutes=15))
-    def import_observations(self, **metadata):
+    def import_observation(self, **metadata):
         api = ApiWrapper()
         observations = api.get_observations_by_location(self.observations_location_id)
-        latest = observations
+        latest_day = self.sortdict(observations)[-1]
+        latest_hour = self.sortdict(latest_day)[-1]
+        observation = Weather.objects.get_or_create(
+            location_id=self.observations_location_id, ptype=PTYPE_OBSERVATION)
+        observation.temperature = int(latest_hour['T'])
+        observation.wind_speed = int(latest_hour['S'])
+        observation.wind_direction = latest_hour['D']
+        observation.pressure = int(latest_hour['P'])
+        #observation.observed_date =
+        observation.outlook = METOFFICE_OUTLOOK_CHOICES[latest_hour['W']]
+        #observation.humidity = not available??
+        observation.save()
+
+    def sortdict(self, d):
+        for key in sorted(d): yield d[key]
 
 
 class ApiWrapper(object):
