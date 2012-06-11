@@ -15,44 +15,44 @@ from molly.apps.weather.models import (
 
 logger = logging.getLogger(__name__)
 
-METOFFICE_OUTLOOK_CHOICES = (
-    ('NA', OUTLOOK_CHOICES['unk']),
-    (0, OUTLOOK_CHOICES['cs']),
-    (1, OUTLOOK_CHOICES['s']),
-    (2, OUTLOOK_CHOICES['pc']),     # night
-    (3, OUTLOOK_CHOICES['si']),
-    (4, OUTLOOK_CHOICES['unk']),    # DUST ??
-    (5, OUTLOOK_CHOICES['m']),
-    (6, OUTLOOK_CHOICES['f']),
-    (7, OUTLOOK_CHOICES['gc']),     # Medium-level cloud
-    (8, OUTLOOK_CHOICES['gc']),     # Low-level cloud
-    (9, OUTLOOK_CHOICES['lrs']),    # night
-    (10, OUTLOOK_CHOICES['lrs']),
-    (11, OUTLOOK_CHOICES['d']),
-    (12, OUTLOOK_CHOICES['lr']),
-    (13, OUTLOOK_CHOICES['hr']),   # Heavy rain shower (night)??
-    (14, OUTLOOK_CHOICES['hr']),   # Heavy rain shower (day)??
-    (15, OUTLOOK_CHOICES['hr']),
-    (16, OUTLOOK_CHOICES['unk']),   # Sleet shower (night)??
-    (17, OUTLOOK_CHOICES['unk']),   # Sleet shower (day)??
-    (18, OUTLOOK_CHOICES['unk']),   # Sleet??
-    (19, OUTLOOK_CHOICES['h']),   # Hail shower (night)
-    (20, OUTLOOK_CHOICES['h']),   # Hail shower (day)
-    (21, OUTLOOK_CHOICES['h']),   # Hail
-    (22, OUTLOOK_CHOICES['lsn']),   # Light snow shower (night)
-    (23, OUTLOOK_CHOICES['lsn']),   # Light snow shower (day)
-    (24, OUTLOOK_CHOICES['lsn']),   # Light snow
-    (25, OUTLOOK_CHOICES['hsn']),   # Heavy snow shower (night)
-    (26, OUTLOOK_CHOICES['hsn']),   # Heavy snow shower (day)
-    (27, OUTLOOK_CHOICES['hsn']),   # Heavy snow
-    (28, OUTLOOK_CHOICES['tsh']),   # Thundery shower (night)
-    (29, OUTLOOK_CHOICES['tsh']),   # Thundery shower (day)
-    (30, OUTLOOK_CHOICES['tst']),   # Thunder storm
-    (31, OUTLOOK_CHOICES['tst']),   # Tropical storm
-    (32, OUTLOOK_CHOICES['unk']),   # NOT USED?
-    (33, OUTLOOK_CHOICES['h']),   # Haze
-)
 
+METOFFICE_OUTLOOK_CHOICES = (
+    ('NA', 'unk'),
+    (0, 'cs'),
+    (1, 's'),
+    (2, 'pc'),     # night
+    (3, 'si'),
+    (4, 'unk'),    # DUST ??
+    (5, 'm'),
+    (6, 'f'),
+    (7, 'gc'),     # Medium-level cloud
+    (8, 'gc'),     # Low-level cloud
+    (9, 'lrs'),    # night
+    (10, 'lrs'),
+    (11, 'd'),
+    (12, 'lr'),
+    (13, 'hr'),   # Heavy rain shower (night)??
+    (14, 'hr'),   # Heavy rain shower (day)??
+    (15, 'hr'),
+    (16, 'hr'),   # Sleet shower (night)??
+    (17, 'hr'),   # Sleet shower (day)??
+    (18, 'hr'),   # Sleet??
+    (19, 'h'),   # Hail shower (night)
+    (20, 'h'),   # Hail shower (day)
+    (21, 'h'),   # Hail
+    (22, 'lsn'),   # Light snow shower (night)
+    (23, 'lsn'),   # Light snow shower (day)
+    (24, 'lsn'),   # Light snow
+    (25, 'hsn'),   # Heavy snow shower (night)
+    (26, 'hsn'),   # Heavy snow shower (day)
+    (27, 'hsn'),   # Heavy snow
+    (28, 'tsh'),   # Thundery shower (night)
+    (29, 'tsh'),   # Thundery shower (day)
+    (30, 'tst'),   # Thunder storm
+    (31, 'tst'),   # Tropical storm
+    (32, 'unk'),   # NOT USED?
+    (33, 'h'),   # Haze
+    )
 METOFFICE_VISIBILITY_CHOICES = (
     ('UN', 0),      # "Unknown", TODO missing association
     ('VP', VISIBILITY_CHOICES['vp']),
