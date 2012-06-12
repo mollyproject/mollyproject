@@ -2,16 +2,15 @@ import logging
 from urllib2 import urlopen
 from lxml import etree
 from datetime import datetime, timedelta, date, time
+import socket
+socket.setdefaulttimeout(5)
 
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 
 from molly.conf.provider import Provider, task
-from molly.apps.weather.models import Weather
 from molly.apps.weather.models import (
-    Weather, OUTLOOK_CHOICES, VISIBILITY_CHOICES, PRESSURE_STATE_CHOICES,
-    SCALE_CHOICES, PTYPE_OBSERVATION, PTYPE_FORECAST
-    )
+    Weather, PTYPE_OBSERVATION, PTYPE_FORECAST)
 
 logger = logging.getLogger(__name__)
 
