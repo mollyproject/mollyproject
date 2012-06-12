@@ -107,7 +107,7 @@ class MetOfficeProvider(Provider):
         api = ApiWrapper()
         observations = api.get_observations_by_location(self.observations_location_id)
         latest_day = sorted(observations)[-1]
-        latest_hour = sorted(observations[latest_day])[-1]
+        latest_hour = sorted(observations[latest_day], key=lambda x: int(x))[-1]
         latest = observations[latest_day][latest_hour]
         observation, created = Weather.objects.get_or_create(
             location_id=self.observations_location_id,
