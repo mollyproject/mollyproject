@@ -714,8 +714,8 @@ APPLICATIONS = [
         # and the number at the end (9) indicates the location ID
         location_id = 'bbc/9',
         
-        # This specifies where Molly gets its weather data from. At present,
-        # only a BBC Weather RSS feed parser exists
+        # This specifies where Molly gets its weather data from.
+
         #provider = Provider('molly.apps.weather.providers.BBCWeatherProvider',
             # This is the BBC location ID, discovered in the same way as
             # described above

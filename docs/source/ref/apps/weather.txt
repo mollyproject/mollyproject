@@ -24,6 +24,9 @@ Sample::
 Providers
 ---------
 
+It is recommended to use the MetOffice provider as BBC Weather is not working at the moment
+and should be changed in the near future.
+
 molly.apps.weather.providers.BBCWeatherProvider
 """""""""""""""""""""""""""""""""""""""""""""""
 
