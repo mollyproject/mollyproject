@@ -1,0 +1,44 @@
+<SiteRep>
+    <Wx>
+        <Parm units="mph" name="G">Wind Gust</Parm>
+        <Parm units="C" name="T">Temperature</Parm>
+        <Parm units="" name="V">Visibility</Parm>
+        <Parm units="deg" name="D">Wind Direction</Parm>
+        <Parm units="mph" name="S">Wind Speed</Parm>
+        <Parm units="" name="W">Weather Type</Parm>
+        <Parm units="hPa" name="P">Pressure</Parm>
+    </Wx>
+    <DV type="Obs" dataDate="2011-11-22T20:00:00Z">
+        <Location continent="EUROPE" country="ENGLAND" name="HEATHROW" lon="-0.45" lat="51.48" i="3772">
+            <Period val="2011-11-22Z" type="Day">
+                <Rep W="104" V="MO" T="10.3" S="5" P="1023" G="-99" D="NW">1200</Rep>
+                <Rep W="-99" V="GO" T="9.7" S="5" P="1023" G="-99" D="N">1260</Rep>
+                <Rep W="104" V="MO" T="8.5" S="5" P="1024" G="-99" D="WNW">1320</Rep>
+                <Rep W="110" V="MO" T="7.4" S="2" P="1024" G="-99" D="WNW">1380</Rep>
+            </Period>
+            <Period val="2011-11-23Z" type="Day">
+                <Rep W="110" V="MO" T="6.6" S="2" P="1024" G="-99" D="W">0</Rep>
+                <Rep W="110" V="PO" T="5.9" S="1" P="1025" G="-99" D="NNW">60</Rep>
+                <Rep W="134" V="VP" T="4.8" S="2" P="1025" G="-99" D="WNW">120</Rep>
+                <Rep W="134" V="VP" T="3.4" S="3" P="1026" G="-99" D="W">180</Rep>
+                <Rep W="133" V="VP" T="3.2" S="2" P="1026" G="-99" D="WNW">240</Rep>
+                <Rep W="133" V="VP" T="2.7" S="3" P="1026" G="-99" D="W">300</Rep>
+                <Rep W="133" V="VP" T="3.3" S="3" P="1026" G="-99" D="WSW">360</Rep>
+                <Rep W="133" V="VP" T="3.4" S="5" P="1027" G="-99" D="SSW">420</Rep>
+                <Rep W="134" V="VP" T="3.6" S="6" P="1027" G="-99" D="S">480</Rep>
+                <Rep W="132" V="VP" T="3.9" S="2" P="1028" G="-99" D="SW">540</Rep>
+                <Rep W="120" V="MO" T="4.7" S="3" P="1028" G="-99" D="WSW">600</Rep>
+                <Rep W="-99" V="GO" T="6.6" S="3" P="1028" G="-99" D="SW">660</Rep>
+                <Rep W="-99" V="GO" T="8.6" S="7" P="1027" G="-99" D="SW">720</Rep>
+                <Rep W="-99" V="VG" T="10.3" S="7" P="1027" G="-99" D="SW">780</Rep>
+                <Rep W="-99" V="VG" T="10.8" S="9" P="1027" G="-99" D="SW">840</Rep>
+                <Rep W="-99" V="VG" T="10.7" S="8" P="1027" G="-99" D="SW">900</Rep>
+                <Rep W="-99" V="VG" T="10.1" S="8" P="1028" G="-99" D="SW">960</Rep>
+                <Rep W="-99" V="VG" T="9.7" S="7" P="1028" G="-99" D="SSW">1020</Rep>
+                <Rep W="104" V="MO" T="9.5" S="6" P="1028" G="-99" D="S">1080</Rep>
+                <Rep W="-99" V="GO" T="9.4" S="9" P="1028" G="-99" D="SSW">1140</Rep>
+                <Rep W="-99" V="GO" T="9.2" S="9" P="1029" G="-99" D="SSW">1200</Rep>
+            </Period>
+        </location>
+    </DV>
+</SiteRep>

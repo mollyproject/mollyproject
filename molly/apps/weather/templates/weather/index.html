@@ -28,8 +28,14 @@
                 {% blocktrans with observation.temperature as temperature %} {{ temperature }}&deg;C{% endblocktrans %}
             </span><br/>
                 {% blocktrans with observation.wind_speed as wind_speed and observation.wind_direction as wind_direction %}{{ wind_speed }}mph {{ wind_direction }}{% endblocktrans %}<br/>
+                {% if observation.humidity %}
                 {% blocktrans with observation.humidity as humidity %}{{ humidity }}% Relative Humidity{% endblocktrans %}<br/>
+                {% endif %}
+                {% if observation.pressure_state %}
                 {% blocktrans with observation.pressure as pressure and observation.get_pressure_state_display as pressure_change %}{{ pressure }} mbar and {{ pressure_change }}{% endblocktrans %}<br/>
+                {% else %}
+                {% blocktrans with observation.pressure as pressure %}{{ pressure }} mbar{% endblocktrans %}<br/>
+                {% endif %}
         </div>
     </div>
 
