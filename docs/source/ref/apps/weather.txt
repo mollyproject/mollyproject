@@ -33,6 +33,17 @@ search. It has one option:
 
  * location_id: The BBC ID for this weather location
 
+molly.apps.weather.providers.metoffice.MetOfficeProvider
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+Uses the MetOffice DataPoint API to get weather information. This provider requires
+an API key that needs a registration on `MetOffice DataPoint <http://www.metoffice.gov.uk/public/ddc/>`_.
+This key should be inserted in API_KEYS as "metoffice".
+
+It has two options:
+ * forecasts_location_id: the ID for the location of forecasts
+ * observations_location_id: the ID for the location of observations
+
 Writing Your Own Providers
 --------------------------
 
