@@ -88,13 +88,14 @@ class MetOfficeProvider(Provider):
     @task(run_every=timedelta(minutes=15), default_retry_delay=2, max_retries=3)
     def import_forecasts(self, **metadata):
         api = ApiWrapper()
-        forecasts = api.get_daily_forecasts_by_location(self.forecasts_location_id)
+        forecasts, location = api.get_daily_forecasts_by_location(self.forecasts_location_id)
         for fc in forecasts:
             f = forecasts[fc]
             forecast, created = Weather.objects.get_or_create(
                     location_id=self.forecasts_location_id,
                     observed_date=fc,
                     ptype=PTYPE_FORECAST)
+            forecast.name = location['name']
             forecast.min_temperature = float(f['Night']['Nm'])
             forecast.max_temperature = float(f['Day']['Dm'])
             outlooks = dict(METOFFICE_OUTLOOK_CHOICES)
@@ -105,13 +106,14 @@ class MetOfficeProvider(Provider):
     @task(run_every=timedelta(minutes=15), default_retry_delay=2, max_retries=3)
     def import_observation(self, **metadata):
         api = ApiWrapper()
-        observations = api.get_observations_by_location(self.observations_location_id)
+        observations, location = api.get_observations_by_location(self.observations_location_id)
         latest_day = sorted(observations)[-1]
         latest_hour = sorted(observations[latest_day], key=lambda x: int(x))[-1]
         latest = observations[latest_day][latest_hour]
         observation, created = Weather.objects.get_or_create(
             location_id=self.observations_location_id,
             ptype=PTYPE_OBSERVATION)
+        observation.name = location['name']
         observation.temperature = float(latest['T'])
         observation.wind_speed = int(latest['S'])
         observation.wind_direction = latest['D']
@@ -161,8 +163,13 @@ class ApiWrapper(object):
         """
         Scrape XML from MetOffice DataPoint API.
         Can be used to parse Forecasts/Daily, Forecasts/3hourly, Observations
+        Returns a list of representations, information about the location
         """
         xml = etree.fromstring(content)
+        location = xml.find('.//Location')
+        l = {}
+        for k in location.attrib:
+            l[k] = location.attrib[k]
         periods = xml.findall('.//Period')
         p = {}
         for period in periods:
@@ -179,4 +186,4 @@ class ApiWrapper(object):
                 # only available for a night forecast...
                 for k in rep.attrib:
                     p[date_parsed][rep.text][k] = rep.attrib[k]
-        return p
+        return p, l
