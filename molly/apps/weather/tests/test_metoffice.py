@@ -16,7 +16,9 @@ class MetOfficeObservationsProviderTest(unittest2.TestCase):
             f.close()
 
         provider = ApiWrapper()
-        result = provider.scrape_forecasts_xml(content)
+        result, location = provider.scrape_xml(content)
+
+        self.assertEqual(location['name'], 'OXFORD')
 
         # 5 periods
         self.assertEqual(len(result), 5)
