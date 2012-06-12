@@ -15,7 +15,7 @@ class MetOfficeObservationsProviderTest(unittest2.TestCase):
             content = f.read()
             f.close()
 
-        provider = ApiWrapper(api_key="fake")
+        provider = ApiWrapper()
         result = provider.scrape_forecasts_xml(content)
 
         # 5 periods
