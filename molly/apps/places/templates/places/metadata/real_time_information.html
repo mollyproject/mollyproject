@@ -2,6 +2,7 @@
 {% load i18n %}
 
 {% if entity.metadata.real_time_information %}
+<!--googleoff: all-->
 <div id="rti-{{ entity.identifier_scheme }}-{{ entity.identifier_value }}">
     {% if entity.metadata.real_time_information.pip_info %}
     <ul class="content-list">
@@ -53,4 +54,5 @@
  </div>
   {% endif %}
 </div>
+<!--googleon: all-->
 {% endif %}
