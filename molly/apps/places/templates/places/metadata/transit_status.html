@@ -1,5 +1,6 @@
 {% load i18n %}
-{% if transit_status %}    
+{% if transit_status %}
+<!--googleoff: all-->
     <div class="section">
         <div class="header">
             <h2>{% blocktrans with transit_status.service_name as service_name %}{{ service_name }} line status{% endblocktrans %}</h2>
@@ -23,4 +24,5 @@
             </tbody>
         </table>
     </div>
+<!--googleon: all-->
 {% endif %}
