@@ -1,4 +1,5 @@
 {% load molly_utils %}{% load i18n %}{% if entity.metadata.ldb %}
+<!--googleoff: all-->
 <div class="section" id="ldb-{{ entity.identifier_scheme }}-{{ entity.identifier_value }}">
   <div class="header">
     <h2>{{ entity.title }} ({% if board %}{% trans board %}{% else %}{% trans "departures" %}{% endif %}) - {{ entity.metadata.ldb.generatedAt|localize_utc|date:"H:i:s" }}</h2>
@@ -107,5 +108,5 @@
     {% endif %}
   </ul>
 </div>
-
+<!--googleon: all-->
 {% endif %}
