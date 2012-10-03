@@ -236,7 +236,7 @@ class OSMMapsProvider(BaseMapsProvider):
 
     def __init__(self, lat_north=None, lat_south=None,
                  lon_west=None, lon_east=None,
-                 url='http://download.geofabrik.de/osm/europe/great_britain/england.osm.bz2',
+                 url='http://download.geofabrik.de/openstreetmap/europe/great_britain/england.osm.bz2',
                  entity_type_data_file=None,
                  osm_tags_data_file=None,
                  identities_file=None):
