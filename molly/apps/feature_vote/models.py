@@ -4,6 +4,7 @@ from django.db import models
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.sessions.models import Session
+from django.contrib.comments.moderation import CommentModerator, moderator
 
 from molly.apps.home.models import UserMessage
 from molly.utils import send_email
@@ -98,3 +99,16 @@ class Feature(models.Model):
 
     def get_absolute_url(self):
         return reverse('feature_vote:feature-detail', args=[self.id])
+
+
+class FeatureModerator(CommentModerator):
+    """Comments are only enabled on public features and are always moderated.
+    This means individual comments need to be marked public. Email
+    notifications are sent for each new comment posted.
+    """
+    email_notification = True
+    auto_moderate_field = 'created'
+    moderate_after = 0
+    enable_field = 'is_public'
+
+moderator.register(Feature, FeatureModerator)
