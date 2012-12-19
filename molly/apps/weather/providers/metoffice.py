@@ -53,7 +53,7 @@ METOFFICE_OUTLOOK_CHOICES = (
     (33, 'h'),   # Haze
     )
 
-BASE_METOFFICE_URL = "http://partner.metoffice.gov.uk/public/val"
+BASE_METOFFICE_URL = "http://datapoint.metoffice.gov.uk/public/data/val"
 
 
 class MetOfficeProvider(Provider):
