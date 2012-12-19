@@ -172,7 +172,7 @@ class ApiWrapper(object):
         periods = xml.findall('.//Period')
         p = {}
         for period in periods:
-            date_val = period.get('val')
+            date_val = period.get('value')
             date_parsed = date(year=int(date_val[0:4]),
                 month=int(date_val[5:7]), day=int(date_val[8:10]))
             p[date_parsed] = {}
