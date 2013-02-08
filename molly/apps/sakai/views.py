@@ -10,6 +10,7 @@ from dateutil.tz import tzutc
 from StringIO import StringIO
 from datetime import datetime, timedelta
 from contextlib import contextmanager
+from simplejson.decoder import JSONDecodeError
 
 from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied
@@ -331,7 +332,7 @@ class PollDetailView(SakaiView):
             poll = self.get_sakai_resource(request, 'direct/poll/%s.json' % id)
             options = self.get_sakai_resource(request, 'direct/poll/%s/option.json' % id)
             options = options['poll-option_collection']
-        except PermissionDenied, e:
+        except (PermissionDenied, JSONDecodeError), e:
             if isinstance(e, OAuthHTTPError) and e.code != 403:
                 raise
             else:
