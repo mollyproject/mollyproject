@@ -9,14 +9,14 @@ page are redirected here)
 Configuration
 -------------
 
- * ``twitter_username`` (optional): If set, this imports a Twitter feed which
-   the desktop templates can display (this settings refers to Twitter's screen_name,
-   not the user_id as `precised in Twitter's documentation 
-   <https://dev.twitter.com/docs/api/1/get/statuses/user_timeline>`_)
- * ``twitter_ignore_urls`` (optional): If set, this filters out tweets in the
-   Twitter feed which contain this URL prefix - this can be used, for example,
-   if you're importing a news blog to your Twitter feed to avoid duplicate
-   content
+in the `settings overview in the Django documentation <http://docs.djangoproject.com/en/1.2/topics/settings/>`_,
+
+ * ``twitter_username`` (optional): If set, embed this users timeline into the
+   desktop pages using a Twitter "embedded timeline". See `twitter
+   documentation for more info
+   <https://dev.twitter.com/docs/embedded-timelines>`__.
+ * ``twitter_widget_id`` (required if twitter_username is specified): The
+   widget id used to tailor the widgets style to your desktop page.
  * ``blog_rss_url`` (optional): If set, this imports an RSS news feed which can
    be displayed to your users
 
