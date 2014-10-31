@@ -12,7 +12,7 @@ from molly.apps.places.providers import BaseMapsProvider
 logger = logging.getLogger(__name__)
 
 class LiveDepartureBoardPlacesProvider(BaseMapsProvider):
-    _WSDL_URL = "https://realtime.nationalrail.co.uk/ldbws/wsdl.aspx"
+    _WSDL_URL = "https://lite.realtime.nationalrail.co.uk/OpenLDBWS/wsdl.aspx"
     _ATTRIBUTION = { 'title': _("Powered by National Rail Enquiries"),
                   'url': "http://www.nationalrail.co.uk",
                   'picture': settings.STATIC_URL + "places/images/powered-by-nre.png" }
